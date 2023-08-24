@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { createGitHubIssueWithTitleAndBody } from '../TestRun';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import { Breadcrumb, Button, Container } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -17,6 +16,7 @@ import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from './TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
+import createIssueLink from '../../utils/createIssueLink';
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -141,13 +141,22 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
             {testPlanReport.finalizedTestResults.map(testResult => {
                 const test = testResult.test;
 
-                const fromReportPageLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
-                const gitHubIssueLinkWithTitleAndBody =
-                    createGitHubIssueWithTitleAndBody({
-                        test,
-                        testPlanReport,
-                        fromReportPageLink
-                    });
+                const reportLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
+                const issueLink = createIssueLink({
+                    testPlanTitle: testPlanVersion.title,
+                    versionString: `V${convertDateToString(
+                        testPlanVersion.updatedAt,
+                        'YY.MM.DD'
+                    )}`,
+                    testTitle: test.title,
+                    testRowNumber: test.rowNumber,
+                    testRenderedUrl: test.renderedUrl,
+                    atName: testPlanReport.at.name,
+                    atVersionName: testResult.atVersion.name,
+                    browserName: testPlanReport.browser.name,
+                    browserVersionName: testResult.browserVersion.name,
+                    reportLink
+                });
 
                 // TODO: fix renderedUrl
                 let modifiedRenderedUrl = test.renderedUrl.replace(
@@ -169,7 +178,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                                 <Button
                                     target="_blank"
                                     rel="noreferrer"
-                                    href={gitHubIssueLinkWithTitleAndBody}
+                                    href={issueLink}
                                     variant="secondary"
                                 >
                                     <FontAwesomeIcon

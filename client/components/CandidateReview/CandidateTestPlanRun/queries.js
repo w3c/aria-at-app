@@ -79,6 +79,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             runnableTests {
                 id
                 title
+                rowNumber
                 renderedUrl
                 renderableContent
                 viewers {

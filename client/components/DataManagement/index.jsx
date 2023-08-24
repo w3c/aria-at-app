@@ -12,9 +12,7 @@ import { evaluateAuth } from '@client/utils/evaluateAuth';
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
         DATA_MANAGEMENT_PAGE_QUERY,
-        {
-            fetchPolicy: 'cache-and-network'
-        }
+        { fetchPolicy: 'cache-and-network' }
     );
 
     const [pageReady, setPageReady] = useState(false);

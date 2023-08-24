@@ -30,7 +30,6 @@
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@react-hook/resize-observer": "^1.2.6",
     "bootstrap": "^5.2.3",
     "core-js": "^3.8.0",
     "graphql": "^16.6.0",
@@ -59,13 +58,13 @@
     "@babel/preset-env": "^7.8.7",
     "@babel/preset-react": "^7.8.3",
     "@lhci/cli": "^0.11.0",
-    "@storybook/builder-webpack5": "^6.5.16",
-    "@storybook/manager-webpack5": "^6.5.16",
     "@storybook/addon-a11y": "^6.5.16",
     "@storybook/addon-actions": "^6.5.16",
     "@storybook/addon-controls": "^6.5.16",
     "@storybook/addon-links": "^6.5.16",
     "@storybook/addons": "^6.5.16",
+    "@storybook/builder-webpack5": "^6.5.16",
+    "@storybook/manager-webpack5": "^6.5.16",
     "@storybook/react": "^6.5.16",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^5.16.5",
@@ -111,9 +110,6 @@
     ],
     "setupFilesAfterEnv": [
       "./jest.setup.js"
-    ],
-    "transformIgnorePatterns": [
-      "<rootDir>/node_modules/(?!(@juggle/resize-observer|@react-hook/resize-observer)/)"
     ],
     "transform": {
       "^.+\\.(js|jsx|mjs)$": "babel-jest"

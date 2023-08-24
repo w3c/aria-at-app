@@ -787,9 +787,19 @@ const graphqlSchema = gql`
         """
         author: String!
         """
+        The issue title in GitHub.
+        """
+        title: String!
+        """
         Link to the GitHub issue's first comment.
         """
         link: String!
+        """
+        Will be true if the issue was raised on the Candidate Review page
+        of the app (as opposed to other places with "raise an issue" buttons like
+        the test queue or the reports page.)
+        """
+        isCandidateReview: Boolean!
         """
         Indicates the type of issue. 'CHANGES_REQUESTED' or 'FEEDBACK'.
         'FEEDBACK' is the default type.
@@ -803,6 +813,14 @@ const graphqlSchema = gql`
         Test Number the issue was raised for.
         """
         testNumberFilteredByAt: Int
+        """
+        The time the issue was created, according to GitHub.
+        """
+        createdAt: Timestamp!
+        """
+        The time the issue was closed, if it was closed.
+        """
+        closedAt: Timestamp
     }
 
     """
@@ -868,7 +886,8 @@ const graphqlSchema = gql`
         finalizedTestResults: [TestResult]
         """
         These are the different feedback and requested change items created for
-        the TestPlanReport and retrieved from GitHub.
+        the TestPlanReport and retrieved from GitHub. Note that results will be
+        cached for one minute.
         """
         issues: [Issue]!
         """

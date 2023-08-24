@@ -12,6 +12,8 @@ export const ThemeTableHeader = styled.h2`
 `;
 
 export const ThemeTable = styled(Table)`
+    margin-bottom: 0;
+
     td,
     th {
         padding-left: 1rem;
@@ -22,5 +24,4 @@ export const ThemeTable = styled(Table)`
 export const ThemeTableUnavailable = styled.div`
     border: solid 1px #d2d5d9;
     padding: 0.5rem 1rem;
-    margin: 0 0 1.5rem 0;
 `;

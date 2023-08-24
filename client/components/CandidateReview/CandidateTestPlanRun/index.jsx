@@ -20,7 +20,6 @@ import { Helmet } from 'react-helmet';
 import './CandidateTestPlanRun.css';
 import '../../TestRun/TestRun.css';
 import '../../App/App.css';
-import useResizeObserver from '@react-hook/resize-observer';
 import { useMediaQuery } from 'react-responsive';
 import { convertDateToString } from '../../../utils/formatter';
 import TestPlanResultsTable from '../../Reports/TestPlanResultsTable';
@@ -29,19 +28,9 @@ import ThankYouModal from '../CandidateModals/ThankYouModal';
 import getMetrics from '../../Reports/getMetrics';
 import FeedbackListItem from '../FeedbackListItem';
 import DisclosureComponent from '../../common/DisclosureComponent';
-
-// https://codesandbox.io/s/react-hookresize-observer-example-ft88x
-function useSize(target) {
-    const [size, setSize] = React.useState();
-
-    React.useLayoutEffect(() => {
-        target && setSize(target.getBoundingClientRect());
-    }, [target]);
-
-    // Where the magic happens
-    useResizeObserver(target, entry => setSize(entry.contentRect));
-    return size;
-}
+import createIssueLink, {
+    getIssueSearchLink
+} from '../../../utils/createIssueLink';
 
 const CandidateTestPlanRun = () => {
     const { atId, testPlanVersionId } = useParams();
@@ -80,10 +69,6 @@ const CandidateTestPlanRun = () => {
     const [showBrowserBools, setShowBrowserBools] = useState([]);
     const [showBrowserClicks, setShowBrowserClicks] = useState([]);
 
-    const [issuesHeading, setIssuesHeading] = React.useState();
-    const issuesHeadingSize = useSize(issuesHeading);
-    const [issuesList, setIssuesList] = React.useState();
-    const issuesListSize = useSize(issuesList);
     const isLaptopOrLarger = useMediaQuery({
         query: '(min-width: 792px)'
     });
@@ -296,6 +281,11 @@ const CandidateTestPlanRun = () => {
     const { testPlanVersion, vendorReviewStatus } = testPlanReport;
     const { recommendedPhaseTargetDate } = testPlanVersion;
 
+    const versionString = `V${convertDateToString(
+        testPlanVersion.updatedAt,
+        'YY.MM.DD'
+    )}`;
+
     const vendorReviewStatusMap = {
         READY: 'Ready',
         IN_PROGRESS: 'In Progress',
@@ -322,54 +312,66 @@ const CandidateTestPlanRun = () => {
             issue.testNumberFilteredByAt === currentTest.seq
     );
 
+    const issue = {
+        isCandidateReview: true,
+        isCandidateReviewChangesRequested: true,
+        testPlanTitle: testPlanVersion.title,
+        versionString,
+        testTitle: currentTest.title,
+        testRowNumber: currentTest.rowNumber,
+        testRenderedUrl: currentTest.renderedUrl,
+        atName: testPlanReport.at.name
+    };
+
+    const requestChangesUrl = createIssueLink(issue);
+
+    const feedbackUrl = createIssueLink({
+        ...issue,
+        isCandidateReviewChangesRequested: false
+    });
+
+    const generalFeedbackUrl = createIssueLink({
+        ...issue,
+        isCandidateReviewChangesRequested: false,
+        testTitle: undefined,
+        testRowNumber: undefined,
+        testRenderedUrl: undefined
+    });
+
+    const issueQuery = {
+        isCandidateReview: true,
+        isCandidateReviewChangesRequested: false,
+        testPlanTitle: testPlanVersion.title,
+        versionString,
+        testRowNumber: currentTest.rowNumber,
+        username: data.me.username,
+        atName: testPlanReport.at.name
+    };
+
+    const feedbackGithubUrl = getIssueSearchLink(issueQuery);
+
+    const changesRequestedGithubUrl = getIssueSearchLink({
+        ...issueQuery,
+        isCandidateReviewChangesRequested: true
+    });
+
+    let fileBugUrl;
+
     const githubAtLabelMap = {
         'VoiceOver for macOS': 'vo',
         JAWS: 'jaws',
         NVDA: 'nvda'
     };
 
-    const generateGithubUrl = (
-        test = false,
-        type = '',
-        titleAddition = '',
-        search = false,
-        author = ''
-    ) => {
-        const testPlanVersionDate = convertDateToString(
-            new Date(testPlanVersion.updatedAt),
-            'DD-MM-YYYY'
-        );
-
-        const generateGithubTitle = () => {
-            return `${at} Feedback: "${currentTest.title}" (${
-                testPlanVersion.title
-            }${
-                test ? `, Test ${currentTest.seq}` : ''
-            }, ${testPlanVersionDate})${
-                titleAddition ? ` - ${titleAddition}` : ''
-            }`;
-        };
-
-        const githubIssueUrlTitle = generateGithubTitle();
-        const defaultGithubLabels = 'app,candidate-review';
-        let githubUrl;
-
-        if (!search) {
-            githubUrl = `https://github.com/w3c/aria-at/issues/new?title=${encodeURI(
-                githubIssueUrlTitle
-            )}&labels=${defaultGithubLabels},${githubAtLabelMap[at]}`;
-            return `${githubUrl},${type}`;
-        } else {
-            let title = generateGithubTitle();
-            let query = encodeURI(
-                `label:app label:candidate-review label:${type} label:${
-                    githubAtLabelMap[at]
-                } ${author ? `author:${author}` : ''} ${title}`
-            );
-            githubUrl = `https://github.com/w3c/aria-at/issues?q=${query}`;
-            return githubUrl;
-        }
-    };
+    if (githubAtLabelMap[at] == 'vo') {
+        fileBugUrl =
+            'https://bugs.webkit.org/buglist.cgi?quicksearch=voiceover';
+    } else if (githubAtLabelMap[at] == 'nvda') {
+        fileBugUrl = 'https://github.com/nvaccess/nvda/issues';
+    } else {
+        fileBugUrl =
+            'https://github.com/FreedomScientific/VFO-standards-support/issues';
+    }
 
     const heading = (
         <div className="test-info-heading">
@@ -429,24 +431,11 @@ const CandidateTestPlanRun = () => {
         issue => issue.testNumberFilteredByAt == currentTest.seq
     ).length > 0 && (
         <div className="issues-container">
-            <h2
-                style={{
-                    width: isLaptopOrLarger
-                        ? issuesHeadingSize?.width
-                        : issuesListSize?.width,
-                    position: 'relative'
-                }}
-            >
+            <h2>
                 <span className="feedback-from-text">Feedback from</span>{' '}
                 <b>{at} Representative</b>
             </h2>
-            <ul
-                className="feedback-list"
-                style={{
-                    width: issuesListSize?.width,
-                    position: 'relative'
-                }}
-            >
+            <ul className="feedback-list">
                 {[changesRequestedIssues, feedbackIssues].map((list, index) => {
                     if (list.length > 0) {
                         const uniqueAuthors = [
@@ -467,15 +456,15 @@ const CandidateTestPlanRun = () => {
                                 }
                                 issues={list}
                                 individualTest={true}
-                                githubUrl={generateGithubUrl(
-                                    true,
-                                    index === 0
-                                        ? 'changes-requested'
-                                        : 'feedback',
-                                    null,
-                                    true,
-                                    !differentAuthors ? data.me.username : null
-                                )}
+                                githubUrl={getIssueSearchLink({
+                                    isCandidateReview: true,
+                                    isCandidateReviewChangesRequested:
+                                        index === 0,
+                                    atName: testPlanReport.at.name,
+                                    testPlanTitle: testPlanVersion.title,
+                                    versionString,
+                                    testRowNumber: currentTest.rowNumber
+                                })}
                             />
                         );
                     }
@@ -540,20 +529,6 @@ const CandidateTestPlanRun = () => {
         </div>
     );
 
-    const requestChangesUrl = generateGithubUrl(true, 'changes-requested');
-    const feedbackUrl = generateGithubUrl(true, 'feedback');
-    let fileBugUrl;
-
-    if (githubAtLabelMap[at] == 'vo') {
-        fileBugUrl =
-            'https://bugs.webkit.org/buglist.cgi?quicksearch=voiceover';
-    } else if (githubAtLabelMap[at] == 'nvda') {
-        fileBugUrl = 'https://github.com/nvaccess/nvda/issues';
-    } else {
-        fileBugUrl =
-            'https://github.com/FreedomScientific/VFO-standards-support/issues';
-    }
-
     return (
         <Container className="test-run-container">
             <Helmet>
@@ -580,11 +555,10 @@ const CandidateTestPlanRun = () => {
                         {heading}
                         {testInfo}
                         <Col className="results-container-col">
-                            <Row xs={1} s={1} md={2} ref={setIssuesHeading}>
+                            <Row xs={1} s={1} md={2}>
                                 <Col
                                     className="results-container"
                                     md={isLaptopOrLarger ? 9 : 12}
-                                    ref={setIssuesList}
                                 >
                                     <Row>{feedback}</Row>
                                     <Row className="results-container-row">
@@ -691,28 +665,18 @@ const CandidateTestPlanRun = () => {
                     testPlan={testPlanVersion.title}
                     feedbackIssues={testPlanReport.issues?.filter(
                         issue =>
+                            issue.isCandidateReview === true &&
                             issue.feedbackType === 'FEEDBACK' &&
                             issue.author == data.me.username
                     )}
-                    feedbackGithubUrl={generateGithubUrl(
-                        false,
-                        'feedback',
-                        null,
-                        true,
-                        data.me.username
-                    )}
+                    feedbackGithubUrl={feedbackGithubUrl}
                     changesRequestedIssues={testPlanReport.issues?.filter(
                         issue =>
+                            issue.isCandidateReview === true &&
                             issue.feedbackType === 'CHANGES_REQUESTED' &&
                             issue.author == data.me.username
                     )}
-                    changesRequestedGithubUrl={generateGithubUrl(
-                        false,
-                        'changes-requested',
-                        null,
-                        true,
-                        data.me.username
-                    )}
+                    changesRequestedGithubUrl={changesRequestedGithubUrl}
                     handleAction={submitApproval}
                     handleHide={() => setFeedbackModalShowing(false)}
                 />
@@ -726,11 +690,7 @@ const CandidateTestPlanRun = () => {
                         setThankYouModalShowing(false);
                         navigate('/candidate-review');
                     }}
-                    githubUrl={generateGithubUrl(
-                        false,
-                        'feedback',
-                        'General Feedback'
-                    )}
+                    githubUrl={generalFeedbackUrl}
                 />
             ) : (
                 <></>

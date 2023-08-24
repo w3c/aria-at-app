@@ -6,9 +6,9 @@ import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Container } from 'react-bootstrap';
 import {
-    ThemeTable as UnstyledThemeTable,
+    ThemeTable,
+    ThemeTableUnavailable,
     ThemeTableHeader as UnstyledThemeTableHeader
-    // ThemeTableUnavailable as UnstyledThemeTableUnavailable
 } from '../common/ThemeTable';
 import VersionString from '../common/VersionString';
 import PhasePill from '../common/PhasePill';
@@ -19,12 +19,18 @@ import {
     faCodeCommit
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { uniqBy as uniqueBy } from 'lodash';
 
 const H3 = styled.h3`
-    padding-top: 1rem;
+    padding-top: 3rem;
     padding-bottom: 15px;
     border-bottom: solid 1px #d2d5d9;
     margin-bottom: 2rem !important;
+`;
+
+const NoneText = styled.span`
+    font-style: italic;
+    color: #6a7989;
 `;
 
 const PageCommitHistory = styled.div`
@@ -39,6 +45,10 @@ const PageUl = styled.ul`
     }
 `;
 
+const PageSpacer = styled.div`
+    height: 3rem;
+`;
+
 const CoveredAtDl = styled.dl`
     margin-bottom: 2rem;
 
@@ -50,17 +60,9 @@ const CoveredAtDl = styled.dl`
     }
 `;
 
-const ThemeTable = styled(UnstyledThemeTable)`
-    margin: 0 0 3rem 0 !important;
-`;
-
 const ThemeTableHeader = styled(UnstyledThemeTableHeader)`
     margin: 0 !important;
 `;
-
-// const ThemeTableUnavailable = styled(UnstyledThemeTableUnavailable)`
-//     margin: 0 0 3rem 0 !important;
-// `;
 
 const TestPlanVersionsPage = () => {
     const { testPlanDirectory } = useParams();
@@ -194,6 +196,18 @@ const TestPlanVersionsPage = () => {
 
     const nonRDVersions = testPlanVersions.filter(each => each.phase !== 'RD');
 
+    const issues = uniqueBy(
+        testPlanVersions.flatMap(testPlanVersion =>
+            testPlanVersion.testPlanReports.flatMap(testPlanReport =>
+                testPlanReport.issues.map(issue => ({
+                    ...issue,
+                    at: testPlanReport.at
+                }))
+            )
+        ),
+        item => item.link
+    );
+
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -267,11 +281,72 @@ const TestPlanVersionsPage = () => {
                             ))}
                         </tbody>
                     </ThemeTable>
+                    <PageSpacer />
                 </>
             )}
-            {/* TODO: enable table when issues are present */}
-            {/* <ThemeTableHeader>GitHub Issues</ThemeTableHeader>
-            <ThemeTableUnavailable>No GitHub Issues</ThemeTableUnavailable> */}
+
+            <ThemeTableHeader>GitHub Issues</ThemeTableHeader>
+            {!issues.length ? (
+                <ThemeTableUnavailable>No GitHub Issues</ThemeTableUnavailable>
+            ) : (
+                <ThemeTable bordered responsive>
+                    <thead>
+                        <tr>
+                            <th>Author</th>
+                            <th>Issue</th>
+                            <th>Status</th>
+                            <th>AT</th>
+                            <th>Created On</th>
+                            <th>Closed On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {issues.map(issue => {
+                            return (
+                                <tr key={issue.link}>
+                                    <td>
+                                        <a
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            href={`https://github.com/${issue.author}`}
+                                        >
+                                            {issue.author}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            href={issue.link}
+                                        >
+                                            {issue.title}
+                                        </a>
+                                    </td>
+                                    <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
+                                    <td>{issue.at.name}</td>
+                                    <td>
+                                        {convertDateToString(
+                                            issue.createdAt,
+                                            'MMM D, YYYY'
+                                        )}
+                                    </td>
+                                    <td>
+                                        {!issue.closedAt ? (
+                                            <NoneText>N/A</NoneText>
+                                        ) : (
+                                            convertDateToString(
+                                                issue.closedAt,
+                                                'MMM D, YYYY'
+                                            )
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </ThemeTable>
+            )}
+            <PageSpacer />
 
             <ThemeTableHeader>Timeline for All Versions</ThemeTableHeader>
             <ThemeTable bordered responsive>
@@ -308,6 +383,7 @@ const TestPlanVersionsPage = () => {
                     })}
                 </tbody>
             </ThemeTable>
+
             {nonRDVersions.map(testPlanVersion => {
                 const vString = `V${convertDateToString(
                     testPlanVersion.updatedAt,

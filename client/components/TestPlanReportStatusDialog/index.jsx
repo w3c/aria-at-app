@@ -184,7 +184,7 @@ const TestPlanReportStatusDialog = ({
                 </h2>
             </Modal.Header>
 
-            <Modal.Body className="pt-0">
+            <Modal.Body className="pt-0 pb-5">
                 {testPlanVersion.phase && (
                     <p>
                         This plan is in the&nbsp;
