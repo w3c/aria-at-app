@@ -100,8 +100,8 @@ const PhaseCell = styled.div`
         background: #f6f8fa;
 
         > span.more-issues-container {
-            display: flex;
-            flex-direction: row;
+            display: grid;
+            grid-template-columns: max-content 1fr;
 
             align-items: center;
         }
