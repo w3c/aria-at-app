@@ -39,14 +39,15 @@ const VersionString = ({
     autoWidth = true,
     iconColor = '#818F98',
     linkRef,
-    linkHref
+    linkHref,
+    ...restProps
 }) => {
     const dateString = convertDateToString(date, 'YY.MM.DD');
 
     const body = (
-        <span aria-label={`V${dateString}`}>
+        <span>
             <FontAwesomeIcon icon={faCircleCheck} color={iconColor} />
-            <b>V{dateString}</b>
+            <b>{'V' + dateString}</b>
         </span>
     );
 
@@ -77,7 +78,11 @@ const VersionString = ({
     let classes = fullWidth ? 'full-width' : '';
     classes = autoWidth ? `${classes} auto-width` : classes;
 
-    return <StyledPill className={classes}>{possibleLink}</StyledPill>;
+    return (
+        <StyledPill className={classes} {...restProps}>
+            {possibleLink}
+        </StyledPill>
+    );
 };
 
 VersionString.propTypes = {

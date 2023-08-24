@@ -112,6 +112,7 @@ const PhaseCell = styled.div`
         }
 
         > span.target-days-container {
+            width: max-content;
             text-align: center;
 
             button {
@@ -119,7 +120,6 @@ const PhaseCell = styled.div`
                 border: none;
                 background: none;
                 color: inherit;
-                font-weight: bold;
 
                 margin: 0;
                 padding: 0;
@@ -363,7 +363,7 @@ const DataManagementRow = ({
                 <>
                     <PhasePill>{phase}</PhasePill>
                     <span>
-                        {phaseText}{' '}
+                        {phaseText}&nbsp;
                         <b>{convertDateToString(versionDate, 'MMM D, YYYY')}</b>
                     </span>
                 </>
@@ -604,7 +604,7 @@ const DataManagementRow = ({
                                 iconColor="#818F98"
                             />
                             <span role="listitem" className="review-complete">
-                                Review Completed{' '}
+                                Review Completed&nbsp;
                                 <b>
                                     {convertDateToString(
                                         completionDate,
@@ -760,7 +760,7 @@ const DataManagementRow = ({
                                 iconColor="#818F98"
                             />
                             <span role="listitem" className="review-complete">
-                                Review Completed{' '}
+                                Review Completed&nbsp;
                                 <b>
                                     {convertDateToString(
                                         completionDate,
@@ -874,7 +874,11 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
-                        <PhaseCell role="list">
+                        <PhaseCell
+                            role="list"
+                            aria-level="1"
+                            aria-setsize={shouldShowAdvanceButton ? 4 : 3}
+                        >
                             <VersionString
                                 role="listitem"
                                 date={latestVersionDate}
@@ -917,12 +921,13 @@ const DataManagementRow = ({
                                 role="listitem"
                                 testPlanVersionId={latestVersion.id}
                             />
-                            <span role="list" className="more">
+                            <span role="list" className="more" aria-level="2">
                                 <span
                                     role="listitem"
                                     className="more-issues-container"
                                 >
-                                    <ReportStatusDot className="issues" />{' '}
+                                    <ReportStatusDot className="issues" />
+                                    &nbsp;
                                     {issuesCount} Open Issue
                                     {`${issuesCount === 1 ? '' : 's'}`}
                                     {`${
@@ -934,13 +939,7 @@ const DataManagementRow = ({
                                 <span
                                     role="listitem"
                                     className="target-days-container"
-                                    aria-label={`Target ${Math.abs(
-                                        timeToTargetDate
-                                    )} Days ${
-                                        timeToTargetDate < 0 ? 'Past' : 'Away'
-                                    }`}
                                 >
-                                    Target{' '}
                                     {isAdmin ? (
                                         <button
                                             ref={updateTargetRef}
@@ -951,26 +950,41 @@ const DataManagementRow = ({
                                                         latestVersion.id,
                                                     title: `Change Recommended Phase Target Date for ${
                                                         testPlan.title
-                                                    }, V${convertDateToString(
-                                                        latestVersionDate,
-                                                        'YY.MM.DD'
-                                                    )}`,
+                                                    }, ${
+                                                        'V' +
+                                                        convertDateToString(
+                                                            latestVersionDate,
+                                                            'YY.MM.DD'
+                                                        )
+                                                    }`,
                                                     dateText:
                                                         latestVersion.recommendedPhaseTargetDate
                                                 });
                                             }}
                                         >
-                                            {Math.abs(timeToTargetDate)} Days
-                                        </button>
-                                    ) : (
-                                        <>
+                                            Target&nbsp;
                                             <b>
                                                 {Math.abs(timeToTargetDate)}{' '}
                                                 Days
                                             </b>
+                                            &nbsp;
+                                            {timeToTargetDate < 0
+                                                ? 'Past'
+                                                : 'Away'}
+                                        </button>
+                                    ) : (
+                                        <>
+                                            Target&nbsp;
+                                            <b>
+                                                {Math.abs(timeToTargetDate)}{' '}
+                                                Days
+                                            </b>
+                                            &nbsp;
+                                            {timeToTargetDate < 0
+                                                ? 'Past'
+                                                : 'Away'}
                                         </>
-                                    )}{' '}
-                                    {timeToTargetDate < 0 ? 'Past' : 'Away'}
+                                    )}
                                 </span>
                             </span>
                         </PhaseCell>
@@ -1002,7 +1016,7 @@ const DataManagementRow = ({
                             linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                         />
                         <span role="listitem" className="review-complete">
-                            Approved{' '}
+                            Approved&nbsp;
                             <b>
                                 {convertDateToString(
                                     completionDate,
@@ -1047,8 +1061,8 @@ const DataManagementRow = ({
                     title={`Advancing test plan, ${testPlan.title}, V${advanceModalData.version}`}
                     content={
                         <>
-                            This version will be updated to{' '}
-                            <b>{advanceModalData.phase}</b>.{' '}
+                            This version will be updated to&nbsp;
+                            <b>{advanceModalData.phase}</b>.&nbsp;
                             {advanceModalData.coveredReports?.length ? (
                                 <>
                                     <br />
@@ -1065,7 +1079,7 @@ const DataManagementRow = ({
                                                         key={`${testPlan.id}${atName}${browserName}`}
                                                     >
                                                         <b>
-                                                            {atName} and{' '}
+                                                            {atName} and&nbsp;
                                                             {browserName}
                                                         </b>
                                                     </li>
