@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { Feedback } from '..';
@@ -22,17 +22,27 @@ const NoOutputCheckbox = styled(Form.Check)`
 `;
 
 const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
-    const [noOutput, setNoOutput] = React.useState(
+    const [noOutput, setNoOutput] = useState(
         atOutput.value === noOutputTextAreaValue
     );
 
+    const isMounted = useRef(false);
+
     useEffect(() => {
-        if (noOutput) {
-            atOutput.change(noOutputTextAreaValue);
+        if (isMounted.current) {
+            if (noOutput) {
+                atOutput.change(noOutputTextAreaValue);
+            } else {
+                atOutput.change('');
+            }
         } else {
-            atOutput.change('');
+            isMounted.current = true;
         }
     }, [noOutput]);
+
+    useEffect(() => {
+        setNoOutput(atOutput.value === noOutputTextAreaValue);
+    }, [atOutput.value]);
 
     return (
         <OutputTextAreaWrapper>
@@ -52,7 +62,7 @@ const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
                 )}
             </label>
             <NoOutputCheckbox
-                aria-checked={noOutput}
+                checked={noOutput}
                 disabled={
                     atOutput.value && atOutput.value !== noOutputTextAreaValue
                 }
