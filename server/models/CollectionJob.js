@@ -22,7 +22,7 @@ module.exports = function (sequelize, DataTypes) {
             }
         },
         {
-            timestamps: false, // If you need timestamps, you can change this to true
+            timestamps: false,
             tableName: MODEL_NAME
         }
     );
