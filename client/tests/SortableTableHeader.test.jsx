@@ -9,7 +9,16 @@ import SortableTableHeader, {
 } from '../components/common/SortableTableHeader';
 import '@testing-library/jest-dom';
 
-const renderComponent = props => render(<SortableTableHeader {...props} />);
+const renderComponent = props =>
+    render(
+        <table>
+            <thead>
+                <tr>
+                    <SortableTableHeader {...props} />
+                </tr>
+            </thead>
+        </table>
+    );
 
 const getAriaSort = (active, sortOrder) =>
     active
