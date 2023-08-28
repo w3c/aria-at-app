@@ -260,6 +260,10 @@ const graphqlSchema = gql`
         Reports section of the app as being recommended.
         """
         RECOMMENDED
+        """
+        The TestPlanVersion is now outdated and replaced by another version.
+        """
+        DEPRECATED
     }
 
     """

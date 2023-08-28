@@ -109,6 +109,9 @@ const TestPlanVersionsPage = () => {
             case 'RD':
                 date = testPlanVersion.updatedAt;
                 break;
+            case 'DEPRECATED':
+                date = testPlanVersion.deprecatedAt;
+                break;
             default:
                 throw new Error('Unexpected case');
         }
@@ -116,15 +119,10 @@ const TestPlanVersionsPage = () => {
     };
 
     const getIconColor = testPlanVersion => {
-        return testPlanVersion.deprecatedAt || testPlanVersion.phase === 'RD'
+        return testPlanVersion.phase === 'DEPRECATED' ||
+            testPlanVersion.phase === 'RD'
             ? '#818F98'
             : '#2BA51C';
-    };
-
-    const getPhaseOrDeprecated = testPlanVersion => {
-        return testPlanVersion.deprecatedAt
-            ? 'DEPRECATED'
-            : testPlanVersion.phase;
     };
 
     const getEventDate = testPlanVersion => {
@@ -142,40 +140,40 @@ const TestPlanVersionsPage = () => {
                         return testPlanVersion.candidatePhaseReachedAt;
                     case 'RECOMMENDED':
                         return testPlanVersion.recommendedPhaseReachedAt;
+                    case 'DEPRECATED':
+                        return testPlanVersion.deprecatedAt;
                 }
             })(),
             'MMM D, YYYY'
         );
     };
 
-    const getEventBody = ({ phase, isDeprecated }) => {
+    const getEventBody = phase => {
         const phasePill = <PhasePill fullWidth={false}>{phase}</PhasePill>;
-        const deprecatedPill = (
-            <PhasePill fullWidth={false}>DEPRECATED</PhasePill>
-        );
 
         switch (phase) {
             case 'RD':
                 return <>{phasePill} Complete</>;
             case 'DRAFT':
-                return isDeprecated ? (
-                    <>{deprecatedPill}</>
-                ) : (
-                    <>{phasePill} Review Started</>
-                );
             case 'CANDIDATE':
-                return isDeprecated ? (
-                    <>{deprecatedPill}</>
-                ) : (
-                    <>{phasePill} Review Started</>
-                );
+                return <>{phasePill} Review Started</>;
             case 'RECOMMENDED':
-                return isDeprecated ? (
-                    <>{deprecatedPill}</>
-                ) : (
-                    <>{phasePill} Approved</>
-                );
+                return <>{phasePill} Approved</>;
+            case 'DEPRECATED':
+                return <>{phasePill}</>;
         }
+    };
+
+    const getDerivedDeprecatedDuringPhase = testPlanVersion => {
+        let derivedPhaseDeprecatedDuring = 'RD';
+        if (testPlanVersion.recommendedPhaseReachedAt)
+            derivedPhaseDeprecatedDuring = 'RECOMMENDED';
+        else if (testPlanVersion.candidatePhaseReachedAt)
+            derivedPhaseDeprecatedDuring = 'CANDIDATE';
+        else if (testPlanVersion.draftPhaseReachedAt)
+            derivedPhaseDeprecatedDuring = 'DRAFT';
+
+        return derivedPhaseDeprecatedDuring;
     };
 
     const testPlan = data.testPlan;
@@ -253,17 +251,28 @@ const TestPlanVersionsPage = () => {
                                     </td>
                                     <td>
                                         {(() => {
+                                            // Gets the derived phase even if deprecated by checking
+                                            // the known dates on the testPlanVersion object
+                                            const derivedPhase =
+                                                getDerivedDeprecatedDuringPhase(
+                                                    testPlanVersion
+                                                );
+
                                             const phasePill = (
                                                 <PhasePill fullWidth={false}>
-                                                    {testPlanVersion.phase}
+                                                    {derivedPhase}
                                                 </PhasePill>
                                             );
-                                            const deprecatedPill = (
-                                                <PhasePill fullWidth={false}>
-                                                    DEPRECATED
-                                                </PhasePill>
-                                            );
+
                                             if (testPlanVersion.deprecatedAt) {
+                                                const deprecatedPill = (
+                                                    <PhasePill
+                                                        fullWidth={false}
+                                                    >
+                                                        DEPRECATED
+                                                    </PhasePill>
+                                                );
+
                                                 return (
                                                     <>
                                                         {deprecatedPill} during{' '}
@@ -367,10 +376,7 @@ const TestPlanVersionsPage = () => {
                             />
                         );
 
-                        const eventBody = getEventBody({
-                            phase: testPlanVersion.phase,
-                            isDeprecated: !!testPlanVersion.deprecatedAt
-                        });
+                        const eventBody = getEventBody(testPlanVersion.phase);
 
                         return (
                             <tr key={testPlanVersion.id}>
@@ -389,9 +395,15 @@ const TestPlanVersionsPage = () => {
                     testPlanVersion.updatedAt,
                     'YY.MM.DD'
                 )}`;
+
+                // Gets the derived phase even if deprecated by checking
+                // the known dates on the testPlanVersion object
+                const derivedPhase =
+                    getDerivedDeprecatedDuringPhase(testPlanVersion);
+
                 const hasFinalReports =
-                    (testPlanVersion.phase === 'CANDIDATE' ||
-                        testPlanVersion.phase === 'RECOMMENDED') &&
+                    (derivedPhase === 'CANDIDATE' ||
+                        derivedPhase === 'RECOMMENDED') &&
                     !!testPlanVersion.testPlanReports.filter(
                         report => report.isFinal
                     ).length;
@@ -405,7 +417,7 @@ const TestPlanVersionsPage = () => {
                                 autoWidth={false}
                             />
                             <PhasePill fullWidth={false}>
-                                {getPhaseOrDeprecated(testPlanVersion)}
+                                {testPlanVersion.phase}
                             </PhasePill>{' '}
                             on {getEventDate(testPlanVersion)}
                         </H3>
@@ -509,13 +521,7 @@ const TestPlanVersionsPage = () => {
                                                     'MMM D, YYYY'
                                                 )}
                                             </td>
-                                            <td>
-                                                {getEventBody({
-                                                    phase,
-                                                    isDeprecated:
-                                                        phase === 'DEPRECATED'
-                                                })}
-                                            </td>
+                                            <td>{getEventBody(phase)}</td>
                                         </tr>
                                     ));
                                 })()}

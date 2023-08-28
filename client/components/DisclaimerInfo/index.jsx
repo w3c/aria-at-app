@@ -70,6 +70,14 @@ const recommendedMessageContent = (
     </>
 );
 
+const deprecatedTitle = 'Deprecated Report';
+const deprecatedMessageContent = (
+    <>
+        The information in this report is generated from previously set
+        candidate or recommended tests.
+    </>
+);
+
 const content = {
     CANDIDATE: {
         title: candidateTitle,
@@ -78,14 +86,19 @@ const content = {
     RECOMMENDED: {
         title: recommendedTitle,
         messageContent: recommendedMessageContent
+    },
+    DEPRECATED: {
+        title: deprecatedTitle,
+        messageContent: deprecatedMessageContent
     }
 };
 
 const DisclaimerInfo = ({ phase }) => {
     const [expanded, setExpanded] = useState(false);
 
-    const title = content[phase].title;
-    const messageContent = content[phase].messageContent;
+    const title = content[phase]?.title || content.CANDIDATE.title;
+    const messageContent =
+        content[phase]?.messageContent || content.CANDIDATE.messageContent;
 
     return (
         <Container>

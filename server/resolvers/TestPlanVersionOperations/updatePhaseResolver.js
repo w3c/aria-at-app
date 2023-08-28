@@ -40,6 +40,15 @@ const updatePhaseResolver = async (
         throw new AuthenticationError();
     }
 
+    // Immediately deprecate version without further checks
+    if (phase === 'DEPRECATED') {
+        await updateTestPlanVersion(testPlanVersionId, {
+            phase,
+            deprecatedAt: new Date()
+        });
+        return populateData({ testPlanVersionId }, { context });
+    }
+
     let testPlanVersionDataToInclude;
     let testPlanReportsDataToIncludeId = [];
 
@@ -418,6 +427,7 @@ const updatePhaseResolver = async (
     // deprecate it
     if (testPlanVersionDataToIncludeId)
         await updateTestPlanVersion(testPlanVersionDataToIncludeId, {
+            phase: 'DEPRECATED',
             deprecatedAt: new Date()
         });
 
