@@ -1,0 +1,6 @@
+export const TEST_PLAN_VERSION_PHASES = {
+    RD: 'RD',
+    DRAFT: 'DRAFT',
+    CANDIDATE: 'CANDIDATE',
+    RECOMMENDED: 'RECOMMENDED'
+};

@@ -22,6 +22,7 @@ import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import VersionString from '../../common/VersionString';
 import PhasePill from '../../common/PhasePill';
 import { uniq as unique, uniqBy as uniqueBy } from 'lodash';
+import { getVersionData } from '../utils';
 
 const StatusCell = styled.div`
     display: flex;
@@ -152,7 +153,8 @@ const DataManagementRow = ({
     ats,
     testPlan,
     testPlanVersions,
-    setTestPlanVersions
+    setTestPlanVersions,
+    tableRowIndex
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const {
@@ -210,27 +212,6 @@ const DataManagementRow = ({
             testPlanVersions.filter(({ phase }) => phase === 'RECOMMENDED')
         );
     }, [testPlanVersions]);
-
-    // Get the version information based on the latest or earliest date info from a group of
-    // TestPlanVersions
-    const getVersionData = (testPlanVersions, dateKey = 'updatedAt') => {
-        const earliestVersion = testPlanVersions.reduce((a, b) =>
-            new Date(a[dateKey]) < new Date(b[dateKey]) ? a : b
-        );
-        const earliestVersionDate = new Date(earliestVersion[dateKey]);
-
-        const latestVersion = testPlanVersions.reduce((a, b) =>
-            new Date(a[dateKey]) > new Date(b[dateKey]) ? a : b
-        );
-        const latestVersionDate = new Date(latestVersion[dateKey]);
-
-        return {
-            earliestVersion,
-            earliestVersionDate,
-            latestVersion,
-            latestVersionDate
-        };
-    };
 
     const handleClickUpdateTestPlanVersionPhase = async (
         testPlanVersionId,
@@ -1015,7 +996,7 @@ const DataManagementRow = ({
 
     return (
         <LoadingStatus message={loadingMessage}>
-            <tr>
+            <tr aria-rowindex={tableRowIndex}>
                 <th>
                     <a href={`/data-management/${testPlan.directory}`}>
                         <b>{testPlan.title}</b>
@@ -1129,6 +1110,7 @@ DataManagementRow.propTypes = {
             recommendedPhaseReachedAt: PropTypes.string
         })
     ).isRequired,
+    tableRowIndex: PropTypes.number.isRequired,
     setTestPlanVersions: PropTypes.func
 };
 
