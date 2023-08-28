@@ -63,6 +63,7 @@ const SortableTableHeader = ({ title, active, onSort = () => {} }) => {
     const { setMessage } = useAriaLiveRegion();
 
     useEffect(() => {
+        if (!setMessage) return;
         if (active) {
             const message = ` now sorted by ${title} in ${currentSortOrder.toLowerCase()} order`;
             setMessage(message);

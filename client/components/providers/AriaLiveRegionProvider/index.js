@@ -18,7 +18,7 @@ const VisuallyHiddenAriaLiveRegion = styled.span`
 export const useAriaLiveRegion = () => {
     const context = useContext(AriaLiveRegionContext);
     if (!context) {
-        console.error(
+        console.warn(
             'useAriaLiveRegion must be used within an AriaLiveRegionProvider'
         );
     }
