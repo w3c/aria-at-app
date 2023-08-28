@@ -213,17 +213,6 @@ const DataManagementRow = ({
         );
     }, [testPlanVersions]);
 
-    const getUniqueAtObjects = testPlanReports => {
-        const uniqueAtObjects = {};
-        testPlanReports.forEach(testPlanReport => {
-            const atId = testPlanReport.at.id;
-            if (!uniqueAtObjects[atId]) {
-                uniqueAtObjects[atId] = testPlanReport.at;
-            }
-        });
-        return uniqueAtObjects;
-    };
-
     const handleClickUpdateTestPlanVersionPhase = async (
         testPlanVersionId,
         phase,
