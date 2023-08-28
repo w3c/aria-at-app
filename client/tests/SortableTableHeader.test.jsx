@@ -8,16 +8,19 @@ import SortableTableHeader, {
     TABLE_SORT_ORDERS
 } from '../components/common/SortableTableHeader';
 import '@testing-library/jest-dom';
+import { AriaLiveRegionProvider } from '../components/providers/AriaLiveRegionProvider';
 
 const renderComponent = props =>
     render(
-        <table>
-            <thead>
-                <tr>
-                    <SortableTableHeader {...props} />
-                </tr>
-            </thead>
-        </table>
+        <AriaLiveRegionProvider>
+            <table>
+                <thead>
+                    <tr>
+                        <SortableTableHeader {...props} />
+                    </tr>
+                </thead>
+            </table>
+        </AriaLiveRegionProvider>
     );
 
 const getAriaSort = (active, sortOrder) =>

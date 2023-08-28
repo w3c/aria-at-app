@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import styled from '@emotion/styled';
@@ -7,6 +7,7 @@ import {
     faArrowDownShortWide,
     faArrowUpShortWide
 } from '@fortawesome/free-solid-svg-icons';
+import { useAriaLiveRegion } from '../../providers/AriaLiveRegionProvider';
 
 const SortableTableHeaderWrapper = styled.th`
     position: relative;
@@ -58,6 +59,15 @@ const SortableTableHeader = ({ title, active, onSort = () => {} }) => {
     const [currentSortOrder, setCurrentSortOrder] = useState(
         TABLE_SORT_ORDERS.ASC
     );
+
+    const { setMessage } = useAriaLiveRegion();
+
+    useEffect(() => {
+        if (active) {
+            const message = ` now sorted by ${title} in ${currentSortOrder.toLowerCase()} order`;
+            setMessage(message);
+        }
+    }, [active, currentSortOrder, setMessage, title]);
 
     const handleClick = () => {
         if (active) {
