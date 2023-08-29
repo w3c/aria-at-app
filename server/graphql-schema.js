@@ -104,7 +104,7 @@ const graphqlSchema = gql`
         """
         See CollectionJob type for more information.
         """
-        status: CollectionJobStatus!
+        status: CollectionJobStatus
     }
 
     type Browser {
@@ -1328,7 +1328,12 @@ const graphqlSchema = gql`
         """
         Create a CollectionJob
         """
-        addCollectionJob(input: CollectionJobInput!): CollectionJob!
+        findOrCreateCollectionJob(
+            """
+            The CollectionJob to find or create.
+            """
+            input: CollectionJobInput!
+        ): CollectionJob!
         """
         Update a CollectionJob
         """

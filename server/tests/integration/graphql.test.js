@@ -244,6 +244,18 @@ describe('graphql', () => {
                             name
                         }
                     }
+                    collectionJob(id: 1) {
+                        __typename
+                        id
+                        name
+                        status
+                    }
+                    collectionJobs {
+                        __typename
+                        id
+                        name
+                        status
+                    }
                     testPlan(id: "checkbox") {
                         __typename
                         id

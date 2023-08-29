@@ -21,7 +21,9 @@ const mutateTestPlanVersion = require('./mutateTestPlanVersionResolver');
 const updateMe = require('./updateMe');
 const populateData = require('./populateDataResolver');
 const collectionJob = require('./collectionJobResolver');
-const addCollectionJob = require('./addCollectionJobResolver');
+const collectionJobs = require('./collectionJobsResolver');
+const findOrCreateCollectionJob = require('./findOrCreateCollectionJobResolver');
+const updateCollectionJob = require('./updateCollectionJobResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
@@ -50,7 +52,8 @@ const resolvers = {
         testPlanReports,
         testPlanRun,
         populateData,
-        collectionJob
+        collectionJob,
+        collectionJobs
     },
     Mutation: {
         at: mutateAt,
@@ -63,7 +66,8 @@ const resolvers = {
         findOrCreateTestPlanReport,
         updateMe,
         addViewer,
-        addCollectionJob
+        findOrCreateCollectionJob,
+        updateCollectionJob
     },
     AtOperations,
     AtVersionOperations,
