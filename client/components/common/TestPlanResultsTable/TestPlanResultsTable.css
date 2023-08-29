@@ -1,0 +1,12 @@
+table.test-plan-results-table {
+    /* To override `caption-side: bottom;` coming from _reboot.scss */
+    caption-side: unset;
+}
+
+p.test-plan-results-response-p {
+    margin: 0;
+}
+
+blockquote.test-plan-results-blockquote {
+    margin: 0 1rem;
+}

@@ -10,25 +10,47 @@ export const TEST_RUN_PAGE_QUERY = gql`
             }
             testResults {
                 id
-                test {
-                    id
-                    renderableContent
-                }
-                atVersion {
-                    id
-                    name
-                }
-                browserVersion {
-                    id
-                    name
-                }
                 startedAt
                 completedAt
+                test {
+                    id
+                    rowNumber
+                    title
+                    renderedUrl
+                    renderableContent
+                }
                 scenarioResults {
                     id
+                    scenario {
+                        commands {
+                            id
+                            text
+                        }
+                    }
                     output
                     assertionResults {
                         id
+                        assertion {
+                            text
+                        }
+                        passed
+                        failedReason
+                    }
+                    requiredAssertionResults: assertionResults(
+                        priority: REQUIRED
+                    ) {
+                        assertion {
+                            text
+                        }
+                        passed
+                        failedReason
+                    }
+                    optionalAssertionResults: assertionResults(
+                        priority: OPTIONAL
+                    ) {
+                        assertion {
+                            text
+                        }
                         passed
                         failedReason
                     }
@@ -37,6 +59,14 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         text
                         otherUnexpectedBehaviorText
                     }
+                }
+                atVersion {
+                    id
+                    name
+                }
+                browserVersion {
+                    id
+                    name
                 }
             }
             testPlanReport {

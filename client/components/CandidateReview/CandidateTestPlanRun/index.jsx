@@ -22,7 +22,7 @@ import '../../TestRun/TestRun.css';
 import '../../App/App.css';
 import { useMediaQuery } from 'react-responsive';
 import { convertDateToString } from '../../../utils/formatter';
-import TestPlanResultsTable from '../../Reports/TestPlanResultsTable';
+import TestPlanResultsTable from '../../common/TestPlanResultsTable';
 import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
 import ThankYouModal from '../CandidateModals/ThankYouModal';
 import getMetrics from '../../Reports/getMetrics';
@@ -522,7 +522,7 @@ const CandidateTestPlanRun = () => {
                                 <TestPlanResultsTable
                                     tableClassName="test-results-table"
                                     key={`${testPlanReport.id} + ${testResult.id}`}
-                                    test={currentTest}
+                                    test={{ ...currentTest, at: { name: at } }}
                                     testResult={testResult}
                                 />
                             </>

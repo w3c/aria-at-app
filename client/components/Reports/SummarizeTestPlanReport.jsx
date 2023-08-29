@@ -13,7 +13,7 @@ import {
 import { differenceBy } from 'lodash';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
-import TestPlanResultsTable from './TestPlanResultsTable';
+import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
@@ -203,7 +203,8 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                             </div>
                         </div>
                         <TestPlanResultsTable
-                            test={test}
+                            key={`TestPlanResultsTable__${testResult.id}`}
+                            test={{ ...test, at }}
                             testResult={testResult}
                         />
 
