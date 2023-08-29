@@ -78,6 +78,7 @@ const graphqlSchema = gql`
         RUNNING
         COMPLETED
         FAILED
+        CANCELED
     }
 
     type CollectionJob {
