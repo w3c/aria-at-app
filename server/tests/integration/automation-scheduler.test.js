@@ -2,12 +2,15 @@ const startSupertestServer = require('../util/api-server');
 const automationRoutes = require('../../routes/automation');
 const setupMockAutomationSchedulerServer = require('../util/mock-automation-scheduler-server');
 const db = require('../../models/index');
+const { query } = require('../util/graphql-test-utilities');
 
 let mockAutomationSchedulerServer;
 let apiServer;
 let sessionAgent;
+let transaction;
 
 beforeAll(async () => {
+    transaction = await db.sequelize.transaction();
     apiServer = await startSupertestServer({
         pathToRoutes: [['/api/jobs', automationRoutes]]
     });
@@ -16,6 +19,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+    await transaction.rollback();
     await mockAutomationSchedulerServer.tearDown();
     await apiServer.tearDown();
     await db.sequelize.close();
@@ -31,6 +35,20 @@ describe('Schedule jobs with automation controller', () => {
         expect(response.body).toEqual({
             id: '999',
             status: 'QUEUED'
+        });
+        const graphqlRes = await query(`
+            query {
+                collectionJob(id: "999") {
+                    id
+                    status
+                }
+            }
+        `);
+        expect(graphqlRes).toEqual({
+            collectionJob: {
+                id: '999',
+                status: 'QUEUED'
+            }
         });
     });
 
@@ -81,6 +99,20 @@ describe('Schedule jobs with automation controller', () => {
         expect(response.body).toEqual({
             id: '999',
             status: 'RUNNING'
+        });
+        const graphqlRes = await query(`
+            query {
+                collectionJob(id: "999") {
+                    id
+                    status
+                }
+            }
+        `);
+        expect(graphqlRes).toEqual({
+            collectionJob: {
+                id: '999',
+                status: 'RUNNING'
+            }
         });
     });
 });
