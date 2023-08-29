@@ -10,6 +10,7 @@ const { Op } = require('sequelize');
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
+ * @throws {Error} - if the CollectionJob cannot be created
  */
 const createCollectionJob = async (
     { id, status = 'QUEUED' },
@@ -33,6 +34,7 @@ const createCollectionJob = async (
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
+ * @throws {Error} - if the CollectionJob cannot be found
  */
 const getCollectionJobById = async (
     id,
@@ -90,6 +92,7 @@ const getCollectionJobs = async (
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
+ * @throws {Error} - if the CollectionJob cannot be found
  */
 const updateCollectionJob = async (
     id,
@@ -103,7 +106,7 @@ const updateCollectionJob = async (
 };
 
 /**
- * Gets one CollectionJob, or creates it if it doesn't exist, and then optionally updates it. Supports nested / associated values.
+ * Gets one CollectionJob and optionally updates it, or creates it if it doesn't exist.
  * @param {*} nestedGetOrCreateValues - These values will be used to find a matching record, or they will be used to create one
  * @param {*} nestedUpdateValues - Values which will be used when a record is found or created, but not used for the initial find
  * @param {object} options - Generic options for Sequelize
@@ -128,12 +131,25 @@ const getOrCreateCollectionJob = async ({ id, status }) => {
     return await getCollectionJobById(id);
 };
 
+/**
+ * @param {string} id - id of the CollectionJob to be deleted
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ * @throws {Error} - if the CollectionJob cannot be found
+ * @throws {Error} - if the CollectionJob cannot be deleted
+ */
+const deleteCollectionJob = async (id, options) => {
+    return await ModelService.removeById(CollectionJob, id, options);
+};
+
 module.exports = {
     // Basic CRUD
     createCollectionJob,
     getCollectionJobById,
     getCollectionJobs,
     updateCollectionJob,
+    deleteCollectionJob,
     // Nested CRUD
     getOrCreateCollectionJob
 };

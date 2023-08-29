@@ -24,6 +24,7 @@ const collectionJob = require('./collectionJobResolver');
 const collectionJobs = require('./collectionJobsResolver');
 const findOrCreateCollectionJob = require('./findOrCreateCollectionJobResolver');
 const updateCollectionJob = require('./updateCollectionJobResolver');
+const deleteCollectionJob = require('./deleteCollectionJobResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
@@ -67,7 +68,8 @@ const resolvers = {
         updateMe,
         addViewer,
         findOrCreateCollectionJob,
-        updateCollectionJob
+        updateCollectionJob,
+        deleteCollectionJob
     },
     AtOperations,
     AtVersionOperations,

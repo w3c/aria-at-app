@@ -244,16 +244,14 @@ describe('graphql', () => {
                             name
                         }
                     }
-                    collectionJob(id: 1) {
+                    collectionJob(id: 111) {
                         __typename
                         id
-                        name
                         status
                     }
                     collectionJobs {
                         __typename
                         id
-                        name
                         status
                     }
                     testPlan(id: "checkbox") {
@@ -693,6 +691,17 @@ describe('graphql', () => {
                         ) {
                             username
                         }
+                        updateCollectionJob(
+                            input: { id: 111, status: COMPLETED }
+                        ) {
+                            id
+                            status
+                        }
+                        findOrCreateCollectionJob(input: { id: 333 }) {
+                            id
+                            status
+                        }
+                        deleteCollectionJob(id: 333)
                     }
                 `,
                 {
