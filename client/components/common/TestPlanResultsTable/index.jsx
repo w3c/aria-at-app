@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import getMetrics from '../../Reports/getMetrics';
 import { Table } from 'react-bootstrap';
 import './TestPlanResultsTable.css';
+import nextId from 'react-id-generator';
 
 const renderAssertionRow = assertionResult => {
     return (
-        <tr key={assertionResult.id}>
+        <tr key={`${assertionResult.id}__${nextId()}`}>
             <td>Required</td>
             <td>{assertionResult.assertion.text}</td>
             <td>{assertionResult.passed ? 'Passed' : 'Failed'}</td>
@@ -47,7 +47,7 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                     .join(' then ');
 
                 return (
-                    <>
+                    <React.Fragment key={scenarioResult.id}>
                         <h3>
                             {commandsString}&nbsp;Results:&nbsp;
                             {passedAssertions.length} passed,&nbsp;
@@ -103,121 +103,9 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                         {index !== testResult.scenarioResults.length - 1 ? (
                             <hr aria-hidden="true" />
                         ) : null}
-                    </>
+                    </React.Fragment>
                 );
             })}
-
-            {/*<Table*/}
-            {/*    bordered*/}
-            {/*    responsive*/}
-            {/*    aria-label={`Results for test ${test.title}`}*/}
-            {/*    className={tableClassName}*/}
-            {/*>*/}
-            {/*    <thead>*/}
-            {/*        <tr>*/}
-            {/*            <th>Command</th>*/}
-            {/*            <th>Support</th>*/}
-            {/*            <th>Details</th>*/}
-            {/*        </tr>*/}
-            {/*    </thead>*/}
-            {/*    <tbody>*/}
-            {/*        {testResult.scenarioResults.map(scenarioResult => {*/}
-            {/*            const passedAssertions =*/}
-            {/*                scenarioResult.assertionResults.filter(*/}
-            {/*                    assertionResult => assertionResult.passed*/}
-            {/*                );*/}
-            {/*            const failedAssertions =*/}
-            {/*                scenarioResult.assertionResults.filter(*/}
-            {/*                    assertionResult => !assertionResult.passed*/}
-            {/*                );*/}
-            {/*            const metrics = getMetrics({*/}
-            {/*                scenarioResult*/}
-            {/*            });*/}
-            {/*            return (*/}
-            {/*                <tr key={scenarioResult.id}>*/}
-            {/*                    <td>*/}
-            {/*                        {scenarioResult.scenario.commands*/}
-            {/*                            .map(({ text }) => text)*/}
-            {/*                            .join(', then ')}*/}
-            {/*                    </td>*/}
-            {/*                    <td>{metrics.supportLevel}</td>*/}
-            {/*                    <td>*/}
-            {/*                        <dl>*/}
-            {/*                            <dt>Output:</dt>*/}
-            {/*                            <dd>{scenarioResult.output}</dd>*/}
-            {/*                            <dt>Passing Assertions:</dt>*/}
-            {/*                            <dd>*/}
-            {/*                                {passedAssertions.length ? (*/}
-            {/*                                    <ul>*/}
-            {/*                                        {passedAssertions.map(*/}
-            {/*                                            assertionResult => (*/}
-            {/*                                                <li*/}
-            {/*                                                    key={*/}
-            {/*                                                        assertionResult.id*/}
-            {/*                                                    }*/}
-            {/*                                                >*/}
-            {/*                                                    {getAssertionResultString(*/}
-            {/*                                                        assertionResult*/}
-            {/*                                                    )}*/}
-            {/*                                                </li>*/}
-            {/*                                            )*/}
-            {/*                                        )}*/}
-            {/*                                    </ul>*/}
-            {/*                                ) : (*/}
-            {/*                                    'None'*/}
-            {/*                                )}*/}
-            {/*                            </dd>*/}
-            {/*                            <dt>Failing Assertions:</dt>*/}
-            {/*                            <dd>*/}
-            {/*                                {failedAssertions.length ? (*/}
-            {/*                                    <ul>*/}
-            {/*                                        {failedAssertions.map(*/}
-            {/*                                            assertionResult => (*/}
-            {/*                                                <li*/}
-            {/*                                                    key={*/}
-            {/*                                                        assertionResult.id*/}
-            {/*                                                    }*/}
-            {/*                                                >*/}
-            {/*                                                    {getAssertionResultString(*/}
-            {/*                                                        assertionResult*/}
-            {/*                                                    )}*/}
-            {/*                                                </li>*/}
-            {/*                                            )*/}
-            {/*                                        )}*/}
-            {/*                                    </ul>*/}
-            {/*                                ) : (*/}
-            {/*                                    'None'*/}
-            {/*                                )}*/}
-            {/*                            </dd>*/}
-            {/*                            <dt>Unexpected Behaviors:</dt>*/}
-            {/*                            <dd>*/}
-            {/*                                {scenarioResult.unexpectedBehaviors*/}
-            {/*                                    .length ? (*/}
-            {/*                                    <ul>*/}
-            {/*                                        {scenarioResult.unexpectedBehaviors.map(*/}
-            {/*                                            unexpected => (*/}
-            {/*                                                <li*/}
-            {/*                                                    key={*/}
-            {/*                                                        unexpected.id*/}
-            {/*                                                    }*/}
-            {/*                                                >*/}
-            {/*                                                    {unexpected.otherUnexpectedBehaviorText ??*/}
-            {/*                                                        unexpected.text}*/}
-            {/*                                                </li>*/}
-            {/*                                            )*/}
-            {/*                                        )}*/}
-            {/*                                    </ul>*/}
-            {/*                                ) : (*/}
-            {/*                                    'None'*/}
-            {/*                                )}*/}
-            {/*                            </dd>*/}
-            {/*                        </dl>*/}
-            {/*                    </td>*/}
-            {/*                </tr>*/}
-            {/*            );*/}
-            {/*        })}*/}
-            {/*    </tbody>*/}
-            {/*</Table>*/}
         </>
     );
 };

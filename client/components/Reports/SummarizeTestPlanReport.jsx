@@ -14,6 +14,7 @@ import { differenceBy } from 'lodash';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
+import { calculateAssertionsCount } from '../common/TestPlanResultsTable/utils';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
@@ -165,14 +166,15 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     'https://aria-at.netlify.app'
                 );
 
+                const { passedAssertionsCount, failedAssertionsCount } =
+                    calculateAssertionsCount(testResult);
+
                 return (
                     <Fragment key={testResult.id}>
                         <div className="test-result-heading">
                             <h2 id={`result-${testResult.id}`} tabIndex="-1">
-                                <span className="test-details">
-                                    Details for test:
-                                </span>
-                                {test.title}
+                                {test.title}&nbsp;({passedAssertionsCount}
+                                &nbsp;passed, {failedAssertionsCount} failed)
                                 <DisclaimerInfo phase={testPlanVersion.phase} />
                             </h2>
                             <div className="test-result-buttons">
