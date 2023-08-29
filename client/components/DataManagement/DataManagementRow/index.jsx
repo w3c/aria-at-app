@@ -517,7 +517,7 @@ const DataManagementRow = ({
                 // "active"
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
-                    <PhaseCell role="list">
+                    <PhaseCell role="list" aria-setsize={isAdmin ? 2 : 1}>
                         <VersionString
                             role="listitem"
                             date={latestVersionDate}
@@ -526,7 +526,6 @@ const DataManagementRow = ({
                         />
                         {isAdmin && (
                             <Button
-                                role="listitem"
                                 ref={ref => setFocusRef(ref)}
                                 className="advance-button"
                                 variant="secondary"
@@ -655,7 +654,7 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
-                        <PhaseCell role="list">
+                        <PhaseCell role="list" aria-setsize={isAdmin ? 3 : 2}>
                             <VersionString
                                 role="listitem"
                                 date={latestVersionDate}
@@ -665,7 +664,6 @@ const DataManagementRow = ({
                             />
                             {isAdmin && (
                                 <Button
-                                    role="listitem"
                                     ref={ref => setFocusRef(ref)}
                                     className="advance-button"
                                     variant="secondary"
@@ -707,10 +705,11 @@ const DataManagementRow = ({
                                     Advance to Candidate
                                 </Button>
                             )}
-                            <TestPlanReportStatusDialogWithButton
-                                role="listitem"
-                                testPlanVersionId={latestVersion.id}
-                            />
+                            <span role="listitem">
+                                <TestPlanReportStatusDialogWithButton
+                                    testPlanVersionId={latestVersion.id}
+                                />
+                            </span>
                         </PhaseCell>
                     );
                 }
@@ -877,8 +876,7 @@ const DataManagementRow = ({
                     return (
                         <PhaseCell
                             role="list"
-                            aria-level="1"
-                            aria-setsize={shouldShowAdvanceButton ? 4 : 3}
+                            aria-setsize={shouldShowAdvanceButton ? 5 : 4}
                         >
                             <VersionString
                                 role="listitem"
@@ -889,7 +887,6 @@ const DataManagementRow = ({
                             />
                             {shouldShowAdvanceButton && (
                                 <Button
-                                    role="listitem"
                                     ref={ref => setFocusRef(ref)}
                                     className="advance-button"
                                     variant="secondary"
@@ -918,17 +915,17 @@ const DataManagementRow = ({
                                     Advance to Recommended
                                 </Button>
                             )}
-                            <TestPlanReportStatusDialogWithButton
-                                role="listitem"
-                                testPlanVersionId={latestVersion.id}
-                            />
-                            <span role="list" className="more" aria-level="2">
+                            <span role="listitem">
+                                <TestPlanReportStatusDialogWithButton
+                                    testPlanVersionId={latestVersion.id}
+                                />
+                            </span>
+                            <span className="more">
                                 <span
                                     role="listitem"
                                     className="more-issues-container"
                                 >
                                     <ReportStatusDot className="issues" />
-                                    &nbsp;
                                     {issuesCount} Open Issue
                                     {`${issuesCount === 1 ? '' : 's'}`}
                                     {`${
@@ -937,10 +934,7 @@ const DataManagementRow = ({
                                             : ''
                                     }`}
                                 </span>
-                                <span
-                                    role="listitem"
-                                    className="target-days-container"
-                                >
+                                <span className="target-days-container">
                                     {isAdmin ? (
                                         <button
                                             ref={updateTargetRef}
