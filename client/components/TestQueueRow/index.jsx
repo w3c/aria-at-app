@@ -240,7 +240,7 @@ const TestQueueRow = ({
                     >
                         <FontAwesomeIcon icon={faUserPlus} />
                     </Dropdown.Toggle>
-                    <Dropdown.Menu role="menu">
+                    <Dropdown.Menu role="menu" className="assign-menu">
                         {testers.length ? (
                             testers.map(({ username }) => {
                                 const isTesterAssigned =

@@ -110,3 +110,8 @@ button.more-actions:active {
 /* tr.test-queue-run-row td:first-child {
     padding: 0.75rem;
 } */
+
+[role="menu"].assign-menu {
+    height: 200px;
+    overflow-y: scroll;
+}
