@@ -8,7 +8,7 @@ import { Container } from 'react-bootstrap';
 import {
     ThemeTable,
     ThemeTableUnavailable,
-    ThemeTableHeader as UnstyledThemeTableHeader
+    ThemeTableHeaderH3 as UnstyledThemeTableHeader
 } from '../common/ThemeTable';
 import VersionString from '../common/VersionString';
 import PhasePill from '../common/PhasePill';
@@ -21,7 +21,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { uniqBy as uniqueBy } from 'lodash';
 
-const H3 = styled.h3`
+const H2 = styled.h2`
+    font-size: 1.25em;
     padding-top: 3rem;
     padding-bottom: 15px;
     border-bottom: solid 1px #d2d5d9;
@@ -409,7 +410,7 @@ const TestPlanVersionsPage = () => {
                     ).length;
                 return (
                     <div key={testPlanVersion.id}>
-                        <H3>
+                        <H2>
                             <VersionString
                                 date={testPlanVersion.updatedAt}
                                 iconColor={getIconColor(testPlanVersion)}
@@ -420,7 +421,7 @@ const TestPlanVersionsPage = () => {
                                 {testPlanVersion.phase}
                             </PhasePill>{' '}
                             on {getEventDate(testPlanVersion)}
-                        </H3>
+                        </H2>
                         <PageUl>
                             <li>
                                 <FontAwesomeIcon
