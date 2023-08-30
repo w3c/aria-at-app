@@ -10,7 +10,7 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import getMetrics from '../Reports/getMetrics';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 import { convertDateToString } from '../../utils/formatter';
-import { ThemeTable, ThemeTableHeader } from '../common/ThemeTable';
+import { ThemeTable } from '../common/ThemeTable';
 
 const TestPlanReportStatusModal = styled(Modal)`
     .modal-dialog {
@@ -207,9 +207,6 @@ const TestPlanReportStatusDialog = ({
                     </p>
                 )}
 
-                <ThemeTableHeader>
-                    Reports for Draft Alert Test Plan
-                </ThemeTableHeader>
                 <ThemeTable bordered responsive>
                     <thead>
                         <tr>
