@@ -14,7 +14,7 @@ const OutputTextAreaWrapper = styled.div`
 const NoOutputCheckbox = styled(Form.Check)`
     display: inline-block;
     float: right;
-    color: ${props => (props.disabled ? 'lightgray' : 'inherit')};
+    color: ${props => (props.disabled ? '#7F7F7F' : 'inherit')};
     > input {
         cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
         margin-right: 4px;
