@@ -401,7 +401,6 @@ const TestQueueRow = ({
 
     const evaluateLabelStatus = () => {
         const { conflictsLength } = testPlanReport;
-        const { phase } = testPlanVersion;
 
         let labelStatus;
 
@@ -418,7 +417,7 @@ const TestQueueRow = ({
                     {pluralizedStatus}
                 </span>
             );
-        } else if (phase === 'DRAFT' || !phase) {
+        } else {
             labelStatus = (
                 <span className="status-label not-started">Draft</span>
             );
@@ -426,8 +425,6 @@ const TestQueueRow = ({
 
         return labelStatus;
     };
-
-    const labelStatus = evaluateLabelStatus();
 
     const getRowId = tester =>
         [
@@ -510,24 +507,28 @@ const TestQueueRow = ({
                     </div>
                 </td>
                 <td>
-                    <div className="status-wrapper">{labelStatus}</div>
+                    <div className="status-wrapper">
+                        {evaluateLabelStatus()}
+                    </div>
                     {isSignedIn && isTester && (
                         <div className="secondary-actions">
-                            {isAdmin && !isLoading && (
-                                <>
-                                    <Button
-                                        ref={updateTestPlanStatusButtonRef}
-                                        variant="secondary"
-                                        onClick={async () => {
-                                            focusButtonRef.current =
-                                                updateTestPlanStatusButtonRef.current;
-                                            await updateReportStatus();
-                                        }}
-                                    >
-                                        Mark as Final
-                                    </Button>
-                                </>
-                            )}
+                            {isAdmin &&
+                                !isLoading &&
+                                !testPlanReport.conflictsLength && (
+                                    <>
+                                        <Button
+                                            ref={updateTestPlanStatusButtonRef}
+                                            variant="secondary"
+                                            onClick={async () => {
+                                                focusButtonRef.current =
+                                                    updateTestPlanStatusButtonRef.current;
+                                                await updateReportStatus();
+                                            }}
+                                        >
+                                            Mark as Final
+                                        </Button>
+                                    </>
+                                )}
                         </div>
                     )}
                 </td>
