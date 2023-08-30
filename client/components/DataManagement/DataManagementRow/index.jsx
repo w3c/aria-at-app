@@ -1010,6 +1010,11 @@ const DataManagementRow = ({
                             linkRef={recommendedVersionStringRef}
                             linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                         />
+                        <span role="listitem">
+                            <TestPlanReportStatusDialogWithButton
+                                testPlanVersionId={latestVersion.id}
+                            />
+                        </span>
                         <span role="listitem" className="review-complete">
                             Approved&nbsp;
                             <b>

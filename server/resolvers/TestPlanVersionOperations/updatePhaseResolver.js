@@ -270,7 +270,7 @@ const updatePhaseResolver = async (
         throw new Error('No reports have been marked as final.');
     }
 
-    if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
+    if (phase === 'CANDIDATE') {
         const reportsByAtAndBrowser = {};
 
         testPlanReports
