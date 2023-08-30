@@ -10,7 +10,6 @@ const { Op } = require('sequelize');
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
- * @throws {Error} - if the CollectionJob cannot be created
  */
 const createCollectionJob = async (
     { id, status = 'QUEUED' },
@@ -34,7 +33,6 @@ const createCollectionJob = async (
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
- * @throws {Error} - if the CollectionJob cannot be found
  */
 const getCollectionJobById = async (
     id,
@@ -92,7 +90,6 @@ const getCollectionJobs = async (
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
- * @throws {Error} - if the CollectionJob cannot be found
  */
 const updateCollectionJob = async (
     id,
@@ -136,8 +133,6 @@ const getOrCreateCollectionJob = async ({ id, status }) => {
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
- * @throws {Error} - if the CollectionJob cannot be found
- * @throws {Error} - if the CollectionJob cannot be deleted
  */
 const deleteCollectionJob = async (id, options) => {
     return await ModelService.removeById(CollectionJob, id, options);
