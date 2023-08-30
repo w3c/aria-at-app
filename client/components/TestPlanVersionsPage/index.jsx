@@ -229,8 +229,14 @@ const TestPlanVersionsPage = () => {
             </PageCommitHistory>
             {!nonRDVersions.length ? null : (
                 <>
-                    <ThemeTableHeader>Version Summary</ThemeTableHeader>
-                    <ThemeTable bordered responsive>
+                    <ThemeTableHeader id="version-summary">
+                        Version Summary
+                    </ThemeTableHeader>
+                    <ThemeTable
+                        bordered
+                        responsive
+                        aria-labelledby="version-summary"
+                    >
                         <thead>
                             <tr>
                                 <th>Version</th>
@@ -295,11 +301,15 @@ const TestPlanVersionsPage = () => {
                 </>
             )}
 
-            <ThemeTableHeader>GitHub Issues</ThemeTableHeader>
+            <ThemeTableHeader id="github-issues">
+                GitHub Issues
+            </ThemeTableHeader>
             {!issues.length ? (
-                <ThemeTableUnavailable>No GitHub Issues</ThemeTableUnavailable>
+                <ThemeTableUnavailable aria-labelledby="github-issues">
+                    No GitHub Issues
+                </ThemeTableUnavailable>
             ) : (
-                <ThemeTable bordered responsive>
+                <ThemeTable bordered responsive aria-labelledby="github-issues">
                     <thead>
                         <tr>
                             <th>Author</th>
@@ -358,8 +368,14 @@ const TestPlanVersionsPage = () => {
             )}
             <PageSpacer />
 
-            <ThemeTableHeader>Timeline for All Versions</ThemeTableHeader>
-            <ThemeTable bordered responsive>
+            <ThemeTableHeader id="timeline-for-all-versions">
+                Timeline for All Versions
+            </ThemeTableHeader>
+            <ThemeTable
+                bordered
+                responsive
+                aria-labelledby="timeline-for-all-versions"
+            >
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -475,10 +491,14 @@ const TestPlanVersionsPage = () => {
                                 </ul>
                             </dd>
                         </CoveredAtDl>
-                        <ThemeTableHeader>
+                        <ThemeTableHeader id={`timeline-for-${vString}`}>
                             Timeline for {vString}
                         </ThemeTableHeader>
-                        <ThemeTable bordered responsive>
+                        <ThemeTable
+                            bordered
+                            responsive
+                            aria-labelledby={`timeline-for-${vString}`}
+                        >
                             <thead>
                                 <tr>
                                     <th>Date</th>
