@@ -399,7 +399,7 @@ const TestPlanVersionsPage = () => {
                             <tr key={testPlanVersion.id}>
                                 <td>{getEventDate(testPlanVersion)}</td>
                                 <td>
-                                    {versionString} {eventBody}
+                                    {versionString}&nbsp;{eventBody}
                                 </td>
                             </tr>
                         );
@@ -433,10 +433,11 @@ const TestPlanVersionsPage = () => {
                                 fullWidth={false}
                                 autoWidth={false}
                             />
+                            &nbsp;
                             <PhasePill fullWidth={false}>
                                 {testPlanVersion.phase}
-                            </PhasePill>{' '}
-                            on {getEventDate(testPlanVersion)}
+                            </PhasePill>
+                            &nbsp;on&nbsp;{getEventDate(testPlanVersion)}
                         </H2>
                         <PageUl>
                             <li>
