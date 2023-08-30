@@ -189,7 +189,7 @@ const TestPlanVersionsPage = () => {
     const testPlanVersionsDesc = data.testPlan.testPlanVersions
         .slice()
         .sort((a, b) => {
-            return new Date(a.updatedAt) - new Date(b.updatedAt);
+            return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
 
     const nonRDVersions = testPlanVersions.filter(each => each.phase !== 'RD');
