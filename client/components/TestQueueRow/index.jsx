@@ -19,17 +19,16 @@ import {
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
 } from '../TestQueue/queries';
-import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
+import { convertDateToString } from '../../utils/formatter';
 import './TestQueueRow.css';
 
 const TestQueueRow = ({
     user = {},
     testers = [],
     testPlanReportData = {},
-    latestTestPlanVersions = [],
     triggerDeleteTestPlanReportModal = () => {},
     triggerDeleteResultsModal = () => {},
     triggerPageUpdate = () => {}
@@ -171,26 +170,22 @@ const TestQueueRow = ({
     };
 
     const renderAssignedUserToTestPlan = () => {
-        const gitUpdatedDateString = (
-            <p className="git-string">
-                Published {gitUpdatedDateToString(testPlanVersion.updatedAt)}
-            </p>
+        const dateString = convertDateToString(
+            testPlanVersion.updatedAt,
+            'YY.MM.DD'
         );
 
-        const latestTestPlanVersion = latestTestPlanVersions.filter(
-            version => version.latestTestPlanVersion?.id === testPlanVersion.id
+        const titleElement = (
+            <>
+                {testPlanVersion.title} {'V' + dateString}
+                &nbsp;({runnableTestsLength} Test
+                {runnableTestsLength === 0 || runnableTestsLength > 1
+                    ? `s`
+                    : ''}
+                )
+            </>
         );
-        const updateTestPlanVersionButton = isAdmin &&
-            latestTestPlanVersion.length === 0 && (
-                <Button
-                    className="updater-button"
-                    onClick={() => setShowTestPlanUpdaterModal(true)}
-                    size="sm"
-                    variant="secondary"
-                >
-                    Update Test Plan
-                </Button>
-            );
+
         // Determine if current user is assigned to testPlan
         if (currentUserAssigned)
             return (
@@ -199,11 +194,8 @@ const TestQueueRow = ({
                         className="test-plan"
                         to={`/run/${currentUserTestPlanRun.id}`}
                     >
-                        {testPlanVersion.title ||
-                            `"${testPlanVersion.testPlan.directory}"`}
+                        {titleElement}
                     </Link>
-                    {gitUpdatedDateString}
-                    {updateTestPlanVersionButton}
                 </>
             );
 
@@ -211,21 +203,12 @@ const TestQueueRow = ({
             return (
                 <>
                     <Link to={`/test-plan-report/${testPlanReport.id}`}>
-                        {testPlanVersion.title ||
-                            `"${testPlanVersion.testPlan.directory}"`}
+                        {titleElement}
                     </Link>
-                    {gitUpdatedDateString}
                 </>
             );
 
-        return (
-            <div>
-                {testPlanVersion.title ||
-                    `"${testPlanVersion.testPlan.directory}"`}
-                {gitUpdatedDateString}
-                {updateTestPlanVersionButton}
-            </div>
-        );
+        return <div>{titleElement}</div>;
     };
 
     const renderAssignMenu = () => {
