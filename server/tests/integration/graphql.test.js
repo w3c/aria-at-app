@@ -694,20 +694,17 @@ describe('graphql', () => {
                         ) {
                             username
                         }
-                        findOrCreateCollectionJob(input: { id: 333 }) {
+                        findOrCreateCollectionJob(
+                            id: 333
+                            testPlanReportId: 1
+                        ) {
                             id
                             status
                             testPlanRun {
                                 id
                             }
                         }
-                        updateCollectionJob(
-                            input: {
-                                id: 333
-                                status: COMPLETED
-                                testPlanRunId: 1
-                            }
-                        ) {
+                        updateCollectionJob(id: 333, status: COMPLETED) {
                             id
                             status
                             testPlanRun {
@@ -793,7 +790,7 @@ const getQueryInputs = async () => {
 const populateQueryData = async () => {
     await query(gql`
         mutation {
-            findOrCreateCollectionJob(input: { id: 1 }) {
+            findOrCreateCollectionJob(id: 1, testPlanReportId: 1) {
                 id
                 status
             }

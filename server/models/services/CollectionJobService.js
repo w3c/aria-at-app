@@ -1,24 +1,64 @@
 const ModelService = require('./ModelService');
-const { CollectionJob } = require('../');
+const { CollectionJob, User, TestPlanRun } = require('../');
 const { COLLECTION_JOB_ATTRIBUTES } = require('./helpers');
 const { Op } = require('sequelize');
+const { createTestPlanRun } = require('./TestPlanRunService');
+const {
+    createUser,
+    getUserByUsername,
+    addUserToRole
+} = require('./UserService');
+const responseCollectionUser = require('../../util/responseCollectionUser');
 
 /**
- * @param {string} id - id for the CollectionJob
- * @param {string} status - status for the CollectionJob
+ * @param {object} collectionJob - CollectionJob to be created
+ * @param {string} collectionJob.id - id for the CollectionJob
+ * @param {string} collectionJob.status - status for the CollectionJob
+ * @param {TestPlanRun} collectionJob.testPlanRun - TestPlanRun for the CollectionJob
+ * @param {string} collectionJob.testPlanReportId - testPlanReportId for the CollectionJob
  * @param {string[]} attributes - attributes to include in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createCollectionJob = async (
-    { id, status = 'QUEUED', testPlanRun },
+    { id, status = 'QUEUED', testPlanRun, testPlanReportId },
     attributes = COLLECTION_JOB_ATTRIBUTES,
     options
 ) => {
+    if (!testPlanRun) {
+        testPlanRun = await TestPlanRun.findOne({
+            where: { testPlanReportId },
+            attributes: ['id']
+        });
+        if (!testPlanRun) {
+            let user = await getUserByUsername(responseCollectionUser.username);
+            if (!user) {
+                const roles = [{ name: User.TESTER }];
+                user = await createUser(
+                    responseCollectionUser,
+                    { roles },
+                    undefined,
+                    undefined,
+                    [],
+                    []
+                );
+            }
+            const { id: botUserId, roles } = user.get({ plain: true });
+            if (!roles.find(role => role.name === User.TESTER)) {
+                await addUserToRole(botUserId, User.TESTER);
+            }
+
+            testPlanRun = await createTestPlanRun({
+                testerUserId: botUserId,
+                testPlanReportId: testPlanReportId
+            });
+        }
+    }
+    const { id: testPlanRunId } = testPlanRun.get({ plain: true });
     await ModelService.create(
         CollectionJob,
-        { id, status, testPlanRun },
+        { id, status, testPlanRunId },
         options
     );
 
@@ -47,7 +87,18 @@ const getCollectionJobById = async (
         CollectionJob,
         id,
         attributes,
-        [],
+        [
+            {
+                model: TestPlanRun,
+                as: 'testPlanRun',
+                include: [
+                    {
+                        model: User,
+                        as: 'tester'
+                    }
+                ]
+            }
+        ],
         options
     );
 };
@@ -81,7 +132,18 @@ const getCollectionJobs = async (
         CollectionJob,
         where,
         collectionJobAttributes,
-        [],
+        [
+            {
+                model: TestPlanRun,
+                as: 'testPlanRun',
+                include: [
+                    {
+                        model: User,
+                        as: 'tester'
+                    }
+                ]
+            }
+        ],
         pagination,
         options
     );
@@ -114,26 +176,40 @@ const updateCollectionJob = async (
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[*, [*]]>}
  */
-const getOrCreateCollectionJob = async ({ id, status, testPlanRun }) => {
-    const effectiveStatus = status ?? 'QUEUED';
-
+const getOrCreateCollectionJob = async ({
+    id,
+    status,
+    testPlanRun,
+    testPlanReportId
+}) => {
     const existingJob = await getCollectionJobById(id);
     const effectiveTestPlanRun =
         testPlanRun ?? existingJob?.testPlanRun ?? null;
 
     if (existingJob) {
-        if (existingJob.status === effectiveStatus) {
+        if (!status || existingJob.status === status) {
             return existingJob;
         }
 
         await updateCollectionJob(id, {
-            status: effectiveStatus,
+            status: status,
             testPlanRun: effectiveTestPlanRun
         });
         return await getCollectionJobById(id);
+    } else {
+        if (!testPlanReportId) {
+            throw new Error(
+                'testPlanReportId is required to create a new CollectionJob'
+            );
+        }
     }
 
-    await createCollectionJob({ id, status: effectiveStatus });
+    await createCollectionJob({
+        id,
+        status,
+        testPlanRun: effectiveTestPlanRun,
+        testPlanReportId
+    });
     return await getCollectionJobById(id);
 };
 

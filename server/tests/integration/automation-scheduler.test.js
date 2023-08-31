@@ -28,7 +28,7 @@ afterAll(async () => {
 describe('Schedule jobs with automation controller', () => {
     it('should schedule a new job', async () => {
         const response = await sessionAgent.post('/api/jobs/new').send({
-            test: 'test'
+            testPlanReportId: '1'
         });
 
         expect(response.statusCode).toBe(200);
@@ -124,23 +124,29 @@ describe('Schedule jobs with automation controller', () => {
                 process.env.AUTOMATION_SCHEDULER_SECRET
             );
         expect(response.statusCode).toBe(200);
-        expect(response.body).toEqual({
-            id: '999',
-            status: 'RUNNING',
-            testPlanRunId: null
-        });
+        expect(response.body.id).toEqual('999');
+        expect(response.body.status).toEqual('RUNNING');
+        expect(response.body.testPlanRun.id).toEqual(1);
+        expect(response.body.testPlanRun.testPlanReportId).toEqual(1);
+
         const graphqlRes = await query(`
             query {
                 collectionJob(id: "999") {
                     id
                     status
+                    testPlanRun {
+                        id
+                    }
                 }
             }
         `);
         expect(graphqlRes).toEqual({
             collectionJob: {
                 id: '999',
-                status: 'RUNNING'
+                status: 'RUNNING',
+                testPlanRun: {
+                    id: '1'
+                }
             }
         });
     });

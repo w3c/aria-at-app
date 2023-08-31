@@ -12,18 +12,19 @@ const axiosConfig = {
 
 const scheduleNewJob = async (req, res) => {
     try {
+        const { testPlanReportId } = req.body;
         const automationSchedulerResponse = await axios.post(
             `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-            {
-                test: req.body.test
-            },
+            { testPlanReportId },
             axiosConfig
         );
         const { id, status } = automationSchedulerResponse.data;
 
         if (id) {
             await findOrCreateCollectionJobResolver(null, {
-                input: { id, status }
+                id,
+                status,
+                testPlanReportId
             });
         }
 
@@ -42,7 +43,8 @@ const cancelJob = async (req, res) => {
         );
         if (automationSchedulerResponse.data.status === 'CANCELED') {
             await updateCollectionJobResolver(null, {
-                input: { id: req.params.jobID, status: 'CANCELED' }
+                id: req.params.jobID,
+                status: 'CANCELED'
             });
         }
         res.json(automationSchedulerResponse.data);
@@ -60,7 +62,8 @@ const restartJob = async (req, res) => {
         );
         if (automationSchedulerResponse.data.status === 'QUEUED') {
             await updateCollectionJobResolver(null, {
-                input: { id: req.params.jobID, status: 'QUEUED' }
+                id: req.params.jobID,
+                status: 'QUEUED'
             });
         }
         res.json(automationSchedulerResponse.data);
@@ -86,7 +89,8 @@ const updateJobStatus = async (req, res) => {
         const { status } = req.body;
 
         const graphqlResponse = await updateCollectionJobResolver(null, {
-            input: { id: req.params.jobID, status }
+            id: req.params.jobID,
+            status
         });
 
         res.json(graphqlResponse);

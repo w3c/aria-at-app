@@ -17,7 +17,7 @@ describe('CollectionJob Service Tests', () => {
             const id = randomIdGenerator();
             const collectionJob =
                 await CollectionJobService.createCollectionJob(
-                    { id },
+                    { id, testPlanReportId: 1 },
                     COLLECTION_JOB_ATTRIBUTES
                 );
 
@@ -32,7 +32,7 @@ describe('CollectionJob Service Tests', () => {
             const status = 'IN_PROGRESS';
             const collectionJob =
                 await CollectionJobService.createCollectionJob(
-                    { id, status },
+                    { id, status, testPlanReportId: 1 },
                     COLLECTION_JOB_ATTRIBUTES
                 );
 
@@ -45,7 +45,7 @@ describe('CollectionJob Service Tests', () => {
         await dbCleaner(async () => {
             const id = randomIdGenerator();
             await CollectionJobService.createCollectionJob(
-                { id },
+                { id, testPlanReportId: 1 },
                 COLLECTION_JOB_ATTRIBUTES
             );
 
@@ -62,33 +62,15 @@ describe('CollectionJob Service Tests', () => {
         await dbCleaner(async () => {
             const id = randomIdGenerator();
             await CollectionJobService.createCollectionJob(
-                { id },
+                { id, testPlanReportId: 1 },
                 COLLECTION_JOB_ATTRIBUTES
             );
 
             const collectionJob =
                 await CollectionJobService.getCollectionJobById(id);
-
-            expect(collectionJob.id).toEqual(id);
-        });
-    });
-
-    it('should get a collectionJob by id with provided attributes', async () => {
-        await dbCleaner(async () => {
-            const id = randomIdGenerator();
-            await CollectionJobService.createCollectionJob(
-                { id },
-                COLLECTION_JOB_ATTRIBUTES
-            );
-
-            const collectionJob =
-                await CollectionJobService.getCollectionJobById(
-                    id,
-                    COLLECTION_JOB_ATTRIBUTES
-                );
-
             expect(collectionJob.id).toEqual(id);
             expect(collectionJob).toHaveProperty('status');
+            expect(collectionJob.testPlanRun.id).toEqual(1);
         });
     });
 
@@ -106,11 +88,11 @@ describe('CollectionJob Service Tests', () => {
             const id1 = randomIdGenerator();
             const id2 = randomIdGenerator();
             await CollectionJobService.createCollectionJob(
-                { id: id1 },
+                { id: id1, testPlanReportId: 1 },
                 COLLECTION_JOB_ATTRIBUTES
             );
             await CollectionJobService.createCollectionJob(
-                { id: id2 },
+                { id: id2, testPlanReportId: 2 },
                 COLLECTION_JOB_ATTRIBUTES
             );
 
@@ -133,11 +115,11 @@ describe('CollectionJob Service Tests', () => {
             const status1 = 'QUEUED';
             const status2 = 'IN_PROGRESS';
             await CollectionJobService.createCollectionJob(
-                { id: id1, status: status1 },
+                { id: id1, status: status1, testPlanReportId: 1 },
                 COLLECTION_JOB_ATTRIBUTES
             );
             await CollectionJobService.createCollectionJob(
-                { id: id2, status: status2 },
+                { id: id2, status: status2, testPlanReportId: 2 },
                 COLLECTION_JOB_ATTRIBUTES
             );
 
@@ -159,7 +141,7 @@ describe('CollectionJob Service Tests', () => {
             const id = randomIdGenerator();
             const status = 'IN_PROGRESS';
             const initialJob = await CollectionJobService.createCollectionJob(
-                { id },
+                { id, testPlanReportId: 1 },
                 COLLECTION_JOB_ATTRIBUTES
             );
             expect(initialJob.id).toEqual(id);
@@ -188,7 +170,8 @@ describe('CollectionJob Service Tests', () => {
             const collectionJob =
                 await CollectionJobService.getOrCreateCollectionJob({
                     id,
-                    status
+                    status,
+                    testPlanReportId: 1
                 });
 
             expect(collectionJob.id).toEqual(id);
@@ -201,15 +184,14 @@ describe('CollectionJob Service Tests', () => {
             const id = randomIdGenerator();
             const status = 'IN_PROGRESS';
             const initialJob = await CollectionJobService.createCollectionJob(
-                { id, status },
+                { id, status, testPlanReportId: 1 },
                 COLLECTION_JOB_ATTRIBUTES
             );
             expect(initialJob.id).toEqual(id);
             expect(initialJob.status).toEqual(status);
             const collectionJob =
                 await CollectionJobService.getOrCreateCollectionJob({
-                    id,
-                    status
+                    id
                 });
 
             expect(collectionJob.id).toEqual(id);
@@ -221,7 +203,7 @@ describe('CollectionJob Service Tests', () => {
         await dbCleaner(async () => {
             const id = randomIdGenerator();
             const initialJob = await CollectionJobService.createCollectionJob(
-                { id },
+                { id, testPlanReportId: 1 },
                 COLLECTION_JOB_ATTRIBUTES
             );
             expect(initialJob.id).toEqual(id);

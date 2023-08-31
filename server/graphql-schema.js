@@ -100,25 +100,6 @@ const graphqlSchema = gql`
         testPlanRun: TestPlanRun
     }
 
-    """
-    The fields of the CollectionJob type which can be updated after the
-    CollectionJob has been created.
-    """
-    input CollectionJobInput {
-        """
-        See CollectionJob type for more information.
-        """
-        id: ID!
-        """
-        See CollectionJob type for more information.
-        """
-        status: CollectionJobStatus
-        """
-        See CollectionJob type for more information.
-        """
-        testPlanRunId: ID
-    }
-
     type Browser {
         """
         Postgres-provided numeric ID.
@@ -1344,12 +1325,29 @@ const graphqlSchema = gql`
             """
             The CollectionJob to find or create.
             """
-            input: CollectionJobInput!
+            id: ID!
+            """
+            The status of the CollectionJob.
+            """
+            status: CollectionJobStatus
+            """
+            The TestPlanReport id to use to create the TestPlanRun associated with the CollectionJob.
+            """
+            testPlanReportId: ID
         ): CollectionJob!
         """
         Update a CollectionJob
         """
-        updateCollectionJob(input: CollectionJobInput!): CollectionJob
+        updateCollectionJob(
+            """
+            The CollectionJob to update.
+            """
+            id: ID!
+            """
+            The status of the CollectionJob.
+            """
+            status: CollectionJobStatus
+        ): CollectionJob
         """
         Delete a CollectionJob
         """
