@@ -187,12 +187,6 @@ const TestPlanVersionsPage = () => {
             return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
 
-    const testPlanVersionsDesc = data.testPlan.testPlanVersions
-        .slice()
-        .sort((a, b) => {
-            return new Date(b.updatedAt) - new Date(a.updatedAt);
-        });
-
     const nonRDVersions = testPlanVersions.filter(each => each.phase !== 'RD');
 
     const issues = uniqueBy(
@@ -227,7 +221,7 @@ const TestPlanVersionsPage = () => {
                     Commit History for aria-at/tests/{testPlanDirectory}
                 </a>
             </PageCommitHistory>
-            {!nonRDVersions.length ? null : (
+            {!testPlanVersions.length ? null : (
                 <>
                     <ThemeTableHeader id="version-summary">
                         Version Summary
@@ -245,7 +239,7 @@ const TestPlanVersionsPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {nonRDVersions.map(testPlanVersion => (
+                            {testPlanVersions.map(testPlanVersion => (
                                 <tr key={testPlanVersion.id}>
                                     <td>
                                         <VersionString
@@ -383,7 +377,7 @@ const TestPlanVersionsPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {testPlanVersionsDesc.map(testPlanVersion => {
+                    {testPlanVersions.map(testPlanVersion => {
                         const versionString = (
                             <VersionString
                                 date={testPlanVersion.updatedAt}
