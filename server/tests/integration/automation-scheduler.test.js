@@ -3,7 +3,6 @@ const automationRoutes = require('../../routes/automation');
 const setupMockAutomationSchedulerServer = require('../util/mock-automation-scheduler-server');
 const db = require('../../models/index');
 const { query } = require('../util/graphql-test-utilities');
-const findOrCreateCollectionJobResolver = require('../../resolvers/findOrCreateCollectionJobResolver');
 
 let mockAutomationSchedulerServer;
 let apiServer;
