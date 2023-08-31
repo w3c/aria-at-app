@@ -2,8 +2,8 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-    up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('CollectionJob', {
+    up: async (queryInterface, Sequelize) => {
+        await queryInterface.createTable('CollectionJob', {
             id: {
                 type: Sequelize.STRING,
                 allowNull: false,
@@ -13,10 +13,19 @@ module.exports = {
                 type: Sequelize.STRING,
                 allowNull: false,
                 defaultValue: 'QUEUED'
+            },
+            testPlanRunId: {
+                type: Sequelize.INTEGER,
+                references: {
+                    model: 'TestPlanRun',
+                    key: 'id'
+                },
+                allowNull: true,
+                unique: true
             }
         });
     },
-    down: queryInterface => {
+    down: async queryInterface => {
         return queryInterface.dropTable('CollectionJob');
     }
 };

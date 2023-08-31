@@ -1,6 +1,7 @@
 const axios = require('axios');
 const findOrCreateCollectionJobResolver = require('../resolvers/findOrCreateCollectionJobResolver');
 const updateCollectionJobResolver = require('../resolvers/updateCollectionJobResolver');
+const deleteCollectionJobResolver = require('../resolvers/deleteCollectionJobResolver');
 
 const axiosConfig = {
     headers: {
@@ -18,13 +19,15 @@ const scheduleNewJob = async (req, res) => {
             },
             axiosConfig
         );
-        const { jobID, status } = automationSchedulerResponse.data;
+        const { id, status } = automationSchedulerResponse.data;
 
-        const graphqlResponse = await findOrCreateCollectionJobResolver(null, {
-            input: { id: jobID, status }
-        });
+        if (id) {
+            await findOrCreateCollectionJobResolver(null, {
+                input: { id, status }
+            });
+        }
 
-        res.json(graphqlResponse);
+        res.json(automationSchedulerResponse.data);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -37,6 +40,11 @@ const cancelJob = async (req, res) => {
             {},
             axiosConfig
         );
+        if (automationSchedulerResponse.data.status === 'CANCELED') {
+            await updateCollectionJobResolver(null, {
+                input: { id: req.params.jobID, status: 'CANCELED' }
+            });
+        }
         res.json(automationSchedulerResponse.data);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -50,6 +58,11 @@ const restartJob = async (req, res) => {
             {},
             axiosConfig
         );
+        if (automationSchedulerResponse.data.status === 'QUEUED') {
+            await updateCollectionJobResolver(null, {
+                input: { id: req.params.jobID, status: 'QUEUED' }
+            });
+        }
         res.json(automationSchedulerResponse.data);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -82,10 +95,22 @@ const updateJobStatus = async (req, res) => {
     }
 };
 
+const deleteJob = async (req, res) => {
+    try {
+        const graphqlResponse = await deleteCollectionJobResolver(null, {
+            id: req.params.jobID
+        });
+        res.json(graphqlResponse);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 module.exports = {
     scheduleNewJob,
     cancelJob,
     restartJob,
     getJobLog,
-    updateJobStatus
+    updateJobStatus,
+    deleteJob
 };

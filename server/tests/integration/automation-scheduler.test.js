@@ -3,6 +3,7 @@ const automationRoutes = require('../../routes/automation');
 const setupMockAutomationSchedulerServer = require('../util/mock-automation-scheduler-server');
 const db = require('../../models/index');
 const { query } = require('../util/graphql-test-utilities');
+const findOrCreateCollectionJobResolver = require('../../resolvers/findOrCreateCollectionJobResolver');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -59,6 +60,20 @@ describe('Schedule jobs with automation controller', () => {
             id: '999',
             status: 'CANCELED'
         });
+        const graphqlRes = await query(`
+            query {
+                collectionJob(id: "999") {
+                    id
+                    status
+                }
+            }
+        `);
+        expect(graphqlRes).toEqual({
+            collectionJob: {
+                id: '999',
+                status: 'CANCELED'
+            }
+        });
     });
 
     it('should restart a job', async () => {
@@ -67,6 +82,20 @@ describe('Schedule jobs with automation controller', () => {
         expect(response.body).toEqual({
             id: '999',
             status: 'QUEUED'
+        });
+        const graphqlRes = await query(`
+            query {
+                collectionJob(id: "999") {
+                    id
+                    status
+                }
+            }
+        `);
+        expect(graphqlRes).toEqual({
+            collectionJob: {
+                id: '999',
+                status: 'QUEUED'
+            }
         });
     });
 
@@ -98,7 +127,8 @@ describe('Schedule jobs with automation controller', () => {
         expect(response.statusCode).toBe(200);
         expect(response.body).toEqual({
             id: '999',
-            status: 'RUNNING'
+            status: 'RUNNING',
+            testPlanRunId: null
         });
         const graphqlRes = await query(`
             query {
@@ -113,6 +143,22 @@ describe('Schedule jobs with automation controller', () => {
                 id: '999',
                 status: 'RUNNING'
             }
+        });
+    });
+
+    it('should delete a job', async () => {
+        const response = await sessionAgent.post('/api/jobs/999/delete');
+        expect(response.statusCode).toBe(200);
+        const graphqlRes = await query(`
+            query {
+                collectionJob(id: "999") {
+                    id
+                    status
+                }
+            }
+        `);
+        expect(graphqlRes).toEqual({
+            collectionJob: null
         });
     });
 });

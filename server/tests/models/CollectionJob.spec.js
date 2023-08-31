@@ -7,16 +7,17 @@ const {
 
 const CollectionJobModel = require('../../models/CollectionJob');
 
-describe('BrowserVersionModel', () => {
+describe('CollectionJobModel', () => {
     // A1
     const Model = CollectionJobModel(sequelize, dataTypes);
     const modelInstance = new Model();
-
     // A2
     checkModelName(Model)('CollectionJob');
 
     // A3
     describe('properties', () => {
-        ['id', 'status'].forEach(checkPropertyExists(modelInstance));
+        ['id', 'status', 'testPlanRunId'].forEach(
+            checkPropertyExists(modelInstance)
+        );
     });
 });

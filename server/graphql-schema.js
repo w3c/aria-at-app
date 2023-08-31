@@ -80,7 +80,9 @@ const graphqlSchema = gql`
         FAILED
         CANCELED
     }
-
+    """
+    A job which was scheduled to collect automated test results using the Response Collection System.
+    """
     type CollectionJob {
         """
         Job Scheduler server-provided ID.
@@ -91,6 +93,11 @@ const graphqlSchema = gql`
         "FAILED".
         """
         status: CollectionJobStatus!
+        """
+        An ID for the Test Plan Run which was created as a result of the Collection Job.
+        This will store the test results.
+        """
+        testPlanRun: TestPlanRun
     }
 
     """
@@ -106,6 +113,10 @@ const graphqlSchema = gql`
         See CollectionJob type for more information.
         """
         status: CollectionJobStatus
+        """
+        See CollectionJob type for more information.
+        """
+        testPlanRunId: ID
     }
 
     type Browser {
@@ -1338,7 +1349,7 @@ const graphqlSchema = gql`
         """
         Update a CollectionJob
         """
-        updateCollectionJob(input: CollectionJobInput!): CollectionJob!
+        updateCollectionJob(input: CollectionJobInput!): CollectionJob
         """
         Delete a CollectionJob
         """

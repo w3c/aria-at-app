@@ -12,11 +12,15 @@ const { Op } = require('sequelize');
  * @returns {Promise<*>}
  */
 const createCollectionJob = async (
-    { id, status = 'QUEUED' },
+    { id, status = 'QUEUED', testPlanRun },
     attributes = COLLECTION_JOB_ATTRIBUTES,
     options
 ) => {
-    await ModelService.create(CollectionJob, { id, status }, options);
+    await ModelService.create(
+        CollectionJob,
+        { id, status, testPlanRun },
+        options
+    );
 
     return await ModelService.getById(
         CollectionJob,
@@ -110,17 +114,22 @@ const updateCollectionJob = async (
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[*, [*]]>}
  */
-const getOrCreateCollectionJob = async ({ id, status }) => {
-    const effectiveStatus = status || 'QUEUED';
+const getOrCreateCollectionJob = async ({ id, status, testPlanRun }) => {
+    const effectiveStatus = status ?? 'QUEUED';
 
     const existingJob = await getCollectionJobById(id);
+    const effectiveTestPlanRun =
+        testPlanRun ?? existingJob?.testPlanRun ?? null;
 
     if (existingJob) {
         if (existingJob.status === effectiveStatus) {
             return existingJob;
         }
 
-        await updateCollectionJob(id, { status: effectiveStatus });
+        await updateCollectionJob(id, {
+            status: effectiveStatus,
+            testPlanRun: effectiveTestPlanRun
+        });
         return await getCollectionJobById(id);
     }
 

@@ -152,7 +152,8 @@ describe('graphql', () => {
             ['TestPlanVersion', 'recommendedPhaseReachedAt'],
             ['TestPlanVersion', 'recommendedPhaseTargetDate'],
             ['TestPlanVersion', 'deprecatedAt'],
-            ['Test', 'viewers']
+            ['Test', 'viewers'],
+            ['CollectionJob', 'testPlanRun']
         ];
         ({
             typeAwareQuery,
@@ -172,7 +173,7 @@ describe('graphql', () => {
 
     it('supports querying every type and field in the schema', async () => {
         const { assertionResultId } = await getQueryInputs();
-
+        await populateQueryData();
         // eslint-disable-next-line no-unused-vars
         const queryResult = await typeAwareQuery(
             gql`
@@ -244,7 +245,7 @@ describe('graphql', () => {
                             name
                         }
                     }
-                    collectionJob(id: 111) {
+                    collectionJob(id: 1) {
                         __typename
                         id
                         status
@@ -508,6 +509,8 @@ describe('graphql', () => {
         );
         // console.info(queryResult);
 
+        await depopulateQueryData();
+
         await dbCleaner(async () => {
             const {
                 emptyTestResultInput,
@@ -691,15 +694,25 @@ describe('graphql', () => {
                         ) {
                             username
                         }
-                        updateCollectionJob(
-                            input: { id: 111, status: COMPLETED }
-                        ) {
-                            id
-                            status
-                        }
                         findOrCreateCollectionJob(input: { id: 333 }) {
                             id
                             status
+                            testPlanRun {
+                                id
+                            }
+                        }
+                        updateCollectionJob(
+                            input: {
+                                id: 333
+                                status: COMPLETED
+                                testPlanRunId: 1
+                            }
+                        ) {
+                            id
+                            status
+                            testPlanRun {
+                                id
+                            }
                         }
                         deleteCollectionJob(id: 333)
                     }
@@ -774,6 +787,26 @@ const getQueryInputs = async () => {
         assertionResultId:
             testPlanRun.testResults[0].scenarioResults[0].assertionResults[0].id
     };
+};
+
+// Todo: use existing strategy for populating data
+const populateQueryData = async () => {
+    await query(gql`
+        mutation {
+            findOrCreateCollectionJob(input: { id: 1 }) {
+                id
+                status
+            }
+        }
+    `);
+};
+
+const depopulateQueryData = async () => {
+    await query(gql`
+        mutation {
+            deleteCollectionJob(id: 1)
+        }
+    `);
 };
 
 const getMutationInputs = async () => {

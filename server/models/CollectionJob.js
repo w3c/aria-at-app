@@ -19,6 +19,15 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.STRING,
                 allowNull: false,
                 defaultValue: STATUS.QUEUED
+            },
+            testPlanRunId: {
+                type: DataTypes.INTEGER,
+                references: {
+                    model: 'TestPlanRun',
+                    key: 'id'
+                },
+                allowNull: true,
+                unique: true
             }
         },
         {
@@ -26,6 +35,14 @@ module.exports = function (sequelize, DataTypes) {
             tableName: MODEL_NAME
         }
     );
+
+    Model.associate = function (models) {
+        Model.hasOne(models.TestPlanRun, {
+            foreignKey: 'id',
+            sourceKey: 'testPlanRunId',
+            as: 'testPlanRun'
+        });
+    };
 
     Model.QUEUED = STATUS.QUEUED;
     Model.RUNNING = STATUS.RUNNING;

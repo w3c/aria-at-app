@@ -4,7 +4,8 @@ const {
     cancelJob,
     restartJob,
     getJobLog,
-    updateJobStatus
+    updateJobStatus,
+    deleteJob
 } = require('../controllers/AutomationController');
 const {
     verifyAutomationScheduler
@@ -21,5 +22,7 @@ router.post('/:jobID/cancel', cancelJob);
 router.post('/:jobID/restart', restartJob);
 
 router.post('/:jobID/update', verifyAutomationScheduler, updateJobStatus);
+
+router.post('/:jobID/delete', deleteJob);
 
 module.exports = router;

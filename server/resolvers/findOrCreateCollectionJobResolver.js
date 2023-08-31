@@ -1,12 +1,23 @@
 const {
     getOrCreateCollectionJob
 } = require('../models/services/CollectionJobService');
+const { getTestPlanRunById } = require('../models/services/TestPlanRunService');
 
 const findOrCreateCollectionJobResolver = async (
     _,
-    { input: { id, status } }
+    { input: { id, status, testPlanRunId } }
 ) => {
-    const collectionJob = await getOrCreateCollectionJob({ id, status });
+    let testPlanRun = null;
+
+    if (testPlanRunId) {
+        testPlanRun = await getTestPlanRunById(testPlanRunId);
+    }
+
+    const collectionJob = await getOrCreateCollectionJob({
+        id,
+        status,
+        testPlanRun
+    });
 
     return collectionJob;
 };

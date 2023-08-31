@@ -16,7 +16,7 @@ const setupMockAutomationSchedulerServer = async () => {
     });
 
     app.post('/jobs/new', (req, res) => {
-        return res.json({ jobID: '999', status: 'QUEUED' });
+        return res.json({ id: '999', status: 'QUEUED' });
     });
 
     app.post('/jobs/:jobID/cancel', (req, res) => {
