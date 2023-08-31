@@ -1,5 +1,5 @@
 const ModelService = require('./ModelService');
-const { CollectionJob, User, TestPlanRun } = require('../');
+const { CollectionJob, User, TestPlanRun, TestPlanReport } = require('../');
 const { COLLECTION_JOB_ATTRIBUTES } = require('./helpers');
 const { Op } = require('sequelize');
 const { createTestPlanRun } = require('./TestPlanRunService');
@@ -95,6 +95,10 @@ const getCollectionJobById = async (
                     {
                         model: User,
                         as: 'tester'
+                    },
+                    {
+                        model: TestPlanReport,
+                        as: 'testPlanReport'
                     }
                 ]
             }
@@ -140,6 +144,10 @@ const getCollectionJobs = async (
                     {
                         model: User,
                         as: 'tester'
+                    },
+                    {
+                        model: TestPlanReport,
+                        as: 'testPlanReport'
                     }
                 ]
             }

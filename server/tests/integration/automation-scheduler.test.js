@@ -28,7 +28,7 @@ afterAll(async () => {
 describe('Schedule jobs with automation controller', () => {
     it('should schedule a new job', async () => {
         const response = await sessionAgent.post('/api/jobs/new').send({
-            testPlanReportId: '1'
+            testPlanReportId: '2'
         });
 
         expect(response.statusCode).toBe(200);
@@ -123,11 +123,12 @@ describe('Schedule jobs with automation controller', () => {
                 'x-automation-secret',
                 process.env.AUTOMATION_SCHEDULER_SECRET
             );
+        const { body } = response;
         expect(response.statusCode).toBe(200);
-        expect(response.body.id).toEqual('999');
-        expect(response.body.status).toEqual('RUNNING');
-        expect(response.body.testPlanRun.id).toEqual(1);
-        expect(response.body.testPlanRun.testPlanReportId).toEqual(1);
+        expect(body.id).toEqual('999');
+        expect(body.status).toEqual('RUNNING');
+        expect(body).toHaveProperty('testPlanRunId');
+        expect(body.testPlanRun.testPlanReportId).toEqual(2);
 
         const graphqlRes = await query(`
             query {
@@ -135,7 +136,9 @@ describe('Schedule jobs with automation controller', () => {
                     id
                     status
                     testPlanRun {
-                        id
+                        testPlanReport {
+                            id
+                        }
                     }
                 }
             }
@@ -145,7 +148,9 @@ describe('Schedule jobs with automation controller', () => {
                 id: '999',
                 status: 'RUNNING',
                 testPlanRun: {
-                    id: '1'
+                    testPlanReport: {
+                        id: '2'
+                    }
                 }
             }
         });

@@ -26,6 +26,7 @@ module.exports = function (sequelize, DataTypes) {
                     model: 'TestPlanRun',
                     key: 'id'
                 },
+                onDelete: 'SET NULL',
                 allowNull: true,
                 unique: true
             }
