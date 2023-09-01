@@ -2,6 +2,7 @@ const axios = require('axios');
 const NodeCache = require('node-cache');
 
 const {
+    ENVIRONMENT,
     GITHUB_GRAPHQL_SERVER,
     GITHUB_OAUTH_SERVER,
     GITHUB_CLIENT_ID,
@@ -10,6 +11,11 @@ const {
     GITHUB_TEAM_ORGANIZATION,
     GITHUB_TEAM_QUERY
 } = process.env;
+
+const GITHUB_ISSUES_API_URL =
+    ENVIRONMENT === 'production'
+        ? 'https://api.github.com/repos/w3c/aria-at'
+        : 'https://api.github.com/repos/bocoup/aria-at';
 
 const permissionScopes = [
     // Not currently used, but this permissions scope will allow us to query for
@@ -32,7 +38,7 @@ const getAllIssuesFromGitHub = async () => {
     // eslint-disable-next-line no-constant-condition
     while (true) {
         const issuesEndpoint =
-            `https://api.github.com/repos/w3c/aria-at/issues` +
+            `${GITHUB_ISSUES_API_URL}/issues` +
             `?labels=app&state=all&per_page=100`;
         const url = `${issuesEndpoint}&page=${page}`;
         const auth = {
