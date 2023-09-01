@@ -2,6 +2,10 @@ const axios = require('axios');
 const findOrCreateCollectionJobResolver = require('../resolvers/findOrCreateCollectionJobResolver');
 const updateCollectionJobResolver = require('../resolvers/updateCollectionJobResolver');
 const deleteCollectionJobResolver = require('../resolvers/deleteCollectionJobResolver');
+const findOrCreateTestResultResolver = require('../resolvers/TestPlanRunOperations/findOrCreateTestResultResolver');
+const {
+    getCollectionJobById
+} = require('../models/services/CollectionJobService');
 
 const axiosConfig = {
     headers: {
@@ -99,6 +103,35 @@ const updateJobStatus = async (req, res) => {
     }
 };
 
+const updateJobResults = async (req, res) => {
+    try {
+        const id = req.params.jobID;
+        const { testId, results } = req.body;
+        const job = await getCollectionJobById(id);
+        if (!job) {
+            throw new Error(`Job with id ${id} not found`);
+        }
+        if (job.status !== 'RUNNING') {
+            throw new Error(
+                `Job with id ${id} is not running, cannot update results`
+            );
+        }
+        const parentContext = {
+            parentContext: {
+                id: job.testPlanRunId
+            }
+        };
+        const testResult = await findOrCreateTestResultResolver(parentContext, {
+            testId,
+            atVersionId: 'TODO GET THIS FROM SERVER',
+            browserVersionId: 'TODO GET THIS FROM SERVER'
+        });
+        findOrCreateTestResultResolver();
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 const deleteJob = async (req, res) => {
     try {
         const graphqlResponse = await deleteCollectionJobResolver(null, {
@@ -116,5 +149,6 @@ module.exports = {
     restartJob,
     getJobLog,
     updateJobStatus,
+    updateJobResults,
     deleteJob
 };
