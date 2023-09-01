@@ -1,6 +1,4 @@
 const getTests = require('../../models/services/TestsService');
-const ats = require('../../resources/ats.json');
-const commands = require('../../resources/commands.json');
 
 /**
  * Resolves the Tests from their reduced form in the database to a fully-

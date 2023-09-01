@@ -55,4 +55,11 @@ const getTestResults = async testPlanRun => {
     });
 };
 
-module.exports = getTestResults;
+const findOrCreateTestResult = async () => {
+    //STUB
+};
+
+module.exports = {
+    getTestResults,
+    findOrCreateTestResult
+};

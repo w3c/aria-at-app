@@ -2,10 +2,12 @@ const axios = require('axios');
 const findOrCreateCollectionJobResolver = require('../resolvers/findOrCreateCollectionJobResolver');
 const updateCollectionJobResolver = require('../resolvers/updateCollectionJobResolver');
 const deleteCollectionJobResolver = require('../resolvers/deleteCollectionJobResolver');
-const findOrCreateTestResultResolver = require('../resolvers/TestPlanRunOperations/findOrCreateTestResultResolver');
 const {
     getCollectionJobById
 } = require('../models/services/CollectionJobService');
+const {
+    findOrCreateTestResult
+} = require('../models/services/TestResultService');
 
 const axiosConfig = {
     headers: {
@@ -116,17 +118,12 @@ const updateJobResults = async (req, res) => {
                 `Job with id ${id} is not running, cannot update results`
             );
         }
-        const parentContext = {
-            parentContext: {
-                id: job.testPlanRunId
-            }
-        };
-        const testResult = await findOrCreateTestResultResolver(parentContext, {
+        await findOrCreateTestResult({
             testId,
             atVersionId: 'TODO GET THIS FROM SERVER',
-            browserVersionId: 'TODO GET THIS FROM SERVER'
+            browserVersionId: 'TODO GET THIS FROM SERVER',
+            results
         });
-        findOrCreateTestResultResolver();
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
