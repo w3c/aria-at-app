@@ -2,6 +2,7 @@ const unexpectedBehaviorsJson = require('../../resources/unexpectedBehaviors.jso
 const getTests = require('./TestsService');
 const AtLoader = require('../loaders/AtLoader');
 const BrowserLoader = require('../loaders/BrowserLoader');
+const deepCustomMerge = require('../../util/deepCustomMerge');
 
 /**
  *
@@ -59,7 +60,30 @@ const findOrCreateTestResult = async () => {
     //STUB
 };
 
+const getFinalizedTestResults = testPlanReport => {
+    if (!testPlanReport.testPlanRuns.length) {
+        return null;
+    }
+
+    let merged = [];
+
+    for (let i = 0; i < testPlanReport.testPlanRuns.length; i += 1) {
+        merged = deepCustomMerge(
+            merged,
+            testPlanReport.testPlanRuns[i].testResults.filter(
+                testResult => !!testResult.completedAt
+            ),
+            {
+                identifyArrayItem: item =>
+                    item.testId ?? item.scenarioId ?? item.assertionId
+            }
+        );
+    }
+    return getTestResults({ testPlanReport, testResults: merged });
+};
+
 module.exports = {
     getTestResults,
-    findOrCreateTestResult
+    findOrCreateTestResult,
+    getFinalizedTestResults
 };
