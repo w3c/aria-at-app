@@ -94,10 +94,10 @@ const createIssueLink = ({
 
     let body =
         `## Description of Behavior\n\n` +
-        `<!-- write your description here -->\n\n` +
+        `<!-- Write your description here -->\n\n` +
         testSetupFormatted +
-        `\n\n<!-- DO NOT EDIT BELOW UNLESS YOU'RE SURE -->\n\n\n` +
-        `<!-- searchStart:${title}:searchEnd -->`;
+        `\n\n<!-- DO NOT EDIT BELOW, UNLESS YOU'RE SURE -->\n\n` +
+        `<!-- ${title} -->`;
 
     if (conflictMarkdown) {
         body += `\n${conflictMarkdown}`;
