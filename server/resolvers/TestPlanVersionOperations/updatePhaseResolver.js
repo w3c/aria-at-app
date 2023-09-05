@@ -308,11 +308,7 @@ const updatePhaseResolver = async (
         let updateParams = {};
 
         if (phase === 'DRAFT') {
-            const conflicts = await conflictsResolver(
-                testPlanReport,
-                null,
-                context
-            );
+            const conflicts = await conflictsResolver(testPlanReport);
             await updateTestPlanReport(testPlanReport.id, {
                 metrics: {
                     ...testPlanReport.metrics,
@@ -323,11 +319,7 @@ const updatePhaseResolver = async (
         }
 
         if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
-            const conflicts = await conflictsResolver(
-                testPlanReport,
-                null,
-                context
-            );
+            const conflicts = await conflictsResolver(testPlanReport);
             if (conflicts.length > 0) {
                 throw new Error(
                     'Cannot update test plan report due to conflicts'

@@ -32,7 +32,7 @@ const deleteTestPlanRunResolver = async (
     const { testPlanReport } = await populateData({
         testPlanReportId
     });
-    const conflicts = await conflictsResolver(testPlanReport, null, context);
+    const conflicts = await conflictsResolver(testPlanReport);
     await updateTestPlanReport(testPlanReport.id, {
         metrics: {
             ...testPlanReport.metrics,

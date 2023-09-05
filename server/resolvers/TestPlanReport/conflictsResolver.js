@@ -3,7 +3,7 @@ const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
 
-const conflictsResolver = async (testPlanReport, _, context) => {
+const conflictsResolver = async testPlanReport => {
     let testPlanReportData = {};
 
     // Used in cases where the testPlanRuns to evaluate the conflicts doesn't
@@ -21,11 +21,7 @@ const conflictsResolver = async (testPlanReport, _, context) => {
     const testResultsByTestId = {};
     for (const testPlanRun of testPlanReportData.testPlanRuns) {
         testPlanRun.testPlanReport = testPlanReportData; // TODO: remove hacky fix
-        const testResults = await testResultsResolver(
-            testPlanRun,
-            null,
-            context
-        );
+        const testResults = await testResultsResolver(testPlanRun);
         testResults
             .filter(testResult => testResult.completedAt)
             .forEach(testResult => {

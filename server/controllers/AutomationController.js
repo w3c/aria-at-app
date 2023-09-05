@@ -8,6 +8,12 @@ const {
 const {
     findOrCreateTestResult
 } = require('../models/services/TestResultWriteService');
+const populateData = require('../services/PopulatedData/populateData');
+const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
+const { getAtVersionByQuery } = require('../models/services/AtService');
+const {
+    getBrowserVersionByQuery
+} = require('../models/services/BrowserService');
 
 const axiosConfig = {
     headers: {
@@ -105,10 +111,38 @@ const updateJobStatus = async (req, res) => {
     }
 };
 
+const updateOrCreateTestResultWithResponses = async ({
+    testId,
+    responses,
+    atVersionId,
+    browserVersionId
+}) => {
+    const { testPlanRun } = populateData({ testId });
+    if (!testId) return null;
+
+    const { testResult } = await findOrCreateTestResult(
+        {
+            parentContext: { id: testPlanRun.id }
+        },
+        { testId, atVersionId, browserVersionId }
+    );
+
+    // Likely need to convert responses into scenario results objects here
+
+    let savedData = await saveTestResultCommon({
+        testResultId: testResult.id,
+        input: responses,
+        isSubmit: true
+    });
+
+    return savedData;
+};
+
 const updateJobResults = async (req, res) => {
     try {
         const id = req.params.jobID;
-        const { testId, results } = req.body;
+        const { testId, responses, atVersionName, browserVersionName } =
+            req.body;
         const job = await getCollectionJobById(id);
         if (!job) {
             throw new Error(`Job with id ${id} not found`);
@@ -118,12 +152,19 @@ const updateJobResults = async (req, res) => {
                 `Job with id ${id} is not running, cannot update results`
             );
         }
-        await findOrCreateTestResult({
-            testId,
-            atVersionId: 'TODO GET THIS FROM SERVER',
-            browserVersionId: 'TODO GET THIS FROM SERVER',
-            results
+
+        const atVersion = await getAtVersionByQuery({ name: atVersionName });
+        const browserVersion = await getBrowserVersionByQuery({
+            name: browserVersionName
         });
+        await updateOrCreateTestResultWithResponses({
+            testId,
+            responses: responses,
+            atVersionId: atVersion.id,
+            browserVersionId: browserVersion.id
+        });
+
+        res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

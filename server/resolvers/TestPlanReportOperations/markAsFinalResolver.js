@@ -20,7 +20,7 @@ const markAsFinalResolver = async (
 
     const testPlanReport = await getTestPlanReportById(testPlanReportId);
 
-    const conflicts = await conflictsResolver(testPlanReport, null, context);
+    const conflicts = await conflictsResolver(testPlanReport);
     if (conflicts.length > 0) {
         throw new Error(
             'Cannot mark test plan report as final due to conflicts'
