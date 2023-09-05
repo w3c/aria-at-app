@@ -24,6 +24,9 @@ const PhaseText = styled.span`
         top: -1px;
         margin-right: 5px;
     }
+    &.for-header {
+        border-radius: 20px;
+    }
 
     &.rd {
         background: #4177de;
@@ -46,10 +49,12 @@ const PhaseText = styled.span`
     }
 `;
 
-const PhasePill = ({ fullWidth = true, children: phase }) => {
+const PhasePill = ({ fullWidth = true, forHeader = false, children: phase }) => {
+    let classes = fullWidth ? 'full-width' : '';
+    classes = forHeader ? `${classes} for-header` : classes;
     return (
         <PhaseText
-            className={[phase.toLowerCase(), fullWidth ? 'full-width' : '']
+            className={[phase.toLowerCase(), classes]
                 .filter(str => str)
                 .join(' ')}
         >
