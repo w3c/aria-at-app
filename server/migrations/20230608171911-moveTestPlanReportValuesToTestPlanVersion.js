@@ -498,8 +498,7 @@ module.exports = {
                 const created = await Promise.all(
                     createdLocationsOfData.map(createdLocationOfData =>
                         populateData(createdLocationOfData, {
-                            preloaded,
-                            context
+                            preloaded
                         })
                     )
                 );

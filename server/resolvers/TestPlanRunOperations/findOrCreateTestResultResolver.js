@@ -20,12 +20,9 @@ const findOrCreateTestResultResolver = async (
     const { user } = context;
 
     const fixTestPlanReportMetrics = async testPlanReportStale => {
-        const { testPlanReport } = await populateData(
-            {
-                testPlanReportId: testPlanReportStale.id
-            },
-            { context }
-        );
+        const { testPlanReport } = await populateData({
+            testPlanReportId: testPlanReportStale.id
+        });
         const runnableTests = runnableTestsResolver(testPlanReport);
         const finalizedTestResults = await finalizedTestResultsResolver(
             {
@@ -50,16 +47,10 @@ const findOrCreateTestResultResolver = async (
         testPlanRun,
         testPlanReport,
         testPlanVersion: testPlanRunTestPlanVersion
-    } = await populateData(
-        {
-            testPlanRunId
-        },
-        { context }
-    );
-    const { test, testPlanVersion } = await populateData(
-        { testId },
-        { context }
-    );
+    } = await populateData({
+        testPlanRunId
+    });
+    const { test, testPlanVersion } = await populateData({ testId });
 
     if (
         !(
@@ -124,7 +115,7 @@ const findOrCreateTestResultResolver = async (
         await fixTestPlanReportMetrics(testPlanReport);
     }
 
-    return populateData({ testResultId: newTestResult.id }, { context });
+    return populateData({ testResultId: newTestResult.id });
 };
 
 module.exports = findOrCreateTestResultResolver;

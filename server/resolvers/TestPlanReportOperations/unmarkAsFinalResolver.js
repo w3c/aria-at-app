@@ -17,7 +17,7 @@ const unmarkAsFinalResolver = async (
 
     await updateTestPlanReport(testPlanReportId, { markedFinalAt: null });
 
-    return populateData({ testPlanReportId }, { context });
+    return populateData({ testPlanReportId });
 };
 
 module.exports = unmarkAsFinalResolver;

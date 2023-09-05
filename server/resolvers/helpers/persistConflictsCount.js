@@ -5,12 +5,9 @@ const {
 } = require('../../models/services/TestPlanReportService');
 
 const persistConflictsCount = async (testPlanRun, context) => {
-    const { testPlanReport: updatedTestPlanReport } = await populateData(
-        {
-            testPlanRunId: testPlanRun.id
-        },
-        { context }
-    );
+    const { testPlanReport: updatedTestPlanReport } = await populateData({
+        testPlanRunId: testPlanRun.id
+    });
     const conflicts = await conflictsResolver(
         updatedTestPlanReport,
         null,

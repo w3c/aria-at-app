@@ -24,7 +24,7 @@ const promoteVendorReviewStatusResolver = async (
         await updateTestPlanReport(testPlanReportId, updateParams);
     }
 
-    return populateData({ testPlanReportId }, { context });
+    return populateData({ testPlanReportId });
 };
 
 module.exports = promoteVendorReviewStatusResolver;

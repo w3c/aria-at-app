@@ -10,12 +10,9 @@ const conflictsResolver = async (testPlanReport, _, context) => {
     // exist for `testPlanReport`, such as this function being called from
     // `conflictsLengthResolver.js`
     if (testPlanReport.testPlanRuns.some(t => !t.testResults)) {
-        const { testPlanReport: _testPlanReport } = await populateData(
-            {
-                testPlanReportId: testPlanReport.id
-            },
-            { context }
-        );
+        const { testPlanReport: _testPlanReport } = await populateData({
+            testPlanReportId: testPlanReport.id
+        });
         testPlanReportData = _testPlanReport;
     } else testPlanReportData = testPlanReport;
 
@@ -100,10 +97,10 @@ const conflictsResolver = async (testPlanReport, _, context) => {
 
     return Promise.all(
         conflicts.map(async ({ source, conflictingResults }) => ({
-            source: await populateData(source, { preloaded, context }),
+            source: await populateData(source, { preloaded }),
             conflictingResults: await Promise.all(
                 conflictingResults.map(conflictingResult =>
-                    populateData(conflictingResult, { preloaded, context })
+                    populateData(conflictingResult, { preloaded })
                 )
             )
         }))

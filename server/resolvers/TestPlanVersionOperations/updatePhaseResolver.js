@@ -422,7 +422,7 @@ const updatePhaseResolver = async (
         });
 
     await updateTestPlanVersion(testPlanVersionId, updateParams);
-    return populateData({ testPlanVersionId }, { context });
+    return populateData({ testPlanVersionId });
 };
 
 module.exports = updatePhaseResolver;

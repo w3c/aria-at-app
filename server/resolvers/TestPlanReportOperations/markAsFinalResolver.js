@@ -41,7 +41,7 @@ const markAsFinalResolver = async (
 
     await updateTestPlanReport(testPlanReportId, { markedFinalAt: new Date() });
 
-    return populateData({ testPlanReportId }, { context });
+    return populateData({ testPlanReportId });
 };
 
 module.exports = markAsFinalResolver;
