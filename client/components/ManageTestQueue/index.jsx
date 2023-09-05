@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useMutation } from '@apollo/client';
-import { Form } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -20,6 +20,31 @@ import DisclosureComponent from '../common/DisclosureComponent';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { ThemeTable, ThemeTableHeader } from '../common/ThemeTable';
 import PhasePill from '../common/PhasePill';
+
+const ModalInnerSectionContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const Row = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+`;
+
+const ModalSubtitleStyle = styled.h2`
+    font-size: 0.8em;
+    margin: 0;
+    padding: 0;
+`;
+
+const Required = styled.span`
+    color: #ce1b4c;
+
+    :after {
+        content: '*';
+    }
+`;
 
 const TransparentButton = styled.button`
     border: none;
@@ -111,6 +136,19 @@ const ManageTestQueue = ({
     const editAtVersionButtonRef = useRef();
     const deleteAtVersionButtonRef = useRef();
 
+    // Find Manage Required Reports Modal
+    const [showEditAtBrowserModal, setShowEditAtBrowserModal] = useState(true);
+    const [requiredReportsModalAt, setRequiredReportsModalAt] = useState('');
+    const [requiredReportsModalTitle, setRequiredReportsModalTitle] =
+        useState('');
+
+    const [updateAtSelection, setUpdateAtSelection] = useState('Select an At');
+    const [updateListAtSelection, setUpdateListAtSelection] =
+        useState('Select an At');
+    const [updateBrowserSelection, setUpdateBrowserSelection] =
+        useState('Select a Browser');
+    const [updateListBrowserSelection, setUpdateListBrowserSelection] =
+        useState('Select a Browser');
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
     const [showManageReqReports, setShowManageReqReports] = useState(false);
@@ -495,6 +533,50 @@ const ManageTestQueue = ({
         setShowThemedModal(true);
     };
 
+    // Find Manage Required Reports Modal
+    const onOpenShowEditAtBrowserModal = (type = 'edit', phase) => {
+        if (type === 'edit') {
+            setRequiredReportsModalTitle(
+                <p>
+                    Edit the following AT/Browser pair for{' '}
+                    <PhasePill fullWidth={false} forHeader={true}>
+                        {phase}
+                    </PhasePill>{' '}
+                    requied reports
+                </p>
+            );
+        }
+
+        if (type === 'delete') {
+            setRequiredReportsModalTitle(<p>delete this</p>);
+        }
+        setShowEditAtBrowserModal(false);
+    };
+
+    const handleShowEditAtBrowserModal = () => {
+        setShowEditAtBrowserModal(false);
+    };
+
+    const handleAtChange = e => {
+        const value = e.target.value;
+        setUpdateAtSelection(value);
+    };
+
+    const handleBrowserChange = e => {
+        const value = e.target.value;
+        setUpdateBrowserSelection(value);
+    };
+
+    const handleListAtChange = e => {
+        const value = e.target.value;
+        setUpdateListAtSelection(value);
+    };
+
+    const handleListBrowserChange = e => {
+        const value = e.target.value;
+        setUpdateListBrowserSelection(value);
+    };
+
     return (
         <LoadingStatus message={loadingMessage}>
             <DisclosureComponent
@@ -717,37 +799,122 @@ const ManageTestQueue = ({
                                 <Form.Label className="disclosure-form-label">
                                     Phase
                                 </Form.Label>
-                                <Form.Select
-                                    onChange={e => {
-                                        // const { value } = e.target;
-                                        // updateMatchingTestPlanVersions(
-                                        //     value,
-                                        //     allTestPlanVersions
-                                        // );
-                                    }}
-                                >
-                                    <option key={`New Key`} value={`New Value`}>
-                                        New Title
-                                    </option>
-                                </Form.Select>
+                                {/* {updateListAtSelection === 'Select an At' ? ( */}
+                                {updateListAtSelection === 'Select an At' ? (
+                                    <Form.Select
+                                        // ref={updatedAtVersionDropdownRef}
+                                        // value={updatedAtVersion}
+                                        value={updateAtSelection}
+                                        onChange={handleAtChange}
+                                        // isInvalid={isAtVersionError}
+                                        required
+                                    >
+                                        <option>Select an At</option>
+                                        <option value="JAWS">
+                                            <PhasePill
+                                                fullWidth={false}
+                                                forHeader={true}
+                                            >
+                                                JAWS
+                                            </PhasePill>
+                                        </option>
+                                        <option value="NVDA">
+                                            <PhasePill
+                                                fullWidth={false}
+                                                forHeader={true}
+                                            >
+                                                NVDA
+                                            </PhasePill>
+                                        </option>
+                                        <option value="VoiceOver for macOs">
+                                            <PhasePill
+                                                fullWidth={false}
+                                                forHeader={true}
+                                            >
+                                                VoiceOver for macOs
+                                            </PhasePill>
+                                        </option>
+                                    </Form.Select>
+                                ) : (
+                                    <Form.Select
+                                        // ref={updatedAtVersionDropdownRef}
+                                        // value={updatedAtVersion}
+                                        value={updateAtSelection}
+                                        onChange={handleAtChange}
+                                        // isInvalid={isAtVersionError}
+                                        required
+                                    >
+                                        {Object.entries(ats).map(
+                                            ([key, value]) => {
+                                                return (
+                                                    <option
+                                                        key={key}
+                                                        value={value.name}
+                                                        disabled={
+                                                            key ===
+                                                            'Select a Version'
+                                                        }
+                                                    >
+                                                        {value.name}
+                                                    </option>
+                                                );
+                                            },
+                                            {}
+                                        )}
+                                    </Form.Select>
+                                )}
                             </Form.Group>
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
                                     Assistive Technology
                                 </Form.Label>
-                                <Form.Select
-                                    onChange={e => {
-                                        // const { value } = e.target;
-                                        // updateMatchingTestPlanVersions(
-                                        //     value,
-                                        //     allTestPlanVersions
-                                        // );
-                                    }}
-                                >
-                                    <option key={`New Key`} value={`New Value`}>
-                                        New Title
-                                    </option>
-                                </Form.Select>
+                                {updateListAtSelection === 'Select an At' ? (
+                                    <Form.Select
+                                        // ref={updatedAtVersionDropdownRef}
+                                        // value={updatedAtVersion}
+                                        value={updateListAtSelection}
+                                        onChange={handleAtChange}
+                                        // isInvalid={isAtVersionError}
+                                        required
+                                    >
+                                        <option>Select an At</option>
+                                        <option value="JAWS">
+                                           { <PhasePill
+                                                fullWidth={false}
+                                                forHeader={true}
+                                            >
+                                                JAWS
+                                            </PhasePill>}
+                                        </option>
+                                        <option value="NVDA">
+                                            <PhasePill
+                                                fullWidth={false}
+                                                forHeader={true}
+                                            >
+                                                NVDA
+                                            </PhasePill>
+                                        </option>
+                                        <option value="VoiceOver for macOs">
+                                            <PhasePill
+                                                fullWidth={false}
+                                                forHeader={true}
+                                            >
+                                                VoiceOver for macOs
+                                            </PhasePill>
+                                        </option>
+                                    </Form.Select>
+                                ) : (
+                                    <Form.Select
+                                        // ref={updatedAtVersionDropdownRef}
+                                        // value={updatedAtVersion}
+                                        value={updateAtSelection}
+                                        onChange={handleAtChange}
+                                        // isInvalid={isAtVersionError}
+                                        required
+                                    >
+                                        <option value="VoiceOver for macOs">check</option>
+                                    </Form.Select>
+                                )}
                             </Form.Group>
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
@@ -776,7 +943,7 @@ const ManageTestQueue = ({
                                     //     !selectedAtId ||
                                     //     !selectedBrowserId
                                     // }
-                                    // onClick={handleAddTestPlanToTestQueue}
+                                    // onClick={handleShowEditAtBrowserModal}
                                 >
                                     Add Required Reports
                                 </Button>
@@ -813,15 +980,36 @@ const ManageTestQueue = ({
                                                         <FontAwesomeIcon
                                                             icon={faEdit}
                                                             color="#818F98"
+                                                            // onClick={
+                                                            //     handleShowEditAtBrowserModal
+                                                            // }
+                                                            onClick={() => {
+                                                                setRequiredReportsModalAt(
+                                                                    phase
+                                                                );
+                                                                onOpenShowEditAtBrowserModal(
+                                                                    'edit',
+                                                                    phase
+                                                                );
+                                                            }}
                                                         />
-                                                        <span className='sr-only'>Edit</span>
+                                                        <span className="sr-only">
+                                                            Edit
+                                                        </span>
                                                     </TransparentButton>
                                                     <TransparentButton>
                                                         <FontAwesomeIcon
                                                             icon={faTrashAlt}
                                                             color="#ce1b4c"
+                                                            onClick={() => {
+                                                                onOpenShowEditAtBrowserModal(
+                                                                    'delete'
+                                                                );
+                                                            }}
                                                         />
-                                                        <span className='sr-only'>Remove</span>
+                                                        <span className="sr-only">
+                                                            Remove
+                                                        </span>
                                                     </TransparentButton>
                                                 </td>
                                             </tr>
@@ -844,7 +1032,6 @@ const ManageTestQueue = ({
                 ]}
                 stacked
             />
-
             {showAtVersionModal && (
                 <UpdateVersionModal
                     show={showAtVersionModal}
@@ -856,7 +1043,6 @@ const ManageTestQueue = ({
                     handleClose={onUpdateModalClose}
                 />
             )}
-
             {showThemedModal && (
                 <BasicThemedModal
                     show={showThemedModal}
@@ -879,7 +1065,6 @@ const ManageTestQueue = ({
                     showCloseAction={themedModalType === 'danger'}
                 />
             )}
-
             {showFeedbackModal && (
                 <BasicModal
                     show={showFeedbackModal}
@@ -891,6 +1076,168 @@ const ManageTestQueue = ({
                         setShowFeedbackModal(false);
                         focusButtonRef.current.focus();
                     }}
+                />
+            )}
+            {/* {!showEditAtBrowserModal && */}
+            {!showEditAtBrowserModal && (
+                <BasicModal
+                    show={true}
+                    // closeButton={true}
+                    closeButton={true}
+                    cancelButton={true}
+                    headerSep={true}
+                    title={requiredReportsModalTitle}
+                    dialogClassName="modal-50w"
+                    content={
+                        <ModalInnerSectionContainer>
+                            <Row>
+                                <Form.Group className="form-group">
+                                    <Form.Label>
+                                        Assistive Technology
+                                    </Form.Label>
+
+                                    {updateAtSelection === 'Select an At' ? (
+                                        <Form.Select
+                                            // ref={updatedAtVersionDropdownRef}
+                                            // value={updatedAtVersion}
+                                            value={updateAtSelection}
+                                            onChange={handleAtChange}
+                                            // isInvalid={isAtVersionError}
+                                            required
+                                        >
+                                            <option>Select an At</option>
+                                            <option value="JAWS">JAWS</option>
+                                            <option value="NVDA">NVDA</option>
+                                            <option value="VoiceOver for macOs">
+                                                VoiceOver for macOs
+                                            </option>
+                                        </Form.Select>
+                                    ) : (
+                                        <Form.Select
+                                            // ref={updatedAtVersionDropdownRef}
+                                            // value={updatedAtVersion}
+                                            value={updateAtSelection}
+                                            onChange={handleAtChange}
+                                            // isInvalid={isAtVersionError}
+                                            required
+                                        >
+                                            {Object.entries(ats).map(
+                                                ([key, value]) => {
+                                                    return (
+                                                        <option
+                                                            key={key}
+                                                            value={value.name}
+                                                            disabled={
+                                                                key ===
+                                                                'Select a Version'
+                                                            }
+                                                        >
+                                                            {value.name}
+                                                        </option>
+                                                    );
+                                                },
+                                                {}
+                                            )}
+                                        </Form.Select>
+                                    )}
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>
+                                        Browser
+                                        {/* <Required aria-hidden /> */}
+                                    </Form.Label>
+
+                                    {updateAtSelection === 'Select an At' ? (
+                                        <Form.Select
+                                            // ref={updatedAtVersionDropdownRef}
+                                            // value={updatedAtVersion}
+                                            value={updateBrowserSelection}
+                                            onChange={handleBrowserChange}
+                                            disabled
+                                            // isInvalid={isAtVersionError}
+                                            required
+                                        ></Form.Select>
+                                    ) : updateAtSelection === 'JAWS' ? (
+                                        <Form.Select
+                                            // ref={updatedAtVersionDropdownRef}
+                                            // value={updatedAtVersion}
+                                            value={updateBrowserSelection}
+                                            onChange={handleBrowserChange}
+                                            // isInvalid={isAtVersionError}
+                                            required
+                                        >
+                                            {' '}
+                                            {Object.entries(
+                                                ats[0].browsers
+                                            ).map(([key, value]) => {
+                                                return (
+                                                    <option key={key}>
+                                                        {value.name}
+                                                    </option>
+                                                );
+                                            })}{' '}
+                                        </Form.Select>
+                                    ) : updateAtSelection === 'NVDA' ? (
+                                        <Form.Select
+                                            // ref={updatedAtVersionDropdownRef}
+                                            // value={updatedAtVersion}
+                                            value={updateBrowserSelection}
+                                            onChange={handleBrowserChange}
+                                            // isInvalid={isAtVersionError}
+                                            required
+                                        >
+                                            {Object.entries(
+                                                ats[1].browsers
+                                            ).map(([key, value]) => {
+                                                return (
+                                                    <option key={key}>
+                                                        {value.name}
+                                                    </option>
+                                                );
+                                            })}{' '}
+                                        </Form.Select>
+                                    ) : updateAtSelection ===
+                                      'VoiceOver for macOS' ? (
+                                        <Form.Select
+                                            // ref={updatedAtVersionDropdownRef}
+                                            // value={updatedAtVersion}
+                                            value={updateBrowserSelection}
+                                            onChange={handleBrowserChange}
+                                            // isInvalid={isAtVersionError}
+                                            required
+                                        >
+                                            {Object.entries(
+                                                ats[2].browsers
+                                            ).map(([key, value]) => {
+                                                return (
+                                                    <option key={key}>
+                                                        {value.name}
+                                                    </option>
+                                                );
+                                            })}{' '}
+                                        </Form.Select>
+                                    ) : null}
+                                </Form.Group>
+                            </Row>
+                        </ModalInnerSectionContainer>
+                    }
+                    actionLabel={'Save Changes'}
+                    handleAction={
+                        // updatedAtVersion !== atVersion ||
+                        // updatedBrowserVersion !== browserVersion
+                        //     ? onSubmit
+                        //     : handleClose
+                        () => {}
+                    }
+                    handleClose={() => {
+                        setUpdateAtSelection('Select an At');
+                        setShowEditAtBrowserModal(true);
+                    }}
+                    handleHide={() => {
+                        setUpdateAtSelection('Select an At');
+                        setShowEditAtBrowserModal(true);
+                    }}
+                    staticBackdrop={true}
                 />
             )}
         </LoadingStatus>

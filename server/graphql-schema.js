@@ -204,6 +204,21 @@ const graphqlSchema = gql`
         releasedAt: Timestamp
     }
 
+    # """
+    # The fields on the RequiredReportOperations type which can be used or update the
+    # RequiredReports.
+    # """
+    # input RequiredReportOperationsInput {
+    #     """
+    #     See AtVersion type for more information.
+    #     """
+    #     inputAtId: ID!
+    #     """
+    #     See AtVersion type for more information.
+    #     """
+    #     inputBrowserId: ID!
+    # }
+
     """
     A suite of tests which keeps its identity as it evolves over time.
     """
@@ -1063,6 +1078,29 @@ const graphqlSchema = gql`
     }
 
     """
+    """
+    enum RequiredReportPhase {
+        IS_CANDIDATE
+        IS_RECOMMENDED
+    }
+
+    # type RequiredReportOperations {
+    #     """
+    #     """
+    #     createRequiredReport: Boolean!
+    #     updateRequiredReport(atId: ID!, browserId: ID!): Boolean!
+    #     deleteRequiredReport: Boolean!
+    # }
+
+    type RequiredReportOperations {
+        """
+        """
+        createRequiredReport: Boolean!
+        updateRequiredReport(atId: ID!, browserId: ID!): Boolean!
+        deleteRequiredReport: Boolean!
+    }
+
+    """
     Mutations scoped to an existing AtVersion.
     """
     type AtVersionOperations {
@@ -1248,6 +1286,13 @@ const graphqlSchema = gql`
         Get the available mutations for the given browser.
         """
         browser(id: ID!): BrowserOperations!
+        """
+        """
+        requiredReport(
+            atId: ID!
+            browserId: ID!
+            phase: RequiredReportPhase!
+        ): RequiredReportOperations!
         """
         Adds a report with the given TestPlanVersion, AT and Browser, and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.
