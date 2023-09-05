@@ -56,10 +56,6 @@ const getTestResults = async testPlanRun => {
     });
 };
 
-const findOrCreateTestResult = async () => {
-    //STUB
-};
-
 const getFinalizedTestResults = testPlanReport => {
     if (!testPlanReport.testPlanRuns.length) {
         return null;
@@ -84,6 +80,5 @@ const getFinalizedTestResults = testPlanReport => {
 
 module.exports = {
     getTestResults,
-    findOrCreateTestResult,
     getFinalizedTestResults
 };

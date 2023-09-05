@@ -1,4 +1,6 @@
-const { getTestResults } = require('../../models/services/TestResultService');
+const {
+    getTestResults
+} = require('../../models/services/TestResultReadService');
 
 const testResultsResolver = async testPlanRun => getTestResults(testPlanRun);
 

@@ -9,9 +9,11 @@ const {
     getTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
 const { decodeLocationOfDataId } = require('./locationOfDataId');
-const testsResolver = require('../../resolvers/TestPlanVersion/testsResolver');
 const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanResolver');
-const { getTestResults } = require('../../models/services/TestResultService');
+const {
+    getTestResults
+} = require('../../models/services/TestResultReadService');
+const getTests = require('../../models/services/TestsService');
 
 /**
  *
@@ -153,7 +155,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         assertionId = assertionResult.assertionId;
     }
     if (testId) {
-        const tests = testsResolver(testPlanReport ?? testPlanVersion);
+        const tests = getTests(testPlanReport ?? testPlanVersion);
         test = tests.find(each => each.id === testId);
         if (!test) {
             throw new Error(

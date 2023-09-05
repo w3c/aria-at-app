@@ -32,7 +32,7 @@ const deleteAtVersionResolver = async (
     };
 };
 
-const populateTestResults = async (resultIds, context) => {
+const populateTestResults = async resultIds => {
     // Limits the number of queries that will be made for this endpoint
     const queryLimit = 10;
 

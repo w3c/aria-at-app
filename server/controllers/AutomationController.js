@@ -7,7 +7,7 @@ const {
 } = require('../models/services/CollectionJobService');
 const {
     findOrCreateTestResult
-} = require('../models/services/TestResultService');
+} = require('../models/services/TestResultWriteService');
 
 const axiosConfig = {
     headers: {

@@ -1,8 +1,6 @@
-const testResultsResolver = require('../TestPlanRun/testResultsResolver');
-const deepCustomMerge = require('../../util/deepCustomMerge');
 const {
     getFinalizedTestResults
-} = require('../../models/services/TestResultService');
+} = require('../../models/services/TestResultReadService');
 
 /**
  * Completed test results sourced from all the report's runs. The runs must be
