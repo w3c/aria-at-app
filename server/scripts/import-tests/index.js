@@ -156,11 +156,12 @@ const importTestPlanVersions = async () => {
             directory
         });
         if (testPlanVersionsToDeprecate.length) {
-            for (const testPlanVersion of testPlanVersionsToDeprecate) {
-                await updateTestPlanVersion(testPlanVersion.id, {
-                    phase: 'DEPRECATED',
-                    deprecatedAt: updatedAt
-                });
+            for (const testPlanVersionToDeprecate of testPlanVersionsToDeprecate) {
+                if (new Date(testPlanVersionToDeprecate.updatedAt) < updatedAt)
+                    await updateTestPlanVersion(testPlanVersionToDeprecate.id, {
+                        phase: 'DEPRECATED',
+                        deprecatedAt: updatedAt
+                    });
             }
         }
 
