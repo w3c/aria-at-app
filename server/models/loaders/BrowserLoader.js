@@ -1,10 +1,16 @@
 const { getBrowsers } = require('../services/BrowserService');
 
+let singletonInstance = null;
+
 const BrowserLoader = () => {
+    if (singletonInstance) {
+        return singletonInstance;
+    }
+
     let browsers;
     let activePromise;
 
-    return {
+    singletonInstance = {
         getAll: async () => {
             if (browsers) {
                 return browsers;
@@ -31,6 +37,7 @@ const BrowserLoader = () => {
             return browsers;
         }
     };
+    return singletonInstance;
 };
 
 module.exports = BrowserLoader;
