@@ -117,14 +117,23 @@ const updatePhaseResolver = async (
                 // between versions
                 let keptTestIds = {};
                 for (const testPlanVersionTest of testPlanVersion.tests) {
-                    const testHash = hashTest(testPlanVersionTest);
+                    // Found odd instances of rowNumber being an int instead of being how it
+                    // currently is; imported as a string
+                    // Ensuring proper hashes are done here
+                    const testHash = hashTest({
+                        ...testPlanVersionTest,
+                        rowNumber: String(testPlanVersionTest.rowNumber)
+                    });
 
                     if (keptTestIds[testHash]) continue;
 
                     for (const testPlanVersionDataToIncludeTest of testPlanVersionDataToInclude.tests) {
-                        const testDataToIncludeHash = hashTest(
-                            testPlanVersionDataToIncludeTest
-                        );
+                        const testDataToIncludeHash = hashTest({
+                            ...testPlanVersionDataToIncludeTest,
+                            rowNumber: String(
+                                testPlanVersionDataToIncludeTest.rowNumber
+                            )
+                        });
 
                         if (testHash === testDataToIncludeHash) {
                             if (!keptTestIds[testHash])
@@ -150,7 +159,11 @@ const updatePhaseResolver = async (
                                 // Then this data should be preserved
                                 testResultsToSave[testId] = testResult;
                             } else {
-                                // TODO: Track which tests cannot be preserved
+                                // TODO: Return information on which tests cannot be preserved
+                                console.error(
+                                    'Unable to preserve data for',
+                                    testId
+                                );
                             }
                         });
                     }
@@ -229,6 +242,77 @@ const updatePhaseResolver = async (
                             );
 
                             testResults.push(testResultToSave);
+                        }
+
+                        const { testPlanReport: populatedTestPlanReport } =
+                            await populateData(
+                                { testPlanReportId: createdTestPlanReport.id },
+                                { context }
+                            );
+
+                        const runnableTests = runnableTestsResolver(
+                            populatedTestPlanReport
+                        );
+                        let updateParams = {};
+
+                        // Mark the report as final if previously was on the TestPlanVersion being
+                        // deprecated
+                        if (testPlanReportDataToInclude.markedFinalAt)
+                            updateParams = { markedFinalAt: new Date() };
+
+                        // Calculate the metrics (happens if updating to DRAFT)
+                        const conflicts = await conflictsResolver(
+                            populatedTestPlanReport,
+                            null,
+                            context
+                        );
+
+                        if (conflicts.length > 0) {
+                            // Then no chance to have finalized reports, and means it hasn't been
+                            // marked as final yet
+                            await updateTestPlanReport(
+                                populatedTestPlanReport.id,
+                                {
+                                    ...updateParams,
+                                    metrics: {
+                                        ...populatedTestPlanReport.metrics,
+                                        conflictsCount: conflicts.length
+                                    }
+                                }
+                            );
+                        } else {
+                            const finalizedTestResults =
+                                await finalizedTestResultsResolver(
+                                    populatedTestPlanReport,
+                                    null,
+                                    context
+                                );
+
+                            if (
+                                !finalizedTestResults ||
+                                !finalizedTestResults.length
+                            ) {
+                                // Do nothing
+                            } else {
+                                const metrics = getMetrics({
+                                    testPlanReport: {
+                                        ...populatedTestPlanReport,
+                                        finalizedTestResults,
+                                        runnableTests
+                                    }
+                                });
+
+                                await updateTestPlanReport(
+                                    populatedTestPlanReport.id,
+                                    {
+                                        ...updateParams,
+                                        metrics: {
+                                            ...populatedTestPlanReport.metrics,
+                                            ...metrics
+                                        }
+                                    }
+                                );
+                            }
                         }
 
                         await updateTestPlanRun(createdTestPlanRun.id, {
@@ -326,12 +410,14 @@ const updatePhaseResolver = async (
                 metrics: {
                     ...testPlanReport.metrics,
                     conflictsCount: conflicts.length
-                },
-                markedFinalAt: null
+                }
             });
         }
 
-        if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
+        if (
+            (phase === 'CANDIDATE' || phase === 'RECOMMENDED') &&
+            testPlanReport.markedFinalAt
+        ) {
             const conflicts = await conflictsResolver(
                 testPlanReport,
                 null,
@@ -344,9 +430,7 @@ const updatePhaseResolver = async (
             }
 
             const finalizedTestResults = await finalizedTestResultsResolver(
-                {
-                    ...testPlanReport
-                },
+                testPlanReport,
                 null,
                 context
             );
