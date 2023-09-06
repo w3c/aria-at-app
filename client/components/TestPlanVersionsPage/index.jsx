@@ -8,11 +8,12 @@ import { Container } from 'react-bootstrap';
 import {
     ThemeTable,
     ThemeTableUnavailable,
-    ThemeTableHeader as UnstyledThemeTableHeader
+    ThemeTableHeaderH3 as UnstyledThemeTableHeader
 } from '../common/ThemeTable';
 import VersionString from '../common/VersionString';
 import PhasePill from '../common/PhasePill';
 import { convertDateToString } from '../../utils/formatter';
+import { derivePhaseName } from '../../utils/aria';
 import styled from '@emotion/styled';
 import {
     faArrowUpRightFromSquare,
@@ -21,7 +22,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { uniqBy as uniqueBy } from 'lodash';
 
-const H3 = styled.h3`
+const H2 = styled.h2`
+    font-size: 1.25em;
     padding-top: 3rem;
     padding-bottom: 15px;
     border-bottom: solid 1px #d2d5d9;
@@ -164,7 +166,7 @@ const TestPlanVersionsPage = () => {
         }
     };
 
-    const getDerivedDeprecatedDuringPhase = testPlanVersion => {
+    const deriveDeprecatedDuringPhase = testPlanVersion => {
         let derivedPhaseDeprecatedDuring = 'RD';
         if (testPlanVersion.recommendedPhaseReachedAt)
             derivedPhaseDeprecatedDuring = 'RECOMMENDED';
@@ -185,14 +187,6 @@ const TestPlanVersionsPage = () => {
         .sort((a, b) => {
             return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
-
-    const testPlanVersionsDesc = data.testPlan.testPlanVersions
-        .slice()
-        .sort((a, b) => {
-            return new Date(a.updatedAt) - new Date(b.updatedAt);
-        });
-
-    const nonRDVersions = testPlanVersions.filter(each => each.phase !== 'RD');
 
     const issues = uniqueBy(
         testPlanVersions.flatMap(testPlanVersion =>
@@ -226,10 +220,16 @@ const TestPlanVersionsPage = () => {
                     Commit History for aria-at/tests/{testPlanDirectory}
                 </a>
             </PageCommitHistory>
-            {!nonRDVersions.length ? null : (
+            {!testPlanVersions.length ? null : (
                 <>
-                    <ThemeTableHeader>Version Summary</ThemeTableHeader>
-                    <ThemeTable bordered responsive>
+                    <ThemeTableHeader id="version-summary">
+                        Version Summary
+                    </ThemeTableHeader>
+                    <ThemeTable
+                        bordered
+                        responsive
+                        aria-labelledby="version-summary"
+                    >
                         <thead>
                             <tr>
                                 <th>Version</th>
@@ -238,7 +238,7 @@ const TestPlanVersionsPage = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {nonRDVersions.map(testPlanVersion => (
+                            {testPlanVersions.map(testPlanVersion => (
                                 <tr key={testPlanVersion.id}>
                                     <td>
                                         <VersionString
@@ -253,14 +253,14 @@ const TestPlanVersionsPage = () => {
                                         {(() => {
                                             // Gets the derived phase even if deprecated by checking
                                             // the known dates on the testPlanVersion object
-                                            const derivedPhase =
-                                                getDerivedDeprecatedDuringPhase(
+                                            const derivedDeprecatedAtPhase =
+                                                deriveDeprecatedDuringPhase(
                                                     testPlanVersion
                                                 );
 
                                             const phasePill = (
                                                 <PhasePill fullWidth={false}>
-                                                    {derivedPhase}
+                                                    {derivedDeprecatedAtPhase}
                                                 </PhasePill>
                                             );
 
@@ -294,11 +294,15 @@ const TestPlanVersionsPage = () => {
                 </>
             )}
 
-            <ThemeTableHeader>GitHub Issues</ThemeTableHeader>
+            <ThemeTableHeader id="github-issues">
+                GitHub Issues
+            </ThemeTableHeader>
             {!issues.length ? (
-                <ThemeTableUnavailable>No GitHub Issues</ThemeTableUnavailable>
+                <ThemeTableUnavailable aria-labelledby="github-issues">
+                    No GitHub Issues
+                </ThemeTableUnavailable>
             ) : (
-                <ThemeTable bordered responsive>
+                <ThemeTable bordered responsive aria-labelledby="github-issues">
                     <thead>
                         <tr>
                             <th>Author</th>
@@ -357,8 +361,14 @@ const TestPlanVersionsPage = () => {
             )}
             <PageSpacer />
 
-            <ThemeTableHeader>Timeline for All Versions</ThemeTableHeader>
-            <ThemeTable bordered responsive>
+            <ThemeTableHeader id="timeline-for-all-versions">
+                Timeline for All Versions
+            </ThemeTableHeader>
+            <ThemeTable
+                bordered
+                responsive
+                aria-labelledby="timeline-for-all-versions"
+            >
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -366,7 +376,7 @@ const TestPlanVersionsPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {testPlanVersionsDesc.map(testPlanVersion => {
+                    {testPlanVersions.map(testPlanVersion => {
                         const versionString = (
                             <VersionString
                                 date={testPlanVersion.updatedAt}
@@ -382,7 +392,7 @@ const TestPlanVersionsPage = () => {
                             <tr key={testPlanVersion.id}>
                                 <td>{getEventDate(testPlanVersion)}</td>
                                 <td>
-                                    {versionString} {eventBody}
+                                    {versionString}&nbsp;{eventBody}
                                 </td>
                             </tr>
                         );
@@ -390,7 +400,7 @@ const TestPlanVersionsPage = () => {
                 </tbody>
             </ThemeTable>
 
-            {nonRDVersions.map(testPlanVersion => {
+            {testPlanVersions.map(testPlanVersion => {
                 const vString = `V${convertDateToString(
                     testPlanVersion.updatedAt,
                     'YY.MM.DD'
@@ -398,29 +408,38 @@ const TestPlanVersionsPage = () => {
 
                 // Gets the derived phase even if deprecated by checking
                 // the known dates on the testPlanVersion object
-                const derivedPhase =
-                    getDerivedDeprecatedDuringPhase(testPlanVersion);
+                const derivedDeprecatedAtPhase =
+                    deriveDeprecatedDuringPhase(testPlanVersion);
 
                 const hasFinalReports =
-                    (derivedPhase === 'CANDIDATE' ||
-                        derivedPhase === 'RECOMMENDED') &&
+                    (derivedDeprecatedAtPhase === 'CANDIDATE' ||
+                        derivedDeprecatedAtPhase === 'RECOMMENDED') &&
                     !!testPlanVersion.testPlanReports.filter(
                         report => report.isFinal
                     ).length;
+
                 return (
                     <div key={testPlanVersion.id}>
-                        <H3>
+                        <H2
+                            aria-label={`${convertDateToString(
+                                testPlanVersion.updatedAt,
+                                'MMM D, YYYY'
+                            )} ${derivePhaseName(
+                                testPlanVersion.phase
+                            )} on ${getEventDate(testPlanVersion)}`}
+                        >
                             <VersionString
                                 date={testPlanVersion.updatedAt}
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}
                             />
+                            &nbsp;
                             <PhasePill fullWidth={false}>
                                 {testPlanVersion.phase}
-                            </PhasePill>{' '}
-                            on {getEventDate(testPlanVersion)}
-                        </H3>
+                            </PhasePill>
+                            &nbsp;on&nbsp;{getEventDate(testPlanVersion)}
+                        </H2>
                         <PageUl>
                             <li>
                                 <FontAwesomeIcon
@@ -474,10 +493,14 @@ const TestPlanVersionsPage = () => {
                                 </ul>
                             </dd>
                         </CoveredAtDl>
-                        <ThemeTableHeader>
+                        <ThemeTableHeader id={`timeline-for-${vString}`}>
                             Timeline for {vString}
                         </ThemeTableHeader>
-                        <ThemeTable bordered responsive>
+                        <ThemeTable
+                            bordered
+                            responsive
+                            aria-labelledby={`timeline-for-${vString}`}
+                        >
                             <thead>
                                 <tr>
                                     <th>Date</th>

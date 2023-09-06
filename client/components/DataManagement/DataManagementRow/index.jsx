@@ -27,7 +27,6 @@ import { getVersionData } from '../utils';
 const StatusCell = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
     height: 100%;
 
     .review-text {

@@ -1,3 +1,8 @@
+const GITHUB_ISSUES_URL =
+    process.env.ENVIRONMENT === 'production'
+        ? 'https://github.com/w3c/aria-at'
+        : 'https://github.com/bocoup/aria-at';
+
 const atLabelMap = {
     'VoiceOver for macOS': 'vo',
     JAWS: 'jaws',
@@ -89,15 +94,17 @@ const createIssueLink = ({
 
     let body =
         `## Description of Behavior\n\n` +
-        `<!-- write your description here -->\n\n` +
-        testSetupFormatted;
+        `<!-- Write your description here -->\n\n` +
+        testSetupFormatted +
+        `\n\n<!-- DO NOT EDIT BELOW, UNLESS YOU'RE SURE -->\n\n` +
+        `<!-- ${title} -->`;
 
     if (conflictMarkdown) {
         body += `\n${conflictMarkdown}`;
     }
 
     return (
-        `https://github.com/w3c/aria-at/issues/new?title=${encodeURI(title)}&` +
+        `${GITHUB_ISSUES_URL}/issues/new?title=${encodeURI(title)}&` +
         `labels=${labels}&body=${encodeURIComponent(body)}`
     );
 };
@@ -134,7 +141,7 @@ export const getIssueSearchLink = ({
         .filter(str => str)
         .join(' ');
 
-    return `https://github.com/w3c/aria-at/issues?q=${encodeURI(query)}`;
+    return `${GITHUB_ISSUES_URL}/issues?q=${encodeURI(query)}`;
 };
 
 export default createIssueLink;

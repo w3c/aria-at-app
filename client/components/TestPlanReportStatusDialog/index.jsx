@@ -98,7 +98,7 @@ const TestPlanReportStatusDialog = ({
     const renderCompleteReportStatus = testPlanReport => {
         const formattedDate = convertDateToString(
             testPlanReport.markedFinalAt,
-            'MMM d, yyyy'
+            'MMM D, YYYY'
         );
         return (
             <a

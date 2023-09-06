@@ -2,9 +2,7 @@ const { GithubService } = require('../../services');
 const convertDateToString = require('../../util/convertDateToString');
 
 const issuesResolver = async testPlanReport => {
-    const issues = await GithubService.getAllIssues({
-        atName: testPlanReport.at.name
-    });
+    const issues = await GithubService.getAllIssues();
 
     const { at, testPlanVersion } = testPlanReport;
 
@@ -23,11 +21,11 @@ const issuesResolver = async testPlanReport => {
     }
 
     return issues
-        .filter(({ title, labels }) => {
+        .filter(({ labels, body }) => {
             return (
                 labels.find(({ name }) => name === searchAtName) &&
-                title.includes(searchTestPlanTitle) &&
-                title.includes(searchVersionString)
+                body?.includes(searchTestPlanTitle) &&
+                body?.includes(searchVersionString)
             );
         })
         .map(issue => {
