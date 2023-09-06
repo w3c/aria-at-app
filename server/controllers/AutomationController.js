@@ -1,9 +1,9 @@
 const axios = require('axios');
-const deleteCollectionJobResolver = require('../resolvers/deleteCollectionJobResolver');
 const {
     getCollectionJobById,
     updateCollectionJob,
-    getOrCreateCollectionJob
+    getOrCreateCollectionJob,
+    deleteCollectionJob
 } = require('../models/services/CollectionJobService');
 const {
     findOrCreateTestResult
@@ -17,7 +17,7 @@ const axiosConfig = {
     headers: {
         'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
     },
-    timeout: 5000
+    timeout: 1000
 };
 
 const scheduleNewJob = async (req, res) => {
@@ -195,9 +195,7 @@ const updateJobResults = async (req, res) => {
 
 const deleteJob = async (req, res) => {
     try {
-        const graphqlResponse = await deleteCollectionJobResolver(null, {
-            id: req.params.jobID
-        });
+        const graphqlResponse = await deleteCollectionJob(req.params.jobID);
         res.json(graphqlResponse);
     } catch (err) {
         res.status(500).json({ error: err.message });

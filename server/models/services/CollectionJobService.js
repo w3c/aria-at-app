@@ -12,7 +12,10 @@ const {
 } = require('../');
 const { COLLECTION_JOB_ATTRIBUTES } = require('./helpers');
 const { Op } = require('sequelize');
-const { createTestPlanRun } = require('./TestPlanRunService');
+const {
+    createTestPlanRun,
+    removeTestPlanRun
+} = require('./TestPlanRunService');
 const {
     createUser,
     getUserByUsername,
@@ -245,7 +248,12 @@ const getOrCreateCollectionJob = async ({
  * @returns {Promise<*>}
  */
 const deleteCollectionJob = async (id, options) => {
-    return await ModelService.removeById(CollectionJob, id, options);
+    // Remove test plan run, may want to allow test plan run to
+    // continue existing independent of collection job
+    const collectionJob = await getCollectionJobById(id);
+    const res = await ModelService.removeById(CollectionJob, id, options);
+    await removeTestPlanRun(collectionJob.testPlanRun.id);
+    return res;
 };
 
 module.exports = {

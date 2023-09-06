@@ -6,9 +6,6 @@ const { query } = require('../util/graphql-test-utilities');
 const {
     getCollectionJobById
 } = require('../../models/services/CollectionJobService');
-const {
-    removeTestPlanRun
-} = require('../../models/services/TestPlanRunService');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -243,15 +240,10 @@ describe('Schedule jobs with automation controller', () => {
     });
 
     it('should delete a job', async () => {
-        const collectionJob = await getCollectionJobById(jobId);
-        const { testPlanRun } = collectionJob;
         const response = await sessionAgent.post(`/api/jobs/${jobId}/delete`);
         expect(response.statusCode).toBe(200);
         const { collectionJob: storedCollectionJob } =
             await getTestCollectionJob();
         expect(storedCollectionJob).toEqual(null);
-        // Remove test plan run which can exist independent of a collection job
-        // to reset the DB
-        await removeTestPlanRun(testPlanRun.id);
     });
 });
