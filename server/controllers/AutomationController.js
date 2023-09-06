@@ -108,22 +108,22 @@ const updateJobStatus = async (req, res) => {
 
 const updateOrCreateTestResultWithResponses = async ({
     testId,
-    testPlanRun,
+    testPlanRun: { id: testPlanRunId },
     responses,
     atVersionId,
     browserVersionId
 }) => {
     const { testResult } = await findOrCreateTestResult({
         testId,
-        testPlanRunId: testPlanRun.id,
+        testPlanRunId,
         atVersionId,
         browserVersionId
     });
 
     const getAutomatedResultFromOutput = ({ baseTestResult, outputs }) => ({
         ...baseTestResult,
-        atVersionId: atVersionId,
-        browserVersionId: browserVersionId,
+        atVersionId,
+        browserVersionId,
         scenarioResults: baseTestResult.scenarioResults.map(
             (scenarioResult, index) => ({
                 ...scenarioResult,
@@ -140,16 +140,14 @@ const updateOrCreateTestResultWithResponses = async ({
         )
     });
 
-    const automatedResult = getAutomatedResultFromOutput({
-        baseTestResult: testResult,
-        outputs: responses
-    });
-
-    const input = convertTestResultToInput(automatedResult);
-
     let savedData = await saveTestResultCommon({
         testResultId: testResult.id,
-        input,
+        input: convertTestResultToInput(
+            getAutomatedResultFromOutput({
+                baseTestResult: testResult,
+                outputs: responses
+            })
+        ),
         isSubmit: true
     });
 
@@ -162,26 +160,29 @@ const updateJobResults = async (req, res) => {
         const { testId, responses, atVersionName, browserVersionName } =
             req.body;
         const job = await getCollectionJobById(id);
-        const { testPlanRun } = job;
-        if (!job) {
-            throw new Error(`Job with id ${id} not found`);
-        }
-        if (job.status !== 'RUNNING') {
+
+        if (!job) throw new Error(`Job with id ${id} not found`);
+        if (job.status !== 'RUNNING')
             throw new Error(
                 `Job with id ${id} is not running, cannot update results`
             );
-        }
 
-        const atVersions = await getAtVersions();
-        const browserVersions = await getBrowserVersions();
+        const [atVersions, browserVersions] = await Promise.all([
+            getAtVersions(),
+            getBrowserVersions()
+        ]);
+
         const atVersion = atVersions.find(each => each.name === atVersionName);
         const browserVersion = browserVersions.find(
             each => each.name === browserVersionName
         );
+
+        if (!atVersion || !browserVersion) throw new Error('Version not found');
+
         await updateOrCreateTestResultWithResponses({
             testId,
-            responses: responses,
-            testPlanRun,
+            responses,
+            testPlanRun: job.testPlanRun,
             atVersionId: atVersion.id,
             browserVersionId: browserVersion.id
         });
