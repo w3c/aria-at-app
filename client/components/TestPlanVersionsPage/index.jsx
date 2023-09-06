@@ -13,6 +13,7 @@ import {
 import VersionString from '../common/VersionString';
 import PhasePill from '../common/PhasePill';
 import { convertDateToString } from '../../utils/formatter';
+import { derivePhaseName } from '../../utils/aria';
 import styled from '@emotion/styled';
 import {
     faArrowUpRightFromSquare,
@@ -165,7 +166,7 @@ const TestPlanVersionsPage = () => {
         }
     };
 
-    const getDerivedDeprecatedDuringPhase = testPlanVersion => {
+    const deriveDeprecatedDuringPhase = testPlanVersion => {
         let derivedPhaseDeprecatedDuring = 'RD';
         if (testPlanVersion.recommendedPhaseReachedAt)
             derivedPhaseDeprecatedDuring = 'RECOMMENDED';
@@ -252,14 +253,14 @@ const TestPlanVersionsPage = () => {
                                         {(() => {
                                             // Gets the derived phase even if deprecated by checking
                                             // the known dates on the testPlanVersion object
-                                            const derivedPhase =
-                                                getDerivedDeprecatedDuringPhase(
+                                            const derivedDeprecatedAtPhase =
+                                                deriveDeprecatedDuringPhase(
                                                     testPlanVersion
                                                 );
 
                                             const phasePill = (
                                                 <PhasePill fullWidth={false}>
-                                                    {derivedPhase}
+                                                    {derivedDeprecatedAtPhase}
                                                 </PhasePill>
                                             );
 
@@ -407,18 +408,26 @@ const TestPlanVersionsPage = () => {
 
                 // Gets the derived phase even if deprecated by checking
                 // the known dates on the testPlanVersion object
-                const derivedPhase =
-                    getDerivedDeprecatedDuringPhase(testPlanVersion);
+                const derivedDeprecatedAtPhase =
+                    deriveDeprecatedDuringPhase(testPlanVersion);
 
                 const hasFinalReports =
-                    (derivedPhase === 'CANDIDATE' ||
-                        derivedPhase === 'RECOMMENDED') &&
+                    (derivedDeprecatedAtPhase === 'CANDIDATE' ||
+                        derivedDeprecatedAtPhase === 'RECOMMENDED') &&
                     !!testPlanVersion.testPlanReports.filter(
                         report => report.isFinal
                     ).length;
+
                 return (
                     <div key={testPlanVersion.id}>
-                        <H2>
+                        <H2
+                            aria-label={`${convertDateToString(
+                                testPlanVersion.updatedAt,
+                                'MMM D, YYYY'
+                            )} ${derivePhaseName(
+                                testPlanVersion.phase
+                            )} on ${getEventDate(testPlanVersion)}`}
+                        >
                             <VersionString
                                 date={testPlanVersion.updatedAt}
                                 iconColor={getIconColor(testPlanVersion)}
