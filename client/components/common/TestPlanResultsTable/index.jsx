@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
-import './TestPlanResultsTable.css';
 import nextId from 'react-id-generator';
+import './TestPlanResultsTable.css';
 
 const renderAssertionRow = assertionResult => {
     return (
@@ -82,23 +82,24 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                                 )}
                             </tbody>
                         </Table>
-                        <p>
-                            Unexpected Behaviors:{' '}
-                            {scenarioResult.unexpectedBehaviors.length ? (
-                                <ul>
-                                    {scenarioResult.unexpectedBehaviors.map(
-                                        unexpected => (
-                                            <li key={unexpected.id}>
-                                                {unexpected.otherUnexpectedBehaviorText ??
-                                                    unexpected.text}
-                                            </li>
-                                        )
-                                    )}
-                                </ul>
-                            ) : (
-                                'None'
-                            )}
-                        </p>
+                        Unexpected Behaviors:{' '}
+                        {scenarioResult.unexpectedBehaviors.length ? (
+                            <ul>
+                                {scenarioResult.unexpectedBehaviors.map(
+                                    unexpected => (
+                                        <li
+                                            key={unexpected.id}
+                                            className="test-plan-results-li"
+                                        >
+                                            {unexpected.otherUnexpectedBehaviorText ??
+                                                unexpected.text}
+                                        </li>
+                                    )
+                                )}
+                            </ul>
+                        ) : (
+                            'None'
+                        )}
                         {/* Do not show separator below last item */}
                         {index !== testResult.scenarioResults.length - 1 ? (
                             <hr aria-hidden="true" />

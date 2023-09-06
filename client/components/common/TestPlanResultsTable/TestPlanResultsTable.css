@@ -8,5 +8,13 @@ p.test-plan-results-response-p {
 }
 
 blockquote.test-plan-results-blockquote {
-    margin: 0 1rem;
+    background: #f7f7f7;
+    border-left: 4px solid #d3d5d9;
+    margin: 0.5em 0;
+    padding: 0.5em;
+}
+
+li.test-plan-results-li {
+    margin-left: 1rem;
+    list-style: disc;
 }
