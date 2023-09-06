@@ -660,6 +660,7 @@ const graphqlSchema = gql`
     enum AssertionFailedReason {
         INCORRECT_OUTPUT
         NO_OUTPUT
+        AUTOMATED_OUTPUT
     }
 
     """

@@ -1,5 +1,15 @@
 const ModelService = require('./ModelService');
-const { CollectionJob, User, TestPlanRun, TestPlanReport } = require('../');
+const {
+    CollectionJob,
+    User,
+    TestPlanRun,
+    TestPlanReport,
+    TestPlanVersion,
+    At,
+    Browser,
+    AtVersion,
+    BrowserVersion
+} = require('../');
 const { COLLECTION_JOB_ATTRIBUTES } = require('./helpers');
 const { Op } = require('sequelize');
 const { createTestPlanRun } = require('./TestPlanRunService');
@@ -9,6 +19,50 @@ const {
     addUserToRole
 } = require('./UserService');
 const responseCollectionUser = require('../../util/responseCollectionUser');
+
+const includeBrowserVersion = {
+    model: BrowserVersion,
+    as: 'browserVersions'
+};
+
+const includeBrowser = {
+    model: Browser,
+    as: 'browser',
+    include: [includeBrowserVersion]
+};
+
+const includeAtVersion = {
+    model: AtVersion,
+    as: 'atVersions'
+};
+
+const includeAt = {
+    model: At,
+    as: 'at',
+    include: [includeAtVersion]
+};
+
+const includeTestPlanVersion = {
+    model: TestPlanVersion,
+    as: 'testPlanVersion'
+};
+
+const includeTestPlanReport = {
+    model: TestPlanReport,
+    as: 'testPlanReport',
+    include: [includeTestPlanVersion, includeAt, includeBrowser]
+};
+
+const includeTester = {
+    model: User,
+    as: 'tester'
+};
+
+const includeTestPlanRun = {
+    model: TestPlanRun,
+    as: 'testPlanRun',
+    include: [includeTester, includeTestPlanReport]
+};
 
 /**
  * @param {object} collectionJob - CollectionJob to be created
@@ -27,34 +81,28 @@ const createCollectionJob = async (
     options
 ) => {
     if (!testPlanRun) {
-        testPlanRun = await TestPlanRun.findOne({
-            where: { testPlanReportId },
-            attributes: ['id']
-        });
-        if (!testPlanRun) {
-            let user = await getUserByUsername(responseCollectionUser.username);
-            if (!user) {
-                const roles = [{ name: User.TESTER }];
-                user = await createUser(
-                    responseCollectionUser,
-                    { roles },
-                    undefined,
-                    undefined,
-                    [],
-                    []
-                );
-            }
-            const { id: botUserId, roles } = user.get({ plain: true });
-            if (!roles.find(role => role.name === User.TESTER)) {
-                await addUserToRole(botUserId, User.TESTER);
-            }
-
-            testPlanRun = await createTestPlanRun({
-                testerUserId: botUserId,
-                testPlanReportId: testPlanReportId
-            });
+        let user = await getUserByUsername(responseCollectionUser.username);
+        if (!user) {
+            const roles = [{ name: User.TESTER }];
+            user = await createUser(
+                responseCollectionUser,
+                { roles },
+                undefined,
+                undefined,
+                [],
+                []
+            );
         }
+        const { id: botUserId, roles } = user.get({ plain: true });
+        if (!roles.find(role => role.name === User.TESTER)) {
+            await addUserToRole(botUserId, User.TESTER);
+        }
+        testPlanRun = await createTestPlanRun({
+            testerUserId: botUserId,
+            testPlanReportId: testPlanReportId
+        });
     }
+
     const { id: testPlanRunId } = testPlanRun.get({ plain: true });
     await ModelService.create(
         CollectionJob,
@@ -87,22 +135,7 @@ const getCollectionJobById = async (
         CollectionJob,
         id,
         attributes,
-        [
-            {
-                model: TestPlanRun,
-                as: 'testPlanRun',
-                include: [
-                    {
-                        model: User,
-                        as: 'tester'
-                    },
-                    {
-                        model: TestPlanReport,
-                        as: 'testPlanReport'
-                    }
-                ]
-            }
-        ],
+        [includeTestPlanRun],
         options
     );
 };
@@ -136,22 +169,7 @@ const getCollectionJobs = async (
         CollectionJob,
         where,
         collectionJobAttributes,
-        [
-            {
-                model: TestPlanRun,
-                as: 'testPlanRun',
-                include: [
-                    {
-                        model: User,
-                        as: 'tester'
-                    },
-                    {
-                        model: TestPlanReport,
-                        as: 'testPlanReport'
-                    }
-                ]
-            }
-        ],
+        [includeTestPlanRun],
         pagination,
         options
     );
@@ -211,7 +229,6 @@ const getOrCreateCollectionJob = async ({
             );
         }
     }
-
     await createCollectionJob({
         id,
         status,

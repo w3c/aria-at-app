@@ -1,19 +1,17 @@
 const axios = require('axios');
-const findOrCreateCollectionJobResolver = require('../resolvers/findOrCreateCollectionJobResolver');
-const updateCollectionJobResolver = require('../resolvers/updateCollectionJobResolver');
 const deleteCollectionJobResolver = require('../resolvers/deleteCollectionJobResolver');
 const {
-    getCollectionJobById
+    getCollectionJobById,
+    updateCollectionJob,
+    getOrCreateCollectionJob
 } = require('../models/services/CollectionJobService');
 const {
     findOrCreateTestResult
 } = require('../models/services/TestResultWriteService');
-const populateData = require('../services/PopulatedData/populateData');
+const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
-const { getAtVersionByQuery } = require('../models/services/AtService');
-const {
-    getBrowserVersionByQuery
-} = require('../models/services/BrowserService');
+const { getAtVersions } = require('../models/services/AtService');
+const { getBrowserVersions } = require('../models/services/BrowserService');
 
 const axiosConfig = {
     headers: {
@@ -33,7 +31,7 @@ const scheduleNewJob = async (req, res) => {
         const { id, status } = automationSchedulerResponse.data;
 
         if (id) {
-            await findOrCreateCollectionJobResolver(null, {
+            await getOrCreateCollectionJob({
                 id,
                 status,
                 testPlanReportId
@@ -54,8 +52,7 @@ const cancelJob = async (req, res) => {
             axiosConfig
         );
         if (automationSchedulerResponse.data.status === 'CANCELED') {
-            await updateCollectionJobResolver(null, {
-                id: req.params.jobID,
+            await updateCollectionJob(req.params.jobID, {
                 status: 'CANCELED'
             });
         }
@@ -73,8 +70,7 @@ const restartJob = async (req, res) => {
             axiosConfig
         );
         if (automationSchedulerResponse.data.status === 'QUEUED') {
-            await updateCollectionJobResolver(null, {
-                id: req.params.jobID,
+            await updateCollectionJob(req.params.jobID, {
                 status: 'QUEUED'
             });
         }
@@ -100,8 +96,7 @@ const updateJobStatus = async (req, res) => {
     try {
         const { status } = req.body;
 
-        const graphqlResponse = await updateCollectionJobResolver(null, {
-            id: req.params.jobID,
+        const graphqlResponse = await updateCollectionJob(req.params.jobID, {
             status
         });
 
@@ -113,25 +108,48 @@ const updateJobStatus = async (req, res) => {
 
 const updateOrCreateTestResultWithResponses = async ({
     testId,
+    testPlanRun,
     responses,
     atVersionId,
     browserVersionId
 }) => {
-    const { testPlanRun } = populateData({ testId });
-    if (!testId) return null;
+    const { testResult } = await findOrCreateTestResult({
+        testId,
+        testPlanRunId: testPlanRun.id,
+        atVersionId,
+        browserVersionId
+    });
 
-    const { testResult } = await findOrCreateTestResult(
-        {
-            parentContext: { id: testPlanRun.id }
-        },
-        { testId, atVersionId, browserVersionId }
-    );
+    const getAutomatedResultFromOutput = ({ baseTestResult, outputs }) => ({
+        ...baseTestResult,
+        atVersionId: atVersionId,
+        browserVersionId: browserVersionId,
+        scenarioResults: baseTestResult.scenarioResults.map(
+            (scenarioResult, index) => ({
+                ...scenarioResult,
+                output: outputs[index],
+                assertionResults: scenarioResult.assertionResults.map(
+                    assertionResult => ({
+                        ...assertionResult,
+                        passed: false,
+                        failedReason: 'AUTOMATED_OUTPUT'
+                    })
+                ),
+                unexpectedBehaviors: []
+            })
+        )
+    });
 
-    // Likely need to convert responses into scenario results objects here
+    const automatedResult = getAutomatedResultFromOutput({
+        baseTestResult: testResult,
+        outputs: responses
+    });
+
+    const input = convertTestResultToInput(automatedResult);
 
     let savedData = await saveTestResultCommon({
         testResultId: testResult.id,
-        input: responses,
+        input,
         isSubmit: true
     });
 
@@ -144,6 +162,7 @@ const updateJobResults = async (req, res) => {
         const { testId, responses, atVersionName, browserVersionName } =
             req.body;
         const job = await getCollectionJobById(id);
+        const { testPlanRun } = job;
         if (!job) {
             throw new Error(`Job with id ${id} not found`);
         }
@@ -153,13 +172,16 @@ const updateJobResults = async (req, res) => {
             );
         }
 
-        const atVersion = await getAtVersionByQuery({ name: atVersionName });
-        const browserVersion = await getBrowserVersionByQuery({
-            name: browserVersionName
-        });
+        const atVersions = await getAtVersions();
+        const browserVersions = await getBrowserVersions();
+        const atVersion = atVersions.find(each => each.name === atVersionName);
+        const browserVersion = browserVersions.find(
+            each => each.name === browserVersionName
+        );
         await updateOrCreateTestResultWithResponses({
             testId,
             responses: responses,
+            testPlanRun,
             atVersionId: atVersion.id,
             browserVersionId: browserVersion.id
         });
