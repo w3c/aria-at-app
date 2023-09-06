@@ -204,11 +204,15 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                                 </Button>
                             </div>
                         </div>
+
                         <TestPlanResultsTable
                             key={`TestPlanResultsTable__${testResult.id}`}
                             test={{ ...test, at }}
                             testResult={testResult}
                         />
+
+                        <br />
+                        <br />
 
                         <DisclosureComponent
                             componentId={`run-history-${testResult.id}`}
