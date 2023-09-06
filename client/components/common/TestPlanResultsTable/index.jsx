@@ -4,10 +4,10 @@ import { Table } from 'react-bootstrap';
 import nextId from 'react-id-generator';
 import './TestPlanResultsTable.css';
 
-const renderAssertionRow = assertionResult => {
+const renderAssertionRow = (assertionResult, priorityString) => {
     return (
         <tr key={`${assertionResult.id}__${nextId()}`}>
-            <td>Required</td>
+            <td>{priorityString}</td>
             <td>{assertionResult.assertion.text}</td>
             <td>{assertionResult.passed ? 'Passed' : 'Failed'}</td>
         </tr>
@@ -74,11 +74,17 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {requiredAssertionResults.map(
-                                    renderAssertionRow
+                                {requiredAssertionResults.map(assertionResult =>
+                                    renderAssertionRow(
+                                        assertionResult,
+                                        'Required'
+                                    )
                                 )}
-                                {optionalAssertionResults.map(
-                                    renderAssertionRow
+                                {optionalAssertionResults.map(assertionResult =>
+                                    renderAssertionRow(
+                                        assertionResult,
+                                        'Optional'
+                                    )
                                 )}
                             </tbody>
                         </Table>
