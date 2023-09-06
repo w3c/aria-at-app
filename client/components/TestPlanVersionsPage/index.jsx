@@ -187,8 +187,6 @@ const TestPlanVersionsPage = () => {
             return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
 
-    const nonRDVersions = testPlanVersions.filter(each => each.phase !== 'RD');
-
     const issues = uniqueBy(
         testPlanVersions.flatMap(testPlanVersion =>
             testPlanVersion.testPlanReports.flatMap(testPlanReport =>
@@ -401,7 +399,7 @@ const TestPlanVersionsPage = () => {
                 </tbody>
             </ThemeTable>
 
-            {nonRDVersions.map(testPlanVersion => {
+            {testPlanVersions.map(testPlanVersion => {
                 const vString = `V${convertDateToString(
                     testPlanVersion.updatedAt,
                     'YY.MM.DD'
