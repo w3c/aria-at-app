@@ -2,7 +2,8 @@ const { AuthenticationError } = require('apollo-server');
 const {
     updateTestPlanReport,
     getTestPlanReports,
-    getOrCreateTestPlanReport
+    getOrCreateTestPlanReport,
+    removeTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
@@ -51,6 +52,7 @@ const updatePhaseResolver = async (
 
     let testPlanVersionDataToInclude;
     let testPlanReportsDataToIncludeId = [];
+    let createdTestPlanReportIdsFromOldResults = [];
 
     // The testPlanVersion being updated
     const testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
@@ -175,6 +177,10 @@ const updatePhaseResolver = async (
                                 atId: testPlanReportDataToInclude.atId,
                                 browserId: testPlanReportDataToInclude.browserId
                             });
+
+                        createdTestPlanReportIdsFromOldResults.push(
+                            createdTestPlanReport.id
+                        );
 
                         const createdTestPlanRun = await createTestPlanRun({
                             testerUserId: testPlanRun.testerUserId,
@@ -388,6 +394,12 @@ const updatePhaseResolver = async (
         });
 
         if (missingAtBrowserCombinations.length) {
+            // Throw away newly created test plan reports if exception were hit
+            if (createdTestPlanReportIdsFromOldResults.length)
+                for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
+                    await removeTestPlanReport(createdTestPlanReportId);
+                }
+
             throw new Error(
                 `Cannot set phase to ${phase.toLowerCase()} because the following` +
                     ` required reports have not been collected or finalized:` +
@@ -400,30 +412,49 @@ const updatePhaseResolver = async (
         const runnableTests = runnableTestsResolver(testPlanReport);
         let updateParams = {};
 
+        const isReportCreatedFromOldResults =
+            createdTestPlanReportIdsFromOldResults.includes(testPlanReport.id);
+
         if (phase === 'DRAFT') {
             const conflicts = await conflictsResolver(
                 testPlanReport,
                 null,
                 context
             );
-            await updateTestPlanReport(testPlanReport.id, {
+
+            updateParams = {
                 metrics: {
                     ...testPlanReport.metrics,
                     conflictsCount: conflicts.length
                 }
-            });
+            };
+
+            // Nullify markedFinalAt if not using old result
+            if (!isReportCreatedFromOldResults)
+                updateParams = { ...updateParams, markedFinalAt: null };
+
+            await updateTestPlanReport(testPlanReport.id, updateParams);
         }
 
-        if (
+        const shouldThrowErrorIfFound =
             (phase === 'CANDIDATE' || phase === 'RECOMMENDED') &&
-            testPlanReport.markedFinalAt
-        ) {
+            isReportCreatedFromOldResults
+                ? false
+                : testPlanReport.markedFinalAt;
+
+        if (shouldThrowErrorIfFound) {
             const conflicts = await conflictsResolver(
                 testPlanReport,
                 null,
                 context
             );
             if (conflicts.length > 0) {
+                // Throw away newly created test plan reports if exception were hit
+                if (createdTestPlanReportIdsFromOldResults.length)
+                    for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
+                        await removeTestPlanReport(createdTestPlanReportId);
+                    }
+
                 throw new Error(
                     'Cannot update test plan report due to conflicts'
                 );
@@ -436,6 +467,12 @@ const updatePhaseResolver = async (
             );
 
             if (!finalizedTestResults || !finalizedTestResults.length) {
+                // Throw away newly created test plan reports if exception were hit
+                if (createdTestPlanReportIdsFromOldResults.length)
+                    for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
+                        await removeTestPlanReport(createdTestPlanReportId);
+                    }
+
                 throw new Error(
                     'Cannot update test plan report because there are no ' +
                         'completed test results'
