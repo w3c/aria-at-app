@@ -27,9 +27,6 @@ const { hashTests } = require('../util/aria');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        const atLoader = AtLoader();
-        const browserLoader = BrowserLoader();
-
         const compareTestContent = (currentTests, newTests) => {
             const currentTestsByHash = hashTests(currentTests);
             const newTestsByHash = hashTests(newTests);
@@ -247,8 +244,6 @@ module.exports = {
                 testPlanReportAttributes
             }) => {
                 const context = {
-                    atLoader,
-                    browserLoader,
                     user: {
                         roles: [{ name: 'ADMIN' }]
                     }

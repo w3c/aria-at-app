@@ -11,9 +11,11 @@ const getTestResults = async testPlanRun => {
     const { testPlanReport } = testPlanRun;
     const tests = getTests(testPlanReport);
     const atLoader = AtLoader();
-    const browserLoader = BrowserLoader(); // Might be a deoptimization, possible optional pass from context
-    const ats = await atLoader.getAll();
-    const browsers = await browserLoader.getAll();
+    const browserLoader = BrowserLoader();
+    const [ats, browsers] = await Promise.all([
+        atLoader.getAll(),
+        browserLoader.getAll()
+    ]);
 
     // Populate nested test, atVersion, browserVersion, scenario, assertion and
     // unexpectedBehavior fields

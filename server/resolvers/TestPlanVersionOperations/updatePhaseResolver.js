@@ -24,6 +24,7 @@ const {
     createScenarioResultId,
     createAssertionResultId
 } = require('../../services/PopulatedData/locationOfDataId');
+const AtLoader = require('../../models/loaders/AtLoader');
 
 const updatePhaseResolver = async (
     { parentContext: { id: testPlanVersionId } },
@@ -276,7 +277,8 @@ const updatePhaseResolver = async (
                 reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
             });
 
-        const ats = await context.atLoader.getAll();
+        const atLoader = AtLoader();
+        const ats = await atLoader.getAll();
 
         const missingAtBrowserCombinations = [];
 
