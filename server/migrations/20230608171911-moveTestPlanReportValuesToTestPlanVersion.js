@@ -1,7 +1,5 @@
 'use strict';
 
-const BrowserLoader = require('../models/loaders/BrowserLoader');
-const AtLoader = require('../models/loaders/AtLoader');
 const { TEST_PLAN_REPORT_ATTRIBUTES } = require('../models/services/helpers');
 const scenariosResolver = require('../resolvers/Test/scenariosResolver');
 const {
