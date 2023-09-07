@@ -421,10 +421,13 @@ const TestPlanVersionsPage = () => {
                 return (
                     <div key={testPlanVersion.id}>
                         <H2
-                            aria-label={`${convertDateToString(
-                                testPlanVersion.updatedAt,
-                                'MMM D, YYYY'
-                            )} ${derivePhaseName(
+                            aria-label={`${
+                                'V' +
+                                convertDateToString(
+                                    testPlanVersion.updatedAt,
+                                    'YY.MM.DD'
+                                )
+                            } ${derivePhaseName(
                                 testPlanVersion.phase
                             )} on ${getEventDate(testPlanVersion)}`}
                         >
