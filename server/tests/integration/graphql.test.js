@@ -307,6 +307,9 @@ describe('graphql', () => {
                         directory
                         title
                     }
+                    testPlanRuns {
+                        id
+                    }
                     testPlanVersions {
                         __typename
                         id

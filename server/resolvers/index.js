@@ -9,6 +9,7 @@ const testPlanReports = require('./testPlanReportsResolver');
 const testPlanVersion = require('./testPlanVersionResolver');
 const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanRun = require('./testPlanRunResolver');
+const testPlanRuns = require('./testPlanRunsResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
 const addViewer = require('./addViewerResolver');
 const mutateAt = require('./mutateAtResolver');
@@ -52,6 +53,7 @@ const resolvers = {
         testPlanReport,
         testPlanReports,
         testPlanRun,
+        testPlanRuns,
         populateData,
         collectionJob,
         collectionJobs

@@ -102,7 +102,8 @@ const createCollectionJob = async (
         }
         testPlanRun = await createTestPlanRun({
             testerUserId: botUserId,
-            testPlanReportId: testPlanReportId
+            testPlanReportId: testPlanReportId,
+            isAutomated: true
         });
     }
 

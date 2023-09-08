@@ -209,7 +209,7 @@ const getTestPlanRuns = async (
  * @returns {Promise<*>}
  */
 const createTestPlanRun = async (
-    { testerUserId, testPlanReportId, testResults = [] },
+    { testerUserId, testPlanReportId, testResults = [], isAutomated = false },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
@@ -219,23 +219,25 @@ const createTestPlanRun = async (
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
-    // shouldn't have duplicate entries for a tester
-    const existingTestPlanRuns = await getTestPlanRuns(
-        '',
-        {
-            testerUserId,
-            testPlanReportId
-        },
-        testPlanRunAttributes,
-        nestedTestPlanRunAttributes,
-        testPlanReportAttributes,
-        testPlanVersionAttributes,
-        atAttributes,
-        browserAttributes,
-        userAttributes,
-        options
-    );
-    if (existingTestPlanRuns.length) return existingTestPlanRuns[0];
+    // shouldn't have duplicate entries for a tester unless it's automated
+    if (!isAutomated) {
+        const existingTestPlanRuns = await getTestPlanRuns(
+            '',
+            {
+                testerUserId,
+                testPlanReportId
+            },
+            testPlanRunAttributes,
+            nestedTestPlanRunAttributes,
+            testPlanReportAttributes,
+            testPlanVersionAttributes,
+            atAttributes,
+            browserAttributes,
+            userAttributes,
+            options
+        );
+        if (existingTestPlanRuns.length) return existingTestPlanRuns[0];
+    }
 
     const testPlanRunResult = await ModelService.create(
         TestPlanRun,

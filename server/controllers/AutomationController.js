@@ -12,6 +12,7 @@ const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/con
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const { getAtVersions } = require('../models/services/AtService');
 const { getBrowserVersions } = require('../models/services/BrowserService');
+const { getTestPlanRuns } = require('../models/services/TestPlanRunService');
 
 const axiosConfig = {
     headers: {
@@ -106,33 +107,109 @@ const updateJobStatus = async (req, res) => {
     }
 };
 
+const getApprovedTestPlanRuns = async testPlanRun => {
+    const { testPlanReport } = testPlanRun;
+    const { testPlanVersion } = testPlanReport;
+    if (
+        !testPlanVersion ||
+        testPlanVersion.phase === 'RD' ||
+        (testPlanVersion.phase === 'DRAFT' && !testPlanReport.markedFinalAt)
+    )
+        return null;
+
+    const testPlanRunsFromReport = await getTestPlanRuns(null, {
+        testPlanReportId: testPlanReport.id
+    });
+
+    const approvedTestPlanRuns = testPlanRunsFromReport.filter(
+        each => each.testPlanReport.testPlanVersionId === testPlanVersion.id
+    );
+
+    if (!approvedTestPlanRuns || approvedTestPlanRuns.length === 0) return null;
+
+    return approvedTestPlanRuns;
+};
+
+const getMostRecentHistoricalTestResults = async testPlanRun => {
+    const approvedTestPlanRunsWithSameReport = await getApprovedTestPlanRuns(
+        testPlanRun
+    );
+
+    if (
+        !approvedTestPlanRunsWithSameReport ||
+        approvedTestPlanRunsWithSameReport.length === 0
+    ) {
+        return null;
+    }
+    // It will be rare that we have multiple historic test plan runs, but if we do,
+    // we want to use the most recent one. This is determined with the completion date of
+    // last test result in the test plan run.
+    const mostRecentApprovedTestPlanRun =
+        approvedTestPlanRunsWithSameReport?.reduce((acc, curr) => {
+            const accDate =
+                acc?.testResults?.[acc.testResults.length - 1]?.completedAt;
+            const currDate =
+                curr?.testResults?.[curr.testResults.length - 1]?.completedAt;
+            return currDate > accDate ? curr : acc;
+        });
+
+    const { testResults: mostRecentHistoricalTestResults } =
+        mostRecentApprovedTestPlanRun;
+
+    return mostRecentHistoricalTestResults;
+};
+
 const updateOrCreateTestResultWithResponses = async ({
     testId,
-    testPlanRun: { id: testPlanRunId },
+    testPlanRun,
     responses,
     atVersionId,
     browserVersionId
 }) => {
     const { testResult } = await findOrCreateTestResult({
         testId,
-        testPlanRunId,
+        testPlanRunId: testPlanRun.id,
         atVersionId,
         browserVersionId
     });
+
+    const historicalTestResults = await getMostRecentHistoricalTestResults(
+        testPlanRun
+    );
+
+    const historicalTestResult = historicalTestResults?.find(each => {
+        return each.testId === testId;
+    });
+
+    if (
+        historicalTestResult &&
+        historicalTestResult.scenarioResults?.length !==
+            testResult.scenarioResults.length
+    ) {
+        throw new Error(
+            'Historical test result does not match current test result'
+        );
+    }
 
     const getAutomatedResultFromOutput = ({ baseTestResult, outputs }) => ({
         ...baseTestResult,
         atVersionId,
         browserVersionId,
         scenarioResults: baseTestResult.scenarioResults.map(
-            (scenarioResult, index) => ({
+            (scenarioResult, i) => ({
                 ...scenarioResult,
-                output: outputs[index],
+                output: outputs[i],
                 assertionResults: scenarioResult.assertionResults.map(
-                    assertionResult => ({
+                    (assertionResult, j) => ({
                         ...assertionResult,
-                        passed: false,
-                        failedReason: 'AUTOMATED_OUTPUT'
+                        passed: historicalTestResult
+                            ? historicalTestResult.scenarioResults[i]
+                                  .assertionResults[j].passed
+                            : false,
+                        failedReason: historicalTestResult
+                            ? historicalTestResult.scenarioResults[i]
+                                  .assertionResults[j].failedReason
+                            : 'AUTOMATED_OUTPUT'
                     })
                 ),
                 unexpectedBehaviors: []
@@ -177,7 +254,9 @@ const updateJobResults = async (req, res) => {
             each => each.name === browserVersionName
         );
 
-        if (!atVersion || !browserVersion) throw new Error('Version not found');
+        if (!atVersion) throw new Error('AT version not found');
+
+        if (!browserVersion) throw new Error('Browser version not found');
 
         await updateOrCreateTestResultWithResponses({
             testId,

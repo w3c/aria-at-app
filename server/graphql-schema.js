@@ -1069,6 +1069,10 @@ const graphqlSchema = gql`
         """
         testPlanRun(id: ID!): TestPlanRun
         """
+        Get all TestPlanRuns.
+        """
+        testPlanRuns(testPlanReportId: ID): [TestPlanRun]!
+        """
         For a given ID, load all the associated data which can be inferred from
         that ID. For more information, take a look at the description of the
         LocationOfDatInput type.
