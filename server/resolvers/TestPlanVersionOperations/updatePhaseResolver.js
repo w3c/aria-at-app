@@ -162,10 +162,6 @@ const updatePhaseResolver = async (
                                 testResultsToSave[testId] = testResult;
                             } else {
                                 // TODO: Return information on which tests cannot be preserved
-                                console.error(
-                                    'Unable to preserve data for',
-                                    testId
-                                );
                             }
                         });
                     }
@@ -250,6 +246,13 @@ const updatePhaseResolver = async (
                             testResults.push(testResultToSave);
                         }
 
+                        // Update TestPlanRun test results to be used in metrics evaluation
+                        // afterward
+                        await updateTestPlanRun(createdTestPlanRun.id, {
+                            testResults
+                        });
+
+                        // Update metrics for TestPlanReport
                         const { testPlanReport: populatedTestPlanReport } =
                             await populateData(
                                 { testPlanReportId: createdTestPlanReport.id },
@@ -276,16 +279,13 @@ const updatePhaseResolver = async (
                         if (conflicts.length > 0) {
                             // Then no chance to have finalized reports, and means it hasn't been
                             // marked as final yet
-                            await updateTestPlanReport(
-                                populatedTestPlanReport.id,
-                                {
-                                    ...updateParams,
-                                    metrics: {
-                                        ...populatedTestPlanReport.metrics,
-                                        conflictsCount: conflicts.length
-                                    }
+                            updateParams = {
+                                ...updateParams,
+                                metrics: {
+                                    ...populatedTestPlanReport.metrics,
+                                    conflictsCount: conflicts.length
                                 }
-                            );
+                            };
                         } else {
                             const finalizedTestResults =
                                 await finalizedTestResultsResolver(
@@ -298,7 +298,13 @@ const updatePhaseResolver = async (
                                 !finalizedTestResults ||
                                 !finalizedTestResults.length
                             ) {
-                                // Do nothing
+                                // Just update with current { markedFinalAt } if available
+                                updateParams = {
+                                    ...updateParams,
+                                    metrics: {
+                                        ...populatedTestPlanReport.metrics
+                                    }
+                                };
                             } else {
                                 const metrics = getMetrics({
                                     testPlanReport: {
@@ -308,22 +314,20 @@ const updatePhaseResolver = async (
                                     }
                                 });
 
-                                await updateTestPlanReport(
-                                    populatedTestPlanReport.id,
-                                    {
-                                        ...updateParams,
-                                        metrics: {
-                                            ...populatedTestPlanReport.metrics,
-                                            ...metrics
-                                        }
+                                updateParams = {
+                                    ...updateParams,
+                                    metrics: {
+                                        ...populatedTestPlanReport.metrics,
+                                        ...metrics
                                     }
-                                );
+                                };
                             }
                         }
 
-                        await updateTestPlanRun(createdTestPlanRun.id, {
-                            testResults
-                        });
+                        await updateTestPlanReport(
+                            populatedTestPlanReport.id,
+                            updateParams
+                        );
                     }
                 }
             }
@@ -352,12 +356,26 @@ const updatePhaseResolver = async (
         throw new Error('No test plan reports found.');
     }
 
+    // If there is at least one report that wasn't created by the old reports then do the exception
+    // check
     if (
-        !testPlanReports.some(({ markedFinalAt }) => markedFinalAt) &&
-        (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
+        testPlanReports.some(
+            ({ id }) => !createdTestPlanReportIdsFromOldResults.includes(id)
+        )
     ) {
-        // Do not update phase if no reports marked as final were found
-        throw new Error('No reports have been marked as final.');
+        if (
+            !testPlanReports.some(({ markedFinalAt }) => markedFinalAt) &&
+            (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
+        ) {
+            // Throw away newly created test plan reports if exception was hit
+            if (createdTestPlanReportIdsFromOldResults.length)
+                for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
+                    await removeTestPlanReport(createdTestPlanReportId);
+                }
+
+            // Do not update phase if no reports marked as final were found
+            throw new Error('No reports have been marked as final.');
+        }
     }
 
     if (phase === 'CANDIDATE') {
@@ -394,7 +412,7 @@ const updatePhaseResolver = async (
         });
 
         if (missingAtBrowserCombinations.length) {
-            // Throw away newly created test plan reports if exception were hit
+            // Throw away newly created test plan reports if exception was hit
             if (createdTestPlanReportIdsFromOldResults.length)
                 for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
                     await removeTestPlanReport(createdTestPlanReportId);
@@ -449,7 +467,7 @@ const updatePhaseResolver = async (
                 context
             );
             if (conflicts.length > 0) {
-                // Throw away newly created test plan reports if exception were hit
+                // Throw away newly created test plan reports if exception was hit
                 if (createdTestPlanReportIdsFromOldResults.length)
                     for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
                         await removeTestPlanReport(createdTestPlanReportId);
@@ -467,7 +485,7 @@ const updatePhaseResolver = async (
             );
 
             if (!finalizedTestResults || !finalizedTestResults.length) {
-                // Throw away newly created test plan reports if exception were hit
+                // Throw away newly created test plan reports if exception was hit
                 if (createdTestPlanReportIdsFromOldResults.length)
                     for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
                         await removeTestPlanReport(createdTestPlanReportId);
