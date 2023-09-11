@@ -87,6 +87,8 @@ The instructions are similar for the test database, with one extra step:
 yarn db-init:test;
 yarn sequelize:test db:migrate;
 yarn sequelize:test db:seed:all;
+yarn workspace server db-import-tests:test -c 5fe7afd82fe51c185b8661276105190a59d47322;
+yarn workspace server db-import-tests:test -c 1aa3b74d24d340362e9f511eae33788d55487d12;
 yarn workspace server db-import-tests:test;
 yarn workspace server db-populate-sample-data:test;
 ```
