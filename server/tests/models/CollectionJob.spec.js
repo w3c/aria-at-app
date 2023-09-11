@@ -11,6 +11,7 @@ describe('CollectionJobModel', () => {
     // A1
     const Model = CollectionJobModel(sequelize, dataTypes);
     const modelInstance = new Model();
+
     // A2
     checkModelName(Model)('CollectionJob');
 
@@ -19,5 +20,22 @@ describe('CollectionJobModel', () => {
         ['id', 'status', 'testPlanRunId'].forEach(
             checkPropertyExists(modelInstance)
         );
+    });
+
+    describe('associations', () => {
+        // A1
+        const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRun' };
+
+        // A2
+        beforeAll(() => {
+            Model.hasOne(TEST_PLAN_RUN_ASSOCIATION);
+        });
+
+        it('defined a hasOne association with TestPlanRun', () => {
+            // A3
+            expect(Model.hasOne).toHaveBeenCalledWith(
+                expect.objectContaining(TEST_PLAN_RUN_ASSOCIATION)
+            );
+        });
     });
 });
