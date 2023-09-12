@@ -8,10 +8,6 @@ const { getAtVersions } = require('../../models/services/AtService');
 const { getBrowserVersions } = require('../../models/services/BrowserService');
 const dbCleaner = require('../util/db-cleaner');
 const { default: axios } = require('axios');
-const { runnableTests } = require('../../resolvers/TestPlanReport');
-const {
-    getTestPlanReportById
-} = require('../../models/services/TestPlanReportService');
 
 let mockAutomationSchedulerServer;
 let apiServer;
