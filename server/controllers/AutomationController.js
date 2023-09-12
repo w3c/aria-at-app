@@ -13,6 +13,10 @@ const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTest
 const { getAtVersions } = require('../models/services/AtService');
 const { getBrowserVersions } = require('../models/services/BrowserService');
 const { getTestPlanRuns } = require('../models/services/TestPlanRunService');
+const {
+    getTestPlanReportById
+} = require('../models/services/TestPlanReportService');
+const { runnableTests } = require('../resolvers/TestPlanReport');
 
 const axiosConfig = {
     headers: {
@@ -24,13 +28,48 @@ const axiosConfig = {
 const scheduleNewJob = async (req, res) => {
     try {
         const { testPlanReportId } = req.body;
+
+        const report = await getTestPlanReportById(testPlanReportId);
+
+        if (!report) {
+            throw new Error(
+                `Test plan report with id ${testPlanReportId} not found`
+            );
+        }
+
+        const tests = await runnableTests(report);
+        const { directory } = report.testPlanVersion.testPlan;
+        const { gitSha } = report.testPlanVersion;
+
+        if (!tests || tests.length === 0) {
+            throw new Error(
+                `No runnable tests found for test plan report with id ${testPlanReportId}`
+            );
+        }
+
+        if (!gitSha) {
+            throw new Error(
+                `Test plan version with id ${report.testPlanVersionId} does not have a gitSha`
+            );
+        }
+
+        if (!directory) {
+            throw new Error(
+                `Test plan with id ${report.testPlanVersion.testPlanId} does not have a directory`
+            );
+        }
+
         const automationSchedulerResponse = await axios.post(
             `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-            { testPlanReportId },
+            {
+                testPlanVersionGitSha: gitSha,
+                testIds: tests.map(t => t.id),
+                testPlanName: directory
+            },
             axiosConfig
         );
-        const { id, status } = automationSchedulerResponse.data;
 
+        const { id, status } = automationSchedulerResponse.data;
         if (id) {
             const job = await getOrCreateCollectionJob({
                 id,
@@ -38,6 +77,8 @@ const scheduleNewJob = async (req, res) => {
                 testPlanReportId
             });
             res.json(job);
+        } else {
+            throw new Error('Job not created');
         }
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -55,6 +96,8 @@ const cancelJob = async (req, res) => {
             await updateCollectionJob(req.params.jobID, {
                 status: 'CANCELED'
             });
+        } else {
+            throw new Error('Job not canceled');
         }
         res.json(automationSchedulerResponse.data);
     } catch (err) {
@@ -73,6 +116,8 @@ const restartJob = async (req, res) => {
             await updateCollectionJob(req.params.jobID, {
                 status: 'QUEUED'
             });
+        } else {
+            throw new Error('Job not restarted');
         }
         res.json(automationSchedulerResponse.data);
     } catch (err) {

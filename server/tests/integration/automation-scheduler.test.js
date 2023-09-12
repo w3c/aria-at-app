@@ -7,6 +7,7 @@ const { markAsFinal } = require('../../resolvers/TestPlanReportOperations');
 const { getAtVersions } = require('../../models/services/AtService');
 const { getBrowserVersions } = require('../../models/services/BrowserService');
 const dbCleaner = require('../util/db-cleaner');
+const { default: axios } = require('axios');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -92,7 +93,7 @@ const getTestCollectionJob = async () =>
         }
     `);
 
-const createCollectionJob = async () =>
+const createCollectionJobThroughAPI = async () =>
     await sessionAgent.post('/api/jobs/new').send({
         testPlanReportId
     });
@@ -100,7 +101,7 @@ const createCollectionJob = async () =>
 describe('Schedule jobs with automation controller', () => {
     it('should schedule a new job', async () => {
         await dbCleaner(async () => {
-            const response = await createCollectionJob();
+            const response = await createCollectionJobThroughAPI();
 
             expect(response.statusCode).toBe(200);
             expect(response.body.id).toEqual(jobId);
@@ -118,9 +119,57 @@ describe('Schedule jobs with automation controller', () => {
         });
     });
 
+    it('should schedule a new job and correctly construct test data for automation scheduler', async () => {
+        await dbCleaner(async () => {
+            const axiosPostMock = jest.spyOn(axios, 'post').mockResolvedValue({
+                data: { id: '999', status: 'QUEUED' }
+            });
+
+            const expectedRequestBody = {
+                testPlanVersionGitSha:
+                    '836fb2a997f5b2844035b8c934f8fda9833cd5b2',
+                testIds: [
+                    'OWY5NeyIyIjoiMzQifQTRmOD',
+                    'NGFjMeyIyIjoiMzQifQjQxY2',
+                    'NTAwOeyIyIjoiMzQifQWI5YT',
+                    'YThjMeyIyIjoiMzQifQzIyYT',
+                    'MWRhMeyIyIjoiMzQifQGY3ND',
+                    'YTgxMeyIyIjoiMzQifQzExOW',
+                    'NGMwNeyIyIjoiMzQifQ2IwN2',
+                    'YzQxNeyIyIjoiMzQifQjY5ND',
+                    'MjgwNeyIyIjoiMzQifQzk3YT',
+                    'N2IwZeyIyIjoiMzQifQGQyNW',
+                    'NTY4YeyIyIjoiMzQifQTI2ZT',
+                    'ZDc5MeyIyIjoiMzQifQGYzMD',
+                    'YTg5YeyIyIjoiMzQifQTFiMj',
+                    'ZTYxMeyIyIjoiMzQifQTMzYT',
+                    'MmI1YeyIyIjoiMzQifQ2JkZD',
+                    'ZmQ1NeyIyIjoiMzQifQjlmZG'
+                ],
+                testPlanName: 'toggle-button'
+            };
+
+            await createCollectionJobThroughAPI();
+
+            expect(axiosPostMock).toHaveBeenCalledWith(
+                `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
+                expectedRequestBody,
+                {
+                    headers: {
+                        'x-automation-secret':
+                            process.env.AUTOMATION_SCHEDULER_SECRET
+                    },
+                    timeout: 1000
+                }
+            );
+
+            axiosPostMock.mockRestore();
+        });
+    });
+
     it('should cancel a job', async () => {
         await dbCleaner(async () => {
-            await createCollectionJob();
+            await createCollectionJobThroughAPI();
             const response = await sessionAgent.post(
                 `/api/jobs/${jobId}/cancel`
             );
@@ -138,7 +187,7 @@ describe('Schedule jobs with automation controller', () => {
 
     it('should restart a job', async () => {
         await dbCleaner(async () => {
-            await createCollectionJob();
+            await createCollectionJobThroughAPI();
             const response = await sessionAgent.post(
                 `/api/jobs/${jobId}/restart`
             );
@@ -156,7 +205,7 @@ describe('Schedule jobs with automation controller', () => {
 
     it('should get a job log', async () => {
         await dbCleaner(async () => {
-            await createCollectionJob();
+            await createCollectionJobThroughAPI();
             const response = await sessionAgent.get(`/api/jobs/${jobId}/log`);
             expect(response.statusCode).toBe(200);
             expect(response.body).toEqual({
@@ -168,7 +217,7 @@ describe('Schedule jobs with automation controller', () => {
 
     it('should not update a job status without verification', async () => {
         await dbCleaner(async () => {
-            await createCollectionJob();
+            await createCollectionJobThroughAPI();
             const response = await sessionAgent.post(
                 `/api/jobs/${jobId}/update`
             );
@@ -181,7 +230,7 @@ describe('Schedule jobs with automation controller', () => {
 
     it('should update a job status with verification', async () => {
         await dbCleaner(async () => {
-            await createCollectionJob();
+            await createCollectionJobThroughAPI();
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: 'RUNNING' })
@@ -210,7 +259,7 @@ describe('Schedule jobs with automation controller', () => {
 
     it('should update job results', async () => {
         await dbCleaner(async () => {
-            const res = await createCollectionJob();
+            const res = await createCollectionJobThroughAPI();
             const collectionJob = res.body;
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
@@ -283,7 +332,7 @@ describe('Schedule jobs with automation controller', () => {
 
     it('should copy assertion results when updating with results that match historical results', async () => {
         await dbCleaner(async () => {
-            const res = await createCollectionJob();
+            const res = await createCollectionJobThroughAPI();
             const collectionJob = res.body;
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
@@ -389,7 +438,7 @@ describe('Schedule jobs with automation controller', () => {
 
     it('should delete a job', async () => {
         await dbCleaner(async () => {
-            await createCollectionJob();
+            await createCollectionJobThroughAPI();
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);
