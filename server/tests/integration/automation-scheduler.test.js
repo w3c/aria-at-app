@@ -3,13 +3,7 @@ const automationRoutes = require('../../routes/automation');
 const setupMockAutomationSchedulerServer = require('../util/mock-automation-scheduler-server');
 const db = require('../../models/index');
 const { query } = require('../util/graphql-test-utilities');
-const {
-    getCollectionJobById
-} = require('../../models/services/CollectionJobService');
 const { markAsFinal } = require('../../resolvers/TestPlanReportOperations');
-const {
-    getTestPlanReportById
-} = require('../../models/services/TestPlanReportService');
 const { getTestPlanRuns } = require('../../models/services/TestPlanRunService');
 const { getAtVersions } = require('../../models/services/AtService');
 const { getBrowserVersions } = require('../../models/services/BrowserService');
