@@ -32,14 +32,13 @@ const scheduleNewJob = async (req, res) => {
         const { id, status } = automationSchedulerResponse.data;
 
         if (id) {
-            await getOrCreateCollectionJob({
+            const job = await getOrCreateCollectionJob({
                 id,
                 status,
                 testPlanReportId
             });
+            res.json(job);
         }
-
-        res.json(automationSchedulerResponse.data);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -217,7 +216,7 @@ const updateOrCreateTestResultWithResponses = async ({
         )
     });
 
-    let savedData = await saveTestResultCommon({
+    return saveTestResultCommon({
         testResultId: testResult.id,
         input: convertTestResultToInput(
             getAutomatedResultFromOutput({
@@ -227,8 +226,6 @@ const updateOrCreateTestResultWithResponses = async ({
         ),
         isSubmit: true
     });
-
-    return savedData;
 };
 
 const updateJobResults = async (req, res) => {
@@ -255,7 +252,6 @@ const updateJobResults = async (req, res) => {
         );
 
         if (!atVersion) throw new Error('AT version not found');
-
         if (!browserVersion) throw new Error('Browser version not found');
 
         await updateOrCreateTestResultWithResponses({

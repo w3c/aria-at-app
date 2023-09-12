@@ -110,10 +110,8 @@ describe('Schedule jobs with automation controller', () => {
             const response = await createCollectionJob();
 
             expect(response.statusCode).toBe(200);
-            expect(response.body).toEqual({
-                id: jobId,
-                status: 'QUEUED'
-            });
+            expect(response.body.id).toEqual(jobId);
+            expect(response.body.status).toEqual('QUEUED');
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);
@@ -219,7 +217,8 @@ describe('Schedule jobs with automation controller', () => {
 
     it('should update job results', async () => {
         await dbCleaner(async () => {
-            await createCollectionJob();
+            const res = await createCollectionJob();
+            const collectionJob = res.body;
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: 'RUNNING' })
@@ -228,7 +227,6 @@ describe('Schedule jobs with automation controller', () => {
                     process.env.AUTOMATION_SCHEDULER_SECRET
                 );
             const automatedTestResponse = 'AUTOMATED TEST RESPONSE';
-            const collectionJob = await getCollectionJobById(jobId);
             const { at, browser } = collectionJob.testPlanRun.testPlanReport;
             const { tests } =
                 collectionJob.testPlanRun.testPlanReport.testPlanVersion;
@@ -292,7 +290,8 @@ describe('Schedule jobs with automation controller', () => {
 
     it('should validate a job when updating with results that match historical results', async () => {
         await dbCleaner(async () => {
-            await createCollectionJob();
+            const res = await createCollectionJob();
+            const collectionJob = res.body;
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: 'RUNNING' })
@@ -300,14 +299,9 @@ describe('Schedule jobs with automation controller', () => {
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
                 );
-            const collectionJob = await getCollectionJobById(jobId);
-
-            const testPlanReport = await getTestPlanReportById(
-                collectionJob.testPlanRun.testPlanReport.id
-            );
             await markAsFinal(
                 {
-                    parentContext: { id: testPlanReport.id }
+                    parentContext: { id: testPlanReportId }
                 },
                 null,
                 {
@@ -318,25 +312,23 @@ describe('Schedule jobs with automation controller', () => {
             );
 
             const testPlanRunsFromReport = await getTestPlanRuns(null, {
-                testPlanReportId: testPlanReport.id
+                testPlanReportId: testPlanReportId
             });
-
             const mimickedTestResult = testPlanRunsFromReport[0].testResults[0];
+            const mimickedResponses = mimickedTestResult?.scenarioResults.map(
+                scenarioResult => scenarioResult.output
+            );
+
             const [atVersions, browserVersions] = await Promise.all([
                 getAtVersions(),
                 getBrowserVersions()
             ]);
-
             const atVersion = atVersions.find(
                 each => each.id === parseInt(mimickedTestResult?.atVersionId)
             );
             const browserVersion = browserVersions.find(
                 each =>
                     each.id === parseInt(mimickedTestResult?.browserVersionId)
-            );
-
-            const mimickedResponses = mimickedTestResult?.scenarioResults.map(
-                scenarioResult => scenarioResult.output
             );
 
             const response = await sessionAgent

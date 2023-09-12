@@ -96,10 +96,12 @@ const createCollectionJob = async (
                 []
             );
         }
+
         const { id: botUserId, roles } = user.get({ plain: true });
         if (!roles.find(role => role.name === User.TESTER)) {
             await addUserToRole(botUserId, User.TESTER);
         }
+
         testPlanRun = await createTestPlanRun({
             testerUserId: botUserId,
             testPlanReportId: testPlanReportId,
