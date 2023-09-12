@@ -357,25 +357,33 @@ const ManageTestQueue = ({
 
     // Section:
     const runMutationForRequiredReportTable = async mutation => {
-        let atId = '';
-        let browserId = '';
-        console.log(atBrowserCombinations)
+        let atId = updateAtForButton;
+        let browserId = updateBrowserForButton;
+        // console.log(atBrowserCombinations);
 
-        atBrowserCombinations.forEach(({ at, browser, phase }) => {
-            // console.log('AtID', updateAtForButton)
-            // console.log('at.Id', at.id)
-            // console.log('BrowserID', updateBrowserForButton)
-            // console.log('browser.Id', browser.id)
-            if (
-                updateAtForButton === at.id &&
-                updateBrowserForButton === browser.id
-                // updatePhaseForButton === phase
-            ) {
-                atId = at.id;
-                browserId = browser.id;
-                // console.log('IT CHECKED OUT');
-            }
-        });
+        // console.log(
+        //     'ids',
+        //     atId,
+        //     browserId,
+        //     updateAtForButton,
+        //     updateBrowserForButton
+        // );
+
+        // atBrowserCombinations.forEach(({ at, browser, phase }) => {
+        //     // console.log('AtID', updateAtForButton)
+        //     // console.log('at.Id', at.id)
+        //     // console.log('BrowserID', updateBrowserForButton)
+        //     // console.log('browser.Id', browser.id)
+        //     if (
+        //         updateAtForButton === at.id &&
+        //         updateBrowserForButton === browser.id
+        //         // updatePhaseForButton === phase
+        //     ) {
+        //         atId = at.id;
+        //         browserId = browser.id;
+        //         // console.log('IT CHECKED OUT');
+        //     }
+        // });
         mutation === 'createRequiredReport'
             ? await triggerLoad(async () => {
                   const { data } = await createRequiredReport({
@@ -390,12 +398,32 @@ const ManageTestQueue = ({
                   const createdRequiredReport =
                       data.requiredReport.createRequiredReport;
                   console.log('atBrowserCombinations', atBrowserCombinations);
-                  console.log('createdRequiredReport', createdRequiredReport);
+                  console.log('createdRequiredReport', createdRequiredReport, {
+                      at: ats.find(at => at.id === atId),
+                      browser: browsers.find(browser => browser.id === atId),
+                      phase: updatePhaseForButton
+                  });
 
-                  setAtBrowserCombinations([
-                      ...atBrowserCombinations,
-                      createdRequiredReport
-                  ]);
+                  // Verify that the created required report was actually created before updating
+                  // the dataset
+                  if (createdRequiredReport) {
+                      // TODO: Sort this so it doesn't pop in at the bottom if it isn't intended
+                      //  for there
+                      setAtBrowserCombinations([
+                          ...atBrowserCombinations,
+                          {
+                              at: ats.find(
+                                  at => at.id === createdRequiredReport.atId
+                              ),
+                              browser: browsers.find(
+                                  browser =>
+                                      browser.id ===
+                                      createdRequiredReport.browserId
+                              ),
+                              phase: updatePhaseForButton
+                          }
+                      ]);
+                  }
               }, 'Adding Phase requirement to the required reports table')
             : mutation === 'updateRequiredReport'
             ? await triggerLoad(async () => {
