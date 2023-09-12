@@ -94,7 +94,7 @@ describe('CollectionJob Service Tests', () => {
                 COLLECTION_JOB_ATTRIBUTES
             );
             await CollectionJobService.createCollectionJob(
-                { id: id2, status: status2, testPlanReportId: 3 },
+                { id: id2, status: status2, testPlanReportId: 4 },
                 COLLECTION_JOB_ATTRIBUTES
             );
 
