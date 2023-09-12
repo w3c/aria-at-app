@@ -172,6 +172,17 @@ const graphqlSchema = gql`
     }
 
     """
+    The return type for createRequiredReport.
+    """
+    type RequiredReport {
+        """
+        """
+        atId: ID!
+        browserId: ID!
+        phase: RequiredReportPhase!
+    }
+
+    """
     The version for a given assistive technology.
     """
     type AtVersion {
@@ -1072,7 +1083,7 @@ const graphqlSchema = gql`
     type RequiredReportOperations {
         """
         """
-        createRequiredReport: Boolean!
+        createRequiredReport: RequiredReport!
         updateRequiredReport(atId: ID!, browserId: ID!): Boolean!
         deleteRequiredReport: Boolean!
     }
