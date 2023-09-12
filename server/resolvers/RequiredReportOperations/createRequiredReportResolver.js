@@ -21,7 +21,7 @@ const createRequiredReportResolver = async (
 
     await updateAtBrowser({ atId, browserId }, updateParams);
 
-    return true;
+    return { atId, browserId, phase };
 };
 
 module.exports = createRequiredReportResolver;
