@@ -83,32 +83,7 @@ describe('CollectionJob Service Tests', () => {
         expect(collectionJob).toBeNull();
     });
 
-    it('should be able to get all CollectionJobs', async () => {
-        await dbCleaner(async () => {
-            const id1 = randomIdGenerator();
-            const id2 = randomIdGenerator();
-            await CollectionJobService.createCollectionJob(
-                { id: id1, testPlanReportId: 2 },
-                COLLECTION_JOB_ATTRIBUTES
-            );
-            await CollectionJobService.createCollectionJob(
-                { id: id2, testPlanReportId: 3 },
-                COLLECTION_JOB_ATTRIBUTES
-            );
-
-            const collectionJobs =
-                await CollectionJobService.getCollectionJobs();
-
-            expect(collectionJobs).toEqual(
-                expect.arrayContaining([
-                    expect.objectContaining({ id: id1 }),
-                    expect.objectContaining({ id: id2 })
-                ])
-            );
-        });
-    });
-
-    it('should be able to filter CollectionJobs by status', async () => {
+    it('should be able to get all CollectionJobs and filter by status', async () => {
         await dbCleaner(async () => {
             const id1 = randomIdGenerator();
             const id2 = randomIdGenerator();
@@ -123,12 +98,22 @@ describe('CollectionJob Service Tests', () => {
                 COLLECTION_JOB_ATTRIBUTES
             );
 
-            const collectionJobs = await CollectionJobService.getCollectionJobs(
+            const collectionJobs =
+                await CollectionJobService.getCollectionJobs();
+
+            expect(collectionJobs).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({ id: id1 }),
+                    expect.objectContaining({ id: id2 })
+                ])
+            );
+
+            const queuedJobs = await CollectionJobService.getCollectionJobs(
                 null,
                 { status: status1 }
             );
 
-            expect(collectionJobs).toEqual(
+            expect(queuedJobs).toEqual(
                 expect.arrayContaining([
                     expect.objectContaining({ id: id1, status: status1 })
                 ])

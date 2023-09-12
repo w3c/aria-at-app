@@ -4,7 +4,6 @@ const setupMockAutomationSchedulerServer = require('../util/mock-automation-sche
 const db = require('../../models/index');
 const { query } = require('../util/graphql-test-utilities');
 const { markAsFinal } = require('../../resolvers/TestPlanReportOperations');
-const { getTestPlanRuns } = require('../../models/services/TestPlanRunService');
 const { getAtVersions } = require('../../models/services/AtService');
 const { getBrowserVersions } = require('../../models/services/BrowserService');
 const dbCleaner = require('../util/db-cleaner');
@@ -282,7 +281,7 @@ describe('Schedule jobs with automation controller', () => {
         });
     });
 
-    it('should validate a job when updating with results that match historical results', async () => {
+    it('should copy assertion results when updating with results that match historical results', async () => {
         await dbCleaner(async () => {
             const res = await createCollectionJob();
             const collectionJob = res.body;
@@ -293,7 +292,10 @@ describe('Schedule jobs with automation controller', () => {
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
                 );
-            await markAsFinal(
+
+            // Test plan report used for test is in Draft so it
+            // must be markedAsFinal to have historical results
+            const finalizedTestPlanVersion = await markAsFinal(
                 {
                     parentContext: { id: testPlanReportId }
                 },
@@ -305,33 +307,34 @@ describe('Schedule jobs with automation controller', () => {
                 }
             );
 
-            const testPlanRunsFromReport = await getTestPlanRuns(null, {
-                testPlanReportId: testPlanReportId
-            });
-            const mimickedTestResult = testPlanRunsFromReport[0].testResults[0];
-            const mimickedResponses = mimickedTestResult?.scenarioResults.map(
-                scenarioResult => scenarioResult.output
-            );
+            const historicalTestResult =
+                finalizedTestPlanVersion.testPlanReport.testPlanRuns[0]
+                    .testResults[0];
+            expect(historicalTestResult).not.toEqual(undefined);
+            const historicalResponses =
+                historicalTestResult?.scenarioResults.map(
+                    scenarioResult => scenarioResult.output
+                );
 
             const [atVersions, browserVersions] = await Promise.all([
                 getAtVersions(),
                 getBrowserVersions()
             ]);
             const atVersion = atVersions.find(
-                each => each.id === parseInt(mimickedTestResult?.atVersionId)
+                each => each.id === parseInt(historicalTestResult?.atVersionId)
             );
             const browserVersion = browserVersions.find(
                 each =>
-                    each.id === parseInt(mimickedTestResult?.browserVersionId)
+                    each.id === parseInt(historicalTestResult?.browserVersionId)
             );
 
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
                 .send({
-                    testId: mimickedTestResult.testId,
+                    testId: historicalTestResult.testId,
                     atVersionName: atVersion.name,
                     browserVersionName: browserVersion.name,
-                    responses: mimickedResponses
+                    responses: historicalResponses
                 })
                 .set(
                     'x-automation-secret',
@@ -346,26 +349,28 @@ describe('Schedule jobs with automation controller', () => {
             const { testResults } = storedTestPlanRun.testPlanRun;
 
             testResults.forEach(testResult => {
-                expect(testResult.test.id).toEqual(mimickedTestResult.testId);
+                expect(testResult.test.id).toEqual(historicalTestResult.testId);
                 expect(testResult.atVersion.name).toEqual(atVersion.name);
                 expect(testResult.browserVersion.name).toEqual(
                     browserVersion.name
                 );
                 testResult.scenarioResults.forEach((scenarioResult, index) => {
-                    const mimickedScenarioResult =
-                        mimickedTestResult.scenarioResults[index];
+                    const historicalScenarioResult =
+                        historicalTestResult.scenarioResults[index];
                     expect(scenarioResult.output).toEqual(
-                        mimickedScenarioResult.output
+                        historicalScenarioResult.output
                     );
                     scenarioResult.assertionResults.forEach(
                         (assertionResult, index) => {
-                            const mimickedAssertionResult =
-                                mimickedScenarioResult.assertionResults[index];
+                            const historicalAssertionResult =
+                                historicalScenarioResult.assertionResults[
+                                    index
+                                ];
                             expect(assertionResult.passed).toEqual(
-                                mimickedAssertionResult.passed
+                                historicalAssertionResult.passed
                             );
                             expect(assertionResult.failedReason).toEqual(
-                                mimickedAssertionResult.failedReason
+                                historicalAssertionResult.failedReason
                             );
                         }
                     );

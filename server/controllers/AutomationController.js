@@ -109,6 +109,10 @@ const updateJobStatus = async (req, res) => {
 const getApprovedTestPlanRuns = async testPlanRun => {
     const { testPlanReport } = testPlanRun;
     const { testPlanVersion } = testPlanReport;
+
+    // To be considered "Approved", a test plan run must be associated with a test plan report
+    // that is associated with a test plan version that is in "CANDIDATE" or "RECOMMENDED" or
+    // "DRAFT" phase and has been marked as final.
     if (
         !testPlanVersion ||
         testPlanVersion.phase === 'RD' ||
@@ -116,17 +120,9 @@ const getApprovedTestPlanRuns = async testPlanRun => {
     )
         return null;
 
-    const testPlanRunsFromReport = await getTestPlanRuns(null, {
+    return getTestPlanRuns(null, {
         testPlanReportId: testPlanReport.id
     });
-
-    const approvedTestPlanRuns = testPlanRunsFromReport.filter(
-        each => each.testPlanReport.testPlanVersionId === testPlanVersion.id
-    );
-
-    if (!approvedTestPlanRuns || approvedTestPlanRuns.length === 0) return null;
-
-    return approvedTestPlanRuns;
 };
 
 const getMostRecentHistoricalTestResults = async testPlanRun => {
@@ -152,10 +148,7 @@ const getMostRecentHistoricalTestResults = async testPlanRun => {
             return currDate > accDate ? curr : acc;
         });
 
-    const { testResults: mostRecentHistoricalTestResults } =
-        mostRecentApprovedTestPlanRun;
-
-    return mostRecentHistoricalTestResults;
+    return mostRecentApprovedTestPlanRun.testResults;
 };
 
 const updateOrCreateTestResultWithResponses = async ({
@@ -235,17 +228,20 @@ const updateJobResults = async (req, res) => {
             req.body;
         const job = await getCollectionJobById(id);
 
-        if (!job) throw new Error(`Job with id ${id} not found`);
-        if (job.status !== 'RUNNING')
+        if (!job) {
+            throw new Error(`Job with id ${id} not found`);
+        }
+
+        if (job.status !== 'RUNNING') {
             throw new Error(
                 `Job with id ${id} is not running, cannot update results`
             );
+        }
 
         const [atVersions, browserVersions] = await Promise.all([
             getAtVersions(),
             getBrowserVersions()
         ]);
-
         const atVersion = atVersions.find(each => each.name === atVersionName);
         const browserVersion = browserVersions.find(
             each => each.name === browserVersionName

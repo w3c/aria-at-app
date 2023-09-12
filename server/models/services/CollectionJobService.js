@@ -116,11 +116,11 @@ const createCollectionJob = async (
         options
     );
 
-    return await ModelService.getById(
+    return ModelService.getById(
         CollectionJob,
         id,
         attributes,
-        [],
+        [includeTestPlanRun],
         options
     );
 };
@@ -137,7 +137,7 @@ const getCollectionJobById = async (
     attributes = COLLECTION_JOB_ATTRIBUTES,
     options
 ) => {
-    return await ModelService.getById(
+    return ModelService.getById(
         CollectionJob,
         id,
         attributes,
@@ -171,7 +171,7 @@ const getCollectionJobs = async (
     const searchQuery = search ? `%${search}%` : '';
     if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
-    return await ModelService.get(
+    return ModelService.get(
         CollectionJob,
         where,
         collectionJobAttributes,
@@ -197,51 +197,48 @@ const updateCollectionJob = async (
 ) => {
     await ModelService.update(CollectionJob, { id }, updateParams, options);
 
-    return await getCollectionJobById(id, collectionJobAttributes, options);
+    return ModelService.getById(
+        CollectionJob,
+        id,
+        collectionJobAttributes,
+        [includeTestPlanRun],
+        options
+    );
 };
 
 /**
  * Gets one CollectionJob and optionally updates it, or creates it if it doesn't exist.
  * @param {*} nestedGetOrCreateValues - These values will be used to find a matching record, or they will be used to create one
- * @param {*} nestedUpdateValues - Values which will be used when a record is found or created, but not used for the initial find
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[*, [*]]>}
  */
-const getOrCreateCollectionJob = async ({
-    id,
-    status,
-    testPlanRun,
-    testPlanReportId
-}) => {
+const getOrCreateCollectionJob = async (
+    { id, status, testPlanRun, testPlanReportId },
+    options
+) => {
     const existingJob = await getCollectionJobById(id);
-    const effectiveTestPlanRun =
-        testPlanRun ?? existingJob?.testPlanRun ?? null;
 
     if (existingJob) {
-        if (!status || existingJob.status === status) {
-            return existingJob;
-        }
-
-        await updateCollectionJob(id, {
-            status: status,
-            testPlanRun: effectiveTestPlanRun
-        });
-        return await getCollectionJobById(id);
+        return existingJob;
     } else {
         if (!testPlanReportId) {
             throw new Error(
                 'testPlanReportId is required to create a new CollectionJob'
             );
         }
+
+        return createCollectionJob(
+            {
+                id,
+                status,
+                testPlanRun,
+                testPlanReportId
+            },
+            COLLECTION_JOB_ATTRIBUTES,
+            options
+        );
     }
-    await createCollectionJob({
-        id,
-        status,
-        testPlanRun: effectiveTestPlanRun,
-        testPlanReportId
-    });
-    return await getCollectionJobById(id);
 };
 
 /**
