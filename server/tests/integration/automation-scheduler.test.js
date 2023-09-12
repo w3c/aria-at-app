@@ -8,6 +8,10 @@ const { getAtVersions } = require('../../models/services/AtService');
 const { getBrowserVersions } = require('../../models/services/BrowserService');
 const dbCleaner = require('../util/db-cleaner');
 const { default: axios } = require('axios');
+const { runnableTests } = require('../../resolvers/TestPlanReport');
+const {
+    getTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -125,28 +129,36 @@ describe('Schedule jobs with automation controller', () => {
                 data: { id: '999', status: 'QUEUED' }
             });
 
+            const {
+                testPlanReport: {
+                    runnableTests,
+                    testPlanVersion: {
+                        gitSha: testPlanVersionGitSha,
+                        testPlan: { directory: testPlanName }
+                    }
+                }
+            } = await query(`
+                query {
+                    testPlanReport(id: "${testPlanReportId}") {
+                        runnableTests {
+                            id
+                        }
+                        testPlanVersion {
+                            testPlan {
+                                directory
+                            }
+                            gitSha
+                        }
+                    }
+                }
+            `);
+
+            const testIds = runnableTests.map(({ id }) => id);
+
             const expectedRequestBody = {
-                testPlanVersionGitSha:
-                    '836fb2a997f5b2844035b8c934f8fda9833cd5b2',
-                testIds: [
-                    'OWY5NeyIyIjoiMzQifQTRmOD',
-                    'NGFjMeyIyIjoiMzQifQjQxY2',
-                    'NTAwOeyIyIjoiMzQifQWI5YT',
-                    'YThjMeyIyIjoiMzQifQzIyYT',
-                    'MWRhMeyIyIjoiMzQifQGY3ND',
-                    'YTgxMeyIyIjoiMzQifQzExOW',
-                    'NGMwNeyIyIjoiMzQifQ2IwN2',
-                    'YzQxNeyIyIjoiMzQifQjY5ND',
-                    'MjgwNeyIyIjoiMzQifQzk3YT',
-                    'N2IwZeyIyIjoiMzQifQGQyNW',
-                    'NTY4YeyIyIjoiMzQifQTI2ZT',
-                    'ZDc5MeyIyIjoiMzQifQGYzMD',
-                    'YTg5YeyIyIjoiMzQifQTFiMj',
-                    'ZTYxMeyIyIjoiMzQifQTMzYT',
-                    'MmI1YeyIyIjoiMzQifQ2JkZD',
-                    'ZmQ1NeyIyIjoiMzQifQjlmZG'
-                ],
-                testPlanName: 'toggle-button'
+                testPlanVersionGitSha,
+                testIds,
+                testPlanName
             };
 
             await createCollectionJobThroughAPI();
