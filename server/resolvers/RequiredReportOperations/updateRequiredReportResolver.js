@@ -32,7 +32,7 @@ const updateRequiredReportResolver = async (
         );
     }
 
-    return true;
+    return { atId: inputAtId, browserId: inputBrowserId, phase };
 };
 
 module.exports = updateRequiredReportResolver;
