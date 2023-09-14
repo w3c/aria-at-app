@@ -37,15 +37,21 @@ module.exports = {
             for (const testPlanVersion of testPlanVersions) {
                 const { id, updatedAt, hasTestPlanReport } = testPlanVersion;
 
-                if (hasTestPlanReport)
+                if (hasTestPlanReport) {
+                    const draftPhaseReachedAt = new Date(updatedAt);
+                    draftPhaseReachedAt.setSeconds(
+                        // Set draftPhaseReachedAt to happen 60 seconds after updatedAt for general
+                        // 'correctness' and to help with any app sorts
+                        draftPhaseReachedAt.getSeconds() + 60
+                    );
                     await queryInterface.sequelize.query(
                         `UPDATE "TestPlanVersion" SET "draftPhaseReachedAt" = ? WHERE id = ?`,
                         {
-                            replacements: [updatedAt, id],
+                            replacements: [draftPhaseReachedAt, id],
                             transaction
                         }
                     );
-                else
+                } else
                     await queryInterface.sequelize.query(
                         `UPDATE "TestPlanVersion" SET phase = ? WHERE id = ?`,
                         {

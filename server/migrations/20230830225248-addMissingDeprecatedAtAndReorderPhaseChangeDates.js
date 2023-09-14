@@ -12,7 +12,7 @@ module.exports = {
             // 1178 (Radio Group Example Using aria-activedescendant) TestPlanVersions
             const testPlanVersionsToSetToCandidate =
                 await queryInterface.sequelize.query(
-                    `select "TestPlanVersion".id, phase, "markedFinalAt"
+                    `select "TestPlanVersion".id, phase, "draftPhaseReachedAt", "markedFinalAt"
                          from "TestPlanVersion"
                                   join "TestPlanReport" on "TestPlanVersion".id = "TestPlanReport"."testPlanVersionId"
                          where "markedFinalAt" is not null
@@ -23,15 +23,23 @@ module.exports = {
                     }
                 );
 
-            const candidatePhaseReachedAt = new Date();
-            const recommendedPhaseTargetDate = new Date(
-                candidatePhaseReachedAt
-            );
-            recommendedPhaseTargetDate.setDate(
-                candidatePhaseReachedAt.getDate() + 180
-            );
-
             for (const testPlanVersion of testPlanVersionsToSetToCandidate) {
+                const candidatePhaseReachedAt = new Date(
+                    testPlanVersion.draftPhaseReachedAt
+                );
+
+                // Set candidatePhaseReachedAt to draftPhaseReachedAt date (+1 day)
+                candidatePhaseReachedAt.setDate(
+                    candidatePhaseReachedAt.getDate() + 1
+                );
+
+                const recommendedPhaseTargetDate = new Date(
+                    candidatePhaseReachedAt
+                );
+                recommendedPhaseTargetDate.setDate(
+                    candidatePhaseReachedAt.getDate() + 180
+                );
+
                 await queryInterface.sequelize.query(
                     `update "TestPlanVersion"
                              set "candidatePhaseReachedAt" = ?,
@@ -97,7 +105,7 @@ module.exports = {
                         testPlanVersion.candidatePhaseReachedAt
                     );
 
-                    // Update candidatePhaseReachedAt to be the draftPhaseReachedAt date (+1)
+                    // Update candidatePhaseReachedAt to be the draftPhaseReachedAt date (+1 day)
                     // (because that phase happening before shouldn't be possible)
                     if (candidatePhaseReachedAt < draftPhaseReachedAt) {
                         const newCandidatePhaseReachedAt = new Date(
@@ -126,6 +134,15 @@ module.exports = {
                 }
 
                 if (testPlanVersion.deprecatedAt) {
+                    const deprecatedAt = new Date(
+                        testPlanVersion.recommendedPhaseReachedAt ||
+                            testPlanVersion.candidatePhaseReachedAt ||
+                            testPlanVersion.draftPhaseReachedAt ||
+                            testPlanVersion.updatedAt ||
+                            testPlanVersion.deprecatedAt
+                    );
+                    deprecatedAt.setSeconds(deprecatedAt.getSeconds() + 1);
+
                     // Add deprecatedAt for applicable testPlanVersions
                     await queryInterface.sequelize.query(
                         `update "TestPlanVersion"
@@ -133,14 +150,7 @@ module.exports = {
                                 phase = 'DEPRECATED'
                              where id = ?`,
                         {
-                            replacements: [
-                                testPlanVersion.recommendedPhaseReachedAt
-                                    ? testPlanVersion.recommendedPhaseReachedAt
-                                    : testPlanVersion.candidatePhaseReachedAt
-                                    ? testPlanVersion.candidatePhaseReachedAt
-                                    : testPlanVersion.deprecatedAt,
-                                testPlanVersion.id
-                            ],
+                            replacements: [deprecatedAt, testPlanVersion.id],
                             transaction
                         }
                     );
