@@ -304,7 +304,7 @@ const TestPlanVersionsPage = () => {
                         <tbody>
                             {testPlanVersions.map(testPlanVersion => (
                                 <tr key={testPlanVersion.id}>
-                                    <td>
+                                    <th>
                                         <VersionString
                                             date={testPlanVersion.updatedAt}
                                             iconColor={getIconColor(
@@ -312,7 +312,7 @@ const TestPlanVersionsPage = () => {
                                             )}
                                             autoWidth={false}
                                         />
-                                    </td>
+                                    </th>
                                     <td>
                                         {(() => {
                                             // Gets the derived phase even if deprecated by checking
@@ -456,7 +456,7 @@ const TestPlanVersionsPage = () => {
                             <tr
                                 key={`${testPlanVersion.id}-${testPlanVersion.phase}`}
                             >
-                                <td>{getEventDate(testPlanVersion)}</td>
+                                <th>{getEventDate(testPlanVersion)}</th>
                                 <td>
                                     {versionString}&nbsp;{eventBody}
                                 </td>
@@ -607,12 +607,12 @@ const TestPlanVersionsPage = () => {
 
                                     return events.map(([phase, date]) => (
                                         <tr key={phase}>
-                                            <td>
+                                            <th>
                                                 {convertDateToString(
                                                     date,
                                                     'MMM D, YYYY'
                                                 )}
-                                            </td>
+                                            </th>
                                             <td>{getEventBody(phase)}</td>
                                         </tr>
                                     ));
