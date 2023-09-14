@@ -248,8 +248,7 @@ const TestPlanVersionsPage = () => {
 
         // If dates are the same, compare phases
         if (dateA === dateB) return phaseOrder[a.phase] - phaseOrder[b.phase];
-
-        return new Date(dateB) - new Date(dateA);
+        return new Date(dateA) - new Date(dateB);
     });
 
     const issues = uniqueBy(
@@ -262,7 +261,11 @@ const TestPlanVersionsPage = () => {
             )
         ),
         item => item.link
-    );
+    ).sort((a, b) => {
+        const aCreatedAt = new Date(a.createdAt);
+        const bCreatedAt = new Date(b.createdAt);
+        return bCreatedAt - aCreatedAt;
+    });
 
     return (
         <Container id="main" as="main" tabIndex="-1">
