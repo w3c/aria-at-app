@@ -21,8 +21,8 @@ import {
 } from '../TestQueue/queries';
 import {
     CREATE_MANAGE_TEST_QUEUE_MUTATION,
-    UPDATE_MANAGE_TEST_QUEUE_MUTATION
-    // DELET_MANAGE_TEST_QUEUE_MUTATION,
+    UPDATE_MANAGE_TEST_QUEUE_MUTATION,
+    DELETE_MANAGE_TEST_QUEUE_MUTATION
 } from './queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { convertStringToDate } from '../../utils/formatter';
@@ -154,6 +154,12 @@ const ManageTestQueue = ({
     const [requiredReportsModalTitle, setRequiredReportsModalTitle] =
         useState('');
 
+    const [isDelete, setIsDelete] = useState(false);
+    const [actionButtonLabel, setActionButtonLabel] = useState('Save Changes');
+    const [updateAtIdForUpdate, setUpdateAtIdForUpdate] = useState('');
+    const [updatePhaseForUpdate, setUpdatePhaseForUpdate] = useState('');
+    const [updateBrowserIdForUpdate, setUpdateBrowserIdForUpdate] =
+        useState('');
     const [updateAtSelection, setUpdateAtSelection] = useState('Select an At');
     const [updateAtForButton, setUpdateAtForButton] = useState('');
     const [updateListAtSelection, setUpdateListAtSelection] =
@@ -356,97 +362,255 @@ const ManageTestQueue = ({
     // ];
 
     // Section:
+
+    const onOpenShowEditAtBrowserModal = (
+        type = 'edit',
+        phase,
+        at = '',
+        browser = ''
+    ) => {
+        if (type === 'edit') {
+            setRequiredReportsModalTitle(
+                <p>
+                    Edit the following AT/Browser pair for{' '}
+                    <PhasePill fullWidth={false} forHeader={true}>
+                        {phase}
+                    </PhasePill>{' '}
+                    required reports
+                </p>
+            );
+        }
+
+        if (type === 'delete') {
+            setRequiredReportsModalTitle(
+                <p>
+                    Delete {at} and {browser} pair for{' '}
+                    <PhasePill fullWidth={false} forHeader={true}>
+                        {phase}
+                    </PhasePill>{' '}
+                    required reports
+                </p>
+            );
+        }
+        setShowEditAtBrowserModal(false);
+    };
+
+    // Section:
     const runMutationForRequiredReportTable = async mutation => {
         let atId = updateAtForButton;
         let browserId = updateBrowserForButton;
         // console.log(atBrowserCombinations);
 
-        // console.log(
-        //     'ids',
-        //     atId,
-        //     browserId,
-        //     updateAtForButton,
-        //     updateBrowserForButton
-        // );
-
-        // atBrowserCombinations.forEach(({ at, browser, phase }) => {
-        //     // console.log('AtID', updateAtForButton)
-        //     // console.log('at.Id', at.id)
-        //     // console.log('BrowserID', updateBrowserForButton)
-        //     // console.log('browser.Id', browser.id)
-        //     if (
-        //         updateAtForButton === at.id &&
-        //         updateBrowserForButton === browser.id
-        //         // updatePhaseForButton === phase
-        //     ) {
-        //         atId = at.id;
-        //         browserId = browser.id;
-        //         // console.log('IT CHECKED OUT');
-        //     }
-        // });
         mutation === 'createRequiredReport'
             ? await triggerLoad(async () => {
-                  const { data } = await createRequiredReport({
-                      variables: {
-                          atId: atId,
-                          browserId: browserId,
-                          phase: `IS_${updatePhaseForButton}`
-                      }
-                  });
-                  console.log('data', data);
-
-                  const createdRequiredReport =
-                      data.requiredReport.createRequiredReport;
-                  console.log('atBrowserCombinations', atBrowserCombinations);
-                  console.log('createdRequiredReport', createdRequiredReport, {
-                      at: ats.find(at => at.id === atId),
-                      browser: browsers.find(browser => browser.id === atId),
-                      phase: updatePhaseForButton
-                  });
-
-                  // Verify that the created required report was actually created before updating
-                  // the dataset
-                  if (createdRequiredReport) {
-                      // TODO: Sort this so it doesn't pop in at the bottom if it isn't intended
-                      //  for there
-                      setAtBrowserCombinations([
-                          ...atBrowserCombinations,
-                          {
-                              at: ats.find(
-                                  at => at.id === createdRequiredReport.atId
-                              ),
-                              browser: browsers.find(
-                                  browser =>
-                                      browser.id ===
-                                      createdRequiredReport.browserId
-                              ),
-                              phase: updatePhaseForButton
+                  try {
+                      atBrowserCombinations.forEach(
+                          ({ at, browser, phase }) => {
+                              // console.log('AtID', updateAtForButton)
+                              // console.log('at.Id', at.id)
+                              // console.log('BrowserID', updateBrowserForButton)
+                              // console.log('browser.Id', browser.id)
+                              if (
+                                  updateAtForButton === at.id &&
+                                  updateBrowserForButton === browser.id &&
+                                  updatePhaseForButton === phase
+                              ) {
+                                  // atId = at.id;
+                                  // browserId = browser.id;
+                                  // console.log('IT CHECKED OUT');
+                                  throw new Error(
+                                      'A duplicate Entry was detected in the table'
+                                  );
+                              }
                           }
-                      ]);
+                      );
+                      const { data } = await createRequiredReport({
+                          variables: {
+                              atId: atId,
+                              browserId: browserId,
+                              phase: `IS_${updatePhaseForButton}`
+                          }
+                      });
+                      //   console.log('data', data);
+
+                      const createdRequiredReport =
+                          data.requiredReport.createRequiredReport;
+
+                      // Verify that the created required report was actually created before updating
+                      // the dataset
+                      if (createdRequiredReport) {
+                          setAtBrowserCombinations(
+                              [
+                                  ...atBrowserCombinations,
+                                  {
+                                      at: ats.find(
+                                          at =>
+                                              at.id ===
+                                              createdRequiredReport.atId
+                                      ),
+                                      browser: browsers.find(
+                                          browser =>
+                                              browser.id ===
+                                              createdRequiredReport.browserId
+                                      ),
+                                      phase: updatePhaseForButton
+                                  }
+                              ].sort((a, b) => {
+                                  if (a.phase < b.phase) return -1;
+                                  if (a.phase > b.phase) return 1;
+                                  return a.at.name.localeCompare(b.at.name);
+                              })
+                          );
+                      }
+                  } catch (error) {
+                      console.error(error);
                   }
               }, 'Adding Phase requirement to the required reports table')
             : mutation === 'updateRequiredReport'
             ? await triggerLoad(async () => {
-                  await updateRequiredReport({
+                  //   console.log(
+                  //       'Update IDS',
+                  //       updateBrowserSelection,
+                  //       updateAtSelection
+                  //   );
+                  //   console.log(
+                  //       'phase in title',
+                  //       requiredReportsModalTitle.props.children[2].props.children
+                  //   );
+                  try {
+                      atBrowserCombinations.forEach(
+                          ({ at, browser, phase }) => {
+                              // console.log('AtID', updateAtForButton)
+                              // console.log('at.Id', at.id)
+                              // console.log('BrowserID', updateBrowserForButton)
+                              // console.log('browser.Id', browser.id)
+                              if (
+                                  updateAtSelection === at.id &&
+                                  updateBrowserSelection === browser.id &&
+                                  updatePhaseForUpdate === phase
+                              ) {
+                                  // atId = at.id;
+                                  // browserId = browser.id;
+                                  // console.log('IT CHECKED OUT');
+                                  throw new Error(
+                                      'A duplicate Entry was detected in the table'
+                                  );
+                              }
+                          }
+                      );
+                      //   console.log('updateAt', updateAtIdForUpdate);
+                      //   console.log('updateBrowser', updateBrowserIdForUpdate);
+
+                      const { data } = await updateRequiredReport({
+                          variables: {
+                              atId: updateAtIdForUpdate,
+                              browserId: updateBrowserIdForUpdate,
+                              //   phase: `IS_${updatePhaseForButton}`,
+                              phase: `IS_${updatePhaseForUpdate}`,
+                              updateAtId: updateAtSelection,
+                              updateBrowserId: updateBrowserSelection
+                          }
+                      });
+                      //   console.log('data', data);
+
+                      const updatedRequiredReport =
+                          data.requiredReport.updateRequiredReport;
+
+                      // Verify that the created required report was actually created before updating
+                      // the dataset
+                      if (updatedRequiredReport) {
+                          setAtBrowserCombinations(
+                              [
+                                  ...atBrowserCombinations,
+                                  {
+                                      at: ats.find(
+                                          at =>
+                                              at.id ===
+                                              updatedRequiredReport.atId
+                                      ),
+                                      browser: browsers.find(
+                                          browser =>
+                                              browser.id ===
+                                              updatedRequiredReport.browserId
+                                      ),
+                                      phase: updatePhaseForUpdate
+                                  }
+                              ]
+                                  .filter(row => {
+                                      if (
+                                          row.at.id === updateAtIdForUpdate &&
+                                          row.browser.id ===
+                                              updateBrowserIdForUpdate &&
+                                          row.phase == updatePhaseForUpdate
+                                      ) {
+                                          // foundOne80 = true; // Set the flag to true to filter out only the first object with score 80
+                                          return false; // Exclude this object from the filtered result
+                                      }
+                                      return true; // Keep all other objects
+                                  })
+                                  .sort((a, b) => {
+                                      if (a.phase < b.phase) return -1;
+                                      if (a.phase > b.phase) return 1;
+                                      return a.at.name.localeCompare(b.at.name);
+                                  })
+                          );
+                      }
+                  } catch (error) {
+                      console.error(error);
+                  }
+              }, 'Adding Phase requirement to the required reports table')
+            : mutation === 'deleteRequiredReport'
+            ? await triggerLoad(async () => {
+                console.log('atId', updateAtIdForUpdate)
+                console.log('browserId', updateBrowserIdForUpdate)
+                  const { data } = await deleteRequiredReport({
                       variables: {
-                          atId: atId,
-                          browserId: browserId,
-                          phase: `IS_${updatePhaseForButton}`
+                          atId: updateAtIdForUpdate,
+                          browserId: updateBrowserIdForUpdate,
+                          phase: `IS_${updatePhaseForUpdate}`
                       }
                   });
+                  //   console.log('data', data);
+
+                  const deletedRequiredReport =
+                      data.requiredReport.deleteRequiredReport;
+
+                  if (deletedRequiredReport) {
+                      setAtBrowserCombinations(
+                          [
+                              ...atBrowserCombinations
+                              //   {
+                              //       at: ats.find(
+                              //           at => at.id === deletedRequiredReport.atId
+                              //       ),
+                              //       browser: browsers.find(
+                              //           browser =>
+                              //               browser.id ===
+                              //               deletedRequiredReport.browserId
+                              //       ),
+                              //       phase: updatePhaseForUpdate
+                              //   }
+                          ]
+                              .filter(row => {
+                                  if (
+                                      row.at.id === updateAtIdForUpdate &&
+                                      row.browser.id ===
+                                          updateBrowserIdForUpdate &&
+                                      row.phase == updatePhaseForUpdate
+                                  ) {
+                                      return false;
+                                  }
+                                  return true;
+                              })
+                              .sort((a, b) => {
+                                  if (a.phase < b.phase) return -1;
+                                  if (a.phase > b.phase) return 1;
+                                  return a.at.name.localeCompare(b.at.name);
+                              })
+                      );
+                  }
               }, 'Adding Phase requirement to the required reports table')
-            : // : mutation === 'deleteRequiredReport'
-              // ? await triggerLoad(async () => {
-              //       await deleteRequiredReport({
-              //           variables: {
-              //               atId: atId,
-              //               browserId: browserId,
-              //               phase: `IS_${updatePhaseForButton}`
-              //           }
-              //       });
-              //   }, 'Adding Phase requirement to the required reports table')
-              // :
-              null;
+            : null;
     };
 
     const addRequiredReport = async () => {
@@ -524,9 +688,9 @@ const ManageTestQueue = ({
     const [updateRequiredReport] = useMutation(
         UPDATE_MANAGE_TEST_QUEUE_MUTATION
     );
-    // const [deleteRequiredReport] = useMutation(
-    //     DELETE_MANAGE_TEST_QUEUE_MUTATION
-    // );
+    const [deleteRequiredReport] = useMutation(
+        DELETE_MANAGE_TEST_QUEUE_MUTATION
+    );
 
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
@@ -870,24 +1034,24 @@ const ManageTestQueue = ({
     };
 
     // Find Manage Required Reports Modal
-    const onOpenShowEditAtBrowserModal = (type = 'edit', phase) => {
-        if (type === 'edit') {
-            setRequiredReportsModalTitle(
-                <p>
-                    Edit the following AT/Browser pair for{' '}
-                    <PhasePill fullWidth={false} forHeader={true}>
-                        {phase}
-                    </PhasePill>{' '}
-                    requied reports
-                </p>
-            );
-        }
+    // const onOpenShowEditAtBrowserModal = (type = 'edit', phase) => {
+    //     if (type === 'edit') {
+    //         setRequiredReportsModalTitle(
+    //             <p>
+    //                 Edit the following AT/Browser pair for{' '}
+    //                 <PhasePill fullWidth={false} forHeader={true}>
+    //                     {phase}
+    //                 </PhasePill>{' '}
+    //                 requied reports
+    //             </p>
+    //         );
+    //     }
 
-        if (type === 'delete') {
-            setRequiredReportsModalTitle(<p>delete this</p>);
-        }
-        setShowEditAtBrowserModal(false);
-    };
+    //     if (type === 'delete') {
+    //         setRequiredReportsModalTitle(<p>delete this</p>);
+    //     }
+    //     setShowEditAtBrowserModal(false);
+    // };
 
     const handlePhaseChange = e => {
         const value = e.target.value;
@@ -1340,7 +1504,7 @@ const ManageTestQueue = ({
                                                 );
                                             }
                                         )}{' '} */}
-                                        {ats[0].browsers.map(item => {
+                                        {ats[2].browsers.map(item => {
                                             return (
                                                 <option
                                                     key={item.id}
@@ -1405,6 +1569,21 @@ const ManageTestQueue = ({
                                                             icon={faEdit}
                                                             color="#818F98"
                                                             onClick={() => {
+                                                                setIsDelete(
+                                                                    false
+                                                                );
+                                                                setActionButtonLabel(
+                                                                    'Save Changes'
+                                                                );
+                                                                setUpdateAtIdForUpdate(
+                                                                    at.id
+                                                                );
+                                                                setUpdateBrowserIdForUpdate(
+                                                                    browser.id
+                                                                );
+                                                                setUpdatePhaseForUpdate(
+                                                                    phase
+                                                                );
                                                                 setRequiredReportsModalAt(
                                                                     phase
                                                                 );
@@ -1423,8 +1602,26 @@ const ManageTestQueue = ({
                                                             icon={faTrashAlt}
                                                             color="#ce1b4c"
                                                             onClick={() => {
+                                                                setIsDelete(
+                                                                    true
+                                                                );
+                                                                setActionButtonLabel(
+                                                                    'Confirm Delete'
+                                                                );
+                                                                setUpdateAtIdForUpdate(
+                                                                    at.id
+                                                                );
+                                                                setUpdateBrowserIdForUpdate(
+                                                                    browser.id
+                                                                );
+                                                                setUpdatePhaseForUpdate(
+                                                                    phase
+                                                                );
                                                                 onOpenShowEditAtBrowserModal(
-                                                                    'delete'
+                                                                    'delete',
+                                                                    phase,
+                                                                    at.name,
+                                                                    browser.name
                                                                 );
                                                             }}
                                                         />
@@ -1511,138 +1708,159 @@ const ManageTestQueue = ({
                     dialogClassName="modal-50w"
                     content={
                         <ModalInnerSectionContainer>
-                            <Row>
-                                <Form.Group className="form-group">
-                                    <Form.Label>
-                                        Assistive Technology
-                                    </Form.Label>
+                            {!isDelete ? (
+                                <Row>
+                                    <Form.Group className="form-group">
+                                        <Form.Label>
+                                            Assistive Technology
+                                        </Form.Label>
 
-                                    {updateAtSelection === 'Select an At' ? (
-                                        <Form.Select
-                                            // ref={updatedAtVersionDropdownRef}
-                                            // value={updatedAtVersion}
-                                            value={updateAtSelection}
-                                            onChange={handleAtChange}
-                                            // isInvalid={isAtVersionError}
-                                            required
-                                        >
-                                            <option>Select an At</option>
-                                            <option value="JAWS">JAWS</option>
-                                            <option value="NVDA">NVDA</option>
-                                            <option value="VoiceOver for macOs">
-                                                VoiceOver for macOs
-                                            </option>
-                                        </Form.Select>
-                                    ) : (
-                                        <Form.Select
-                                            // ref={updatedAtVersionDropdownRef}
-                                            // value={updatedAtVersion}
-                                            value={updateAtSelection}
-                                            onChange={handleAtChange}
-                                            // isInvalid={isAtVersionError}
-                                            required
-                                        >
-                                            {Object.entries(ats).map(
-                                                ([key, value]) => {
+                                        {updateAtSelection ===
+                                        'Select an At' ? (
+                                            <Form.Select
+                                                // ref={updatedAtVersionDropdownRef}
+                                                // value={updatedAtVersion}
+                                                value={updateAtSelection}
+                                                onChange={handleAtChange}
+                                                // isInvalid={isAtVersionError}
+                                                required
+                                            >
+                                                <option>Select an At</option>
+                                                <option value={1}>JAWS</option>
+                                                <option value={2}>NVDA</option>
+                                                <option value={3}>
+                                                    VoiceOver for macOs
+                                                </option>
+                                            </Form.Select>
+                                        ) : (
+                                            <Form.Select
+                                                // ref={updatedAtVersionDropdownRef}
+                                                // value={updatedAtVersion}
+                                                value={updateAtSelection}
+                                                onChange={handleAtChange}
+                                                // isInvalid={isAtVersionError}
+                                                required
+                                            >
+                                                {Object.entries(ats).map(
+                                                    ([key, value]) => {
+                                                        return (
+                                                            <option
+                                                                key={key}
+                                                                value={value.id}
+                                                                disabled={
+                                                                    key ===
+                                                                    'Select a Version'
+                                                                }
+                                                            >
+                                                                {value.name}
+                                                            </option>
+                                                        );
+                                                    },
+                                                    {}
+                                                )}
+                                            </Form.Select>
+                                        )}
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>
+                                            Browser
+                                            {/* <Required aria-hidden /> */}
+                                        </Form.Label>
+
+                                        {updateAtSelection ===
+                                        'Select an At' ? (
+                                            <Form.Select
+                                                // ref={updatedAtVersionDropdownRef}
+                                                // value={updatedAtVersion}
+                                                value={updateBrowserSelection}
+                                                onChange={handleBrowserChange}
+                                                disabled
+                                                // isInvalid={isAtVersionError}
+                                                required
+                                            ></Form.Select>
+                                        ) : updateAtSelection === '1' ? (
+                                            <Form.Select
+                                                // ref={updatedAtVersionDropdownRef}
+                                                // value={updatedAtVersion}
+                                                value={updateBrowserSelection}
+                                                onChange={handleBrowserChange}
+                                                // isInvalid={isAtVersionError}
+                                                required
+                                            >
+                                                {' '}
+                                                <option>
+                                                    Select a Browser
+                                                </option>
+                                                {Object.entries(
+                                                    ats[0].browsers
+                                                ).map(([key, value]) => {
                                                     return (
                                                         <option
                                                             key={key}
-                                                            value={value.name}
-                                                            disabled={
-                                                                key ===
-                                                                'Select a Version'
-                                                            }
+                                                            value={value.id}
                                                         >
                                                             {value.name}
                                                         </option>
                                                     );
-                                                },
-                                                {}
-                                            )}
-                                        </Form.Select>
-                                    )}
-                                </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>
-                                        Browser
-                                        {/* <Required aria-hidden /> */}
-                                    </Form.Label>
-
-                                    {updateAtSelection === 'Select an At' ? (
-                                        <Form.Select
-                                            // ref={updatedAtVersionDropdownRef}
-                                            // value={updatedAtVersion}
-                                            value={updateBrowserSelection}
-                                            onChange={handleBrowserChange}
-                                            disabled
-                                            // isInvalid={isAtVersionError}
-                                            required
-                                        ></Form.Select>
-                                    ) : updateAtSelection === 'JAWS' ? (
-                                        <Form.Select
-                                            // ref={updatedAtVersionDropdownRef}
-                                            // value={updatedAtVersion}
-                                            value={updateBrowserSelection}
-                                            onChange={handleBrowserChange}
-                                            // isInvalid={isAtVersionError}
-                                            required
-                                        >
-                                            {' '}
-                                            {Object.entries(
-                                                ats[0].browsers
-                                            ).map(([key, value]) => {
-                                                return (
-                                                    <option key={key}>
-                                                        {value.name}
-                                                    </option>
-                                                );
-                                            })}{' '}
-                                        </Form.Select>
-                                    ) : updateAtSelection === 'NVDA' ? (
-                                        <Form.Select
-                                            // ref={updatedAtVersionDropdownRef}
-                                            // value={updatedAtVersion}
-                                            value={updateBrowserSelection}
-                                            onChange={handleBrowserChange}
-                                            // isInvalid={isAtVersionError}
-                                            required
-                                        >
-                                            {Object.entries(
-                                                ats[1].browsers
-                                            ).map(([key, value]) => {
-                                                return (
-                                                    <option key={key}>
-                                                        {value.name}
-                                                    </option>
-                                                );
-                                            })}{' '}
-                                        </Form.Select>
-                                    ) : updateAtSelection ===
-                                      'VoiceOver for macOS' ? (
-                                        <Form.Select
-                                            // ref={updatedAtVersionDropdownRef}
-                                            // value={updatedAtVersion}
-                                            value={updateBrowserSelection}
-                                            onChange={handleBrowserChange}
-                                            // isInvalid={isAtVersionError}
-                                            required
-                                        >
-                                            {Object.entries(
-                                                ats[2].browsers
-                                            ).map(([key, value]) => {
-                                                return (
-                                                    <option key={key}>
-                                                        {value.name}
-                                                    </option>
-                                                );
-                                            })}{' '}
-                                        </Form.Select>
-                                    ) : null}
-                                </Form.Group>
-                            </Row>
+                                                })}{' '}
+                                            </Form.Select>
+                                        ) : updateAtSelection === '2' ? (
+                                            <Form.Select
+                                                // ref={updatedAtVersionDropdownRef}
+                                                // value={updatedAtVersion}
+                                                value={updateBrowserSelection}
+                                                onChange={handleBrowserChange}
+                                                // isInvalid={isAtVersionError}
+                                                required
+                                            >
+                                                <option>
+                                                    Select a Browser
+                                                </option>
+                                                {Object.entries(
+                                                    ats[1].browsers
+                                                ).map(([key, value]) => {
+                                                    return (
+                                                        <option
+                                                            key={key}
+                                                            value={value.id}
+                                                        >
+                                                            {value.name}
+                                                        </option>
+                                                    );
+                                                })}{' '}
+                                            </Form.Select>
+                                        ) : updateAtSelection === '3' ? (
+                                            <Form.Select
+                                                // ref={updatedAtVersionDropdownRef}
+                                                // value={updatedAtVersion}
+                                                onChange={handleBrowserChange}
+                                                value={updateBrowserSelection}
+                                                // isInvalid={isAtVersionError}
+                                                required
+                                            >
+                                                <option>
+                                                    Select a Browser
+                                                </option>
+                                                {Object.entries(
+                                                    ats[2].browsers
+                                                ).map(([key, value]) => {
+                                                    return (
+                                                        <option
+                                                            key={key}
+                                                            value={value.id}
+                                                        >
+                                                            {value.name}
+                                                        </option>
+                                                    );
+                                                })}{' '}
+                                            </Form.Select>
+                                        ) : null}
+                                    </Form.Group>
+                                </Row>
+                            ) : null}
                         </ModalInnerSectionContainer>
                     }
-                    actionLabel={'Save Changes'}
+                    actionLabel={actionButtonLabel}
                     //section:
                     handleAction={
                         // updatedAtVersion !== atVersion ||
@@ -1650,7 +1868,21 @@ const ManageTestQueue = ({
                         //     ? onSubmit
                         //     : handleClose
                         () => {
-                            console.log('IT RAN');
+                            // console.log(
+                            //     requiredReportsModalTitle.props.children[2]
+                            //         .props.children
+                            // );
+                            if (actionButtonLabel === 'Save Changes') {
+                                runMutationForRequiredReportTable(
+                                    'updateRequiredReport'
+                                );
+                            }
+                            if (actionButtonLabel === 'Confirm Delete') {
+                                runMutationForRequiredReportTable(
+                                    'deleteRequiredReport'
+                                );
+                            }
+                            setShowEditAtBrowserModal(true);
                         }
                     }
                     handleClose={() => {

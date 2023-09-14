@@ -1107,8 +1107,8 @@ const graphqlSchema = gql`
         """
         """
         createRequiredReport: RequiredReport!
-        updateRequiredReport(atId: ID!, browserId: ID!): Boolean!
-        deleteRequiredReport: Boolean!
+        updateRequiredReport(atId: ID!, browserId: ID!): RequiredReport!
+        deleteRequiredReport: RequiredReport!
     }
 
     """

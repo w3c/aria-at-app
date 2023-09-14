@@ -21,9 +21,14 @@ export const UPDATE_MANAGE_TEST_QUEUE_MUTATION = gql`
         $atId: ID!
         $browserId: ID!
         $phase: RequiredReportPhase!
+        $updateAtId: ID!
+        $updateBrowserId: ID!
     ) {
         requiredReport(atId: $atId, browserId: $browserId, phase: $phase) {
-            updateRequiredReport {
+            updateRequiredReport(
+                atId: $updateAtId
+                browserId: $updateBrowserId
+            ) {
                 atId
                 browserId
                 phase
@@ -32,7 +37,21 @@ export const UPDATE_MANAGE_TEST_QUEUE_MUTATION = gql`
     }
 `;
 
-// DELET_MANAGE_TEST_QUEUE_MUTATION
+export const DELETE_MANAGE_TEST_QUEUE_MUTATION = gql`
+    mutation DeleteRequiredReport(
+        $atId: ID!
+        $browserId: ID!
+        $phase: RequiredReportPhase!
+    ) {
+        requiredReport(atId: $atId, browserId: $browserId, phase: $phase) {
+            deleteRequiredReport {
+                atId
+                browserId
+                phase
+            }
+        }
+    }
+`;
 
 export const ADD_TEST_QUEUE_MUTATION = gql`
     mutation AddTestPlanReport(
