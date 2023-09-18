@@ -49,7 +49,11 @@ const PhaseText = styled.span`
     }
 `;
 
-const PhasePill = ({ fullWidth = true, forHeader = false, children: phase }) => {
+const PhasePill = ({
+    fullWidth = true,
+    forHeader = false,
+    children: phase
+}) => {
     let classes = fullWidth ? 'full-width' : '';
     classes = forHeader ? `${classes} for-header` : classes;
     return (
@@ -64,6 +68,7 @@ const PhasePill = ({ fullWidth = true, forHeader = false, children: phase }) => 
 };
 
 PhasePill.propTypes = {
+    forHeader: PropTypes.bool,
     fullWidth: PropTypes.bool,
     children: PropTypes.string.isRequired
 };
