@@ -4,52 +4,46 @@ const convertDateToString = require('../../util/convertDateToString');
 const issuesResolver = async testPlanReport => {
     const issues = await GithubService.getAllIssues();
 
-    const { at, testPlanVersion } = testPlanReport;
+    const { at, browser, testPlanVersion } = testPlanReport;
 
-    const searchTestPlanTitle = testPlanVersion.title;
-
-    const searchVersionString = `V${convertDateToString(
+    const versionString = `V${convertDateToString(
         testPlanVersion.updatedAt,
         'YY.MM.DD'
     )}`;
 
-    let searchAtName;
-    if (at.name === 'JAWS' || at.name === 'NVDA') {
-        searchAtName = at.name.toLowerCase();
-    } else {
-        searchAtName = 'vo';
-    }
+    const getHiddenIssueMetadata = issue => {
+        return JSON.parse(
+            issue.body.match(
+                // Since this is human editable it should be okay for the
+                // JSON part to be multiline, and for additional comments
+                // to follow this metadata comment
+                /<!--\s*ARIA_AT_APP_ISSUE_DATA\s*=\s*((.|\n)+?)\s*-->/
+            )?.[1] ?? 'null'
+        );
+    };
 
     return issues
-        .filter(({ labels, body }) => {
+        .filter(issue => {
+            const hiddenIssueMetadata = getHiddenIssueMetadata(issue);
             return (
-                labels.find(({ name }) => name === searchAtName) &&
-                body?.includes(searchTestPlanTitle) &&
-                body?.includes(searchVersionString)
+                hiddenIssueMetadata &&
+                hiddenIssueMetadata.testPlanDirectory ===
+                    testPlanVersion.directory &&
+                hiddenIssueMetadata.versionString === versionString &&
+                hiddenIssueMetadata.atName === at.name &&
+                (!hiddenIssueMetadata.browserName ||
+                    hiddenIssueMetadata.browserName === browser.name)
             );
         })
         .map(issue => {
-            const {
-                title,
-                user,
-                labels,
-                state,
-                html_url,
-                id: topCommentId
-            } = issue;
-            const testNumberMatch = title.match(/\sTest \d+,/g);
-            const testNumberSubstring = testNumberMatch
-                ? testNumberMatch[0]
-                : '';
-            const testNumberFilteredByAt = testNumberSubstring
-                ? testNumberSubstring.match(/\d+/g)[0]
-                : null;
+            const hiddenIssueMetadata = getHiddenIssueMetadata(issue);
 
-            const labelNames = labels.map(label => label.name);
+            const { title, user, state, html_url, id: topCommentId } = issue;
 
-            const feedbackType = labelNames.includes('changes-requested')
-                ? 'CHANGES_REQUESTED'
-                : 'FEEDBACK';
+            const feedbackType =
+                hiddenIssueMetadata.isCandidateReviewChangesRequested
+                    ? 'CHANGES_REQUESTED'
+                    : 'FEEDBACK';
 
             return {
                 author: user.login,
@@ -57,10 +51,10 @@ const issuesResolver = async testPlanReport => {
                 createdAt: issue.created_at,
                 closedAt: issue.closed_at,
                 link: `${html_url}#issue-${topCommentId}`,
-                isCandidateReview: labelNames.includes('candidate-review'),
+                isCandidateReview: hiddenIssueMetadata.isCandidateReview,
                 feedbackType,
                 isOpen: state === 'open',
-                testNumberFilteredByAt
+                testNumberFilteredByAt: hiddenIssueMetadata.testRowNumber
             };
         });
 };

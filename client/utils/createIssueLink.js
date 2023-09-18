@@ -12,6 +12,7 @@ const atLabelMap = {
 const createIssueLink = ({
     isCandidateReview = false,
     isCandidateReviewChangesRequested = false,
+    testPlanDirectory,
     testPlanTitle,
     versionString,
     testTitle = null,
@@ -24,7 +25,7 @@ const createIssueLink = ({
     conflictMarkdown = null,
     reportLink = null
 }) => {
-    if (!(testPlanTitle || versionString || atName)) {
+    if (!(testPlanDirectory || testPlanTitle || versionString || atName)) {
         throw new Error('Cannot create issue link due to missing parameters');
     }
 
@@ -89,15 +90,27 @@ const createIssueLink = ({
             `[${shortenedUrl}](${modifiedRenderedUrl})\n` +
             reportLinkFormatted +
             atFormatted +
-            browserFormatted;
+            browserFormatted +
+            '\n';
     }
+
+    const hiddenIssueMetadata = JSON.stringify({
+        testPlanDirectory,
+        versionString,
+        atName,
+        browserName,
+        testRowNumber,
+        isCandidateReview,
+        isCandidateReviewChangesRequested
+    });
 
     let body =
         `## Description of Behavior\n\n` +
         `<!-- Write your description here -->\n\n` +
         testSetupFormatted +
-        `\n\n<!-- DO NOT EDIT BELOW, UNLESS YOU'RE SURE -->\n\n` +
-        `<!-- ${title} -->`;
+        `<!-- The following data allows the issue to be imported into the ` +
+        `ARIA AT app -->\n` +
+        `<!-- ARIA_AT_APP_ISSUE_DATA = ${hiddenIssueMetadata} -->`;
 
     if (conflictMarkdown) {
         body += `\n${conflictMarkdown}`;
