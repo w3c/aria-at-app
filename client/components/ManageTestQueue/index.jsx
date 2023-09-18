@@ -133,7 +133,6 @@ const ManageTestQueue = ({
 
     // Find Manage Required Reports Modal
     const [showEditAtBrowserModal, setShowEditAtBrowserModal] = useState(true);
-    // const [requiredReportsModalAt, setRequiredReportsModalAt] = useState('');
     const [requiredReportsModalTitle, setRequiredReportsModalTitle] =
         useState('');
 

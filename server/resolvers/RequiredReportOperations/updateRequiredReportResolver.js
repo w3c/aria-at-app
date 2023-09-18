@@ -4,7 +4,6 @@ const { updateAtBrowser } = require('../../models/services/AtBrowserService');
 const updateRequiredReportResolver = async (
     { parentContext: { atId, browserId, phase } },
     { atId: inputAtId, browserId: inputBrowserId },
-    // input,
     { user }
 ) => {
     if (!user?.roles.find(role => role.name === 'ADMIN')) {

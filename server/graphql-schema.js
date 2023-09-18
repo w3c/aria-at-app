@@ -215,21 +215,6 @@ const graphqlSchema = gql`
         releasedAt: Timestamp
     }
 
-    # """
-    # The fields on the RequiredReportOperations type which can be used or update the
-    # RequiredReports.
-    # """
-    # input RequiredReportOperationsInput {
-    #     """
-    #     See AtVersion type for more information.
-    #     """
-    #     inputAtId: ID!
-    #     """
-    #     See AtVersion type for more information.
-    #     """
-    #     inputBrowserId: ID!
-    # }
-
     """
     A suite of tests which keeps its identity as it evolves over time.
     """
@@ -1071,14 +1056,6 @@ const graphqlSchema = gql`
         IS_CANDIDATE
         IS_RECOMMENDED
     }
-
-    # type RequiredReportOperations {
-    #     """
-    #     """
-    #     createRequiredReport: Boolean!
-    #     updateRequiredReport(atId: ID!, browserId: ID!): Boolean!
-    #     deleteRequiredReport: Boolean!
-    # }
 
     type RequiredReportOperations {
         """
