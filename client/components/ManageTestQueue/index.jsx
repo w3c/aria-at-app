@@ -27,7 +27,7 @@ import { convertStringToDate } from '../../utils/formatter';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
-import { ThemeTable, ThemeTableHeader } from '../common/ThemeTable';
+import { ThemeTable, ThemeTableHeaderH2 } from '../common/ThemeTable';
 import PhasePill from '../common/PhasePill';
 
 const ModalInnerSectionContainer = styled.div`
@@ -1268,7 +1268,9 @@ const ManageTestQueue = ({
                                 </Button>
                             </Form.Group>
                         </div>
-                        <ThemeTableHeader>Required Reports</ThemeTableHeader>
+                        <ThemeTableHeaderH2>
+                            Required Reports
+                        </ThemeTableHeaderH2>
                         <ThemeTable bordered responsive>
                             <thead>
                                 <tr>
