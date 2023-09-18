@@ -29,7 +29,6 @@ import DisclosureComponent from '../common/DisclosureComponent';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { ThemeTable, ThemeTableHeader } from '../common/ThemeTable';
 import PhasePill from '../common/PhasePill';
-// import { at } from 'lodash';
 
 const ModalInnerSectionContainer = styled.div`
     display: flex;
@@ -41,20 +40,6 @@ const Row = styled.div`
     grid-template-columns: 1fr 1fr;
     grid-gap: 1rem;
 `;
-
-// const ModalSubtitleStyle = styled.h2`
-//     font-size: 0.8em;
-//     margin: 0;
-//     padding: 0;
-// `;
-
-// const Required = styled.span`
-//     color: #ce1b4c;
-
-//     :after {
-//         content: '*';
-//     }
-// `;
 
 const TransparentButton = styled.button`
     border: none;
@@ -212,14 +197,14 @@ const ManageTestQueue = ({
 
     const [atBrowserCombinations, setAtBrowserCombinations] = useState([
         ...ats.flatMap(at =>
-            at.candidateBrowsers.map(browser => ({
+            at.candidateBrowsers?.map(browser => ({
                 at,
                 browser,
                 phase: 'CANDIDATE'
             }))
         ),
         ...ats.flatMap(at =>
-            at.recommendedBrowsers.map(browser => ({
+            at.recommendedBrowsers?.map(browser => ({
                 at,
                 browser,
                 phase: 'RECOMMENDED'
@@ -1294,7 +1279,7 @@ const ManageTestQueue = ({
                                 </tr>
                             </thead>
                             <tbody>
-                                {atBrowserCombinations.map(
+                                {atBrowserCombinations?.map(
                                     ({ at, browser, phase }) => {
                                         return (
                                             <tr
