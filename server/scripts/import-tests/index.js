@@ -7,7 +7,8 @@ const spawn = require('cross-spawn');
 const { At } = require('../../models');
 const {
     createTestPlanVersion,
-    getTestPlanVersions
+    getTestPlanVersions,
+    updateTestPlanVersion
 } = require('../../models/services/TestPlanVersionService');
 const {
     getTestPlans,
@@ -146,6 +147,22 @@ const importTestPlanVersions = async () => {
         } else {
             const newTestPlan = await createTestPlan({ title, directory });
             testPlanId = newTestPlan.dataValues.id;
+        }
+
+        // Check if any TestPlanVersions exist for the directory and is currently in RD, and set it
+        // to DEPRECATED
+        const testPlanVersionsToDeprecate = await getTestPlanVersions('', {
+            phase: 'RD',
+            directory
+        });
+        if (testPlanVersionsToDeprecate.length) {
+            for (const testPlanVersionToDeprecate of testPlanVersionsToDeprecate) {
+                if (new Date(testPlanVersionToDeprecate.updatedAt) < updatedAt)
+                    await updateTestPlanVersion(testPlanVersionToDeprecate.id, {
+                        phase: 'DEPRECATED',
+                        deprecatedAt: updatedAt
+                    });
+            }
         }
 
         await createTestPlanVersion({

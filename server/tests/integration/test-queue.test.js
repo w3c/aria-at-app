@@ -247,6 +247,50 @@ describe('test queue', () => {
                 }
             `);
 
+            // Check to see that the testPlanVersion cannot be updated until the reports have been
+            // finalized
+            await expect(() => {
+                return mutate(gql`
+                    mutation {
+                        testPlanVersion(id: ${testPlanVersionId}) {
+                            updatePhase(phase: CANDIDATE) {
+                                testPlanVersion {
+                                    phase
+                                }
+                            }
+                        }
+                    }
+                `);
+            }).rejects.toThrow(
+                'Cannot set phase to candidate because the following required reports have' +
+                    ' not been collected or finalized: JAWS and Chrome, NVDA and Chrome,' +
+                    ' VoiceOver for macOS and Safari.'
+            );
+
+            const testPlanReportsToMarkAsFinalResult = await query(gql`
+                query {
+                    testPlanReports(testPlanVersionId: ${testPlanVersionId}) {
+                        id
+                    }
+                }
+            `);
+
+            for (const testPlanReport of testPlanReportsToMarkAsFinalResult.testPlanReports) {
+                await mutate(gql`
+                    mutation {
+                        testPlanReport(id: ${testPlanReport.id}) {
+                            markAsFinal {
+                                testPlanReport {
+                                    id
+                                    markedFinalAt
+                                }
+                            }
+                        }
+                    }
+
+                `);
+            }
+
             const candidateResult = await mutate(gql`
                 mutation {
                     testPlanVersion(id: ${testPlanVersionId}) {

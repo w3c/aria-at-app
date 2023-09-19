@@ -26,7 +26,8 @@ const BasicModal = ({
     handleClose = null,
     handleAction = null,
     handleHide = null,
-    staticBackdrop = false
+    staticBackdrop = false,
+    useOnHide = false
 }) => {
     const headerRef = useRef();
 
@@ -41,8 +42,8 @@ const BasicModal = ({
                 show={show}
                 centered={centered}
                 animation={animation}
-                onExit={handleHide || handleClose}
-                onHide={handleHide}
+                onHide={useOnHide ? handleHide || handleClose : null}
+                onExit={!useOnHide ? handleHide || handleClose : null}
                 /* Disabled due to buggy implementation which jumps the page */
                 autoFocus={false}
                 aria-labelledby="basic-modal"
@@ -102,7 +103,8 @@ BasicModal.propTypes = {
     handleClose: PropTypes.func,
     handleAction: PropTypes.func,
     handleHide: PropTypes.func,
-    staticBackdrop: PropTypes.bool
+    staticBackdrop: PropTypes.bool,
+    useOnHide: PropTypes.bool
 };
 
 export default BasicModal;

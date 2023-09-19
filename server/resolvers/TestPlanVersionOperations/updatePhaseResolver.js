@@ -40,6 +40,15 @@ const updatePhaseResolver = async (
         throw new AuthenticationError();
     }
 
+    // Immediately deprecate version without further checks
+    if (phase === 'DEPRECATED') {
+        await updateTestPlanVersion(testPlanVersionId, {
+            phase,
+            deprecatedAt: new Date()
+        });
+        return populateData({ testPlanVersionId }, { context });
+    }
+
     let testPlanVersionDataToInclude;
     let testPlanReportsDataToIncludeId = [];
 
@@ -261,17 +270,20 @@ const updatePhaseResolver = async (
         throw new Error('No reports have been marked as final.');
     }
 
-    if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
+    if (phase === 'CANDIDATE') {
         const reportsByAtAndBrowser = {};
 
-        testPlanReports.forEach(testPlanReport => {
-            const { at, browser } = testPlanReport;
-            if (!reportsByAtAndBrowser[at.id]) {
-                reportsByAtAndBrowser[at.id] = {};
-            }
+        testPlanReports
+            // Only check for reports which have been marked as final
+            .filter(testPlanReport => !!testPlanReport.markedFinalAt)
+            .forEach(testPlanReport => {
+                const { at, browser } = testPlanReport;
+                if (!reportsByAtAndBrowser[at.id]) {
+                    reportsByAtAndBrowser[at.id] = {};
+                }
 
-            reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
-        });
+                reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
+            });
 
         const ats = await context.atLoader.getAll();
 
@@ -294,7 +306,7 @@ const updatePhaseResolver = async (
         if (missingAtBrowserCombinations.length) {
             throw new Error(
                 `Cannot set phase to ${phase.toLowerCase()} because the following` +
-                    ` required reports have not been collected:` +
+                    ` required reports have not been collected or finalized:` +
                     ` ${missingAtBrowserCombinations.join(', ')}.`
             );
         }
@@ -415,6 +427,7 @@ const updatePhaseResolver = async (
     // deprecate it
     if (testPlanVersionDataToIncludeId)
         await updateTestPlanVersion(testPlanVersionDataToIncludeId, {
+            phase: 'DEPRECATED',
             deprecatedAt: new Date()
         });
 

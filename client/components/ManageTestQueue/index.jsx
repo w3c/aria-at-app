@@ -27,7 +27,7 @@ import { convertStringToDate } from '../../utils/formatter';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
-import { ThemeTable, ThemeTableHeader } from '../common/ThemeTable';
+import { ThemeTable, ThemeTableHeaderH2 } from '../common/ThemeTable';
 import PhasePill from '../common/PhasePill';
 
 const ModalInnerSectionContainer = styled.div`
@@ -596,13 +596,18 @@ const ManageTestQueue = ({
                 item =>
                     item.title === retrievedTestPlan.title &&
                     item.testPlan.directory ===
-                        retrievedTestPlan.testPlan.directory
+                        retrievedTestPlan.testPlan.directory &&
+                    item.phase !== 'DEPRECATED' &&
+                    item.phase !== 'RD'
             )
             .sort((a, b) =>
                 new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1
             );
         setMatchingTestPlanVersions(matchingTestPlanVersions);
-        setSelectedTestPlanVersionId(matchingTestPlanVersions[0].id);
+
+        if (matchingTestPlanVersions.length)
+            setSelectedTestPlanVersionId(matchingTestPlanVersions[0].id);
+        else setSelectedTestPlanVersionId(null);
     };
 
     const onManageAtChange = e => {
@@ -998,21 +1003,33 @@ const ManageTestQueue = ({
                                     Test Plan Version
                                 </Form.Label>
                                 <Form.Select
-                                    value={selectedTestPlanVersionId}
+                                    value={
+                                        selectedTestPlanVersionId
+                                            ? selectedTestPlanVersionId
+                                            : ''
+                                    }
                                     onChange={onTestPlanVersionChange}
+                                    disabled={!selectedTestPlanVersionId}
+                                    aria-disabled={!selectedTestPlanVersionId}
                                 >
-                                    {matchingTestPlanVersions.map(item => (
-                                        <option
-                                            key={`${item.gitSha}-${item.id}`}
-                                            value={item.id}
-                                        >
-                                            {gitUpdatedDateToString(
-                                                item.updatedAt
-                                            )}{' '}
-                                            {item.gitMessage} (
-                                            {item.gitSha.substring(0, 7)})
+                                    {matchingTestPlanVersions.length ? (
+                                        matchingTestPlanVersions.map(item => (
+                                            <option
+                                                key={`${item.gitSha}-${item.id}`}
+                                                value={item.id}
+                                            >
+                                                {gitUpdatedDateToString(
+                                                    item.updatedAt
+                                                )}{' '}
+                                                {item.gitMessage} (
+                                                {item.gitSha.substring(0, 7)})
+                                            </option>
+                                        ))
+                                    ) : (
+                                        <option>
+                                            Versions in R&D or Deprecated
                                         </option>
-                                    ))}
+                                    )}
                                 </Form.Select>
                             </Form.Group>
                             <Form.Group className="form-group">
@@ -1247,7 +1264,9 @@ const ManageTestQueue = ({
                                 </Button>
                             </Form.Group>
                         </div>
-                        <ThemeTableHeader>Required Reports</ThemeTableHeader>
+                        <ThemeTableHeaderH2>
+                            Required Reports
+                        </ThemeTableHeaderH2>
                         <ThemeTable bordered responsive>
                             <thead>
                                 <tr>

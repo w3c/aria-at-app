@@ -2520,6 +2520,357 @@ export default (
     {
         request: {
             query: testPlanReportStatusDialogQuery,
+            variables: { testPlanVersionId: '5' }
+        },
+        result: {
+            data: {
+                testPlanVersion: {
+                    id: '5',
+                    title: 'Checkbox Example (Mixed-State)',
+                    phase: 'RECOMMENDED',
+                    gitSha: '836fb2a997f5b2844035b8c934f8fda9833cd5b2',
+                    gitMessage: 'Validation for test csv formats (#980)',
+                    updatedAt: '2023-08-23T20:30:34.000Z',
+                    draftPhaseReachedAt: null,
+                    candidatePhaseReachedAt: '2022-07-06T00:00:00.000Z',
+                    recommendedPhaseTargetDate: '2023-01-02T00:00:00.000Z',
+                    recommendedPhaseReachedAt: '2023-01-03T00:00:00.000Z',
+                    testPlan: {
+                        directory: 'checkbox-tri-state'
+                    },
+                    testPlanReports: [
+                        {
+                            id: '6',
+                            metrics: {
+                                testsCount: 7,
+                                supportLevel: 'FAILING',
+                                conflictsCount: 0,
+                                supportPercent: 96,
+                                testsFailedCount: 3,
+                                testsPassedCount: 4,
+                                optionalFormatted: '4 of 4 passed',
+                                requiredFormatted: '44 of 46 passed',
+                                optionalAssertionsCount: 4,
+                                requiredAssertionsCount: 46,
+                                unexpectedBehaviorCount: 0,
+                                unexpectedBehaviorsFormatted: false,
+                                optionalAssertionsFailedCount: 0,
+                                optionalAssertionsPassedCount: 4,
+                                requiredAssertionsFailedCount: 2,
+                                requiredAssertionsPassedCount: 44
+                            },
+                            markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            at: {
+                                id: '3',
+                                name: 'VoiceOver for macOS'
+                            },
+                            browser: {
+                                id: '3',
+                                name: 'Safari'
+                            },
+                            issues: [],
+                            draftTestPlanRuns: [
+                                {
+                                    tester: {
+                                        username: 'tom-proudfeet'
+                                    },
+                                    testPlanReport: {
+                                        id: '6'
+                                    },
+                                    testResults: [
+                                        {
+                                            test: {
+                                                id: 'YTE3NeyIyIjoiNSJ9WJlMj'
+                                            },
+                                            atVersion: {
+                                                id: '3',
+                                                name: '11.6 (20G165)'
+                                            },
+                                            browserVersion: {
+                                                id: '3',
+                                                name: '14.1.2'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:57.070Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'YWJiOeyIyIjoiNSJ9GQ5Zm'
+                                            },
+                                            atVersion: {
+                                                id: '3',
+                                                name: '11.6 (20G165)'
+                                            },
+                                            browserVersion: {
+                                                id: '3',
+                                                name: '14.1.2'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:57.142Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'ZGFlYeyIyIjoiNSJ9TJlMW'
+                                            },
+                                            atVersion: {
+                                                id: '3',
+                                                name: '11.6 (20G165)'
+                                            },
+                                            browserVersion: {
+                                                id: '3',
+                                                name: '14.1.2'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:57.204Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'YjI2MeyIyIjoiNSJ9WE1OT'
+                                            },
+                                            atVersion: {
+                                                id: '3',
+                                                name: '11.6 (20G165)'
+                                            },
+                                            browserVersion: {
+                                                id: '3',
+                                                name: '14.1.2'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:57.275Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'ZjAwZeyIyIjoiNSJ9TZmZj'
+                                            },
+                                            atVersion: {
+                                                id: '3',
+                                                name: '11.6 (20G165)'
+                                            },
+                                            browserVersion: {
+                                                id: '3',
+                                                name: '14.1.2'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:57.330Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'MGRjZeyIyIjoiNSJ9WNiZD'
+                                            },
+                                            atVersion: {
+                                                id: '3',
+                                                name: '11.6 (20G165)'
+                                            },
+                                            browserVersion: {
+                                                id: '3',
+                                                name: '14.1.2'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:57.382Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'OTZmYeyIyIjoiNSJ9TU5Ym'
+                                            },
+                                            atVersion: {
+                                                id: '3',
+                                                name: '11.6 (20G165)'
+                                            },
+                                            browserVersion: {
+                                                id: '3',
+                                                name: '14.1.2'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:57.439Z'
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: '12',
+                            metrics: {
+                                testsCount: 14,
+                                supportLevel: 'FULL',
+                                conflictsCount: 0,
+                                supportPercent: 100,
+                                testsFailedCount: 12,
+                                testsPassedCount: 2,
+                                optionalFormatted: false,
+                                requiredFormatted: '25 of 25 passed',
+                                optionalAssertionsCount: 0,
+                                requiredAssertionsCount: 25,
+                                unexpectedBehaviorCount: 0,
+                                unexpectedBehaviorsFormatted: false,
+                                optionalAssertionsFailedCount: 0,
+                                optionalAssertionsPassedCount: 0,
+                                requiredAssertionsFailedCount: 0,
+                                requiredAssertionsPassedCount: 25
+                            },
+                            markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            at: {
+                                id: '1',
+                                name: 'JAWS'
+                            },
+                            browser: {
+                                id: '2',
+                                name: 'Chrome'
+                            },
+                            issues: [],
+                            draftTestPlanRuns: [
+                                {
+                                    tester: {
+                                        username: 'esmeralda-baggins'
+                                    },
+                                    testPlanReport: {
+                                        id: '12'
+                                    },
+                                    testResults: [
+                                        {
+                                            test: {
+                                                id: 'MTVlZeyIyIjoiNSJ9DUzMz'
+                                            },
+                                            atVersion: {
+                                                id: '1',
+                                                name: '2021.2111.13'
+                                            },
+                                            browserVersion: {
+                                                id: '2',
+                                                name: '99.0.4844.84'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:58.343Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'OThhMeyIyIjoiNSJ9WMxM2'
+                                            },
+                                            atVersion: {
+                                                id: '1',
+                                                name: '2021.2111.13'
+                                            },
+                                            browserVersion: {
+                                                id: '2',
+                                                name: '99.0.4844.84'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:58.404Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'YWNhNeyIyIjoiNSJ9TliN2'
+                                            },
+                                            atVersion: {
+                                                id: '1',
+                                                name: '2021.2111.13'
+                                            },
+                                            browserVersion: {
+                                                id: '2',
+                                                name: '99.0.4844.84'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:58.472Z'
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: '13',
+                            metrics: {
+                                testsCount: 14,
+                                supportLevel: 'FULL',
+                                conflictsCount: 0,
+                                supportPercent: 100,
+                                testsFailedCount: 12,
+                                testsPassedCount: 2,
+                                optionalFormatted: false,
+                                requiredFormatted: '25 of 25 passed',
+                                optionalAssertionsCount: 0,
+                                requiredAssertionsCount: 25,
+                                unexpectedBehaviorCount: 0,
+                                unexpectedBehaviorsFormatted: false,
+                                optionalAssertionsFailedCount: 0,
+                                optionalAssertionsPassedCount: 0,
+                                requiredAssertionsFailedCount: 0,
+                                requiredAssertionsPassedCount: 25
+                            },
+                            markedFinalAt: '2022-07-07T00:00:00.000Z',
+                            at: {
+                                id: '2',
+                                name: 'NVDA'
+                            },
+                            browser: {
+                                id: '2',
+                                name: 'Chrome'
+                            },
+                            issues: [],
+                            draftTestPlanRuns: [
+                                {
+                                    tester: {
+                                        username: 'esmeralda-baggins'
+                                    },
+                                    testPlanReport: {
+                                        id: '13'
+                                    },
+                                    testResults: [
+                                        {
+                                            test: {
+                                                id: 'MTVlZeyIyIjoiNSJ9DUzMz'
+                                            },
+                                            atVersion: {
+                                                id: '2',
+                                                name: '2020.4'
+                                            },
+                                            browserVersion: {
+                                                id: '2',
+                                                name: '99.0.4844.84'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:58.531Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'OThhMeyIyIjoiNSJ9WMxM2'
+                                            },
+                                            atVersion: {
+                                                id: '2',
+                                                name: '2020.4'
+                                            },
+                                            browserVersion: {
+                                                id: '2',
+                                                name: '99.0.4844.84'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:58.593Z'
+                                        },
+                                        {
+                                            test: {
+                                                id: 'YWNhNeyIyIjoiNSJ9TliN2'
+                                            },
+                                            atVersion: {
+                                                id: '2',
+                                                name: '2020.4'
+                                            },
+                                            browserVersion: {
+                                                id: '2',
+                                                name: '99.0.4844.84'
+                                            },
+                                            completedAt:
+                                                '2023-08-30T13:23:58.655Z'
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    {
+        request: {
+            query: testPlanReportStatusDialogQuery,
             variables: { testPlanVersionId: '7' }
         },
         result: {

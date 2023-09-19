@@ -37,7 +37,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             directory
             title
         }
-        testPlanVersions {
+        testPlanVersions(phases: [RD, DRAFT, CANDIDATE, RECOMMENDED]) {
             id
             title
             phase

@@ -1,33 +1,34 @@
 const { GithubService } = require('../../services');
-const { Base64 } = require('js-base64');
-const moment = require('moment');
+const convertDateToString = require('../../util/convertDateToString');
 
 const issuesResolver = async testPlanReport => {
-    if (!testPlanReport.candidatePhaseReachedAt) return [];
+    const issues = await GithubService.getAllIssues();
 
-    const searchPrefix = `${testPlanReport.at.name} Feedback: "`;
-    const searchTestPlanVersionTitle =
-        testPlanReport.testPlanVersion.dataValues.title;
-    const searchTestPlanVersionDate = moment(
-        testPlanReport.testPlanVersion.updatedAt
-    ).format('DD-MM-YYYY');
-    const cacheId = Base64.encode(
-        `${testPlanReport.id}${searchPrefix}${searchTestPlanVersionTitle}${searchTestPlanVersionDate}`
-    );
+    const { at, testPlanVersion } = testPlanReport;
 
-    const issues = await GithubService.getCandidateReviewIssuesByAt({
-        cacheId,
-        atName: testPlanReport.at.name
-    });
+    const searchTestPlanTitle = testPlanVersion.title;
 
-    if (issues.length) {
-        const filteredIssues = issues.filter(
-            ({ title }) =>
-                title.includes(searchPrefix) &&
-                title.includes(searchTestPlanVersionTitle) &&
-                title.includes(searchTestPlanVersionDate)
-        );
-        return filteredIssues.map(issue => {
+    const searchVersionString = `V${convertDateToString(
+        testPlanVersion.updatedAt,
+        'YY.MM.DD'
+    )}`;
+
+    let searchAtName;
+    if (at.name === 'JAWS' || at.name === 'NVDA') {
+        searchAtName = at.name.toLowerCase();
+    } else {
+        searchAtName = 'vo';
+    }
+
+    return issues
+        .filter(({ labels, body }) => {
+            return (
+                labels.find(({ name }) => name === searchAtName) &&
+                body?.includes(searchTestPlanTitle) &&
+                body?.includes(searchVersionString)
+            );
+        })
+        .map(issue => {
             const {
                 title,
                 user,
@@ -44,21 +45,24 @@ const issuesResolver = async testPlanReport => {
                 ? testNumberSubstring.match(/\d+/g)[0]
                 : null;
 
+            const labelNames = labels.map(label => label.name);
+
+            const feedbackType = labelNames.includes('changes-requested')
+                ? 'CHANGES_REQUESTED'
+                : 'FEEDBACK';
+
             return {
                 author: user.login,
+                title,
+                createdAt: issue.created_at,
+                closedAt: issue.closed_at,
                 link: `${html_url}#issue-${topCommentId}`,
-                feedbackType: labels
-                    .map(label => label.name)
-                    .includes('changes-requested')
-                    ? 'CHANGES_REQUESTED'
-                    : 'FEEDBACK',
+                isCandidateReview: labelNames.includes('candidate-review'),
+                feedbackType,
                 isOpen: state === 'open',
                 testNumberFilteredByAt
             };
         });
-    }
-
-    return [];
 };
 
 module.exports = issuesResolver;
