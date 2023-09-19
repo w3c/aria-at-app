@@ -309,8 +309,6 @@ const ManageTestQueue = ({
         );
     });
 
-    // Section:
-
     const onOpenShowEditAtBrowserModal = (
         type = 'edit',
         phase,
@@ -343,7 +341,6 @@ const ManageTestQueue = ({
         setShowEditAtBrowserModal(false);
     };
 
-    // Section:
     const runMutationForRequiredReportTable = async mutation => {
         let atId = updateAtForButton;
         let browserId = updateBrowserForButton;
@@ -1548,7 +1545,6 @@ const ManageTestQueue = ({
                         </ModalInnerSectionContainer>
                     }
                     actionLabel={actionButtonLabel}
-                    //section: save button
                     handleAction={() => {
                         if (actionButtonLabel === 'Save Changes') {
                             runMutationForRequiredReportTable(
