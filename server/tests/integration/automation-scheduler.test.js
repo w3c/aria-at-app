@@ -142,6 +142,13 @@ const cancelCollectionJobByMutation = async () =>
         }
     `);
 
+const deleteCollectionJobByMutation = async () =>
+    await mutate(`
+        mutation {
+            deleteCollectionJob(id: "${jobId}") 
+        }
+    `);
+
 describe('Automation controller', () => {
     it('should schedule a new job', async () => {
         await dbCleaner(async () => {
@@ -539,10 +546,12 @@ describe('Automation controller', () => {
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);
-            const response = await sessionAgent.post(
-                `/api/jobs/${jobId}/delete`
-            );
-            expect(response.statusCode).toBe(200);
+
+            const res = await deleteCollectionJobByMutation();
+            expect(res).toEqual({
+                deleteCollectionJob: true
+            });
+
             const { collectionJob: deletedCollectionJob } =
                 await getTestCollectionJob();
             expect(deletedCollectionJob).toEqual(null);

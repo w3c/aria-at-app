@@ -2,7 +2,6 @@ const { Router } = require('express');
 const {
     getJobLog,
     updateJobStatus,
-    deleteJob,
     updateJobResults
 } = require('../controllers/AutomationController');
 const {
@@ -20,8 +19,6 @@ router.post(
     updateJobStatus,
     handleError
 );
-
-router.post('/:jobID/delete', deleteJob, handleError);
 
 router.post(
     '/:jobID/result',

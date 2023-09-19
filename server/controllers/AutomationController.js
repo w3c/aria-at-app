@@ -1,8 +1,7 @@
 const axios = require('axios');
 const {
     getCollectionJobById,
-    updateCollectionJob,
-    deleteCollectionJob
+    updateCollectionJob
 } = require('../models/services/CollectionJobService');
 const {
     findOrCreateTestResult
@@ -245,15 +244,9 @@ const updateJobResults = async (req, res) => {
     res.json({ success: true });
 };
 
-const deleteJob = async (req, res) => {
-    const graphqlResponse = await deleteCollectionJob(req.params.jobID);
-    res.json(graphqlResponse);
-};
-
 module.exports = {
     cancelJob,
     getJobLog,
     updateJobStatus,
-    updateJobResults,
-    deleteJob
+    updateJobResults
 };
