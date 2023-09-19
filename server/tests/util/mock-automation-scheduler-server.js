@@ -3,6 +3,7 @@ const express = require('express');
 const {
     verifyAutomationScheduler
 } = require('../../middleware/verifyAutomationScheduler');
+const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 
 const setupMockAutomationSchedulerServer = async () => {
     const app = express();
@@ -16,15 +17,21 @@ const setupMockAutomationSchedulerServer = async () => {
     });
 
     app.post('/jobs/new', (req, res) => {
-        return res.json({ id: '999', status: 'QUEUED' });
+        return res.json({ id: '999', status: COLLECTION_JOB_STATUS.QUEUED });
     });
 
     app.post('/jobs/:jobID/cancel', (req, res) => {
-        return res.json({ id: req.params.jobID, status: 'CANCELED' });
+        return res.json({
+            id: req.params.jobID,
+            status: COLLECTION_JOB_STATUS.CANCELLED
+        });
     });
 
     app.post('/jobs/:jobID/restart', (req, res) => {
-        return res.json({ id: req.params.jobID, status: 'QUEUED' });
+        return res.json({
+            id: req.params.jobID,
+            status: COLLECTION_JOB_STATUS.QUEUED
+        });
     });
 
     app.get('/jobs/:jobID/log', (req, res) => {

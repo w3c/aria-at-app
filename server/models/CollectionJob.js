@@ -1,10 +1,6 @@
+const { COLLECTION_JOB_STATUS } = require('../util/enums');
+
 const MODEL_NAME = 'CollectionJob';
-const STATUS = {
-    QUEUED: 'QUEUED',
-    RUNNING: 'RUNNING',
-    COMPLETED: 'COMPLETED',
-    FAILED: 'FAILED'
-};
 
 module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
@@ -18,7 +14,7 @@ module.exports = function (sequelize, DataTypes) {
             status: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                defaultValue: STATUS.QUEUED
+                defaultValue: COLLECTION_JOB_STATUS.QUEUED
             },
             testPlanRunId: {
                 type: DataTypes.INTEGER,
@@ -45,10 +41,10 @@ module.exports = function (sequelize, DataTypes) {
         });
     };
 
-    Model.QUEUED = STATUS.QUEUED;
-    Model.RUNNING = STATUS.RUNNING;
-    Model.COMPLETED = STATUS.COMPLETED;
-    Model.FAILED = STATUS.FAILED;
+    Model.QUEUED = COLLECTION_JOB_STATUS.QUEUED;
+    Model.RUNNING = COLLECTION_JOB_STATUS.RUNNING;
+    Model.COMPLETED = COLLECTION_JOB_STATUS.COMPLETED;
+    Model.ERROR = COLLECTION_JOB_STATUS.ERROR;
 
     return Model;
 };

@@ -18,6 +18,7 @@ const {
 } = require('../models/services/TestPlanReportService');
 const { runnableTests } = require('../resolvers/TestPlanReport');
 const { HttpQueryError } = require('apollo-server-core');
+const { COLLECTION_JOB_STATUS } = require('../util/enums');
 
 const axiosConfig = {
     headers: {
@@ -37,7 +38,7 @@ const throwNoJobFoundError = jobId => {
 const throwSchedulerError = schedulerResponse => {
     throw new HttpQueryError(
         502,
-        `Response scheduler did not successfully cancel job: ${schedulerResponse}`,
+        `Response scheduler did not give a correct response: ${schedulerResponse}`,
         false
     );
 };
@@ -111,9 +112,12 @@ const cancelJob = async (req, res) => {
         throwSchedulerError(automationSchedulerResponse);
     }
 
-    if (automationSchedulerResponse.data.status === 'CANCELED') {
+    if (
+        automationSchedulerResponse.data.status ===
+        COLLECTION_JOB_STATUS.CANCELLED
+    ) {
         const graphqlRes = await updateCollectionJob(req.params.jobID, {
-            status: 'CANCELED'
+            status: COLLECTION_JOB_STATUS.CANCELLED
         });
         if (!graphqlRes) {
             throwNoJobFoundError(req.params.jobID);
@@ -133,9 +137,11 @@ const restartJob = async (req, res) => {
         throwSchedulerError(automationSchedulerResponse);
     }
 
-    if (automationSchedulerResponse.data.status === 'QUEUED') {
+    if (
+        automationSchedulerResponse.data.status === COLLECTION_JOB_STATUS.QUEUED
+    ) {
         const graphqlRes = await updateCollectionJob(req.params.jobID, {
-            status: 'QUEUED'
+            status: COLLECTION_JOB_STATUS.QUEUED
         });
         if (!graphqlRes) {
             throwNoJobFoundError(req.params.jobID);
@@ -158,13 +164,7 @@ const getJobLog = async (req, res) => {
 const updateJobStatus = async (req, res) => {
     const { status } = req.body;
 
-    if (
-        status !== 'RUNNING' &&
-        status !== 'COMPLETED' &&
-        status !== 'FAILED' &&
-        status !== 'CANCELED' &&
-        status !== 'QUEUED'
-    ) {
+    if (!Object.values(COLLECTION_JOB_STATUS).includes(status)) {
         throw new HttpQueryError(400, `Invalid status: ${status}`, true);
     }
 
@@ -300,10 +300,10 @@ const updateJobResults = async (req, res) => {
     const job = await getCollectionJobById(id);
 
     if (!job) {
-        throw new Error(`Job with id ${id} not found`);
+        throwNoJobFoundError(id);
     }
 
-    if (job.status !== 'RUNNING') {
+    if (job.status !== COLLECTION_JOB_STATUS.RUNNING) {
         throw new Error(
             `Job with id ${id} is not running, cannot update results`
         );

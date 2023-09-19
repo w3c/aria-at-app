@@ -77,8 +77,8 @@ const graphqlSchema = gql`
         QUEUED
         RUNNING
         COMPLETED
-        FAILED
-        CANCELED
+        ERROR
+        CANCELLED
     }
     """
     A job which was scheduled to collect automated test results using the Response Collection System.
@@ -90,7 +90,7 @@ const graphqlSchema = gql`
         id: ID!
         """
         The status of the job, which can be "QUEUED", "RUNNING", "COMPLETED" or
-        "FAILED".
+        "ERROR".
         """
         status: CollectionJobStatus!
         """
