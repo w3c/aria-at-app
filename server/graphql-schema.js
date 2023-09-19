@@ -1324,7 +1324,7 @@ const graphqlSchema = gql`
         """
         addViewer(testPlanVersionId: ID!, testId: ID!): User!
         """
-        Schedule a new CollectionJob
+        Schedule a new CollectionJob through the Response Scheduler
         """
         scheduleCollectionJob(
             """
@@ -1363,11 +1363,20 @@ const graphqlSchema = gql`
             status: CollectionJobStatus
         ): CollectionJob
         """
-        Restart a CollectionJob
+        Restart a CollectionJob by way of the Response Scheduler
         """
         restartCollectionJob(
             """
             The CollectionJob to restart.
+            """
+            id: ID!
+        ): CollectionJob
+        """
+        Cancel a CollectionJob by way of the Response Scheduler
+        """
+        cancelCollectionJob(
+            """
+            The CollectionJob to cancel.
             """
             id: ID!
         ): CollectionJob

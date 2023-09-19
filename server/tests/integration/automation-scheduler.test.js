@@ -132,6 +132,16 @@ const restartCollectionJobByMutation = async () =>
         }
     `);
 
+const cancelCollectionJobByMutation = async () =>
+    await mutate(`
+        mutation {
+            cancelCollectionJob(id: "${jobId}") {
+                id
+                status
+            }
+        }
+    `);
+
 describe('Automation controller', () => {
     it('should schedule a new job', async () => {
         await dbCleaner(async () => {
@@ -209,11 +219,9 @@ describe('Automation controller', () => {
     it('should cancel a job', async () => {
         await dbCleaner(async () => {
             await scheduleCollectionJobByMutation();
-            const response = await sessionAgent.post(
-                `/api/jobs/${jobId}/cancel`
-            );
-            expect(response.statusCode).toBe(200);
-            expect(response.body).toEqual({
+            const { cancelCollectionJob: canceledCollectionJob } =
+                await cancelCollectionJobByMutation();
+            expect(canceledCollectionJob).toEqual({
                 id: jobId,
                 status: COLLECTION_JOB_STATUS.CANCELLED
             });
@@ -226,12 +234,10 @@ describe('Automation controller', () => {
         });
     });
 
-    it('should fail to cancel a job that does not exist', async () => {
-        const response = await sessionAgent.post(`/api/jobs/${jobId}/cancel`);
-        expect(response.statusCode).toBe(404);
-        expect(response.body).toEqual({
-            error: `Could not find job with jobId: ${jobId}`
-        });
+    it('should gracefully reject request to cancel a job that does not exist', async () => {
+        const { cancelCollectionJob: canceledCollectionJob } =
+            await cancelCollectionJobByMutation();
+        expect(canceledCollectionJob).toBe(null);
     });
 
     it('should restart a job', async () => {

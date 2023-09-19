@@ -317,6 +317,41 @@ const getOrCreateCollectionJob = async (
 };
 
 /**
+ * Cancels a collection job by id through the Response Scheduler
+ * @param {object} input Input object for request to cancel job
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<[*, [*]]>}
+ */
+const cancelCollectionJob = async ({ id }, options) => {
+    const automationSchedulerResponse = await axios.post(
+        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${id}/cancel`,
+        {},
+        axiosConfig
+    );
+
+    if (
+        automationSchedulerResponse.data.status ===
+        COLLECTION_JOB_STATUS.CANCELLED
+    ) {
+        return updateCollectionJob(
+            id,
+            {
+                status: COLLECTION_JOB_STATUS.CANCELLED
+            },
+            COLLECTION_JOB_ATTRIBUTES,
+            options
+        );
+    } else {
+        throw new HttpQueryError(
+            502,
+            `Error cancelling job: ${automationSchedulerResponse}`,
+            true
+        );
+    }
+};
+
+/**
  * @param {string} id - id of the CollectionJob to be deleted
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -355,6 +390,7 @@ const restartCollectionJob = async ({ id }, options) => {
             {
                 status: COLLECTION_JOB_STATUS.QUEUED
             },
+            COLLECTION_JOB_ATTRIBUTES,
             options
         );
     } else {
@@ -375,7 +411,8 @@ module.exports = {
     deleteCollectionJob,
     // Nested CRUD
     getOrCreateCollectionJob,
-    // Custom
+    // Custom for Response Scheduler
     scheduleCollectionJob,
-    restartCollectionJob
+    restartCollectionJob,
+    cancelCollectionJob
 };
