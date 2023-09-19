@@ -98,7 +98,7 @@ const createCollectionJobThroughAPI = async () =>
         testPlanReportId
     });
 
-describe('Schedule jobs with automation controller', () => {
+describe('Automation controller', () => {
     it('should schedule a new job', async () => {
         await dbCleaner(async () => {
             const response = await createCollectionJobThroughAPI();
@@ -193,6 +193,14 @@ describe('Schedule jobs with automation controller', () => {
         });
     });
 
+    it('should fail to cancel a job that does not exist', async () => {
+        const response = await sessionAgent.post(`/api/jobs/${jobId}/cancel`);
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({
+            error: `Could not find job with jobId: ${jobId}`
+        });
+    });
+
     it('should restart a job', async () => {
         await dbCleaner(async () => {
             await createCollectionJobThroughAPI();
@@ -208,6 +216,14 @@ describe('Schedule jobs with automation controller', () => {
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);
             expect(storedCollectionJob.status).toEqual('QUEUED');
+        });
+    });
+
+    it('should fail to restart a job that does not exist', async () => {
+        const response = await sessionAgent.post(`/api/jobs/${jobId}/restart`);
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({
+            error: `Could not find job with jobId: ${jobId}`
         });
     });
 
@@ -233,6 +249,37 @@ describe('Schedule jobs with automation controller', () => {
             expect(response.body).toEqual({
                 error: 'Unauthorized'
             });
+        });
+    });
+
+    it('should fail to update a job status with invalid status', async () => {
+        await dbCleaner(async () => {
+            await createCollectionJobThroughAPI();
+            const response = await sessionAgent
+                .post(`/api/jobs/${jobId}/update`)
+                .send({ status: 'INVALID' })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                );
+            expect(response.statusCode).toBe(400);
+            expect(response.body).toEqual({
+                error: 'Invalid status: INVALID'
+            });
+        });
+    });
+
+    it('should fail to update a job status for a non-existent jobId', async () => {
+        const response = await sessionAgent
+            .post(`/api/jobs/${jobId}/update`)
+            .send({ status: 'RUNNING' })
+            .set(
+                'x-automation-secret',
+                process.env.AUTOMATION_SCHEDULER_SECRET
+            );
+        expect(response.statusCode).toBe(404);
+        expect(response.body).toEqual({
+            error: `Could not find job with jobId: ${jobId}`
         });
     });
 

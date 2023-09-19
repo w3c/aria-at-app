@@ -17,6 +17,7 @@ const {
     getTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 const { runnableTests } = require('../resolvers/TestPlanReport');
+const { HttpQueryError } = require('apollo-server-core');
 
 const axiosConfig = {
     headers: {
@@ -25,130 +26,157 @@ const axiosConfig = {
     timeout: 1000
 };
 
+const throwNoJobFoundError = jobId => {
+    throw new HttpQueryError(
+        404,
+        `Could not find job with jobId: ${jobId}`,
+        true
+    );
+};
+
+const throwSchedulerError = schedulerResponse => {
+    throw new HttpQueryError(
+        502,
+        `Response scheduler did not successfully cancel job: ${schedulerResponse}`,
+        false
+    );
+};
+
 const scheduleNewJob = async (req, res) => {
-    try {
-        const { testPlanReportId } = req.body;
+    const { testPlanReportId } = req.body;
 
-        const report = await getTestPlanReportById(testPlanReportId);
+    const report = await getTestPlanReportById(testPlanReportId);
 
-        if (!report) {
-            throw new Error(
-                `Test plan report with id ${testPlanReportId} not found`
-            );
-        }
-
-        const tests = await runnableTests(report);
-        const { directory } = report.testPlanVersion.testPlan;
-        const { gitSha } = report.testPlanVersion;
-
-        if (!tests || tests.length === 0) {
-            throw new Error(
-                `No runnable tests found for test plan report with id ${testPlanReportId}`
-            );
-        }
-
-        if (!gitSha) {
-            throw new Error(
-                `Test plan version with id ${report.testPlanVersionId} does not have a gitSha`
-            );
-        }
-
-        if (!directory) {
-            throw new Error(
-                `Test plan with id ${report.testPlanVersion.testPlanId} does not have a directory`
-            );
-        }
-
-        const automationSchedulerResponse = await axios.post(
-            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-            {
-                testPlanVersionGitSha: gitSha,
-                testIds: tests.map(t => t.id),
-                testPlanName: directory
-            },
-            axiosConfig
+    if (!report) {
+        throw new HttpQueryError(
+            404,
+            `Test plan report with id ${testPlanReportId} not found`,
+            true
         );
+    }
 
-        const { id, status } = automationSchedulerResponse.data;
-        if (id) {
-            const job = await getOrCreateCollectionJob({
-                id,
-                status,
-                testPlanReportId
-            });
-            res.json(job);
-        } else {
-            throw new Error('Job not created');
-        }
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    const tests = await runnableTests(report);
+    const { directory } = report.testPlanVersion.testPlan;
+    const { gitSha } = report.testPlanVersion;
+
+    if (!tests || tests.length === 0) {
+        throw new Error(
+            `No runnable tests found for test plan report with id ${testPlanReportId}`
+        );
+    }
+
+    if (!gitSha) {
+        throw new Error(
+            `Test plan version with id ${report.testPlanVersionId} does not have a gitSha`
+        );
+    }
+
+    if (!directory) {
+        throw new Error(
+            `Test plan with id ${report.testPlanVersion.testPlanId} does not have a directory`
+        );
+    }
+
+    const automationSchedulerResponse = await axios.post(
+        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
+        {
+            testPlanVersionGitSha: gitSha,
+            testIds: tests.map(t => t.id),
+            testPlanName: directory
+        },
+        axiosConfig
+    );
+
+    const { id, status } = automationSchedulerResponse.data;
+    if (id) {
+        const job = await getOrCreateCollectionJob({
+            id,
+            status,
+            testPlanReportId
+        });
+        res.json(job);
+    } else {
+        throw new Error('Job not created');
     }
 };
 
 const cancelJob = async (req, res) => {
-    try {
-        const automationSchedulerResponse = await axios.post(
-            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${req.params.jobID}/cancel`,
-            {},
-            axiosConfig
-        );
-        if (automationSchedulerResponse.data.status === 'CANCELED') {
-            await updateCollectionJob(req.params.jobID, {
-                status: 'CANCELED'
-            });
-        } else {
-            throw new Error('Job not canceled');
-        }
-        res.json(automationSchedulerResponse.data);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    const automationSchedulerResponse = await axios.post(
+        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${req.params.jobID}/cancel`,
+        {},
+        axiosConfig
+    );
+
+    if (!automationSchedulerResponse.data) {
+        throwSchedulerError(automationSchedulerResponse);
     }
+
+    if (automationSchedulerResponse.data.status === 'CANCELED') {
+        const graphqlRes = await updateCollectionJob(req.params.jobID, {
+            status: 'CANCELED'
+        });
+        if (!graphqlRes) {
+            throwNoJobFoundError(req.params.jobID);
+        }
+    }
+    res.json(automationSchedulerResponse.data);
 };
 
 const restartJob = async (req, res) => {
-    try {
-        const automationSchedulerResponse = await axios.post(
-            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${req.params.jobID}/restart`,
-            {},
-            axiosConfig
-        );
-        if (automationSchedulerResponse.data.status === 'QUEUED') {
-            await updateCollectionJob(req.params.jobID, {
-                status: 'QUEUED'
-            });
-        } else {
-            throw new Error('Job not restarted');
-        }
-        res.json(automationSchedulerResponse.data);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    const automationSchedulerResponse = await axios.post(
+        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${req.params.jobID}/restart`,
+        {},
+        axiosConfig
+    );
+
+    if (!automationSchedulerResponse.data) {
+        throwSchedulerError(automationSchedulerResponse);
     }
+
+    if (automationSchedulerResponse.data.status === 'QUEUED') {
+        const graphqlRes = await updateCollectionJob(req.params.jobID, {
+            status: 'QUEUED'
+        });
+        if (!graphqlRes) {
+            throwNoJobFoundError(req.params.jobID);
+        }
+    }
+    res.json(automationSchedulerResponse.data);
 };
 
 const getJobLog = async (req, res) => {
-    try {
-        const automationSchedulerResponse = await axios.get(
-            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${req.params.jobID}/log`,
-            axiosConfig
-        );
-        res.json(automationSchedulerResponse.data);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    const automationSchedulerResponse = await axios.get(
+        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${req.params.jobID}/log`,
+        axiosConfig
+    );
+    if (!automationSchedulerResponse.data) {
+        throwSchedulerError(automationSchedulerResponse);
     }
+    res.json(automationSchedulerResponse.data);
 };
 
 const updateJobStatus = async (req, res) => {
-    try {
-        const { status } = req.body;
+    const { status } = req.body;
 
-        const graphqlResponse = await updateCollectionJob(req.params.jobID, {
-            status
-        });
-
-        res.json(graphqlResponse);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    if (
+        status !== 'RUNNING' &&
+        status !== 'COMPLETED' &&
+        status !== 'FAILED' &&
+        status !== 'CANCELED' &&
+        status !== 'QUEUED'
+    ) {
+        throw new HttpQueryError(400, `Invalid status: ${status}`, true);
     }
+
+    const graphqlResponse = await updateCollectionJob(req.params.jobID, {
+        status
+    });
+
+    if (!graphqlResponse) {
+        throwNoJobFoundError(req.params.jobID);
+    }
+
+    res.json(graphqlResponse);
 };
 
 const getApprovedTestPlanRuns = async testPlanRun => {
@@ -267,55 +295,46 @@ const updateOrCreateTestResultWithResponses = async ({
 };
 
 const updateJobResults = async (req, res) => {
-    try {
-        const id = req.params.jobID;
-        const { testId, responses, atVersionName, browserVersionName } =
-            req.body;
-        const job = await getCollectionJobById(id);
+    const id = req.params.jobID;
+    const { testId, responses, atVersionName, browserVersionName } = req.body;
+    const job = await getCollectionJobById(id);
 
-        if (!job) {
-            throw new Error(`Job with id ${id} not found`);
-        }
-
-        if (job.status !== 'RUNNING') {
-            throw new Error(
-                `Job with id ${id} is not running, cannot update results`
-            );
-        }
-
-        const [atVersions, browserVersions] = await Promise.all([
-            getAtVersions(),
-            getBrowserVersions()
-        ]);
-        const atVersion = atVersions.find(each => each.name === atVersionName);
-        const browserVersion = browserVersions.find(
-            each => each.name === browserVersionName
-        );
-
-        if (!atVersion) throw new Error('AT version not found');
-        if (!browserVersion) throw new Error('Browser version not found');
-
-        await updateOrCreateTestResultWithResponses({
-            testId,
-            responses,
-            testPlanRun: job.testPlanRun,
-            atVersionId: atVersion.id,
-            browserVersionId: browserVersion.id
-        });
-
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    if (!job) {
+        throw new Error(`Job with id ${id} not found`);
     }
+
+    if (job.status !== 'RUNNING') {
+        throw new Error(
+            `Job with id ${id} is not running, cannot update results`
+        );
+    }
+
+    const [atVersions, browserVersions] = await Promise.all([
+        getAtVersions(),
+        getBrowserVersions()
+    ]);
+    const atVersion = atVersions.find(each => each.name === atVersionName);
+    const browserVersion = browserVersions.find(
+        each => each.name === browserVersionName
+    );
+
+    if (!atVersion) throw new Error('AT version not found');
+    if (!browserVersion) throw new Error('Browser version not found');
+
+    await updateOrCreateTestResultWithResponses({
+        testId,
+        responses,
+        testPlanRun: job.testPlanRun,
+        atVersionId: atVersion.id,
+        browserVersionId: browserVersion.id
+    });
+
+    res.json({ success: true });
 };
 
 const deleteJob = async (req, res) => {
-    try {
-        const graphqlResponse = await deleteCollectionJob(req.params.jobID);
-        res.json(graphqlResponse);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+    const graphqlResponse = await deleteCollectionJob(req.params.jobID);
+    res.json(graphqlResponse);
 };
 
 module.exports = {
