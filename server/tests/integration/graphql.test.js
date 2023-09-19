@@ -138,7 +138,8 @@ describe('graphql', () => {
             // Items formatted like this:
             // 'TestResult'
             'Issue',
-            'Vendor'
+            'Vendor',
+            'scheduleCollectionJob'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
@@ -153,7 +154,8 @@ describe('graphql', () => {
             ['TestPlanVersion', 'recommendedPhaseTargetDate'],
             ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers'],
-            ['CollectionJob', 'testPlanRun']
+            ['CollectionJob', 'testPlanRun'],
+            ['Mutation', 'scheduleCollectionJob']
         ];
         ({
             typeAwareQuery,

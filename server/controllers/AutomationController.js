@@ -2,7 +2,6 @@ const axios = require('axios');
 const {
     getCollectionJobById,
     updateCollectionJob,
-    getOrCreateCollectionJob,
     deleteCollectionJob
 } = require('../models/services/CollectionJobService');
 const {
@@ -13,10 +12,6 @@ const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTest
 const { getAtVersions } = require('../models/services/AtService');
 const { getBrowserVersions } = require('../models/services/BrowserService');
 const { getTestPlanRuns } = require('../models/services/TestPlanRunService');
-const {
-    getTestPlanReportById
-} = require('../models/services/TestPlanReportService');
-const { runnableTests } = require('../resolvers/TestPlanReport');
 const { HttpQueryError } = require('apollo-server-core');
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
 
@@ -41,64 +36,6 @@ const throwSchedulerError = schedulerResponse => {
         `Response scheduler did not give a correct response: ${schedulerResponse}`,
         false
     );
-};
-
-const scheduleNewJob = async (req, res) => {
-    const { testPlanReportId } = req.body;
-
-    const report = await getTestPlanReportById(testPlanReportId);
-
-    if (!report) {
-        throw new HttpQueryError(
-            404,
-            `Test plan report with id ${testPlanReportId} not found`,
-            true
-        );
-    }
-
-    const tests = await runnableTests(report);
-    const { directory } = report.testPlanVersion.testPlan;
-    const { gitSha } = report.testPlanVersion;
-
-    if (!tests || tests.length === 0) {
-        throw new Error(
-            `No runnable tests found for test plan report with id ${testPlanReportId}`
-        );
-    }
-
-    if (!gitSha) {
-        throw new Error(
-            `Test plan version with id ${report.testPlanVersionId} does not have a gitSha`
-        );
-    }
-
-    if (!directory) {
-        throw new Error(
-            `Test plan with id ${report.testPlanVersion.testPlanId} does not have a directory`
-        );
-    }
-
-    const automationSchedulerResponse = await axios.post(
-        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-        {
-            testPlanVersionGitSha: gitSha,
-            testIds: tests.map(t => t.id),
-            testPlanName: directory
-        },
-        axiosConfig
-    );
-
-    const { id, status } = automationSchedulerResponse.data;
-    if (id) {
-        const job = await getOrCreateCollectionJob({
-            id,
-            status,
-            testPlanReportId
-        });
-        res.json(job);
-    } else {
-        throw new Error('Job not created');
-    }
 };
 
 const cancelJob = async (req, res) => {
@@ -338,7 +275,6 @@ const deleteJob = async (req, res) => {
 };
 
 module.exports = {
-    scheduleNewJob,
     cancelJob,
     restartJob,
     getJobLog,

@@ -1324,7 +1324,16 @@ const graphqlSchema = gql`
         """
         addViewer(testPlanVersionId: ID!, testId: ID!): User!
         """
-        Create a CollectionJob
+        Schedule a new CollectionJob
+        """
+        scheduleCollectionJob(
+            """
+            The CollectionJob to schedule.
+            """
+            testPlanReportId: ID!
+        ): CollectionJob!
+        """
+        Find or create a CollectionJob
         """
         findOrCreateCollectionJob(
             """

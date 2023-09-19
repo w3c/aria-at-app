@@ -2,13 +2,16 @@ const startSupertestServer = require('../util/api-server');
 const automationRoutes = require('../../routes/automation');
 const setupMockAutomationSchedulerServer = require('../util/mock-automation-scheduler-server');
 const db = require('../../models/index');
-const { query } = require('../util/graphql-test-utilities');
+const { query, mutate } = require('../util/graphql-test-utilities');
 const { markAsFinal } = require('../../resolvers/TestPlanReportOperations');
 const { getAtVersions } = require('../../models/services/AtService');
 const { getBrowserVersions } = require('../../models/services/BrowserService');
 const dbCleaner = require('../util/db-cleaner');
 const { default: axios } = require('axios');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
+const {
+    getCollectionJobById
+} = require('../../models/services/CollectionJobService');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -94,31 +97,46 @@ const getTestCollectionJob = async () =>
         }
     `);
 
-const createCollectionJobThroughAPI = async () =>
-    await sessionAgent.post('/api/jobs/new').send({
-        testPlanReportId
-    });
+const scheduleNewCollectionJob = async () =>
+    await mutate(`
+        mutation {
+            scheduleCollectionJob(testPlanReportId: "${testPlanReportId}") {
+                id
+                status
+                testPlanRun {
+                    testPlanReport {
+                        id
+                        testPlanVersion {
+                            id
+                            phase
+                        }
+                    }
+                    testResults {
+                        id
+                        scenarioResults {
+                            output
+                        }
+                    }
+                }
+            }
+        }
+    `);
 
 describe('Automation controller', () => {
     it('should schedule a new job', async () => {
         await dbCleaner(async () => {
-            const response = await createCollectionJobThroughAPI();
-
-            expect(response.statusCode).toBe(200);
-            expect(response.body.id).toEqual(jobId);
-            expect(response.body.status).toEqual(COLLECTION_JOB_STATUS.QUEUED);
-            const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob();
-            expect(storedCollectionJob.id).toEqual(jobId);
-            expect(storedCollectionJob.status).toEqual(
-                COLLECTION_JOB_STATUS.QUEUED
-            );
-            expect(storedCollectionJob.testPlanRun.testPlanReport.id).toEqual(
+            const job = await scheduleNewCollectionJob();
+            // get job from result of graphql mutation
+            const { scheduleCollectionJob: storedJob } = job;
+            expect(storedJob).not.toEqual(undefined);
+            expect(storedJob.id).toEqual(jobId);
+            expect(storedJob.status).toEqual(COLLECTION_JOB_STATUS.QUEUED);
+            expect(storedJob.id).toEqual(jobId);
+            expect(storedJob.status).toEqual(COLLECTION_JOB_STATUS.QUEUED);
+            expect(storedJob.testPlanRun.testPlanReport.id).toEqual(
                 testPlanReportId
             );
-            expect(storedCollectionJob.testPlanRun.testResults.length).toEqual(
-                0
-            );
+            expect(storedJob.testPlanRun.testResults.length).toEqual(0);
         });
     });
 
@@ -160,7 +178,7 @@ describe('Automation controller', () => {
                 testPlanName
             };
 
-            await createCollectionJobThroughAPI();
+            await scheduleNewCollectionJob();
 
             expect(axiosPostMock).toHaveBeenCalledWith(
                 `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
@@ -180,7 +198,7 @@ describe('Automation controller', () => {
 
     it('should cancel a job', async () => {
         await dbCleaner(async () => {
-            await createCollectionJobThroughAPI();
+            await scheduleNewCollectionJob();
             const response = await sessionAgent.post(
                 `/api/jobs/${jobId}/cancel`
             );
@@ -208,7 +226,7 @@ describe('Automation controller', () => {
 
     it('should restart a job', async () => {
         await dbCleaner(async () => {
-            await createCollectionJobThroughAPI();
+            await scheduleNewCollectionJob();
             const response = await sessionAgent.post(
                 `/api/jobs/${jobId}/restart`
             );
@@ -236,7 +254,7 @@ describe('Automation controller', () => {
 
     it('should get a job log', async () => {
         await dbCleaner(async () => {
-            await createCollectionJobThroughAPI();
+            await scheduleNewCollectionJob();
             const response = await sessionAgent.get(`/api/jobs/${jobId}/log`);
             expect(response.statusCode).toBe(200);
             expect(response.body).toEqual({
@@ -248,7 +266,7 @@ describe('Automation controller', () => {
 
     it('should not update a job status without verification', async () => {
         await dbCleaner(async () => {
-            await createCollectionJobThroughAPI();
+            await scheduleNewCollectionJob();
             const response = await sessionAgent.post(
                 `/api/jobs/${jobId}/update`
             );
@@ -261,7 +279,7 @@ describe('Automation controller', () => {
 
     it('should fail to update a job status with invalid status', async () => {
         await dbCleaner(async () => {
-            await createCollectionJobThroughAPI();
+            await scheduleNewCollectionJob();
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: 'INVALID' })
@@ -292,7 +310,7 @@ describe('Automation controller', () => {
 
     it('should update a job status with verification', async () => {
         await dbCleaner(async () => {
-            await createCollectionJobThroughAPI();
+            await scheduleNewCollectionJob();
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: COLLECTION_JOB_STATUS.RUNNING })
@@ -323,8 +341,9 @@ describe('Automation controller', () => {
 
     it('should update job results', async () => {
         await dbCleaner(async () => {
-            const res = await createCollectionJobThroughAPI();
-            const collectionJob = res.body;
+            const { scheduleCollectionJob: job } =
+                await scheduleNewCollectionJob();
+            const collectionJob = await getCollectionJobById(job.id);
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: COLLECTION_JOB_STATUS.RUNNING })
@@ -396,8 +415,9 @@ describe('Automation controller', () => {
 
     it('should copy assertion results when updating with results that match historical results', async () => {
         await dbCleaner(async () => {
-            const res = await createCollectionJobThroughAPI();
-            const collectionJob = res.body;
+            const { scheduleCollectionJob: job } =
+                await scheduleNewCollectionJob();
+            const collectionJob = await getCollectionJobById(job.id);
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: COLLECTION_JOB_STATUS.RUNNING })
@@ -502,7 +522,7 @@ describe('Automation controller', () => {
 
     it('should delete a job', async () => {
         await dbCleaner(async () => {
-            await createCollectionJobThroughAPI();
+            await scheduleNewCollectionJob();
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);

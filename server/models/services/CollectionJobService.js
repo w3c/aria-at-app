@@ -22,6 +22,10 @@ const {
     addUserToRole
 } = require('./UserService');
 const responseCollectionUser = require('../../util/responseCollectionUser');
+const { getTestPlanReportById } = require('./TestPlanReportService');
+const { HttpQueryError } = require('apollo-server-core');
+const { runnableTests } = require('../../resolvers/TestPlanReport');
+const { default: axios } = require('axios');
 
 const includeBrowserVersion = {
     model: BrowserVersion,
@@ -207,6 +211,73 @@ const updateCollectionJob = async (
 };
 
 /**
+ * @param {object} input object for request to schedule job
+ * @param {string} input.testPlanReportId id of test plan report to use for scheduling
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const scheduleCollectionJob = async ({ testPlanReportId }, options) => {
+    const report = await getTestPlanReportById(testPlanReportId);
+
+    if (!report) {
+        throw new HttpQueryError(
+            404,
+            `Test plan report with id ${testPlanReportId} not found`,
+            true
+        );
+    }
+
+    const tests = await runnableTests(report);
+    const { directory } = report.testPlanVersion.testPlan;
+    const { gitSha } = report.testPlanVersion;
+
+    if (!tests || tests.length === 0) {
+        throw new Error(
+            `No runnable tests found for test plan report with id ${testPlanReportId}`
+        );
+    }
+
+    if (!gitSha) {
+        throw new Error(
+            `Test plan version with id ${report.testPlanVersionId} does not have a gitSha`
+        );
+    }
+
+    if (!directory) {
+        throw new Error(
+            `Test plan with id ${report.testPlanVersion.testPlanId} does not have a directory`
+        );
+    }
+
+    const automationSchedulerResponse = await axios.post(
+        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
+        {
+            testPlanVersionGitSha: gitSha,
+            testIds: tests.map(t => t.id),
+            testPlanName: directory
+        },
+        {
+            headers: {
+                'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
+            },
+            timeout: 1000
+        }
+    );
+
+    const { id, status } = automationSchedulerResponse.data;
+    return createCollectionJob(
+        {
+            id,
+            status,
+            testPlanReportId
+        },
+        COLLECTION_JOB_ATTRIBUTES,
+        options
+    );
+};
+
+/**
  * Gets one CollectionJob and optionally updates it, or creates it if it doesn't exist.
  * @param {*} nestedGetOrCreateValues - These values will be used to find a matching record, or they will be used to create one
  * @param {object} options - Generic options for Sequelize
@@ -264,5 +335,7 @@ module.exports = {
     updateCollectionJob,
     deleteCollectionJob,
     // Nested CRUD
-    getOrCreateCollectionJob
+    getOrCreateCollectionJob,
+    // Custom
+    scheduleCollectionJob
 };
