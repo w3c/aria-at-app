@@ -1,7 +1,6 @@
 const { Router } = require('express');
 const {
     cancelJob,
-    restartJob,
     getJobLog,
     updateJobStatus,
     deleteJob,
@@ -17,8 +16,6 @@ const router = Router();
 router.get('/:jobID/log', getJobLog, handleError);
 
 router.post('/:jobID/cancel', cancelJob, handleError);
-
-router.post('/:jobID/restart', restartJob, handleError);
 
 router.post(
     '/:jobID/update',

@@ -1363,6 +1363,15 @@ const graphqlSchema = gql`
             status: CollectionJobStatus
         ): CollectionJob
         """
+        Restart a CollectionJob
+        """
+        restartCollectionJob(
+            """
+            The CollectionJob to restart.
+            """
+            id: ID!
+        ): CollectionJob
+        """
         Delete a CollectionJob
         """
         deleteCollectionJob(id: ID!): NoResponse!

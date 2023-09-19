@@ -26,6 +26,7 @@ const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { runnableTests } = require('../../resolvers/TestPlanReport');
 const { default: axios } = require('axios');
+const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 
 const includeBrowserVersion = {
     model: BrowserVersion,
@@ -69,6 +70,13 @@ const includeTestPlanRun = {
     model: TestPlanRun,
     as: 'testPlanRun',
     include: [includeTester, includeTestPlanReport]
+};
+
+const axiosConfig = {
+    headers: {
+        'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
+    },
+    timeout: 1000
 };
 
 /**
@@ -211,6 +219,7 @@ const updateCollectionJob = async (
 };
 
 /**
+ * Schedule a collection job with Response Scheduler
  * @param {object} input object for request to schedule job
  * @param {string} input.testPlanReportId id of test plan report to use for scheduling
  * @param {object} options - Generic options for Sequelize
@@ -257,12 +266,7 @@ const scheduleCollectionJob = async ({ testPlanReportId }, options) => {
             testIds: tests.map(t => t.id),
             testPlanName: directory
         },
-        {
-            headers: {
-                'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
-            },
-            timeout: 1000
-        }
+        axiosConfig
     );
 
     const { id, status } = automationSchedulerResponse.data;
@@ -327,6 +331,41 @@ const deleteCollectionJob = async (id, options) => {
     return res;
 };
 
+/**
+ * Restarts a collection job by id
+ * @param {Object} input Input object for request to restart job
+ * @param {string} input.collectionJobId id of collection job to restart
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns
+ */
+const restartCollectionJob = async ({ id }, options) => {
+    const automationSchedulerResponse = await axios.post(
+        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${id}/restart`,
+        {},
+        axiosConfig
+    );
+
+    if (
+        automationSchedulerResponse?.data?.status ===
+        COLLECTION_JOB_STATUS.QUEUED
+    ) {
+        return updateCollectionJob(
+            id,
+            {
+                status: COLLECTION_JOB_STATUS.QUEUED
+            },
+            options
+        );
+    } else {
+        throw new HttpQueryError(
+            502,
+            `Error restarting job with id ${id}`,
+            true
+        );
+    }
+};
+
 module.exports = {
     // Basic CRUD
     createCollectionJob,
@@ -337,5 +376,6 @@ module.exports = {
     // Nested CRUD
     getOrCreateCollectionJob,
     // Custom
-    scheduleCollectionJob
+    scheduleCollectionJob,
+    restartCollectionJob
 };
