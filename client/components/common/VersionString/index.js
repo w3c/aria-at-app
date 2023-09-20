@@ -40,14 +40,16 @@ const VersionString = ({
     iconColor = '#818F98',
     linkRef,
     linkHref,
+    order = 1,
     ...restProps
 }) => {
     const dateString = convertDateToString(date, 'YY.MM.DD');
+    const orderString = order > 1 ? `_${order}` : '';
 
     const body = (
         <span>
             <FontAwesomeIcon icon={faCircleCheck} color={iconColor} />
-            <b>{'V' + dateString}</b>
+            <b>{'V' + dateString + orderString}</b>
         </span>
     );
 
@@ -92,7 +94,8 @@ VersionString.propTypes = {
     autoWidth: PropTypes.bool,
     iconColor: PropTypes.string,
     linkRef: PropTypes.shape({ current: PropTypes.any }),
-    linkHref: PropTypes.string
+    linkHref: PropTypes.string,
+    order: PropTypes.number
 };
 
 export default VersionString;

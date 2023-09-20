@@ -200,6 +200,32 @@ const TestPlanVersionsPage = () => {
         item => item.link
     );
 
+    // Hash the test plan version version strings. If found, record the order
+    const testPlanVersionDuplicates = new Map();
+    const testPlanVersionOrder = {};
+
+    // Given that the testPlanVersions array is sorted from most recent version
+    // to least recent version, iterate backwards to determine the duplicates.
+    // This means that the least recent versions will have a lower order if there
+    // is a duplicate version that is more recent.
+    for (let i = testPlanVersions.length - 1; i > 0; i--) {
+        const versionString = convertDateToString(
+            testPlanVersions[i].updatedAt,
+            'YYYY.MM.DD'
+        );
+        if (!testPlanVersionDuplicates.has(versionString)) {
+            testPlanVersionDuplicates.set(versionString, 1);
+        } else {
+            testPlanVersionDuplicates.set(
+                versionString,
+                testPlanVersionDuplicates.get(versionString) + 1
+            );
+        }
+
+        testPlanVersionOrder[testPlanVersions[i].id] =
+            testPlanVersionDuplicates.get(versionString);
+    }
+
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -247,6 +273,11 @@ const TestPlanVersionsPage = () => {
                                                 testPlanVersion
                                             )}
                                             autoWidth={false}
+                                            order={
+                                                testPlanVersionOrder[
+                                                    testPlanVersion.id
+                                                ]
+                                            }
                                         />
                                     </td>
                                     <td>
@@ -383,6 +414,7 @@ const TestPlanVersionsPage = () => {
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}
+                                order={testPlanVersionOrder[testPlanVersion.id]}
                             />
                         );
 
@@ -401,10 +433,12 @@ const TestPlanVersionsPage = () => {
             </ThemeTable>
 
             {testPlanVersions.map(testPlanVersion => {
-                const vString = `V${convertDateToString(
-                    testPlanVersion.updatedAt,
-                    'YY.MM.DD'
-                )}`;
+                const vString = `V${
+                    convertDateToString(testPlanVersion.updatedAt, 'YY.MM.DD') +
+                    (testPlanVersionOrder[testPlanVersion.id] > 1
+                        ? `_${testPlanVersionOrder[testPlanVersion.id]}`
+                        : '')
+                }`;
 
                 // Gets the derived phase even if deprecated by checking
                 // the known dates on the testPlanVersion object
@@ -436,6 +470,7 @@ const TestPlanVersionsPage = () => {
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}
+                                order={testPlanVersionOrder[testPlanVersion.id]}
                             />
                             &nbsp;
                             <PhasePill fullWidth={false}>
