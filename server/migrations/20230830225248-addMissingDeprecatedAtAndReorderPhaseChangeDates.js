@@ -134,27 +134,7 @@ module.exports = {
                 }
 
                 if (testPlanVersion.deprecatedAt) {
-                    // Check if there is a more recent test plan version
-                    const moreRecentTestPlanVersions =
-                        await queryInterface.sequelize.query(
-                            `select "TestPlanVersion".id, "updatedAt", "deprecatedAt"
-                                from "TestPlanVersion"
-                                where "updatedAt" > '${testPlanVersion.updatedAt.toLocaleDateString()}'
-                                and "testPlanId" = ${testPlanVersion.id}
-                                order by "updatedAt" desc;`,
-                            {
-                                type: Sequelize.QueryTypes.SELECT,
-                                transaction
-                            }
-                        );
-
-                    const moreRecentTestPlanVersion =
-                        moreRecentTestPlanVersions[0];
-
-                    const deprecatedAt = new Date(
-                        moreRecentTestPlanVersion?.updatedAt ||
-                            testPlanVersion.deprecatedAt
-                    );
+                    const deprecatedAt = new Date(testPlanVersion.deprecatedAt);
                     deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 1);
 
                     // Add deprecatedAt for applicable testPlanVersions
