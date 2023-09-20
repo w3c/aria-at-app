@@ -89,8 +89,8 @@ const graphqlSchema = gql`
         """
         id: ID!
         """
-        The status of the job, which can be "QUEUED", "RUNNING", "COMPLETED" or
-        "ERROR".
+        The status of the job, which can be "QUEUED", "RUNNING", "COMPLETED",
+        "ERROR", or "CANCELLED".
         """
         status: CollectionJobStatus!
         """
