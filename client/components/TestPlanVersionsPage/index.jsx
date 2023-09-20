@@ -208,7 +208,7 @@ const TestPlanVersionsPage = () => {
     // to least recent version, iterate backwards to determine the duplicates.
     // This means that the least recent versions will have a lower order if there
     // is a duplicate version that is more recent.
-    for (let i = testPlanVersions.length - 1; i > 0; i--) {
+    for (let i = testPlanVersions.length - 1; i >= 0; i--) {
         const versionString = convertDateToString(
             testPlanVersions[i].updatedAt,
             'YYYY.MM.DD'
@@ -225,6 +225,8 @@ const TestPlanVersionsPage = () => {
         testPlanVersionOrder[testPlanVersions[i].id] =
             testPlanVersionDuplicates.get(versionString);
     }
+
+    console.log(testPlanVersionDuplicates);
 
     return (
         <Container id="main" as="main" tabIndex="-1">
