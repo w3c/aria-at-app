@@ -226,8 +226,6 @@ const TestPlanVersionsPage = () => {
             testPlanVersionDuplicates.get(versionString);
     }
 
-    console.log(testPlanVersionDuplicates);
-
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
