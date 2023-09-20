@@ -118,6 +118,7 @@ const DisclosureContainer = styled.div`
 `;
 
 const ManageTestQueue = ({
+    enableManageRequiredReports = false,
     ats = [],
     browsers = [],
     testPlanVersions = [],
@@ -538,6 +539,18 @@ const ManageTestQueue = ({
     const onManageReqReportsClick = () =>
         setShowManageReqReports(!showManageReqReports);
 
+    const disclosureTitle = enableManageRequiredReports
+        ? [
+              'Manage Assistive Technology Versions',
+              'Add Test Plans to the Test Queue'
+              // 'Manage Required Reports'
+          ]
+        : [
+              'Manage Assistive Technology Versions',
+              'Add Test Plans to the Test Queue',
+              'Manage Required Reports'
+          ];
+
     useEffect(() => {
         const allTestPlanVersions = testPlanVersions
             .map(version => ({ ...version }))
@@ -885,11 +898,7 @@ const ManageTestQueue = ({
         <LoadingStatus message={loadingMessage}>
             <DisclosureComponent
                 componentId="manage-test-queue"
-                title={[
-                    'Manage Assistive Technology Versions',
-                    'Add Test Plans to the Test Queue',
-                    'Manage Required Reports'
-                ]}
+                title={disclosureTitle}
                 disclosureContainerView={[
                     <DisclosureContainer key={`manage-test-queue-at-section`}>
                         <span>
@@ -1601,6 +1610,7 @@ ManageTestQueue.propTypes = {
     className: PropTypes.string,
     onClick: PropTypes.func,
     testPlanVersions: PropTypes.array,
+    enableManageRequiredReports: PropTypes.bool,
     triggerUpdate: PropTypes.func
 };
 
