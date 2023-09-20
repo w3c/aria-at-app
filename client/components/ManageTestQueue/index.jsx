@@ -543,7 +543,6 @@ const ManageTestQueue = ({
         ? [
               'Manage Assistive Technology Versions',
               'Add Test Plans to the Test Queue'
-              // 'Manage Required Reports'
           ]
         : [
               'Manage Assistive Technology Versions',
