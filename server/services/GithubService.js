@@ -15,7 +15,7 @@ const {
 const GITHUB_ISSUES_API_URL =
     ENVIRONMENT === 'production'
         ? 'https://api.github.com/repos/w3c/aria-at'
-        : 'https://api.github.com/repos/w3c/aria-at';
+        : 'https://api.github.com/repos/bocoup/aria-at';
 
 const permissionScopes = [
     // Not currently used, but this permissions scope will allow us to query for
