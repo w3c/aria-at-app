@@ -21,8 +21,9 @@ const PhaseText = styled.span`
         padding: 2px 15px;
         vertical-align: middle;
         position: relative;
-        top: -1px;
+        top: -4px;
         margin-right: 5px;
+        margin-top: 4px; /* Improve appearance when text wraps */
     }
 
     &.rd {

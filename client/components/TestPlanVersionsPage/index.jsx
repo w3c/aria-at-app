@@ -273,10 +273,48 @@ const TestPlanVersionsPage = () => {
                                                     </PhasePill>
                                                 );
 
+                                                const draftPill = (
+                                                    <PhasePill
+                                                        fullWidth={false}
+                                                    >
+                                                        DRAFT
+                                                    </PhasePill>
+                                                );
+
+                                                if (
+                                                    derivedDeprecatedAtPhase ===
+                                                    'RD'
+                                                ) {
+                                                    return (
+                                                        <>
+                                                            {deprecatedPill}
+                                                            before&nbsp;
+                                                            {draftPill}
+                                                            review
+                                                        </>
+                                                    );
+                                                }
+
+                                                if (
+                                                    derivedDeprecatedAtPhase ===
+                                                    'RECOMMENDED'
+                                                ) {
+                                                    return (
+                                                        <>
+                                                            {deprecatedPill}
+                                                            after being approved
+                                                            as&nbsp;
+                                                            {phasePill}
+                                                        </>
+                                                    );
+                                                }
+
                                                 return (
                                                     <>
-                                                        {deprecatedPill} during{' '}
-                                                        {phasePill} review
+                                                        {deprecatedPill}
+                                                        during&nbsp;
+                                                        {phasePill}
+                                                        review
                                                     </>
                                                 );
                                             }
