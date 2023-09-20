@@ -134,14 +134,8 @@ module.exports = {
                 }
 
                 if (testPlanVersion.deprecatedAt) {
-                    const deprecatedAt = new Date(
-                        testPlanVersion.recommendedPhaseReachedAt ||
-                            testPlanVersion.candidatePhaseReachedAt ||
-                            testPlanVersion.draftPhaseReachedAt ||
-                            testPlanVersion.updatedAt ||
-                            testPlanVersion.deprecatedAt
-                    );
-                    deprecatedAt.setSeconds(deprecatedAt.getSeconds() + 1);
+                    const deprecatedAt = new Date(testPlanVersion.deprecatedAt);
+                    deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 1);
 
                     // Add deprecatedAt for applicable testPlanVersions
                     await queryInterface.sequelize.query(
