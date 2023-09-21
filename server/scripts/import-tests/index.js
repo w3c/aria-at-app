@@ -157,11 +157,19 @@ const importTestPlanVersions = async () => {
         });
         if (testPlanVersionsToDeprecate.length) {
             for (const testPlanVersionToDeprecate of testPlanVersionsToDeprecate) {
-                if (new Date(testPlanVersionToDeprecate.updatedAt) < updatedAt)
+                if (
+                    new Date(testPlanVersionToDeprecate.updatedAt) < updatedAt
+                ) {
+                    // Set the deprecatedAt time to a couple seconds less than the updatedAt date.
+                    // Deprecations happen slightly before update during normal app operations.
+                    // This is to maintain correctness and any app sorts issues
+                    const deprecatedAt = new Date(updatedAt);
+                    deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 60);
                     await updateTestPlanVersion(testPlanVersionToDeprecate.id, {
                         phase: 'DEPRECATED',
-                        deprecatedAt: updatedAt
+                        deprecatedAt
                     });
+                }
             }
         }
 

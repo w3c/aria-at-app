@@ -188,6 +188,69 @@ const TestPlanVersionsPage = () => {
             return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
 
+    const timelineForAllVersions = [];
+
+    testPlanVersions.forEach(testPlanVersion => {
+        const event = {
+            id: testPlanVersion.id,
+            updatedAt: testPlanVersion.updatedAt
+        };
+        timelineForAllVersions.push({ ...event, phase: 'RD' });
+
+        if (testPlanVersion.draftPhaseReachedAt)
+            timelineForAllVersions.push({
+                ...event,
+                phase: 'DRAFT',
+                draftPhaseReachedAt: testPlanVersion.draftPhaseReachedAt
+            });
+        if (testPlanVersion.candidatePhaseReachedAt)
+            timelineForAllVersions.push({
+                ...event,
+                phase: 'CANDIDATE',
+                candidatePhaseReachedAt: testPlanVersion.candidatePhaseReachedAt
+            });
+        if (testPlanVersion.recommendedPhaseReachedAt)
+            timelineForAllVersions.push({
+                ...event,
+                phase: 'RECOMMENDED',
+                recommendedPhaseReachedAt:
+                    testPlanVersion.recommendedPhaseReachedAt
+            });
+        if (testPlanVersion.deprecatedAt)
+            timelineForAllVersions.push({
+                ...event,
+                phase: 'DEPRECATED',
+                deprecatedAt: testPlanVersion.deprecatedAt
+            });
+    });
+
+    const phaseOrder = {
+        RD: 0,
+        DRAFT: 1,
+        CANDIDATE: 2,
+        RECOMMENDED: 3,
+        DEPRECATED: 4
+    };
+
+    timelineForAllVersions.sort((a, b) => {
+        const dateA =
+            a.recommendedPhaseReachedAt ||
+            a.candidatePhaseReachedAt ||
+            a.draftPhaseReachedAt ||
+            a.deprecatedAt ||
+            a.updatedAt;
+        const dateB =
+            b.recommendedPhaseReachedAt ||
+            b.candidatePhaseReachedAt ||
+            b.draftPhaseReachedAt ||
+            b.deprecatedAt ||
+            b.updatedAt;
+
+        // If dates are the same, compare phases
+        if (dateA === dateB) return phaseOrder[a.phase] - phaseOrder[b.phase];
+        return new Date(dateA) - new Date(dateB);
+    });
+
     const issues = uniqueBy(
         testPlanVersions.flatMap(testPlanVersion =>
             testPlanVersion.testPlanReports.flatMap(testPlanReport =>
@@ -198,7 +261,11 @@ const TestPlanVersionsPage = () => {
             )
         ),
         item => item.link
-    );
+    ).sort((a, b) => {
+        const aCreatedAt = new Date(a.createdAt);
+        const bCreatedAt = new Date(b.createdAt);
+        return bCreatedAt - aCreatedAt;
+    });
 
     return (
         <Container id="main" as="main" tabIndex="-1">
@@ -240,7 +307,7 @@ const TestPlanVersionsPage = () => {
                         <tbody>
                             {testPlanVersions.map(testPlanVersion => (
                                 <tr key={testPlanVersion.id}>
-                                    <td>
+                                    <th>
                                         <VersionString
                                             date={testPlanVersion.updatedAt}
                                             iconColor={getIconColor(
@@ -248,7 +315,7 @@ const TestPlanVersionsPage = () => {
                                             )}
                                             autoWidth={false}
                                         />
-                                    </td>
+                                    </th>
                                     <td>
                                         {(() => {
                                             // Gets the derived phase even if deprecated by checking
@@ -376,7 +443,7 @@ const TestPlanVersionsPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {testPlanVersions.map(testPlanVersion => {
+                    {timelineForAllVersions.map(testPlanVersion => {
                         const versionString = (
                             <VersionString
                                 date={testPlanVersion.updatedAt}
@@ -389,8 +456,10 @@ const TestPlanVersionsPage = () => {
                         const eventBody = getEventBody(testPlanVersion.phase);
 
                         return (
-                            <tr key={testPlanVersion.id}>
-                                <td>{getEventDate(testPlanVersion)}</td>
+                            <tr
+                                key={`${testPlanVersion.id}-${testPlanVersion.phase}`}
+                            >
+                                <th>{getEventDate(testPlanVersion)}</th>
                                 <td>
                                     {versionString}&nbsp;{eventBody}
                                 </td>
@@ -541,12 +610,12 @@ const TestPlanVersionsPage = () => {
 
                                     return events.map(([phase, date]) => (
                                         <tr key={phase}>
-                                            <td>
+                                            <th>
                                                 {convertDateToString(
                                                     date,
                                                     'MMM D, YYYY'
                                                 )}
-                                            </td>
+                                            </th>
                                             <td>{getEventBody(phase)}</td>
                                         </tr>
                                     ));
