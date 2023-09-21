@@ -215,6 +215,12 @@ const AtAndBrowserDetailsModal = ({
                         Browser versions will not be saved.
                     </>
                 }
+                actions={[
+                    {
+                        label: 'Ok',
+                        onClick: () => navigate('/test-queue')
+                    }
+                ]}
                 actionLabel="Ok"
                 closeLabel="Cancel"
                 handleAction={() => navigate('/test-queue')}
@@ -586,18 +592,20 @@ const AtAndBrowserDetailsModal = ({
                             </FieldsetRow>
                         </ModalInnerSectionContainer>
                     }
-                    actionLabel={
-                        updatedAtVersion !== atVersion ||
-                        updatedBrowserVersion !== browserVersion
-                            ? 'Save and Continue'
-                            : 'Continue'
-                    }
-                    handleAction={
-                        updatedAtVersion !== atVersion ||
-                        updatedBrowserVersion !== browserVersion
-                            ? onSubmit
-                            : handleClose
-                    }
+                    actions={[
+                        {
+                            label:
+                                updatedAtVersion !== atVersion ||
+                                updatedBrowserVersion !== browserVersion
+                                    ? 'Save and Continue'
+                                    : 'Continue',
+                            onClick:
+                                updatedAtVersion !== atVersion ||
+                                updatedBrowserVersion !== browserVersion
+                                    ? onSubmit
+                                    : handleClose
+                        }
+                    ]}
                     handleClose={!isFirstLoad ? handleClose : null}
                     handleHide={handleHide}
                     staticBackdrop={true}

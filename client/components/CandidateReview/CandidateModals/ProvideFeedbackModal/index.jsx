@@ -23,8 +23,6 @@ const ProvideFeedbackModal = ({
     return (
         <BasicModal
             show={true}
-            actionLabel={'Submit Review'}
-            actionButtonClassName={'submit-button'}
             centered={true}
             cancelButton={false}
             handleHide={handleHide}
@@ -87,11 +85,17 @@ const ProvideFeedbackModal = ({
                 </div>
             }
             dialogClassName="feedback"
-            handleAction={() => {
-                handleAction(
-                    selectedRadio === 'approve-input' ? 'APPROVED' : ''
-                );
-            }}
+            actions={[
+                {
+                    label: 'Submit Review',
+                    className: 'submit-button',
+                    onClick: () => {
+                        handleAction(
+                            selectedRadio === 'approve-input' ? 'APPROVED' : ''
+                        );
+                    }
+                }
+            ]}
             title={
                 <>
                     <p className="sr-only">

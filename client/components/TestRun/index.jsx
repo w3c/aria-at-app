@@ -1032,7 +1032,11 @@ const TestRun = () => {
                         animation={false}
                         title="Start Over"
                         content={`Are you sure you want to start over Test #${currentTest.seq}? Your progress (if any), will be lost.`}
-                        handleAction={handleStartOverAction}
+                        actions={[
+                            {
+                                onClick: handleStartOverAction
+                            }
+                        ]}
                         handleClose={() => setShowStartOverModal(false)}
                     />
                 )}
