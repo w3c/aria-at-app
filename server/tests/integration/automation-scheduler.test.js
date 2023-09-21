@@ -8,7 +8,6 @@ const { getAtVersions } = require('../../models/services/AtService');
 const { getBrowserVersions } = require('../../models/services/BrowserService');
 const dbCleaner = require('../util/db-cleaner');
 const { default: axios } = require('axios');
-const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const {
     getCollectionJobById
 } = require('../../models/services/CollectionJobService');
@@ -157,9 +156,9 @@ describe('Automation controller', () => {
             const { scheduleCollectionJob: storedJob } = job;
             expect(storedJob).not.toEqual(undefined);
             expect(storedJob.id).toEqual(jobId);
-            expect(storedJob.status).toEqual(COLLECTION_JOB_STATUS.QUEUED);
+            expect(storedJob.status).toEqual('QUEUED');
             expect(storedJob.id).toEqual(jobId);
-            expect(storedJob.status).toEqual(COLLECTION_JOB_STATUS.QUEUED);
+            expect(storedJob.status).toEqual('QUEUED');
             expect(storedJob.testPlanRun.testPlanReport.id).toEqual(
                 testPlanReportId
             );
@@ -170,7 +169,7 @@ describe('Automation controller', () => {
     it('should schedule a new job and correctly construct test data for automation scheduler', async () => {
         await dbCleaner(async () => {
             const axiosPostMock = jest.spyOn(axios, 'post').mockResolvedValue({
-                data: { id: '999', status: COLLECTION_JOB_STATUS.QUEUED }
+                data: { id: '999', status: 'QUEUED' }
             });
 
             const {
@@ -230,14 +229,12 @@ describe('Automation controller', () => {
                 await cancelCollectionJobByMutation();
             expect(canceledCollectionJob).toEqual({
                 id: jobId,
-                status: COLLECTION_JOB_STATUS.CANCELLED
+                status: 'CANCELLED'
             });
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);
-            expect(storedCollectionJob.status).toEqual(
-                COLLECTION_JOB_STATUS.CANCELLED
-            );
+            expect(storedCollectionJob.status).toEqual('CANCELLED');
         });
     });
 
@@ -255,14 +252,12 @@ describe('Automation controller', () => {
             expect(collectionJob).not.toBe(undefined);
             expect(collectionJob).toEqual({
                 id: jobId,
-                status: COLLECTION_JOB_STATUS.QUEUED
+                status: 'QUEUED'
             });
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);
-            expect(storedCollectionJob.status).toEqual(
-                COLLECTION_JOB_STATUS.QUEUED
-            );
+            expect(storedCollectionJob.status).toEqual('QUEUED');
         });
     });
 
@@ -317,7 +312,7 @@ describe('Automation controller', () => {
     it('should fail to update a job status for a non-existent jobId', async () => {
         const response = await sessionAgent
             .post(`/api/jobs/${jobId}/update`)
-            .send({ status: COLLECTION_JOB_STATUS.RUNNING })
+            .send({ status: 'RUNNING' })
             .set(
                 'x-automation-secret',
                 process.env.AUTOMATION_SCHEDULER_SECRET
@@ -333,7 +328,7 @@ describe('Automation controller', () => {
             await scheduleCollectionJobByMutation();
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
-                .send({ status: COLLECTION_JOB_STATUS.RUNNING })
+                .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
@@ -341,7 +336,7 @@ describe('Automation controller', () => {
             const { body } = response;
             expect(response.statusCode).toBe(200);
             expect(body.id).toEqual(jobId);
-            expect(body.status).toEqual(COLLECTION_JOB_STATUS.RUNNING);
+            expect(body.status).toEqual('RUNNING');
             expect(body).toHaveProperty('testPlanRunId');
             expect(body.testPlanRun.testPlanReportId).toEqual(
                 parseInt(testPlanReportId)
@@ -350,9 +345,7 @@ describe('Automation controller', () => {
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);
-            expect(storedCollectionJob.status).toEqual(
-                COLLECTION_JOB_STATUS.RUNNING
-            );
+            expect(storedCollectionJob.status).toEqual('RUNNING');
             expect(storedCollectionJob.testPlanRun.testPlanReport.id).toEqual(
                 testPlanReportId
             );
@@ -366,7 +359,7 @@ describe('Automation controller', () => {
             const collectionJob = await getCollectionJobById(job.id);
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
-                .send({ status: COLLECTION_JOB_STATUS.RUNNING })
+                .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
@@ -440,7 +433,7 @@ describe('Automation controller', () => {
             const collectionJob = await getCollectionJobById(job.id);
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
-                .send({ status: COLLECTION_JOB_STATUS.RUNNING })
+                .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET

@@ -26,7 +26,6 @@ const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { runnableTests } = require('../../resolvers/TestPlanReport');
 const { default: axios } = require('axios');
-const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 
 const includeBrowserVersion = {
     model: BrowserVersion,
@@ -330,14 +329,11 @@ const cancelCollectionJob = async ({ id }, options) => {
         axiosConfig
     );
 
-    if (
-        automationSchedulerResponse.data.status ===
-        COLLECTION_JOB_STATUS.CANCELLED
-    ) {
+    if (automationSchedulerResponse.data.status === 'CANCELLED') {
         return updateCollectionJob(
             id,
             {
-                status: COLLECTION_JOB_STATUS.CANCELLED
+                status: 'CANCELLED'
             },
             COLLECTION_JOB_ATTRIBUTES,
             options
@@ -381,14 +377,11 @@ const restartCollectionJob = async ({ id }, options) => {
         axiosConfig
     );
 
-    if (
-        automationSchedulerResponse?.data?.status ===
-        COLLECTION_JOB_STATUS.QUEUED
-    ) {
+    if (automationSchedulerResponse?.data?.status === 'QUEUED') {
         return updateCollectionJob(
             id,
             {
-                status: COLLECTION_JOB_STATUS.QUEUED
+                status: 'QUEUED'
             },
             COLLECTION_JOB_ATTRIBUTES,
             options
