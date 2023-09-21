@@ -288,9 +288,9 @@ const TestPlanVersionsPage = () => {
                                                     return (
                                                         <>
                                                             {deprecatedPill}
-                                                            before&nbsp;
+                                                            {` before `}
                                                             {draftPill}
-                                                            review
+                                                            {` review `}
                                                         </>
                                                     );
                                                 }
@@ -302,8 +302,7 @@ const TestPlanVersionsPage = () => {
                                                     return (
                                                         <>
                                                             {deprecatedPill}
-                                                            after being approved
-                                                            as&nbsp;
+                                                            {` after being approved as `}
                                                             {phasePill}
                                                         </>
                                                     );
@@ -312,9 +311,9 @@ const TestPlanVersionsPage = () => {
                                                 return (
                                                     <>
                                                         {deprecatedPill}
-                                                        during&nbsp;
+                                                        {` during `}
                                                         {phasePill}
-                                                        review
+                                                        {` review `}
                                                     </>
                                                 );
                                             }
