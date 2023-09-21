@@ -1,2 +1,2 @@
-export const isSupportedByResponseCollector = (at, browser) =>
-    at.name === 'NVDA' && browser.name === 'Chrome';
+export const isSupportedByResponseCollector = ({ at, browser }) =>
+    at?.name === 'NVDA' && browser?.name === 'Chrome';

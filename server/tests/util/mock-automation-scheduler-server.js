@@ -12,12 +12,29 @@ const setupMockAutomationSchedulerServer = async () => {
 
     let shutdownManager;
     await new Promise(resolve => {
-        const listener = app.listen('6688', resolve);
+        const listener = app.listen(
+            process.env.AUTOMATION_SCHEDULER_PORT,
+            resolve
+        );
         shutdownManager = new GracefulShutdownManager(listener);
     });
 
+    const generateRandomId = () => {
+        return Math.floor(Math.random() * 1000000).toString();
+    };
+
     app.post('/jobs/new', (req, res) => {
-        return res.json({ id: '999', status: COLLECTION_JOB_STATUS.QUEUED });
+        if (process.env.ENVIRONMENT === 'test') {
+            return res.json({
+                id: '999',
+                status: COLLECTION_JOB_STATUS.QUEUED
+            });
+        } else {
+            return res.json({
+                id: generateRandomId(),
+                status: COLLECTION_JOB_STATUS.QUEUED
+            });
+        }
     });
 
     app.post('/jobs/:jobID/cancel', (req, res) => {
