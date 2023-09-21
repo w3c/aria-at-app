@@ -1,15 +1,16 @@
 const { GithubService } = require('../../services');
 const convertDateToString = require('../../util/convertDateToString');
 
-const issuesResolver = async testPlanReport => {
+const issuesResolver = (testPlanReport, _, context) =>
+    getIssues({ testPlanReport, context });
+
+const getIssues = async ({ testPlanReport, testPlan, context }) => {
+    const [ats, browsers] = await Promise.all([
+        context.atLoader.getAll(),
+        context.browserLoader.getAll()
+    ]);
+
     const issues = await GithubService.getAllIssues();
-
-    const { at, browser, testPlanVersion } = testPlanReport;
-
-    const versionString = `V${convertDateToString(
-        testPlanVersion.updatedAt,
-        'YY.MM.DD'
-    )}`;
 
     const getHiddenIssueMetadata = issue => {
         return JSON.parse(
@@ -25,15 +26,30 @@ const issuesResolver = async testPlanReport => {
     return issues
         .filter(issue => {
             const hiddenIssueMetadata = getHiddenIssueMetadata(issue);
-            return (
-                hiddenIssueMetadata &&
-                hiddenIssueMetadata.testPlanDirectory ===
-                    testPlanVersion.directory &&
-                hiddenIssueMetadata.versionString === versionString &&
-                hiddenIssueMetadata.atName === at.name &&
-                (!hiddenIssueMetadata.browserName ||
-                    hiddenIssueMetadata.browserName === browser.name)
-            );
+
+            if (testPlanReport) {
+                const { at, browser, testPlanVersion } = testPlanReport;
+
+                const versionString = `V${convertDateToString(
+                    testPlanVersion.updatedAt,
+                    'YY.MM.DD'
+                )}`;
+
+                return (
+                    hiddenIssueMetadata &&
+                    hiddenIssueMetadata.testPlanDirectory ===
+                        testPlanVersion.directory &&
+                    hiddenIssueMetadata.versionString === versionString &&
+                    hiddenIssueMetadata.atName === at.name &&
+                    (!hiddenIssueMetadata.browserName ||
+                        hiddenIssueMetadata.browserName === browser.name)
+                );
+            } else if (testPlan) {
+                return (
+                    hiddenIssueMetadata &&
+                    hiddenIssueMetadata.testPlanDirectory === testPlan.directory
+                );
+            }
         })
         .map(issue => {
             const hiddenIssueMetadata = getHiddenIssueMetadata(issue);
@@ -45,6 +61,11 @@ const issuesResolver = async testPlanReport => {
                     ? 'CHANGES_REQUESTED'
                     : 'FEEDBACK';
 
+            const at = ats.find(at => at.name === hiddenIssueMetadata.atName);
+            const browser = browsers.find(
+                browser => browser.name === hiddenIssueMetadata.browserName
+            );
+
             return {
                 author: user.login,
                 title,
@@ -54,9 +75,12 @@ const issuesResolver = async testPlanReport => {
                 isCandidateReview: hiddenIssueMetadata.isCandidateReview,
                 feedbackType,
                 isOpen: state === 'open',
-                testNumberFilteredByAt: hiddenIssueMetadata.testRowNumber
+                testNumberFilteredByAt: hiddenIssueMetadata.testRowNumber,
+                at,
+                browser
             };
         });
 };
 
 module.exports = issuesResolver;
+module.exports.getIssues = getIssues;

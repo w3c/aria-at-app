@@ -230,11 +230,15 @@ const graphqlSchema = gql`
         Gets the most recent version imported from the test plan's directory.
         """
         latestTestPlanVersion: TestPlanVersion
-
         """
         Gets all historic versions of the test plan.
         """
         testPlanVersions: [TestPlanVersion]!
+        """
+        A list of all issues which have filed through "Raise an Issue" buttons
+        in the app. Note that results will be cached for at least ten seconds.
+        """
+        issues: [Issue]!
     }
 
     """
@@ -825,6 +829,14 @@ const graphqlSchema = gql`
         The time the issue was closed, if it was closed.
         """
         closedAt: Timestamp
+        """
+        The AT associated with the issue.
+        """
+        at: At!
+        """
+        The browser associated with the issue, which may not be present.
+        """
+        browser: Browser
     }
 
     """
@@ -889,9 +901,8 @@ const graphqlSchema = gql`
         """
         finalizedTestResults: [TestResult]
         """
-        These are the different feedback and requested change items created for
-        the TestPlanReport and retrieved from GitHub. Note that results will be
-        cached for one minute.
+        A list of all issues which have filed through "Raise an Issue" buttons
+        in the app. Note that results will be cached for at least ten seconds.
         """
         issues: [Issue]!
         """

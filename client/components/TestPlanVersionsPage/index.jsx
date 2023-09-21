@@ -20,7 +20,6 @@ import {
     faCodeCommit
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { uniqBy as uniqueBy } from 'lodash';
 
 const H2 = styled.h2`
     font-size: 1.25em;
@@ -179,6 +178,7 @@ const TestPlanVersionsPage = () => {
     };
 
     const testPlan = data.testPlan;
+    const issues = testPlan.issues;
 
     const ats = data.ats;
 
@@ -187,18 +187,6 @@ const TestPlanVersionsPage = () => {
         .sort((a, b) => {
             return new Date(b.updatedAt) - new Date(a.updatedAt);
         });
-
-    const issues = uniqueBy(
-        testPlanVersions.flatMap(testPlanVersion =>
-            testPlanVersion.testPlanReports.flatMap(testPlanReport =>
-                testPlanReport.issues.map(issue => ({
-                    ...issue,
-                    at: testPlanReport.at
-                }))
-            )
-        ),
-        item => item.link
-    );
 
     return (
         <Container id="main" as="main" tabIndex="-1">
