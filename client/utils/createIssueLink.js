@@ -50,7 +50,6 @@ const createIssueLink = ({
     }
 
     const labels =
-        'app,' +
         (isCandidateReview ? 'candidate-review,' : '') +
         `${atLabelMap[atName]},` +
         (isCandidateReviewChangesRequested ? 'changes-requested' : 'feedback');
@@ -109,7 +108,7 @@ const createIssueLink = ({
         `<!-- Write your description here -->\n\n` +
         testSetupFormatted +
         `<!-- The following data allows the issue to be imported into the ` +
-        `ARIA AT app -->\n` +
+        `ARIA AT App -->\n` +
         `<!-- ARIA_AT_APP_ISSUE_DATA = ${hiddenIssueMetadata} -->`;
 
     if (conflictMarkdown) {
@@ -139,7 +138,6 @@ export const getIssueSearchLink = ({
     }
 
     const query = [
-        `label:app`,
         isCandidateReview ? `label:candidate-review` : '',
         isCandidateReviewChangesRequested
             ? `label:changes-requested`

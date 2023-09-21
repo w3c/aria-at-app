@@ -302,14 +302,14 @@ const CandidateTestPlanRun = () => {
     // Assumes that the issues are across the entire AT/Browser combination
     const changesRequestedIssues = testPlanReport.issues?.filter(
         issue =>
-            issue.isCandidateReview === true &&
+            issue.isCandidateReview &&
             issue.feedbackType === 'CHANGES_REQUESTED' &&
             issue.testNumberFilteredByAt === currentTest.seq
     );
 
     const feedbackIssues = testPlanReport.issues?.filter(
         issue =>
-            issue.isCandidateReview === true &&
+            issue.isCandidateReview &&
             issue.feedbackType === 'FEEDBACK' &&
             issue.testNumberFilteredByAt === currentTest.seq
     );
@@ -670,14 +670,14 @@ const CandidateTestPlanRun = () => {
                     testPlan={testPlanVersion.title}
                     feedbackIssues={testPlanReport.issues?.filter(
                         issue =>
-                            issue.isCandidateReview === true &&
+                            issue.isCandidateReview &&
                             issue.feedbackType === 'FEEDBACK' &&
                             issue.author == data.me.username
                     )}
                     feedbackGithubUrl={feedbackGithubUrl}
                     changesRequestedIssues={testPlanReport.issues?.filter(
                         issue =>
-                            issue.isCandidateReview === true &&
+                            issue.isCandidateReview &&
                             issue.feedbackType === 'CHANGES_REQUESTED' &&
                             issue.author == data.me.username
                     )}
