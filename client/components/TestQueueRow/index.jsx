@@ -24,6 +24,7 @@ import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import { convertDateToString } from '../../utils/formatter';
 import './TestQueueRow.css';
+import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListItem';
 
 const TestQueueRow = ({
     user = {},
@@ -419,7 +420,6 @@ const TestQueueRow = ({
             tester.username,
             'completed'
         ].join('-');
-
     return (
         <LoadingStatus message={loadingMessage}>
             <tr className="test-queue-run-row">
@@ -457,28 +457,26 @@ const TestQueueRow = ({
                                             : 1
                                     )
                                     .map(
-                                        ({ tester, testResultsLength = 0 }) => (
-                                            <li key={nextId()}>
-                                                <a
-                                                    href={
-                                                        `https://github.com/` +
-                                                        `${tester.username}`
-                                                    }
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    // Allows ATs to read the number of
-                                                    // completed tests when tabbing to this
-                                                    // link
-                                                    aria-describedby={getRowId(
-                                                        tester
-                                                    )}
-                                                >
-                                                    {tester.username}
-                                                </a>
-                                                <div id={getRowId(tester)}>
-                                                    {`${testResultsLength} of ${runnableTestsLength} tests complete`}
-                                                </div>
-                                            </li>
+                                        ({
+                                            tester,
+                                            testResultsLength = 0,
+                                            id
+                                        }) => (
+                                            <TestQueueCompletionStatusListItem
+                                                key={nextId()}
+                                                testPlanRunId={id}
+                                                testPlanVersionId={
+                                                    testPlanVersion?.id
+                                                }
+                                                testResultsLength={
+                                                    testResultsLength
+                                                }
+                                                runnableTestsLength={
+                                                    runnableTestsLength
+                                                }
+                                                tester={tester}
+                                                id={getRowId(tester)}
+                                            />
                                         )
                                     )}
                             </ul>
