@@ -8,7 +8,9 @@ import ManageTestQueue from '../ManageTestQueue';
 import DataManagementRow from '@components/DataManagement/DataManagementRow';
 import './DataManagement.css';
 import { evaluateAuth } from '@client/utils/evaluateAuth';
-import SortableTableHeader from '../common/SortableTableHeader';
+import SortableTableHeader, {
+    TABLE_SORT_ORDERS
+} from '../common/SortableTableHeader';
 import FilterButtons from '../common/FilterButtons';
 import {
     useDataManagementTableFiltering,
@@ -61,7 +63,12 @@ const DataManagement = () => {
     );
 
     const { sortedTestPlans, updateSort, activeSort } =
-        useDataManagementTableSorting(filteredTestPlans, testPlanVersions, ats);
+        useDataManagementTableSorting(
+            filteredTestPlans,
+            testPlanVersions,
+            ats,
+            TABLE_SORT_ORDERS.DESC
+        );
 
     if (error) {
         return (
@@ -198,6 +205,7 @@ const DataManagement = () => {
                                         direction
                                     })
                                 }
+                                initialSortDirection={TABLE_SORT_ORDERS.DESC}
                             />
                             <th>R&D Version</th>
                             <th>Draft Review</th>
