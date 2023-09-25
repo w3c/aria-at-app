@@ -31,6 +31,11 @@ const StyledPill = styled.span`
         width: auto;
         margin: 0.75rem;
     }
+
+    // .check {
+    //     margin: 0;
+    //     color: #969696;
+    // }
 `;
 
 const VersionString = ({
@@ -46,7 +51,7 @@ const VersionString = ({
 
     const body = (
         <span>
-            <FontAwesomeIcon icon={faCircleCheck} color={iconColor} />
+            <FontAwesomeIcon className='check' icon={faCircleCheck} color={iconColor} />
             <b>{'V' + dateString}</b>
         </span>
     );
