@@ -830,9 +830,12 @@ const graphqlSchema = gql`
         """
         closedAt: Timestamp
         """
-        The AT associated with the issue.
+        The AT associated with the issue. Although there are not currently any
+        cases where we generate GitHub issues without an associated AT, that
+        may not remain true forever and we do support this field being
+        undefined.
         """
-        at: At!
+        at: At
         """
         The browser associated with the issue, which may not be present.
         """

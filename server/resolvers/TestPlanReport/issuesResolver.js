@@ -61,9 +61,15 @@ const getIssues = async ({ testPlanReport, testPlan, context }) => {
                     ? 'CHANGES_REQUESTED'
                     : 'FEEDBACK';
 
-            const at = ats.find(at => at.name === hiddenIssueMetadata.atName);
+            const at = ats.find(
+                at =>
+                    at.name.toLowerCase() ===
+                    hiddenIssueMetadata.atName?.toLowerCase()
+            );
             const browser = browsers.find(
-                browser => browser.name === hiddenIssueMetadata.browserName
+                browser =>
+                    browser.name.toLowerCase() ===
+                    hiddenIssueMetadata.browserName?.toLowerCase()
             );
 
             return {

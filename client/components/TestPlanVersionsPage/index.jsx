@@ -324,7 +324,9 @@ const TestPlanVersionsPage = () => {
                                         </a>
                                     </td>
                                     <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
-                                    <td>{issue.at.name}</td>
+                                    <td>
+                                        {issue.at?.name ?? 'AT not specified'}
+                                    </td>
                                     <td>
                                         {convertDateToString(
                                             issue.createdAt,
