@@ -28,6 +28,7 @@ export const ThemeTable = styled(Table)`
     th {
         padding-left: 1rem;
         min-width: 165px;
+        vertical-align: middle;
     }
 `;
 
