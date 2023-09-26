@@ -20,7 +20,6 @@ import {
     faCodeCommit
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { uniqBy as uniqueBy } from 'lodash';
 
 const H2 = styled.h2`
     font-size: 1.25em;
@@ -180,6 +179,13 @@ const TestPlanVersionsPage = () => {
 
     const testPlan = data.testPlan;
 
+    // GraphQL results are read only so they need to be cloned before sorting
+    const issues = [...testPlan.issues].sort((a, b) => {
+        const aCreatedAt = new Date(a.createdAt);
+        const bCreatedAt = new Date(b.createdAt);
+        return bCreatedAt - aCreatedAt;
+    });
+
     const ats = data.ats;
 
     const testPlanVersions = data.testPlan.testPlanVersions
@@ -249,22 +255,6 @@ const TestPlanVersionsPage = () => {
         // If dates are the same, compare phases
         if (dateA === dateB) return phaseOrder[a.phase] - phaseOrder[b.phase];
         return new Date(dateA) - new Date(dateB);
-    });
-
-    const issues = uniqueBy(
-        testPlanVersions.flatMap(testPlanVersion =>
-            testPlanVersion.testPlanReports.flatMap(testPlanReport =>
-                testPlanReport.issues.map(issue => ({
-                    ...issue,
-                    at: testPlanReport.at
-                }))
-            )
-        ),
-        item => item.link
-    ).sort((a, b) => {
-        const aCreatedAt = new Date(a.createdAt);
-        const bCreatedAt = new Date(b.createdAt);
-        return bCreatedAt - aCreatedAt;
     });
 
     return (
@@ -440,7 +430,9 @@ const TestPlanVersionsPage = () => {
                                         </a>
                                     </td>
                                     <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
-                                    <td>{issue.at.name}</td>
+                                    <td>
+                                        {issue.at?.name ?? 'AT not specified'}
+                                    </td>
                                     <td>
                                         {convertDateToString(
                                             issue.createdAt,

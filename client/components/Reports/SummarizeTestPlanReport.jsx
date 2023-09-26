@@ -144,6 +144,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 const reportLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
                 const issueLink = createIssueLink({
                     testPlanTitle: testPlanVersion.title,
+                    testPlanDirectory: testPlanVersion.testPlan.directory,
                     versionString: `V${convertDateToString(
                         testPlanVersion.updatedAt,
                         'YY.MM.DD'
