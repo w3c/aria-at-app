@@ -178,7 +178,9 @@ const TestPlanVersionsPage = () => {
     };
 
     const testPlan = data.testPlan;
-    const issues = testPlan.issues.sort((a, b) => {
+
+    // GraphQL results are read only so they need to be cloned before sorting
+    const issues = [...testPlan.issues].sort((a, b) => {
         const aCreatedAt = new Date(a.createdAt);
         const bCreatedAt = new Date(b.createdAt);
         return bCreatedAt - aCreatedAt;
