@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useQuery } from '@apollo/client';
 import { TEST_PLAN_VERSIONS_PAGE_QUERY } from './queries';
 import PageStatus from '../common/PageStatus';
@@ -119,11 +119,11 @@ const DisclosureComponent = styled(DisclosureComponentUnstyled)`
 //     padding-bottom: 15px;
 //     margin-bottom: 2rem !important;
 // `;
-const H2 = styled.h2`
-    // font-size: 1.25em;
-    // padding-top: 3rem;
-    // padding-bottom: 15px;
-`;
+// const H2 = styled.h2`
+//     // font-size: 1.25em;
+//     // padding-top: 3rem;
+//     // padding-bottom: 15px;
+// `;
 
 const NoneText = styled.span`
     font-style: italic;
