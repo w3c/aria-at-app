@@ -27,3 +27,13 @@ export const ALL_ASSERTIONS_FOR_TEST_PLAN_VERSION_QUERY = gql`
         }
     }
 `;
+
+export const TEST_RESULTS_QUERY = gql`
+    query TestResultsQuery($testPlanRunId: ID!) {
+        testPlanRun(id: $testPlanRunId) {
+            testResults {
+                id
+            }
+        }
+    }
+`;

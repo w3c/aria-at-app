@@ -4,9 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import BotTestCompletionStatus from './BotTestCompletionStatus';
 
-const TestQueueCompletionStatusListItem = props => {
-    const { testResultsLength, tester, runnableTestsLength, id } = props;
-
+const TestQueueCompletionStatusListItem = ({
+    runnableTestsLength,
+    testPlanVersionId,
+    testPlanRun,
+    id
+}) => {
+    const { testResultsLength, tester } = testPlanRun;
     const isBot = useMemo(
         () => tester.username.toLowerCase().slice(-3) === 'bot',
         [tester]
@@ -39,7 +43,14 @@ const TestQueueCompletionStatusListItem = props => {
 
     const renderTestCompletionStatus = () => {
         if (isBot) {
-            return <BotTestCompletionStatus {...props} />;
+            return (
+                <BotTestCompletionStatus
+                    id={id}
+                    testPlanRun={testPlanRun}
+                    runnableTestsLength={runnableTestsLength}
+                    testPlanVersionId={testPlanVersionId}
+                />
+            );
         } else {
             return (
                 <div id={id}>
@@ -58,14 +69,15 @@ const TestQueueCompletionStatusListItem = props => {
 };
 
 TestQueueCompletionStatusListItem.propTypes = {
-    testResultsLength: PropTypes.number.isRequired,
-    tester: PropTypes.shape({
-        username: PropTypes.string.isRequired
-    }).isRequired,
+    testPlanVersionId: PropTypes.string.isRequired,
     runnableTestsLength: PropTypes.number.isRequired,
-    id: PropTypes.string.isRequired,
-    testPlanRunId: PropTypes.string.isRequired,
-    testPlanVersionId: PropTypes.string.isRequired
+    testPlanRun: PropTypes.shape({
+        testResultsLength: PropTypes.number.isRequired,
+        tester: PropTypes.shape({
+            username: PropTypes.string.isRequired
+        }).isRequired
+    }).isRequired,
+    id: PropTypes.string.isRequired
 };
 
 export default TestQueueCompletionStatusListItem;

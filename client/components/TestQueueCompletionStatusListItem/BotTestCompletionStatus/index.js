@@ -2,27 +2,26 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
     ALL_ASSERTIONS_FOR_TEST_PLAN_VERSION_QUERY,
-    TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY
+    TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY,
+    TEST_RESULTS_QUERY
 } from '../queries';
 import { useQuery } from '@apollo/client';
 
 const BotTestCompletionStatus = ({
-    testPlanRunId,
+    testPlanRun,
     testPlanVersionId,
     id,
-    testResultsLength,
     runnableTestsLength
 }) => {
     const { data: testPlanRunAssertionsQueryResult } = useQuery(
         TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY,
         {
             variables: {
-                testPlanRunId: testPlanRunId
+                testPlanRunId: testPlanRun.id
             },
             fetchPolicy: 'cache-and-network'
         }
     );
-
     const testPlanVersionAssertionQueryResult = useQuery(
         ALL_ASSERTIONS_FOR_TEST_PLAN_VERSION_QUERY,
         {
@@ -32,6 +31,35 @@ const BotTestCompletionStatus = ({
             fetchPolicy: 'cache-and-network'
         }
     );
+
+    const testResultsLengthQueryResult = useQuery(TEST_RESULTS_QUERY, {
+        variables: {
+            testPlanRunId: testPlanRun.id
+        },
+        fetchPolicy: 'cache-and-network',
+        pollInterval: 500
+    });
+
+    const { stopPolling, startPolling } = testResultsLengthQueryResult;
+
+    const testResultsLength = useMemo(() => {
+        if (testResultsLengthQueryResult.data) {
+            const length =
+                testResultsLengthQueryResult.data.testPlanRun.testResults
+                    .length;
+            if (length === runnableTestsLength) {
+                stopPolling();
+            }
+            return length;
+        } else {
+            return 0;
+        }
+    }, [
+        testResultsLengthQueryResult.data,
+        runnableTestsLength,
+        stopPolling,
+        startPolling
+    ]);
 
     const totalPossibleAssertions = useMemo(() => {
         if (testPlanVersionAssertionQueryResult.data) {
@@ -83,10 +111,24 @@ const BotTestCompletionStatus = ({
 };
 
 BotTestCompletionStatus.propTypes = {
-    testPlanRunId: PropTypes.string.isRequired,
+    testPlanRun: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        testResults: PropTypes.arrayOf(
+            PropTypes.shape({
+                scenarioResults: PropTypes.arrayOf(
+                    PropTypes.shape({
+                        assertionResults: PropTypes.arrayOf(
+                            PropTypes.shape({
+                                passed: PropTypes.bool.isRequired
+                            }).isRequired
+                        ).isRequired
+                    }).isRequired
+                ).isRequired
+            }).isRequired
+        ).isRequired
+    }).isRequired,
     testPlanVersionId: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
-    testResultsLength: PropTypes.number.isRequired,
     runnableTestsLength: PropTypes.number.isRequired
 };
 

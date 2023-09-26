@@ -456,29 +456,21 @@ const TestQueueRow = ({
                                             ? -1
                                             : 1
                                     )
-                                    .map(
-                                        ({
-                                            tester,
-                                            testResultsLength = 0,
-                                            id
-                                        }) => (
-                                            <TestQueueCompletionStatusListItem
-                                                key={nextId()}
-                                                testPlanRunId={id}
-                                                testPlanVersionId={
-                                                    testPlanVersion?.id
-                                                }
-                                                testResultsLength={
-                                                    testResultsLength
-                                                }
-                                                runnableTestsLength={
-                                                    runnableTestsLength
-                                                }
-                                                tester={tester}
-                                                id={getRowId(tester)}
-                                            />
-                                        )
-                                    )}
+                                    .map(draftTestPlanRun => (
+                                        <TestQueueCompletionStatusListItem
+                                            key={nextId()}
+                                            testPlanVersionId={
+                                                testPlanVersion?.id
+                                            }
+                                            runnableTestsLength={
+                                                runnableTestsLength
+                                            }
+                                            testPlanRun={draftTestPlanRun}
+                                            id={getRowId(
+                                                draftTestPlanRun.tester
+                                            )}
+                                        />
+                                    ))}
                             </ul>
                         ) : (
                             <div className="no-assignees">
