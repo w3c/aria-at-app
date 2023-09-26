@@ -3,8 +3,11 @@
 The database migrations are managed by [Sequelize](https://sequelize.org/). To read and understand the schema, see the Sequelize models that represent the data in `server/models`. Each model represents a table in the database.
 
 ## Setting up a local database for development
+
 0. Install PostgreSQL
-    - Mac 
+
+    - Mac
+
     ```
     brew install postgresql@14
     brew services start postgresql@14
@@ -30,7 +33,9 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). To r
     ```
 4. Import the most recent tests from the [aria-at repository](https://github.com/w3c/aria-at):
     ```
-    yarn db-import-tests:dev
+    yarn db-import-tests:dev -c 5fe7afd82fe51c185b8661276105190a59d47322;
+    yarn db-import-tests:dev -c 1aa3b74d24d340362e9f511eae33788d55487d12;
+    yarn db-import-tests:dev;
     ```
 
 All at once:
@@ -45,6 +50,8 @@ fi;
 
 yarn sequelize db:migrate;
 yarn sequelize db:seed:all;
+yarn db-import-tests:dev -c 5fe7afd82fe51c185b8661276105190a59d47322;
+yarn db-import-tests:dev -c 1aa3b74d24d340362e9f511eae33788d55487d12;
 yarn db-import-tests:dev;
 ```
 
@@ -96,9 +103,8 @@ yarn workspace server db-populate-sample-data:test;
 ### Inspecting the database
 
 To connect to the Postgres table locally:
-    ```
-    yarn run dotenv -e config/dev.env psql
-    ```
+`   yarn run dotenv -e config/dev.env psql
+  `
 
 ## Application development: modifications to the schema
 
