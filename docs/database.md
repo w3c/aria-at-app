@@ -5,9 +5,7 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). To r
 ## Setting up a local database for development
 
 0. Install PostgreSQL
-
     - Mac
-
     ```
     brew install postgresql@14
     brew services start postgresql@14
@@ -103,8 +101,10 @@ yarn workspace server db-populate-sample-data:test;
 ### Inspecting the database
 
 To connect to the Postgres table locally:
-`   yarn run dotenv -e config/dev.env psql
-  `
+
+```
+yarn run dotenv -e config/dev.env psql
+```
 
 ## Application development: modifications to the schema
 
