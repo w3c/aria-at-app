@@ -54,11 +54,11 @@ const PhasePill = ({
     forHeader = false,
     children: phase
 }) => {
-    let classes = fullWidth ? 'full-width' : '';
-    classes = forHeader ? `${classes} for-header` : classes;
+    let className = fullWidth ? 'full-width' : '';
+    className = forHeader ? `${className} for-header` : className;
     return (
         <PhaseText
-            className={[phase.toLowerCase(), classes]
+            className={[phase.toLowerCase(), className]
                 .filter(str => str)
                 .join(' ')}
         >

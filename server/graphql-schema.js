@@ -175,8 +175,6 @@ const graphqlSchema = gql`
     The return type for createRequiredReport.
     """
     type RequiredReport {
-        """
-        """
         atId: ID!
         browserId: ID!
         phase: RequiredReportPhase!
@@ -1073,16 +1071,12 @@ const graphqlSchema = gql`
         findOrCreateAtVersion(input: AtVersionInput!): AtVersion!
     }
 
-    """
-    """
     enum RequiredReportPhase {
         IS_CANDIDATE
         IS_RECOMMENDED
     }
 
     type RequiredReportOperations {
-        """
-        """
         createRequiredReport: RequiredReport!
         updateRequiredReport(atId: ID!, browserId: ID!): RequiredReport!
         deleteRequiredReport: RequiredReport!
@@ -1274,8 +1268,7 @@ const graphqlSchema = gql`
         Get the available mutations for the given browser.
         """
         browser(id: ID!): BrowserOperations!
-        """
-        """
+
         requiredReport(
             atId: ID!
             browserId: ID!

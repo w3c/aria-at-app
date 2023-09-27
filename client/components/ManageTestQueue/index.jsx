@@ -117,6 +117,97 @@ const DisclosureContainer = styled.div`
     }
 `;
 
+const CustomToggleDiv = styled.div`
+    background-color: transparent;
+    width: 100%;
+    height: 38px;
+    text-align: center;
+
+    .icon-container {
+        float: right;
+        margin-top: 2px;
+        margin-right: 3px;
+    }
+    .icon-chevron {
+        font-size: 0.8rem;
+    }
+`;
+
+const CustomToggleP = styled.p`
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    padding: 2px;
+    width: 100%;
+    height: 38px;
+    cursor: default;
+    display: inline-block;
+`;
+
+const CustomToggleSpan = styled.span`
+    float: left;
+    margin-top: 2px;
+    margin-left: 20px;
+    background-color: ${props =>
+        props.phaseLabel === 'Phase Selection'
+            ? '#fff'
+            : props.phaseLabel === 'Candidate'
+            ? '#ff6c00'
+            : props.phaseLabel === 'Recommended'
+            ? '#8441de'
+            : 'black'};
+    border-radius: 14px;
+    padding: 2px 15px;
+    font-size: 1rem;
+    font-weight: 400;
+    color: ${props =>
+        props.phaseLabel === 'Phase Selection' ? 'black' : '#fff'};
+`;
+
+const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+    <CustomToggleDiv
+        ref={ref}
+        onClick={e => {
+            e.preventDefault();
+            onClick(e);
+        }}
+    >
+        <CustomToggleP
+            ref={ref}
+            onClick={e => {
+                e.preventDefault();
+                onClick(e);
+            }}
+        >
+            <CustomToggleSpan phaseLabel={children}>
+                {children}
+            </CustomToggleSpan>
+            <span className="icon-container">
+                <FontAwesomeIcon
+                    className="icon-chevron"
+                    icon={faChevronDown}
+                />
+            </span>
+        </CustomToggleP>
+    </CustomToggleDiv>
+));
+
+const CustomMenu = React.forwardRef(({ children, className }, ref) => {
+    const value = '';
+
+    return (
+        <div ref={ref} className={className}>
+            <ul>
+                {React.Children.toArray(children).filter(
+                    child =>
+                        !value ||
+                        child.props.children.toLowerCase().startsWith(value)
+                )}
+            </ul>
+        </div>
+    );
+});
+
 const ManageTestQueue = ({
     enableManageRequiredReports = false,
     ats = [],
@@ -212,79 +303,6 @@ const ManageTestQueue = ({
         )
     ]);
 
-    const toggleDivStyle = {
-        backgroundColor: 'transparent',
-        width: '100%',
-        height: '38px',
-        textAlign: 'center'
-    };
-
-    const togglePStyle = {
-        border: '1px solid #ced4da',
-        borderRadius: '0.375rem',
-        backgroundColor: '#fff',
-        padding: '2px',
-        width: '100%',
-        height: '38px',
-        cursor: 'default',
-        display: 'inline-block'
-    };
-
-    const toggleSpanStyle = {
-        float: 'left',
-        marginTop: '2px',
-        marginLeft: '20px',
-        backgroundColor:
-            updatePhaseSelection === 'Phase Selection'
-                ? '#fff'
-                : updatePhaseSelection === 'Candidate'
-                ? '#ff6c00'
-                : updatePhaseSelection === 'Recommended'
-                ? '#8441de'
-                : 'black',
-        borderRadius: '14px',
-        padding: '2px 15px',
-        fontSize: '1rem',
-        fontWeight: '400',
-        color: updatePhaseSelection === 'Phase Selection' ? 'black' : '#fff'
-    };
-
-    const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
-        <div
-            style={toggleDivStyle}
-            href=""
-            ref={ref}
-            onClick={e => {
-                e.preventDefault();
-                onClick(e);
-            }}
-        >
-            <p
-                style={togglePStyle}
-                href=""
-                ref={ref}
-                onClick={e => {
-                    e.preventDefault();
-                    onClick(e);
-                }}
-            >
-                <span style={toggleSpanStyle}>{children}</span>
-                <span
-                    style={{
-                        float: 'right',
-                        marginTop: '2px',
-                        marginRight: '3px'
-                    }}
-                >
-                    <FontAwesomeIcon
-                        style={{ fontSize: '.8rem' }}
-                        icon={faChevronDown}
-                    />
-                </span>
-            </p>
-        </div>
-    ));
-
     const setPhase = phase => {
         setUpdatePhaseSelection(phase);
         if (phase === 'Candidate') {
@@ -294,21 +312,6 @@ const ManageTestQueue = ({
             setUpdatePhaseForButton('RECOMMENDED');
         }
     };
-    const CustomMenu = React.forwardRef(({ children, className }, ref) => {
-        const value = '';
-
-        return (
-            <div ref={ref} className={className}>
-                <ul>
-                    {React.Children.toArray(children).filter(
-                        child =>
-                            !value ||
-                            child.props.children.toLowerCase().startsWith(value)
-                    )}
-                </ul>
-            </div>
-        );
-    });
 
     const onOpenShowEditAtBrowserModal = (
         type = 'edit',
@@ -346,179 +349,175 @@ const ManageTestQueue = ({
         let atId = updateAtForButton;
         let browserId = updateBrowserForButton;
 
-        mutation === 'createRequiredReport'
-            ? await triggerLoad(async () => {
-                  try {
-                      atBrowserCombinations.forEach(
-                          ({ at, browser, phase }) => {
-                              if (
-                                  updateAtForButton === at.id &&
-                                  updateBrowserForButton === browser.id &&
-                                  updatePhaseForButton === phase
-                              ) {
-                                  throw new Error(
-                                      'A duplicate Entry was detected in the table'
-                                  );
-                              }
-                          }
-                      );
-                      const { data } = await createRequiredReport({
-                          variables: {
-                              atId: atId,
-                              browserId: browserId,
-                              phase: `IS_${updatePhaseForButton}`
-                          }
-                      });
+        if (mutation === 'createRequiredReport') {
+            await triggerLoad(async () => {
+                try {
+                    atBrowserCombinations.forEach(({ at, browser, phase }) => {
+                        if (
+                            updateAtForButton === at.id &&
+                            updateBrowserForButton === browser.id &&
+                            updatePhaseForButton === phase
+                        ) {
+                            throw new Error(
+                                'A duplicate Entry was detected in the table'
+                            );
+                        }
+                    });
+                    const { data } = await createRequiredReport({
+                        variables: {
+                            atId: atId,
+                            browserId: browserId,
+                            phase: `IS_${updatePhaseForButton}`
+                        }
+                    });
 
-                      const createdRequiredReport =
-                          data.requiredReport.createRequiredReport;
+                    const createdRequiredReport =
+                        data.requiredReport.createRequiredReport;
 
-                      // Verify that the created required report was actually created before updating
-                      // the dataset
-                      if (createdRequiredReport) {
-                          setAtBrowserCombinations(
-                              [
-                                  ...atBrowserCombinations,
-                                  {
-                                      at: ats.find(
-                                          at =>
-                                              at.id ===
-                                              createdRequiredReport.atId
-                                      ),
-                                      browser: browsers.find(
-                                          browser =>
-                                              browser.id ===
-                                              createdRequiredReport.browserId
-                                      ),
-                                      phase: updatePhaseForButton
-                                  }
-                              ].sort((a, b) => {
-                                  if (a.phase < b.phase) return -1;
-                                  if (a.phase > b.phase) return 1;
-                                  return a.at.name.localeCompare(b.at.name);
-                              })
-                          );
-                      }
-                  } catch (error) {
-                      setShowThemedModal(true);
-                      setThemedModalTitle(
-                          'Error Updating Required Reports Table'
-                      );
-                      setThemedModalContent(<>{error.message}</>);
-                  }
-              }, 'Adding Phase requirement to the required reports table')
-            : mutation === 'updateRequiredReport'
-            ? await triggerLoad(async () => {
-                  try {
-                      atBrowserCombinations.forEach(
-                          ({ at, browser, phase }) => {
-                              if (
-                                  updateAtSelection === at.id &&
-                                  updateBrowserSelection === browser.id &&
-                                  updatePhaseForUpdate === phase
-                              ) {
-                                  throw new Error(
-                                      'Cannnot update to a duplicate entry'
-                                  );
-                              }
-                          }
-                      );
+                    // Verify that the created required report was actually created before updating
+                    // the dataset
+                    if (createdRequiredReport) {
+                        setAtBrowserCombinations(
+                            [
+                                ...atBrowserCombinations,
+                                {
+                                    at: ats.find(
+                                        at =>
+                                            at.id === createdRequiredReport.atId
+                                    ),
+                                    browser: browsers.find(
+                                        browser =>
+                                            browser.id ===
+                                            createdRequiredReport.browserId
+                                    ),
+                                    phase: updatePhaseForButton
+                                }
+                            ].sort((a, b) => {
+                                if (a.phase < b.phase) return -1;
+                                if (a.phase > b.phase) return 1;
+                                return a.at.name.localeCompare(b.at.name);
+                            })
+                        );
+                    }
+                } catch (error) {
+                    setShowThemedModal(true);
+                    setThemedModalTitle(
+                        'Error Updating Required Reports Table'
+                    );
+                    setThemedModalContent(<>{error.message}</>);
+                }
+            }, 'Adding Phase requirement to the required reports table');
+        }
+        if (mutation === 'updateRequiredReport') {
+            await triggerLoad(async () => {
+                try {
+                    atBrowserCombinations.forEach(({ at, browser, phase }) => {
+                        if (
+                            updateAtSelection === at.id &&
+                            updateBrowserSelection === browser.id &&
+                            updatePhaseForUpdate === phase
+                        ) {
+                            throw new Error(
+                                'Cannnot update to a duplicate entry'
+                            );
+                        }
+                    });
 
-                      const { data } = await updateRequiredReport({
-                          variables: {
-                              atId: updateAtIdForUpdate,
-                              browserId: updateBrowserIdForUpdate,
-                              phase: `IS_${updatePhaseForUpdate}`,
-                              updateAtId: updateAtSelection,
-                              updateBrowserId: updateBrowserSelection
-                          }
-                      });
+                    const { data } = await updateRequiredReport({
+                        variables: {
+                            atId: updateAtIdForUpdate,
+                            browserId: updateBrowserIdForUpdate,
+                            phase: `IS_${updatePhaseForUpdate}`,
+                            updateAtId: updateAtSelection,
+                            updateBrowserId: updateBrowserSelection
+                        }
+                    });
 
-                      const updatedRequiredReport =
-                          data.requiredReport.updateRequiredReport;
+                    const updatedRequiredReport =
+                        data.requiredReport.updateRequiredReport;
 
-                      // Verify that the created required report was actually created before updating
-                      // the dataset
-                      if (updatedRequiredReport) {
-                          setAtBrowserCombinations(
-                              [
-                                  ...atBrowserCombinations,
-                                  {
-                                      at: ats.find(
-                                          at =>
-                                              at.id ===
-                                              updatedRequiredReport.atId
-                                      ),
-                                      browser: browsers.find(
-                                          browser =>
-                                              browser.id ===
-                                              updatedRequiredReport.browserId
-                                      ),
-                                      phase: updatePhaseForUpdate
-                                  }
-                              ]
-                                  .filter(row => {
-                                      if (
-                                          row.at.id === updateAtIdForUpdate &&
-                                          row.browser.id ===
-                                              updateBrowserIdForUpdate &&
-                                          row.phase == updatePhaseForUpdate
-                                      ) {
-                                          return false;
-                                      }
-                                      return true;
-                                  })
-                                  .sort((a, b) => {
-                                      if (a.phase < b.phase) return -1;
-                                      if (a.phase > b.phase) return 1;
-                                      return a.at.name.localeCompare(b.at.name);
-                                  })
-                          );
-                      }
-                  } catch (error) {
-                      setShowThemedModal(true);
-                      setThemedModalTitle(
-                          'Error Updating Required Reports Table'
-                      );
-                      setThemedModalContent(<>{error.message}</>);
-                  }
-              }, 'Adding Phase requirement to the required reports table')
-            : mutation === 'deleteRequiredReport'
-            ? await triggerLoad(async () => {
-                  const { data } = await deleteRequiredReport({
-                      variables: {
-                          atId: updateAtIdForUpdate,
-                          browserId: updateBrowserIdForUpdate,
-                          phase: `IS_${updatePhaseForUpdate}`
-                      }
-                  });
+                    // Verify that the created required report was actually created before updating
+                    // the dataset
+                    if (updatedRequiredReport) {
+                        setAtBrowserCombinations(
+                            [
+                                ...atBrowserCombinations,
+                                {
+                                    at: ats.find(
+                                        at =>
+                                            at.id === updatedRequiredReport.atId
+                                    ),
+                                    browser: browsers.find(
+                                        browser =>
+                                            browser.id ===
+                                            updatedRequiredReport.browserId
+                                    ),
+                                    phase: updatePhaseForUpdate
+                                }
+                            ]
+                                .filter(row => {
+                                    if (
+                                        row.at.id === updateAtIdForUpdate &&
+                                        row.browser.id ===
+                                            updateBrowserIdForUpdate &&
+                                        row.phase == updatePhaseForUpdate
+                                    ) {
+                                        return false;
+                                    }
+                                    return true;
+                                })
+                                .sort((a, b) => {
+                                    if (a.phase < b.phase) return -1;
+                                    if (a.phase > b.phase) return 1;
+                                    return a.at.name.localeCompare(b.at.name);
+                                })
+                        );
+                    }
+                } catch (error) {
+                    setShowThemedModal(true);
+                    setThemedModalTitle(
+                        'Error Updating Required Reports Table'
+                    );
+                    setThemedModalContent(<>{error.message}</>);
+                }
+            }, 'Adding Phase requirement to the required reports table');
+        }
+        if (mutation === 'deleteRequiredReport') {
+            await triggerLoad(async () => {
+                const { data } = await deleteRequiredReport({
+                    variables: {
+                        atId: updateAtIdForUpdate,
+                        browserId: updateBrowserIdForUpdate,
+                        phase: `IS_${updatePhaseForUpdate}`
+                    }
+                });
 
-                  const deletedRequiredReport =
-                      data.requiredReport.deleteRequiredReport;
+                const deletedRequiredReport =
+                    data.requiredReport.deleteRequiredReport;
 
-                  if (deletedRequiredReport) {
-                      setAtBrowserCombinations(
-                          [...atBrowserCombinations]
-                              .filter(row => {
-                                  if (
-                                      row.at.id === updateAtIdForUpdate &&
-                                      row.browser.id ===
-                                          updateBrowserIdForUpdate &&
-                                      row.phase == updatePhaseForUpdate
-                                  ) {
-                                      return false;
-                                  }
-                                  return true;
-                              })
-                              .sort((a, b) => {
-                                  if (a.phase < b.phase) return -1;
-                                  if (a.phase > b.phase) return 1;
-                                  return a.at.name.localeCompare(b.at.name);
-                              })
-                      );
-                  }
-              }, 'Adding Phase requirement to the required reports table')
-            : null;
+                if (deletedRequiredReport) {
+                    setAtBrowserCombinations(
+                        [...atBrowserCombinations]
+                            .filter(row => {
+                                if (
+                                    row.at.id === updateAtIdForUpdate &&
+                                    row.browser.id ===
+                                        updateBrowserIdForUpdate &&
+                                    row.phase == updatePhaseForUpdate
+                                ) {
+                                    return false;
+                                }
+                                return true;
+                            })
+                            .sort((a, b) => {
+                                if (a.phase < b.phase) return -1;
+                                if (a.phase > b.phase) return 1;
+                                return a.at.name.localeCompare(b.at.name);
+                            })
+                    );
+                }
+            }, 'Adding Phase requirement to the required reports table');
+        }
     };
 
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
@@ -1106,7 +1105,6 @@ const ManageTestQueue = ({
                             Add required reports for a specific AT and Browser
                             pair
                         </span>
-                        {/* section: */}
                         <div className="disclosure-row-controls">
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
@@ -1262,6 +1260,9 @@ const ManageTestQueue = ({
                                         );
                                         setUpdateListAtSelection(
                                             'Select an At'
+                                        );
+                                        setUpdateListBrowserSelection(
+                                            'Select a browser'
                                         );
                                         runMutationForRequiredReportTable(
                                             'createRequiredReport'
@@ -1602,12 +1603,20 @@ const ManageTestQueue = ({
     );
 };
 
+CustomToggle.propTypes = {
+    children: PropTypes.array,
+    className: PropTypes.string,
+    onClick: PropTypes.func
+};
+
+CustomMenu.propTypes = {
+    children: PropTypes.array,
+    className: PropTypes.string
+};
+
 ManageTestQueue.propTypes = {
     ats: PropTypes.array,
     browsers: PropTypes.array,
-    children: PropTypes.array,
-    className: PropTypes.string,
-    onClick: PropTypes.func,
     testPlanVersions: PropTypes.array,
     enableManageRequiredReports: PropTypes.bool,
     triggerUpdate: PropTypes.func
