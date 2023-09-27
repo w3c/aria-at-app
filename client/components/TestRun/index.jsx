@@ -230,6 +230,11 @@ const TestRun = () => {
         setCurrentTestBrowserVersionId(currentTestBrowserVersionId);
         setCurrentAtVersion(currentAtVersion);
         setCurrentBrowserVersion(currentBrowserVersion);
+        // Testers do not need to change AT/Browser versions
+        // while assigning verdicts for previously automated tests
+        if (testPlanRun?.initiatedByAutomation) {
+            setIsShowingAtBrowserModal(false);
+        }
         setPageReady(true);
     };
 

@@ -244,7 +244,8 @@ const createTestPlanRun = async (
         {
             testerUserId,
             testPlanReportId,
-            testResults
+            testResults,
+            initiatedByAutomation: isAutomated
         },
         options
     );

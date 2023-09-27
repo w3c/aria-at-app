@@ -787,6 +787,10 @@ const graphqlSchema = gql`
         expensive time-consuming operations to calculate.
         """
         testResultsLength: Int!
+        """
+        Whether the TestPlanRun was initiated by the Response Collection System
+        """
+        initiatedByAutomation: Boolean!
     }
 
     """

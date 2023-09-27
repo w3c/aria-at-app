@@ -4,6 +4,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
     query TestPlanRunPage($testPlanRunId: ID!) {
         testPlanRun(id: $testPlanRunId) {
             id
+            initiatedByAutomation
             tester {
                 id
                 username
