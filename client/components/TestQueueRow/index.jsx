@@ -25,6 +25,8 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import { convertDateToString } from '../../utils/formatter';
 import './TestQueueRow.css';
 import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListItem';
+import { isBot } from '../../utils/automation';
+import FinishBotRunButtonWithDialog from '../FinishBotRunButtonWithDialog';
 
 const TestQueueRow = ({
     user = {},
@@ -364,6 +366,34 @@ const TestQueueRow = ({
         }
     };
 
+    const renderSecondaryActions = () => {
+        const botTestPlanRun = draftTestPlanRuns.find(({ tester }) =>
+            isBot(tester)
+        );
+        if (isAdmin && !isLoading) {
+            return (
+                <>
+                    {botTestPlanRun && (
+                        <FinishBotRunButtonWithDialog
+                            testPlanRun={botTestPlanRun}
+                        />
+                    )}
+                    <Button
+                        ref={updateTestPlanStatusButtonRef}
+                        variant="secondary"
+                        onClick={async () => {
+                            focusButtonRef.current =
+                                updateTestPlanStatusButtonRef.current;
+                            await updateReportStatus();
+                        }}
+                    >
+                        Mark as Final
+                    </Button>
+                </>
+            );
+        }
+    };
+
     const updateReportStatus = async () => {
         try {
             await triggerLoad(async () => {
@@ -485,23 +515,7 @@ const TestQueueRow = ({
                     </div>
                     {isSignedIn && isTester && (
                         <div className="secondary-actions">
-                            {isAdmin &&
-                                !isLoading &&
-                                !testPlanReport.conflictsLength && (
-                                    <>
-                                        <Button
-                                            ref={updateTestPlanStatusButtonRef}
-                                            variant="secondary"
-                                            onClick={async () => {
-                                                focusButtonRef.current =
-                                                    updateTestPlanStatusButtonRef.current;
-                                                await updateReportStatus();
-                                            }}
-                                        >
-                                            Mark as Final
-                                        </Button>
-                                    </>
-                                )}
+                            {renderSecondaryActions()}
                         </div>
                     )}
                 </td>

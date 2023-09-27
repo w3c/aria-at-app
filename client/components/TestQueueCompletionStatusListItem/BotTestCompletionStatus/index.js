@@ -99,7 +99,7 @@ const BotTestCompletionStatus = ({
     }, [testPlanRunAssertionsQueryResult]);
 
     return (
-        <ul id={id}>
+        <ul id={id} className="text-secondary">
             <li>
                 {`Responses for ${testResultsLength} of ${runnableTestsLength} tests recorded`}
             </li>
@@ -119,13 +119,13 @@ BotTestCompletionStatus.propTypes = {
                     PropTypes.shape({
                         assertionResults: PropTypes.arrayOf(
                             PropTypes.shape({
-                                passed: PropTypes.bool.isRequired
-                            }).isRequired
-                        ).isRequired
-                    }).isRequired
-                ).isRequired
-            }).isRequired
-        ).isRequired
+                                passed: PropTypes.bool
+                            })
+                        )
+                    })
+                )
+            })
+        )
     }).isRequired,
     testPlanVersionId: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,

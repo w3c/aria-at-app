@@ -53,7 +53,7 @@ const TestQueueCompletionStatusListItem = ({
             );
         } else {
             return (
-                <div id={id}>
+                <div id={id} className="text-secondary">
                     {`${testResultsLength} of ${runnableTestsLength} tests complete`}
                 </div>
             );
@@ -61,7 +61,7 @@ const TestQueueCompletionStatusListItem = ({
     };
 
     return (
-        <li>
+        <li className="mb-2 text-nowrap">
             {renderTesterInfo()}
             {renderTestCompletionStatus()}
         </li>
