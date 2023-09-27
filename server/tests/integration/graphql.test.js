@@ -137,8 +137,6 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
-            // 'RequiredReport',
-            // 'RequiredReportOperations',
             'Issue',
             'Vendor'
         ];

@@ -117,11 +117,16 @@ const DisclosureContainer = styled.div`
     }
 `;
 
-const CustomToggleDiv = styled.div`
+const CustomToggleButton = styled.button`
     background-color: transparent;
     width: 100%;
     height: 38px;
     text-align: center;
+
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: block;
 
     .icon-container {
         float: right;
@@ -166,7 +171,7 @@ const CustomToggleSpan = styled.span`
 
 // You can learn everything about this component here: https://react-bootstrap.netlify.app/docs/components/dropdowns#custom-dropdown-components
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
-    <CustomToggleDiv
+    <CustomToggleButton
         ref={ref}
         onClick={e => {
             e.preventDefault();
@@ -190,7 +195,7 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
                 />
             </span>
         </CustomToggleP>
-    </CustomToggleDiv>
+    </CustomToggleButton>
 ));
 
 const CustomMenu = React.forwardRef(({ children, className }, ref) => {
