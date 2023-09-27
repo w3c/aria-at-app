@@ -34,6 +34,27 @@ const BasicModal = ({
         headerRef.current.focus();
     }, [show]);
 
+    const renderAction = (action, index) => {
+        if (action.component) {
+            return React.createElement(
+                action.component,
+                { key: `CustomComponent_${index}`, ...action.props },
+                null
+            );
+        } else {
+            return (
+                <Button
+                    key={`BasicModalAction_${index}`}
+                    variant={action.variant ?? 'primary'}
+                    onClick={action.onClick}
+                    className={action.className ?? ''}
+                >
+                    {action.label ?? 'Continue'}
+                </Button>
+            );
+        }
+    };
+
     return (
         <>
             <Modal
@@ -68,16 +89,9 @@ const BasicModal = ({
                                 {closeLabel}
                             </Button>
                         )}
-                        {actions.map((action, index) => (
-                            <Button
-                                key={`BasicModalAction_${index}`}
-                                variant="primary"
-                                onClick={action.onClick}
-                                className={action.className ?? ''}
-                            >
-                                {action.label ?? 'Continue'}
-                            </Button>
-                        ))}
+                        {actions.map((action, index) =>
+                            renderAction(action, index)
+                        )}
                     </Modal.Footer>
                 )}
             </Modal>
@@ -103,10 +117,12 @@ BasicModal.propTypes = {
     useOnHide: PropTypes.bool,
     actions: PropTypes.arrayOf(
         PropTypes.shape({
-            label: PropTypes.string.isRequired,
-            onClick: PropTypes.func.isRequired,
+            label: PropTypes.string,
+            onClick: PropTypes.func,
             variant: PropTypes.string,
-            className: PropTypes.string
+            className: PropTypes.string,
+            component: PropTypes.elementType,
+            props: PropTypes.object
         })
     )
 };

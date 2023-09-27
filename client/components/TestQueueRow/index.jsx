@@ -2,11 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useApolloClient, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faCheck,
-    faTrashAlt,
-    faUserPlus
-} from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -27,6 +23,7 @@ import './TestQueueRow.css';
 import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListItem';
 import { isBot } from '../../utils/automation';
 import FinishBotRunButtonWithDialog from '../FinishBotRunButtonWithDialog';
+import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
 
 const TestQueueRow = ({
     user = {},
@@ -40,14 +37,14 @@ const TestQueueRow = ({
     const { triggerLoad, loadingMessage } = useTriggerLoad();
 
     const focusButtonRef = useRef();
-    const dropdownAssignTesterButtonRef = useRef();
     const assignTesterButtonRef = useRef();
     const dropdownDeleteTesterResultsButtonRef = useRef();
     const deleteTesterResultsButtonRef = useRef();
     const deleteTestPlanButtonRef = useRef();
     const updateTestPlanStatusButtonRef = useRef();
 
-    const [alertMessage, setAlertMessage] = useState('');
+    // TODO: Reimagine alert, set not used currently
+    const [alertMessage] = useState('');
 
     const [showThemedModal, setShowThemedModal] = useState(false);
     const [themedModalType, setThemedModalType] = useState('warning');
@@ -216,61 +213,14 @@ const TestQueueRow = ({
 
     const renderAssignMenu = () => {
         return (
-            <>
-                <Dropdown aria-label="Assign testers menu">
-                    <Dropdown.Toggle
-                        ref={dropdownAssignTesterButtonRef}
-                        aria-label="Assign testers"
-                        className="assign-tester"
-                        variant="secondary"
-                    >
-                        <FontAwesomeIcon icon={faUserPlus} />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu role="menu" className="assign-menu">
-                        {testers.length ? (
-                            testers.map(({ username }) => {
-                                const isTesterAssigned =
-                                    checkIsTesterAssigned(username);
-                                let classname = isTesterAssigned
-                                    ? 'assigned'
-                                    : 'not-assigned';
-                                return (
-                                    <Dropdown.Item
-                                        role="menuitem"
-                                        variant="secondary"
-                                        as="button"
-                                        key={nextId()}
-                                        onClick={async () => {
-                                            focusButtonRef.current =
-                                                dropdownAssignTesterButtonRef.current;
-                                            await toggleTesterAssign(username);
-                                            setAlertMessage(
-                                                `You have been ${
-                                                    classname.includes('not')
-                                                        ? 'removed from'
-                                                        : 'assigned to'
-                                                } this test run.`
-                                            );
-                                        }}
-                                        aria-checked={isTesterAssigned}
-                                    >
-                                        {isTesterAssigned && (
-                                            <FontAwesomeIcon icon={faCheck} />
-                                        )}
-                                        <span className={classname}>
-                                            {`${username}`}
-                                        </span>
-                                    </Dropdown.Item>
-                                );
-                            })
-                        ) : (
-                            <span className="not-assigned">
-                                No testers to assign
-                            </span>
-                        )}
-                    </Dropdown.Menu>
-                </Dropdown>
-            </>
+            <AssignTesterDropdown
+                onChange={async () => {
+                    await triggerTestPlanReportUpdate();
+                }}
+                testPlanReportId={testPlanReport.id}
+                possibleTesters={testers}
+                draftTestPlanRuns={draftTestPlanRuns}
+            />
         );
     };
 
@@ -376,6 +326,9 @@ const TestQueueRow = ({
                     {botTestPlanRun && (
                         <FinishBotRunButtonWithDialog
                             testPlanRun={botTestPlanRun}
+                            testPlanReportId={testPlanReport.id}
+                            testers={testers}
+                            onChange={triggerTestPlanReportUpdate}
                         />
                     )}
                     <Button

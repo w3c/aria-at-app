@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import FinishBotRunDialog from './FinishBotRunDialog';
 
-const FinishBotRunButtonWithDialog = ({ testPlanRun }) => {
+const FinishBotRunButtonWithDialog = ({
+    testPlanRun,
+    testPlanReportId,
+    testers,
+    onChange
+}) => {
     const [showDialog, setShowDialog] = useState(false);
 
     return (
@@ -21,13 +26,22 @@ const FinishBotRunButtonWithDialog = ({ testPlanRun }) => {
                 testPlanRun={testPlanRun}
                 show={showDialog}
                 setShow={setShowDialog}
+                testers={testers}
+                testPlanReportId={testPlanReportId}
+                onChange={async () => {
+                    await onChange();
+                    setShowDialog(false);
+                }}
             />
         </>
     );
 };
 
 FinishBotRunButtonWithDialog.propTypes = {
-    testPlanRun: PropTypes.object.isRequired
+    testPlanRun: PropTypes.object.isRequired,
+    testPlanReportId: PropTypes.string.isRequired,
+    testers: PropTypes.array.isRequired,
+    onChange: PropTypes.func.isRequired
 };
 
 export default FinishBotRunButtonWithDialog;

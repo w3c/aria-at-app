@@ -221,9 +221,13 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
 `;
 
 export const ASSIGN_TESTER_MUTATION = gql`
-    mutation AssignTester($testReportId: ID!, $testerId: ID!) {
+    mutation AssignTester(
+        $testReportId: ID!
+        $testerId: ID!
+        $testPlanRunId: ID
+    ) {
         testPlanReport(id: $testReportId) {
-            assignTester(userId: $testerId) {
+            assignTester(userId: $testerId, testPlanRunId: $testPlanRunId) {
                 testPlanReport {
                     draftTestPlanRuns {
                         tester {

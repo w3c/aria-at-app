@@ -1164,10 +1164,11 @@ const graphqlSchema = gql`
     """
     type TestPlanReportOperations {
         """
-        Assigns a user to a TestPlanReport, creating an associated TestPlanRun
-        with no results.
+        Assigns a user to a TestPlanReport, if a testPlanRunID is supplied the
+        the TestPlanRun will be reassigned, otherwise an associated TestPlanRun
+        with no results is created.
         """
-        assignTester(userId: ID!): PopulatedData!
+        assignTester(userId: ID!, testPlanRunId: ID): PopulatedData!
         """
         Permanently deletes the TestPlanRun from the TestPlanReport for the
         user.
