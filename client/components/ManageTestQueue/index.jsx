@@ -164,6 +164,7 @@ const CustomToggleSpan = styled.span`
         props.phaseLabel === 'Phase Selection' ? 'black' : '#fff'};
 `;
 
+// You can learn everything about this component here: https://react-bootstrap.netlify.app/docs/components/dropdowns#custom-dropdown-components
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     <CustomToggleDiv
         ref={ref}
