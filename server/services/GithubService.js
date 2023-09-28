@@ -1,7 +1,8 @@
 const axios = require('axios');
-const NodeCache = require('node-cache');
+const staleWhileRevalidate = require('../util/staleWhileRevalidate');
 
 const {
+    ENVIRONMENT,
     GITHUB_GRAPHQL_SERVER,
     GITHUB_OAUTH_SERVER,
     GITHUB_CLIENT_ID,
@@ -10,6 +11,11 @@ const {
     GITHUB_TEAM_ORGANIZATION,
     GITHUB_TEAM_QUERY
 } = process.env;
+
+const GITHUB_ISSUES_API_URL =
+    ENVIRONMENT === 'production'
+        ? 'https://api.github.com/repos/w3c/aria-at'
+        : 'https://api.github.com/repos/bocoup/aria-at';
 
 const permissionScopes = [
     // Not currently used, but this permissions scope will allow us to query for
@@ -23,74 +29,44 @@ const permissionScopes = [
 ];
 const permissionScopesURI = encodeURI(permissionScopes.join(' '));
 const graphQLEndpoint = `${GITHUB_GRAPHQL_SERVER}/graphql`;
-const nodeCache = new NodeCache();
-const CACHE_MINUTES = 1;
 
-const constructIssuesRequest = async ({
-    ats = ['jaws', 'nvda', 'vo'],
-    page = 1
-}) => {
-    const issuesEndpoint = `https://api.github.com/repos/w3c/aria-at/issues?labels=app,candidate-review&per_page=100`;
-    const url = `${issuesEndpoint}&page=${page}`;
-    const auth = {
-        username: GITHUB_CLIENT_ID,
-        password: GITHUB_CLIENT_SECRET
-    };
-    const response = await axios.get(url, { auth });
-    // https://docs.github.com/en/rest/issues/issues#list-repository-issues
-    // Filter out Pull Requests. GitHub's REST API v3 also considers every
-    // pull request an issue.
-    const issues = response.data.filter(data => !data.pull_request);
-    const headersLink = response.headers.link;
+const getAllIssues = async () => {
+    let currentResults = [];
+    let page = 1;
 
-    let resultsByAt = { jaws: [], nvda: [], vo: [] };
-    if (issues.length) {
-        resultsByAt = {
-            jaws: ats.includes('jaws')
-                ? [
-                      ...issues.filter(issue =>
-                          issue.labels.map(label => label.name).includes('jaws')
-                      )
-                  ]
-                : [],
-            nvda: ats.includes('nvda')
-                ? [
-                      ...issues.filter(issue =>
-                          issue.labels.map(label => label.name).includes('nvda')
-                      )
-                  ]
-                : [],
-            vo: ats.includes('vo')
-                ? [
-                      ...issues.filter(issue =>
-                          issue.labels.map(label => label.name).includes('vo')
-                      )
-                  ]
-                : []
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+        const issuesEndpoint = `${GITHUB_ISSUES_API_URL}/issues?state=all&per_page=100`;
+        const url = `${issuesEndpoint}&page=${page}`;
+        const auth = {
+            username: GITHUB_CLIENT_ID,
+            password: GITHUB_CLIENT_SECRET
         };
+        const response = await axios.get(url, { auth });
+
+        const issues = response.data
+            // https://docs.github.com/en/rest/issues/issues#list-repository-issues
+            // Filter out Pull Requests. GitHub's REST API v3 also considers every
+            // pull request an issue.
+            .filter(data => !data.pull_request)
+            // Our issue API should only return issues that were originally
+            // created by the app, indicated by the presence of metadata
+            // hidden in a comment
+            .filter(data => data.body.includes('ARIA_AT_APP_ISSUE_DATA'));
+
+        currentResults = [...currentResults, ...issues];
+
+        const hasMoreResults = response.headers.link?.includes('rel="next"');
+
+        if (hasMoreResults) {
+            page += 1;
+            continue;
+        }
+
+        break;
     }
 
-    // Check if additional pages exist
-    if (headersLink && headersLink.includes('rel="next"')) {
-        // Get result from other pages
-        const additionalResultsByAt = await constructIssuesRequest({
-            ats,
-            page: page + 1
-        });
-        resultsByAt = {
-            jaws: ats.includes('jaws')
-                ? [...resultsByAt.jaws, ...additionalResultsByAt.jaws]
-                : [],
-            nvda: ats.includes('nvda')
-                ? [...resultsByAt.nvda, ...additionalResultsByAt.nvda]
-                : [],
-            vo: ats.includes('vo')
-                ? [...resultsByAt.vo, ...additionalResultsByAt.vo]
-                : []
-        };
-    }
-
-    return resultsByAt;
+    return currentResults;
 };
 
 module.exports = {
@@ -165,29 +141,7 @@ module.exports = {
 
         return isMember;
     },
-    async getCandidateReviewIssuesByAt({ cacheId, atName }) {
-        const cacheResult = nodeCache.get(cacheId);
-
-        let atKey = '';
-        switch (atName) {
-            case 'JAWS':
-                atKey = 'jaws';
-                break;
-            case 'NVDA':
-                atKey = 'nvda';
-                break;
-            case 'VoiceOver for macOS':
-                atKey = 'vo';
-                break;
-        }
-
-        if (!cacheResult) {
-            const result = await constructIssuesRequest({
-                ats: [atKey]
-            });
-            nodeCache.set(cacheId, result, CACHE_MINUTES * 60);
-            return result[atKey];
-        }
-        return cacheResult[atKey];
-    }
+    getAllIssues: staleWhileRevalidate(getAllIssues, {
+        millisecondsUntilStale: 10000 /* 10 seconds */
+    })
 };

@@ -4,7 +4,10 @@ const {
 const retrieveAttributes = require('./helpers/retrieveAttributes');
 const { TEST_PLAN_VERSION_ATTRIBUTES } = require('../models/services/helpers');
 
-const testPlanVersionsResolver = async (root, args, context, info) => {
+const testPlanVersionsResolver = async (_, { phases }, context, info) => {
+    const where = {};
+    if (phases) where.phase = phases;
+
     const { attributes: testPlanVersionAttributes } = retrieveAttributes(
         'testPlanVersion',
         TEST_PLAN_VERSION_ATTRIBUTES,
@@ -13,7 +16,7 @@ const testPlanVersionsResolver = async (root, args, context, info) => {
 
     return getTestPlanVersions(
         null,
-        {},
+        where,
         testPlanVersionAttributes,
         [],
         [],
@@ -22,6 +25,7 @@ const testPlanVersionsResolver = async (root, args, context, info) => {
         [],
         {
             order: [
+                ['candidatePhaseReachedAt', 'desc'],
                 ['updatedAt', 'desc'],
                 ['title', 'asc'],
                 ['directory', 'asc']

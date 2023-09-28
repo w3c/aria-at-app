@@ -137,7 +137,6 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
-            'Issue',
             'Vendor'
         ];
         const excludedTypeNameAndField = [
@@ -147,6 +146,11 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
+            ['TestPlanReportOperations', 'updateTestPlanReportTestPlanVersion'],
+            ['TestPlanVersion', 'candidatePhaseReachedAt'],
+            ['TestPlanVersion', 'recommendedPhaseReachedAt'],
+            ['TestPlanVersion', 'recommendedPhaseTargetDate'],
+            ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers']
         ];
         ({
@@ -182,6 +186,16 @@ describe('graphql', () => {
                             id
                             name
                         }
+                        candidateAts {
+                            __typename
+                            id
+                            name
+                        }
+                        recommendedAts {
+                            __typename
+                            id
+                            name
+                        }
                         browserVersions {
                             __typename
                             id
@@ -193,6 +207,16 @@ describe('graphql', () => {
                         id
                         name
                         browsers {
+                            __typename
+                            id
+                            name
+                        }
+                        candidateBrowsers {
+                            __typename
+                            id
+                            name
+                        }
+                        recommendedBrowsers {
                             __typename
                             id
                             name
@@ -266,17 +290,45 @@ describe('graphql', () => {
                         testPlanVersions {
                             id
                         }
+                        issues {
+                            __typename
+                            author
+                            title
+                            link
+                            isCandidateReview
+                            feedbackType
+                            isOpen
+                            testNumberFilteredByAt
+                            createdAt
+                            closedAt
+                            at {
+                                name
+                            }
+                            browser {
+                                name
+                            }
+                        }
                     }
                     testPlans {
                         directory
                         title
                     }
                     testPlanVersions {
+                        __typename
                         id
+                        phase
+                        draftPhaseReachedAt
+                        candidatePhaseReachedAt
+                        recommendedPhaseTargetDate
+                        recommendedPhaseReachedAt
+                        deprecatedAt
                     }
                     testPlanVersion(id: 1) {
                         __typename
                         id
+                        testPlanReports {
+                            id
+                        }
                         testPlan {
                             id
                             directory
@@ -285,7 +337,7 @@ describe('graphql', () => {
                     conflictTestPlanReport: testPlanReport(id: 2) {
                         __typename
                         id
-                        status
+                        isFinal
                         createdAt
                         vendorReviewStatus
                         testPlanVersion {
@@ -378,9 +430,6 @@ describe('graphql', () => {
                         }
                         metrics
                         conflictsLength
-                        candidateStatusReachedAt
-                        recommendedStatusTargetDate
-                        recommendedStatusReachedAt
                         atVersions {
                             id
                             name
@@ -391,6 +440,7 @@ describe('graphql', () => {
                             name
                             releasedAt
                         }
+                        markedFinalAt
                     }
                     testPlanReports {
                         id
@@ -510,24 +560,16 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        reportStatus: testPlanReport(id: 1) {
+                        updateTestPlanVersionPhase: testPlanVersion(id: 26) {
                             __typename
-                            updateStatus(status: CANDIDATE) {
+                            updatePhase(phase: DRAFT) {
                                 locationOfData
                             }
                         }
-                        bulkReportStatus: testPlanReport(ids: [1]) {
+                        testPlanVersion(id: 3) {
                             __typename
-                            bulkUpdateStatus(status: CANDIDATE) {
-                                locationOfData
-                            }
-                        }
-                        reportRecommendedStatusTargetDate: testPlanReport(
-                            id: 3
-                        ) {
-                            __typename
-                            updateRecommendedStatusTargetDate(
-                                recommendedStatusTargetDate: "2023-12-25"
+                            updateRecommendedPhaseTargetDate(
+                                recommendedPhaseTargetDate: "2023-12-25"
                             ) {
                                 locationOfData
                             }
@@ -550,6 +592,18 @@ describe('graphql', () => {
                                 testPlanReport {
                                     id
                                 }
+                            }
+                        }
+                        markReportAsFinal: testPlanReport(id: 2) {
+                            __typename
+                            markAsFinal {
+                                locationOfData
+                            }
+                        }
+                        unmarkReportAsFinal: testPlanReport(id: 2) {
+                            __typename
+                            unmarkAsFinal {
+                                locationOfData
                             }
                         }
                         testPlanRun(id: 1) {

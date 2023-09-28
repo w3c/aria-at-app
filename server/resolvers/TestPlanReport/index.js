@@ -5,11 +5,11 @@ const finalizedTestResults = require('./finalizedTestResultsResolver');
 const conflicts = require('./conflictsResolver');
 const conflictsLength = require('./conflictsLengthResolver');
 const issues = require('./issuesResolver');
-const recommendedStatusTargetDate = require('./recommendedStatusTargetDateResolver');
 const atVersions = require('./atVersionsResolver');
 const at = require('./atResolver');
 const browser = require('./browserResolver');
 const latestAtVersionReleasedAt = require('./latestAtVersionReleasedAtResolver');
+const isFinal = require('./isFinalResolver');
 
 module.exports = {
     runnableTests,
@@ -19,9 +19,9 @@ module.exports = {
     conflicts,
     conflictsLength,
     issues,
-    recommendedStatusTargetDate,
     atVersions,
     at,
     browser,
-    latestAtVersionReleasedAt
+    latestAtVersionReleasedAt,
+    isFinal
 };

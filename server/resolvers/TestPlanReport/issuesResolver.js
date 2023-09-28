@@ -1,64 +1,92 @@
 const { GithubService } = require('../../services');
-const { Base64 } = require('js-base64');
-const moment = require('moment');
+const convertDateToString = require('../../util/convertDateToString');
 
-const issuesResolver = async testPlanReport => {
-    if (!testPlanReport.candidateStatusReachedAt) return [];
+const issuesResolver = (testPlanReport, _, context) =>
+    getIssues({ testPlanReport, context });
 
-    const searchPrefix = `${testPlanReport.at.name} Feedback: "`;
-    const searchTestPlanVersionTitle =
-        testPlanReport.testPlanVersion.dataValues.title;
-    const searchTestPlanVersionDate = moment(
-        testPlanReport.testPlanVersion.updatedAt
-    ).format('DD-MM-YYYY');
-    const cacheId = Base64.encode(
-        `${testPlanReport.id}${searchPrefix}${searchTestPlanVersionTitle}${searchTestPlanVersionDate}`
-    );
+const getIssues = async ({ testPlanReport, testPlan, context }) => {
+    const [ats, browsers] = await Promise.all([
+        context.atLoader.getAll(),
+        context.browserLoader.getAll()
+    ]);
 
-    const issues = await GithubService.getCandidateReviewIssuesByAt({
-        cacheId,
-        atName: testPlanReport.at.name
-    });
+    const issues = await GithubService.getAllIssues();
 
-    if (issues.length) {
-        const filteredIssues = issues.filter(
-            ({ title }) =>
-                title.includes(searchPrefix) &&
-                title.includes(searchTestPlanVersionTitle) &&
-                title.includes(searchTestPlanVersionDate)
+    const getHiddenIssueMetadata = issue => {
+        return JSON.parse(
+            issue.body.match(
+                // Since this is human editable it should be okay for the
+                // JSON part to be multiline, and for additional comments
+                // to follow this metadata comment
+                /<!--\s*ARIA_AT_APP_ISSUE_DATA\s*=\s*((.|\n)+?)\s*-->/
+            )?.[1] ?? 'null'
         );
-        return filteredIssues.map(issue => {
-            const {
-                title,
-                user,
-                labels,
-                state,
-                html_url,
-                id: topCommentId
-            } = issue;
-            const testNumberMatch = title.match(/\sTest \d+,/g);
-            const testNumberSubstring = testNumberMatch
-                ? testNumberMatch[0]
-                : '';
-            const testNumberFilteredByAt = testNumberSubstring
-                ? testNumberSubstring.match(/\d+/g)[0]
-                : null;
+    };
+
+    return issues
+        .filter(issue => {
+            const hiddenIssueMetadata = getHiddenIssueMetadata(issue);
+
+            if (testPlanReport) {
+                const { at, browser, testPlanVersion } = testPlanReport;
+
+                const versionString = `V${convertDateToString(
+                    testPlanVersion.updatedAt,
+                    'YY.MM.DD'
+                )}`;
+
+                return (
+                    hiddenIssueMetadata &&
+                    hiddenIssueMetadata.testPlanDirectory ===
+                        testPlanVersion.directory &&
+                    hiddenIssueMetadata.versionString === versionString &&
+                    hiddenIssueMetadata.atName === at.name &&
+                    (!hiddenIssueMetadata.browserName ||
+                        hiddenIssueMetadata.browserName === browser.name)
+                );
+            } else if (testPlan) {
+                return (
+                    hiddenIssueMetadata &&
+                    hiddenIssueMetadata.testPlanDirectory === testPlan.directory
+                );
+            }
+        })
+        .map(issue => {
+            const hiddenIssueMetadata = getHiddenIssueMetadata(issue);
+
+            const { title, user, state, html_url, id: topCommentId } = issue;
+
+            const feedbackType =
+                hiddenIssueMetadata.isCandidateReviewChangesRequested
+                    ? 'CHANGES_REQUESTED'
+                    : 'FEEDBACK';
+
+            const at = ats.find(
+                at =>
+                    at.name.toLowerCase() ===
+                    hiddenIssueMetadata.atName?.toLowerCase()
+            );
+            const browser = browsers.find(
+                browser =>
+                    browser.name.toLowerCase() ===
+                    hiddenIssueMetadata.browserName?.toLowerCase()
+            );
 
             return {
                 author: user.login,
+                title,
+                createdAt: issue.created_at,
+                closedAt: issue.closed_at,
                 link: `${html_url}#issue-${topCommentId}`,
-                feedbackType: labels
-                    .map(label => label.name)
-                    .includes('changes-requested')
-                    ? 'CHANGES_REQUESTED'
-                    : 'FEEDBACK',
+                isCandidateReview: hiddenIssueMetadata.isCandidateReview,
+                feedbackType,
                 isOpen: state === 'open',
-                testNumberFilteredByAt
+                testNumberFilteredByAt: hiddenIssueMetadata.testRowNumber,
+                at,
+                browser
             };
         });
-    }
-
-    return [];
 };
 
 module.exports = issuesResolver;
+module.exports.getIssues = getIssues;

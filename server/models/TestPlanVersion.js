@@ -1,4 +1,11 @@
 const MODEL_NAME = 'TestPlanVersion';
+const PHASE = {
+    RD: 'RD',
+    DRAFT: 'DRAFT',
+    CANDIDATE: 'CANDIDATE',
+    RECOMMENDED: 'RECOMMENDED',
+    DEPRECATED: 'DEPRECATED'
+};
 
 module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
@@ -9,6 +16,11 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false,
                 primaryKey: true,
                 autoIncrement: true
+            },
+            phase: {
+                type: DataTypes.TEXT,
+                allowNull: false,
+                defaultValue: PHASE.RD
             },
             title: { type: DataTypes.TEXT },
             directory: { type: DataTypes.TEXT },
@@ -26,7 +38,32 @@ module.exports = function (sequelize, DataTypes) {
             },
             tests: { type: DataTypes.JSONB },
             testPlanId: { type: DataTypes.INTEGER },
-            metadata: { type: DataTypes.JSONB }
+            metadata: { type: DataTypes.JSONB },
+            draftPhaseReachedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            candidatePhaseReachedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            recommendedPhaseReachedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            recommendedPhaseTargetDate: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            },
+            deprecatedAt: {
+                type: DataTypes.DATE,
+                defaultValue: null,
+                allowNull: true
+            }
         },
         {
             timestamps: false,

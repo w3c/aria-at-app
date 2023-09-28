@@ -1,25 +1,17 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { Route, Routes, Navigate } from 'react-router';
+import { Route, Routes, Navigate, useParams } from 'react-router-dom';
 import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
 import PageStatus from '../common/PageStatus';
 import { REPORT_PAGE_QUERY } from './queries';
 import './Reports.css';
-import { useParams } from 'react-router-dom';
 
 const Report = () => {
     const { testPlanVersionId } = useParams();
 
-    let testPlanVersionIds = [];
-
-    if (testPlanVersionId.includes(','))
-        testPlanVersionIds = testPlanVersionId.split(',');
-
     const { loading, data, error } = useQuery(REPORT_PAGE_QUERY, {
-        variables: testPlanVersionIds.length
-            ? { testPlanVersionIds }
-            : { testPlanVersionId },
+        variables: { testPlanVersionId: testPlanVersionId },
         fetchPolicy: 'cache-and-network'
     });
 
@@ -45,55 +37,14 @@ const Report = () => {
 
     if (!data) return null;
 
-    const testPlanReports = data.testPlanReports.filter(
-        each =>
-            each.testPlanVersion.id === testPlanVersionId ||
-            testPlanVersionIds.includes(each.testPlanVersion.id)
-    );
-
-    const combineArray = testPlanReports => {
-        let testPlanTargetsById = {};
-        testPlanReports.forEach(testPlanReport => {
-            const { at, browser } = testPlanReport;
-
-            // Construct testPlanTarget
-            const testPlanTargetId = `${at.id}${browser.id}`;
-
-            if (!testPlanTargetsById[testPlanTargetId]) {
-                testPlanTargetsById[testPlanTargetId] = [{ ...testPlanReport }];
-            } else
-                testPlanTargetsById[testPlanTargetId].push({
-                    ...testPlanReport
-                });
-        });
-
-        return Object.values(testPlanTargetsById).map(testPlanReports => {
-            return testPlanReports.reduce((prev, curr) => {
-                const latestPrevDate = new Date(
-                    prev.latestAtVersionReleasedAt.releasedAt
-                );
-
-                const latestCurrDate = new Date(
-                    curr.latestAtVersionReleasedAt.releasedAt
-                );
-
-                return latestPrevDate > latestCurrDate ? prev : curr;
-            });
-        });
-    };
-
-    if (!testPlanReports || testPlanReports.length < 1) {
-        return <Navigate to="/404" replace />;
-    }
-
     return (
         <Routes>
             <Route
                 index
                 element={
                     <SummarizeTestPlanVersion
-                        testPlanVersion={testPlanReports[0].testPlanVersion}
-                        testPlanReports={combineArray(testPlanReports)}
+                        testPlanVersion={data.testPlanVersion}
+                        testPlanReports={data.testPlanVersion.testPlanReports}
                     />
                 }
             />
@@ -101,7 +52,8 @@ const Report = () => {
                 path="targets/:testPlanReportId"
                 element={
                     <SummarizeTestPlanReport
-                        testPlanReports={testPlanReports}
+                        testPlanVersion={data.testPlanVersion}
+                        testPlanReports={data.testPlanVersion.testPlanReports}
                     />
                 }
             />

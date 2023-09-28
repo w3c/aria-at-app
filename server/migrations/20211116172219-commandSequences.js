@@ -11,7 +11,15 @@ module.exports = {
         if (!Number(testPlanVersionCount)) return;
 
         const testPlanVersions = await TestPlanVersion.findAll({
-            attributes: { exclude: ['testPlanId'] }
+            attributes: {
+                exclude: [
+                    'testPlanId',
+                    'phase',
+                    'candidatePhaseReachedAt',
+                    'recommendedPhaseReachedAt',
+                    'recommendedPhaseTargetDate'
+                ]
+            }
         });
         await Promise.all(
             testPlanVersions.map(testPlanVersion => {

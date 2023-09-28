@@ -10,12 +10,17 @@ const {
 
 const testPlanReportsResolver = async (
     _,
-    { statuses, testPlanVersionId, testPlanVersionIds, atId },
+    {
+        testPlanVersionPhases = [],
+        testPlanVersionId,
+        testPlanVersionIds,
+        atId,
+        isFinal
+    },
     context,
     info
 ) => {
     const where = {};
-    if (statuses) where.status = statuses;
     if (testPlanVersionId) where.testPlanVersionId = testPlanVersionId;
     if (testPlanVersionIds) where.testPlanVersionId = testPlanVersionIds;
     if (atId) where.atId = atId;
@@ -45,7 +50,17 @@ const testPlanReportsResolver = async (
     if (testPlanReportRawAttributes.includes('conflictsLength'))
         testPlanReportAttributes.push('metrics');
 
-    return getTestPlanReports(
+    if (isFinal === undefined) {
+        // Do nothing
+    } else testPlanReportAttributes.push('markedFinalAt');
+
+    if (
+        testPlanVersionPhases.length &&
+        !testPlanVersionAttributes.includes('phase')
+    )
+        testPlanVersionAttributes.push('phase');
+
+    let testPlanReports = await getTestPlanReports(
         null,
         where,
         testPlanReportAttributes,
@@ -56,6 +71,23 @@ const testPlanReportsResolver = async (
         null,
         { order: [['createdAt', 'desc']] }
     );
+
+    if (isFinal === undefined) {
+        // Do nothing
+    } else if (isFinal)
+        testPlanReports = testPlanReports.filter(
+            report => !!report.markedFinalAt
+        );
+    else if (!isFinal)
+        testPlanReports = testPlanReports.filter(
+            report => !report.markedFinalAt
+        );
+
+    if (testPlanVersionPhases.length) {
+        return testPlanReports.filter(testPlanReport =>
+            testPlanVersionPhases.includes(testPlanReport.testPlanVersion.phase)
+        );
+    } else return testPlanReports;
 };
 
 module.exports = testPlanReportsResolver;

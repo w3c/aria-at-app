@@ -21,7 +21,7 @@ describe('TestPlanReportModel', () => {
 
     describe('properties', () => {
         // A3
-        ['status', 'testPlanVersionId', 'createdAt'].forEach(
+        ['testPlanVersionId', 'createdAt'].forEach(
             checkPropertyExists(modelInstance)
         );
     });

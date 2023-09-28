@@ -9,8 +9,8 @@ const hash = require('object-hash');
 const app = express();
 const handlebarsPath =
     process.env.ENVIRONMENT === 'dev' || process.env.ENVIRONMENT === 'test'
-        ? 'handlebars'
-        : 'server/handlebars';
+        ? 'handlebars/embed'
+        : 'server/handlebars/embed';
 
 // handlebars
 const hbs = create({
@@ -44,10 +44,12 @@ const queryReports = async () => {
                         name
                     }
                 }
-                testPlanReports(statuses: [CANDIDATE, RECOMMENDED]) {
+                testPlanReports(
+                    testPlanVersionPhases: [CANDIDATE, RECOMMENDED]
+                    isFinal: true
+                ) {
                     id
                     metrics
-                    status
                     at {
                         id
                         name
@@ -64,6 +66,7 @@ const queryReports = async () => {
                     testPlanVersion {
                         id
                         title
+                        phase
                         updatedAt
                         testPlan {
                             id
@@ -185,16 +188,16 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     });
 
     const hasAnyCandidateReports = Object.values(reportsByAt).find(atReports =>
-        atReports.find(report => report.status === 'CANDIDATE')
+        atReports.some(report => report.testPlanVersion.phase === 'CANDIDATE')
     );
-    let status = hasAnyCandidateReports ? 'CANDIDATE' : 'RECOMMENDED';
+    let phase = hasAnyCandidateReports ? 'CANDIDATE' : 'RECOMMENDED';
 
     return {
         title,
         allBrowsers,
         allAtVersionsByAt,
         testPlanVersionIds,
-        status,
+        phase,
         reportsByAt
     };
 };
@@ -212,7 +215,7 @@ const renderEmbed = ({
         allBrowsers,
         allAtVersionsByAt,
         testPlanVersionIds,
-        status,
+        phase,
         reportsByAt
     } = getLatestReportsForPattern({ pattern, allTestPlanReports });
     const allAtBrowserCombinations = Object.fromEntries(
@@ -232,7 +235,7 @@ const renderEmbed = ({
         allAtBrowserCombinations,
         title: queryTitle || title || 'Pattern Not Found',
         pattern,
-        status,
+        phase,
         allBrowsers,
         allAtVersionsByAt,
         reportsByAt,

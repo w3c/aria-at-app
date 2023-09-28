@@ -42,3 +42,10 @@ export const convertStringFormatToAnotherFormat = (
 export const isValidDate = (date, format = 'DD-MM-YYYY') => {
     return moment(date, format).isValid();
 };
+
+export const checkTimeBetweenDates = (date, otherDate, unit = 'days') => {
+    const _date = moment(date);
+    const _otherDate = moment(otherDate);
+
+    return _date.diff(_otherDate, unit);
+};

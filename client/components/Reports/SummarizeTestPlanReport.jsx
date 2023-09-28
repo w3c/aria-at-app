@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { createGitHubIssueWithTitleAndBody } from '../TestRun';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import { Breadcrumb, Button, Container } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -16,8 +15,8 @@ import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from './TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
-import { Navigate } from 'react-router';
-import { useLocation, useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
+import createIssueLink from '../../utils/createIssueLink';
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -31,11 +30,7 @@ const getTestersRunHistory = (
         const { testPlanReport, testResults, tester } = draftTestPlanRun;
 
         const testResult = testResults.find(item => item.test.id === testId);
-        if (
-            testPlanReportId === testPlanReport.id &&
-            testPlanReport.status === 'CANDIDATE' &&
-            testResult?.completedAt
-        ) {
+        if (testPlanReportId === testPlanReport.id && testResult?.completedAt) {
             lines.push(
                 <li
                     key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
@@ -76,7 +71,7 @@ const getTestersRunHistory = (
     );
 };
 
-const SummarizeTestPlanReport = ({ testPlanReports }) => {
+const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     const location = useLocation();
     const { testPlanReportId } = useParams();
 
@@ -86,7 +81,7 @@ const SummarizeTestPlanReport = ({ testPlanReports }) => {
 
     if (!testPlanReport) return <Navigate to="/404" />;
 
-    const { testPlanVersion, at, browser } = testPlanReport;
+    const { at, browser } = testPlanReport;
 
     // Construct testPlanTarget
     const testPlanTarget = {
@@ -146,13 +141,23 @@ const SummarizeTestPlanReport = ({ testPlanReports }) => {
             {testPlanReport.finalizedTestResults.map(testResult => {
                 const test = testResult.test;
 
-                const fromReportPageLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
-                const gitHubIssueLinkWithTitleAndBody =
-                    createGitHubIssueWithTitleAndBody({
-                        test,
-                        testPlanReport,
-                        fromReportPageLink
-                    });
+                const reportLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
+                const issueLink = createIssueLink({
+                    testPlanTitle: testPlanVersion.title,
+                    testPlanDirectory: testPlanVersion.testPlan.directory,
+                    versionString: `V${convertDateToString(
+                        testPlanVersion.updatedAt,
+                        'YY.MM.DD'
+                    )}`,
+                    testTitle: test.title,
+                    testRowNumber: test.rowNumber,
+                    testRenderedUrl: test.renderedUrl,
+                    atName: testPlanReport.at.name,
+                    atVersionName: testResult.atVersion.name,
+                    browserName: testPlanReport.browser.name,
+                    browserVersionName: testResult.browserVersion.name,
+                    reportLink
+                });
 
                 // TODO: fix renderedUrl
                 let modifiedRenderedUrl = test.renderedUrl.replace(
@@ -168,15 +173,13 @@ const SummarizeTestPlanReport = ({ testPlanReports }) => {
                                     Details for test:
                                 </span>
                                 {test.title}
-                                <DisclaimerInfo
-                                    reportStatus={testPlanReport.status}
-                                />
+                                <DisclaimerInfo phase={testPlanVersion.phase} />
                             </h2>
                             <div className="test-result-buttons">
                                 <Button
                                     target="_blank"
                                     rel="noreferrer"
-                                    href={gitHubIssueLinkWithTitleAndBody}
+                                    href={issueLink}
                                     variant="secondary"
                                 >
                                     <FontAwesomeIcon
@@ -241,11 +244,10 @@ const SummarizeTestPlanReport = ({ testPlanReports }) => {
 };
 
 SummarizeTestPlanReport.propTypes = {
+    testPlanVersion: PropTypes.object.isRequired,
     testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
-            status: PropTypes.string.isRequired,
-            testPlanVersion: PropTypes.object.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired)
                 .isRequired,
             at: PropTypes.shape({

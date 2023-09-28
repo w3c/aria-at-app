@@ -87,6 +87,14 @@ const graphqlSchema = gql`
         The Ats which can be run with the specific browser, for example, Jaws can be run with Chrome but not Safari, and Safari works with VoiceOver only.
         """
         ats: [At]!
+        """
+        The Ats which are required to move a TestPlanVersion to CANDIDATE phase.
+        """
+        candidateAts: [At]!
+        """
+        The Ats which are required to move a TestPlanVersion to RECOMMENDED phase.
+        """
+        recommendedAts: [At]!
     }
 
     """
@@ -153,6 +161,14 @@ const graphqlSchema = gql`
         The browsers which can run the At, for example, Safari can run VoiceOver but not Jaws because Jaws is Windows only.
         """
         browsers: [Browser]!
+        """
+        The browsers which are required to move a TestPlanVersion to CANDIDATE phase.
+        """
+        candidateBrowsers: [Browser]!
+        """
+        The browsers which are required to move a TestPlanVersion to RECOMMENDED phase.
+        """
+        recommendedBrowsers: [Browser]!
     }
 
     """
@@ -188,28 +204,6 @@ const graphqlSchema = gql`
         releasedAt: Timestamp
     }
 
-    # TODO: Determine if needed following 2021 Working Mode changes
-    # https://github.com/w3c/aria-at/wiki/Working-Mode
-    # """
-    # To make sure Test Plans are relevant, they need to be reviewed by community
-    # stakeholders such as AT vendors.
-    # """
-    # enum TestPlanVersionStatus {
-    #     """
-    #     Default value meaning the source has been imported and the test plan
-    #     can be reviewed internally.
-    #     """
-    #     DRAFT
-    #     """
-    #     Receiving review from stakeholders.
-    #     """
-    #     CANDIDATE
-    #     """
-    #     Wide review phase complete and ready to record test results.
-    #     """
-    #     RECOMMENDED
-    # }
-
     """
     A suite of tests which keeps its identity as it evolves over time.
     """
@@ -236,25 +230,44 @@ const graphqlSchema = gql`
         Gets the most recent version imported from the test plan's directory.
         """
         latestTestPlanVersion: TestPlanVersion
-        # latestTestPlanVersion(
-        #     # TODO: Waiting for TestPlanVersionStatus to be implemented
-        #     status: TestPlanVersionStatus
-        #
-        #     # TODO: determine if we need to filter test plans with no results
-        #     testPlanReportStatuses: [TestPlanReportStatus]
-        # ): TestPlanVersion
-
         """
         Gets all historic versions of the test plan.
         """
         testPlanVersions: [TestPlanVersion]!
-        # testPlanVersions(
-        #     # TODO: Waiting for TestPlanVersionStatus to be implemented
-        #     status: TestPlanVersionStatus
-        #
-        #     # TODO: determine if we need to filter test plans with no results
-        #     testPlanReportStatuses: [TestPlanReportStatus]
-        # ): [TestPlanVersion]!
+        """
+        A list of all issues which have filed through "Raise an Issue" buttons
+        in the app. Note that results will be cached for at least ten seconds.
+        """
+        issues: [Issue]!
+    }
+
+    """
+    The life-cycle of a TestPlanVersion from the point it is imported automatically
+    or by an admin until it is saved an available to the public on the reports page.
+    """
+    enum TestPlanVersionPhase {
+        """
+        Accepting new TestPlanRuns from testers.
+        """
+        RD
+        """
+        Accepting new TestPlanRuns from testers.
+        """
+        DRAFT
+        """
+        Testing is complete and consistent, and ready to be displayed in the
+        Candidate Tests and Reports section of the app.
+        """
+        CANDIDATE
+        """
+        Testing is complete and consistent, and ready to be displayed in the
+        Reports section of the app as being recommended.
+        """
+        RECOMMENDED
+        """
+        The TestPlanVersion is now outdated and replaced by another version.
+        """
+        DEPRECATED
     }
 
     """
@@ -271,16 +284,35 @@ const graphqlSchema = gql`
         The title of the TestPlan at this point in time.
         """
         title: String
-        # TODO: Waiting for TestPlanVersionStatus to be needed
-        # status: TestPlanVersionStatus!
-
-        # TODO: decide whether to use this approach, since we think gitShas are
-        # a bit intimidating and hard to use.
-        # """
-        # A version label set in the ARIA-AT repo. The app will only import new
-        # versions when that label has changed.
-        # """
-        # label: String!
+        """
+        See TestPlanVersionPhase type for more information.
+        """
+        phase: TestPlanVersionPhase!
+        """
+        Date of when the TestPlanVersion last updated to the 'Draft'
+        phase.
+        """
+        draftPhaseReachedAt: Timestamp
+        """
+        Date of when the TestPlanVersion was last updated to the 'Candidate'
+        phase.
+        """
+        candidatePhaseReachedAt: Timestamp
+        """
+        Date of when the TestPlanVersion was last updated to the 'Recommended'
+        phase.
+        """
+        recommendedPhaseReachedAt: Timestamp
+        """
+        The intended target date for the final TestPlanVersion phase promotion.
+        Based on the ARIA-AT Working Mode.
+        https://github.com/w3c/aria-at/wiki/Working-Mode
+        """
+        recommendedPhaseTargetDate: Timestamp
+        """
+        The date when the TestPlanVersion was deprecated.
+        """
+        deprecatedAt: Timestamp
         """
         The TestPlan this TestPlanVersion is a snapshot of.
         """
@@ -297,6 +329,7 @@ const graphqlSchema = gql`
         gitMessage: String! # TODO: remove if using version labels
         """
         The date (originating in Git) corresponding to the Git sha's commit.
+        This can also be considered as the time for when R & D was complete
         """
         updatedAt: Timestamp!
         # TODO: consider moving to the Scenario type if we support multiple
@@ -315,6 +348,17 @@ const graphqlSchema = gql`
         The tests as they stand at this point in time.
         """
         tests: [Test]!
+        """
+        The TestPlanReports attached to the TestPlanVersion. There will always
+        be a unique combination of AT + Browser + TestPlanVersion.
+
+        isFinal is used to check if a TestPlanReport has been "Marked as Final",
+        indicated by TestPlanReport.markedFinalAt existence.
+        None value indicates to return all.
+        True value indicates to return the reports which only have an markedFinalAt date.
+        False value indicates to return the reports which have no markedFinalAt date.
+        """
+        testPlanReports(isFinal: Boolean): [TestPlanReport]!
     }
 
     """
@@ -715,27 +759,6 @@ const graphqlSchema = gql`
     }
 
     """
-    The life-cycle of a TestPlanReport from the point it is created by an admin
-    until it is saved an available to the public on the reports page.
-    """
-    enum TestPlanReportStatus {
-        """
-        Accepting new TestPlanRuns from testers.
-        """
-        DRAFT
-        """
-        Testing is complete and consistent, and ready to be displayed in the
-        Candidate Tests and Reports section of the app.
-        """
-        CANDIDATE
-        """
-        Testing is complete and consistent, and ready to be displayed in the
-        Reports section of the app as being recommended.
-        """
-        RECOMMENDED
-    }
-
-    """
     Tests, as we envision them, should not leave any room for interpretation. If
     a conflict between results is found, the report cannot be published until
     the cause of the disparity is determined.
@@ -772,9 +795,19 @@ const graphqlSchema = gql`
         """
         author: String!
         """
+        The issue title in GitHub.
+        """
+        title: String!
+        """
         Link to the GitHub issue's first comment.
         """
         link: String!
+        """
+        Will be true if the issue was raised on the Candidate Review page
+        of the app (as opposed to other places with "raise an issue" buttons like
+        the test queue or the reports page.)
+        """
+        isCandidateReview: Boolean!
         """
         Indicates the type of issue. 'CHANGES_REQUESTED' or 'FEEDBACK'.
         'FEEDBACK' is the default type.
@@ -788,6 +821,25 @@ const graphqlSchema = gql`
         Test Number the issue was raised for.
         """
         testNumberFilteredByAt: Int
+        """
+        The time the issue was created, according to GitHub.
+        """
+        createdAt: Timestamp!
+        """
+        The time the issue was closed, if it was closed.
+        """
+        closedAt: Timestamp
+        """
+        The AT associated with the issue. Although there are not currently any
+        cases where we generate GitHub issues without an associated AT, that
+        may not remain true forever and we do support this field being
+        undefined.
+        """
+        at: At
+        """
+        The browser associated with the issue, which may not be present.
+        """
+        browser: Browser
     }
 
     """
@@ -799,26 +851,6 @@ const graphqlSchema = gql`
         Postgres-provided numeric ID.
         """
         id: ID!
-        """
-        See TestPlanReportStatus type for more information.
-        """
-        status: TestPlanReportStatus!
-        """
-        Date of when the TestPlanReport was last updated to the 'Candidate'
-        status.
-        """
-        candidateStatusReachedAt: Timestamp
-        """
-        Date of when the TestPlanReport was last updated to the 'Recommended'
-        status.
-        """
-        recommendedStatusReachedAt: Timestamp
-        """
-        The intended target date for the final TestPlanReport status promotion.
-        Based on the ARIA-AT Working Mode.
-        https://github.com/w3c/aria-at/wiki/Working-Mode
-        """
-        recommendedStatusTargetDate: Timestamp
         """
         The snapshot of a TestPlan to use.
         """
@@ -855,7 +887,7 @@ const graphqlSchema = gql`
         Scenario if the output or unexpected behaviors do not match, or even at
         the level of an Assertion, if the result of an assertion does not match.
 
-        These conflicts must be resolved before the status can change from
+        These conflicts must be resolved before the TestPlanVersion phase can change from
         DRAFT to CANDIDATE.
         """
         conflicts: [TestPlanReportConflict]!
@@ -872,8 +904,8 @@ const graphqlSchema = gql`
         """
         finalizedTestResults: [TestResult]
         """
-        These are the different feedback and requested change items created for
-        the TestPlanReport and retrieved from GitHub.
+        A list of all issues which have filed through "Raise an Issue" buttons
+        in the app. Note that results will be cached for at least ten seconds.
         """
         issues: [Issue]!
         """
@@ -894,6 +926,16 @@ const graphqlSchema = gql`
         The point at which an admin created the TestPlanReport.
         """
         createdAt: Timestamp!
+        """
+        This is marked with the date when an admin has determined that all conflicts on the
+        TestPlanReport have been resolved and indicates that the TestPlanReport is ready
+        to be included when the entire TestPlanVersion is advanced to the "CANDIDATE" phase.
+        """
+        markedFinalAt: Timestamp
+        """
+        Indicated by TestPlanReport.markedFinalAt existence, after a report has been "marked as final".
+        """
+        isFinal: Boolean!
     }
 
     """
@@ -988,21 +1030,22 @@ const graphqlSchema = gql`
         """
         Get all TestPlanVersions.
         """
-        testPlanVersions: [TestPlanVersion]!
+        testPlanVersions(phases: [TestPlanVersionPhase]): [TestPlanVersion]!
         """
         Get a particular TestPlanVersion by ID.
         """
-        testPlanVersion(id: ID!): TestPlanVersion
+        testPlanVersion(id: ID): TestPlanVersion
         """
         Load multiple TestPlanReports, with the optional ability to filter by
-        status, atId and testPlanVersionId.
+        TestPlanVersionPhase, atId, testPlanVersionId and if the report is marked as final.
         See TestPlanReport type for more information.
         """
         testPlanReports(
-            statuses: [TestPlanReportStatus]
+            testPlanVersionPhases: [TestPlanVersionPhase]
             testPlanVersionId: ID
             testPlanVersionIds: [ID]
             atId: ID
+            isFinal: Boolean
         ): [TestPlanReport]!
         """
         Get a TestPlanReport by ID.
@@ -1088,26 +1131,24 @@ const graphqlSchema = gql`
         """
         deleteTestPlanRun(userId: ID!): PopulatedData!
         """
-        Update the report status. Remember that all conflicts must be resolved
-        when setting the status to CANDIDATE. Only available to admins.
-        """
-        updateStatus(
-            status: TestPlanReportStatus!
-            candidateStatusReachedAt: Timestamp
-            recommendedStatusTargetDate: Timestamp
-        ): PopulatedData!
-        """
-        Update the report status for multiple TestPlanReports. Remember that all
-        conflicts must be resolved when setting the status to CANDIDATE. Only
-        available to admins.
-        """
-        bulkUpdateStatus(status: TestPlanReportStatus!): [PopulatedData]!
-        """
-        Update the report recommended status target date.
+        Updates the markedFinalAt date. This must be set before a TestPlanReport can
+        be advanced to CANDIDATE. All conflicts must also be resolved.
         Only available to admins.
         """
-        updateRecommendedStatusTargetDate(
-            recommendedStatusTargetDate: Timestamp!
+        markAsFinal: PopulatedData!
+        """
+        Remove the TestPlanReport's markedFinalAt date. This allows the TestPlanReport
+        to be worked on in the Test Queue page again if was previously marked as final.
+        """
+        unmarkAsFinal: PopulatedData!
+        """
+        Update the report to a specific TestPlanVersion id.
+        """
+        updateTestPlanReportTestPlanVersion(
+            """
+            The TestPlanReport to update.
+            """
+            input: TestPlanReportInput!
         ): PopulatedData!
         """
         Move the vendor review status from READY to IN PROGRESS
@@ -1119,6 +1160,29 @@ const graphqlSchema = gql`
         Only available to admins.
         """
         deleteTestPlanReport: NoResponse
+    }
+
+    """
+    Mutations scoped to a previously-created TestPlanVersion.
+    """
+    type TestPlanVersionOperations {
+        """
+        Update the test plan version phase. Remember that all conflicts must be resolved
+        when setting the phase to CANDIDATE. Only available to admins.
+        """
+        updatePhase(
+            phase: TestPlanVersionPhase!
+            candidatePhaseReachedAt: Timestamp
+            recommendedPhaseTargetDate: Timestamp
+            testPlanVersionDataToIncludeId: ID
+        ): PopulatedData!
+        """
+        Update the test plan version recommended phase target date.
+        Only available to admins.
+        """
+        updateRecommendedPhaseTargetDate(
+            recommendedPhaseTargetDate: Timestamp!
+        ): PopulatedData!
     }
 
     """
@@ -1202,10 +1266,7 @@ const graphqlSchema = gql`
         Adds a report with the given TestPlanVersion, AT and Browser, and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.
         In the case an identical report already exists, it will be returned
-        without changes and without affecting existing results. In the case an
-        identical report exists but with a status of "CANDIDATE" or "RECOMMENDED",
-        it will be given a status of "DRAFT" and will therefore be pulled back
-        into the queue with its results unaffected.
+        without changes and without affecting existing results.
         """
         findOrCreateTestPlanReport(
             """
@@ -1225,6 +1286,10 @@ const graphqlSchema = gql`
         Get the available mutations for the given TestResult.
         """
         testResult(id: ID!): TestResultOperations!
+        """
+        Get the available mutations for the given TestPlanVersion.
+        """
+        testPlanVersion(id: ID!): TestPlanVersionOperations!
         """
         Update the currently-logged-in User.
         """

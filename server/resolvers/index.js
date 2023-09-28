@@ -17,17 +17,20 @@ const mutateBrowser = require('./mutateBrowserResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
 const mutateTestPlanRun = require('./mutateTestPlanRunResolver');
 const mutateTestResult = require('./mutateTestResultResolver');
+const mutateTestPlanVersion = require('./mutateTestPlanVersionResolver');
 const updateMe = require('./updateMe');
 const populateData = require('./populateDataResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
 const BrowserOperations = require('./BrowserOperations');
+const TestPlan = require('./TestPlan');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
 const TestPlanRunOperations = require('./TestPlanRunOperations');
 const TestResultOperations = require('./TestResultOperations');
+const TestPlanVersionOperations = require('./TestPlanVersionOperations');
 const TestPlanRun = require('./TestPlanRun');
 const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
@@ -54,6 +57,7 @@ const resolvers = {
         testPlanReport: mutateTestPlanReport,
         testPlanRun: mutateTestPlanRun,
         testResult: mutateTestResult,
+        testPlanVersion: mutateTestPlanVersion,
         findOrCreateTestPlanReport,
         updateMe,
         addViewer
@@ -62,6 +66,7 @@ const resolvers = {
     AtVersionOperations,
     BrowserOperations,
     User,
+    TestPlan,
     TestPlanVersion,
     TestPlanReport,
     TestPlanRun,
@@ -69,7 +74,8 @@ const resolvers = {
     ScenarioResult,
     TestPlanReportOperations,
     TestPlanRunOperations,
-    TestResultOperations
+    TestResultOperations,
+    TestPlanVersionOperations
 };
 
 module.exports = resolvers;

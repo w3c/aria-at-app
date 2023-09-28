@@ -52,7 +52,9 @@ const TestNavigator = ({
                         let resultClassName = 'not-started';
                         let resultStatus = 'Not Started';
                         const issuesExist = testPlanReport.issues?.filter(
-                            issue => issue.testNumberFilteredByAt == test.seq
+                            issue =>
+                                issue.isCandidateReview &&
+                                issue.testNumberFilteredByAt == test.seq
                         ).length;
 
                         if (test) {

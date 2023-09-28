@@ -45,11 +45,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             </Breadcrumb>
             <h2>Introduction</h2>
 
-            {testPlanReports.some(t => t.status === 'CANDIDATE') ? (
-                <DisclaimerInfo reportStatus="CANDIDATE" />
-            ) : (
-                <DisclaimerInfo reportStatus="RECOMMENDED" />
-            )}
+            <DisclaimerInfo phase={testPlanVersion.phase} />
             <p>
                 This page summarizes the test results for each AT and Browser
                 which executed the Test Plan.
@@ -77,6 +73,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             </ul>
 
             {testPlanReports.map(testPlanReport => {
+                if (testPlanReport.status === 'DRAFT') return null;
                 const skippedTests = differenceBy(
                     testPlanReport.runnableTests,
                     testPlanReport.finalizedTestResults,
@@ -97,21 +94,21 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 return (
                     <Fragment key={testPlanReport.id}>
                         <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
-                        <DisclaimerInfo reportStatus={testPlanReport.status} />
+                        <DisclaimerInfo phase={testPlanVersion.phase} />
                         <LinkContainer
                             to={
-                                `/report/${testPlanReport.testPlanVersion.id}` +
+                                `/report/${testPlanVersion.id}` +
                                 `/targets/${testPlanReport.id}`
                             }
                         >
-                            <Button variant="secondary" className="mr-3">
+                            <Button variant="secondary" className="me-3">
                                 View Complete Results
                             </Button>
                         </LinkContainer>
                         {skippedTests.length ? (
                             <Link
                                 to={
-                                    `/report/${testPlanReport.testPlanVersion.id}` +
+                                    `/report/${testPlanVersion.id}` +
                                     `/targets/${testPlanReport.id}` +
                                     `#skipped-tests`
                                 }
@@ -151,7 +148,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                                 <td>
                                                     <Link
                                                         to={
-                                                            `/report/${testPlanReport.testPlanVersion.id}` +
+                                                            `/report/${testPlanVersion.id}` +
                                                             `/targets/${testPlanReport.id}` +
                                                             `#result-${testResult.id}`
                                                         }
@@ -193,6 +190,7 @@ SummarizeTestPlanVersion.propTypes = {
     testPlanVersion: PropTypes.shape({
         id: PropTypes.string.isRequired,
         title: PropTypes.string,
+        phase: PropTypes.string,
         metadata: PropTypes.shape({
             exampleUrl: PropTypes.string.isRequired,
             designPatternUrl: PropTypes.string
@@ -201,9 +199,8 @@ SummarizeTestPlanVersion.propTypes = {
     testPlanReports: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
-            status: PropTypes.string.isRequired,
             runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
-            finalizedTestResults: PropTypes.arrayOf(PropTypes.object).isRequired
+            finalizedTestResults: PropTypes.arrayOf(PropTypes.object)
         }).isRequired
     ).isRequired
 };

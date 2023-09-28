@@ -601,6 +601,7 @@ const AtAndBrowserDetailsModal = ({
                     handleClose={!isFirstLoad ? handleClose : null}
                     handleHide={handleHide}
                     staticBackdrop={true}
+                    useOnHide={true}
                 />
             )}
         </>

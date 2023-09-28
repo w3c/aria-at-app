@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useMutation } from '@apollo/client';
-import { Button, Form } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -11,13 +11,13 @@ import BasicThemedModal from '../common/BasicThemedModal';
 import {
     ADD_AT_VERSION_MUTATION,
     EDIT_AT_VERSION_MUTATION,
-    DELETE_AT_VERSION_MUTATION,
-    ADD_TEST_QUEUE_MUTATION
+    DELETE_AT_VERSION_MUTATION
 } from '../TestQueue/queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { convertStringToDate } from '../../utils/formatter';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
+import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 
 const DisclosureContainer = styled.div`
     // Following directives are related to the ManageTestQueue component
@@ -102,7 +102,6 @@ const ManageTestQueue = ({
     const addAtVersionButtonRef = useRef();
     const editAtVersionButtonRef = useRef();
     const deleteAtVersionButtonRef = useRef();
-    const addTestPlanReportButtonRef = useRef();
 
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
@@ -145,7 +144,6 @@ const ManageTestQueue = ({
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
     const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);
-    const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
 
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
@@ -156,14 +154,17 @@ const ManageTestQueue = ({
             .flat();
 
         // to remove duplicate entries from different test plan versions of the same test plan being imported multiple times
-        const filteredTestPlanVersions = allTestPlanVersions.filter(
-            (v, i, a) =>
-                a.findIndex(
-                    t =>
-                        t.title === v.title &&
-                        t.testPlan.directory === v.testPlan.directory
-                ) === i
-        );
+        const filteredTestPlanVersions = allTestPlanVersions
+            .filter(
+                (v, i, a) =>
+                    a.findIndex(
+                        t =>
+                            t.title === v.title &&
+                            t.testPlan.directory === v.testPlan.directory
+                    ) === i
+            )
+            // sort by the testPlanVersion titles
+            .sort((a, b) => (a.title < b.title ? -1 : 1));
 
         // mark the first testPlanVersion as selected
         if (filteredTestPlanVersions.length) {
@@ -172,11 +173,7 @@ const ManageTestQueue = ({
         }
 
         setAllTestPlanVersions(allTestPlanVersions);
-        setFilteredTestPlanVersions(
-            filteredTestPlanVersions.sort((a, b) =>
-                a.title < b.title ? -1 : 1
-            )
-        );
+        setFilteredTestPlanVersions(filteredTestPlanVersions);
     }, [testPlanVersions]);
 
     useEffect(() => {
@@ -204,13 +201,23 @@ const ManageTestQueue = ({
         );
 
         // find the versions that apply and pre-set these
-        const matchingTestPlanVersions = allTestPlanVersions.filter(
-            item =>
-                item.title === retrievedTestPlan.title &&
-                item.testPlan.directory === retrievedTestPlan.testPlan.directory
-        );
+        const matchingTestPlanVersions = allTestPlanVersions
+            .filter(
+                item =>
+                    item.title === retrievedTestPlan.title &&
+                    item.testPlan.directory ===
+                        retrievedTestPlan.testPlan.directory &&
+                    item.phase !== 'DEPRECATED' &&
+                    item.phase !== 'RD'
+            )
+            .sort((a, b) =>
+                new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1
+            );
         setMatchingTestPlanVersions(matchingTestPlanVersions);
-        setSelectedTestPlanVersionId(matchingTestPlanVersions[0].id);
+
+        if (matchingTestPlanVersions.length)
+            setSelectedTestPlanVersionId(matchingTestPlanVersions[0].id);
+        else setSelectedTestPlanVersionId(null);
     };
 
     const onManageAtChange = e => {
@@ -447,40 +454,6 @@ const ManageTestQueue = ({
         }
     };
 
-    const handleAddTestPlanToTestQueue = async () => {
-        focusButtonRef.current = addTestPlanReportButtonRef.current;
-
-        const selectedTestPlanVersion = allTestPlanVersions.find(
-            item => item.id === selectedTestPlanVersionId
-        );
-        const selectedAt = ats.find(item => item.id === selectedAtId);
-        const selectedBrowser = browsers.find(
-            item => item.id === selectedBrowserId
-        );
-
-        await triggerLoad(async () => {
-            await addTestPlanReport({
-                variables: {
-                    testPlanVersionId: selectedTestPlanVersionId,
-                    atId: selectedAtId,
-                    browserId: selectedBrowserId
-                }
-            });
-            await triggerUpdate();
-        }, 'Adding Test Plan to Test Queue');
-
-        showFeedbackMessage(
-            'Successfully Added Test Plan',
-            <>
-                Successfully added <b>{selectedTestPlanVersion.title}</b> for{' '}
-                <b>
-                    {selectedAt.name} and {selectedBrowser.name}
-                </b>{' '}
-                to the Test Queue.
-            </>
-        );
-    };
-
     const showFeedbackMessage = (title, content) => {
         setFeedbackModalTitle(title);
         setFeedbackModalContent(content);
@@ -615,21 +588,33 @@ const ManageTestQueue = ({
                                     Test Plan Version
                                 </Form.Label>
                                 <Form.Select
-                                    value={selectedTestPlanVersionId}
+                                    value={
+                                        selectedTestPlanVersionId
+                                            ? selectedTestPlanVersionId
+                                            : ''
+                                    }
                                     onChange={onTestPlanVersionChange}
+                                    disabled={!selectedTestPlanVersionId}
+                                    aria-disabled={!selectedTestPlanVersionId}
                                 >
-                                    {matchingTestPlanVersions.map(item => (
-                                        <option
-                                            key={`${item.gitSha}-${item.id}`}
-                                            value={item.id}
-                                        >
-                                            {gitUpdatedDateToString(
-                                                item.updatedAt
-                                            )}{' '}
-                                            {item.gitMessage} (
-                                            {item.gitSha.substring(0, 7)})
+                                    {matchingTestPlanVersions.length ? (
+                                        matchingTestPlanVersions.map(item => (
+                                            <option
+                                                key={`${item.gitSha}-${item.id}`}
+                                                value={item.id}
+                                            >
+                                                {gitUpdatedDateToString(
+                                                    item.updatedAt
+                                                )}{' '}
+                                                {item.gitMessage} (
+                                                {item.gitSha.substring(0, 7)})
+                                            </option>
+                                        ))
+                                    ) : (
+                                        <option>
+                                            Versions in R&D or Deprecated
                                         </option>
-                                    ))}
+                                    )}
                                 </Form.Select>
                             </Form.Group>
                             <Form.Group className="form-group">
@@ -675,18 +660,21 @@ const ManageTestQueue = ({
                                 </Form.Select>
                             </Form.Group>
                         </div>
-                        <Button
-                            ref={addTestPlanReportButtonRef}
-                            variant="primary"
+                        <AddTestToQueueWithConfirmation
+                            testPlanVersion={allTestPlanVersions.find(
+                                item => item.id === selectedTestPlanVersionId
+                            )}
+                            at={ats.find(item => item.id === selectedAtId)}
+                            browser={browsers.find(
+                                item => item.id === selectedBrowserId
+                            )}
+                            triggerUpdate={triggerUpdate}
                             disabled={
                                 !selectedTestPlanVersionId ||
                                 !selectedAtId ||
                                 !selectedBrowserId
                             }
-                            onClick={handleAddTestPlanToTestQueue}
-                        >
-                            Add Test Plan to Test Queue
-                        </Button>
+                        />
                     </DisclosureContainer>
                 ]}
                 onClick={[onManageAtsClick, onAddTestPlansClick]}
