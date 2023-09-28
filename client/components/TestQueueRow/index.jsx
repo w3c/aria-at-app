@@ -115,15 +115,33 @@ const TestQueueRow = ({
         const tester = testers.find(tester => tester.username === username);
 
         if (isTesterAssigned) {
-            await triggerLoad(async () => {
-                await removeTester({
-                    variables: {
-                        testReportId: testPlanReport.id,
-                        testerId: tester.id
-                    }
-                });
-                await triggerTestPlanReportUpdate();
-            }, 'Updating Test Plan Assignees');
+            const testPlanRun = draftTestPlanRuns.find(
+                ({ tester }) => tester.username === username
+            );
+            const { initiatedByAutomation } = testPlanRun;
+            if (initiatedByAutomation) {
+                const botTester = testers.find(isBot);
+                await triggerLoad(async () => {
+                    await assignTester({
+                        variables: {
+                            testReportId: testPlanReport.id,
+                            testerId: botTester.id,
+                            testPlanRunId: testPlanRun.id
+                        }
+                    });
+                    await triggerTestPlanReportUpdate();
+                }, 'Updating Test Plan Assignees');
+            } else {
+                await triggerLoad(async () => {
+                    await removeTester({
+                        variables: {
+                            testReportId: testPlanReport.id,
+                            testerId: tester.id
+                        }
+                    });
+                    await triggerTestPlanReportUpdate();
+                }, 'Updating Test Plan Assignees');
+            }
         } else {
             await triggerLoad(async () => {
                 await assignTester({
@@ -442,9 +460,6 @@ const TestQueueRow = ({
                                     .map(draftTestPlanRun => (
                                         <TestQueueCompletionStatusListItem
                                             key={nextId()}
-                                            testPlanVersionId={
-                                                testPlanVersion?.id
-                                            }
                                             runnableTestsLength={
                                                 runnableTestsLength
                                             }

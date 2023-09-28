@@ -479,6 +479,7 @@ describe('graphql', () => {
                     testPlanRun(id: 3) {
                         __typename
                         id
+                        initiatedByAutomation
                         testPlanReport {
                             id
                         }

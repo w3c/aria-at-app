@@ -6,7 +6,6 @@ import BotTestCompletionStatus from './BotTestCompletionStatus';
 
 const TestQueueCompletionStatusListItem = ({
     runnableTestsLength,
-    testPlanVersionId,
     testPlanRun,
     id
 }) => {
@@ -48,7 +47,6 @@ const TestQueueCompletionStatusListItem = ({
                     id={id}
                     testPlanRun={testPlanRun}
                     runnableTestsLength={runnableTestsLength}
-                    testPlanVersionId={testPlanVersionId}
                 />
             );
         } else {
@@ -69,7 +67,6 @@ const TestQueueCompletionStatusListItem = ({
 };
 
 TestQueueCompletionStatusListItem.propTypes = {
-    testPlanVersionId: PropTypes.string.isRequired,
     runnableTestsLength: PropTypes.number.isRequired,
     testPlanRun: PropTypes.shape({
         testResultsLength: PropTypes.number.isRequired,

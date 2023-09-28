@@ -1,32 +1,17 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import {
-    ALL_ASSERTIONS_FOR_TEST_PLAN_VERSION_QUERY,
     TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY,
     TEST_RESULTS_QUERY
 } from '../queries';
 import { useQuery } from '@apollo/client';
 
-const BotTestCompletionStatus = ({
-    testPlanRun,
-    testPlanVersionId,
-    id,
-    runnableTestsLength
-}) => {
+const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
     const { data: testPlanRunAssertionsQueryResult } = useQuery(
         TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY,
         {
             variables: {
                 testPlanRunId: testPlanRun.id
-            },
-            fetchPolicy: 'cache-and-network'
-        }
-    );
-    const testPlanVersionAssertionQueryResult = useQuery(
-        ALL_ASSERTIONS_FOR_TEST_PLAN_VERSION_QUERY,
-        {
-            variables: {
-                testPlanVersionId: testPlanVersionId
             },
             fetchPolicy: 'cache-and-network'
         }
@@ -62,17 +47,25 @@ const BotTestCompletionStatus = ({
     ]);
 
     const totalPossibleAssertions = useMemo(() => {
-        if (testPlanVersionAssertionQueryResult.data) {
-            return testPlanVersionAssertionQueryResult.data.testPlanVersion.tests.reduce(
-                (acc, test) => {
-                    return acc + test.assertions.length;
-                },
-                0
-            );
+        if (testPlanRunAssertionsQueryResult) {
+            let count = 0;
+            const {
+                testPlanRun: { testResults }
+            } = testPlanRunAssertionsQueryResult;
+            for (let i = 0; i < testResults.length; i++) {
+                const scenarios = testResults[i].scenarioResults;
+                for (let j = 0; j < scenarios.length; j++) {
+                    const assertions = scenarios[j].assertionResults;
+                    for (let k = 0; k < assertions.length; k++) {
+                        count++;
+                    }
+                }
+            }
+            return count;
         } else {
             return 0;
         }
-    }, [testPlanVersionAssertionQueryResult.data]);
+    }, [testPlanRunAssertionsQueryResult]);
 
     const totalCompletedAssertions = useMemo(() => {
         if (testPlanRunAssertionsQueryResult) {
@@ -127,7 +120,6 @@ BotTestCompletionStatus.propTypes = {
             })
         )
     }).isRequired,
-    testPlanVersionId: PropTypes.string.isRequired,
     id: PropTypes.string.isRequired,
     runnableTestsLength: PropTypes.number.isRequired
 };

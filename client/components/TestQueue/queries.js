@@ -62,6 +62,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             }
             draftTestPlanRuns {
                 id
+                initiatedByAutomation
                 tester {
                     id
                     username
@@ -110,6 +111,7 @@ export const TEST_PLAN_REPORT_QUERY = gql`
             }
             draftTestPlanRuns {
                 id
+                initiatedByAutomation
                 tester {
                     id
                     username
@@ -230,6 +232,7 @@ export const ASSIGN_TESTER_MUTATION = gql`
             assignTester(userId: $testerId, testPlanRunId: $testPlanRunId) {
                 testPlanReport {
                     draftTestPlanRuns {
+                        initiatedByAutomation
                         tester {
                             id
                             username
