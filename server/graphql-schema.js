@@ -1105,6 +1105,10 @@ const graphqlSchema = gql`
         """
         collectionJob(id: ID!): CollectionJob
         """
+        Get a CollectionJob by TestPlanRun ID.
+        """
+        collectionJobByTestPlanRunId(testPlanRunId: ID!): CollectionJob
+        """
         Get all CollectionJobs.
         """
         collectionJobs: [CollectionJob]!
@@ -1277,6 +1281,15 @@ const graphqlSchema = gql`
         """
         deleteTestResult: PopulatedData!
     }
+    """
+    Mutations scoped to a CollectionJob.
+    """
+    type CollectionJobOperations {
+        """
+        Mark a CollectionJob as finished.
+        """
+        markCollectionJobFinished: CollectionJob!
+    }
 
     """
     Generic response to findOrCreate mutations, which allow you to dictate an
@@ -1338,6 +1351,10 @@ const graphqlSchema = gql`
         Get the available mutations for the given TestPlanVersion.
         """
         testPlanVersion(id: ID!): TestPlanVersionOperations!
+        """
+        Get the available mutations for the given CollectionJob.
+        """
+        collectionJob(id: ID!): CollectionJobOperations
         """
         Update the currently-logged-in User.
         """

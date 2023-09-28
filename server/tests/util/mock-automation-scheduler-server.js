@@ -86,6 +86,15 @@ const setupMockAutomationSchedulerServer = async () => {
                     currentTestIndex + 1
                 );
             }, Math.random() * 1000);
+        } else {
+            setTimeout(
+                () =>
+                    simulateJobStatusUpdate(
+                        jobId,
+                        COLLECTION_JOB_STATUS.COMPLETED
+                    ),
+                1000
+            );
         }
 
         return testResult;

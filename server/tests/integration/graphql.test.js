@@ -255,8 +255,16 @@ describe('graphql', () => {
                         __typename
                         id
                         status
+                        testPlanRun {
+                            id
+                        }
                     }
                     collectionJobs {
+                        __typename
+                        id
+                        status
+                    }
+                    collectionJobByTestPlanRunId(testPlanRunId: 1) {
                         __typename
                         id
                         status
@@ -735,6 +743,13 @@ describe('graphql', () => {
                             status
                             testPlanRun {
                                 id
+                            }
+                        }
+                        collectionJob(id: 333) {
+                            __typename
+                            markCollectionJobFinished {
+                                id
+                                status
                             }
                         }
                         deleteCollectionJob(id: 333)
