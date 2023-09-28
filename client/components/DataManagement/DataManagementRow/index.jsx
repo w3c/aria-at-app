@@ -22,14 +22,14 @@ import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import VersionString from '../../common/VersionString';
 import PhasePill from '../../common/PhasePill';
 import { uniq as unique, uniqBy as uniqueBy } from 'lodash';
+import { getVersionData } from '../utils';
 
 const StatusCell = styled.div`
     display: flex;
     flex-direction: column;
-    justify-content: center;
     height: 100%;
 
-    span:nth-of-type(2) {
+    .review-text {
         margin-top: 1rem;
         font-size: 14px;
         text-align: center;
@@ -37,7 +37,7 @@ const StatusCell = styled.div`
         margin-bottom: 88px;
     }
 
-    span:nth-of-type(3) {
+    .versions-in-progress {
         display: flex;
         justify-content: center;
         padding: 12px;
@@ -118,7 +118,6 @@ const PhaseCell = styled.div`
                 border: none;
                 background: none;
                 color: inherit;
-                font-weight: bold;
 
                 margin: 0;
                 padding: 0;
@@ -152,7 +151,8 @@ const DataManagementRow = ({
     ats,
     testPlan,
     testPlanVersions,
-    setTestPlanVersions
+    setTestPlanVersions,
+    tableRowIndex
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const {
@@ -210,27 +210,6 @@ const DataManagementRow = ({
             testPlanVersions.filter(({ phase }) => phase === 'RECOMMENDED')
         );
     }, [testPlanVersions]);
-
-    // Get the version information based on the latest or earliest date info from a group of
-    // TestPlanVersions
-    const getVersionData = (testPlanVersions, dateKey = 'updatedAt') => {
-        const earliestVersion = testPlanVersions.reduce((a, b) =>
-            new Date(a[dateKey]) < new Date(b[dateKey]) ? a : b
-        );
-        const earliestVersionDate = new Date(earliestVersion[dateKey]);
-
-        const latestVersion = testPlanVersions.reduce((a, b) =>
-            new Date(a[dateKey]) > new Date(b[dateKey]) ? a : b
-        );
-        const latestVersionDate = new Date(latestVersion[dateKey]);
-
-        return {
-            earliestVersion,
-            earliestVersionDate,
-            latestVersion,
-            latestVersionDate
-        };
-    };
 
     const handleClickUpdateTestPlanVersionPhase = async (
         testPlanVersionId,
@@ -367,31 +346,33 @@ const DataManagementRow = ({
 
             switch (phase) {
                 case 'RD':
-                    phaseText = 'Complete';
+                    phaseText = 'Complete ';
                     break;
                 case 'DRAFT':
                 case 'CANDIDATE':
-                    phaseText = 'Review Started';
+                    phaseText = 'Review Started ';
                     break;
                 case 'RECOMMENDED':
-                    phaseText = 'Since';
+                    phaseText = 'Since ';
                     break;
             }
+
+            const dateString = convertDateToString(versionDate, 'MMM D, YYYY');
 
             return (
                 <>
                     <PhasePill>{phase}</PhasePill>
-                    <span>
-                        {phaseText}{' '}
-                        <b>{convertDateToString(versionDate, 'MMM D, YYYY')}</b>
-                    </span>
+                    <p className="review-text">
+                        {phaseText}
+                        <b>{dateString}</b>
+                    </p>
                 </>
             );
         };
 
         const versionsInProgressView = versionsCount => {
             return versionsCount ? (
-                <span>
+                <span className="versions-in-progress">
                     <>
                         <span className="pill">+{versionsCount}</span> New
                         Version
@@ -535,8 +516,9 @@ const DataManagementRow = ({
                 // "active"
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
-                    <PhaseCell>
+                    <PhaseCell role="list" aria-setsize={isAdmin ? 2 : 1}>
                         <VersionString
+                            role="listitem"
                             date={latestVersionDate}
                             iconColor="#2BA51C"
                             linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
@@ -614,13 +596,14 @@ const DataManagementRow = ({
                         otherLatestVersion.candidatePhaseReachedAt;
 
                     return (
-                        <PhaseCell>
+                        <PhaseCell role="list">
                             <VersionString
+                                role="listitem"
                                 date={otherLatestVersionDate}
                                 iconColor="#818F98"
                             />
-                            <span className="review-complete">
-                                Review Completed{' '}
+                            <span role="listitem" className="review-complete">
+                                Review Completed&nbsp;
                                 <b>
                                     {convertDateToString(
                                         completionDate,
@@ -653,25 +636,22 @@ const DataManagementRow = ({
                     }
 
                     let coveredReports = [];
-                    let finalReportFound = false;
-
                     latestVersion.testPlanReports.forEach(testPlanReport => {
                         const markedFinalAt = testPlanReport.markedFinalAt;
                         const atName = testPlanReport.at.name;
                         const browserName = testPlanReport.browser.name;
                         const value = `${atName}_${browserName}`;
 
-                        if (markedFinalAt && !coveredReports.includes(value)) {
-                            finalReportFound = true;
+                        if (markedFinalAt && !coveredReports.includes(value))
                             coveredReports.push(value);
-                        }
                     });
 
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
-                        <PhaseCell>
+                        <PhaseCell role="list" aria-setsize={isAdmin ? 3 : 2}>
                             <VersionString
+                                role="listitem"
                                 date={latestVersionDate}
                                 iconColor="#2BA51C"
                                 linkRef={draftVersionStringRef}
@@ -683,46 +663,33 @@ const DataManagementRow = ({
                                     className="advance-button"
                                     variant="secondary"
                                     onClick={async () => {
-                                        if (finalReportFound) {
-                                            setShowAdvanceModal(true);
-                                            setAdvanceModalData({
-                                                phase: derivePhaseName(
-                                                    'CANDIDATE'
-                                                ),
-                                                version: convertDateToString(
-                                                    latestVersionDate,
-                                                    'YY.MM.DD'
-                                                ),
-                                                advanceFunc: () => {
-                                                    setShowAdvanceModal(false);
-                                                    handleClickUpdateTestPlanVersionPhase(
-                                                        latestVersion.id,
-                                                        'CANDIDATE',
-                                                        testPlanVersionDataToInclude
-                                                    );
-                                                },
-                                                coveredReports
-                                            });
-                                        } else {
-                                            setShowThemedModal(true);
-                                            setThemedModalTitle(
-                                                'Error Updating Test Plan Version Phase'
-                                            );
-                                            setThemedModalContent(
-                                                <>
-                                                    No reports have been marked
-                                                    as final.
-                                                </>
-                                            );
-                                        }
+                                        setShowAdvanceModal(true);
+                                        setAdvanceModalData({
+                                            phase: derivePhaseName('CANDIDATE'),
+                                            version: convertDateToString(
+                                                latestVersionDate,
+                                                'YY.MM.DD'
+                                            ),
+                                            advanceFunc: () => {
+                                                setShowAdvanceModal(false);
+                                                handleClickUpdateTestPlanVersionPhase(
+                                                    latestVersion.id,
+                                                    'CANDIDATE',
+                                                    testPlanVersionDataToInclude
+                                                );
+                                            },
+                                            coveredReports
+                                        });
                                     }}
                                 >
                                     Advance to Candidate
                                 </Button>
                             )}
-                            <TestPlanReportStatusDialogWithButton
-                                testPlanVersionId={latestVersion.id}
-                            />
+                            <span role="listitem">
+                                <TestPlanReportStatusDialogWithButton
+                                    testPlanVersionId={latestVersion.id}
+                                />
+                            </span>
                         </PhaseCell>
                     );
                 }
@@ -766,13 +733,14 @@ const DataManagementRow = ({
                         otherLatestVersion.recommendedPhaseReachedAt;
 
                     return (
-                        <PhaseCell>
+                        <PhaseCell role="list">
                             <VersionString
+                                role="listitem"
                                 date={otherLatestVersionDate}
                                 iconColor="#818F98"
                             />
-                            <span className="review-complete">
-                                Review Completed{' '}
+                            <span role="listitem" className="review-complete">
+                                Review Completed&nbsp;
                                 <b>
                                     {convertDateToString(
                                         completionDate,
@@ -886,8 +854,12 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
-                        <PhaseCell>
+                        <PhaseCell
+                            role="list"
+                            aria-setsize={shouldShowAdvanceButton ? 5 : 4}
+                        >
                             <VersionString
+                                role="listitem"
                                 date={latestVersionDate}
                                 iconColor="#2BA51C"
                                 linkRef={candidateVersionStringRef}
@@ -923,12 +895,17 @@ const DataManagementRow = ({
                                     Advance to Recommended
                                 </Button>
                             )}
-                            <TestPlanReportStatusDialogWithButton
-                                testPlanVersionId={latestVersion.id}
-                            />
+                            <span role="listitem">
+                                <TestPlanReportStatusDialogWithButton
+                                    testPlanVersionId={latestVersion.id}
+                                />
+                            </span>
                             <span className="more">
-                                <span className="more-issues-container">
-                                    <ReportStatusDot className="issues" />{' '}
+                                <span
+                                    role="listitem"
+                                    className="more-issues-container"
+                                >
+                                    <ReportStatusDot className="issues" />
                                     {issuesCount} Open Issue
                                     {`${issuesCount === 1 ? '' : 's'}`}
                                     {`${
@@ -938,7 +915,6 @@ const DataManagementRow = ({
                                     }`}
                                 </span>
                                 <span className="target-days-container">
-                                    Target{' '}
                                     {isAdmin ? (
                                         <button
                                             ref={updateTargetRef}
@@ -949,26 +925,41 @@ const DataManagementRow = ({
                                                         latestVersion.id,
                                                     title: `Change Recommended Phase Target Date for ${
                                                         testPlan.title
-                                                    }, V${convertDateToString(
-                                                        latestVersionDate,
-                                                        'YY.MM.DD'
-                                                    )}`,
+                                                    }, ${
+                                                        'V' +
+                                                        convertDateToString(
+                                                            latestVersionDate,
+                                                            'YY.MM.DD'
+                                                        )
+                                                    }`,
                                                     dateText:
                                                         latestVersion.recommendedPhaseTargetDate
                                                 });
                                             }}
                                         >
-                                            {Math.abs(timeToTargetDate)} Days
-                                        </button>
-                                    ) : (
-                                        <>
+                                            Target&nbsp;
                                             <b>
                                                 {Math.abs(timeToTargetDate)}{' '}
                                                 Days
                                             </b>
+                                            &nbsp;
+                                            {timeToTargetDate < 0
+                                                ? 'Past'
+                                                : 'Away'}
+                                        </button>
+                                    ) : (
+                                        <>
+                                            Target&nbsp;
+                                            <b>
+                                                {Math.abs(timeToTargetDate)}{' '}
+                                                Days
+                                            </b>
+                                            &nbsp;
+                                            {timeToTargetDate < 0
+                                                ? 'Past'
+                                                : 'Away'}
                                         </>
-                                    )}{' '}
-                                    {timeToTargetDate < 0 ? 'Past' : 'Away'}
+                                    )}
                                 </span>
                             </span>
                         </PhaseCell>
@@ -991,15 +982,21 @@ const DataManagementRow = ({
                 // Phase is "active"
                 insertActivePhaseForTestPlan(latestVersion);
                 return (
-                    <PhaseCell>
+                    <PhaseCell role="list">
                         <VersionString
+                            role="listitem"
                             date={latestVersionDate}
                             iconColor="#2BA51C"
                             linkRef={recommendedVersionStringRef}
                             linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                         />
-                        <span className="review-complete">
-                            Approved{' '}
+                        <span role="listitem">
+                            <TestPlanReportStatusDialogWithButton
+                                testPlanVersionId={latestVersion.id}
+                            />
+                        </span>
+                        <span role="listitem" className="review-complete">
+                            Approved&nbsp;
                             <b>
                                 {convertDateToString(
                                     completionDate,
@@ -1015,7 +1012,7 @@ const DataManagementRow = ({
 
     return (
         <LoadingStatus message={loadingMessage}>
-            <tr>
+            <tr aria-rowindex={tableRowIndex}>
                 <th>
                     <a href={`/data-management/${testPlan.directory}`}>
                         <b>{testPlan.title}</b>
@@ -1044,8 +1041,8 @@ const DataManagementRow = ({
                     title={`Advancing test plan, ${testPlan.title}, V${advanceModalData.version}`}
                     content={
                         <>
-                            This version will be updated to{' '}
-                            <b>{advanceModalData.phase}</b>.{' '}
+                            This version will be updated to&nbsp;
+                            <b>{advanceModalData.phase}</b>.&nbsp;
                             {advanceModalData.coveredReports?.length ? (
                                 <>
                                     <br />
@@ -1062,7 +1059,7 @@ const DataManagementRow = ({
                                                         key={`${testPlan.id}${atName}${browserName}`}
                                                     >
                                                         <b>
-                                                            {atName} and{' '}
+                                                            {atName} and&nbsp;
                                                             {browserName}
                                                         </b>
                                                     </li>
@@ -1129,6 +1126,7 @@ DataManagementRow.propTypes = {
             recommendedPhaseReachedAt: PropTypes.string
         })
     ).isRequired,
+    tableRowIndex: PropTypes.number.isRequired,
     setTestPlanVersions: PropTypes.func
 };
 

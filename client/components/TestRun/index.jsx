@@ -337,6 +337,7 @@ const TestRun = () => {
     if (hasLoadingCompleted) {
         issueLink = createIssueLink({
             testPlanTitle: testPlanVersion.title,
+            testPlanDirectory: testPlanVersion.testPlan.directory,
             versionString: `V${convertDateToString(
                 testPlanVersion.updatedAt,
                 'YY.MM.DD'

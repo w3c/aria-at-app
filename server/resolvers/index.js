@@ -33,6 +33,7 @@ const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
 const BrowserOperations = require('./BrowserOperations');
+const TestPlan = require('./TestPlan');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
@@ -83,6 +84,7 @@ const resolvers = {
     AtVersionOperations,
     BrowserOperations,
     User,
+    TestPlan,
     TestPlanVersion,
     TestPlanReport,
     TestPlanRun,

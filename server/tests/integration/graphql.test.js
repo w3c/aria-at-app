@@ -308,6 +308,24 @@ describe('graphql', () => {
                         testPlanVersions {
                             id
                         }
+                        issues {
+                            __typename
+                            author
+                            title
+                            link
+                            isCandidateReview
+                            feedbackType
+                            isOpen
+                            testNumberFilteredByAt
+                            createdAt
+                            closedAt
+                            at {
+                                name
+                            }
+                            browser {
+                                name
+                            }
+                        }
                     }
                     testPlans {
                         directory

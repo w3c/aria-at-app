@@ -101,7 +101,6 @@ const TestQueue = () => {
                     className="test-queue"
                     aria-labelledby={tableId}
                     bordered
-                    responsive
                 >
                     <thead>
                         <tr>

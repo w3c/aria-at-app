@@ -79,8 +79,8 @@ INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "bro
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (9, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 2, 1, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (10, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 3, 1, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (11, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 3, 2, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (12, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)'), '2021-05-14 14:18:23.602-05', 1, 2, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (13, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)'), '2021-05-14 14:18:23.602-05', 2, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (12, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)'), '2021-05-14 14:18:23.602-05', '2022-07-06', 1, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (13, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)'), '2021-05-14 14:18:23.602-05', '2022-07-07', 2, 2, 'READY');
 
 --
 -- Data for Name: TestPlanVersion; Type: TABLE DATA; Schema: public; Owner: atr

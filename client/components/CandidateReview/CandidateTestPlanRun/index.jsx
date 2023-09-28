@@ -302,12 +302,14 @@ const CandidateTestPlanRun = () => {
     // Assumes that the issues are across the entire AT/Browser combination
     const changesRequestedIssues = testPlanReport.issues?.filter(
         issue =>
+            issue.isCandidateReview &&
             issue.feedbackType === 'CHANGES_REQUESTED' &&
             issue.testNumberFilteredByAt === currentTest.seq
     );
 
     const feedbackIssues = testPlanReport.issues?.filter(
         issue =>
+            issue.isCandidateReview &&
             issue.feedbackType === 'FEEDBACK' &&
             issue.testNumberFilteredByAt === currentTest.seq
     );
@@ -316,6 +318,7 @@ const CandidateTestPlanRun = () => {
         isCandidateReview: true,
         isCandidateReviewChangesRequested: true,
         testPlanTitle: testPlanVersion.title,
+        testPlanDirectory: testPlanVersion.testPlan.directory,
         versionString,
         testTitle: currentTest.title,
         testRowNumber: currentTest.rowNumber,
@@ -428,7 +431,9 @@ const CandidateTestPlanRun = () => {
     );
 
     const feedback = testPlanReport.issues.filter(
-        issue => issue.testNumberFilteredByAt == currentTest.seq
+        issue =>
+            issue.isCandidateReview &&
+            issue.testNumberFilteredByAt == currentTest.seq
     ).length > 0 && (
         <div className="issues-container">
             <h2>
@@ -665,14 +670,14 @@ const CandidateTestPlanRun = () => {
                     testPlan={testPlanVersion.title}
                     feedbackIssues={testPlanReport.issues?.filter(
                         issue =>
-                            issue.isCandidateReview === true &&
+                            issue.isCandidateReview &&
                             issue.feedbackType === 'FEEDBACK' &&
                             issue.author == data.me.username
                     )}
                     feedbackGithubUrl={feedbackGithubUrl}
                     changesRequestedIssues={testPlanReport.issues?.filter(
                         issue =>
-                            issue.isCandidateReview === true &&
+                            issue.isCandidateReview &&
                             issue.feedbackType === 'CHANGES_REQUESTED' &&
                             issue.author == data.me.username
                     )}

@@ -46,6 +46,7 @@ const queryReports = async () => {
                 }
                 testPlanReports(
                     testPlanVersionPhases: [CANDIDATE, RECOMMENDED]
+                    isFinal: true
                 ) {
                     id
                     metrics

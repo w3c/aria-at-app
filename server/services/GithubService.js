@@ -1,7 +1,8 @@
 const axios = require('axios');
-const NodeCache = require('node-cache');
+const staleWhileRevalidate = require('../util/staleWhileRevalidate');
 
 const {
+    ENVIRONMENT,
     GITHUB_GRAPHQL_SERVER,
     GITHUB_OAUTH_SERVER,
     GITHUB_CLIENT_ID,
@@ -10,6 +11,11 @@ const {
     GITHUB_TEAM_ORGANIZATION,
     GITHUB_TEAM_QUERY
 } = process.env;
+
+const GITHUB_ISSUES_API_URL =
+    ENVIRONMENT === 'production'
+        ? 'https://api.github.com/repos/w3c/aria-at'
+        : 'https://api.github.com/repos/bocoup/aria-at';
 
 const permissionScopes = [
     // Not currently used, but this permissions scope will allow us to query for
@@ -23,17 +29,14 @@ const permissionScopes = [
 ];
 const permissionScopesURI = encodeURI(permissionScopes.join(' '));
 const graphQLEndpoint = `${GITHUB_GRAPHQL_SERVER}/graphql`;
-const nodeCache = new NodeCache();
 
-const getAllIssuesFromGitHub = async () => {
+const getAllIssues = async () => {
     let currentResults = [];
     let page = 1;
 
     // eslint-disable-next-line no-constant-condition
     while (true) {
-        const issuesEndpoint =
-            `https://api.github.com/repos/w3c/aria-at/issues` +
-            `?labels=app&state=all&per_page=100`;
+        const issuesEndpoint = `${GITHUB_ISSUES_API_URL}/issues?state=all&per_page=100`;
         const url = `${issuesEndpoint}&page=${page}`;
         const auth = {
             username: GITHUB_CLIENT_ID,
@@ -41,10 +44,15 @@ const getAllIssuesFromGitHub = async () => {
         };
         const response = await axios.get(url, { auth });
 
-        // https://docs.github.com/en/rest/issues/issues#list-repository-issues
-        // Filter out Pull Requests. GitHub's REST API v3 also considers every
-        // pull request an issue.
-        const issues = response.data.filter(data => !data.pull_request);
+        const issues = response.data
+            // https://docs.github.com/en/rest/issues/issues#list-repository-issues
+            // Filter out Pull Requests. GitHub's REST API v3 also considers every
+            // pull request an issue.
+            .filter(data => !data.pull_request)
+            // Our issue API should only return issues that were originally
+            // created by the app, indicated by the presence of metadata
+            // hidden in a comment
+            .filter(data => data.body.includes('ARIA_AT_APP_ISSUE_DATA'));
 
         currentResults = [...currentResults, ...issues];
 
@@ -59,31 +67,6 @@ const getAllIssuesFromGitHub = async () => {
     }
 
     return currentResults;
-};
-
-let activeIssuePromise;
-
-const getAllIssues = async () => {
-    const cacheResult = nodeCache.get('allIssues');
-
-    if (cacheResult) return cacheResult;
-
-    if (!activeIssuePromise) {
-        // eslint-disable-next-line no-async-promise-executor
-        activeIssuePromise = new Promise(async resolve => {
-            const result = await getAllIssuesFromGitHub();
-
-            nodeCache.set('allIssues', result, 60 /* 1 min */);
-
-            activeIssuePromise = null;
-
-            resolve();
-        });
-    }
-
-    await activeIssuePromise;
-
-    return nodeCache.get('allIssues');
 };
 
 module.exports = {
@@ -158,5 +141,7 @@ module.exports = {
 
         return isMember;
     },
-    getAllIssues
+    getAllIssues: staleWhileRevalidate(getAllIssues, {
+        millisecondsUntilStale: 10000 /* 10 seconds */
+    })
 };

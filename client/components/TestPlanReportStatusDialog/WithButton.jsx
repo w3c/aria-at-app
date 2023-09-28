@@ -41,6 +41,7 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
     const [showDialog, setShowDialog] = useState(false);
     const { testPlanReports } = testPlanVersion ?? {};
 
+    // TODO: Use the DB provided AtBrowsers combinations when doing the edit UI task
     const requiredReports = useMemo(
         () => getRequiredReports(testPlanVersion?.phase),
         [testPlanVersion?.phase]
@@ -58,7 +59,7 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
             if (matchingReport) {
                 const percentComplete =
                     calculateTestPlanReportCompletionPercentage(matchingReport);
-                if (percentComplete === 100) {
+                if (percentComplete === 100 && matchingReport.markedFinalAt) {
                     acc.completed++;
                 } else {
                     acc.inProgress++;
@@ -126,7 +127,8 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
         !testPlanVersion ||
         !testPlanVersion.phase ||
         (testPlanVersion.phase !== 'DRAFT' &&
-            testPlanVersion.phase !== 'CANDIDATE')
+            testPlanVersion.phase !== 'CANDIDATE' &&
+            testPlanVersion.phase !== 'RECOMMENDED')
     ) {
         return;
     }
