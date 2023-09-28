@@ -451,7 +451,9 @@ const TestPlans = ({ testPlanVersions }) => {
                                 .sort((a, b) => (a.title < b.title ? -1 : 1))
                                 .map(testPlanVersion => {
                                     const testPlanReports =
-                                        testPlanVersion.testPlanReports;
+                                        testPlanVersion.testPlanReports.filter(
+                                            ({ at }) => at.id === atId
+                                        );
                                     const candidatePhaseReachedAt =
                                         testPlanVersion.candidatePhaseReachedAt;
                                     const recommendedPhaseTargetDate =
@@ -535,6 +537,9 @@ const TestPlans = ({ testPlanVersions }) => {
                                             ...testPlanReport.issues
                                         ])
                                         .flat()
+                                        .filter(
+                                            t => t.isCandidateReview === true
+                                        )
                                         .filter(t =>
                                             uniqueFilter(t, uniqueLinks, 'link')
                                         );

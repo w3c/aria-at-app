@@ -8,13 +8,24 @@ import ManageTestQueue from '../ManageTestQueue';
 import DataManagementRow from '@components/DataManagement/DataManagementRow';
 import './DataManagement.css';
 import { evaluateAuth } from '@client/utils/evaluateAuth';
+import SortableTableHeader, {
+    TABLE_SORT_ORDERS
+} from '../common/SortableTableHeader';
+import FilterButtons from '../common/FilterButtons';
+import {
+    useDataManagementTableFiltering,
+    useDataManagementTableSorting
+} from './filterSortHooks';
+import {
+    DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
+    DATA_MANAGEMENT_TABLE_SORT_OPTIONS
+} from './utils';
+import { AriaLiveRegionProvider } from '../providers/AriaLiveRegionProvider';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
         DATA_MANAGEMENT_PAGE_QUERY,
-        {
-            fetchPolicy: 'cache-and-network'
-        }
+        { fetchPolicy: 'cache-and-network' }
     );
 
     const [pageReady, setPageReady] = useState(false);
@@ -22,6 +33,9 @@ const DataManagement = () => {
     const [browsers, setBrowsers] = useState([]);
     const [testPlans, setTestPlans] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
+    const [filter, setFilter] = useState(
+        DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL
+    );
 
     const auth = evaluateAuth(data && data.me ? data.me : {});
     const { isAdmin } = auth;
@@ -41,6 +55,20 @@ const DataManagement = () => {
             setPageReady(true);
         }
     }, [data]);
+
+    const { filteredTestPlans, filterLabels } = useDataManagementTableFiltering(
+        testPlans,
+        testPlanVersions,
+        filter
+    );
+
+    const { sortedTestPlans, updateSort, activeSort } =
+        useDataManagementTableSorting(
+            filteredTestPlans,
+            testPlanVersions,
+            ats,
+            TABLE_SORT_ORDERS.DESC
+        );
 
     if (error) {
         return (
@@ -123,71 +151,70 @@ const DataManagement = () => {
             )}
 
             <h2>Test Plans Status Summary</h2>
-            <Table
-                className="data-management"
-                aria-label="Test Plans Status Summary Table"
-                bordered
-                hover
-            >
-                <thead>
-                    <tr>
-                        <th>Test Plan</th>
-                        <th>Covered AT</th>
-                        <th>Overall Status</th>
-                        <th>R&D Version</th>
-                        <th>Draft Review</th>
-                        <th>Candidate Review</th>
-                        <th>Recommended Version</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {testPlans
-                        .slice()
-                        .sort((a, b) => {
-                            // First sort by overall status descending: recommended plans,
-                            // then candidate plans, then draft plans, then R&D complete plans.
-                            const phaseOrder = {
-                                RD: 0,
-                                DRAFT: 1,
-                                CANDIDATE: 2,
-                                RECOMMENDED: 3
-                            };
-
-                            const getTestPlanVersionOverallPhase = t => {
-                                let testPlanVersionOverallPhase = 'RD';
-
-                                Object.keys(phaseOrder).forEach(phaseKey => {
-                                    testPlanVersionOverallPhase =
-                                        testPlanVersions.filter(
-                                            ({ phase, testPlan }) =>
-                                                testPlan.directory ===
-                                                    t.directory &&
-                                                phase === phaseKey
-                                        ).length
-                                            ? phaseKey
-                                            : testPlanVersionOverallPhase;
-                                });
-                                return testPlanVersionOverallPhase;
-                            };
-
-                            const testPlanVersionOverallA =
-                                getTestPlanVersionOverallPhase(a);
-                            const testPlanVersionOverallB =
-                                getTestPlanVersionOverallPhase(b);
-
-                            const phaseA = phaseOrder[testPlanVersionOverallA];
-                            const phaseB = phaseOrder[testPlanVersionOverallB];
-
-                            if (phaseA > phaseB) return -1;
-                            if (phaseA < phaseB) return 1;
-
-                            // Then sort by test plan name ascending.
-                            if (a.title < b.title) return -1;
-                            if (a.title > b.title) return 1;
-
-                            return 0;
-                        })
-                        .map(testPlan => {
+            <FilterButtons
+                filterOptions={DATA_MANAGEMENT_TABLE_FILTER_OPTIONS}
+                optionLabels={filterLabels}
+                activeFilter={filter}
+                onFilterChange={setFilter}
+            />
+            <AriaLiveRegionProvider baseMessage="Test Plans Status Summary Table,">
+                <Table
+                    className="data-management"
+                    aria-label="Test Plans Status Summary Table"
+                    bordered
+                    hover
+                    aria-rowcount={sortedTestPlans.length}
+                >
+                    <thead>
+                        <tr>
+                            <SortableTableHeader
+                                title="Test Plan"
+                                active={
+                                    activeSort.key ===
+                                    DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME
+                                }
+                                onSort={direction =>
+                                    updateSort({
+                                        key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME,
+                                        direction
+                                    })
+                                }
+                            />
+                            <SortableTableHeader
+                                title="Covered AT"
+                                active={
+                                    activeSort.key ===
+                                    DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS
+                                }
+                                onSort={direction =>
+                                    updateSort({
+                                        key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS,
+                                        direction
+                                    })
+                                }
+                            />
+                            <SortableTableHeader
+                                title="Overall Status"
+                                active={
+                                    activeSort.key ===
+                                    DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE
+                                }
+                                onSort={direction =>
+                                    updateSort({
+                                        key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
+                                        direction
+                                    })
+                                }
+                                initialSortDirection={TABLE_SORT_ORDERS.DESC}
+                            />
+                            <th>R&D Version</th>
+                            <th>Draft Review</th>
+                            <th>Candidate Review</th>
+                            <th>Recommended Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {sortedTestPlans.map((testPlan, index) => {
                             return (
                                 <DataManagementRow
                                     key={testPlan.id}
@@ -200,12 +227,14 @@ const DataManagement = () => {
                                                 .directory ===
                                             testPlan.directory
                                     )}
+                                    tableRowIndex={index}
                                     setTestPlanVersions={setTestPlanVersions}
                                 />
                             );
                         })}
-                </tbody>
-            </Table>
+                    </tbody>
+                </Table>
+            </AriaLiveRegionProvider>
         </Container>
     );
 };

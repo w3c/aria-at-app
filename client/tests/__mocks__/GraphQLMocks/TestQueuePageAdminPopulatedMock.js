@@ -96,6 +96,7 @@ export default testQueuePageQuery => [
                     {
                         id: '1',
                         title: 'Alert Example',
+                        phase: 'DRAFT',
                         gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
                         gitMessage:
                             'Create tests for APG design pattern example: Navigation Menu Button (#524)',
@@ -107,6 +108,7 @@ export default testQueuePageQuery => [
                     {
                         id: '2',
                         title: 'Banner Landmark',
+                        phase: 'DRAFT',
                         gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
                         gitMessage:
                             'Create tests for APG design pattern example: Navigation Menu Button (#524)',
@@ -118,6 +120,7 @@ export default testQueuePageQuery => [
                     {
                         id: '3',
                         title: 'Breadcrumb Example',
+                        phase: 'DRAFT',
                         gitSha: '97d4bd6c2078849ad4ee01eeeb3667767ca6f992',
                         gitMessage:
                             'Create tests for APG design pattern example: Navigation Menu Button (#524)',

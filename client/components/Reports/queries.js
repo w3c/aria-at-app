@@ -105,6 +105,12 @@ export const REPORT_PAGE_QUERY = gql`
                             otherUnexpectedBehaviorText
                         }
                     }
+                    atVersion {
+                        name
+                    }
+                    browserVersion {
+                        name
+                    }
                 }
                 draftTestPlanRuns {
                     tester {

@@ -68,6 +68,11 @@ const populateTestDatabase = async () => {
         'completeAndFailingDueToIncorrectAssertions',
         'completeAndFailingDueToNoOutputAssertions',
         'completeAndFailingDueToUnexpectedBehaviors',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
         'completeAndPassing'
     ]);
 
@@ -105,10 +110,20 @@ const populateTestDatabase = async () => {
     await populateFakeTestResults(8, [
         'completeAndPassing',
         'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
         'completeAndPassing'
     ]);
 
     await populateFakeTestResults(9, [
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
         'completeAndPassing',
         'completeAndPassing',
         'completeAndPassing'
@@ -117,10 +132,18 @@ const populateTestDatabase = async () => {
     await populateFakeTestResults(10, [
         'completeAndPassing',
         'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
         'completeAndPassing'
     ]);
 
     await populateFakeTestResults(11, [
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
+        'completeAndPassing',
         'completeAndPassing',
         'completeAndPassing',
         'completeAndPassing'

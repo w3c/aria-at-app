@@ -230,11 +230,15 @@ const graphqlSchema = gql`
         Gets the most recent version imported from the test plan's directory.
         """
         latestTestPlanVersion: TestPlanVersion
-
         """
         Gets all historic versions of the test plan.
         """
         testPlanVersions: [TestPlanVersion]!
+        """
+        A list of all issues which have filed through "Raise an Issue" buttons
+        in the app. Note that results will be cached for at least ten seconds.
+        """
+        issues: [Issue]!
     }
 
     """
@@ -260,6 +264,10 @@ const graphqlSchema = gql`
         Reports section of the app as being recommended.
         """
         RECOMMENDED
+        """
+        The TestPlanVersion is now outdated and replaced by another version.
+        """
+        DEPRECATED
     }
 
     """
@@ -787,9 +795,19 @@ const graphqlSchema = gql`
         """
         author: String!
         """
+        The issue title in GitHub.
+        """
+        title: String!
+        """
         Link to the GitHub issue's first comment.
         """
         link: String!
+        """
+        Will be true if the issue was raised on the Candidate Review page
+        of the app (as opposed to other places with "raise an issue" buttons like
+        the test queue or the reports page.)
+        """
+        isCandidateReview: Boolean!
         """
         Indicates the type of issue. 'CHANGES_REQUESTED' or 'FEEDBACK'.
         'FEEDBACK' is the default type.
@@ -803,6 +821,25 @@ const graphqlSchema = gql`
         Test Number the issue was raised for.
         """
         testNumberFilteredByAt: Int
+        """
+        The time the issue was created, according to GitHub.
+        """
+        createdAt: Timestamp!
+        """
+        The time the issue was closed, if it was closed.
+        """
+        closedAt: Timestamp
+        """
+        The AT associated with the issue. Although there are not currently any
+        cases where we generate GitHub issues without an associated AT, that
+        may not remain true forever and we do support this field being
+        undefined.
+        """
+        at: At
+        """
+        The browser associated with the issue, which may not be present.
+        """
+        browser: Browser
     }
 
     """
@@ -867,8 +904,8 @@ const graphqlSchema = gql`
         """
         finalizedTestResults: [TestResult]
         """
-        These are the different feedback and requested change items created for
-        the TestPlanReport and retrieved from GitHub.
+        A list of all issues which have filed through "Raise an Issue" buttons
+        in the app. Note that results will be cached for at least ten seconds.
         """
         issues: [Issue]!
         """

@@ -38,63 +38,8 @@ import {
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
-
-const createGitHubIssueWithTitleAndBody = ({
-    test = {},
-    testPlanReport = {},
-    atVersion,
-    browserVersion,
-    conflictMarkdown = null,
-    fromReportPageLink = null
-}) => {
-    // TODO: fix renderedUrl
-    let modifiedRenderedUrl = test?.renderedUrl?.replace(
-        /.+(?=\/tests)/,
-        'https://aria-at.netlify.app'
-    );
-
-    const { testPlanVersion = {}, at = {}, browser = {} } = testPlanReport;
-
-    const title =
-        `Feedback: "${test?.title}" (${testPlanVersion.title}, ` +
-        `Test ${test?.rowNumber})`;
-
-    const shortenedUrl = modifiedRenderedUrl?.match(/[^/]+$/)[0];
-
-    let body =
-        `## Description of Behavior\n\n` +
-        `<!-- write your description here -->\n\n` +
-        `## Test Setup\n\n` +
-        `- Test File: ` +
-        `[${shortenedUrl}](${modifiedRenderedUrl})\n` +
-        `- AT: ` +
-        `${at.name} (version ${atVersion})\n` +
-        `- Browser: ` +
-        `${browser.name} (version ${browserVersion})\n`;
-
-    if (fromReportPageLink)
-        body =
-            `## Description of Behavior\n\n` +
-            `<!-- write your description here -->\n\n` +
-            `## Test Setup\n\n` +
-            `- Test File: ` +
-            `[${shortenedUrl}](${modifiedRenderedUrl})\n` +
-            `- Report Page: ` +
-            `[Link](${fromReportPageLink})\n` +
-            `- AT: ` +
-            `${at.name}\n` +
-            `- Browser: ` +
-            `${browser.name}\n`;
-
-    if (conflictMarkdown) {
-        body += `\n${conflictMarkdown}`;
-    }
-
-    return (
-        `https://github.com/w3c/aria-at/issues/new?title=${encodeURI(title)}&` +
-        `body=${encodeURIComponent(body)}`
-    );
-};
+import createIssueLink from '../../utils/createIssueLink';
+import { convertDateToString } from '../../utils/formatter';
 
 const TestRun = () => {
     const params = useParams();
@@ -387,14 +332,26 @@ const TestRun = () => {
 
     adminReviewerCheckedRef.current = true;
 
-    // For creating content for GitHub Issue
-    const gitHubIssueLinkWithTitleAndBody = createGitHubIssueWithTitleAndBody({
-        test: currentTest,
-        testPlanReport,
-        atVersion: currentAtVersion?.name,
-        browserVersion: currentBrowserVersion?.name,
-        conflictMarkdown: conflictMarkdownRef.current
-    });
+    let issueLink;
+    const hasLoadingCompleted = Object.keys(currentTest).length;
+    if (hasLoadingCompleted) {
+        issueLink = createIssueLink({
+            testPlanTitle: testPlanVersion.title,
+            testPlanDirectory: testPlanVersion.testPlan.directory,
+            versionString: `V${convertDateToString(
+                testPlanVersion.updatedAt,
+                'YY.MM.DD'
+            )}`,
+            testTitle: currentTest.title,
+            testRowNumber: currentTest.rowNumber,
+            testRenderedUrl: currentTest.renderedUrl,
+            atName: testPlanReport.at.name,
+            browserName: testPlanReport.browser.name,
+            atVersionName: currentAtVersion?.name,
+            browserVersionName: currentBrowserVersion?.name,
+            conflictMarkdown: conflictMarkdownRef.current
+        });
+    }
 
     const remapScenarioResults = (
         rendererState,
@@ -953,7 +910,7 @@ const TestRun = () => {
                                 />
                             }
                             target="_blank"
-                            href={gitHubIssueLinkWithTitleAndBody}
+                            href={issueLink}
                         />
                     </li>
                     <li>
@@ -1108,7 +1065,7 @@ const TestRun = () => {
                         test={currentTest}
                         key={`ReviewConflictsModal__${currentTestIndex}`}
                         userId={testerId}
-                        issueLink={gitHubIssueLinkWithTitleAndBody}
+                        issueLink={issueLink}
                         handleClose={() => setShowReviewConflictsModal(false)}
                     />
                 )}
@@ -1328,5 +1285,4 @@ const TestRun = () => {
     );
 };
 
-export { createGitHubIssueWithTitleAndBody };
 export default TestRun;
