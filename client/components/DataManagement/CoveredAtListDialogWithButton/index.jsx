@@ -52,7 +52,8 @@ const CoveredAtListDialogWithButton = ({ ats }) => {
                 show={show}
                 closeButton={true}
                 cancelButton={false}
-                handleClose={handleClose}
+                useOnHide={true}
+                handleHide={handleClose}
                 content={renderDialogContent()}
             />
         </>

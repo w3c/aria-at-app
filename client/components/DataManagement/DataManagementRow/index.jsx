@@ -15,10 +15,11 @@ import {
 } from '../../../utils/formatter';
 import { derivePhaseName } from '@client/utils/aria';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
-import BasicModal from '@components/common/BasicModal';
 import TestPlanReportStatusDialogWithButton from '../../TestPlanReportStatusDialog/WithButton';
+import CoveredAtListDialogWithButton from '../CoveredAtListDialogWithButton';
+import BasicModal from '../../common/BasicModal';
 import ReportStatusDot from '../../common/ReportStatusDot';
-import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
+import UpdateTargetDateModal from '../../common/UpdateTargetDateModal';
 import VersionString from '../../common/VersionString';
 import PhasePill from '../../common/PhasePill';
 import { uniq as unique, uniqBy as uniqueBy } from 'lodash';
@@ -131,7 +132,7 @@ const PhaseCell = styled.div`
     }
 `;
 
-const NoneText = styled.span`
+export const NoneText = styled.span`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -316,29 +317,9 @@ const DataManagementRow = ({
         }
     };
 
-    const renderCellForCoveredAts = () => {
-        const atNames = ats.map(({ name }) => name);
-
-        if (atNames.length > 1) {
-            return (
-                <div>
-                    {atNames.map((item, index) => (
-                        <React.Fragment key={index}>
-                            <b>{item}</b>
-                            {index !== atNames.length - 1 ? (
-                                index === atNames.length - 2 ? (
-                                    <span> and </span>
-                                ) : (
-                                    <span>, </span>
-                                )
-                            ) : null}
-                        </React.Fragment>
-                    ))}
-                </div>
-            );
-        } else if (atNames.length === 1) return <b>{atNames[0]}</b>;
-        else return <NoneText>N/A</NoneText>;
-    };
+    const renderCellForCoveredAts = () => (
+        <CoveredAtListDialogWithButton ats={ats} />
+    );
 
     const renderCellForOverallStatus = () => {
         const phaseView = (phase, versionDate) => {
