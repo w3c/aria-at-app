@@ -13,7 +13,7 @@ const BotRunTestStatusUnorderedList = styled.ul`
     background-color: #f6f8fa;
     font-size: 0.9rem !important;
     padding: 0.5rem 0;
-    margin: 0.25rem 0;
+    margin: 0.5rem 0;
     white-space: nowrap;
 `;
 

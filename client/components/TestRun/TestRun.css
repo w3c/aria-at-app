@@ -326,6 +326,11 @@ main.container-fluid .test-iframe-container > .row {
     display: inline-block;
 }
 
+.reviewing-as.bot {
+    background: #f0e1ff;
+    border: 1px solid #d29fff;
+}
+
 /* Current Test Options */
 .current-test-options {
     padding-right: 0;

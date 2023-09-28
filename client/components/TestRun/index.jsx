@@ -10,7 +10,8 @@ import {
     faRedo,
     faCheck,
     faCheckCircle,
-    faExclamationCircle
+    faExclamationCircle,
+    faRobot
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
@@ -40,6 +41,7 @@ import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
 import { convertDateToString } from '../../utils/formatter';
+import { isBot } from '../../utils/automation';
 
 const TestRun = () => {
     const params = useParams();
@@ -827,6 +829,58 @@ const TestRun = () => {
         editAtBrowserDetailsButtonRef.current.focus();
     };
 
+    const renderTestsCompletedInfoBox = () => {
+        let isReviewingBot = false;
+        if (openAsUserId) {
+            const openAsUser = users.find(user => user.id === openAsUserId);
+            isReviewingBot = isBot(openAsUser);
+        }
+
+        let content;
+
+        if (isReviewingBot) {
+            content = (
+                <>
+                    <b>{`${testResults.reduce(
+                        (acc, { scenarioResults }) =>
+                            acc +
+                            (scenarioResults &&
+                            scenarioResults.every(({ output }) => !!output)
+                                ? 1
+                                : 0),
+                        0
+                    )} of ${tests.length}`}</b>{' '}
+                    responses collected.
+                </>
+            );
+        } else if (!isSignedIn) {
+            content = <b>{tests.length} tests to view</b>;
+        } else if (hasTestsToRun) {
+            content = (
+                <>
+                    {' '}
+                    <b>{`${testResults.reduce(
+                        (acc, { completedAt }) => acc + (completedAt ? 1 : 0),
+                        0
+                    )} of ${tests.length}`}</b>{' '}
+                    tests completed
+                </>
+            );
+        } else {
+            content = <div>No tests for this AT and Browser combination</div>;
+        }
+        return (
+            <div className="test-info-entity tests-completed">
+                <div className="info-label">
+                    <FontAwesomeIcon
+                        icon={hasTestsToRun ? faCheck : faExclamationCircle}
+                    />
+                    {content}
+                </div>
+            </div>
+        );
+    };
+
     const renderTestContent = (testPlanReport, currentTest, heading) => {
         const { index } = currentTest;
         const isComplete = currentTest.testResult
@@ -1088,14 +1142,22 @@ const TestRun = () => {
 
     if (openAsUserId) {
         const openAsUser = users.find(user => user.id === openAsUserId);
-        openAsUserHeading = (
-            <>
+        if (isBot(openAsUser)) {
+            openAsUserHeading = (
+                <div className="test-info-entity reviewing-as bot">
+                    Reviewing tests of{' '}
+                    <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
+                    <b>{`${openAsUser.username}`}.</b>
+                </div>
+            );
+        } else {
+            openAsUserHeading = (
                 <div className="test-info-entity reviewing-as">
                     Reviewing tests of <b>{`${openAsUser.username}`}.</b>
                     <p>{`All changes will be saved as performed by ${openAsUser.username}.`}</p>
                 </div>
-            </>
-        );
+            );
+        }
     }
 
     heading = pageReady && (
@@ -1145,32 +1207,7 @@ const TestRun = () => {
                         </Button>
                     )}
                 </div>
-                <div className="test-info-entity tests-completed">
-                    <div className="info-label">
-                        <FontAwesomeIcon
-                            icon={hasTestsToRun ? faCheck : faExclamationCircle}
-                        />
-                        {!isSignedIn ? (
-                            <>
-                                <b>{tests.length} tests to view</b>
-                            </>
-                        ) : hasTestsToRun ? (
-                            <>
-                                {' '}
-                                <b>{`${testResults.reduce(
-                                    (acc, { completedAt }) =>
-                                        acc + (completedAt ? 1 : 0),
-                                    0
-                                )} of ${tests.length}`}</b>{' '}
-                                tests completed
-                            </>
-                        ) : (
-                            <div>
-                                No tests for this AT and Browser combination
-                            </div>
-                        )}
-                    </div>
-                </div>
+                {renderTestsCompletedInfoBox()}
             </div>
             {openAsUserHeading}
         </>
