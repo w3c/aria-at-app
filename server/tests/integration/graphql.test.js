@@ -137,7 +137,6 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
-            'Issue',
             'Vendor'
         ];
         const excludedTypeNameAndField = [
@@ -290,6 +289,24 @@ describe('graphql', () => {
                         }
                         testPlanVersions {
                             id
+                        }
+                        issues {
+                            __typename
+                            author
+                            title
+                            link
+                            isCandidateReview
+                            feedbackType
+                            isOpen
+                            testNumberFilteredByAt
+                            createdAt
+                            closedAt
+                            at {
+                                name
+                            }
+                            browser {
+                                name
+                            }
                         }
                     }
                     testPlans {

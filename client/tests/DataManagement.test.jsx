@@ -127,7 +127,12 @@ const ats = []; // ATs are stubbed until this model is defined
 describe('useDataManagementTableSorting hook', () => {
     it('sorts by phase by default', () => {
         const { result } = renderHook(() =>
-            useDataManagementTableSorting(testPlans, testPlanVersions, ats)
+            useDataManagementTableSorting(
+                testPlans,
+                testPlanVersions,
+                ats,
+                TABLE_SORT_ORDERS.DESC
+            )
         );
         expect(result.current.sortedTestPlans).toEqual([
             testPlans[3], // RECOMMENDED
