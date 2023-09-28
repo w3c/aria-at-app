@@ -642,7 +642,8 @@ const TestPlanVersionsPage = () => {
                                                         faArrowUpRightFromSquare
                                                     }
                                                     size="xs"
-                                                    color="#818F98"
+                                                    // color="#818F98"
+                                                    color="orange"
                                                 />
                                                 View tests in {vString}
                                             </a>
