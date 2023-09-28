@@ -25,11 +25,8 @@ const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
 const BrowserOperations = require('./BrowserOperations');
-<<<<<<< HEAD
 const RequiredReportOperations = require('./RequiredReportOperations');
-=======
 const TestPlan = require('./TestPlan');
->>>>>>> update-database-impl
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
