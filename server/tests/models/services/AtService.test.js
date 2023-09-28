@@ -212,9 +212,17 @@ describe('AtModel Data Checks', () => {
     it('should return collection of ats with paginated structure', async () => {
         await dbCleaner(async () => {
             // A1
-            const result = await AtService.getAts('', {}, ['name'], [], [], [], {
-                enablePagination: true
-            });
+            const result = await AtService.getAts(
+                '',
+                {},
+                ['name'],
+                [],
+                [],
+                [],
+                {
+                    enablePagination: true
+                }
+            );
 
             // A3
             expect(result.data.length).toBeGreaterThanOrEqual(1);
