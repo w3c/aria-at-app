@@ -55,10 +55,14 @@ export const TABLE_SORT_ORDERS = {
     DESC: 'DESCENDING'
 };
 
-const SortableTableHeader = ({ title, active, onSort = () => {} }) => {
-    const [currentSortOrder, setCurrentSortOrder] = useState(
-        TABLE_SORT_ORDERS.ASC
-    );
+const SortableTableHeader = ({
+    title,
+    active,
+    onSort = () => {},
+    initialSortDirection = TABLE_SORT_ORDERS.ASC
+}) => {
+    const [currentSortOrder, setCurrentSortOrder] =
+        useState(initialSortDirection);
 
     const { setMessage } = useAriaLiveRegion();
 
@@ -129,7 +133,11 @@ const SortableTableHeader = ({ title, active, onSort = () => {} }) => {
 SortableTableHeader.propTypes = {
     title: PropTypes.string.isRequired,
     active: PropTypes.bool.isRequired,
-    onSort: PropTypes.func.isRequired
+    onSort: PropTypes.func.isRequired,
+    initialSortDirection: PropTypes.oneOf([
+        TABLE_SORT_ORDERS.ASC,
+        TABLE_SORT_ORDERS.DESC
+    ])
 };
 
 export default SortableTableHeader;

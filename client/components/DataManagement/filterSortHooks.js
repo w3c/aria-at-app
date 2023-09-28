@@ -165,23 +165,26 @@ export const useDataManagementTableFiltering = (
 export const useDataManagementTableSorting = (
     testPlans,
     testPlanVersions,
-    ats
+    ats,
+    initialSortDirection = TABLE_SORT_ORDERS.ASC
 ) => {
     const [activeSort, setActiveSort] = useState({
         key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
-        direction: TABLE_SORT_ORDERS.ASC
+        direction: initialSortDirection
     });
 
     const { derivedOverallPhaseByTestPlanId } =
         useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
 
     const sortedTestPlans = useMemo(() => {
+        // Ascending and descending interpreted differently for statuses
+        // (ascending = earlier phase first, descending = later phase first)
         const phaseOrder = {
-            NOT_STARTED: -1,
-            RD: 0,
-            DRAFT: 1,
-            CANDIDATE: 2,
-            RECOMMENDED: 3
+            NOT_STARTED: 4,
+            RD: 3,
+            DRAFT: 2,
+            CANDIDATE: 1,
+            RECOMMENDED: 0
         };
         const directionMod =
             activeSort.direction === TABLE_SORT_ORDERS.ASC ? -1 : 1;
@@ -192,7 +195,7 @@ export const useDataManagementTableSorting = (
         const sortByAts = (a, b) => {
             const countA = ats.length; // Stubs based on current rendering in DataManagementRow
             const countB = ats.length;
-            if (countA === countB) return sortByName(a, b);
+            if (countA === countB) return sortByName(a, b, -1);
             return directionMod * (countA - countB);
         };
 
@@ -202,7 +205,7 @@ export const useDataManagementTableSorting = (
             const testPlanVersionOverallB =
                 derivedOverallPhaseByTestPlanId[b.id] ?? 'NOT_STARTED';
             if (testPlanVersionOverallA === testPlanVersionOverallB) {
-                return sortByName(a, b, directionMod);
+                return sortByName(a, b, -1);
             }
             return (
                 directionMod *
