@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import BotTestCompletionStatus from './BotTestCompletionStatus';
+import { isBot } from '../../utils/automation';
+import PreviouslyAutomatedTestCompletionStatus from './PreviouslyAutomatedTestCompletionStatus';
 
 const TestQueueCompletionStatusListItem = ({
     runnableTestsLength,
@@ -10,13 +12,14 @@ const TestQueueCompletionStatusListItem = ({
     id
 }) => {
     const { testResultsLength, tester } = testPlanRun;
-    const isBot = useMemo(
-        () => tester.username.toLowerCase().slice(-3) === 'bot',
-        [tester]
+    const testerIsBot = useMemo(() => isBot(tester), [tester]);
+    const testPlanRunPreviouslyAutomated = useMemo(
+        () => testPlanRun.initiatedByAutomation,
+        [testPlanRun]
     );
 
     const renderTesterInfo = () => {
-        if (isBot) {
+        if (testerIsBot) {
             return (
                 <span aria-describedby={id}>
                     <FontAwesomeIcon icon={faRobot} />
@@ -41,11 +44,19 @@ const TestQueueCompletionStatusListItem = ({
     };
 
     const renderTestCompletionStatus = () => {
-        if (isBot) {
+        if (testerIsBot) {
             return (
                 <BotTestCompletionStatus
                     id={id}
                     testPlanRun={testPlanRun}
+                    runnableTestsLength={runnableTestsLength}
+                />
+            );
+        } else if (testPlanRunPreviouslyAutomated) {
+            return (
+                <PreviouslyAutomatedTestCompletionStatus
+                    id={id}
+                    testPlanRunId={testPlanRun.id}
                     runnableTestsLength={runnableTestsLength}
                 />
             );
@@ -69,7 +80,9 @@ const TestQueueCompletionStatusListItem = ({
 TestQueueCompletionStatusListItem.propTypes = {
     runnableTestsLength: PropTypes.number.isRequired,
     testPlanRun: PropTypes.shape({
+        id: PropTypes.string.isRequired,
         testResultsLength: PropTypes.number.isRequired,
+        initiatedByAutomation: PropTypes.bool.isRequired,
         tester: PropTypes.shape({
             username: PropTypes.string.isRequired
         }).isRequired

@@ -5,6 +5,7 @@ import {
     TEST_RESULTS_QUERY
 } from '../queries';
 import { useQuery } from '@apollo/client';
+import { isAssertionValidated } from '../../../utils/automation';
 
 const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
     const { data: testPlanRunAssertionsQueryResult } = useQuery(
@@ -26,7 +27,6 @@ const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
     });
 
     const { stopPolling, startPolling } = testResultsLengthQueryResult;
-
     const testResultsLength = useMemo(() => {
         if (testResultsLengthQueryResult.data) {
             const length =
@@ -67,28 +67,29 @@ const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
         }
     }, [testPlanRunAssertionsQueryResult]);
 
+    const countNonNullAssertionsInScenario = scenario => {
+        return scenario.assertionResults.reduce((acc, assertion) => {
+            return acc + (isAssertionValidated(assertion) ? 1 : 0);
+        }, 0);
+    };
+
+    const countNonNullAssertionsInTest = test => {
+        return test.scenarioResults.reduce((acc, scenario) => {
+            return acc + countNonNullAssertionsInScenario(scenario);
+        }, 0);
+    };
+
     const totalCompletedAssertions = useMemo(() => {
-        if (testPlanRunAssertionsQueryResult) {
-            const { testPlanRun } = testPlanRunAssertionsQueryResult;
-            return testPlanRun?.testResults.reduce((acc, test) => {
-                return (
-                    acc +
-                    test.scenarioResults.reduce((acc, scenario) => {
-                        return (
-                            acc +
-                            scenario.assertionResults.reduce(
-                                (acc, assertion) => {
-                                    return acc + (assertion.passed ? 1 : 0);
-                                },
-                                0
-                            )
-                        );
-                    }, 0)
-                );
-            }, 0);
-        } else {
+        if (!testPlanRunAssertionsQueryResult) {
             return 0;
         }
+
+        const {
+            testPlanRun: { testResults }
+        } = testPlanRunAssertionsQueryResult;
+        return testResults.reduce((acc, test) => {
+            return acc + countNonNullAssertionsInTest(test);
+        }, 0);
     }, [testPlanRunAssertionsQueryResult]);
 
     return (
