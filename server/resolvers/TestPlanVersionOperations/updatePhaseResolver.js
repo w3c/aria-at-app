@@ -42,8 +42,6 @@ const updatePhaseResolver = async (
         throw new AuthenticationError();
     }
 
-    const atLoader = AtLoader();
-
     // Immediately deprecate version without further checks
     if (phase === 'DEPRECATED') {
         await updateTestPlanVersion(testPlanVersionId, {
@@ -273,7 +271,9 @@ const updatePhaseResolver = async (
                             updateParams = { markedFinalAt: new Date() };
 
                         // Calculate the metrics (happens if updating to DRAFT)
-                        const conflicts = await conflictsResolver(populatedTestPlanReport);
+                        const conflicts = await conflictsResolver(
+                            populatedTestPlanReport
+                        );
 
                         if (conflicts.length > 0) {
                             // Then no chance to have finalized reports, and means it hasn't been
@@ -392,6 +392,7 @@ const updatePhaseResolver = async (
                 reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
             });
 
+        const atLoader = AtLoader();
         const ats = await atLoader.getAll();
 
         const missingAtBrowserCombinations = [];

@@ -936,8 +936,7 @@ const graphqlSchema = gql`
         finalizedTestResults: [TestResult]
         """
         A list of all issues which have filed through "Raise an Issue" buttons
-        in the app. Note that results will be cached for at least ten seconds. Note that results will be
-        cached for one minute.
+        in the app. Note that results will be cached for at least ten seconds.
         """
         issues: [Issue]!
         """

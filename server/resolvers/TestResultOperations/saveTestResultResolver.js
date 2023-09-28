@@ -20,6 +20,7 @@ const saveTestResultResolver = async (
     ) {
         throw new AuthenticationError();
     }
+
     return saveTestResultCommon({
         testResultId,
         input,
