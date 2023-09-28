@@ -1,37 +1,27 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import {
-    TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY,
-    TEST_RESULTS_QUERY
-} from '../queries';
+import { TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY } from '../queries';
 import { useQuery } from '@apollo/client';
 import { isAssertionValidated } from '../../../utils/automation';
 
 const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
-    const { data: testPlanRunAssertionsQueryResult } = useQuery(
-        TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY,
-        {
-            variables: {
-                testPlanRunId: testPlanRun.id
-            },
-            fetchPolicy: 'cache-and-network'
-        }
-    );
-
-    const testResultsLengthQueryResult = useQuery(TEST_RESULTS_QUERY, {
+    const {
+        data: testPlanRunAssertionsQueryResult,
+        startPolling,
+        stopPolling
+    } = useQuery(TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY, {
         variables: {
             testPlanRunId: testPlanRun.id
         },
         fetchPolicy: 'cache-and-network',
-        pollInterval: 500
+        pollInterval: 750
     });
 
-    const { stopPolling, startPolling } = testResultsLengthQueryResult;
     const testResultsLength = useMemo(() => {
-        if (testResultsLengthQueryResult.data) {
+        if (testPlanRunAssertionsQueryResult) {
             const length =
-                testResultsLengthQueryResult.data.testPlanRun.testResults
-                    .length;
+                testPlanRunAssertionsQueryResult.testPlanRun?.testResults
+                    ?.length;
             if (length === runnableTestsLength) {
                 stopPolling();
             }
@@ -40,7 +30,7 @@ const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
             return 0;
         }
     }, [
-        testResultsLengthQueryResult.data,
+        testPlanRunAssertionsQueryResult,
         runnableTestsLength,
         stopPolling,
         startPolling
@@ -49,6 +39,9 @@ const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
     const totalPossibleAssertions = useMemo(() => {
         if (testPlanRunAssertionsQueryResult) {
             let count = 0;
+            if (!testPlanRunAssertionsQueryResult?.testPlanRun) {
+                return 0;
+            }
             const {
                 testPlanRun: { testResults }
             } = testPlanRunAssertionsQueryResult;
@@ -80,7 +73,7 @@ const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
     };
 
     const totalCompletedAssertions = useMemo(() => {
-        if (!testPlanRunAssertionsQueryResult) {
+        if (!testPlanRunAssertionsQueryResult?.testPlanRun) {
             return 0;
         }
 

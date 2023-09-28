@@ -2,6 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import BasicModal from '../../common/BasicModal';
 import AssignTesterDropdown from '../../TestQueue/AssignTesterDropdown';
+import { useMutation, useQuery } from '@apollo/client';
+import {
+    COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
+    MARK_COLLECTION_JOB_AS_FINISHED
+} from '../queries';
 
 const FinishBotRunDialog = ({
     testPlanReportId,
@@ -11,6 +16,26 @@ const FinishBotRunDialog = ({
     setShow,
     onChange
 }) => {
+    const { data: collectionJobQuery } = useQuery(
+        COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
+        {
+            variables: {
+                testPlanRunId: testPlanRun.id
+            },
+            fetchPolicy: 'cache-and-network'
+        }
+    );
+
+    const [markCollectionJobFinished] = useMutation(
+        MARK_COLLECTION_JOB_AS_FINISHED,
+        {
+            variables: {
+                collectionJobId:
+                    collectionJobQuery?.collectionJobByTestPlanRunId?.id
+            }
+        }
+    );
+
     return (
         <BasicModal
             show={show}
@@ -33,7 +58,9 @@ const FinishBotRunDialog = ({
                     label: 'Mark as finished',
                     variant: 'secondary',
                     onClick: async () => {
-                        // TODO: Implement
+                        if (markCollectionJobFinished) {
+                            await markCollectionJobFinished();
+                        }
                         await onChange();
                     }
                 },

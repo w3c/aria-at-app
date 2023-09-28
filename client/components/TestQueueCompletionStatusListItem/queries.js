@@ -5,22 +5,13 @@ export const TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY = gql`
         testPlanRun(id: $testPlanRunId) {
             id
             testResults {
+                id
                 scenarioResults {
                     assertionResults {
                         passed
                         failedReason
                     }
                 }
-            }
-        }
-    }
-`;
-
-export const TEST_RESULTS_QUERY = gql`
-    query TestResultsQuery($testPlanRunId: ID!) {
-        testPlanRun(id: $testPlanRunId) {
-            testResults {
-                id
             }
         }
     }

@@ -24,6 +24,7 @@ import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListI
 import { isBot } from '../../utils/automation';
 import FinishBotRunButtonWithDialog from '../FinishBotRunButtonWithDialog';
 import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
+import BotRunTestStatusList from '../BotRunTestStatusList';
 
 const TestQueueRow = ({
     user = {},
@@ -335,15 +336,15 @@ const TestQueueRow = ({
     };
 
     const renderSecondaryActions = () => {
-        const botTestPlanRun = draftTestPlanRuns.find(({ tester }) =>
+        const hasBotTestPlanRun = draftTestPlanRuns.find(({ tester }) =>
             isBot(tester)
         );
         if (isAdmin && !isLoading) {
             return (
                 <>
-                    {botTestPlanRun && (
+                    {hasBotTestPlanRun && (
                         <FinishBotRunButtonWithDialog
-                            testPlanRun={botTestPlanRun}
+                            testPlanRun={hasBotTestPlanRun}
                             testPlanReportId={testPlanReport.id}
                             testers={testers}
                             onChange={triggerTestPlanReportUpdate}
@@ -360,6 +361,12 @@ const TestQueueRow = ({
                     >
                         Mark as Final
                     </Button>
+                    {hasBotTestPlanRun && (
+                        <BotRunTestStatusList
+                            testPlanReportId={testPlanReport.id}
+                            runnableTestsLength={runnableTestsLength}
+                        />
+                    )}
                 </>
             );
         }

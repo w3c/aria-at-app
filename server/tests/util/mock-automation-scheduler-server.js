@@ -64,17 +64,22 @@ const setupMockAutomationSchedulerServer = async () => {
             browserVersionName,
             responses
         };
-        await axios.post(
-            `${process.env.APP_SERVER}/api/jobs/${jobId}/result`,
-            testResult,
-            {
-                headers: {
-                    'x-automation-secret':
-                        process.env.AUTOMATION_SCHEDULER_SECRET
-                },
-                timeout: 1000
-            }
-        );
+        try {
+            await axios.post(
+                `${process.env.APP_SERVER}/api/jobs/${jobId}/result`,
+                testResult,
+                {
+                    headers: {
+                        'x-automation-secret':
+                            process.env.AUTOMATION_SCHEDULER_SECRET
+                    },
+                    timeout: 1000
+                }
+            );
+        } catch (e) {
+            // Likely just means the test was cancelled
+            return;
+        }
 
         if (currentTestIndex < tests.length - 1) {
             setTimeout(() => {
