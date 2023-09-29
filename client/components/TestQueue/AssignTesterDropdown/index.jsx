@@ -5,11 +5,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faCheck,
     faChevronDown,
+    faRobot,
     faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
 import { ASSIGN_TESTER_MUTATION, REMOVE_TESTER_MUTATION } from '../queries';
 import { useMutation } from '@apollo/client';
 import { useTriggerLoad } from '../../common/LoadingStatus';
+import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
+import { isBot } from '../../../utils/automation';
 
 const AssignTesterDropdown = ({
     testPlanReportId,
@@ -25,6 +28,7 @@ const AssignTesterDropdown = ({
 
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
+    const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION);
 
     const checkIsTesterAssigned = username => {
         if (testPlanRun) {
@@ -54,15 +58,25 @@ const AssignTesterDropdown = ({
                 });
             }, 'Updating Test Plan Assignees');
         } else {
-            await triggerLoad(async () => {
-                await assignTester({
-                    variables: {
-                        testReportId: testPlanReportId,
-                        testerId: tester.id,
-                        testPlanRunId: testPlanRun?.id // if we are assigning to an existing test plan run, pass the id
-                    }
-                });
-            }, 'Updating Test Plan Assignees');
+            if (isBot(tester)) {
+                await triggerLoad(async () => {
+                    await scheduleCollection({
+                        variables: {
+                            testPlanReportId: testPlanReportId
+                        }
+                    });
+                }, 'Scheduling Collection Job');
+            } else {
+                await triggerLoad(async () => {
+                    await assignTester({
+                        variables: {
+                            testReportId: testPlanReportId,
+                            testerId: tester.id,
+                            testPlanRunId: testPlanRun?.id // if we are assigning to an existing test plan run, pass the id
+                        }
+                    });
+                }, 'Updating Test Plan Assignees');
+            }
         }
     };
 
@@ -90,29 +104,34 @@ const AssignTesterDropdown = ({
             </Dropdown.Toggle>
             <Dropdown.Menu role="menu">
                 {possibleTesters?.length ? (
-                    possibleTesters.map(({ username }) => {
-                        const isTesterAssigned =
-                            checkIsTesterAssigned(username);
+                    possibleTesters.map(tester => {
+                        const isTesterAssigned = checkIsTesterAssigned(
+                            tester.username
+                        );
                         let classname = isTesterAssigned
                             ? 'assigned'
                             : 'not-assigned';
+                        let icon;
+                        if (isBot(tester)) {
+                            icon = faRobot;
+                        } else if (isTesterAssigned) {
+                            icon = faCheck;
+                        }
                         return (
                             <Dropdown.Item
                                 role="menuitem"
                                 variant="secondary"
                                 as="button"
-                                key={`tpr-${testPlanReportId}-assign-tester-${username}`}
+                                key={`tpr-${testPlanReportId}-assign-tester-${tester.username}`}
                                 onClick={async () => {
-                                    await toggleTesterAssign(username);
+                                    await toggleTesterAssign(tester.username);
                                     await onChange();
                                 }}
                                 aria-checked={isTesterAssigned}
                             >
-                                {isTesterAssigned && (
-                                    <FontAwesomeIcon icon={faCheck} />
-                                )}
+                                {icon && <FontAwesomeIcon icon={icon} />}
                                 <span className={classname}>
-                                    {`${username}`}
+                                    {`${tester.username}`}
                                 </span>
                             </Dropdown.Item>
                         );

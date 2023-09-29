@@ -7,6 +7,7 @@ import {
 import { useLazyQuery, useQuery } from '@apollo/client';
 import styled from '@emotion/styled';
 import ReportStatusDot from '../common/ReportStatusDot';
+import { isBot } from '../../utils/automation';
 
 const BotRunTestStatusUnorderedList = styled.ul`
     list-style-type: none;
@@ -25,7 +26,7 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
     } = useQuery(TEST_PLAN_RUNS_TEST_RESULTS_QUERY, {
         variables: { testPlanReportId },
         fetchPolicy: 'cache-and-network',
-        pollInterval: 750
+        pollInterval: 2000
     });
 
     const [getCollectionJobStatus, { data: collectionJobStatusQueryResult }] =
@@ -62,6 +63,9 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
             ) {
                 const { testPlanRuns } = testPlanRunsQueryResult;
                 for (let i = 0; i < testPlanRuns.length; i++) {
+                    if (!isBot(testPlanRuns[i].tester)) {
+                        continue;
+                    }
                     const status = collectedData[i];
                     res[0] += testPlanRuns[i].testResults.length;
                     switch (status) {

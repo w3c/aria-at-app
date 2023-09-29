@@ -14,7 +14,7 @@ const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
             testPlanRunId: testPlanRun.id
         },
         fetchPolicy: 'cache-and-network',
-        pollInterval: 750
+        pollInterval: 2000
     });
 
     const testResultsLength = useMemo(() => {
