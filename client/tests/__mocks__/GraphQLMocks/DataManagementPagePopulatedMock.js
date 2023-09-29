@@ -486,7 +486,7 @@ export default (
                         phase: 'RD',
                         gitSha: '1aa3b74d24d340362e9f511eae33788d55487d12',
                         gitMessage:
-                            'Add down arrow command to the out of the Breadcrumb navigation landmark task for JAWS (#803)',
+                            'Add down arrow command to the Navigate forwards out of the Breadcrumb navigation landmark task for JAWS (#803)',
                         updatedAt: '2022-08-10T18:44:16.000Z',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
