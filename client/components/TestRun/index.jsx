@@ -1264,6 +1264,7 @@ const TestRun = () => {
                         currentTestIndex={currentTestIndex}
                         toggleShowClick={toggleTestNavigator}
                         handleTestClick={handleTestClick}
+                        testPlanRun={testPlanRun}
                     />
                     <Col
                         className="main-test-area"
