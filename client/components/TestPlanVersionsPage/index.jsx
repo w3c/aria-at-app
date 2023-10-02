@@ -22,7 +22,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { uniqBy as uniqueBy } from 'lodash';
 import DisclosureComponentUnstyled from '../common/DisclosureComponent';
-//section:
+
 const DisclosureContainer = styled.div`
     // Following directives are related to the ManageTestQueue component
     > span {
@@ -106,25 +106,6 @@ const DisclosureComponent = styled(DisclosureComponentUnstyled)`
     }
 `;
 
-// const H2 = styled.h2`
-//     font-size: 1.25em;
-//     padding-top: 3rem;
-//     padding-bottom: 15px;
-//     border-bottom: solid 1px #d2d5d9;
-//     margin-bottom: 2rem !important;
-// `;
-// const H2 = styled.h2`
-//     font-size: 1.25em;
-//     padding-top: 3rem;
-//     padding-bottom: 15px;
-//     margin-bottom: 2rem !important;
-// `;
-// const H2 = styled.h2`
-//     // font-size: 1.25em;
-//     // padding-top: 3rem;
-//     // padding-bottom: 15px;
-// `;
-
 const NoneText = styled.span`
     font-style: italic;
     color: #6a7989;
@@ -175,7 +156,6 @@ const TestPlanVersionsPage = () => {
         variables: { testPlanDirectory },
         fetchPolicy: 'cache-and-network'
     });
-    //section:
     const forceUpdate = useForceUpdate();
 
     const expandedVersionSections = useRef();
@@ -306,8 +286,7 @@ const TestPlanVersionsPage = () => {
         ),
         item => item.link
     );
-    //section:
-    // console.log('rendering', expandedVersionSections.current);
+
     if (!expandedVersionSections.current) {
         expandedVersionSections.current = [];
         toggleVersionSections.current = [];
@@ -317,16 +296,9 @@ const TestPlanVersionsPage = () => {
             toggleVersionSections.current[i] = () => {
                 expandedVersionSections.current[i] =
                     !expandedVersionSections.current[i];
-                // console.log('toggled', i);
                 forceUpdate();
             };
         }
-        // expandedVersionSections.current = new Array(
-        //     testPlanVersions.length
-        // ).fill(false);
-        // toggleVersionSections.current = expandedVersionSections.current.map((_, index) => {
-
-        // });
     }
 
     return (
@@ -528,9 +500,7 @@ const TestPlanVersionsPage = () => {
             </ThemeTable>
             <PageSpacer />
             <DisclosureComponent
-                //section:
                 componentId="versionHistory"
-                // title={['Title One', 'Title Two']}
                 title={testPlanVersions.map(testPlanVersion => {
                     return (
                         <span
@@ -585,32 +555,6 @@ const TestPlanVersionsPage = () => {
                                 <DisclosureContainer
                                     key={`manage-test-queue-at-section`}
                                 >
-                                    {/* <H2
-                                    aria-label={`${
-                                        'V' +
-                                        convertDateToString(
-                                            testPlanVersion.updatedAt,
-                                            'YY.MM.DD'
-                                        )
-                                    } ${derivePhaseName(
-                                        testPlanVersion.phase
-                                    )} on ${getEventDate(testPlanVersion)}`}
-                                >
-                                    <VersionString
-                                        date={testPlanVersion.updatedAt}
-                                        iconColor={getIconColor(
-                                            testPlanVersion
-                                        )}
-                                        fullWidth={false}
-                                        autoWidth={false}
-                                    />
-                                    &nbsp;
-                                    <PhasePill fullWidth={false}>
-                                        {testPlanVersion.phase}
-                                    </PhasePill>
-                                    &nbsp;on&nbsp;
-                                    {getEventDate(testPlanVersion)}
-                                </H2> */}
                                     <PageUl>
                                         <li>
                                             <FontAwesomeIcon
@@ -642,7 +586,6 @@ const TestPlanVersionsPage = () => {
                                                         faArrowUpRightFromSquare
                                                     }
                                                     size="xs"
-                                                    // color="#818F98"
                                                     color="orange"
                                                 />
                                                 View tests in {vString}
