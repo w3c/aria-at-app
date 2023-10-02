@@ -336,18 +336,32 @@ const TestQueueRow = ({
     };
 
     const renderSecondaryActions = () => {
-        const hasBotTestPlanRun = draftTestPlanRuns.find(({ tester }) =>
+        const botTestPlanRun = draftTestPlanRuns.find(({ tester }) =>
             isBot(tester)
         );
         if (isAdmin && !isLoading) {
             return (
                 <>
-                    {hasBotTestPlanRun && (
+                    {botTestPlanRun && (
                         <FinishBotRunButtonWithDialog
-                            testPlanRun={hasBotTestPlanRun}
+                            testPlanRun={botTestPlanRun}
                             testPlanReportId={testPlanReport.id}
                             testers={testers}
                             onChange={triggerTestPlanReportUpdate}
+                            onDelete={() => {
+                                triggerDeleteResultsModal(
+                                    evaluateTestPlanRunTitle(),
+                                    botTestPlanRun.username,
+                                    async () => {
+                                        await triggerLoad(async () => {
+                                            await handleRemoveTesterResults(
+                                                botTestPlanRun.id
+                                            );
+                                        }, 'Removing Test Results');
+                                        dropdownDeleteTesterResultsButtonRef.current.focus();
+                                    }
+                                );
+                            }}
                         />
                     )}
                     <Button
@@ -361,7 +375,7 @@ const TestQueueRow = ({
                     >
                         Mark as Final
                     </Button>
-                    {hasBotTestPlanRun && (
+                    {botTestPlanRun && (
                         <BotRunTestStatusList
                             testPlanReportId={testPlanReport.id}
                             runnableTestsLength={runnableTestsLength}

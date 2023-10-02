@@ -7,6 +7,7 @@ import {
     COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
     MARK_COLLECTION_JOB_AS_FINISHED
 } from '../queries';
+import DeleteButton from '../../common/DeleteButton';
 
 const FinishBotRunDialog = ({
     testPlanReportId,
@@ -14,7 +15,8 @@ const FinishBotRunDialog = ({
     testers,
     show,
     setShow,
-    onChange
+    onChange,
+    onDelete
 }) => {
     const { data: collectionJobQuery } = useQuery(
         COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
@@ -42,7 +44,7 @@ const FinishBotRunDialog = ({
             handleHide={() => setShow(false)}
             title="Finish Bot Run"
             cancelButton={false}
-            content={<div></div>}
+            content=""
             actions={[
                 {
                     component: AssignTesterDropdown,
@@ -65,11 +67,10 @@ const FinishBotRunDialog = ({
                     }
                 },
                 {
-                    label: 'Delete',
-                    variant: 'secondary',
-                    onClick: async () => {
-                        // TODO: Implement
-                        await onChange();
+                    component: DeleteButton,
+                    props: {
+                        ariaLabel: 'Delete bot run',
+                        onClick: onDelete
                     }
                 }
             ]}
@@ -83,7 +84,8 @@ FinishBotRunDialog.propTypes = {
     setShow: PropTypes.func.isRequired,
     testers: PropTypes.array.isRequired,
     testPlanReportId: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired
 };
 
 export default FinishBotRunDialog;

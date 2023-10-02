@@ -7,7 +7,8 @@ const FinishBotRunButtonWithDialog = ({
     testPlanRun,
     testPlanReportId,
     testers,
-    onChange
+    onChange,
+    onDelete
 }) => {
     const [showDialog, setShowDialog] = useState(false);
 
@@ -28,6 +29,10 @@ const FinishBotRunButtonWithDialog = ({
                 setShow={setShowDialog}
                 testers={testers}
                 testPlanReportId={testPlanReportId}
+                onDelete={async () => {
+                    await onDelete();
+                    setShowDialog(false);
+                }}
                 onChange={async () => {
                     await onChange();
                     setShowDialog(false);
@@ -41,7 +46,8 @@ FinishBotRunButtonWithDialog.propTypes = {
     testPlanRun: PropTypes.object.isRequired,
     testPlanReportId: PropTypes.string.isRequired,
     testers: PropTypes.array.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired
 };
 
 export default FinishBotRunButtonWithDialog;
