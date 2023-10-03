@@ -45,6 +45,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             vendorReviewStatus
             issues {
                 author
+                isCandidateReview
                 feedbackType
                 testNumberFilteredByAt
                 link

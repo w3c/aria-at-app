@@ -149,155 +149,167 @@ describe('BrowserModel Data Checks', () => {
     });
 
     it('should return collection of browsers', async () => {
-        // A1
-        const result = await BrowserService.getBrowsers('');
+        await dbCleaner(async () => {
+            // A1
+            const result = await BrowserService.getBrowsers('');
 
-        // A3
-        expect(result.length).toBeGreaterThanOrEqual(1);
-        expect(result).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    id: expect.any(Number),
-                    name: expect.any(String),
-                    browserVersions: expect.any(Array),
-                    ats: expect.any(Array)
-                })
-            ])
-        );
+            // A3
+            expect(result.length).toBeGreaterThanOrEqual(1);
+            expect(result).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.any(Number),
+                        name: expect.any(String),
+                        browserVersions: expect.any(Array),
+                        ats: expect.any(Array)
+                    })
+                ])
+            );
+        });
     });
 
     it('should return collection of browsers for name query', async () => {
-        // A1
-        const search = 'chr';
+        await dbCleaner(async () => {
+            // A1
+            const search = 'chr';
 
-        // A2
-        const result = await BrowserService.getBrowsers(search, {});
+            // A2
+            const result = await BrowserService.getBrowsers(search, {});
 
-        // A3
-        expect(result).toBeInstanceOf(Array);
-        expect(result.length).toBeGreaterThanOrEqual(1);
-        expect(result).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    id: expect.any(Number),
-                    name: expect.stringMatching(/chr/gi),
-                    browserVersions: expect.any(Array),
-                    ats: expect.any(Array)
-                })
-            ])
-        );
+            // A3
+            expect(result).toBeInstanceOf(Array);
+            expect(result.length).toBeGreaterThanOrEqual(1);
+            expect(result).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.any(Number),
+                        name: expect.stringMatching(/chr/gi),
+                        browserVersions: expect.any(Array),
+                        ats: expect.any(Array)
+                    })
+                ])
+            );
+        });
     });
 
     it('should return collection of browsers with paginated structure', async () => {
-        // A1
-        const result = await BrowserService.getBrowsers(
-            '',
-            {},
-            ['name'],
-            [],
-            [],
-            {
-                enablePagination: true
-            }
-        );
+        await dbCleaner(async () => {
+            // A1
+            const result = await BrowserService.getBrowsers(
+                '',
+                {},
+                ['name'],
+                [],
+                [],
+                {
+                    enablePagination: true
+                }
+            );
 
-        // A3
-        expect(result.data.length).toBeGreaterThanOrEqual(1);
-        expect(result).toEqual(
-            expect.objectContaining({
-                page: 1,
-                pageSize: expect.any(Number),
-                resultsCount: expect.any(Number),
-                totalResultsCount: expect.any(Number),
-                pagesCount: expect.any(Number),
-                data: expect.arrayContaining([
-                    expect.objectContaining({
-                        name: expect.any(String)
-                    })
-                ])
-            })
-        );
+            // A3
+            expect(result.data.length).toBeGreaterThanOrEqual(1);
+            expect(result).toEqual(
+                expect.objectContaining({
+                    page: 1,
+                    pageSize: expect.any(Number),
+                    resultsCount: expect.any(Number),
+                    totalResultsCount: expect.any(Number),
+                    pagesCount: expect.any(Number),
+                    data: expect.arrayContaining([
+                        expect.objectContaining({
+                            name: expect.any(String)
+                        })
+                    ])
+                })
+            );
+        });
     });
 });
 
 describe('BrowserVersionModel Data Checks', () => {
     it('should return valid browserVersion with browser for query with all associations', async () => {
-        // A1
-        const _browserId = 1;
-        const _name = '99.0.1';
+        await dbCleaner(async () => {
+            // A1
+            const _browserId = 1;
+            const _name = '99.0.1';
 
-        // A2
-        const browserVersionInstance =
-            await BrowserService.getBrowserVersionByQuery({
-                browserId: _browserId,
-                name: _name
-            });
-        const { id, browserId, name, browser } = browserVersionInstance;
+            // A2
+            const browserVersionInstance =
+                await BrowserService.getBrowserVersionByQuery({
+                    browserId: _browserId,
+                    name: _name
+                });
+            const { id, browserId, name, browser } = browserVersionInstance;
 
-        // A3
-        expect(browserId).toBeTruthy();
-        expect(name).toBeTruthy();
-        expect(browser).toBeTruthy();
-        expect(id).toBeTruthy();
-        expect(browserVersionInstance).toEqual(
-            expect.objectContaining({
-                id: expect.anything(),
-                browserId: _browserId,
-                name: _name,
-                browser: expect.objectContaining({
-                    id: _browserId,
-                    name: expect.any(String)
+            // A3
+            expect(browserId).toBeTruthy();
+            expect(name).toBeTruthy();
+            expect(browser).toBeTruthy();
+            expect(id).toBeTruthy();
+            expect(browserVersionInstance).toEqual(
+                expect.objectContaining({
+                    id: expect.anything(),
+                    browserId: _browserId,
+                    name: _name,
+                    browser: expect.objectContaining({
+                        id: _browserId,
+                        name: expect.any(String)
+                    })
                 })
-            })
-        );
-        expect(browserVersionInstance).toHaveProperty('browser');
+            );
+            expect(browserVersionInstance).toHaveProperty('browser');
+        });
     });
 
     it('should return valid browserVersionInstance for query with no associations', async () => {
-        // A1
-        const _browserId = 1;
-        const _name = '99.0.1';
+        await dbCleaner(async () => {
+            // A1
+            const _browserId = 1;
+            const _name = '99.0.1';
 
-        // A2
-        const browserVersionInstance =
-            await BrowserService.getBrowserVersionByQuery(
-                {
+            // A2
+            const browserVersionInstance =
+                await BrowserService.getBrowserVersionByQuery(
+                    {
+                        browserId: _browserId,
+                        name: _name
+                    },
+                    null,
+                    []
+                );
+            const { id, browserId, name } = browserVersionInstance;
+
+            // A3
+            expect(browserId).toBeTruthy();
+            expect(name).toBeTruthy();
+            expect(id).toBeTruthy();
+            expect(browserVersionInstance).toEqual(
+                expect.objectContaining({
+                    id: expect.anything(),
                     browserId: _browserId,
                     name: _name
-                },
-                null,
-                []
+                })
             );
-        const { id, browserId, name } = browserVersionInstance;
-
-        // A3
-        expect(browserId).toBeTruthy();
-        expect(name).toBeTruthy();
-        expect(id).toBeTruthy();
-        expect(browserVersionInstance).toEqual(
-            expect.objectContaining({
-                id: expect.anything(),
-                browserId: _browserId,
-                name: _name
-            })
-        );
-        expect(browserVersionInstance).not.toHaveProperty('browser');
+            expect(browserVersionInstance).not.toHaveProperty('browser');
+        });
     });
 
     it('should not be valid browserVersion query', async () => {
-        // A1
-        const _browserId = 53935;
-        const _name = randomStringGenerator();
+        await dbCleaner(async () => {
+            // A1
+            const _browserId = 53935;
+            const _name = randomStringGenerator();
 
-        // A2
-        const browserVersionInstance =
-            await BrowserService.getBrowserVersionByQuery({
-                browserId: _browserId,
-                name: _name
-            });
+            // A2
+            const browserVersionInstance =
+                await BrowserService.getBrowserVersionByQuery({
+                    browserId: _browserId,
+                    name: _name
+                });
 
-        // A3
-        expect(browserVersionInstance).toBeNull();
+            // A3
+            expect(browserVersionInstance).toBeNull();
+        });
     });
 
     it('should create and remove a new browserVersion', async () => {

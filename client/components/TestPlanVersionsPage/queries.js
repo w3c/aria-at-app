@@ -8,6 +8,18 @@ export const TEST_PLAN_VERSIONS_PAGE_QUERY = gql`
         }
         testPlan(id: $testPlanDirectory) {
             title
+            issues {
+                author
+                title
+                link
+                feedbackType
+                isOpen
+                createdAt
+                closedAt
+                at {
+                    name
+                }
+            }
             testPlanVersions {
                 id
                 testPlan {
@@ -26,15 +38,6 @@ export const TEST_PLAN_VERSIONS_PAGE_QUERY = gql`
                     isFinal
                     at {
                         name
-                    }
-                    issues {
-                        author
-                        title
-                        link
-                        feedbackType
-                        isOpen
-                        createdAt
-                        closedAt
                     }
                 }
             }

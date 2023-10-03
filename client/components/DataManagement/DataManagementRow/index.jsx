@@ -636,18 +636,14 @@ const DataManagementRow = ({
                     }
 
                     let coveredReports = [];
-                    let finalReportFound = false;
-
                     latestVersion.testPlanReports.forEach(testPlanReport => {
                         const markedFinalAt = testPlanReport.markedFinalAt;
                         const atName = testPlanReport.at.name;
                         const browserName = testPlanReport.browser.name;
                         const value = `${atName}_${browserName}`;
 
-                        if (markedFinalAt && !coveredReports.includes(value)) {
-                            finalReportFound = true;
+                        if (markedFinalAt && !coveredReports.includes(value))
                             coveredReports.push(value);
-                        }
                     });
 
                     // Phase is "active"
@@ -667,38 +663,23 @@ const DataManagementRow = ({
                                     className="advance-button"
                                     variant="secondary"
                                     onClick={async () => {
-                                        if (finalReportFound) {
-                                            setShowAdvanceModal(true);
-                                            setAdvanceModalData({
-                                                phase: derivePhaseName(
-                                                    'CANDIDATE'
-                                                ),
-                                                version: convertDateToString(
-                                                    latestVersionDate,
-                                                    'YY.MM.DD'
-                                                ),
-                                                advanceFunc: () => {
-                                                    setShowAdvanceModal(false);
-                                                    handleClickUpdateTestPlanVersionPhase(
-                                                        latestVersion.id,
-                                                        'CANDIDATE',
-                                                        testPlanVersionDataToInclude
-                                                    );
-                                                },
-                                                coveredReports
-                                            });
-                                        } else {
-                                            setShowThemedModal(true);
-                                            setThemedModalTitle(
-                                                'Error Updating Test Plan Version Phase'
-                                            );
-                                            setThemedModalContent(
-                                                <>
-                                                    No reports have been marked
-                                                    as final.
-                                                </>
-                                            );
-                                        }
+                                        setShowAdvanceModal(true);
+                                        setAdvanceModalData({
+                                            phase: derivePhaseName('CANDIDATE'),
+                                            version: convertDateToString(
+                                                latestVersionDate,
+                                                'YY.MM.DD'
+                                            ),
+                                            advanceFunc: () => {
+                                                setShowAdvanceModal(false);
+                                                handleClickUpdateTestPlanVersionPhase(
+                                                    latestVersion.id,
+                                                    'CANDIDATE',
+                                                    testPlanVersionDataToInclude
+                                                );
+                                            },
+                                            coveredReports
+                                        });
                                     }}
                                 >
                                     Advance to Candidate
