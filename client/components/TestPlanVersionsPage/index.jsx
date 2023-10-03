@@ -90,6 +90,10 @@ const DisclosureContainer = styled.div`
         font-weight: bold;
         font-size: 1rem;
     }
+
+    .timeline-for-version-table {
+        padding: 0.5rem 1rem;
+    }
 `;
 
 const DisclosureComponent = styled(DisclosureComponentUnstyled)`
@@ -721,6 +725,7 @@ const TestPlanVersionsPage = () => {
                                     </CoveredAtDl>
                                     <ThemeTableHeader
                                         id={`timeline-for-${vString}`}
+                                        className="timeline-for-version-table"
                                     >
                                         Timeline for {vString}
                                     </ThemeTableHeader>
