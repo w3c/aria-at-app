@@ -6,6 +6,8 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import BasicModal from '../components/common/BasicModal';
 
+const MockCustomComponent = ({ customProp }) => <button>{customProp}</button>; // eslint-disable-line react/prop-types
+
 describe('BasicModal', () => {
     test('renders modal when show is true', () => {
         render(
@@ -80,5 +82,47 @@ describe('BasicModal', () => {
         );
         fireEvent.click(screen.getByText('Cancel'));
         expect(handleClose).toHaveBeenCalledTimes(1);
+    });
+    test('renders custom component in actions', () => {
+        render(
+            <BasicModal
+                show={true}
+                title="Test title"
+                content="Test content"
+                actions={[
+                    {
+                        component: MockCustomComponent,
+                        props: { customProp: 'Custom Button' }
+                    }
+                ]}
+            />
+        );
+
+        expect(screen.getByText('Custom Button')).toBeInTheDocument();
+    });
+
+    test('custom component triggers appropriate action', () => {
+        const customAction = jest.fn();
+
+        render(
+            <BasicModal
+                show={true}
+                title="Test title"
+                content="Test content"
+                actions={[
+                    {
+                        component: () => (
+                            <button onClick={customAction}>
+                                Custom Action
+                            </button>
+                        ),
+                        props: {}
+                    }
+                ]}
+            />
+        );
+
+        fireEvent.click(screen.getByText('Custom Action'));
+        expect(customAction).toHaveBeenCalledTimes(1);
     });
 });
