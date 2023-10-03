@@ -20,7 +20,6 @@ import {
     faCodeCommit
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { uniqBy as uniqueBy } from 'lodash';
 import DisclosureComponentUnstyled from '../common/DisclosureComponent';
 
 const DisclosureContainer = styled.div`
@@ -345,19 +344,19 @@ const TestPlanVersionsPage = () => {
         return new Date(dateA) - new Date(dateB);
     });
 
-  if (!expandedVersionSections.current) {
-    expandedVersionSections.current = [];
-    toggleVersionSections.current = [];
+    if (!expandedVersionSections.current) {
+        expandedVersionSections.current = [];
+        toggleVersionSections.current = [];
 
-    for (let i = 0; i < testPlanVersions.length; i += 1) {
-      expandedVersionSections.current[i] = false;
-      toggleVersionSections.current[i] = () => {
-        expandedVersionSections.current[i] =
-          !expandedVersionSections.current[i];
-        forceUpdate();
-      };
+        for (let i = 0; i < testPlanVersions.length; i += 1) {
+            expandedVersionSections.current[i] = false;
+            toggleVersionSections.current[i] = () => {
+                expandedVersionSections.current[i] =
+                    !expandedVersionSections.current[i];
+                forceUpdate();
+            };
+        }
     }
-  }
 
     return (
         <Container id="main" as="main" tabIndex="-1">
