@@ -70,6 +70,36 @@ const graphqlSchema = gql`
         atIds: [ID]!
     }
 
+    """
+    The possible statuses for a CollectionJob.
+    """
+    enum CollectionJobStatus {
+        QUEUED
+        RUNNING
+        COMPLETED
+        ERROR
+        CANCELLED
+    }
+    """
+    A job which was scheduled to collect automated test results using the Response Collection System.
+    """
+    type CollectionJob {
+        """
+        Job Scheduler server-provided ID.
+        """
+        id: ID!
+        """
+        The status of the job, which can be "QUEUED", "RUNNING", "COMPLETED",
+        "ERROR", or "CANCELLED".
+        """
+        status: CollectionJobStatus!
+        """
+        An ID for the Test Plan Run which was created as a result of the Collection Job.
+        This will store the test results.
+        """
+        testPlanRun: TestPlanRun
+    }
+
     type Browser {
         """
         Postgres-provided numeric ID.
@@ -638,6 +668,7 @@ const graphqlSchema = gql`
     enum AssertionFailedReason {
         INCORRECT_OUTPUT
         NO_OUTPUT
+        AUTOMATED_OUTPUT
     }
 
     """
@@ -1056,11 +1087,23 @@ const graphqlSchema = gql`
         """
         testPlanRun(id: ID!): TestPlanRun
         """
+        Get all TestPlanRuns.
+        """
+        testPlanRuns(testPlanReportId: ID): [TestPlanRun]!
+        """
         For a given ID, load all the associated data which can be inferred from
         that ID. For more information, take a look at the description of the
         LocationOfDatInput type.
         """
         populateData(locationOfData: LocationOfDataInput!): PopulatedData!
+        """
+        Get a CollectionJob by ID.
+        """
+        collectionJob(id: ID!): CollectionJob
+        """
+        Get all CollectionJobs.
+        """
+        collectionJobs: [CollectionJob]!
     }
 
     # Mutation-specific types below
@@ -1298,6 +1341,67 @@ const graphqlSchema = gql`
         Add a viewer to a test
         """
         addViewer(testPlanVersionId: ID!, testId: ID!): User!
+        """
+        Schedule a new CollectionJob through the Response Scheduler
+        """
+        scheduleCollectionJob(
+            """
+            The CollectionJob to schedule.
+            """
+            testPlanReportId: ID!
+        ): CollectionJob!
+        """
+        Find or create a CollectionJob
+        """
+        findOrCreateCollectionJob(
+            """
+            The CollectionJob to find or create.
+            """
+            id: ID!
+            """
+            The status of the CollectionJob.
+            """
+            status: CollectionJobStatus
+            """
+            The TestPlanReport id to use to create the TestPlanRun associated with the CollectionJob.
+            """
+            testPlanReportId: ID
+        ): CollectionJob!
+        """
+        Update a CollectionJob
+        """
+        updateCollectionJob(
+            """
+            The CollectionJob to update.
+            """
+            id: ID!
+            """
+            The status of the CollectionJob.
+            """
+            status: CollectionJobStatus
+        ): CollectionJob
+        """
+        Restart a CollectionJob by way of the Response Scheduler
+        """
+        restartCollectionJob(
+            """
+            The CollectionJob to restart.
+            """
+            id: ID!
+        ): CollectionJob
+        """
+        Cancel a CollectionJob by way of the Response Scheduler
+        """
+        cancelCollectionJob(
+            """
+            The CollectionJob to cancel.
+            """
+            id: ID!
+        ): CollectionJob
+        """
+        Delete a CollectionJob
+        """
+        deleteCollectionJob(id: ID!): NoResponse!
     }
 `;
 

@@ -1,7 +1,5 @@
 'use strict';
 
-const BrowserLoader = require('../models/loaders/BrowserLoader');
-const AtLoader = require('../models/loaders/AtLoader');
 const { TEST_PLAN_REPORT_ATTRIBUTES } = require('../models/services/helpers');
 const scenariosResolver = require('../resolvers/Test/scenariosResolver');
 const {
@@ -27,9 +25,6 @@ const { hashTests } = require('../util/aria');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        const atLoader = AtLoader();
-        const browserLoader = BrowserLoader();
-
         const compareTestContent = (currentTests, newTests) => {
             const currentTestsByHash = hashTests(currentTests);
             const newTestsByHash = hashTests(newTests);
@@ -247,8 +242,6 @@ module.exports = {
                 testPlanReportAttributes
             }) => {
                 const context = {
-                    atLoader,
-                    browserLoader,
                     user: {
                         roles: [{ name: 'ADMIN' }]
                     }
@@ -498,8 +491,7 @@ module.exports = {
                 const created = await Promise.all(
                     createdLocationsOfData.map(createdLocationOfData =>
                         populateData(createdLocationOfData, {
-                            preloaded,
-                            context
+                            preloaded
                         })
                     )
                 );

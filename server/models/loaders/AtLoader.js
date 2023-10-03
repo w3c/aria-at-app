@@ -1,10 +1,16 @@
 const { getAts } = require('../services/AtService');
 
+let singletonInstance = null;
+
 const AtLoader = () => {
+    if (singletonInstance) {
+        return singletonInstance;
+    }
+
     let ats;
     let activePromise;
 
-    return {
+    singletonInstance = {
         getAll: async () => {
             if (ats) {
                 return ats;
@@ -13,8 +19,8 @@ const AtLoader = () => {
             if (activePromise) {
                 return activePromise;
             }
-            activePromise = getAts();
 
+            activePromise = getAts();
             ats = await activePromise;
 
             // Sort date of atVersions subarray in desc order by releasedAt date
@@ -35,6 +41,8 @@ const AtLoader = () => {
             return ats;
         }
     };
+
+    return singletonInstance;
 };
 
 module.exports = AtLoader;

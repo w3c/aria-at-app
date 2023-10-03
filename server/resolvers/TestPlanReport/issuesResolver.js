@@ -1,13 +1,16 @@
 const { GithubService } = require('../../services');
 const convertDateToString = require('../../util/convertDateToString');
+const AtLoader = require('../../models/loaders/AtLoader');
+const BrowserLoader = require('../../models/loaders/BrowserLoader');
 
-const issuesResolver = (testPlanReport, _, context) =>
-    getIssues({ testPlanReport, context });
+const issuesResolver = testPlanReport => getIssues({ testPlanReport });
 
-const getIssues = async ({ testPlanReport, testPlan, context }) => {
+const getIssues = async ({ testPlanReport, testPlan }) => {
+    const atLoader = AtLoader();
+    const browserLoader = BrowserLoader();
     const [ats, browsers] = await Promise.all([
-        context.atLoader.getAll(),
-        context.browserLoader.getAll()
+        atLoader.getAll(),
+        browserLoader.getAll()
     ]);
 
     const issues = await GithubService.getAllIssues();

@@ -25,7 +25,7 @@ const assignTesterResolver = async (
         testerUserId
     });
 
-    return populateData({ testPlanRunId }, { context });
+    return populateData({ testPlanRunId });
 };
 
 module.exports = assignTesterResolver;

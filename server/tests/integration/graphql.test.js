@@ -137,7 +137,9 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
-            'Vendor'
+            'Issue',
+            'Vendor',
+            'scheduleCollectionJob'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
@@ -151,7 +153,13 @@ describe('graphql', () => {
             ['TestPlanVersion', 'recommendedPhaseReachedAt'],
             ['TestPlanVersion', 'recommendedPhaseTargetDate'],
             ['TestPlanVersion', 'deprecatedAt'],
-            ['Test', 'viewers']
+            ['Test', 'viewers'],
+            ['CollectionJob', 'testPlanRun'],
+            // These interact with Response Scheduler API
+            // which is mocked in other tests.
+            ['Mutation', 'scheduleCollectionJob'],
+            ['Mutation', 'restartCollectionJob'],
+            ['Mutation', 'cancelCollectionJob']
         ];
         ({
             typeAwareQuery,
@@ -243,6 +251,16 @@ describe('graphql', () => {
                             name
                         }
                     }
+                    collectionJob(id: 1) {
+                        __typename
+                        id
+                        status
+                    }
+                    collectionJobs {
+                        __typename
+                        id
+                        status
+                    }
                     testPlan(id: "checkbox") {
                         __typename
                         id
@@ -312,6 +330,9 @@ describe('graphql', () => {
                     testPlans {
                         directory
                         title
+                    }
+                    testPlanRuns {
+                        id
                     }
                     testPlanVersions {
                         __typename
@@ -698,6 +719,24 @@ describe('graphql', () => {
                         ) {
                             username
                         }
+                        findOrCreateCollectionJob(
+                            id: 333
+                            testPlanReportId: 4
+                        ) {
+                            id
+                            status
+                            testPlanRun {
+                                id
+                            }
+                        }
+                        updateCollectionJob(id: 333, status: COMPLETED) {
+                            id
+                            status
+                            testPlanRun {
+                                id
+                            }
+                        }
+                        deleteCollectionJob(id: 333)
                     }
                 `,
                 {

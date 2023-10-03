@@ -9,6 +9,7 @@ const testPlanReports = require('./testPlanReportsResolver');
 const testPlanVersion = require('./testPlanVersionResolver');
 const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanRun = require('./testPlanRunResolver');
+const testPlanRuns = require('./testPlanRunsResolver');
 const findOrCreateTestPlanReport = require('./findOrCreateTestPlanReportResolver');
 const addViewer = require('./addViewerResolver');
 const mutateAt = require('./mutateAtResolver');
@@ -20,6 +21,14 @@ const mutateTestResult = require('./mutateTestResultResolver');
 const mutateTestPlanVersion = require('./mutateTestPlanVersionResolver');
 const updateMe = require('./updateMe');
 const populateData = require('./populateDataResolver');
+const collectionJob = require('./collectionJobResolver');
+const collectionJobs = require('./collectionJobsResolver');
+const findOrCreateCollectionJob = require('./findOrCreateCollectionJobResolver');
+const updateCollectionJob = require('./updateCollectionJobResolver');
+const deleteCollectionJob = require('./deleteCollectionJobResolver');
+const scheduleCollectionJob = require('./scheduleCollectionJobResolver');
+const restartCollectionJob = require('./restartCollectionJobResolver');
+const cancelCollectionJob = require('./cancelCollectionJobResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
@@ -48,7 +57,10 @@ const resolvers = {
         testPlanReport,
         testPlanReports,
         testPlanRun,
-        populateData
+        testPlanRuns,
+        populateData,
+        collectionJob,
+        collectionJobs
     },
     Mutation: {
         at: mutateAt,
@@ -60,7 +72,13 @@ const resolvers = {
         testPlanVersion: mutateTestPlanVersion,
         findOrCreateTestPlanReport,
         updateMe,
-        addViewer
+        addViewer,
+        findOrCreateCollectionJob,
+        updateCollectionJob,
+        deleteCollectionJob,
+        scheduleCollectionJob,
+        restartCollectionJob,
+        cancelCollectionJob
     },
     AtOperations,
     AtVersionOperations,

@@ -125,6 +125,12 @@ INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults"
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (13, 1, 13, '[]');
 
 --
+-- Data for Name: CollectionJob; Type: TABLE DATA; Schema: public; Owner: atr
+--
+
+INSERT INTO "CollectionJob" (id, status, "testPlanRunId") VALUES (1, 'QUEUED', 1);
+
+--
 -- Name: At_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
 --
 
