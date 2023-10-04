@@ -38,6 +38,36 @@ export default (
                                 name: '2021.2111.13',
                                 releasedAt: '2021-11-01T04:00:00.000Z'
                             }
+                        ],
+                        browsers: [
+                            {
+                                id: '3',
+                                name: 'Safari'
+                            },
+                            {
+                                id: '1',
+                                name: 'Firefox'
+                            },
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            }
+                        ],
+                        candidateBrowsers: [
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            }
+                        ],
+                        recommendedBrowsers: [
+                            {
+                                id: '1',
+                                name: 'Firefox'
+                            },
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            }
                         ]
                     },
                     {
@@ -49,6 +79,36 @@ export default (
                                 name: '2020.4',
                                 releasedAt: '2021-02-19T05:00:00.000Z'
                             }
+                        ],
+                        browsers: [
+                            {
+                                id: '3',
+                                name: 'Safari'
+                            },
+                            {
+                                id: '1',
+                                name: 'Firefox'
+                            },
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            }
+                        ],
+                        candidateBrowsers: [
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            }
+                        ],
+                        recommendedBrowsers: [
+                            {
+                                id: '1',
+                                name: 'Firefox'
+                            },
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            }
                         ]
                     },
                     {
@@ -59,6 +119,36 @@ export default (
                                 id: '3',
                                 name: '11.6 (20G165)',
                                 releasedAt: '2019-09-01T04:00:00.000Z'
+                            }
+                        ],
+                        browsers: [
+                            {
+                                id: '3',
+                                name: 'Safari'
+                            },
+                            {
+                                id: '1',
+                                name: 'Firefox'
+                            },
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            }
+                        ],
+                        candidateBrowsers: [
+                            {
+                                id: '3',
+                                name: 'Safari'
+                            }
+                        ],
+                        recommendedBrowsers: [
+                            {
+                                id: '3',
+                                name: 'Safari'
+                            },
+                            {
+                                id: '2',
+                                name: 'Chrome'
                             }
                         ]
                     }
