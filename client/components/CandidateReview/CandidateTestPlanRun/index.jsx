@@ -281,11 +281,6 @@ const CandidateTestPlanRun = () => {
     const { testPlanVersion, vendorReviewStatus } = testPlanReport;
     const { recommendedPhaseTargetDate } = testPlanVersion;
 
-    const versionString = `V${convertDateToString(
-        testPlanVersion.updatedAt,
-        'YY.MM.DD'
-    )}`;
-
     const vendorReviewStatusMap = {
         READY: 'Ready',
         IN_PROGRESS: 'In Progress',
@@ -319,7 +314,7 @@ const CandidateTestPlanRun = () => {
         isCandidateReviewChangesRequested: true,
         testPlanTitle: testPlanVersion.title,
         testPlanDirectory: testPlanVersion.testPlan.directory,
-        versionString,
+        versionString: testPlanVersion.versionString,
         testTitle: currentTest.title,
         testRowNumber: currentTest.rowNumber,
         testRenderedUrl: currentTest.renderedUrl,
@@ -345,7 +340,7 @@ const CandidateTestPlanRun = () => {
         isCandidateReview: true,
         isCandidateReviewChangesRequested: false,
         testPlanTitle: testPlanVersion.title,
-        versionString,
+        versionString: testPlanVersion.versionString,
         testRowNumber: currentTest.rowNumber,
         username: data.me.username,
         atName: testPlanReport.at.name
@@ -467,7 +462,8 @@ const CandidateTestPlanRun = () => {
                                         index === 0,
                                     atName: testPlanReport.at.name,
                                     testPlanTitle: testPlanVersion.title,
-                                    versionString,
+                                    versionString:
+                                        testPlanVersion.versionString,
                                     testRowNumber: currentTest.rowNumber
                                 })}
                             />

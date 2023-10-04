@@ -159,7 +159,7 @@ export default testQueuePageQuery => [
                             testPlan: {
                                 directory: 'checkbox'
                             },
-                            updatedAt: '2021-11-30T14:51:28.000Z'
+                            versionString: 'V21-11-30'
                         },
                         draftTestPlanRuns: [
                             {
@@ -203,7 +203,7 @@ export default testQueuePageQuery => [
                             testPlan: {
                                 directory: 'checkbox'
                             },
-                            updatedAt: '2021-11-30T14:51:28.000Z'
+                            versionString: 'V21-11-30'
                         },
                         draftTestPlanRuns: [
                             {
@@ -239,7 +239,7 @@ export default testQueuePageQuery => [
                             testPlan: {
                                 directory: 'menubar-editor'
                             },
-                            updatedAt: '2021-11-30T14:51:28.000Z'
+                            versionString: 'V21-11-30'
                         },
                         draftTestPlanRuns: []
                     }

@@ -198,6 +198,7 @@ const createTestPlanVersion = async (
         testPageUrl,
         hashedTests,
         updatedAt,
+        versionString,
         metadata,
         tests,
         testPlanId = null
@@ -220,6 +221,7 @@ const createTestPlanVersion = async (
         testPageUrl,
         hashedTests,
         updatedAt,
+        versionString,
         metadata,
         tests,
         testPlanId
@@ -261,6 +263,7 @@ const updateTestPlanVersion = async (
         testPageUrl,
         hashedTests,
         updatedAt,
+        versionString,
         metadata,
         tests,
         draftPhaseReachedAt,
@@ -289,6 +292,7 @@ const updateTestPlanVersion = async (
             testPageUrl,
             hashedTests,
             updatedAt,
+            versionString,
             metadata,
             tests,
             draftPhaseReachedAt,

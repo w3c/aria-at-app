@@ -11,7 +11,7 @@ export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
                 directory
             }
             metadata
-            updatedAt
+            versionString
             candidatePhaseReachedAt
             recommendedPhaseTargetDate
             testPlanReports(isFinal: true) {

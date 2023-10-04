@@ -145,10 +145,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 const issueLink = createIssueLink({
                     testPlanTitle: testPlanVersion.title,
                     testPlanDirectory: testPlanVersion.testPlan.directory,
-                    versionString: `V${convertDateToString(
-                        testPlanVersion.updatedAt,
-                        'YY.MM.DD'
-                    )}`,
+                    versionString: testPlanVersion.versionString,
                     testTitle: test.title,
                     testRowNumber: test.rowNumber,
                     testRenderedUrl: test.renderedUrl,
