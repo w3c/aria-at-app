@@ -519,10 +519,11 @@ const DataManagementRow = ({
                     <PhaseCell role="list" aria-setsize={isAdmin ? 2 : 1}>
                         <VersionString
                             role="listitem"
-                            date={latestVersionDate}
                             iconColor="#2BA51C"
                             linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
-                        />
+                        >
+                            {latestVersion.versionString}
+                        </VersionString>
                         {isAdmin && (
                             <Button
                                 ref={ref => setFocusRef(ref)}
@@ -532,10 +533,7 @@ const DataManagementRow = ({
                                     setShowAdvanceModal(true);
                                     setAdvanceModalData({
                                         phase: derivePhaseName('DRAFT'),
-                                        version: convertDateToString(
-                                            latestVersionDate,
-                                            'YY.MM.DD'
-                                        ),
+                                        version: latestVersion.versionString,
                                         advanceFunc: () => {
                                             setShowAdvanceModal(false);
                                             handleClickUpdateTestPlanVersionPhase(
@@ -587,21 +585,17 @@ const DataManagementRow = ({
                 // least one of candidate or recommended phases, show string "Review of
                 // VERSION_STRING completed DATE"
                 if (otherTestPlanVersions.length) {
-                    const {
-                        latestVersion: otherLatestVersion,
-                        latestVersionDate: otherLatestVersionDate
-                    } = getVersionData(otherTestPlanVersions);
+                    const { latestVersion: otherLatestVersion } =
+                        getVersionData(otherTestPlanVersions);
 
                     const completionDate =
                         otherLatestVersion.candidatePhaseReachedAt;
 
                     return (
                         <PhaseCell role="list">
-                            <VersionString
-                                role="listitem"
-                                date={otherLatestVersionDate}
-                                iconColor="#818F98"
-                            />
+                            <VersionString role="listitem" iconColor="#818F98">
+                                {otherLatestVersion.versionString}
+                            </VersionString>
                             <span role="listitem" className="review-complete">
                                 Review Completed&nbsp;
                                 <b>
@@ -652,11 +646,12 @@ const DataManagementRow = ({
                         <PhaseCell role="list" aria-setsize={isAdmin ? 3 : 2}>
                             <VersionString
                                 role="listitem"
-                                date={latestVersionDate}
                                 iconColor="#2BA51C"
                                 linkRef={draftVersionStringRef}
                                 linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
-                            />
+                            >
+                                {latestVersion.versionString}
+                            </VersionString>
                             {isAdmin && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
@@ -666,10 +661,8 @@ const DataManagementRow = ({
                                         setShowAdvanceModal(true);
                                         setAdvanceModalData({
                                             phase: derivePhaseName('CANDIDATE'),
-                                            version: convertDateToString(
-                                                latestVersionDate,
-                                                'YY.MM.DD'
-                                            ),
+                                            version:
+                                                latestVersion.versionString,
                                             advanceFunc: () => {
                                                 setShowAdvanceModal(false);
                                                 handleClickUpdateTestPlanVersionPhase(
@@ -738,7 +731,9 @@ const DataManagementRow = ({
                                 role="listitem"
                                 date={otherLatestVersionDate}
                                 iconColor="#818F98"
-                            />
+                            >
+                                {otherLatestVersion.versionString}
+                            </VersionString>
                             <span role="listitem" className="review-complete">
                                 Review Completed&nbsp;
                                 <b>
@@ -860,11 +855,12 @@ const DataManagementRow = ({
                         >
                             <VersionString
                                 role="listitem"
-                                date={latestVersionDate}
                                 iconColor="#2BA51C"
                                 linkRef={candidateVersionStringRef}
                                 linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
-                            />
+                            >
+                                {latestVersion.versionString}
+                            </VersionString>
                             {shouldShowAdvanceButton && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
@@ -876,10 +872,8 @@ const DataManagementRow = ({
                                             phase: derivePhaseName(
                                                 'RECOMMENDED'
                                             ),
-                                            version: convertDateToString(
-                                                latestVersionDate,
-                                                'YY.MM.DD'
-                                            ),
+                                            version:
+                                                latestVersion.versionString,
                                             advanceFunc: () => {
                                                 setShowAdvanceModal(false);
                                                 handleClickUpdateTestPlanVersionPhase(
@@ -923,15 +917,7 @@ const DataManagementRow = ({
                                                 setUpdateTargetModalData({
                                                     testPlanVersionId:
                                                         latestVersion.id,
-                                                    title: `Change Recommended Phase Target Date for ${
-                                                        testPlan.title
-                                                    }, ${
-                                                        'V' +
-                                                        convertDateToString(
-                                                            latestVersionDate,
-                                                            'YY.MM.DD'
-                                                        )
-                                                    }`,
+                                                    title: `Change Recommended Phase Target Date for ${testPlan.title}, ${latestVersion.versionString}`,
                                                     dateText:
                                                         latestVersion.recommendedPhaseTargetDate
                                                 });
@@ -974,8 +960,7 @@ const DataManagementRow = ({
                     return <NoneText>None Yet</NoneText>;
 
                 // Link with text "VERSION_STRING" that targets the single-page view of the plan
-                const { latestVersion, latestVersionDate } =
-                    getVersionData(testPlanVersions);
+                const { latestVersion } = getVersionData(testPlanVersions);
 
                 const completionDate = latestVersion.recommendedPhaseReachedAt;
 
@@ -985,11 +970,12 @@ const DataManagementRow = ({
                     <PhaseCell role="list">
                         <VersionString
                             role="listitem"
-                            date={latestVersionDate}
                             iconColor="#2BA51C"
                             linkRef={recommendedVersionStringRef}
                             linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
-                        />
+                        >
+                            {latestVersion.versionString}
+                        </VersionString>
                         <span role="listitem">
                             <TestPlanReportStatusDialogWithButton
                                 testPlanVersionId={latestVersion.id}
@@ -1038,7 +1024,7 @@ const DataManagementRow = ({
                 <BasicModal
                     show={showAdvanceModal}
                     closeButton={false}
-                    title={`Advancing test plan, ${testPlan.title}, V${advanceModalData.version}`}
+                    title={`Advancing test plan, ${testPlan.title}, ${advanceModalData.version}`}
                     content={
                         <>
                             This version will be updated to&nbsp;

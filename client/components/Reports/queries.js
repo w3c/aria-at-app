@@ -35,7 +35,7 @@ export const REPORT_PAGE_QUERY = gql`
             title
             phase
             gitSha
-            updatedAt
+            versionString
             testPlan {
                 directory
             }
