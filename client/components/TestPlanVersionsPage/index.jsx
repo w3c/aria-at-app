@@ -199,6 +199,7 @@ const TestPlanVersionsPage = () => {
     testPlanVersions.forEach(testPlanVersion => {
         const event = {
             id: testPlanVersion.id,
+            updatedAt: testPlanVersion.updatedAt,
             versionString: testPlanVersion.versionString
         };
         timelineForAllVersions.push({ ...event, phase: 'RD' });
