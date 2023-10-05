@@ -18,6 +18,15 @@ import { calculateAssertionsCount } from '../common/TestPlanResultsTable/utils';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
+import styled from '@emotion/styled';
+
+const ResultsContainer = styled.div`
+    padding: 1em 1.75em;
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 2em;
+`;
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -205,14 +214,13 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                             </div>
                         </div>
 
-                        <TestPlanResultsTable
-                            key={`TestPlanResultsTable__${testResult.id}`}
-                            test={{ ...test, at }}
-                            testResult={testResult}
-                        />
-
-                        <br />
-                        <br />
+                        <ResultsContainer>
+                            <TestPlanResultsTable
+                                key={`TestPlanResultsTable__${testResult.id}`}
+                                test={{ ...test, at }}
+                                testResult={testResult}
+                            />
+                        </ResultsContainer>
 
                         <DisclosureComponent
                             componentId={`run-history-${testResult.id}`}
