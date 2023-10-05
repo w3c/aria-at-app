@@ -132,12 +132,7 @@
 }
 
 .test-results-header {
-    border-bottom: none;
-    margin: 0;
-    padding: 20px;
-    font-size: 20px;
-    background-color: #f5f8fa;
-    border: #e5efe8 1px solid;
+    margin: 0 0 1rem;
 }
 
 .test-results-table {

@@ -13,10 +13,20 @@ import {
 import { differenceBy } from 'lodash';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
-import TestPlanResultsTable from './TestPlanResultsTable';
+import TestPlanResultsTable from '../common/TestPlanResultsTable';
+import { calculateAssertionsCount } from '../common/TestPlanResultsTable/utils';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
+import styled from '@emotion/styled';
+
+const ResultsContainer = styled.div`
+    padding: 1em 1.75em;
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 2em;
+`;
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -162,14 +172,15 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     'https://aria-at.netlify.app'
                 );
 
+                const { passedAssertionsCount, failedAssertionsCount } =
+                    calculateAssertionsCount(testResult);
+
                 return (
                     <Fragment key={testResult.id}>
                         <div className="test-result-heading">
                             <h2 id={`result-${testResult.id}`} tabIndex="-1">
-                                <span className="test-details">
-                                    Details for test:
-                                </span>
-                                {test.title}
+                                {test.title}&nbsp;({passedAssertionsCount}
+                                &nbsp;passed, {failedAssertionsCount} failed)
                                 <DisclaimerInfo phase={testPlanVersion.phase} />
                             </h2>
                             <div className="test-result-buttons">
@@ -199,10 +210,14 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                                 </Button>
                             </div>
                         </div>
-                        <TestPlanResultsTable
-                            test={test}
-                            testResult={testResult}
-                        />
+
+                        <ResultsContainer>
+                            <TestPlanResultsTable
+                                key={`TestPlanResultsTable__${testResult.id}`}
+                                test={{ ...test, at }}
+                                testResult={testResult}
+                            />
+                        </ResultsContainer>
 
                         <DisclosureComponent
                             componentId={`run-history-${testResult.id}`}
