@@ -490,22 +490,25 @@ const TestQueueRow = ({
                     {isSignedIn && isTester && (
                         <div className="secondary-actions">
                             {isAdmin &&
-                                !isLoading &&
-                                !testPlanReport.conflictsLength && (
-                                    <>
-                                        <Button
-                                            ref={updateTestPlanStatusButtonRef}
-                                            variant="secondary"
-                                            onClick={async () => {
-                                                focusButtonRef.current =
-                                                    updateTestPlanStatusButtonRef.current;
-                                                await updateReportStatus();
-                                            }}
-                                        >
-                                            Mark as Final
-                                        </Button>
-                                    </>
-                                )}
+                            !isLoading &&
+                            !testPlanReport.conflictsLength &&
+                            testPlanReport.draftTestPlanRuns.length &&
+                            testPlanReport.draftTestPlanRuns[0]
+                                .testResultsLength ? (
+                                <>
+                                    <Button
+                                        ref={updateTestPlanStatusButtonRef}
+                                        variant="secondary"
+                                        onClick={async () => {
+                                            focusButtonRef.current =
+                                                updateTestPlanStatusButtonRef.current;
+                                            await updateReportStatus();
+                                        }}
+                                    >
+                                        Mark as Final
+                                    </Button>
+                                </>
+                            ) : null}
                         </div>
                     )}
                 </td>
