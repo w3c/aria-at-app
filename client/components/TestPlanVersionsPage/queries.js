@@ -26,6 +26,7 @@ export const TEST_PLAN_VERSIONS_PAGE_QUERY = gql`
                     directory
                 }
                 phase
+                updatedAt
                 versionString
                 deprecatedAt
                 gitSha
