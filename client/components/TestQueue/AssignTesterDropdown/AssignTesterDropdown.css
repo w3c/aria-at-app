@@ -1,0 +1,34 @@
+.assignees {
+    margin-top: 0.3em;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.assign-tester {
+    border-radius: 25px;
+    height: 2.5em;
+    border-style: dashed;
+    padding: 0.4em 0.6em;
+}
+
+.assign-tester .fa-user-plus {
+    margin: 0;
+}
+
+.assign-tester.dropdown-toggle:after {
+    display: none;
+}
+
+.no-assignees {
+    text-align: center;
+    line-height: 2;
+}
+
+.not-assigned {
+    padding-left: 1.5em;
+}
+
+[role='menu'].assign-menu {
+    height: 200px;
+    overflow-y: scroll;
+}

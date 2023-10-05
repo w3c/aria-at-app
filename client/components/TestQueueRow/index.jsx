@@ -38,14 +38,14 @@ const TestQueueRow = ({
     const { triggerLoad, loadingMessage } = useTriggerLoad();
 
     const focusButtonRef = useRef();
+    const dropdownAssignTesterButtonRef = useRef();
     const assignTesterButtonRef = useRef();
     const dropdownDeleteTesterResultsButtonRef = useRef();
     const deleteTesterResultsButtonRef = useRef();
     const deleteTestPlanButtonRef = useRef();
     const updateTestPlanStatusButtonRef = useRef();
 
-    // TODO: Reimagine alert, set not used currently
-    const [alertMessage] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
     const [showThemedModal, setShowThemedModal] = useState(false);
     const [themedModalType, setThemedModalType] = useState('warning');
@@ -234,11 +234,15 @@ const TestQueueRow = ({
         return (
             <AssignTesterDropdown
                 onChange={async () => {
+                    focusButtonRef.current =
+                        dropdownAssignTesterButtonRef.current;
                     await triggerTestPlanReportUpdate();
                 }}
+                setAlertMessage={setAlertMessage}
                 testPlanReportId={testPlanReport.id}
                 possibleTesters={testers}
                 draftTestPlanRuns={draftTestPlanRuns}
+                dropdownAssignTesterButtonRef={dropdownAssignTesterButtonRef}
             />
         );
     };

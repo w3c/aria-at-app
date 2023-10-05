@@ -14,16 +14,18 @@ import { useTriggerLoad } from '../../common/LoadingStatus';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
 import { isBot } from '../../../utils/automation';
 
+import './AssignTesterDropdown.css';
+
 const AssignTesterDropdown = ({
     testPlanReportId,
     testPlanRun,
     draftTestPlanRuns,
     possibleTesters,
     onChange,
-    label
+    label,
+    dropdownAssignTesterButtonRef,
+    setAlertMessage = () => {}
 }) => {
-    const dropdownAssignTesterButtonRef = useRef();
-
     const { triggerLoad } = useTriggerLoad();
 
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
@@ -102,7 +104,7 @@ const AssignTesterDropdown = ({
             >
                 {renderLabel()}
             </Dropdown.Toggle>
-            <Dropdown.Menu role="menu">
+            <Dropdown.Menu role="menu" className="assign-menu">
                 {possibleTesters?.length ? (
                     possibleTesters.map(tester => {
                         const isTesterAssigned = checkIsTesterAssigned(
@@ -125,6 +127,13 @@ const AssignTesterDropdown = ({
                                 key={`tpr-${testPlanReportId}-assign-tester-${tester.username}`}
                                 onClick={async () => {
                                     await toggleTesterAssign(tester.username);
+                                    setAlertMessage(
+                                        `You have been ${
+                                            classname.includes('not')
+                                                ? 'removed from'
+                                                : 'assigned to'
+                                        } this test run.`
+                                    );
                                     await onChange();
                                 }}
                                 aria-checked={isTesterAssigned}
@@ -150,7 +159,9 @@ AssignTesterDropdown.propTypes = {
     onChange: PropTypes.func.isRequired,
     testPlanRun: PropTypes.object,
     label: PropTypes.string,
-    draftTestPlanRuns: PropTypes.array
+    draftTestPlanRuns: PropTypes.array,
+    setAlertMessage: PropTypes.func,
+    dropdownAssignTesterButtonRef: PropTypes.object
 };
 
 export default AssignTesterDropdown;
