@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-export const CREATE_MANAGE_TEST_QUEUE_MUTATION = gql`
+export const CREATE_REQUIRED_REPORT_MUTATION = gql`
     mutation CreateRequiredReport(
         $atId: ID!
         $browserId: ID!
@@ -16,7 +16,7 @@ export const CREATE_MANAGE_TEST_QUEUE_MUTATION = gql`
     }
 `;
 
-export const UPDATE_MANAGE_TEST_QUEUE_MUTATION = gql`
+export const UPDATE_REQUIRED_REPORT_MUTATION = gql`
     mutation UpdateRequiredReport(
         $atId: ID!
         $browserId: ID!
@@ -37,7 +37,7 @@ export const UPDATE_MANAGE_TEST_QUEUE_MUTATION = gql`
     }
 `;
 
-export const DELETE_MANAGE_TEST_QUEUE_MUTATION = gql`
+export const DELETE_REQUIRED_REPORT_MUTATION = gql`
     mutation DeleteRequiredReport(
         $atId: ID!
         $browserId: ID!

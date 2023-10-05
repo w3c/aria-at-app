@@ -18,9 +18,9 @@ import {
     DELETE_AT_VERSION_MUTATION
 } from '../TestQueue/queries';
 import {
-    CREATE_MANAGE_TEST_QUEUE_MUTATION,
-    UPDATE_MANAGE_TEST_QUEUE_MUTATION,
-    DELETE_MANAGE_TEST_QUEUE_MUTATION
+    CREATE_REQUIRED_REPORT_MUTATION,
+    UPDATE_REQUIRED_REPORT_MUTATION,
+    DELETE_REQUIRED_REPORT_MUTATION
 } from './queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { convertStringToDate } from '../../utils/formatter';
@@ -240,16 +240,17 @@ const ManageTestQueue = ({
     const [updatePhaseForUpdate, setUpdatePhaseForUpdate] = useState('');
     const [updateBrowserIdForUpdate, setUpdateBrowserIdForUpdate] =
         useState('');
-    const [updateAtSelection, setUpdateAtSelection] = useState('Select an At');
+    const [updateAtSelection, setUpdateAtSelection] = useState(
+        'Select an Assitive Tecchnology'
+    );
     const [updateAtForButton, setUpdateAtForButton] = useState('');
-    const [updateListAtSelection, setUpdateListAtSelection] =
-        useState('Select an At');
-    const [updateBrowserSelection, setUpdateBrowserSelection] =
-        useState('Select a Browser');
-    const [updateBrowserForButton, setUpdateBrowserForButton] =
-        useState('Select a Browser');
+    const [updateListAtSelection, setUpdateListAtSelection] = useState(
+        'Select an Assitive Tecchnology'
+    );
+    const [updateBrowserSelection, setUpdateBrowserSelection] = useState('');
+    const [updateBrowserForButton, setUpdateBrowserForButton] = useState('');
     const [updateListBrowserSelection, setUpdateListBrowserSelection] =
-        useState('Select a Browser');
+        useState('');
     const [updatePhaseSelection, setUpdatePhaseSelection] =
         useState('Phase Selection');
     const [updatePhaseForButton, setUpdatePhaseForButton] = useState('');
@@ -292,6 +293,13 @@ const ManageTestQueue = ({
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
 
+    const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
+    const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
+    const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);
+    const [createRequiredReport] = useMutation(CREATE_REQUIRED_REPORT_MUTATION);
+    const [updateRequiredReport] = useMutation(UPDATE_REQUIRED_REPORT_MUTATION);
+    const [deleteRequiredReport] = useMutation(DELETE_REQUIRED_REPORT_MUTATION);
+
     const [atBrowserCombinations, setAtBrowserCombinations] = useState([
         ...ats.flatMap(at =>
             at.candidateBrowsers?.map(browser => ({
@@ -311,11 +319,8 @@ const ManageTestQueue = ({
 
     const setPhase = phase => {
         setUpdatePhaseSelection(phase);
-        if (phase === 'Candidate') {
-            setUpdatePhaseForButton('CANDIDATE');
-        }
-        if (phase === 'Recommended') {
-            setUpdatePhaseForButton('RECOMMENDED');
+        if (phase === 'Candidate' || phase === 'Recommended') {
+            setUpdatePhaseForButton(phase.toUpperCase());
         }
     };
 
@@ -526,19 +531,6 @@ const ManageTestQueue = ({
         }
     };
 
-    const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
-    const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
-    const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);
-    const [createRequiredReport] = useMutation(
-        CREATE_MANAGE_TEST_QUEUE_MUTATION
-    );
-    const [updateRequiredReport] = useMutation(
-        UPDATE_MANAGE_TEST_QUEUE_MUTATION
-    );
-    const [deleteRequiredReport] = useMutation(
-        DELETE_MANAGE_TEST_QUEUE_MUTATION
-    );
-
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
     const onManageReqReportsClick = () =>
@@ -705,9 +697,7 @@ const ManageTestQueue = ({
 
     const onThemedModalClose = () => {
         setShowThemedModal(false);
-        focusButtonRef.current === undefined
-            ? null
-            : focusButtonRef.current.focus();
+        if (focusButtonRef.current) focusButtonRef.current.focus();
     };
 
     const getAtVersionFromId = id => {
@@ -891,12 +881,10 @@ const ManageTestQueue = ({
         setUpdateListAtSelection(value);
         setUpdateAtForButton(value);
     };
-    //section:
     const handleListBrowserChange = e => {
         const value = e.target.value;
         setUpdateListBrowserSelection(value);
         setUpdateBrowserForButton(value);
-        console.log(value);
     };
 
     return (
@@ -1154,13 +1142,16 @@ const ManageTestQueue = ({
                                 <Form.Label className="disclosure-form-label">
                                     Assistive Technology
                                 </Form.Label>
-                                {updateListAtSelection === 'Select an At' ? (
+                                {updateListAtSelection ===
+                                'Select an Assitive Tecchnology' ? (
                                     <Form.Select
                                         value={updateListAtSelection}
                                         onChange={handleListAtChange}
                                         required
                                     >
-                                        <option>Select an At</option>
+                                        <option>
+                                            Select an Assitive Tecchnology
+                                        </option>
                                         {ats.map(item => {
                                             return (
                                                 <option
@@ -1195,21 +1186,12 @@ const ManageTestQueue = ({
                                 <Form.Label className="disclosure-form-label">
                                     Browser
                                 </Form.Label>
-                                {/* section: */}
-                                {/* <Form.Select
-                                    value={updateListBrowserSelection}
-                                    onChange={handleListBrowserChange}
-                                    required
-                                > */}
                                 <Form.Select
                                     value={updateListBrowserSelection}
                                     onChange={handleListBrowserChange}
                                     required
                                 >
-                                    <option
-                                        value={updateListBrowserSelection}
-                                        disabled
-                                    >
+                                    <option value={''} disabled>
                                         Select a Browser
                                     </option>
                                     {ats
@@ -1226,82 +1208,25 @@ const ManageTestQueue = ({
                                             </option>
                                         ))}
                                 </Form.Select>
-                                {/* {updateListAtSelection === 'Select an At' ? (
-                                    <Form.Select
-                                        value={updateListBrowserSelection}
-                                        onChange={handleListBrowserChange}
-                                        disabled
-                                        required
-                                    ></Form.Select>
-                                ) : updateListAtSelection === '1' ? (
-                                    <Form.Select
-                                        value={updateListBrowserSelection}
-                                        onChange={handleListBrowserChange}
-                                        required
-                                    >
-                                        {' '}
-                                        <option>Select a browser</option>
-                                        {ats[0].browsers.map(item => {
-                                            return (
-                                                <option
-                                                    key={item.id}
-                                                    value={item.id}
-                                                >
-                                                    {item.name}
-                                                </option>
-                                            );
-                                        })}
-                                    </Form.Select>
-                                ) : updateListAtSelection === '2' ? (
-                                    <Form.Select
-                                        value={updateListBrowserSelection}
-                                        onChange={handleListBrowserChange}
-                                        required
-                                    >
-                                        <option>Select a browser</option>
-                                        {ats[1].browsers.map(item => {
-                                            return (
-                                                <option
-                                                    key={item.id}
-                                                    value={item.id}
-                                                >
-                                                    {item.name}
-                                                </option>
-                                            );
-                                        })}
-                                    </Form.Select>
-                                ) : updateListAtSelection === '3' ? (
-                                    <Form.Select
-                                        value={updateListBrowserSelection}
-                                        onChange={handleListBrowserChange}
-                                        required
-                                    >
-                                        <option>Select a browser</option>
-                                        {ats[2].browsers.map(item => {
-                                            return (
-                                                <option
-                                                    key={item.id}
-                                                    value={item.id}
-                                                >
-                                                    {item.name}
-                                                </option>
-                                            );
-                                        })}
-                                    </Form.Select>
-                                ) : null} */}
                             </Form.Group>
                             <Form.Group className="form-group">
                                 <Button
+                                    disabled={
+                                        !updatePhaseForButton ||
+                                        !updateAtForButton ||
+                                        !updateBrowserForButton
+                                    }
                                     onClick={() => {
                                         setUpdatePhaseSelection(
                                             'Phase Selection'
                                         );
+                                        setUpdatePhaseForButton('');
                                         setUpdateListAtSelection(
-                                            'Select an At'
+                                            'Select an Assitive Tecchnology'
                                         );
-                                        setUpdateListBrowserSelection(
-                                            'Select a browser'
-                                        );
+                                        setUpdateAtForButton('');
+                                        setUpdateListBrowserSelection('');
+                                        setUpdateBrowserForButton('');
                                         runMutationForRequiredReportTable(
                                             'createRequiredReport'
                                         );
@@ -1472,7 +1397,7 @@ const ManageTestQueue = ({
             {!showEditAtBrowserModal && (
                 <BasicModal
                     show={true}
-                    closeButton={true}
+                    closeButton={false}
                     cancelButton={true}
                     headerSep={true}
                     title={requiredReportsModalTitle}
@@ -1485,20 +1410,27 @@ const ManageTestQueue = ({
                                         <Form.Label>
                                             Assistive Technology
                                         </Form.Label>
-
-                                        {updateAtSelection ===
-                                        'Select an At' ? (
+                                        {updateListAtSelection ===
+                                        'Select an Assitive Tecchnology' ? (
                                             <Form.Select
                                                 value={updateAtSelection}
                                                 onChange={handleAtChange}
                                                 required
                                             >
-                                                <option>Select an At</option>
-                                                <option value={1}>JAWS</option>
-                                                <option value={2}>NVDA</option>
-                                                <option value={3}>
-                                                    VoiceOver for macOs
+                                                <option>
+                                                    Select an Assitive
+                                                    Tecchnology
                                                 </option>
+                                                {ats.map(item => {
+                                                    return (
+                                                        <option
+                                                            key={item.id}
+                                                            value={item.id}
+                                                        >
+                                                            {item.name}
+                                                        </option>
+                                                    );
+                                                })}
                                             </Form.Select>
                                         ) : (
                                             <Form.Select
@@ -1506,105 +1438,44 @@ const ManageTestQueue = ({
                                                 onChange={handleAtChange}
                                                 required
                                             >
-                                                {Object.entries(ats).map(
-                                                    ([key, value]) => {
-                                                        return (
-                                                            <option
-                                                                key={key}
-                                                                value={value.id}
-                                                                disabled={
-                                                                    key ===
-                                                                    'Select a Version'
-                                                                }
-                                                            >
-                                                                {value.name}
-                                                            </option>
-                                                        );
-                                                    },
-                                                    {}
-                                                )}
+                                                {ats.map(item => {
+                                                    return (
+                                                        <option
+                                                            key={item.id}
+                                                            value={item.id}
+                                                        >
+                                                            {item.name}
+                                                        </option>
+                                                    );
+                                                })}
                                             </Form.Select>
                                         )}
                                     </Form.Group>
                                     <Form.Group>
                                         <Form.Label>Browser</Form.Label>
-
-                                        {updateAtSelection ===
-                                        'Select an At' ? (
-                                            <Form.Select
-                                                value={updateBrowserSelection}
-                                                onChange={handleBrowserChange}
-                                                disabled
-                                                required
-                                            ></Form.Select>
-                                        ) : updateAtSelection === '1' ? (
-                                            <Form.Select
-                                                value={updateBrowserSelection}
-                                                onChange={handleBrowserChange}
-                                                required
-                                            >
-                                                {' '}
-                                                <option>
-                                                    Select a Browser
-                                                </option>
-                                                {Object.entries(
-                                                    ats[0].browsers
-                                                ).map(([key, value]) => {
-                                                    return (
-                                                        <option
-                                                            key={key}
-                                                            value={value.id}
-                                                        >
-                                                            {value.name}
-                                                        </option>
-                                                    );
-                                                })}{' '}
-                                            </Form.Select>
-                                        ) : updateAtSelection === '2' ? (
-                                            <Form.Select
-                                                value={updateBrowserSelection}
-                                                onChange={handleBrowserChange}
-                                                required
-                                            >
-                                                <option>
-                                                    Select a Browser
-                                                </option>
-                                                {Object.entries(
-                                                    ats[1].browsers
-                                                ).map(([key, value]) => {
-                                                    return (
-                                                        <option
-                                                            key={key}
-                                                            value={value.id}
-                                                        >
-                                                            {value.name}
-                                                        </option>
-                                                    );
-                                                })}{' '}
-                                            </Form.Select>
-                                        ) : updateAtSelection === '3' ? (
-                                            <Form.Select
-                                                onChange={handleBrowserChange}
-                                                value={updateBrowserSelection}
-                                                required
-                                            >
-                                                <option>
-                                                    Select a Browser
-                                                </option>
-                                                {Object.entries(
-                                                    ats[2].browsers
-                                                ).map(([key, value]) => {
-                                                    return (
-                                                        <option
-                                                            key={key}
-                                                            value={value.id}
-                                                        >
-                                                            {value.name}
-                                                        </option>
-                                                    );
-                                                })}{' '}
-                                            </Form.Select>
-                                        ) : null}
+                                        <Form.Select
+                                            value={updateBrowserSelection}
+                                            onChange={handleBrowserChange}
+                                            required
+                                        >
+                                            <option value={''} disabled>
+                                                Select a Browser
+                                            </option>
+                                            {ats
+                                                .find(
+                                                    at =>
+                                                        at.id ===
+                                                        updateAtSelection
+                                                )
+                                                ?.browsers.map(item => (
+                                                    <option
+                                                        key={`${item.name}-${item.id}`}
+                                                        value={item.id}
+                                                    >
+                                                        {item.name}
+                                                    </option>
+                                                ))}
+                                        </Form.Select>
                                     </Form.Group>
                                 </Row>
                             ) : null}
@@ -1616,22 +1487,24 @@ const ManageTestQueue = ({
                             runMutationForRequiredReportTable(
                                 'updateRequiredReport'
                             );
-                            setUpdateAtSelection('Select an At');
+                            setUpdateAtSelection(
+                                'Select an Assitive Tecchnology'
+                            );
+                            setUpdateBrowserSelection('');
                         }
                         if (actionButtonLabel === 'Confirm Delete') {
                             runMutationForRequiredReportTable(
                                 'deleteRequiredReport'
                             );
-                            setUpdateAtSelection('Select an At');
+                            setUpdateAtSelection(
+                                'Select an Assitive Tecchnology'
+                            );
+                            setUpdateBrowserSelection('');
                         }
                         setShowEditAtBrowserModal(true);
                     }}
                     handleClose={() => {
-                        setUpdateAtSelection('Select an At');
-                        setShowEditAtBrowserModal(true);
-                    }}
-                    handleHide={() => {
-                        setUpdateAtSelection('Select an At');
+                        setUpdateAtSelection('Select an Assitive Tecchnology');
                         setShowEditAtBrowserModal(true);
                     }}
                     staticBackdrop={true}
