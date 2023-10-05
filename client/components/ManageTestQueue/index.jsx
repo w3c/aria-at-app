@@ -248,7 +248,6 @@ const ManageTestQueue = ({
         'Select an Assitive Tecchnology'
     );
     const [updateBrowserSelection, setUpdateBrowserSelection] = useState('');
-    const [updateBrowserForButton, setUpdateBrowserForButton] = useState('');
     const [updateListBrowserSelection, setUpdateListBrowserSelection] =
         useState('');
     const [updatePhaseSelection, setUpdatePhaseSelection] =
@@ -358,7 +357,7 @@ const ManageTestQueue = ({
 
     const runMutationForRequiredReportTable = async mutation => {
         let atId = updateAtForButton;
-        let browserId = updateBrowserForButton;
+        let browserId = updateListBrowserSelection;
 
         if (mutation === 'createRequiredReport') {
             await triggerLoad(async () => {
@@ -366,7 +365,7 @@ const ManageTestQueue = ({
                     atBrowserCombinations.forEach(({ at, browser, phase }) => {
                         if (
                             updateAtForButton === at.id &&
-                            updateBrowserForButton === browser.id &&
+                            updateListBrowserSelection === browser.id &&
                             updatePhaseForButton === phase
                         ) {
                             throw new Error(
@@ -884,7 +883,6 @@ const ManageTestQueue = ({
     const handleListBrowserChange = e => {
         const value = e.target.value;
         setUpdateListBrowserSelection(value);
-        setUpdateBrowserForButton(value);
     };
 
     return (
@@ -1214,7 +1212,7 @@ const ManageTestQueue = ({
                                     disabled={
                                         !updatePhaseForButton ||
                                         !updateAtForButton ||
-                                        !updateBrowserForButton
+                                        !updateListBrowserSelection
                                     }
                                     onClick={() => {
                                         setUpdatePhaseSelection(
@@ -1226,7 +1224,6 @@ const ManageTestQueue = ({
                                         );
                                         setUpdateAtForButton('');
                                         setUpdateListBrowserSelection('');
-                                        setUpdateBrowserForButton('');
                                         runMutationForRequiredReportTable(
                                             'createRequiredReport'
                                         );
