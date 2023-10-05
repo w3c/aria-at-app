@@ -1140,45 +1140,25 @@ const ManageTestQueue = ({
                                 <Form.Label className="disclosure-form-label">
                                     Assistive Technology
                                 </Form.Label>
-                                {updateListAtSelection ===
-                                'Select an Assitive Tecchnology' ? (
-                                    <Form.Select
-                                        value={updateListAtSelection}
-                                        onChange={handleListAtChange}
-                                        required
-                                    >
-                                        <option>
-                                            Select an Assitive Tecchnology
-                                        </option>
-                                        {ats.map(item => {
-                                            return (
-                                                <option
-                                                    key={item.id}
-                                                    value={item.id}
-                                                >
-                                                    {item.name}
-                                                </option>
-                                            );
-                                        })}
-                                    </Form.Select>
-                                ) : (
-                                    <Form.Select
-                                        value={updateListAtSelection}
-                                        onChange={handleListAtChange}
-                                        required
-                                    >
-                                        {ats.map(item => {
-                                            return (
-                                                <option
-                                                    key={item.id}
-                                                    value={item.id}
-                                                >
-                                                    {item.name}
-                                                </option>
-                                            );
-                                        })}
-                                    </Form.Select>
-                                )}
+                                <Form.Select
+                                    value={updateListAtSelection}
+                                    onChange={handleListAtChange}
+                                    required
+                                >
+                                    <option disabled>
+                                        Select an Assitive Tecchnology
+                                    </option>
+                                    {ats.map(item => {
+                                        return (
+                                            <option
+                                                key={item.id}
+                                                value={item.id}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        );
+                                    })}
+                                </Form.Select>
                             </Form.Group>
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
