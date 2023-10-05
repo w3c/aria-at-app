@@ -485,11 +485,13 @@ const graphqlSchema = gql`
     """
     enum AssertionPriority {
         """
-        All required assertions must pass for the test to pass.
+        All required assertions must pass for the test to pass. This should be
+        considered as 'MUST Behaviors'.
         """
         REQUIRED
         """
         This assertion is not considered when deciding if a test is passing.
+        This should be considered as 'SHOULD Behaviors'.
         """
         OPTIONAL
     }

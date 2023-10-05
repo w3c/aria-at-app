@@ -75,15 +75,12 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                             </thead>
                             <tbody>
                                 {requiredAssertionResults.map(assertionResult =>
-                                    renderAssertionRow(
-                                        assertionResult,
-                                        'Required'
-                                    )
+                                    renderAssertionRow(assertionResult, 'MUST')
                                 )}
                                 {optionalAssertionResults.map(assertionResult =>
                                     renderAssertionRow(
                                         assertionResult,
-                                        'Optional'
+                                        'SHOULD'
                                     )
                                 )}
                             </tbody>
