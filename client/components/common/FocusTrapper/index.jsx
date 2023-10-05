@@ -58,6 +58,8 @@ const FocusTrapper = ({ children, isActive, trappedElId }) => {
         if (isActive) {
             updateFocusableElements();
             document.addEventListener('keydown', trapFocus);
+        } else {
+            document.removeEventListener('keydown', trapFocus);
         }
 
         return () => {
