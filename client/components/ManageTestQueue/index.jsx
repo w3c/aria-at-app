@@ -891,11 +891,12 @@ const ManageTestQueue = ({
         setUpdateListAtSelection(value);
         setUpdateAtForButton(value);
     };
-
+    //section:
     const handleListBrowserChange = e => {
         const value = e.target.value;
         setUpdateListBrowserSelection(value);
         setUpdateBrowserForButton(value);
+        console.log(value);
     };
 
     return (
@@ -1194,7 +1195,38 @@ const ManageTestQueue = ({
                                 <Form.Label className="disclosure-form-label">
                                     Browser
                                 </Form.Label>
-                                {updateListAtSelection === 'Select an At' ? (
+                                {/* section: */}
+                                {/* <Form.Select
+                                    value={updateListBrowserSelection}
+                                    onChange={handleListBrowserChange}
+                                    required
+                                > */}
+                                <Form.Select
+                                    value={updateListBrowserSelection}
+                                    onChange={handleListBrowserChange}
+                                    required
+                                >
+                                    <option
+                                        value={updateListBrowserSelection}
+                                        disabled
+                                    >
+                                        Select a Browser
+                                    </option>
+                                    {ats
+                                        .find(
+                                            at =>
+                                                at.id === updateListAtSelection
+                                        )
+                                        ?.browsers.map(item => (
+                                            <option
+                                                key={`${item.name}-${item.id}`}
+                                                value={item.id}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                </Form.Select>
+                                {/* {updateListAtSelection === 'Select an At' ? (
                                     <Form.Select
                                         value={updateListBrowserSelection}
                                         onChange={handleListBrowserChange}
@@ -1256,7 +1288,7 @@ const ManageTestQueue = ({
                                             );
                                         })}
                                     </Form.Select>
-                                ) : null}
+                                ) : null} */}
                             </Form.Group>
                             <Form.Group className="form-group">
                                 <Button
@@ -1610,8 +1642,7 @@ const ManageTestQueue = ({
 };
 
 CustomToggle.propTypes = {
-    children: PropTypes.array,
-    className: PropTypes.string,
+    children: PropTypes.string,
     onClick: PropTypes.func
 };
 
