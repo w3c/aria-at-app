@@ -87,6 +87,7 @@ function AddTestToQueueWithConfirmation({
                 closeLabel={hasAutomationSupport ? 'Cancel' : 'Ok'}
                 staticBackdrop={true}
                 actions={actions}
+                useOnHide
                 handleClose={async () => {
                     if (hasAutomationSupport) {
                         setShowConfirmation(false);
