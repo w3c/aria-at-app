@@ -241,11 +241,11 @@ const ManageTestQueue = ({
     const [updateBrowserIdForUpdate, setUpdateBrowserIdForUpdate] =
         useState('');
     const [updateAtSelection, setUpdateAtSelection] = useState(
-        'Select an Assistive Tecchnology'
+        'Select an Assistive Technology'
     );
     const [updateAtForButton, setUpdateAtForButton] = useState('');
     const [updateListAtSelection, setUpdateListAtSelection] = useState(
-        'Select an Assistive Tecchnology'
+        'Select an Assistive Technology'
     );
     const [updateBrowserSelection, setUpdateBrowserSelection] = useState('');
     const [updateListBrowserSelection, setUpdateListBrowserSelection] =
@@ -1146,7 +1146,7 @@ const ManageTestQueue = ({
                                     required
                                 >
                                     <option disabled>
-                                        Select an Assistive Tecchnology
+                                        Select an Assistive Technology
                                     </option>
                                     {ats.map(item => {
                                         return (
@@ -1200,7 +1200,7 @@ const ManageTestQueue = ({
                                         );
                                         setUpdatePhaseForButton('');
                                         setUpdateListAtSelection(
-                                            'Select an Assistive Tecchnology'
+                                            'Select an Assistive Technology'
                                         );
                                         setUpdateAtForButton('');
                                         setUpdateListBrowserSelection('');
@@ -1388,7 +1388,7 @@ const ManageTestQueue = ({
                                             Assistive Technology
                                         </Form.Label>
                                         {updateListAtSelection ===
-                                        'Select an Assistive Tecchnology' ? (
+                                        'Select an Assistive Technology' ? (
                                             <Form.Select
                                                 value={updateAtSelection}
                                                 onChange={handleAtChange}
@@ -1396,7 +1396,7 @@ const ManageTestQueue = ({
                                             >
                                                 <option>
                                                     Select an Assitive
-                                                    Tecchnology
+                                                    Technology
                                                 </option>
                                                 {ats.map(item => {
                                                     return (
@@ -1465,7 +1465,7 @@ const ManageTestQueue = ({
                                 'updateRequiredReport'
                             );
                             setUpdateAtSelection(
-                                'Select an Assistive Tecchnology'
+                                'Select an Assistive Technology'
                             );
                             setUpdateBrowserSelection('');
                         }
@@ -1474,7 +1474,7 @@ const ManageTestQueue = ({
                                 'deleteRequiredReport'
                             );
                             setUpdateAtSelection(
-                                'Select an Assistive Tecchnology'
+                                'Select an Assistive Technology'
                             );
                             setUpdateBrowserSelection('');
                         }
