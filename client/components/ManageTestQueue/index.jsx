@@ -1481,7 +1481,7 @@ const ManageTestQueue = ({
                         setShowEditAtBrowserModal(true);
                     }}
                     handleClose={() => {
-                        setUpdateAtSelection('Select an Assistive Tecchnology');
+                        setUpdateAtSelection('Select an Assistive Technology');
                         setShowEditAtBrowserModal(true);
                     }}
                     staticBackdrop={true}
