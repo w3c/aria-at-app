@@ -1395,7 +1395,7 @@ const ManageTestQueue = ({
                                                 required
                                             >
                                                 <option>
-                                                    Select an Assitive
+                                                    Select an Assistive
                                                     Technology
                                                 </option>
                                                 {ats.map(item => {
