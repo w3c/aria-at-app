@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
@@ -35,50 +35,61 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
         });
 
     const [collectedData, setCollectedData] = useState([]);
+    const requestedTestRunIds = useRef(new Set());
+
+    const filteredTestPlanRuns = useMemo(() => {
+        if (!testPlanRunsQueryResult?.testPlanRuns) {
+            return [];
+        }
+        return testPlanRunsQueryResult.testPlanRuns.filter(testPlanRun =>
+            isBot(testPlanRun.tester)
+        );
+    }, [testPlanRunsQueryResult?.testPlanRuns]);
 
     useEffect(() => {
-        if (testPlanRunsQueryResult && testPlanRunsQueryResult.testPlanRuns) {
-            const ids = testPlanRunsQueryResult.testPlanRuns.map(run => run.id);
-
-            if (collectionJobStatusQueryResult) {
-                setCollectedData(prev => [
-                    ...prev,
-                    collectionJobStatusQueryResult?.collectionJobByTestPlanRunId
-                        ?.status
-                ]);
-            }
-
+        if (filteredTestPlanRuns && filteredTestPlanRuns.length > 0) {
+            const ids = filteredTestPlanRuns.map(run => run.id);
             for (const id of ids) {
-                getCollectionJobStatus({ variables: { testPlanRunId: id } });
+                if (!requestedTestRunIds.current.has(id)) {
+                    requestedTestRunIds.current.add(id);
+                    getCollectionJobStatus({
+                        variables: { testPlanRunId: id }
+                    });
+                }
             }
         }
-    }, [testPlanRunsQueryResult, collectionJobStatusQueryResult]);
+    }, [filteredTestPlanRuns]);
+
+    useEffect(() => {
+        if (collectionJobStatusQueryResult?.collectionJobByTestPlanRunId) {
+            const { status } =
+                collectionJobStatusQueryResult.collectionJobByTestPlanRunId;
+            setCollectedData(prev => [...prev, status]);
+        }
+    }, [collectionJobStatusQueryResult?.collectionJobByTestPlanRunId]);
 
     const [numTestsCompleted, numTestsQueued, numTestsCancelled] =
         useMemo(() => {
             const res = [0, 0, 0];
             if (
-                testPlanRunsQueryResult &&
-                testPlanRunsQueryResult.testPlanRuns
+                filteredTestPlanRuns &&
+                filteredTestPlanRuns.length &&
+                collectedData.length === filteredTestPlanRuns.length
             ) {
-                const { testPlanRuns } = testPlanRunsQueryResult;
-                for (let i = 0; i < testPlanRuns.length; i++) {
-                    if (!isBot(testPlanRuns[i].tester)) {
-                        continue;
-                    }
+                for (let i = 0; i < filteredTestPlanRuns.length; i++) {
                     const status = collectedData[i];
-                    res[0] += testPlanRuns[i].testResults.length;
+                    res[0] += filteredTestPlanRuns[i].testResults.length;
                     switch (status) {
                         case 'COMPLETED':
                         case 'RUNNING':
                             res[1] +=
                                 runnableTestsLength -
-                                testPlanRuns[i].testResults.length;
+                                filteredTestPlanRuns[i].testResults.length;
                             break;
                         case 'CANCELLED':
                             res[2] +=
                                 runnableTestsLength -
-                                testPlanRuns[i].testResults.length;
+                                filteredTestPlanRuns[i].testResults.length;
                             break;
                         default:
                             break;
@@ -86,8 +97,7 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
                 }
                 if (
                     res[0] + res[2] ===
-                    runnableTestsLength *
-                        testPlanRunsQueryResult.testPlanRuns.length
+                    runnableTestsLength * filteredTestPlanRuns.length
                 ) {
                     stopPolling();
                 }
@@ -95,10 +105,14 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
             return res;
         }, [testPlanRunsQueryResult, collectedData, stopPolling, startPolling]);
 
-    if (!testPlanRunsQueryResult) {
+    if (
+        !filteredTestPlanRuns ||
+        filteredTestPlanRuns.length === 0 ||
+        !collectedData ||
+        !(collectedData.length === filteredTestPlanRuns.length)
+    ) {
         return null;
     }
-
     return (
         <BotRunTestStatusUnorderedList className="text-secondary fs-6">
             <li className="m-2">
