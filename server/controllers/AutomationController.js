@@ -13,6 +13,9 @@ const { getBrowserVersions } = require('../models/services/BrowserService');
 const { getTestPlanRuns } = require('../models/services/TestPlanRunService');
 const { HttpQueryError } = require('apollo-server-core');
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
+const {
+    getTestPlanReports
+} = require('../models/services/TestPlanReportService');
 
 const axiosConfig = {
     headers: {
@@ -92,21 +95,28 @@ const updateJobStatus = async (req, res) => {
 };
 
 const getApprovedTestPlanRuns = async testPlanRun => {
-    const { testPlanReport } = testPlanRun;
-    const { testPlanVersion } = testPlanReport;
-
+    const {
+        testPlanReport: { testPlanVersion }
+    } = testPlanRun;
+    const testPlanReports = await getTestPlanReports(null, {
+        testPlanVersionId: testPlanVersion.id
+    });
     // To be considered "Approved", a test plan run must be associated with a test plan report
     // that is associated with a test plan version that is in "CANDIDATE" or "RECOMMENDED" or
     // "DRAFT" phase and has been marked as final.
+    const finalizedTestPlanReport = testPlanReports.find(
+        each => each.markedFinalAt !== null
+    );
     if (
         !testPlanVersion ||
         testPlanVersion.phase === 'RD' ||
-        (testPlanVersion.phase === 'DRAFT' && !testPlanReport.markedFinalAt)
-    )
+        (testPlanVersion.phase === 'DRAFT' && !finalizedTestPlanReport)
+    ) {
         return null;
+    }
 
     return getTestPlanRuns(null, {
-        testPlanReportId: testPlanReport.id
+        testPlanReportId: finalizedTestPlanReport.id
     });
 };
 
@@ -173,24 +183,33 @@ const updateOrCreateTestResultWithResponses = async ({
         atVersionId,
         browserVersionId,
         scenarioResults: baseTestResult.scenarioResults.map(
-            (scenarioResult, i) => ({
-                ...scenarioResult,
-                output: outputs[i],
-                assertionResults: scenarioResult.assertionResults.map(
-                    (assertionResult, j) => ({
-                        ...assertionResult,
-                        passed: historicalTestResult
-                            ? historicalTestResult.scenarioResults[i]
-                                  .assertionResults[j].passed
-                            : false,
-                        failedReason: historicalTestResult
-                            ? historicalTestResult.scenarioResults[i]
-                                  .assertionResults[j].failedReason
-                            : 'AUTOMATED_OUTPUT'
-                    })
-                ),
-                unexpectedBehaviors: []
-            })
+            (scenarioResult, i) => {
+                // Check if output matches historical output
+                const outputMatches =
+                    historicalTestResult &&
+                    historicalTestResult.scenarioResults[i] &&
+                    historicalTestResult.scenarioResults[i].output ===
+                        outputs[i];
+
+                return {
+                    ...scenarioResult,
+                    output: outputs[i],
+                    assertionResults: scenarioResult.assertionResults.map(
+                        (assertionResult, j) => ({
+                            ...assertionResult,
+                            passed: outputMatches
+                                ? historicalTestResult.scenarioResults[i]
+                                      .assertionResults[j].passed
+                                : false,
+                            failedReason: outputMatches
+                                ? historicalTestResult.scenarioResults[i]
+                                      .assertionResults[j].failedReason
+                                : 'AUTOMATED_OUTPUT'
+                        })
+                    ),
+                    unexpectedBehaviors: []
+                };
+            }
         )
     });
 
