@@ -98,9 +98,13 @@ const getApprovedTestPlanRuns = async testPlanRun => {
     const {
         testPlanReport: { testPlanVersion }
     } = testPlanRun;
+
     const testPlanReports = await getTestPlanReports(null, {
-        testPlanVersionId: testPlanVersion.id
+        testPlanVersionId: testPlanVersion.id,
+        atId: testPlanRun.testPlanReport.at.id,
+        browserId: testPlanRun.testPlanReport.browser.id
     });
+
     // To be considered "Approved", a test plan run must be associated with a test plan report
     // that is associated with a test plan version that is in "CANDIDATE" or "RECOMMENDED" or
     // "DRAFT" phase and has been marked as final.
