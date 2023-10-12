@@ -31,11 +31,6 @@ const StyledPill = styled.span`
         width: auto;
         margin: 0.75rem;
     }
-
-    // .check {
-    //     margin: 0;
-    //     color: #969696;
-    // }
 `;
 
 const VersionString = ({

@@ -105,7 +105,7 @@ const DisclosureComponent = ({
                             disclosureContainerView[index];
 
                         return (
-                            <Fragment key={`disclosure-${buttonTitle}-key`}>
+                            <Fragment key={`disclosure-${index}-key`}>
                                 <Tag>
                                     <DisclosureButton
                                         id={`disclosure-btn-${componentId}-${buttonTitle}`}
@@ -175,7 +175,9 @@ DisclosureComponent.propTypes = {
     componentId: PropTypes.string,
     title: PropTypes.oneOfType([
         PropTypes.string,
-        PropTypes.arrayOf(PropTypes.string)
+        PropTypes.node,
+        PropTypes.arrayOf(PropTypes.string),
+        PropTypes.arrayOf(PropTypes.node)
     ]),
     disclosureContainerView: PropTypes.oneOfType([
         PropTypes.node,

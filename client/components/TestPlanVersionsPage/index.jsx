@@ -602,6 +602,7 @@ const TestPlanVersionsPage = () => {
             </ThemeTable>
             <PageSpacer />
             <DisclosureComponent
+                // section:
                 componentId="versionHistory"
                 title={testPlanVersions.map(testPlanVersion => {
                     return (
