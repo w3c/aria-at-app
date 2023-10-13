@@ -38,7 +38,9 @@ export default (
                                 name: '2021.2111.13',
                                 releasedAt: '2021-11-01T04:00:00.000Z'
                             }
-                        ]
+                        ],
+                        candidateBrowsers: [{ id: '2' }],
+                        recommendedBrowsers: [{ id: '1' }, { id: '2' }]
                     },
                     {
                         id: '2',
@@ -49,7 +51,9 @@ export default (
                                 name: '2020.4',
                                 releasedAt: '2021-02-19T05:00:00.000Z'
                             }
-                        ]
+                        ],
+                        candidateBrowsers: [{ id: '2' }],
+                        recommendedBrowsers: [{ id: '1' }, { id: '2' }]
                     },
                     {
                         id: '3',
@@ -60,7 +64,9 @@ export default (
                                 name: '11.6 (20G165)',
                                 releasedAt: '2019-09-01T04:00:00.000Z'
                             }
-                        ]
+                        ],
+                        candidateBrowsers: [{ id: '3' }],
+                        recommendedBrowsers: [{ id: '2' }, { id: '3' }]
                     }
                 ],
                 browsers: [
@@ -366,6 +372,7 @@ export default (
                                 id: '7',
                                 metrics: {},
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -525,6 +532,7 @@ export default (
                                     requiredAssertionsPassedCount: 28
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -1009,6 +1017,7 @@ export default (
                                     requiredAssertionsPassedCount: 48
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -1340,6 +1349,7 @@ export default (
                                     requiredAssertionsPassedCount: 44
                                 },
                                 markedFinalAt: '2022-07-06T00:00:00.000Z',
+                                isFinal: true,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -1488,6 +1498,7 @@ export default (
                                     requiredAssertionsPassedCount: 25
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -1576,6 +1587,7 @@ export default (
                                     requiredAssertionsPassedCount: 25
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -1683,6 +1695,7 @@ export default (
                                     requiredAssertionsPassedCount: 14
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -1771,6 +1784,7 @@ export default (
                                     requiredAssertionsPassedCount: 16
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -1859,6 +1873,7 @@ export default (
                                     requiredAssertionsPassedCount: 14
                                 },
                                 markedFinalAt: '2022-07-06T00:00:00.000Z',
+                                isFinal: true,
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -1977,6 +1992,7 @@ export default (
                                     requiredAssertionsPassedCount: 14
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -2065,6 +2081,7 @@ export default (
                                     requiredAssertionsPassedCount: 20
                                 },
                                 markedFinalAt: '2022-07-06T00:00:00.000Z',
+                                isFinal: true,
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -2213,6 +2230,7 @@ export default (
                                     requiredAssertionsPassedCount: 23
                                 },
                                 markedFinalAt: '2022-07-06T00:00:00.000Z',
+                                isFinal: true,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -2346,6 +2364,7 @@ export default (
                                     requiredAssertionsPassedCount: 16
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -2447,6 +2466,7 @@ export default (
                             id: '7',
                             metrics: {},
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -2506,6 +2526,7 @@ export default (
                                 requiredAssertionsPassedCount: 44
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -2654,6 +2675,7 @@ export default (
                                 requiredAssertionsPassedCount: 25
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '1',
                                 name: 'JAWS'
@@ -2742,6 +2764,7 @@ export default (
                                 requiredAssertionsPassedCount: 25
                             },
                             markedFinalAt: '2022-07-07T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '2',
                                 name: 'NVDA'
@@ -2858,6 +2881,7 @@ export default (
                                 requiredAssertionsPassedCount: 48
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '2',
                                 name: 'NVDA'
@@ -3162,6 +3186,7 @@ export default (
                                 requiredAssertionsPassedCount: 14
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -3250,6 +3275,7 @@ export default (
                                 requiredAssertionsPassedCount: 16
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '2',
                                 name: 'NVDA'
@@ -3338,6 +3364,7 @@ export default (
                                 requiredAssertionsPassedCount: 14
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '1',
                                 name: 'JAWS'
@@ -3456,6 +3483,7 @@ export default (
                                 requiredAssertionsPassedCount: 14
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -3544,6 +3572,7 @@ export default (
                                 requiredAssertionsPassedCount: 20
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '2',
                                 name: 'NVDA'
@@ -3692,6 +3721,7 @@ export default (
                                 requiredAssertionsPassedCount: 23
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -3825,6 +3855,7 @@ export default (
                                 requiredAssertionsPassedCount: 16
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '1',
                                 name: 'JAWS'
@@ -3941,6 +3972,7 @@ export default (
                                 requiredAssertionsPassedCount: 28
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '1',
                                 name: 'JAWS'
