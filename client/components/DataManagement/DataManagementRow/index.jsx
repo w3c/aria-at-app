@@ -212,13 +212,6 @@ const DataManagementRow = ({
     }, [testPlanVersions]);
 
     const completedRequiredReports = testPlanVersion => {
-        // if (
-        //     testPlanVersion.title ===
-        //     'Action Menu Button Example Using element.focus()'
-        // ) {
-        //     debugger;
-        // }
-
         const reportAtBrowsers = testPlanVersion.testPlanReports
             .filter(testPlanReport => testPlanReport.isFinal)
             .map(report => {
