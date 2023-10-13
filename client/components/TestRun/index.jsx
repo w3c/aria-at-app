@@ -137,6 +137,7 @@ const TestRun = () => {
             : null;
     const testerId = openAsUserId || userId;
     const isAdminReviewer = !!(isAdmin && openAsUserId);
+    const openAsUser = users.find(user => user.id === openAsUserId);
 
     useEffect(() => {
         if (data) setup(data);
@@ -832,7 +833,6 @@ const TestRun = () => {
     const renderTestsCompletedInfoBox = () => {
         let isReviewingBot = false;
         if (openAsUserId) {
-            const openAsUser = users.find(user => user.id === openAsUserId);
             isReviewingBot = isBot(openAsUser);
         }
 
@@ -972,19 +972,30 @@ const TestRun = () => {
                             href={issueLink}
                         />
                     </li>
-                    <li>
-                        <OptionButton
-                            text="Start Over"
-                            icon={
-                                <FontAwesomeIcon
-                                    icon={faRedo}
-                                    color="#94979b"
-                                />
-                            }
-                            onClick={handleStartOverButtonClick}
-                            disabled={!isSignedIn}
-                        />
-                    </li>
+                    {isBot(openAsUser) ? (
+                        <li>
+                            <OptionButton
+                                text="View Log"
+                                target="_blank"
+                                // href={TODO: link to automation job log}
+                            />
+                        </li>
+                    ) : (
+                        <li>
+                            <OptionButton
+                                text="Start Over"
+                                icon={
+                                    <FontAwesomeIcon
+                                        icon={faRedo}
+                                        color="#94979b"
+                                    />
+                                }
+                                onClick={handleStartOverButtonClick}
+                                disabled={!isSignedIn}
+                            />
+                        </li>
+                    )}
+
                     <li>
                         <OptionButton
                             text={!isSignedIn ? 'Close' : 'Save and Close'}
@@ -1141,7 +1152,6 @@ const TestRun = () => {
     let openAsUserHeading = null;
 
     if (openAsUserId) {
-        const openAsUser = users.find(user => user.id === openAsUserId);
         if (isBot(openAsUser)) {
             openAsUserHeading = (
                 <div className="test-info-entity reviewing-as bot">

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
-import FinishBotRunDialog from './FinishBotRunDialog';
+import ManageBotRunDialog from '.';
 
-const FinishBotRunButtonWithDialog = ({
+const ManageBotRunDialogWithButton = ({
     testPlanRun,
     testPlanReportId,
     testers,
@@ -21,9 +21,9 @@ const FinishBotRunButtonWithDialog = ({
                 }}
                 className="mb-2"
             >
-                Finish Bot Run
+                Manage {testPlanRun?.tester?.username} Run
             </Button>
-            <FinishBotRunDialog
+            <ManageBotRunDialog
                 testPlanRun={testPlanRun}
                 show={showDialog}
                 setShow={setShowDialog}
@@ -42,7 +42,7 @@ const FinishBotRunButtonWithDialog = ({
     );
 };
 
-FinishBotRunButtonWithDialog.propTypes = {
+ManageBotRunDialogWithButton.propTypes = {
     testPlanRun: PropTypes.object.isRequired,
     testPlanReportId: PropTypes.string.isRequired,
     testers: PropTypes.array.isRequired,
@@ -50,4 +50,4 @@ FinishBotRunButtonWithDialog.propTypes = {
     onDelete: PropTypes.func.isRequired
 };
 
-export default FinishBotRunButtonWithDialog;
+export default ManageBotRunDialogWithButton;

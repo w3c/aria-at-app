@@ -22,9 +22,9 @@ import { convertDateToString } from '../../utils/formatter';
 import './TestQueueRow.css';
 import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListItem';
 import { isBot } from '../../utils/automation';
-import FinishBotRunButtonWithDialog from '../FinishBotRunButtonWithDialog';
 import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
 import BotRunTestStatusList from '../BotRunTestStatusList';
+import ManageBotRunDialogWithButton from '../ManageBotRunDialog/WithButton';
 
 const TestQueueRow = ({
     user = {},
@@ -347,7 +347,7 @@ const TestQueueRow = ({
             return (
                 <>
                     {botTestPlanRun && (
-                        <FinishBotRunButtonWithDialog
+                        <ManageBotRunDialogWithButton
                             testPlanRun={botTestPlanRun}
                             testPlanReportId={testPlanReport.id}
                             testers={testers}
