@@ -290,7 +290,8 @@ const TestPlanVersionsPage = () => {
     testPlanVersions.forEach(testPlanVersion => {
         const event = {
             id: testPlanVersion.id,
-            updatedAt: testPlanVersion.updatedAt
+            updatedAt: testPlanVersion.updatedAt,
+            versionString: testPlanVersion.versionString
         };
         timelineForAllVersions.push({ ...event, phase: 'RD' });
 
@@ -409,7 +410,9 @@ const TestPlanVersionsPage = () => {
                                                 testPlanVersion
                                             )}
                                             autoWidth={false}
-                                        />
+                                        >
+                                            {testPlanVersion.versionString}
+                                        </VersionString>
                                     </th>
                                     <td>
                                         {(() => {
@@ -582,7 +585,9 @@ const TestPlanVersionsPage = () => {
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}
-                            />
+                            >
+                                {testPlanVersion.versionString}
+                            </VersionString>
                         );
 
                         const eventBody = getEventBody(testPlanVersion.phase);
@@ -609,11 +614,7 @@ const TestPlanVersionsPage = () => {
                         <span
                             key={testPlanVersion.id}
                             aria-label={`${
-                                'V' +
-                                convertDateToString(
-                                    testPlanVersion.updatedAt,
-                                    'YY.MM.DD'
-                                )
+                                testPlanVersion.versionString
                             } ${derivePhaseName(
                                 testPlanVersion.phase
                             )} on ${getEventDate(testPlanVersion)}`}
@@ -624,7 +625,9 @@ const TestPlanVersionsPage = () => {
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}
-                            />
+                            >
+                                {testPlanVersion.versionString}
+                            </VersionString>
                             &nbsp;
                             <PhasePill fullWidth={false}>
                                 {testPlanVersion.phase}

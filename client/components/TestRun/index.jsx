@@ -622,11 +622,44 @@ const TestRun = () => {
         isSubmit = false
     ) => {
         const { id } = currentTest.testResult;
+
+        /*
+         * The shape of scenarioResults should be:
+         *
+         * {
+         * ..id,
+         * ..output,
+         * ..assertionResults: [
+         * ....{
+         * ......id
+         * ......passed
+         * ......failedReason
+         * ....},
+         * ....other assertionResults,
+         * ..],
+         * ..unexpectedBehaviors: []
+         * }
+         * */
+        const formattedScenarioResults = scenarioResults.map(
+            ({ assertionResults, id, output, unexpectedBehaviors }) => ({
+                id,
+                output: output,
+                unexpectedBehaviors: unexpectedBehaviors,
+                assertionResults: assertionResults.map(
+                    ({ failedReason, id, passed }) => ({
+                        id,
+                        passed: passed,
+                        failedReason: failedReason
+                    })
+                )
+            })
+        );
+
         let variables = {
             id,
             atVersionId,
             browserVersionId,
-            scenarioResults
+            scenarioResults: formattedScenarioResults
         };
 
         if (isSubmit) {

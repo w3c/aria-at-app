@@ -32,6 +32,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             gitSha
             gitMessage
             updatedAt
+            versionString
             draftPhaseReachedAt
             candidatePhaseReachedAt
             recommendedPhaseTargetDate

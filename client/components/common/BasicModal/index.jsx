@@ -1,7 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import styled from '@emotion/styled';
+import FocusTrapper from '../FocusTrapper';
+import { uniqueId } from 'lodash';
 
 const ModalTitleStyle = styled.h1`
     border: 0;
@@ -36,10 +38,15 @@ const BasicModal = ({
         headerRef.current.focus();
     }, [show]);
 
+    const id = useMemo(() => {
+        return uniqueId('focus-trapped-modal-');
+    }, []);
+
     return (
-        <>
+        <FocusTrapper isActive={show} trappedElId={id}>
             <Modal
                 show={show}
+                id={id}
                 centered={centered}
                 animation={animation}
                 onHide={useOnHide ? handleHide || handleClose : null}
@@ -82,7 +89,7 @@ const BasicModal = ({
                     </Modal.Footer>
                 )}
             </Modal>
-        </>
+        </FocusTrapper>
     );
 };
 
