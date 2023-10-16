@@ -4,11 +4,11 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import FinishBotRunDialog from '../components/FinishBotRunButtonWithDialog/FinishBotRunDialog';
+import ManageBotRunDialog from '../components/ManageBotRunDialog/';
 import {
     COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
     MARK_COLLECTION_JOB_AS_FINISHED
-} from '../components/FinishBotRunButtonWithDialog/queries';
+} from '../components/ManageBotRunDialog/queries';
 import '@testing-library/jest-dom/extend-expect';
 
 const mocks = [
@@ -51,11 +51,22 @@ describe('FinishBotRunDialog', () => {
     test('renders without crashing', () => {
         render(
             <MockedProvider mocks={mocks} addTypename={false}>
-                <FinishBotRunDialog
-                    testPlanRun={{ id: '1' }}
+                <ManageBotRunDialog
+                    testPlanRun={{
+                        id: '1',
+                        tester: {
+                            id: 1,
+                            username: 'NVDA Bot'
+                        }
+                    }}
                     show={true}
                     setShow={jest.fn()}
-                    testers={[]}
+                    testers={[
+                        {
+                            id: 1,
+                            username: 'NVDA Bot'
+                        }
+                    ]}
                     testPlanReportId="1"
                     onChange={jest.fn()}
                     onDelete={jest.fn()}
@@ -63,7 +74,7 @@ describe('FinishBotRunDialog', () => {
             </MockedProvider>
         );
 
-        expect(screen.getByText('Finish Bot Run')).toBeInTheDocument();
+        expect(screen.getByText('Manage NVDA Bot Run')).toBeInTheDocument();
     });
 
     test('triggers correct actions when buttons are clicked', async () => {
@@ -72,11 +83,22 @@ describe('FinishBotRunDialog', () => {
 
         render(
             <MockedProvider mocks={mocks} addTypename={false}>
-                <FinishBotRunDialog
-                    testPlanRun={{ id: '1' }}
+                <ManageBotRunDialog
+                    testPlanRun={{
+                        id: '1',
+                        tester: {
+                            id: 1,
+                            username: 'NVDA Bot'
+                        }
+                    }}
                     show={true}
                     setShow={jest.fn()}
-                    testers={[]}
+                    testers={[
+                        {
+                            id: 1,
+                            username: 'NVDA Bot'
+                        }
+                    ]}
                     testPlanReportId="1"
                     onChange={mockOnChange}
                     onDelete={mockOnDelete}

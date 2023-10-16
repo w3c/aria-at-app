@@ -93,6 +93,7 @@ const ManageBotRunDialog = ({
                 label: 'Mark as not finished',
                 variant: 'secondary',
                 onClick: async () => {
+                    await onChange();
                     // TODO: unmark all test results as finished
                     // if this is possible
                 }
@@ -102,6 +103,7 @@ const ManageBotRunDialog = ({
                 label: 'Mark as finished',
                 variant: 'secondary',
                 onClick: async () => {
+                    await onChange();
                     // TODO: resubmit all test results as finished
                 }
             });
