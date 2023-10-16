@@ -405,7 +405,6 @@ const TestPlanVersionsPage = () => {
                                 <tr key={testPlanVersion.id}>
                                     <th>
                                         <VersionString
-                                            date={testPlanVersion.updatedAt}
                                             iconColor={getIconColor(
                                                 testPlanVersion
                                             )}
@@ -581,7 +580,6 @@ const TestPlanVersionsPage = () => {
                     {timelineForAllVersions.map(testPlanVersion => {
                         const versionString = (
                             <VersionString
-                                date={testPlanVersion.updatedAt}
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}
@@ -621,7 +619,6 @@ const TestPlanVersionsPage = () => {
                         >
                             <VersionString
                                 circleCheckIcon={false}
-                                date={testPlanVersion.updatedAt}
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}

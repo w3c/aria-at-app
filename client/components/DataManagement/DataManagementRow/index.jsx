@@ -717,21 +717,15 @@ const DataManagementRow = ({
                 // If a version of the plan is not in the candidate phase and there is a recommended
                 // version, show string "Review of VERSION_STRING completed DATE"
                 if (otherTestPlanVersions.length) {
-                    const {
-                        latestVersion: otherLatestVersion,
-                        latestVersionDate: otherLatestVersionDate
-                    } = getVersionData(otherTestPlanVersions);
+                    const { latestVersion: otherLatestVersion } =
+                        getVersionData(otherTestPlanVersions);
 
                     const completionDate =
                         otherLatestVersion.recommendedPhaseReachedAt;
 
                     return (
                         <PhaseCell role="list">
-                            <VersionString
-                                role="listitem"
-                                date={otherLatestVersionDate}
-                                iconColor="#818F98"
-                            >
+                            <VersionString role="listitem" iconColor="#818F98">
                                 {otherLatestVersion.versionString}
                             </VersionString>
                             <span role="listitem" className="review-complete">
