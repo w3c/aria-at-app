@@ -605,7 +605,6 @@ const TestPlanVersionsPage = () => {
             </ThemeTable>
             <PageSpacer />
             <DisclosureComponent
-                // section:
                 componentId="versionHistory"
                 title={testPlanVersions.map(testPlanVersion => {
                     return (
@@ -636,11 +635,6 @@ const TestPlanVersionsPage = () => {
                 })}
                 disclosureContainerView={testPlanVersions.map(
                     testPlanVersion => {
-                        const vString = `V${convertDateToString(
-                            testPlanVersion.updatedAt,
-                            'YY.MM.DD'
-                        )}`;
-
                         // Gets the derived phase even if deprecated by checking
                         // the known dates on the testPlanVersion object
                         const derivedDeprecatedAtPhase =
@@ -691,7 +685,8 @@ const TestPlanVersionsPage = () => {
                                                     size="xs"
                                                     color="#818F98"
                                                 />
-                                                View tests in {vString}
+                                                View tests in{' '}
+                                                {testPlanVersion.versionString}
                                             </a>
                                         </li>
                                         {!hasFinalReports ? null : (
@@ -707,7 +702,9 @@ const TestPlanVersionsPage = () => {
                                                         color="#818F98"
                                                     />
                                                     View reports generated from{' '}
-                                                    {vString}
+                                                    {
+                                                        testPlanVersion.versionString
+                                                    }
                                                 </a>
                                             </li>
                                         )}
@@ -725,15 +722,16 @@ const TestPlanVersionsPage = () => {
                                         </dd>
                                     </CoveredAtDl>
                                     <ThemeTableHeader
-                                        id={`timeline-for-${vString}`}
+                                        id={`timeline-for-${testPlanVersion.versionString}`}
                                         className="timeline-for-version-table"
                                     >
-                                        Timeline for {vString}
+                                        Timeline for{' '}
+                                        {testPlanVersion.versionString}
                                     </ThemeTableHeader>
                                     <ThemeTable
                                         bordered
                                         responsive
-                                        aria-labelledby={`timeline-for-${vString}`}
+                                        aria-labelledby={`timeline-for-${testPlanVersion.versionString}`}
                                     >
                                         <thead>
                                             <tr>
