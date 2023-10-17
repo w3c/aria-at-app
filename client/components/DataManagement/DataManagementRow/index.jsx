@@ -21,7 +21,7 @@ import ReportStatusDot from '../../common/ReportStatusDot';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import VersionString from '../../common/VersionString';
 import PhasePill from '../../common/PhasePill';
-import { uniq as unique, uniqBy as uniqueBy } from 'lodash';
+import { differenceBy, uniq as unique, uniqBy as uniqueBy } from 'lodash';
 import { getVersionData } from '../utils';
 
 const StatusCell = styled.div`
@@ -210,6 +210,39 @@ const DataManagementRow = ({
             testPlanVersions.filter(({ phase }) => phase === 'RECOMMENDED')
         );
     }, [testPlanVersions]);
+
+    const completedRequiredReports = testPlanVersion => {
+        const reportAtBrowsers = testPlanVersion.testPlanReports
+            .filter(testPlanReport => testPlanReport.isFinal)
+            .map(report => {
+                return [report.at.id, report.browser.id];
+            });
+
+        let browsersKey;
+        if (testPlanVersion.phase === 'DRAFT') {
+            browsersKey = 'candidateBrowsers';
+        } else if (testPlanVersion.phase === 'CANDIDATE') {
+            browsersKey = 'recommendedBrowsers';
+        } else {
+            throw new Error('Unexpected case');
+        }
+
+        let requiredAtBrowsers = [];
+        ats.forEach(at => {
+            const browsers = at[browsersKey];
+            browsers.forEach(browser => {
+                requiredAtBrowsers.push([at.id, browser.id]);
+            });
+        });
+
+        const missingReports = differenceBy(
+            requiredAtBrowsers,
+            reportAtBrowsers,
+            (atId, browserId) => `${atId},${browserId}`
+        );
+
+        return missingReports.length === 0;
+    };
 
     const handleClickUpdateTestPlanVersionPhase = async (
         testPlanVersionId,
@@ -642,6 +675,7 @@ const DataManagementRow = ({
 
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
+
                     return (
                         <PhaseCell role="list" aria-setsize={isAdmin ? 3 : 2}>
                             <VersionString
@@ -652,32 +686,35 @@ const DataManagementRow = ({
                             >
                                 {latestVersion.versionString}
                             </VersionString>
-                            {isAdmin && (
-                                <Button
-                                    ref={ref => setFocusRef(ref)}
-                                    className="advance-button"
-                                    variant="secondary"
-                                    onClick={async () => {
-                                        setShowAdvanceModal(true);
-                                        setAdvanceModalData({
-                                            phase: derivePhaseName('CANDIDATE'),
-                                            version:
-                                                latestVersion.versionString,
-                                            advanceFunc: () => {
-                                                setShowAdvanceModal(false);
-                                                handleClickUpdateTestPlanVersionPhase(
-                                                    latestVersion.id,
-                                                    'CANDIDATE',
-                                                    testPlanVersionDataToInclude
-                                                );
-                                            },
-                                            coveredReports
-                                        });
-                                    }}
-                                >
-                                    Advance to Candidate
-                                </Button>
-                            )}
+                            {isAdmin &&
+                                completedRequiredReports(latestVersion) && (
+                                    <Button
+                                        ref={ref => setFocusRef(ref)}
+                                        className="advance-button"
+                                        variant="secondary"
+                                        onClick={async () => {
+                                            setShowAdvanceModal(true);
+                                            setAdvanceModalData({
+                                                phase: derivePhaseName(
+                                                    'CANDIDATE'
+                                                ),
+                                                version:
+                                                    latestVersion.versionString,
+                                                advanceFunc: () => {
+                                                    setShowAdvanceModal(false);
+                                                    handleClickUpdateTestPlanVersionPhase(
+                                                        latestVersion.id,
+                                                        'CANDIDATE',
+                                                        testPlanVersionDataToInclude
+                                                    );
+                                                },
+                                                coveredReports
+                                            });
+                                        }}
+                                    >
+                                        Advance to Candidate
+                                    </Button>
+                                )}
                             <span role="listitem">
                                 <TestPlanReportStatusDialogWithButton
                                     testPlanVersionId={latestVersion.id}
@@ -830,6 +867,7 @@ const DataManagementRow = ({
                     const DAYS_TO_PROVIDE_FEEDBACK = 120;
                     const shouldShowAdvanceButton =
                         isAdmin &&
+                        completedRequiredReports(latestVersion) &&
                         issuesCount === 0 &&
                         (recommendedTestPlanVersions.length ||
                             (!recommendedTestPlanVersions.length &&
