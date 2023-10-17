@@ -1,4 +1,4 @@
-const ModelService = require('./ModelService');
+const ModelService = require('./ModelService.js');
 const { AtBrowsers } = require('../');
 const { AT_BROWSERS_ATTRIBUTES } = require('./helpers');
 

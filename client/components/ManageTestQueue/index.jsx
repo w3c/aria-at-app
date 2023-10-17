@@ -1242,63 +1242,61 @@ const ManageTestQueue = ({
                                                 <td>{at.name}</td>
                                                 <td>{browser.name}</td>
                                                 <td>
-                                                    <TransparentButton>
+                                                    <TransparentButton
+                                                        onClick={() => {
+                                                            setIsDelete(false);
+                                                            setActionButtonLabel(
+                                                                'Save Changes'
+                                                            );
+                                                            setUpdateAtIdForUpdate(
+                                                                at.id
+                                                            );
+                                                            setUpdateBrowserIdForUpdate(
+                                                                browser.id
+                                                            );
+                                                            setUpdatePhaseForUpdate(
+                                                                phase
+                                                            );
+                                                            onOpenShowEditAtBrowserModal(
+                                                                'edit',
+                                                                phase
+                                                            );
+                                                        }}
+                                                    >
                                                         <FontAwesomeIcon
                                                             icon={faEdit}
                                                             color="#818F98"
-                                                            onClick={() => {
-                                                                setIsDelete(
-                                                                    false
-                                                                );
-                                                                setActionButtonLabel(
-                                                                    'Save Changes'
-                                                                );
-                                                                setUpdateAtIdForUpdate(
-                                                                    at.id
-                                                                );
-                                                                setUpdateBrowserIdForUpdate(
-                                                                    browser.id
-                                                                );
-                                                                setUpdatePhaseForUpdate(
-                                                                    phase
-                                                                );
-                                                                onOpenShowEditAtBrowserModal(
-                                                                    'edit',
-                                                                    phase
-                                                                );
-                                                            }}
                                                         />
                                                         <span className="sr-only">
                                                             Edit
                                                         </span>
                                                     </TransparentButton>
-                                                    <TransparentButton>
+                                                    <TransparentButton
+                                                        onClick={() => {
+                                                            setIsDelete(true);
+                                                            setActionButtonLabel(
+                                                                'Confirm Delete'
+                                                            );
+                                                            setUpdateAtIdForUpdate(
+                                                                at.id
+                                                            );
+                                                            setUpdateBrowserIdForUpdate(
+                                                                browser.id
+                                                            );
+                                                            setUpdatePhaseForUpdate(
+                                                                phase
+                                                            );
+                                                            onOpenShowEditAtBrowserModal(
+                                                                'delete',
+                                                                phase,
+                                                                at.name,
+                                                                browser.name
+                                                            );
+                                                        }}
+                                                    >
                                                         <FontAwesomeIcon
                                                             icon={faTrashAlt}
                                                             color="#ce1b4c"
-                                                            onClick={() => {
-                                                                setIsDelete(
-                                                                    true
-                                                                );
-                                                                setActionButtonLabel(
-                                                                    'Confirm Delete'
-                                                                );
-                                                                setUpdateAtIdForUpdate(
-                                                                    at.id
-                                                                );
-                                                                setUpdateBrowserIdForUpdate(
-                                                                    browser.id
-                                                                );
-                                                                setUpdatePhaseForUpdate(
-                                                                    phase
-                                                                );
-                                                                onOpenShowEditAtBrowserModal(
-                                                                    'delete',
-                                                                    phase,
-                                                                    at.name,
-                                                                    browser.name
-                                                                );
-                                                            }}
                                                         />
                                                         <span className="sr-only">
                                                             Remove
@@ -1464,20 +1462,14 @@ const ManageTestQueue = ({
                             runMutationForRequiredReportTable(
                                 'updateRequiredReport'
                             );
-                            setUpdateAtSelection(
-                                'Select an Assistive Technology'
-                            );
-                            setUpdateBrowserSelection('');
                         }
                         if (actionButtonLabel === 'Confirm Delete') {
                             runMutationForRequiredReportTable(
                                 'deleteRequiredReport'
                             );
-                            setUpdateAtSelection(
-                                'Select an Assistive Technology'
-                            );
-                            setUpdateBrowserSelection('');
                         }
+                        setUpdateAtSelection('Select an Assistive Technology');
+                        setUpdateBrowserSelection('');
                         setShowEditAtBrowserModal(true);
                     }}
                     handleClose={() => {

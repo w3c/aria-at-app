@@ -12,6 +12,10 @@ const updateRequiredReportResolver = async (
 
     let updateParams = {};
 
+    // These conditionals will change values in the At/Browsers table
+    // in the database. Each updateAtBrowser() call changes the boolean value
+    // for a particular row in the database. The booleans for two row need to be
+    // changed. So we call updateAtBrowser() twice.
     if (phase === 'IS_CANDIDATE') {
         updateParams = { isCandidate: false };
         await updateAtBrowser({ atId, browserId }, updateParams);
