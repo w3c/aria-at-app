@@ -4,8 +4,6 @@ const setupMockAutomationSchedulerServer = require('../util/mock-automation-sche
 const db = require('../../models/index');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const { markAsFinal } = require('../../resolvers/TestPlanReportOperations');
-const { getAtVersions } = require('../../models/services/AtService');
-const { getBrowserVersions } = require('../../models/services/BrowserService');
 const dbCleaner = require('../util/db-cleaner');
 const { default: axios } = require('axios');
 const {

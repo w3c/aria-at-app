@@ -10,13 +10,8 @@ const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/con
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const { getAtVersions } = require('../models/services/AtService');
 const { getBrowserVersions } = require('../models/services/BrowserService');
-const { getTestPlanRuns } = require('../models/services/TestPlanRunService');
 const { HttpQueryError } = require('apollo-server-core');
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
-const {
-    getTestPlanReports,
-    getTestPlanReportById
-} = require('../models/services/TestPlanReportService');
 const populateData = require('../services/PopulatedData/populateData');
 const {
     getFinalizedTestResults
