@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import BasicModal from '../common/BasicModal';
 import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
 import { useMutation, useQuery } from '@apollo/client';
 import {
     COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
+    DELETE_TEST_PLAN_RUN,
     MARK_COLLECTION_JOB_AS_FINISHED
 } from './queries';
 import DeleteButton from '../common/DeleteButton';
@@ -18,9 +19,10 @@ const ManageBotRunDialog = ({
     testers,
     show,
     setShow,
-    onChange,
-    onDelete
+    onChange
 }) => {
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
     const { data: collectionJobQuery } = useQuery(
         COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
         {
@@ -40,6 +42,13 @@ const ManageBotRunDialog = ({
             }
         }
     );
+
+    const [deleteTestPlanRun] = useMutation(DELETE_TEST_PLAN_RUN, {
+        variables: {
+            testPlanReportId: testPlanReportId,
+            userId: testPlanRun.tester.id
+        }
+    });
 
     const possibleReassignees = useMemo(
         () => testers.filter(t => !isBot(t)),
@@ -112,7 +121,7 @@ const ManageBotRunDialog = ({
             component: DeleteButton,
             props: {
                 ariaLabel: 'Delete bot run',
-                onClick: onDelete
+                onClick: () => setShowDeleteDialog(true)
             }
         });
         return _actions;
@@ -123,18 +132,50 @@ const ManageBotRunDialog = ({
         onChange,
         markCollectionJobFinished
     ]);
+    const deleteConfirmationContent = (
+        <>
+            <p>
+                The test plan run for <b>{testPlanRun.tester.username}</b> will
+                be deleted:
+            </p>
+            <p>
+                <b>Please press Delete to confirm this action.</b>
+            </p>
+        </>
+    );
 
     return (
-        <BasicModal
-            show={show}
-            handleHide={() => setShow(false)}
-            useOnHide={true}
-            title={`Manage ${testPlanRun.tester?.username} Run`}
-            cancelButton={false}
-            content=""
-            dialogClassName="manage-bot-run-dialog"
-            actions={actions}
-        />
+        <>
+            <BasicModal
+                show={showDeleteDialog}
+                handleHide={() => setShowDeleteDialog(false)}
+                useOnHide={true}
+                cancelButton={true}
+                title={`You are about to delete the run for ${testPlanRun.tester?.username}`}
+                content={deleteConfirmationContent}
+                actions={[
+                    {
+                        label: 'Delete',
+                        variant: 'danger',
+                        onClick: async () => {
+                            await deleteTestPlanRun();
+                            await onChange();
+                            setShowDeleteDialog(false);
+                        }
+                    }
+                ]}
+            />
+            <BasicModal
+                show={show}
+                handleHide={() => setShow(false)}
+                useOnHide={true}
+                title={`Manage ${testPlanRun.tester?.username} Run`}
+                cancelButton={false}
+                content=""
+                dialogClassName="manage-bot-run-dialog"
+                actions={actions}
+            />
+        </>
     );
 };
 
@@ -144,8 +185,7 @@ ManageBotRunDialog.propTypes = {
     setShow: PropTypes.func.isRequired,
     testers: PropTypes.array.isRequired,
     testPlanReportId: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired
 };
 
 export default ManageBotRunDialog;

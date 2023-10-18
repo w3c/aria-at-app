@@ -7,6 +7,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import ManageBotRunDialog from '../components/ManageBotRunDialog/';
 import {
     COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
+    DELETE_TEST_PLAN_RUN,
     MARK_COLLECTION_JOB_AS_FINISHED
 } from '../components/ManageBotRunDialog/queries';
 import '@testing-library/jest-dom/extend-expect';
@@ -44,10 +45,30 @@ const mocks = [
                 }
             }
         }
+    },
+    {
+        request: {
+            query: DELETE_TEST_PLAN_RUN,
+            variables: {
+                testPlanReportId: '1',
+                userId: 1
+            }
+        },
+        result: {
+            data: {
+                testPlanReport: {
+                    deleteTestPlanRun: {
+                        testPlanRun: {
+                            id: null
+                        }
+                    }
+                }
+            }
+        }
     }
 ];
 
-describe('FinishBotRunDialog', () => {
+describe('ManageBotRunDialog', () => {
     test('renders without crashing', () => {
         render(
             <MockedProvider mocks={mocks} addTypename={false}>
@@ -69,7 +90,6 @@ describe('FinishBotRunDialog', () => {
                     ]}
                     testPlanReportId="1"
                     onChange={jest.fn()}
-                    onDelete={jest.fn()}
                 />
             </MockedProvider>
         );
@@ -79,7 +99,6 @@ describe('FinishBotRunDialog', () => {
 
     test('triggers correct actions when buttons are clicked', async () => {
         const mockOnChange = jest.fn();
-        const mockOnDelete = jest.fn();
 
         render(
             <MockedProvider mocks={mocks} addTypename={false}>
@@ -101,7 +120,6 @@ describe('FinishBotRunDialog', () => {
                     ]}
                     testPlanReportId="1"
                     onChange={mockOnChange}
-                    onDelete={mockOnDelete}
                 />
             </MockedProvider>
         );
@@ -116,6 +134,14 @@ describe('FinishBotRunDialog', () => {
         await waitFor(() => expect(mockOnChange).toHaveBeenCalled());
 
         fireEvent.click(deleteButton);
-        expect(mockOnDelete).toHaveBeenCalled();
+        expect(
+            screen.getByText('You are about to delete the run for NVDA Bot')
+        ).toBeInTheDocument();
+
+        const deleteButtonInModal = screen.getByRole('button', {
+            name: 'Delete'
+        });
+        fireEvent.click(deleteButtonInModal);
+        expect(mockOnChange).toHaveBeenCalled();
     });
 });

@@ -18,3 +18,15 @@ export const MARK_COLLECTION_JOB_AS_FINISHED = gql`
         }
     }
 `;
+
+export const DELETE_TEST_PLAN_RUN = gql`
+    mutation DeleteTestPlanRun($testPlanReportId: ID!, $userId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            deleteTestPlanRun(userId: $userId) {
+                testPlanRun {
+                    id
+                }
+            }
+        }
+    }
+`;

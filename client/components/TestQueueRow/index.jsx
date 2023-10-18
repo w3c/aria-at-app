@@ -355,7 +355,7 @@ const TestQueueRow = ({
                             onDelete={() => {
                                 triggerDeleteResultsModal(
                                     evaluateTestPlanRunTitle(),
-                                    botTestPlanRun.username,
+                                    botTestPlanRun.tester.username,
                                     async () => {
                                         await triggerLoad(async () => {
                                             await handleRemoveTesterResults(
