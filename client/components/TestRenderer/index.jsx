@@ -20,6 +20,7 @@ import {
 } from '../../resources/aria-at-test-io-format.mjs';
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../utils/aria';
+import OutputTextArea from './OutputTextArea';
 
 const Container = styled.div`
     width: 100%;
@@ -49,7 +50,7 @@ const Text = styled.p`
     }
 `;
 
-const Feedback = styled.span`
+export const Feedback = styled.span`
     &.required:not(.highlight-required) {
         display: none;
     }
@@ -655,48 +656,11 @@ const TestRenderer = ({
                                         <InnerSectionHeadingText>
                                             {header}
                                         </InnerSectionHeadingText>
-                                        <Text>
-                                            <label
-                                                htmlFor={`speechoutput-${commandIndex}`}
-                                            >
-                                                {atOutput.description[0]}
-                                                {isSubmitted && (
-                                                    <Feedback
-                                                        className={`${
-                                                            atOutput
-                                                                .description[1]
-                                                                .required &&
-                                                            'required'
-                                                        } ${
-                                                            atOutput
-                                                                .description[1]
-                                                                .highlightRequired &&
-                                                            'highlight-required'
-                                                        }`}
-                                                    >
-                                                        {
-                                                            atOutput
-                                                                .description[1]
-                                                                .description
-                                                        }
-                                                    </Feedback>
-                                                )}
-                                            </label>
-                                            <textarea
-                                                key={`SpeechOutput__textarea__${commandIndex}`}
-                                                id={`speechoutput-${commandIndex}`}
-                                                autoFocus={
-                                                    isSubmitted &&
-                                                    atOutput.focus
-                                                }
-                                                value={atOutput.value}
-                                                onChange={e =>
-                                                    atOutput.change(
-                                                        e.target.value
-                                                    )
-                                                }
-                                            />
-                                        </Text>
+                                        <OutputTextArea
+                                            commandIndex={commandIndex}
+                                            atOutput={atOutput}
+                                            isSubmitted={isSubmitted}
+                                        />
                                         <h4
                                             id={`command-${commandIndex}-assertions-heading`}
                                         >
