@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useMutation } from '@apollo/client';
-import { Form } from 'react-bootstrap';
+import { Button, Form, Dropdown } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import {
+    faEdit,
+    faTrashAlt,
+    faChevronDown
+} from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import BasicModal from '../common/BasicModal';
 import UpdateVersionModal from '../common/UpdateVersionModal';
@@ -13,11 +17,34 @@ import {
     EDIT_AT_VERSION_MUTATION,
     DELETE_AT_VERSION_MUTATION
 } from '../TestQueue/queries';
+import {
+    CREATE_REQUIRED_REPORT_MUTATION,
+    UPDATE_REQUIRED_REPORT_MUTATION,
+    DELETE_REQUIRED_REPORT_MUTATION
+} from './queries';
 import { gitUpdatedDateToString } from '../../utils/gitUtils';
 import { convertStringToDate } from '../../utils/formatter';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
+import { ThemeTable, ThemeTableHeaderH2 } from '../common/ThemeTable';
+import PhasePill from '../common/PhasePill';
+
+const ModalInnerSectionContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const Row = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 1rem;
+`;
+
+const TransparentButton = styled.button`
+    border: none;
+    background-color: transparent;
+`;
 
 const DisclosureContainer = styled.div`
     // Following directives are related to the ManageTestQueue component
@@ -76,11 +103,12 @@ const DisclosureContainer = styled.div`
         }
     }
 
-    .disclosure-row-test-plans {
+    .disclosure-row-controls {
         display: grid;
         grid-auto-flow: column;
         grid-template-columns: 1fr 1fr 1fr 1fr;
         grid-gap: 1rem;
+        align-items: end;
     }
 
     .disclosure-form-label {
@@ -89,7 +117,105 @@ const DisclosureContainer = styled.div`
     }
 `;
 
+const CustomToggleButton = styled.button`
+    background-color: transparent;
+    width: 100%;
+    height: 38px;
+    text-align: center;
+
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: block;
+
+    .icon-container {
+        float: right;
+        margin-top: 2px;
+        margin-right: 3px;
+    }
+    .icon-chevron {
+        font-size: 0.8rem;
+    }
+`;
+
+const CustomToggleP = styled.p`
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    background-color: #fff;
+    padding: 2px;
+    width: 100%;
+    height: 38px;
+    cursor: default;
+    display: inline-block;
+`;
+
+const CustomToggleSpan = styled.span`
+    float: left;
+    margin-top: 2px;
+    margin-left: 20px;
+    background-color: ${props =>
+        props.phaseLabel === 'Phase Selection'
+            ? '#fff'
+            : props.phaseLabel === 'Candidate'
+            ? '#ff6c00'
+            : props.phaseLabel === 'Recommended'
+            ? '#8441de'
+            : 'black'};
+    border-radius: 14px;
+    padding: 2px 15px;
+    font-size: 1rem;
+    font-weight: 400;
+    color: ${props =>
+        props.phaseLabel === 'Phase Selection' ? 'black' : '#fff'};
+`;
+
+// You can learn everything about this component here: https://react-bootstrap.netlify.app/docs/components/dropdowns#custom-dropdown-components
+const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+    <CustomToggleButton
+        ref={ref}
+        onClick={e => {
+            e.preventDefault();
+            onClick(e);
+        }}
+    >
+        <CustomToggleP
+            ref={ref}
+            onClick={e => {
+                e.preventDefault();
+                onClick(e);
+            }}
+        >
+            <CustomToggleSpan phaseLabel={children}>
+                {children}
+            </CustomToggleSpan>
+            <span className="icon-container">
+                <FontAwesomeIcon
+                    className="icon-chevron"
+                    icon={faChevronDown}
+                />
+            </span>
+        </CustomToggleP>
+    </CustomToggleButton>
+));
+
+const CustomMenu = React.forwardRef(({ children, className }, ref) => {
+    const value = '';
+
+    return (
+        <div ref={ref} className={className}>
+            <ul>
+                {React.Children.toArray(children).filter(
+                    child =>
+                        !value ||
+                        child.props.children.toLowerCase().startsWith(value)
+                )}
+            </ul>
+        </div>
+    );
+});
+
 const ManageTestQueue = ({
+    enableManageRequiredReports = false,
     ats = [],
     browsers = [],
     testPlanVersions = [],
@@ -103,8 +229,33 @@ const ManageTestQueue = ({
     const editAtVersionButtonRef = useRef();
     const deleteAtVersionButtonRef = useRef();
 
+    // Find Manage Required Reports Modal
+    const [showEditAtBrowserModal, setShowEditAtBrowserModal] = useState(true);
+    const [requiredReportsModalTitle, setRequiredReportsModalTitle] =
+        useState('');
+
+    const [isDelete, setIsDelete] = useState(false);
+    const [actionButtonLabel, setActionButtonLabel] = useState('Save Changes');
+    const [updateAtIdForUpdate, setUpdateAtIdForUpdate] = useState('');
+    const [updatePhaseForUpdate, setUpdatePhaseForUpdate] = useState('');
+    const [updateBrowserIdForUpdate, setUpdateBrowserIdForUpdate] =
+        useState('');
+    const [updateAtSelection, setUpdateAtSelection] = useState(
+        'Select an Assistive Technology'
+    );
+    const [updateAtForButton, setUpdateAtForButton] = useState('');
+    const [updateListAtSelection, setUpdateListAtSelection] = useState(
+        'Select an Assistive Technology'
+    );
+    const [updateBrowserSelection, setUpdateBrowserSelection] = useState('');
+    const [updateListBrowserSelection, setUpdateListBrowserSelection] =
+        useState('');
+    const [updatePhaseSelection, setUpdatePhaseSelection] =
+        useState('Phase Selection');
+    const [updatePhaseForButton, setUpdatePhaseForButton] = useState('');
     const [showManageATs, setShowManageATs] = useState(false);
     const [showAddTestPlans, setShowAddTestPlans] = useState(false);
+    const [showManageReqReports, setShowManageReqReports] = useState(false);
     const [selectedManageAtId, setSelectedManageAtId] = useState('1');
     const [selectedManageAtVersions, setSelectedManageAtVersions] = useState(
         []
@@ -144,9 +295,256 @@ const ManageTestQueue = ({
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
     const [deleteAtVersion] = useMutation(DELETE_AT_VERSION_MUTATION);
+    const [createRequiredReport] = useMutation(CREATE_REQUIRED_REPORT_MUTATION);
+    const [updateRequiredReport] = useMutation(UPDATE_REQUIRED_REPORT_MUTATION);
+    const [deleteRequiredReport] = useMutation(DELETE_REQUIRED_REPORT_MUTATION);
+
+    const [atBrowserCombinations, setAtBrowserCombinations] = useState([
+        ...ats.flatMap(at =>
+            at.candidateBrowsers?.map(browser => ({
+                at,
+                browser,
+                phase: 'CANDIDATE'
+            }))
+        ),
+        ...ats.flatMap(at =>
+            at.recommendedBrowsers?.map(browser => ({
+                at,
+                browser,
+                phase: 'RECOMMENDED'
+            }))
+        )
+    ]);
+
+    const setPhase = phase => {
+        setUpdatePhaseSelection(phase);
+        if (phase === 'Candidate' || phase === 'Recommended') {
+            setUpdatePhaseForButton(phase.toUpperCase());
+        }
+    };
+
+    const onOpenShowEditAtBrowserModal = (
+        type = 'edit',
+        phase,
+        at = '',
+        browser = ''
+    ) => {
+        if (type === 'edit') {
+            setRequiredReportsModalTitle(
+                <p>
+                    Edit the following AT/Browser pair for{' '}
+                    <PhasePill fullWidth={false} forHeader={true}>
+                        {phase}
+                    </PhasePill>{' '}
+                    required reports
+                </p>
+            );
+        }
+
+        if (type === 'delete') {
+            setRequiredReportsModalTitle(
+                <p>
+                    Delete {at} and {browser} pair for{' '}
+                    <PhasePill fullWidth={false} forHeader={true}>
+                        {phase}
+                    </PhasePill>{' '}
+                    required reports
+                </p>
+            );
+        }
+        setShowEditAtBrowserModal(false);
+    };
+
+    const runMutationForRequiredReportTable = async mutation => {
+        let atId = updateAtForButton;
+        let browserId = updateListBrowserSelection;
+
+        if (mutation === 'createRequiredReport') {
+            await triggerLoad(async () => {
+                try {
+                    atBrowserCombinations.forEach(({ at, browser, phase }) => {
+                        if (
+                            updateAtForButton === at.id &&
+                            updateListBrowserSelection === browser.id &&
+                            updatePhaseForButton === phase
+                        ) {
+                            throw new Error(
+                                'A duplicate Entry was detected in the table'
+                            );
+                        }
+                    });
+                    const { data } = await createRequiredReport({
+                        variables: {
+                            atId: atId,
+                            browserId: browserId,
+                            phase: `IS_${updatePhaseForButton}`
+                        }
+                    });
+
+                    const createdRequiredReport =
+                        data.requiredReport.createRequiredReport;
+
+                    // Verify that the created required report was actually created before updating
+                    // the dataset
+                    if (createdRequiredReport) {
+                        setAtBrowserCombinations(
+                            [
+                                ...atBrowserCombinations,
+                                {
+                                    at: ats.find(
+                                        at =>
+                                            at.id === createdRequiredReport.atId
+                                    ),
+                                    browser: browsers.find(
+                                        browser =>
+                                            browser.id ===
+                                            createdRequiredReport.browserId
+                                    ),
+                                    phase: updatePhaseForButton
+                                }
+                            ].sort((a, b) => {
+                                if (a.phase < b.phase) return -1;
+                                if (a.phase > b.phase) return 1;
+                                return a.at.name.localeCompare(b.at.name);
+                            })
+                        );
+                    }
+                } catch (error) {
+                    setShowThemedModal(true);
+                    setThemedModalTitle(
+                        'Error Updating Required Reports Table'
+                    );
+                    setThemedModalContent(<>{error.message}</>);
+                }
+            }, 'Adding Phase requirement to the required reports table');
+        }
+        if (mutation === 'updateRequiredReport') {
+            await triggerLoad(async () => {
+                try {
+                    atBrowserCombinations.forEach(({ at, browser, phase }) => {
+                        if (
+                            updateAtSelection === at.id &&
+                            updateBrowserSelection === browser.id &&
+                            updatePhaseForUpdate === phase
+                        ) {
+                            throw new Error(
+                                'Cannnot update to a duplicate entry'
+                            );
+                        }
+                    });
+
+                    const { data } = await updateRequiredReport({
+                        variables: {
+                            atId: updateAtIdForUpdate,
+                            browserId: updateBrowserIdForUpdate,
+                            phase: `IS_${updatePhaseForUpdate}`,
+                            updateAtId: updateAtSelection,
+                            updateBrowserId: updateBrowserSelection
+                        }
+                    });
+
+                    const updatedRequiredReport =
+                        data.requiredReport.updateRequiredReport;
+
+                    // Verify that the created required report was actually created before updating
+                    // the dataset
+                    if (updatedRequiredReport) {
+                        setAtBrowserCombinations(
+                            [
+                                ...atBrowserCombinations,
+                                {
+                                    at: ats.find(
+                                        at =>
+                                            at.id === updatedRequiredReport.atId
+                                    ),
+                                    browser: browsers.find(
+                                        browser =>
+                                            browser.id ===
+                                            updatedRequiredReport.browserId
+                                    ),
+                                    phase: updatePhaseForUpdate
+                                }
+                            ]
+                                .filter(row => {
+                                    if (
+                                        row.at.id === updateAtIdForUpdate &&
+                                        row.browser.id ===
+                                            updateBrowserIdForUpdate &&
+                                        row.phase == updatePhaseForUpdate
+                                    ) {
+                                        return false;
+                                    }
+                                    return true;
+                                })
+                                .sort((a, b) => {
+                                    if (a.phase < b.phase) return -1;
+                                    if (a.phase > b.phase) return 1;
+                                    return a.at.name.localeCompare(b.at.name);
+                                })
+                        );
+                    }
+                } catch (error) {
+                    setShowThemedModal(true);
+                    setThemedModalTitle(
+                        'Error Updating Required Reports Table'
+                    );
+                    setThemedModalContent(<>{error.message}</>);
+                }
+            }, 'Adding Phase requirement to the required reports table');
+        }
+        if (mutation === 'deleteRequiredReport') {
+            await triggerLoad(async () => {
+                const { data } = await deleteRequiredReport({
+                    variables: {
+                        atId: updateAtIdForUpdate,
+                        browserId: updateBrowserIdForUpdate,
+                        phase: `IS_${updatePhaseForUpdate}`
+                    }
+                });
+
+                const deletedRequiredReport =
+                    data.requiredReport.deleteRequiredReport;
+
+                if (deletedRequiredReport) {
+                    setAtBrowserCombinations(
+                        [...atBrowserCombinations]
+                            .filter(row => {
+                                if (
+                                    row.at.id === updateAtIdForUpdate &&
+                                    row.browser.id ===
+                                        updateBrowserIdForUpdate &&
+                                    row.phase == updatePhaseForUpdate
+                                ) {
+                                    return false;
+                                }
+                                return true;
+                            })
+                            .sort((a, b) => {
+                                if (a.phase < b.phase) return -1;
+                                if (a.phase > b.phase) return 1;
+                                return a.at.name.localeCompare(b.at.name);
+                            })
+                    );
+                }
+            }, 'Adding Phase requirement to the required reports table');
+        }
+    };
 
     const onManageAtsClick = () => setShowManageATs(!showManageATs);
     const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
+    const onManageReqReportsClick = () =>
+        setShowManageReqReports(!showManageReqReports);
+
+    const disclosureTitle = enableManageRequiredReports
+        ? [
+              'Manage Assistive Technology Versions',
+              'Add Test Plans to the Test Queue'
+          ]
+        : [
+              'Manage Assistive Technology Versions',
+              'Add Test Plans to the Test Queue',
+              'Manage Required Reports'
+          ];
 
     useEffect(() => {
         const allTestPlanVersions = testPlanVersions
@@ -298,7 +696,7 @@ const ManageTestQueue = ({
 
     const onThemedModalClose = () => {
         setShowThemedModal(false);
-        focusButtonRef.current.focus();
+        if (focusButtonRef.current) focusButtonRef.current.focus();
     };
 
     const getAtVersionFromId = id => {
@@ -467,14 +865,31 @@ const ManageTestQueue = ({
         setShowThemedModal(true);
     };
 
+    const handleAtChange = e => {
+        const value = e.target.value;
+        setUpdateAtSelection(value);
+    };
+
+    const handleBrowserChange = e => {
+        const value = e.target.value;
+        setUpdateBrowserSelection(value);
+    };
+
+    const handleListAtChange = e => {
+        const value = e.target.value;
+        setUpdateListAtSelection(value);
+        setUpdateAtForButton(value);
+    };
+    const handleListBrowserChange = e => {
+        const value = e.target.value;
+        setUpdateListBrowserSelection(value);
+    };
+
     return (
         <LoadingStatus message={loadingMessage}>
             <DisclosureComponent
                 componentId="manage-test-queue"
-                title={[
-                    'Manage Assistive Technology Versions',
-                    'Add Test Plans to the Test Queue'
-                ]}
+                title={disclosureTitle}
                 disclosureContainerView={[
                     <DisclosureContainer key={`manage-test-queue-at-section`}>
                         <span>
@@ -555,7 +970,7 @@ const ManageTestQueue = ({
                             Select a Test Plan and version and an Assistive
                             Technology and Browser to add it to the Test Queue
                         </span>
-                        <div className="disclosure-row-test-plans">
+                        <div className="disclosure-row-controls">
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
                                     Test Plan
@@ -675,13 +1090,239 @@ const ManageTestQueue = ({
                                 !selectedBrowserId
                             }
                         />
+                    </DisclosureContainer>,
+                    <DisclosureContainer
+                        key={`manage-test-queue-required-reports`}
+                    >
+                        <span>
+                            Add required reports for a specific AT and Browser
+                            pair
+                        </span>
+                        <div className="disclosure-row-controls">
+                            <Form.Group className="form-group">
+                                <Form.Label className="disclosure-form-label">
+                                    Phase
+                                </Form.Label>
+                                <Dropdown>
+                                    <Dropdown.Toggle
+                                        as={CustomToggle}
+                                        id="dropdown-custom-components"
+                                    >
+                                        {updatePhaseSelection}
+                                    </Dropdown.Toggle>
+
+                                    <Dropdown.Menu
+                                        className="drop-down-div"
+                                        as={CustomMenu}
+                                    >
+                                        <Dropdown.Item
+                                            className="phase-option"
+                                            eventKey="1"
+                                            onClick={() =>
+                                                setPhase('Candidate')
+                                            }
+                                        >
+                                            Candidate
+                                        </Dropdown.Item>
+                                        <Dropdown.Item
+                                            className="phase-option"
+                                            eventKey="2"
+                                            onClick={() =>
+                                                setPhase('Recommended')
+                                            }
+                                        >
+                                            Recommended
+                                        </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </Form.Group>
+                            <Form.Group className="form-group">
+                                <Form.Label className="disclosure-form-label">
+                                    Assistive Technology
+                                </Form.Label>
+                                <Form.Select
+                                    value={updateListAtSelection}
+                                    onChange={handleListAtChange}
+                                    required
+                                >
+                                    <option disabled>
+                                        Select an Assistive Technology
+                                    </option>
+                                    {ats.map(item => {
+                                        return (
+                                            <option
+                                                key={item.id}
+                                                value={item.id}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        );
+                                    })}
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="form-group">
+                                <Form.Label className="disclosure-form-label">
+                                    Browser
+                                </Form.Label>
+                                <Form.Select
+                                    value={updateListBrowserSelection}
+                                    onChange={handleListBrowserChange}
+                                    required
+                                >
+                                    <option value={''} disabled>
+                                        Select a Browser
+                                    </option>
+                                    {ats
+                                        .find(
+                                            at =>
+                                                at.id === updateListAtSelection
+                                        )
+                                        ?.browsers.map(item => (
+                                            <option
+                                                key={`${item.name}-${item.id}`}
+                                                value={item.id}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="form-group">
+                                <Button
+                                    disabled={
+                                        !updatePhaseForButton ||
+                                        !updateAtForButton ||
+                                        !updateListBrowserSelection
+                                    }
+                                    onClick={() => {
+                                        setUpdatePhaseSelection(
+                                            'Phase Selection'
+                                        );
+                                        setUpdatePhaseForButton('');
+                                        setUpdateListAtSelection(
+                                            'Select an Assistive Technology'
+                                        );
+                                        setUpdateAtForButton('');
+                                        setUpdateListBrowserSelection('');
+                                        runMutationForRequiredReportTable(
+                                            'createRequiredReport'
+                                        );
+                                    }}
+                                >
+                                    Add Required Reports
+                                </Button>
+                            </Form.Group>
+                        </div>
+                        <ThemeTableHeaderH2>
+                            Required Reports
+                        </ThemeTableHeaderH2>
+                        <ThemeTable bordered responsive>
+                            <thead>
+                                <tr>
+                                    <th>Phase</th>
+                                    <th>AT</th>
+                                    <th>Browser</th>
+                                    <th>Edit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {atBrowserCombinations?.map(
+                                    ({ at, browser, phase }) => {
+                                        return (
+                                            <tr
+                                                key={`${at.id}-${browser.id}-${phase}`}
+                                            >
+                                                <td>
+                                                    <PhasePill
+                                                        fullWidth={false}
+                                                    >
+                                                        {phase}
+                                                    </PhasePill>{' '}
+                                                </td>
+                                                <td>{at.name}</td>
+                                                <td>{browser.name}</td>
+                                                <td>
+                                                    <TransparentButton
+                                                        onClick={() => {
+                                                            setIsDelete(false);
+                                                            setActionButtonLabel(
+                                                                'Save Changes'
+                                                            );
+                                                            setUpdateAtIdForUpdate(
+                                                                at.id
+                                                            );
+                                                            setUpdateBrowserIdForUpdate(
+                                                                browser.id
+                                                            );
+                                                            setUpdatePhaseForUpdate(
+                                                                phase
+                                                            );
+                                                            onOpenShowEditAtBrowserModal(
+                                                                'edit',
+                                                                phase
+                                                            );
+                                                        }}
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={faEdit}
+                                                            color="#818F98"
+                                                        />
+                                                        <span className="sr-only">
+                                                            Edit
+                                                        </span>
+                                                    </TransparentButton>
+                                                    <TransparentButton
+                                                        onClick={() => {
+                                                            setIsDelete(true);
+                                                            setActionButtonLabel(
+                                                                'Confirm Delete'
+                                                            );
+                                                            setUpdateAtIdForUpdate(
+                                                                at.id
+                                                            );
+                                                            setUpdateBrowserIdForUpdate(
+                                                                browser.id
+                                                            );
+                                                            setUpdatePhaseForUpdate(
+                                                                phase
+                                                            );
+                                                            onOpenShowEditAtBrowserModal(
+                                                                'delete',
+                                                                phase,
+                                                                at.name,
+                                                                browser.name
+                                                            );
+                                                        }}
+                                                    >
+                                                        <FontAwesomeIcon
+                                                            icon={faTrashAlt}
+                                                            color="#ce1b4c"
+                                                        />
+                                                        <span className="sr-only">
+                                                            Remove
+                                                        </span>
+                                                    </TransparentButton>
+                                                </td>
+                                            </tr>
+                                        );
+                                    }
+                                )}
+                            </tbody>
+                        </ThemeTable>
                     </DisclosureContainer>
                 ]}
-                onClick={[onManageAtsClick, onAddTestPlansClick]}
-                expanded={[showManageATs, showAddTestPlans]}
+                onClick={[
+                    onManageAtsClick,
+                    onAddTestPlansClick,
+                    onManageReqReportsClick
+                ]}
+                expanded={[
+                    showManageATs,
+                    showAddTestPlans,
+                    showManageReqReports
+                ]}
                 stacked
             />
-
             {showAtVersionModal && (
                 <UpdateVersionModal
                     show={showAtVersionModal}
@@ -693,7 +1334,6 @@ const ManageTestQueue = ({
                     handleClose={onUpdateModalClose}
                 />
             )}
-
             {showThemedModal && (
                 <BasicThemedModal
                     show={showThemedModal}
@@ -716,7 +1356,6 @@ const ManageTestQueue = ({
                     showCloseAction={themedModalType === 'danger'}
                 />
             )}
-
             {showFeedbackModal && (
                 <BasicModal
                     show={showFeedbackModal}
@@ -730,14 +1369,135 @@ const ManageTestQueue = ({
                     }}
                 />
             )}
+            {!showEditAtBrowserModal && (
+                <BasicModal
+                    show={true}
+                    closeButton={false}
+                    cancelButton={true}
+                    headerSep={true}
+                    title={requiredReportsModalTitle}
+                    dialogClassName="modal-50w"
+                    content={
+                        <ModalInnerSectionContainer>
+                            {!isDelete ? (
+                                <Row>
+                                    <Form.Group className="form-group">
+                                        <Form.Label>
+                                            Assistive Technology
+                                        </Form.Label>
+                                        {updateListAtSelection ===
+                                        'Select an Assistive Technology' ? (
+                                            <Form.Select
+                                                value={updateAtSelection}
+                                                onChange={handleAtChange}
+                                                required
+                                            >
+                                                <option>
+                                                    Select an Assistive
+                                                    Technology
+                                                </option>
+                                                {ats.map(item => {
+                                                    return (
+                                                        <option
+                                                            key={item.id}
+                                                            value={item.id}
+                                                        >
+                                                            {item.name}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </Form.Select>
+                                        ) : (
+                                            <Form.Select
+                                                value={updateAtSelection}
+                                                onChange={handleAtChange}
+                                                required
+                                            >
+                                                {ats.map(item => {
+                                                    return (
+                                                        <option
+                                                            key={item.id}
+                                                            value={item.id}
+                                                        >
+                                                            {item.name}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </Form.Select>
+                                        )}
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label>Browser</Form.Label>
+                                        <Form.Select
+                                            value={updateBrowserSelection}
+                                            onChange={handleBrowserChange}
+                                            required
+                                        >
+                                            <option value={''} disabled>
+                                                Select a Browser
+                                            </option>
+                                            {ats
+                                                .find(
+                                                    at =>
+                                                        at.id ===
+                                                        updateAtSelection
+                                                )
+                                                ?.browsers.map(item => (
+                                                    <option
+                                                        key={`${item.name}-${item.id}`}
+                                                        value={item.id}
+                                                    >
+                                                        {item.name}
+                                                    </option>
+                                                ))}
+                                        </Form.Select>
+                                    </Form.Group>
+                                </Row>
+                            ) : null}
+                        </ModalInnerSectionContainer>
+                    }
+                    actionLabel={actionButtonLabel}
+                    handleAction={() => {
+                        if (actionButtonLabel === 'Save Changes') {
+                            runMutationForRequiredReportTable(
+                                'updateRequiredReport'
+                            );
+                        }
+                        if (actionButtonLabel === 'Confirm Delete') {
+                            runMutationForRequiredReportTable(
+                                'deleteRequiredReport'
+                            );
+                        }
+                        setUpdateAtSelection('Select an Assistive Technology');
+                        setUpdateBrowserSelection('');
+                        setShowEditAtBrowserModal(true);
+                    }}
+                    handleClose={() => {
+                        setUpdateAtSelection('Select an Assistive Technology');
+                        setShowEditAtBrowserModal(true);
+                    }}
+                    staticBackdrop={true}
+                />
+            )}
         </LoadingStatus>
     );
+};
+
+CustomToggle.propTypes = {
+    children: PropTypes.string,
+    onClick: PropTypes.func
+};
+
+CustomMenu.propTypes = {
+    children: PropTypes.array,
+    className: PropTypes.string
 };
 
 ManageTestQueue.propTypes = {
     ats: PropTypes.array,
     browsers: PropTypes.array,
     testPlanVersions: PropTypes.array,
+    enableManageRequiredReports: PropTypes.bool,
     triggerUpdate: PropTypes.func
 };
 

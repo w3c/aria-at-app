@@ -95,3 +95,16 @@ table button {
 .add-test-plan-queue-modal-normalize-row {
     margin-top: auto;
 }
+
+.phase-option:hover {
+    text-decoration: none;
+    cursor: default;
+}
+
+.drop-down-div {
+    height: fit-content;
+}
+
+.drop-down-div > ul {
+    margin-bottom: 0;
+}

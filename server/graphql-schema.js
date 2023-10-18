@@ -172,6 +172,15 @@ const graphqlSchema = gql`
     }
 
     """
+    The return type for createRequiredReport.
+    """
+    type RequiredReport {
+        atId: ID!
+        browserId: ID!
+        phase: RequiredReportPhase!
+    }
+
+    """
     The version for a given assistive technology.
     """
     type AtVersion {
@@ -1084,6 +1093,17 @@ const graphqlSchema = gql`
         findOrCreateAtVersion(input: AtVersionInput!): AtVersion!
     }
 
+    enum RequiredReportPhase {
+        IS_CANDIDATE
+        IS_RECOMMENDED
+    }
+
+    type RequiredReportOperations {
+        createRequiredReport: RequiredReport!
+        updateRequiredReport(atId: ID!, browserId: ID!): RequiredReport!
+        deleteRequiredReport: RequiredReport!
+    }
+
     """
     Mutations scoped to an existing AtVersion.
     """
@@ -1270,6 +1290,12 @@ const graphqlSchema = gql`
         Get the available mutations for the given browser.
         """
         browser(id: ID!): BrowserOperations!
+
+        requiredReport(
+            atId: ID!
+            browserId: ID!
+            phase: RequiredReportPhase!
+        ): RequiredReportOperations!
         """
         Adds a report with the given TestPlanVersion, AT and Browser, and a
         state of "DRAFT", resulting in the report appearing in the Test Queue.

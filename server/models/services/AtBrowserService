@@ -1,0 +1,27 @@
+const ModelService = require('./ModelService.js');
+const { AtBrowsers } = require('../');
+const { AT_BROWSERS_ATTRIBUTES } = require('./helpers');
+
+const updateAtBrowser = async (
+    { atId, browserId },
+    updateParams = {},
+    atBrowsersAttributes = AT_BROWSERS_ATTRIBUTES,
+    options = {}
+) => {
+    await ModelService.update(
+        AtBrowsers,
+        { atId, browserId },
+        updateParams,
+        options
+    );
+
+    return await ModelService.getByQuery(
+        AtBrowsers,
+        { atId, browserId },
+        atBrowsersAttributes,
+        null,
+        options
+    );
+};
+
+module.exports = { updateAtBrowser };

@@ -24,6 +24,9 @@ const PhaseText = styled.span`
         top: -4px;
         margin-top: 4px; /* Improve appearance when text wraps */
     }
+    &.for-header {
+        border-radius: 20px;
+    }
 
     &.rd {
         background: #4177de;
@@ -46,10 +49,16 @@ const PhaseText = styled.span`
     }
 `;
 
-const PhasePill = ({ fullWidth = true, children: phase }) => {
+const PhasePill = ({
+    fullWidth = true,
+    forHeader = false,
+    children: phase
+}) => {
+    let className = fullWidth ? 'full-width' : '';
+    className = forHeader ? `${className} for-header` : className;
     return (
         <PhaseText
-            className={[phase.toLowerCase(), fullWidth ? 'full-width' : '']
+            className={[phase.toLowerCase(), className]
                 .filter(str => str)
                 .join(' ')}
         >
@@ -59,6 +68,7 @@ const PhasePill = ({ fullWidth = true, children: phase }) => {
 };
 
 PhasePill.propTypes = {
+    forHeader: PropTypes.bool,
     fullWidth: PropTypes.bool,
     children: PropTypes.string.isRequired
 };

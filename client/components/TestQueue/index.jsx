@@ -253,6 +253,7 @@ const TestQueue = () => {
 
             {isAdmin && (
                 <ManageTestQueue
+                    enableManageRequiredReports={true}
                     ats={ats}
                     browsers={browsers}
                     testPlanVersions={testPlanVersions}

@@ -514,7 +514,6 @@ describe('graphql', () => {
                 }
             `
         );
-        // console.info(queryResult);
 
         await dbCleaner(async () => {
             const {
@@ -698,6 +697,31 @@ describe('graphql', () => {
                             testId: "NjgwYeyIyIjoiMSJ9zYxZT"
                         ) {
                             username
+                        }
+                        requiredReport(
+                            atId: 1
+                            browserId: 1
+                            phase: IS_CANDIDATE
+                        ) {
+                            __typename
+                            createRequiredReport {
+                                __typename
+                                atId
+                                browserId
+                                phase
+                            }
+                            updateRequiredReport(atId: 1, browserId: 1) {
+                                __typename
+                                atId
+                                browserId
+                                phase
+                            }
+                            deleteRequiredReport {
+                                __typename
+                                atId
+                                browserId
+                                phase
+                            }
                         }
                     }
                 `,
