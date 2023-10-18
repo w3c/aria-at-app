@@ -10,25 +10,47 @@ export const TEST_RUN_PAGE_QUERY = gql`
             }
             testResults {
                 id
-                test {
-                    id
-                    renderableContent
-                }
-                atVersion {
-                    id
-                    name
-                }
-                browserVersion {
-                    id
-                    name
-                }
                 startedAt
                 completedAt
+                test {
+                    id
+                    rowNumber
+                    title
+                    renderedUrl
+                    renderableContent
+                }
                 scenarioResults {
                     id
+                    scenario {
+                        commands {
+                            id
+                            text
+                        }
+                    }
                     output
                     assertionResults {
                         id
+                        assertion {
+                            text
+                        }
+                        passed
+                        failedReason
+                    }
+                    requiredAssertionResults: assertionResults(
+                        priority: REQUIRED
+                    ) {
+                        assertion {
+                            text
+                        }
+                        passed
+                        failedReason
+                    }
+                    optionalAssertionResults: assertionResults(
+                        priority: OPTIONAL
+                    ) {
+                        assertion {
+                            text
+                        }
                         passed
                         failedReason
                     }
@@ -37,6 +59,14 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         text
                         otherUnexpectedBehaviorText
                     }
+                }
+                atVersion {
+                    id
+                    name
+                }
+                browserVersion {
+                    id
+                    name
                 }
             }
             testPlanReport {
@@ -263,11 +293,62 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
             ) {
                 locationOfData
                 testPlanRun {
+                    id
+                    tester {
+                        id
+                        username
+                    }
                     testResults {
                         id
+                        startedAt
+                        completedAt
                         test {
                             id
+                            rowNumber
+                            title
+                            renderedUrl
                             renderableContent
+                        }
+                        scenarioResults {
+                            id
+                            scenario {
+                                commands {
+                                    id
+                                    text
+                                }
+                            }
+                            output
+                            assertionResults {
+                                id
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            requiredAssertionResults: assertionResults(
+                                priority: REQUIRED
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            optionalAssertionResults: assertionResults(
+                                priority: OPTIONAL
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            unexpectedBehaviors {
+                                id
+                                text
+                                otherUnexpectedBehaviorText
+                            }
                         }
                         atVersion {
                             id
@@ -277,20 +358,99 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             id
                             name
                         }
-                        startedAt
-                        completedAt
-                        scenarioResults {
-                            id
-                            output
-                            assertionResults {
-                                id
-                                passed
-                                failedReason
+                    }
+                    testPlanReport {
+                        id
+                        conflicts {
+                            source {
+                                test {
+                                    id
+                                    title
+                                    rowNumber
+                                }
+                                scenario {
+                                    id
+                                    commands {
+                                        text
+                                    }
+                                }
+                                assertion {
+                                    id
+                                    text
+                                }
                             }
-                            unexpectedBehaviors {
+                            conflictingResults {
+                                testPlanRun {
+                                    id
+                                    tester {
+                                        username
+                                    }
+                                }
+                                scenarioResult {
+                                    output
+                                    unexpectedBehaviors {
+                                        text
+                                        otherUnexpectedBehaviorText
+                                    }
+                                }
+                                assertionResult {
+                                    passed
+                                    failedReason
+                                }
+                            }
+                        }
+                        at {
+                            id
+                            name
+                            atVersions {
                                 id
+                                name
+                            }
+                        }
+                        browser {
+                            id
+                            name
+                            browserVersions {
+                                id
+                                name
+                            }
+                        }
+                        testPlanVersion {
+                            id
+                            title
+                            phase
+                            updatedAt
+                            gitSha
+                            testPageUrl
+                            testPlan {
+                                directory
+                            }
+                        }
+                        runnableTests {
+                            id
+                            rowNumber
+                            title
+                            ats {
+                                id
+                                name
+                            }
+                            atMode
+                            renderedUrl
+                            scenarios {
+                                id
+                                at {
+                                    id
+                                    name
+                                }
+                                commands {
+                                    id
+                                    text
+                                }
+                            }
+                            assertions {
+                                id
+                                priority
                                 text
-                                otherUnexpectedBehaviorText
                             }
                         }
                     }
@@ -412,11 +572,62 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
             ) {
                 locationOfData
                 testPlanRun {
+                    id
+                    tester {
+                        id
+                        username
+                    }
                     testResults {
                         id
+                        startedAt
+                        completedAt
                         test {
                             id
+                            rowNumber
+                            title
+                            renderedUrl
                             renderableContent
+                        }
+                        scenarioResults {
+                            id
+                            scenario {
+                                commands {
+                                    id
+                                    text
+                                }
+                            }
+                            output
+                            assertionResults {
+                                id
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            requiredAssertionResults: assertionResults(
+                                priority: REQUIRED
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            optionalAssertionResults: assertionResults(
+                                priority: OPTIONAL
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            unexpectedBehaviors {
+                                id
+                                text
+                                otherUnexpectedBehaviorText
+                            }
                         }
                         atVersion {
                             id
@@ -426,20 +637,99 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             id
                             name
                         }
-                        startedAt
-                        completedAt
-                        scenarioResults {
-                            id
-                            output
-                            assertionResults {
-                                id
-                                passed
-                                failedReason
+                    }
+                    testPlanReport {
+                        id
+                        conflicts {
+                            source {
+                                test {
+                                    id
+                                    title
+                                    rowNumber
+                                }
+                                scenario {
+                                    id
+                                    commands {
+                                        text
+                                    }
+                                }
+                                assertion {
+                                    id
+                                    text
+                                }
                             }
-                            unexpectedBehaviors {
+                            conflictingResults {
+                                testPlanRun {
+                                    id
+                                    tester {
+                                        username
+                                    }
+                                }
+                                scenarioResult {
+                                    output
+                                    unexpectedBehaviors {
+                                        text
+                                        otherUnexpectedBehaviorText
+                                    }
+                                }
+                                assertionResult {
+                                    passed
+                                    failedReason
+                                }
+                            }
+                        }
+                        at {
+                            id
+                            name
+                            atVersions {
                                 id
+                                name
+                            }
+                        }
+                        browser {
+                            id
+                            name
+                            browserVersions {
+                                id
+                                name
+                            }
+                        }
+                        testPlanVersion {
+                            id
+                            title
+                            phase
+                            updatedAt
+                            gitSha
+                            testPageUrl
+                            testPlan {
+                                directory
+                            }
+                        }
+                        runnableTests {
+                            id
+                            rowNumber
+                            title
+                            ats {
+                                id
+                                name
+                            }
+                            atMode
+                            renderedUrl
+                            scenarios {
+                                id
+                                at {
+                                    id
+                                    name
+                                }
+                                commands {
+                                    id
+                                    text
+                                }
+                            }
+                            assertions {
+                                id
+                                priority
                                 text
-                                otherUnexpectedBehaviorText
                             }
                         }
                     }
@@ -561,11 +851,62 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
             ) {
                 locationOfData
                 testPlanRun {
+                    id
+                    tester {
+                        id
+                        username
+                    }
                     testResults {
                         id
+                        startedAt
+                        completedAt
                         test {
                             id
+                            rowNumber
+                            title
+                            renderedUrl
                             renderableContent
+                        }
+                        scenarioResults {
+                            id
+                            scenario {
+                                commands {
+                                    id
+                                    text
+                                }
+                            }
+                            output
+                            assertionResults {
+                                id
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            requiredAssertionResults: assertionResults(
+                                priority: REQUIRED
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            optionalAssertionResults: assertionResults(
+                                priority: OPTIONAL
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            unexpectedBehaviors {
+                                id
+                                text
+                                otherUnexpectedBehaviorText
+                            }
                         }
                         atVersion {
                             id
@@ -575,20 +916,99 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             id
                             name
                         }
-                        startedAt
-                        completedAt
-                        scenarioResults {
-                            id
-                            output
-                            assertionResults {
-                                id
-                                passed
-                                failedReason
+                    }
+                    testPlanReport {
+                        id
+                        conflicts {
+                            source {
+                                test {
+                                    id
+                                    title
+                                    rowNumber
+                                }
+                                scenario {
+                                    id
+                                    commands {
+                                        text
+                                    }
+                                }
+                                assertion {
+                                    id
+                                    text
+                                }
                             }
-                            unexpectedBehaviors {
+                            conflictingResults {
+                                testPlanRun {
+                                    id
+                                    tester {
+                                        username
+                                    }
+                                }
+                                scenarioResult {
+                                    output
+                                    unexpectedBehaviors {
+                                        text
+                                        otherUnexpectedBehaviorText
+                                    }
+                                }
+                                assertionResult {
+                                    passed
+                                    failedReason
+                                }
+                            }
+                        }
+                        at {
+                            id
+                            name
+                            atVersions {
                                 id
+                                name
+                            }
+                        }
+                        browser {
+                            id
+                            name
+                            browserVersions {
+                                id
+                                name
+                            }
+                        }
+                        testPlanVersion {
+                            id
+                            title
+                            phase
+                            updatedAt
+                            gitSha
+                            testPageUrl
+                            testPlan {
+                                directory
+                            }
+                        }
+                        runnableTests {
+                            id
+                            rowNumber
+                            title
+                            ats {
+                                id
+                                name
+                            }
+                            atMode
+                            renderedUrl
+                            scenarios {
+                                id
+                                at {
+                                    id
+                                    name
+                                }
+                                commands {
+                                    id
+                                    text
+                                }
+                            }
+                            assertions {
+                                id
+                                priority
                                 text
-                                otherUnexpectedBehaviorText
                             }
                         }
                     }

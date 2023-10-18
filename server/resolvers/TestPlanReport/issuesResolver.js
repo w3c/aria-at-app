@@ -1,5 +1,4 @@
 const { GithubService } = require('../../services');
-const convertDateToString = require('../../util/convertDateToString');
 
 const issuesResolver = (testPlanReport, _, context) =>
     getIssues({ testPlanReport, context });
@@ -30,16 +29,12 @@ const getIssues = async ({ testPlanReport, testPlan, context }) => {
             if (testPlanReport) {
                 const { at, browser, testPlanVersion } = testPlanReport;
 
-                const versionString = `V${convertDateToString(
-                    testPlanVersion.updatedAt,
-                    'YY.MM.DD'
-                )}`;
-
                 return (
                     hiddenIssueMetadata &&
                     hiddenIssueMetadata.testPlanDirectory ===
                         testPlanVersion.directory &&
-                    hiddenIssueMetadata.versionString === versionString &&
+                    hiddenIssueMetadata.versionString ===
+                        testPlanVersion.versionString &&
                     hiddenIssueMetadata.atName === at.name &&
                     (!hiddenIssueMetadata.browserName ||
                         hiddenIssueMetadata.browserName === browser.name)

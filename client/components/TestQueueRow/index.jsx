@@ -22,7 +22,6 @@ import {
 import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
-import { convertDateToString } from '../../utils/formatter';
 import './TestQueueRow.css';
 
 const TestQueueRow = ({
@@ -170,14 +169,9 @@ const TestQueueRow = ({
     };
 
     const renderAssignedUserToTestPlan = () => {
-        const dateString = convertDateToString(
-            testPlanVersion.updatedAt,
-            'YY.MM.DD'
-        );
-
         const titleElement = (
             <>
-                {testPlanVersion.title} {'V' + dateString}
+                {testPlanVersion.title} {testPlanVersion.versionString}
                 &nbsp;({runnableTestsLength} Test
                 {runnableTestsLength === 0 || runnableTestsLength > 1
                     ? `s`

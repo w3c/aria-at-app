@@ -128,8 +128,8 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                             <thead>
                                 <tr>
                                     <th>Test Name</th>
-                                    <th>Required Assertions</th>
-                                    <th>Optional Assertions</th>
+                                    <th>MUST-DO Behaviors</th>
+                                    <th>SHOULD-DO Behaviors</th>
                                     <th>Unexpected Behaviors</th>
                                 </tr>
                             </thead>

@@ -15,17 +15,11 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                 name
                 releasedAt
             }
-            browsers {
-                id
-                name
-            }
             candidateBrowsers {
                 id
-                name
             }
             recommendedBrowsers {
                 id
-                name
             }
         }
         browsers {
@@ -44,6 +38,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             gitSha
             gitMessage
             updatedAt
+            versionString
             draftPhaseReachedAt
             candidatePhaseReachedAt
             recommendedPhaseTargetDate
@@ -54,6 +49,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             testPlanReports {
                 id
                 metrics
+                isFinal
                 markedFinalAt
                 at {
                     id

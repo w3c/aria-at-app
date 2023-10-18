@@ -236,7 +236,7 @@ export default testQueuePageQuery => [
                             gitSha: 'b7078039f789c125e269cb8f8632f57a03d4c50b',
                             gitMessage: 'The message for this SHA',
                             testPlan: { directory: 'checkbox' },
-                            updatedAt: '2021-11-30T14:51:28.000Z'
+                            versionString: 'V21.11.30'
                         },
                         draftTestPlanRuns: [
                             {
@@ -264,7 +264,7 @@ export default testQueuePageQuery => [
                             gitSha: 'b7078039f789c125e269cb8f8632f57a03d4c50b',
                             gitMessage: 'The message for this SHA',
                             testPlan: { directory: 'checkbox' },
-                            updatedAt: '2021-11-30T14:51:28.000Z'
+                            versionString: 'V21.11.30'
                         },
                         draftTestPlanRuns: [
                             {
@@ -292,7 +292,7 @@ export default testQueuePageQuery => [
                             gitSha: 'b7078039f789c125e269cb8f8632f57a03d4c50b',
                             gitMessage: 'The message for this SHA',
                             testPlan: { directory: 'checkbox' },
-                            updatedAt: '2021-11-30T14:51:28.000Z'
+                            versionString: 'V21.11.30'
                         },
                         draftTestPlanRuns: [
                             {

@@ -70,7 +70,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 testPlan {
                     directory
                 }
-                updatedAt
+                versionString
             }
             draftTestPlanRuns {
                 id
