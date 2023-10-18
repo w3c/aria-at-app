@@ -3,6 +3,7 @@
 const path = require('path');
 const { Client } = require('pg');
 const fse = require('fs-extra');
+const { pathToFileURL } = require('url');
 const spawn = require('cross-spawn');
 const { At } = require('../../models');
 const {
@@ -267,8 +268,7 @@ const readCsv = ({ sourceDirectoryPath }) => {
 };
 
 const updateCommandsJson = async () => {
-    const keysMjsPath = path.join(testsDirectory, 'resources', 'keys.mjs');
-
+    const keysMjsPath = pathToFileURL(path.join(testsDirectory, 'resources', 'keys.mjs'));
     const commands = Object.entries(await import(keysMjsPath)).map(
         ([id, text]) => ({ id, text })
     );
