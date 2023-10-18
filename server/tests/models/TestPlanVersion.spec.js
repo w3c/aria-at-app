@@ -26,6 +26,7 @@ describe('TestPlanVersionModel', () => {
             'gitMessage',
             'testPageUrl',
             'updatedAt',
+            'versionString',
             'metadata',
             'tests'
         ].forEach(checkPropertyExists(modelInstance));

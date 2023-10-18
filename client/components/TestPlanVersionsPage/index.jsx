@@ -199,7 +199,8 @@ const TestPlanVersionsPage = () => {
     testPlanVersions.forEach(testPlanVersion => {
         const event = {
             id: testPlanVersion.id,
-            updatedAt: testPlanVersion.updatedAt
+            updatedAt: testPlanVersion.updatedAt,
+            versionString: testPlanVersion.versionString
         };
         timelineForAllVersions.push({ ...event, phase: 'RD' });
 
@@ -299,12 +300,13 @@ const TestPlanVersionsPage = () => {
                                 <tr key={testPlanVersion.id}>
                                     <th>
                                         <VersionString
-                                            date={testPlanVersion.updatedAt}
                                             iconColor={getIconColor(
                                                 testPlanVersion
                                             )}
                                             autoWidth={false}
-                                        />
+                                        >
+                                            {testPlanVersion.versionString}
+                                        </VersionString>
                                     </th>
                                     <td>
                                         {(() => {
@@ -475,11 +477,12 @@ const TestPlanVersionsPage = () => {
                     {timelineForAllVersions.map(testPlanVersion => {
                         const versionString = (
                             <VersionString
-                                date={testPlanVersion.updatedAt}
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}
-                            />
+                            >
+                                {testPlanVersion.versionString}
+                            </VersionString>
                         );
 
                         const eventBody = getEventBody(testPlanVersion.phase);
@@ -499,11 +502,6 @@ const TestPlanVersionsPage = () => {
             </ThemeTable>
 
             {testPlanVersions.map(testPlanVersion => {
-                const vString = `V${convertDateToString(
-                    testPlanVersion.updatedAt,
-                    'YY.MM.DD'
-                )}`;
-
                 // Gets the derived phase even if deprecated by checking
                 // the known dates on the testPlanVersion object
                 const derivedDeprecatedAtPhase =
@@ -520,21 +518,18 @@ const TestPlanVersionsPage = () => {
                     <div key={testPlanVersion.id}>
                         <H2
                             aria-label={`${
-                                'V' +
-                                convertDateToString(
-                                    testPlanVersion.updatedAt,
-                                    'YY.MM.DD'
-                                )
+                                testPlanVersion.versionString
                             } ${derivePhaseName(
                                 testPlanVersion.phase
                             )} on ${getEventDate(testPlanVersion)}`}
                         >
                             <VersionString
-                                date={testPlanVersion.updatedAt}
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}
-                            />
+                            >
+                                {testPlanVersion.versionString}
+                            </VersionString>
                             &nbsp;
                             <PhasePill fullWidth={false}>
                                 {testPlanVersion.phase}
@@ -568,7 +563,8 @@ const TestPlanVersionsPage = () => {
                                         size="xs"
                                         color="#818F98"
                                     />
-                                    View tests in {vString}
+                                    View tests in{' '}
+                                    {testPlanVersion.versionString}
                                 </a>
                             </li>
                             {!hasFinalReports ? null : (
@@ -579,7 +575,8 @@ const TestPlanVersionsPage = () => {
                                             size="xs"
                                             color="#818F98"
                                         />
-                                        View reports generated from {vString}
+                                        View reports generated from{' '}
+                                        {testPlanVersion.versionString}
                                     </a>
                                 </li>
                             )}
@@ -594,13 +591,15 @@ const TestPlanVersionsPage = () => {
                                 </ul>
                             </dd>
                         </CoveredAtDl>
-                        <ThemeTableHeader id={`timeline-for-${vString}`}>
-                            Timeline for {vString}
+                        <ThemeTableHeader
+                            id={`timeline-for-${testPlanVersion.versionString}`}
+                        >
+                            Timeline for {testPlanVersion.versionString}
                         </ThemeTableHeader>
                         <ThemeTable
                             bordered
                             responsive
-                            aria-labelledby={`timeline-for-${vString}`}
+                            aria-labelledby={`timeline-for-${testPlanVersion.versionString}`}
                         >
                             <thead>
                                 <tr>

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { convertDateToString } from '../../../utils/formatter';
 import styled from '@emotion/styled';
 
 const StyledPill = styled.span`
@@ -18,6 +17,14 @@ const StyledPill = styled.span`
     // Needed for presenting component on Version History page
     &.full-width {
         width: 100%;
+
+        /* Version strings can have different character counts and this keeps
+        them lined up in lists */
+        & b {
+            min-width: 6em;
+            display: inline-block;
+            text-align: left;
+        }
     }
 
     &:not(.full-width) {
@@ -34,20 +41,18 @@ const StyledPill = styled.span`
 `;
 
 const VersionString = ({
-    date,
     fullWidth = true,
     autoWidth = true,
     iconColor = '#818F98',
     linkRef,
     linkHref,
+    children: versionString,
     ...restProps
 }) => {
-    const dateString = convertDateToString(date, 'YY.MM.DD');
-
     const body = (
         <span>
             <FontAwesomeIcon icon={faCircleCheck} color={iconColor} />
-            <b>{'V' + dateString}</b>
+            <b>{versionString}</b>
         </span>
     );
 
@@ -86,13 +91,12 @@ const VersionString = ({
 };
 
 VersionString.propTypes = {
-    date: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Date)])
-        .isRequired,
     fullWidth: PropTypes.bool,
     autoWidth: PropTypes.bool,
     iconColor: PropTypes.string,
     linkRef: PropTypes.shape({ current: PropTypes.any }),
-    linkHref: PropTypes.string
+    linkHref: PropTypes.string,
+    children: PropTypes.string
 };
 
 export default VersionString;

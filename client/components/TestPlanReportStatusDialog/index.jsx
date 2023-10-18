@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Modal } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import { getRequiredReports } from './isRequired';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
@@ -11,13 +10,9 @@ import getMetrics from '../Reports/getMetrics';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 import { convertDateToString } from '../../utils/formatter';
 import { ThemeTable } from '../common/ThemeTable';
+import BasicModal from '../common/BasicModal';
 
-const TestPlanReportStatusModal = styled(Modal)`
-    .modal-dialog {
-        max-width: 90%;
-        width: max-content;
-    }
-`;
+import './TestPlanReportStatusDialog.css';
 
 const IncompleteStatusReport = styled.span`
     min-width: 5rem;
@@ -169,65 +164,69 @@ const TestPlanReportStatusDialog = ({
         }
     };
 
+    const getContent = () => (
+        <>
+            {testPlanVersion.phase && (
+                <p>
+                    This plan is in the&nbsp;
+                    <span
+                        className={`status-label d-inline ${
+                            testPlanVersion.phase === 'DRAFT'
+                                ? 'not-started'
+                                : 'complete'
+                        }`}
+                    >
+                        {/* text-transform: capitalize will not work on all-caps string */}
+                        {testPlanVersion.phase[0] +
+                            testPlanVersion.phase.slice(1).toLowerCase()}
+                    </span>
+                    &nbsp;Review phase.&nbsp;
+                    <strong>{requiredReports.length} AT/browser&nbsp;</strong>
+                    pairs require reports in this phase.
+                </p>
+            )}
+
+            <ThemeTable bordered responsive>
+                <thead>
+                    <tr>
+                        <th>Required</th>
+                        <th>AT</th>
+                        <th>Browser</th>
+                        <th>Report Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {matchedReports.map(report => renderTableRow(report))}
+                    {unmatchedRequiredReports.map(report =>
+                        renderTableRow(report)
+                    )}
+                    {unmatchedTestPlanReports.map(report =>
+                        renderTableRow(report, 'No')
+                    )}
+                </tbody>
+            </ThemeTable>
+        </>
+    );
+
+    const getTitle = () => (
+        <>
+            Report Status for the&nbsp;
+            <strong>{testPlanVersion.title}</strong>
+            &nbsp;Test Plan
+        </>
+    );
+
     return (
-        <TestPlanReportStatusModal
+        <BasicModal
             show={show}
-            onHide={handleHide}
-            dialogClassName="p-3"
+            handleHide={handleHide}
+            useOnHide={true}
             animation={false}
-        >
-            <Modal.Header closeButton className="pb-1">
-                <h2>
-                    Report Status for the&nbsp;
-                    <strong>{testPlanVersion.title}</strong>
-                    &nbsp;Test Plan
-                </h2>
-            </Modal.Header>
-
-            <Modal.Body className="pt-0 pb-5">
-                {testPlanVersion.phase && (
-                    <p>
-                        This plan is in the&nbsp;
-                        <span
-                            className={`status-label d-inline ${
-                                testPlanVersion.phase === 'DRAFT'
-                                    ? 'not-started'
-                                    : 'complete'
-                            }`}
-                        >
-                            {/* text-transform: capitalize will not work on all-caps string */}
-                            {testPlanVersion.phase[0] +
-                                testPlanVersion.phase.slice(1).toLowerCase()}
-                        </span>
-                        &nbsp;Review phase.&nbsp;
-                        <strong>
-                            {requiredReports.length} AT/browser&nbsp;
-                        </strong>
-                        pairs require reports in this phase.
-                    </p>
-                )}
-
-                <ThemeTable bordered responsive>
-                    <thead>
-                        <tr>
-                            <th>Required</th>
-                            <th>AT</th>
-                            <th>Browser</th>
-                            <th>Report Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {matchedReports.map(report => renderTableRow(report))}
-                        {unmatchedRequiredReports.map(report =>
-                            renderTableRow(report)
-                        )}
-                        {unmatchedTestPlanReports.map(report =>
-                            renderTableRow(report, 'No')
-                        )}
-                    </tbody>
-                </ThemeTable>
-            </Modal.Body>
-        </TestPlanReportStatusModal>
+            centered
+            dialogClassName="test-plan-report-status-dialog p-3"
+            content={getContent()}
+            title={getTitle()}
+        />
     );
 };
 

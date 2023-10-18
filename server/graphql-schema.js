@@ -341,6 +341,12 @@ const graphqlSchema = gql`
         This can also be considered as the time for when R & D was complete
         """
         updatedAt: Timestamp!
+        """
+        An easily readable representation of the date associated with the
+        version, formatted like V23.09.28 (or V23.09.28-1 in the case that
+        there are multiple versions on the same day).
+        """
+        versionString: String!
         # TODO: consider moving to the Scenario type if we support multiple
         # test pages for one TestPlanVersion (i.e. testing that
         # <input type="button"> and <button> have equivalent behavior).
@@ -494,11 +500,13 @@ const graphqlSchema = gql`
     """
     enum AssertionPriority {
         """
-        All required assertions must pass for the test to pass.
+        All required assertions must pass for the test to pass. This should be
+        considered as 'MUST Behaviors'.
         """
         REQUIRED
         """
         This assertion is not considered when deciding if a test is passing.
+        This should be considered as 'SHOULD Behaviors'.
         """
         OPTIONAL
     }

@@ -101,6 +101,7 @@ describe('TestPlanReportModel Data Checks', () => {
             const _testPageUrl = randomStringGenerator();
             const _hashedTests = randomStringGenerator();
             const _updatedAt = new Date();
+            const _versionString = 'V2023.09.27';
             const _metadata = { designPattern: 'https://google.com' };
             const _tests = [{ test: 'goes here' }];
 
@@ -117,6 +118,7 @@ describe('TestPlanReportModel Data Checks', () => {
                     testPageUrl: _testPageUrl,
                     hashedTests: _hashedTests,
                     updatedAt: _updatedAt,
+                    versionString: _versionString,
                     metadata: _metadata,
                     tests: _tests
                 });
@@ -130,6 +132,7 @@ describe('TestPlanReportModel Data Checks', () => {
                 testPageUrl: createdTestPageUrl,
                 hashedTests: createdHashedTests,
                 updatedAt: createdUpdatedAt,
+                versionString: createdVersionString,
                 metadata: createdMetadata,
                 tests: createdTests
             } = testPlanVersion;
@@ -153,6 +156,7 @@ describe('TestPlanReportModel Data Checks', () => {
             expect(createdTestPageUrl).toBe(_testPageUrl);
             expect(createdHashedTests).toEqual(_hashedTests);
             expect(createdUpdatedAt).toEqual(_updatedAt);
+            expect(createdVersionString).toEqual(_versionString);
             expect(createdMetadata).toEqual(_metadata);
             expect(createdTests).toEqual(_tests);
 
