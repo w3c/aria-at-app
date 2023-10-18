@@ -33,6 +33,42 @@ afterAll(async () => {
     await db.sequelize.close();
 });
 
+const getTestPlanReport = async id =>
+    await query(`
+        query {
+            testPlanReport(id: "${id}") {
+                id
+                markedFinalAt
+                finalizedTestResults {
+                    test{
+                        id
+                    }
+                    atVersion{
+                        name
+                    }
+                    browserVersion{
+                        name
+                    }
+                    scenarioResults {
+                        id
+                        scenario {
+                            id
+                        }
+                        output
+                        assertionResults {
+                            passed
+                            failedReason
+                        }
+                        unexpectedBehaviors {
+                            id
+                            otherUnexpectedBehaviorText
+                        }
+                    }
+                }
+            }
+        }
+    `);
+
 const getTestPlanRun = async id =>
     await query(`
         query {
@@ -453,31 +489,20 @@ describe('Automation controller', () => {
                 }
             );
 
-            const historicalTestResult =
-                finalizedTestPlanVersion.testPlanReport.testPlanRuns[0]
-                    .testResults[0];
+            const { testPlanReport } = await getTestPlanReport(
+                finalizedTestPlanVersion.testPlanReport.id
+            );
+            const historicalTestResult = testPlanReport.finalizedTestResults[0];
             expect(historicalTestResult).not.toEqual(undefined);
             const historicalResponses =
                 historicalTestResult?.scenarioResults.map(
                     scenarioResult => scenarioResult.output
                 );
-
-            const [atVersions, browserVersions] = await Promise.all([
-                getAtVersions(),
-                getBrowserVersions()
-            ]);
-            const atVersion = atVersions.find(
-                each => each.id === parseInt(historicalTestResult?.atVersionId)
-            );
-            const browserVersion = browserVersions.find(
-                each =>
-                    each.id === parseInt(historicalTestResult?.browserVersionId)
-            );
-
+            const { atVersion, browserVersion } = historicalTestResult;
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
                 .send({
-                    testId: historicalTestResult.testId,
+                    testId: historicalTestResult.test.id,
                     atVersionName: atVersion.name,
                     browserVersionName: browserVersion.name,
                     responses: historicalResponses
@@ -495,7 +520,9 @@ describe('Automation controller', () => {
             const { testResults } = storedTestPlanRun.testPlanRun;
 
             testResults.forEach(testResult => {
-                expect(testResult.test.id).toEqual(historicalTestResult.testId);
+                expect(testResult.test.id).toEqual(
+                    historicalTestResult.test.id
+                );
                 expect(testResult.atVersion.name).toEqual(atVersion.name);
                 expect(testResult.browserVersion.name).toEqual(
                     browserVersion.name
@@ -506,6 +533,7 @@ describe('Automation controller', () => {
                     expect(scenarioResult.output).toEqual(
                         historicalScenarioResult.output
                     );
+
                     scenarioResult.assertionResults.forEach(
                         (assertionResult, index) => {
                             const historicalAssertionResult =

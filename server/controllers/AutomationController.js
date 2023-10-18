@@ -14,8 +14,13 @@ const { getTestPlanRuns } = require('../models/services/TestPlanRunService');
 const { HttpQueryError } = require('apollo-server-core');
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
 const {
-    getTestPlanReports
+    getTestPlanReports,
+    getTestPlanReportById
 } = require('../models/services/TestPlanReportService');
+const populateData = require('../services/PopulatedData/populateData');
+const {
+    getFinalizedTestResults
+} = require('../models/services/TestResultReadService');
 
 const axiosConfig = {
     headers: {
@@ -94,60 +99,30 @@ const updateJobStatus = async (req, res) => {
     res.json(graphqlResponse);
 };
 
-const getApprovedTestPlanRuns = async testPlanRun => {
+const getApprovedFinalizedTestResults = async testPlanRun => {
     const {
         testPlanReport: { testPlanVersion }
     } = testPlanRun;
 
-    const testPlanReports = await getTestPlanReports(null, {
-        testPlanVersionId: testPlanVersion.id,
-        atId: testPlanRun.testPlanReport.at.id,
-        browserId: testPlanRun.testPlanReport.browser.id
-    });
-
     // To be considered "Approved", a test plan run must be associated with a test plan report
     // that is associated with a test plan version that is in "CANDIDATE" or "RECOMMENDED" or
-    // "DRAFT" phase and has been marked as final.
-    const finalizedTestPlanReport = testPlanReports.find(
-        each => each.markedFinalAt !== null
-    );
+    // "DRAFT" phase and the test plan report been marked as final.
+    const { phase } = testPlanVersion;
+
     if (
-        !testPlanVersion ||
-        testPlanVersion.phase === 'RD' ||
-        (testPlanVersion.phase === 'DRAFT' && !finalizedTestPlanReport)
+        phase === 'RD' ||
+        (phase === 'DRAFT' && testPlanRun.testPlanReport.markedFinalAt === null)
     ) {
         return null;
     }
 
-    return getTestPlanRuns(null, {
-        testPlanReportId: finalizedTestPlanReport.id
+    const { testPlanReport } = await populateData({
+        testPlanReportId: testPlanRun.testPlanReport.id
     });
-};
 
-const getMostRecentHistoricalTestResults = async testPlanRun => {
-    const approvedTestPlanRunsWithSameReport = await getApprovedTestPlanRuns(
-        testPlanRun
-    );
-
-    if (
-        !approvedTestPlanRunsWithSameReport ||
-        approvedTestPlanRunsWithSameReport.length === 0
-    ) {
-        return null;
-    }
-    // It will be rare that we have multiple historic test plan runs, but if we do,
-    // we want to use the most recent one. This is determined with the completion date of
-    // last test result in the test plan run.
-    const mostRecentApprovedTestPlanRun =
-        approvedTestPlanRunsWithSameReport?.reduce((acc, curr) => {
-            const accDate =
-                acc?.testResults?.[acc.testResults.length - 1]?.completedAt;
-            const currDate =
-                curr?.testResults?.[curr.testResults.length - 1]?.completedAt;
-            return currDate > accDate ? curr : acc;
-        });
-
-    return mostRecentApprovedTestPlanRun.testResults;
+    return await getFinalizedTestResults({
+        ...testPlanReport
+    });
 };
 
 const updateOrCreateTestResultWithResponses = async ({
@@ -164,7 +139,7 @@ const updateOrCreateTestResultWithResponses = async ({
         browserVersionId
     });
 
-    const historicalTestResults = await getMostRecentHistoricalTestResults(
+    const historicalTestResults = await getApprovedFinalizedTestResults(
         testPlanRun
     );
 
@@ -225,7 +200,7 @@ const updateOrCreateTestResultWithResponses = async ({
                 outputs: responses
             })
         ),
-        isSubmit: false
+        isSubmit: true
     });
 };
 
@@ -233,7 +208,6 @@ const updateJobResults = async (req, res) => {
     const id = req.params.jobID;
     const { testId, responses, atVersionName, browserVersionName } = req.body;
     const job = await getCollectionJobById(id);
-
     if (!job) {
         throwNoJobFoundError(id);
     }
