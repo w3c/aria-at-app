@@ -51,7 +51,11 @@ const VersionString = ({
 }) => {
     const body = (
         <span>
-            <FontAwesomeIcon icon={faCircleCheck} color={iconColor} />
+            <FontAwesomeIcon
+                className="check"
+                icon={faCircleCheck}
+                color={iconColor}
+            />
             <b>{versionString}</b>
         </span>
     );
