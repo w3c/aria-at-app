@@ -15,6 +15,10 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                 name
                 releasedAt
             }
+            browsers {
+                id
+                name
+            }
             candidateBrowsers {
                 id
             }

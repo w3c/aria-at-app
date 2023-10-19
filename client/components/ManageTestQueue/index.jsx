@@ -5,8 +5,8 @@ import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faEdit,
-    faTrashAlt,
-    faChevronDown
+    faTrashAlt
+    // faChevronDown
 } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import BasicModal from '../common/BasicModal';
@@ -116,7 +116,7 @@ const DisclosureContainer = styled.div`
         font-size: 1rem;
     }
 `;
-
+//section:
 const CustomToggleButton = styled.button`
     background-color: transparent;
     width: 100%;
@@ -129,6 +129,8 @@ const CustomToggleButton = styled.button`
     display: block;
 
     .icon-container {
+        background-color: red;
+        /* position: relative; */
         float: right;
         margin-top: 2px;
         margin-right: 3px;
@@ -140,6 +142,10 @@ const CustomToggleButton = styled.button`
 
 const CustomToggleP = styled.p`
     border: 1px solid #ced4da;
+    /* background-image: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23343a40%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px; */
     border-radius: 0.375rem;
     background-color: #fff;
     padding: 2px;
@@ -150,9 +156,14 @@ const CustomToggleP = styled.p`
 `;
 
 const CustomToggleSpan = styled.span`
+    background-image: url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3e%3cpath fill=%27none%27 stroke=%27%23343a40%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27m2 5 6 6 6-6%27/%3e%3c/svg%3e');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 12px;
     float: left;
     margin-top: 2px;
-    margin-left: 20px;
+    /* margin-left: 20px; */
+    white-space: nowrap;
     background-color: ${props =>
         props.phaseLabel === 'Phase Selection'
             ? '#fff'
@@ -162,13 +173,15 @@ const CustomToggleSpan = styled.span`
             ? '#8441de'
             : 'black'};
     border-radius: 14px;
-    padding: 2px 15px;
+    padding: 2px 32px 2px 14px;
+    text-align: left;
+    width: 100%;
     font-size: 1rem;
     font-weight: 400;
     color: ${props =>
         props.phaseLabel === 'Phase Selection' ? 'black' : '#fff'};
 `;
-
+//section:
 // You can learn everything about this component here: https://react-bootstrap.netlify.app/docs/components/dropdowns#custom-dropdown-components
 const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
     <CustomToggleButton
@@ -188,12 +201,12 @@ const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
             <CustomToggleSpan phaseLabel={children}>
                 {children}
             </CustomToggleSpan>
-            <span className="icon-container">
+            {/* <span className="icon-container">
                 <FontAwesomeIcon
                     className="icon-chevron"
                     icon={faChevronDown}
                 />
-            </span>
+            </span> */}
         </CustomToggleP>
     </CustomToggleButton>
 ));
