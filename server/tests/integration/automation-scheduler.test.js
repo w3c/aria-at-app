@@ -14,7 +14,7 @@ let mockAutomationSchedulerServer;
 let apiServer;
 let sessionAgent;
 
-const jobId = '999';
+const jobId = '2';
 const testPlanReportId = '1';
 
 beforeAll(async () => {
@@ -168,9 +168,11 @@ const restartCollectionJobByMutation = async () =>
 const cancelCollectionJobByMutation = async () =>
     await mutate(`
         mutation {
-            cancelCollectionJob(id: "${jobId}") {
-                id
-                status
+            collectionJob(id: "${jobId}") {
+                cancelCollectionJob {
+                    id
+                    status
+                }
             }
         }
     `);
@@ -235,7 +237,8 @@ describe('Automation controller', () => {
             const expectedRequestBody = {
                 testPlanVersionGitSha,
                 testIds,
-                testPlanName
+                testPlanName,
+                jobId
             };
 
             await scheduleCollectionJobByMutation();
@@ -259,9 +262,11 @@ describe('Automation controller', () => {
     it('should cancel a job', async () => {
         await dbCleaner(async () => {
             await scheduleCollectionJobByMutation();
-            const { cancelCollectionJob: canceledCollectionJob } =
-                await cancelCollectionJobByMutation();
-            expect(canceledCollectionJob).toEqual({
+            const {
+                collectionJob: { cancelCollectionJob: cancelledCollectionJob }
+            } = await cancelCollectionJobByMutation();
+
+            expect(cancelledCollectionJob).toEqual({
                 id: jobId,
                 status: 'CANCELLED'
             });
@@ -273,9 +278,10 @@ describe('Automation controller', () => {
     });
 
     it('should gracefully reject request to cancel a job that does not exist', async () => {
-        const { cancelCollectionJob: canceledCollectionJob } =
-            await cancelCollectionJobByMutation();
-        expect(canceledCollectionJob).toBe(null);
+        expect.assertions(1); // Make sure an assertion is made
+        await expect(cancelCollectionJobByMutation()).rejects.toThrow(
+            'Could not find collection job with id 2'
+        );
     });
 
     it('should restart a job', async () => {

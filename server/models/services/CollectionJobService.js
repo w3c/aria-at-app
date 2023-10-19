@@ -26,7 +26,6 @@ const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { runnableTests } = require('../../resolvers/TestPlanReport');
 const { default: axios } = require('axios');
-const { uniqueId } = require('lodash');
 
 const includeBrowserVersion = {
     model: BrowserVersion,
@@ -256,8 +255,6 @@ const retryCancelledCollections = async (
         },
         axiosConfig
     );
-
-    console.log(res);
 
     if (res.status !== 200) {
         throw new Error(

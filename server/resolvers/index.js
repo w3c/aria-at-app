@@ -29,7 +29,6 @@ const updateCollectionJob = require('./updateCollectionJobResolver');
 const deleteCollectionJob = require('./deleteCollectionJobResolver');
 const scheduleCollectionJob = require('./scheduleCollectionJobResolver');
 const restartCollectionJob = require('./restartCollectionJobResolver');
-const cancelCollectionJob = require('./cancelCollectionJobResolver');
 const collectionJobByTestPlanRunId = require('./collectionJobByTestPlanRunIdResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
@@ -82,8 +81,7 @@ const resolvers = {
         updateCollectionJob,
         deleteCollectionJob,
         scheduleCollectionJob,
-        restartCollectionJob,
-        cancelCollectionJob
+        restartCollectionJob
     },
     AtOperations,
     AtVersionOperations,

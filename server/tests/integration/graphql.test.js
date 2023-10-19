@@ -159,7 +159,7 @@ describe('graphql', () => {
             // which is mocked in other tests.
             ['Mutation', 'scheduleCollectionJob'],
             ['Mutation', 'restartCollectionJob'],
-            ['Mutation', 'cancelCollectionJob']
+            ['CollectionJobOperations', 'retryCancelledCollections']
         ];
         ({
             typeAwareQuery,
@@ -738,18 +738,18 @@ describe('graphql', () => {
                                 id
                             }
                         }
+                        collectionJob(id: 333) {
+                            __typename
+                            cancelCollectionJob {
+                                id
+                                status
+                            }
+                        }
                         updateCollectionJob(id: 333, status: COMPLETED) {
                             id
                             status
                             testPlanRun {
                                 id
-                            }
-                        }
-                        collectionJob(id: 333) {
-                            __typename
-                            markCollectionJobFinished {
-                                id
-                                status
                             }
                         }
                         deleteCollectionJob(id: 333)

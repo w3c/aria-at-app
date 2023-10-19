@@ -1416,15 +1416,6 @@ const graphqlSchema = gql`
             id: ID!
         ): CollectionJob
         """
-        Cancel a CollectionJob by way of the Response Scheduler
-        """
-        cancelCollectionJob(
-            """
-            The CollectionJob to cancel.
-            """
-            id: ID!
-        ): CollectionJob
-        """
         Delete a CollectionJob
         """
         deleteCollectionJob(id: ID!): NoResponse!
