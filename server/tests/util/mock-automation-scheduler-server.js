@@ -22,10 +22,6 @@ const setupMockAutomationSchedulerServer = async () => {
         shutdownManager = new GracefulShutdownManager(listener);
     });
 
-    const generateRandomId = () => {
-        return Math.floor(Math.random() * 1000000).toString();
-    };
-
     const simulateJobStatusUpdate = async (jobId, newStatus) => {
         await axios.post(
             `${process.env.APP_SERVER}/api/jobs/${jobId}/update`,
@@ -108,12 +104,11 @@ const setupMockAutomationSchedulerServer = async () => {
     app.post('/jobs/new', async (req, res) => {
         if (process.env.ENVIRONMENT === 'test') {
             return res.json({
-                id: '999',
                 status: COLLECTION_JOB_STATUS.QUEUED
             });
         } else {
             // Local development must simulate posting results
-            const { testPlanVersionGitSha, testPlanName } = req.body;
+            const { testPlanVersionGitSha, testPlanName, jobId } = req.body;
 
             const { testPlanVersions } = await query(gql`
                 query {
@@ -166,7 +161,6 @@ const setupMockAutomationSchedulerServer = async () => {
 
             const atVersionName = testPlanReport.at.atVersions[0].name;
             const { runnableTests } = testPlanReport;
-            const jobId = generateRandomId();
 
             setTimeout(
                 () =>

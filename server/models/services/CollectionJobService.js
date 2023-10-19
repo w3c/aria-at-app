@@ -26,6 +26,7 @@ const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { runnableTests } = require('../../resolvers/TestPlanReport');
 const { default: axios } = require('axios');
+const { uniqueId } = require('lodash');
 
 const includeBrowserVersion = {
     model: BrowserVersion,
@@ -250,12 +251,15 @@ const retryCancelledCollections = async (
         {
             testPlanVersionGitSha: testPlanVersion.gitSha,
             testIds,
-            testPlanName: testPlanVersion.directory
+            testPlanName: testPlanVersion.directory,
+            jobId: collectionJob.id
         },
         axiosConfig
     );
 
-    if (res.statusCode !== 200) {
+    console.log(res);
+
+    if (res.status !== 200) {
         throw new Error(
             `Error from Github while retrying cancelled tests: ${res.data}`
         );
@@ -315,20 +319,35 @@ const scheduleCollectionJob = async (
         );
     }
 
+    // TODO: Replace by allowing CollectionJob id to auto-increment
+    const lastRecord = await CollectionJob.findAll({
+        limit: 1,
+        where: {},
+        order: [['id', 'DESC']]
+    });
+
+    let jobId;
+    if (lastRecord.length > 0) {
+        jobId = (Number(lastRecord[0].id) + 1).toString();
+    } else {
+        jobId = '1';
+    }
+
     const automationSchedulerResponse = await axios.post(
         `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
         {
             testPlanVersionGitSha: gitSha,
             testIds: testIds ?? tests.map(t => t.id),
-            testPlanName: directory
+            testPlanName: directory,
+            jobId
         },
         axiosConfig
     );
 
-    const { id, status } = automationSchedulerResponse.data;
+    const { status } = automationSchedulerResponse.data;
     return createCollectionJob(
         {
-            id,
+            id: jobId,
             status,
             testPlanReportId
         },
@@ -416,7 +435,7 @@ const deleteCollectionJob = async (id, options) => {
     // continue existing independent of collection job
     const collectionJob = await getCollectionJobById(id);
     const res = await ModelService.removeById(CollectionJob, id, options);
-    await removeTestPlanRun(collectionJob.testPlanRun.id);
+    await removeTestPlanRun(collectionJob.testPlanRun?.id);
     return res;
 };
 
