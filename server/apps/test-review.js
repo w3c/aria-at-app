@@ -346,7 +346,7 @@ app.get('/:commit/:pattern', async (req, res) => {
     const commit = req.params.commit;
     const pattern = req.params.pattern;
     const testPlan = await getTestPlanById(pattern);
-    const testPlanVersionTitle = testPlan.title;
+    const testPlanTitle = testPlan.title;
     //  console.log("New Log", testPlan.title);
 
     const { commitDate, commitMessage } = await getCommitInfo(commit);
@@ -362,7 +362,7 @@ app.get('/:commit/:pattern', async (req, res) => {
             ats,
             tests,
             pattern,
-            testPlanVersionTitle,
+            testPlanTitle,
             setupScripts,
             commitMessage: convertTextToHTML(commitMessage),
             commitDate: moment(commitDate).format('YYYY.MM.DD')
