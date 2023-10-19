@@ -28,9 +28,10 @@ function AddTestToQueueWithConfirmation({
         browser
     });
 
-    const feedbackModalTitle = hasAutomationSupport
-        ? `Adding ${testPlanVersion.title} Test Plan to the Test Queue`
-        : 'Successfully Added Test Plan';
+    const feedbackModalTitle =
+        hasAutomationSupport && testPlanVersion
+            ? `Adding ${testPlanVersion.title} Test Plan to the Test Queue`
+            : 'Successfully Added Test Plan';
 
     const feedbackModalContent = hasAutomationSupport ? (
         <>

@@ -154,7 +154,6 @@ describe('ManageBotRunDialog', () => {
         expect(
             screen.getByText('You are about to delete the run for NVDA Bot')
         ).toBeInTheDocument();
-        screen.debug();
         const deleteButtonInModal = screen.getByRole('button', {
             name: 'Delete'
         });
