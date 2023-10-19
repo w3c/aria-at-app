@@ -1288,7 +1288,11 @@ const graphqlSchema = gql`
         """
         Mark a CollectionJob as finished.
         """
-        markCollectionJobFinished: CollectionJob!
+        cancelCollectionJob: CollectionJob!
+        """
+        Retry the 'cancelled' tests of a CollectionJob.
+        """
+        retryCancelledCollections: CollectionJob!
     }
 
     """

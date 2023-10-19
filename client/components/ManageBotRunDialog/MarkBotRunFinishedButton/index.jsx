@@ -7,6 +7,7 @@ import {
     TEST_PLAN_RUN_TEST_RESULTS_COMPLETION_STATUS
 } from './queries';
 import { useTriggerLoad } from '../../common/LoadingStatus';
+import { useTestPlanRunValidatedAssertionCounts } from '../../../hooks/useTestPlanRunValidatedAssertionCounts';
 
 const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
     const {
@@ -20,6 +21,9 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
     });
 
     const { triggerLoad } = useTriggerLoad();
+
+    const { totalValidatedAssertions, totalPossibleAssertions } =
+        useTestPlanRunValidatedAssertionCounts(testPlanRun);
 
     const runIsFinished = useMemo(() => {
         if (!testPlanRunCompletionQuery) {
@@ -53,7 +57,11 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
     };
 
     return (
-        <Button variant="secondary" onClick={handleClick}>
+        <Button
+            variant="secondary"
+            onClick={handleClick}
+            disabled={totalValidatedAssertions < totalPossibleAssertions}
+        >
             {runIsFinished ? 'Mark as unfinished' : 'Mark as finished'}
         </Button>
     );

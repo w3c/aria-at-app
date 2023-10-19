@@ -218,14 +218,71 @@ const updateCollectionJob = async (
 };
 
 /**
- * Schedule a collection job with Response Scheduler
- * @param {object} input object for request to schedule job
- * @param {string} input.testPlanReportId id of test plan report to use for scheduling
+ * Retry cancelled tests from a collection job
+ * @param {object} input Input object for request to retry cancelled tests
+ * @param {object} input.collectionJob CollectionJob to retry cancelled tests from
+ * @param {string[]} collectionJobAttributes - CollectionJob attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const scheduleCollectionJob = async ({ testPlanReportId }, options) => {
+const retryCancelledCollections = async (
+    { collectionJob },
+    collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+    options
+) => {
+    if (!collectionJob) {
+        throw new Error('collectionJob is required to retry cancelled tests');
+    }
+
+    const cancelledTests = collectionJob.testPlanRun.testResults.filter(
+        testResult =>
+            // Find tests that don't have complete output
+            !testResult?.scenarioResults?.every(
+                scenario => scenario?.output !== null
+            )
+    );
+
+    const testIds = cancelledTests.map(test => test.id);
+    const { testPlanVersion } = collectionJob.testPlanRun.testPlanReport;
+    const res = await axios.post(
+        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
+        {
+            testPlanVersionGitSha: testPlanVersion.gitSha,
+            testIds,
+            testPlanName: testPlanVersion.directory
+        },
+        axiosConfig
+    );
+
+    if (res.statusCode !== 200) {
+        throw new Error(
+            `Error from Github while retrying cancelled tests: ${res.data}`
+        );
+    }
+
+    return ModelService.getById(
+        CollectionJob,
+        collectionJob.id,
+        collectionJobAttributes,
+        [includeTestPlanRun],
+        options
+    );
+};
+
+/**
+ * Schedule a collection job with Response Scheduler
+ * @param {object} input object for request to schedule job
+ * @param {string} input.testPlanReportId id of test plan report to use for scheduling
+ * @param {Array<string>} input.testIds optional: ids of tests to run
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const scheduleCollectionJob = async (
+    { testPlanReportId, testIds = null },
+    options
+) => {
     const report = await getTestPlanReportById(testPlanReportId);
 
     if (!report) {
@@ -262,7 +319,7 @@ const scheduleCollectionJob = async ({ testPlanReportId }, options) => {
         `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
         {
             testPlanVersionGitSha: gitSha,
-            testIds: tests.map(t => t.id),
+            testIds: testIds ?? tests.map(t => t.id),
             testPlanName: directory
         },
         axiosConfig
@@ -323,6 +380,7 @@ const getOrCreateCollectionJob = async (
  * @returns {Promise<[*, [*]]>}
  */
 const cancelCollectionJob = async ({ id }, options) => {
+    // Not currently in use as the Response Scheduler does not support cancelling jobs
     const automationSchedulerResponse = await axios.post(
         `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${id}/cancel`,
         {},
@@ -407,5 +465,6 @@ module.exports = {
     // Custom for Response Scheduler
     scheduleCollectionJob,
     restartCollectionJob,
-    cancelCollectionJob
+    cancelCollectionJob,
+    retryCancelledTests: retryCancelledCollections
 };

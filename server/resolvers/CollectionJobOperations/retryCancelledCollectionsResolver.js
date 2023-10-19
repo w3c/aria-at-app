@@ -1,13 +1,13 @@
 const { AuthenticationError } = require('apollo-server');
 
 const {
-    updateCollectionJob,
-    getCollectionJobById
+    getCollectionJobById,
+    retryCancelledTests
 } = require('../../models/services/CollectionJobService');
 
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 
-const markCollectionJobFinishedResolver = async (
+const retryCancelledCollectionsResolver = async (
     { parentContext: { id: collectionJobId } },
     _,
     { user }
@@ -28,13 +28,13 @@ const markCollectionJobFinishedResolver = async (
         );
     }
 
-    if (collectionJob.status === COLLECTION_JOB_STATUS.COMPLETED) {
-        return collectionJob;
-    } else {
-        return updateCollectionJob(collectionJobId, {
-            status: COLLECTION_JOB_STATUS.CANCELLED
-        });
+    if (collectionJob.status !== COLLECTION_JOB_STATUS.CANCELLED) {
+        throw new Error(
+            `Collection job with id ${collectionJobId} is ${collectionJob.status} not CANCELLED`
+        );
     }
+
+    return retryCancelledTests({ collectionJob });
 };
 
-module.exports = markCollectionJobFinishedResolver;
+module.exports = retryCancelledCollectionsResolver;

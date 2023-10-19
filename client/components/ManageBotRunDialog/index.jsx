@@ -5,14 +5,15 @@ import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
 import { useMutation, useQuery } from '@apollo/client';
 import {
     COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
-    DELETE_TEST_PLAN_RUN,
-    MARK_COLLECTION_JOB_AS_FINISHED
+    DELETE_TEST_PLAN_RUN
 } from './queries';
 import DeleteButton from '../common/DeleteButton';
 import { isBot } from '../../utils/automation';
 
 import './ManageBotRunDialog.css';
 import MarkBotRunFinishedButton from './MarkBotRunFinishedButton';
+import RetryCancelledCollectionsButton from './RetryCancelledCollectionsButton';
+import StopRunningCollectionButton from './StopRunningCollectionButton';
 
 const ManageBotRunDialog = ({
     testPlanReportId,
@@ -34,16 +35,6 @@ const ManageBotRunDialog = ({
         }
     );
 
-    const [markCollectionJobFinished] = useMutation(
-        MARK_COLLECTION_JOB_AS_FINISHED,
-        {
-            variables: {
-                collectionJobId:
-                    collectionJobQuery?.collectionJobByTestPlanRunId?.id
-            }
-        }
-    );
-
     const [deleteTestPlanRun] = useMutation(DELETE_TEST_PLAN_RUN, {
         variables: {
             testPlanReportId: testPlanReportId,
@@ -57,8 +48,7 @@ const ManageBotRunDialog = ({
     );
 
     const actions = useMemo(() => {
-        // Fill with always present actions first
-        const _actions = [
+        return [
             {
                 component: AssignTesterDropdown,
                 props: {
@@ -70,32 +60,26 @@ const ManageBotRunDialog = ({
                 }
             },
             {
-                label: 'Stop Running',
-                // TODO: enabled when a job is queued
-                variant: 'secondary',
-                onClick: async () => {
-                    if (markCollectionJobFinished) {
-                        await markCollectionJobFinished();
-                    }
-                    await onChange();
+                component: StopRunningCollectionButton,
+                props: {
+                    collectionJob:
+                        collectionJobQuery?.collectionJobByTestPlanRunId,
+                    onClick: onChange
                 }
             },
             {
-                label: 'Retry cancelled collections',
-                // TODO: enabled when all jobs are either cancelled or completed
-                variant: 'secondary',
-                onClick: async () => {
-                    // TODO: retry cancelled collections
-                    await onChange();
+                component: RetryCancelledCollectionsButton,
+                props: {
+                    collectionJob:
+                        collectionJobQuery?.collectionJobByTestPlanRunId,
+                    onClick: onChange
                 }
             },
             {
                 component: MarkBotRunFinishedButton,
                 props: {
                     testPlanRun: testPlanRun,
-                    onClick: async () => {
-                        await onChange();
-                    }
+                    onClick: onChange
                 }
             },
             {
@@ -106,14 +90,7 @@ const ManageBotRunDialog = ({
                 }
             }
         ];
-        return _actions;
-    }, [
-        testPlanReportId,
-        testPlanRun,
-        possibleReassignees,
-        onChange,
-        markCollectionJobFinished
-    ]);
+    }, [testPlanReportId, testPlanRun, possibleReassignees, onChange]);
     const deleteConfirmationContent = (
         <>
             <p>

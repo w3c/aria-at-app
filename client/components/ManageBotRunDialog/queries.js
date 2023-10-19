@@ -4,14 +4,15 @@ export const COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY = gql`
     query CollectionJobIdByTestPlanRunId($testPlanRunId: ID!) {
         collectionJobByTestPlanRunId(testPlanRunId: $testPlanRunId) {
             id
+            status
         }
     }
 `;
 
-export const MARK_COLLECTION_JOB_AS_FINISHED = gql`
-    mutation MarkCollectionJobFinished($collectionJobId: ID!) {
+export const CANCEL_COLLECTION_JOB = gql`
+    mutation CancelCollectionJob($collectionJobId: ID!) {
         collectionJob(id: $collectionJobId) {
-            markCollectionJobFinished {
+            cancelCollectionJob {
                 id
                 status
             }
@@ -26,6 +27,17 @@ export const DELETE_TEST_PLAN_RUN = gql`
                 testPlanRun {
                     id
                 }
+            }
+        }
+    }
+`;
+
+export const RETRY_CANCELLED_COLLECTIONS = gql`
+    mutation RetryCancelledCollections($collectionJobId: ID!) {
+        collectionJob(id: $collectionJobId) {
+            retryCancelledCollections {
+                id
+                status
             }
         }
     }
