@@ -268,7 +268,9 @@ const readCsv = ({ sourceDirectoryPath }) => {
 };
 
 const updateCommandsJson = async () => {
-    const keysMjsPath = pathToFileURL(path.join(testsDirectory, 'resources', 'keys.mjs'));
+    const keysMjsPath = pathToFileURL(
+        path.join(testsDirectory, 'resources', 'keys.mjs')
+    );
     const commands = Object.entries(await import(keysMjsPath)).map(
         ([id, text]) => ({ id, text })
     );

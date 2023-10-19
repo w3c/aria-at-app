@@ -43,6 +43,7 @@ export const REPORT_PAGE_QUERY = gql`
             testPlanReports(isFinal: true) {
                 id
                 metrics
+                markedFinalAt
                 at {
                     id
                     name

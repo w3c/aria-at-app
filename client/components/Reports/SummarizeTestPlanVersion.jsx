@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import DisclaimerInfo from '../DisclaimerInfo';
+import { convertDateToString } from '../../utils/formatter';
 
 const FullHeightContainer = styled(Container)`
     min-height: calc(100vh - 64px);
@@ -52,6 +53,17 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             </p>
             <h2>Metadata</h2>
             <ul>
+                <li>
+                    Generated from {/* section: */}
+                    <a
+                        href={`/test-review/${testPlanVersion.gitSha}/${testPlanVersion.testPlan.directory}`}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        {testPlanVersion.versionString} of{' '}
+                        {testPlanVersion.title} Test Plan
+                    </a>
+                </li>
                 {exampleUrl ? (
                     <li>
                         <a href={exampleUrl} target="_blank" rel="noreferrer">
@@ -94,6 +106,14 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 return (
                     <Fragment key={testPlanReport.id}>
                         <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
+                        <p>
+                            {/* Report completed on {testPlanReport.markedFinalAt} */}
+                            Report completed on{' '}
+                            {convertDateToString(
+                                new Date(testPlanReport.markedFinalAt),
+                                'MMMM D, YYYY'
+                            )}
+                        </p>
                         <DisclaimerInfo phase={testPlanVersion.phase} />
                         <LinkContainer
                             to={
@@ -187,7 +207,15 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
 };
 
 SummarizeTestPlanVersion.propTypes = {
+    // gitSha
+    // testPlan
+    // directory
+    // versionString
     testPlanVersion: PropTypes.shape({
+        gitSha: PropTypes.string,
+        testPlan: PropTypes.string,
+        directory: PropTypes.string,
+        versionString: PropTypes.string,
         id: PropTypes.string.isRequired,
         title: PropTypes.string,
         phase: PropTypes.string,
