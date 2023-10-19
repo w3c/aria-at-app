@@ -597,15 +597,15 @@ const graphqlSchema = gql`
         """
         See TestResult type for more information.
         """
-        atVersionId: ID!
+        atVersionId: ID
         """
         See TestResult type for more information.
         """
-        browserVersionId: ID!
+        browserVersionId: ID
         """
         See TestResult type for more information.
         """
-        scenarioResults: [ScenarioResultInput]!
+        scenarioResults: [ScenarioResultInput]
     }
 
     """

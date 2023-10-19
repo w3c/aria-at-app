@@ -12,6 +12,7 @@ import DeleteButton from '../common/DeleteButton';
 import { isBot } from '../../utils/automation';
 
 import './ManageBotRunDialog.css';
+import MarkBotRunFinishedButton from './MarkBotRunFinishedButton';
 
 const ManageBotRunDialog = ({
     testPlanReportId,
@@ -55,14 +56,6 @@ const ManageBotRunDialog = ({
         [testers]
     );
 
-    const runIsFinished = useMemo(
-        () =>
-            testPlanRun?.testResults?.every(
-                testResult => testResult?.completedAt !== null
-            ),
-        [testPlanRun]
-    );
-
     const actions = useMemo(() => {
         // Fill with always present actions first
         const _actions = [
@@ -95,35 +88,24 @@ const ManageBotRunDialog = ({
                     // TODO: retry cancelled collections
                     await onChange();
                 }
+            },
+            {
+                component: MarkBotRunFinishedButton,
+                props: {
+                    testPlanRun: testPlanRun,
+                    onClick: async () => {
+                        await onChange();
+                    }
+                }
+            },
+            {
+                component: DeleteButton,
+                props: {
+                    ariaLabel: 'Delete bot run',
+                    onClick: () => setShowDeleteDialog(true)
+                }
             }
         ];
-        if (runIsFinished) {
-            _actions.push({
-                label: 'Mark as not finished',
-                variant: 'secondary',
-                onClick: async () => {
-                    await onChange();
-                    // TODO: unmark all test results as finished
-                    // if this is possible
-                }
-            });
-        } else {
-            _actions.push({
-                label: 'Mark as finished',
-                variant: 'secondary',
-                onClick: async () => {
-                    await onChange();
-                    // TODO: resubmit all test results as finished
-                }
-            });
-        }
-        _actions.push({
-            component: DeleteButton,
-            props: {
-                ariaLabel: 'Delete bot run',
-                onClick: () => setShowDeleteDialog(true)
-            }
-        });
         return _actions;
     }, [
         testPlanReportId,

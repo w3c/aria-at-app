@@ -195,7 +195,7 @@ const updateOrCreateTestResultWithResponses = async ({
                 outputs: responses
             })
         ),
-        isSubmit: true
+        isSubmit: false
     });
 };
 

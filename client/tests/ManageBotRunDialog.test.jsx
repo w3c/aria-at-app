@@ -11,6 +11,7 @@ import {
     MARK_COLLECTION_JOB_AS_FINISHED
 } from '../components/ManageBotRunDialog/queries';
 import '@testing-library/jest-dom/extend-expect';
+import { TEST_PLAN_RUN_TEST_RESULTS_COMPLETION_STATUS } from '../components/ManageBotRunDialog/MarkBotRunFinishedButton/queries';
 
 const mocks = [
     {
@@ -62,6 +63,27 @@ const mocks = [
                             id: null
                         }
                     }
+                }
+            }
+        }
+    },
+    {
+        request: {
+            query: TEST_PLAN_RUN_TEST_RESULTS_COMPLETION_STATUS,
+            variables: {
+                testPlanRunId: '1'
+            }
+        },
+        result: {
+            data: {
+                testPlanRun: {
+                    id: '1',
+                    testResults: [
+                        {
+                            id: 'test-result-1',
+                            completedAt: null
+                        }
+                    ]
                 }
             }
         }
@@ -126,22 +148,17 @@ describe('ManageBotRunDialog', () => {
 
         await waitFor(() => new Promise(resolve => setTimeout(resolve, 0)));
 
-        const markAsFinishedButton = screen.getByText('Mark as finished');
         const deleteButton = screen.getByLabelText('Delete bot run');
-
-        fireEvent.click(markAsFinishedButton);
-
-        await waitFor(() => expect(mockOnChange).toHaveBeenCalled());
 
         fireEvent.click(deleteButton);
         expect(
             screen.getByText('You are about to delete the run for NVDA Bot')
         ).toBeInTheDocument();
-
+        screen.debug();
         const deleteButtonInModal = screen.getByRole('button', {
             name: 'Delete'
         });
         fireEvent.click(deleteButtonInModal);
-        expect(mockOnChange).toHaveBeenCalled();
+        await waitFor(() => expect(mockOnChange).toHaveBeenCalled());
     });
 });
