@@ -23,6 +23,7 @@ import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
+import { differenceBy } from 'lodash';
 
 const TestQueueRow = ({
     user = {},
@@ -414,6 +415,12 @@ const TestQueueRow = ({
             'completed'
         ].join('-');
 
+    const completedAllTests = !testPlanReport.draftTestPlanRuns.find(
+        testPlanRun =>
+            testPlanRun.testResultsLength !==
+            testPlanReport.runnableTests.length
+    );
+
     return (
         <LoadingStatus message={loadingMessage}>
             <tr className="test-queue-run-row">
@@ -494,7 +501,8 @@ const TestQueueRow = ({
                             !testPlanReport.conflictsLength &&
                             testPlanReport.draftTestPlanRuns.length &&
                             testPlanReport.draftTestPlanRuns[0]
-                                .testResultsLength ? (
+                                .testResultsLength &&
+                            completedAllTests ? (
                                 <>
                                     <Button
                                         ref={updateTestPlanStatusButtonRef}

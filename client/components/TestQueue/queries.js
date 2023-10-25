@@ -49,6 +49,11 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 id
                 name
             }
+            runnableTests {
+                id
+                title
+                renderedUrl
+            }
             testPlanVersion {
                 id
                 title
