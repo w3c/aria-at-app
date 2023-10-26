@@ -5,7 +5,10 @@ import BasicModal from '../common/BasicModal';
 import { useMutation } from '@apollo/client';
 import { ADD_TEST_QUEUE_MUTATION } from '../TestQueue/queries';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
-import { isSupportedByResponseCollector } from '../../utils/automation';
+import {
+    getBotUserFromAtBrowser,
+    isSupportedByResponseCollector
+} from '../../utils/automation';
 import './AddTestToQueueWithConfirmation.css';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from './queries';
 
@@ -35,8 +38,10 @@ function AddTestToQueueWithConfirmation({
 
     const feedbackModalContent = hasAutomationSupport ? (
         <>
-            Would you like to automatically generate a report with automation
-            for this Test Plan?
+            Choose how the report for {at?.name} and {browser?.name} will be
+            generated. Add it to the queue so it can be assigned to a tester at
+            a later time or start running automated response collection with{' '}
+            {getBotUserFromAtBrowser(at, browser)?.username}.
         </>
     ) : (
         <>
