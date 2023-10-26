@@ -150,7 +150,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
             <h2>Metadata</h2>
             <ul>
                 <li>
-                    Generated from {/* section: */}
+                    Generated from
                     <a
                         href={`/test-review/${testPlanVersion.gitSha}/${testPlanVersion.testPlan.directory}`}
                         target="_blank"
@@ -161,7 +161,6 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     </a>
                 </li>
                 <li>
-                    {/* Report completed on {testPlanReport.markedFinalAt} */}
                     Report completed on{' '}
                     {convertDateToString(
                         new Date(testPlanReport.markedFinalAt),
