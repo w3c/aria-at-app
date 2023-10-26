@@ -649,14 +649,16 @@ const ManageTestQueue = ({
                                     <option value={''} disabled>
                                         Select a Browser
                                     </option>
-                                    {browsers.map(item => (
-                                        <option
-                                            key={`${item.name}-${item.id}`}
-                                            value={item.id}
-                                        >
-                                            {item.name}
-                                        </option>
-                                    ))}
+                                    {ats
+                                        .find(at => at.id === selectedAtId)
+                                        ?.browsers.map(item => (
+                                            <option
+                                                key={`${item.name}-${item.id}`}
+                                                value={item.id}
+                                            >
+                                                {item.name}
+                                            </option>
+                                        ))}
                                 </Form.Select>
                             </Form.Group>
                         </div>
