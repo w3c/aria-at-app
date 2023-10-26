@@ -24,7 +24,7 @@ const axiosConfig = {
         'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
     },
     timeout: 1000,
-    httpAgent,
+    httpAgent
 };
 
 const throwNoJobFoundError = jobId => {
