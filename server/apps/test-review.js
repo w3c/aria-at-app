@@ -347,7 +347,6 @@ app.get('/:commit/:pattern', async (req, res) => {
     const pattern = req.params.pattern;
     const testPlan = await getTestPlanById(pattern);
     const testPlanTitle = testPlan.title;
-    //  console.log("New Log", testPlan.title);
 
     const { commitDate, commitMessage } = await getCommitInfo(commit);
     const { tests, scripts: setupScripts } = await generateTests(
