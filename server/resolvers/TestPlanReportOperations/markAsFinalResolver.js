@@ -3,7 +3,7 @@ const {
     getTestPlanReportById,
     updateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
-const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
+const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 
@@ -27,15 +27,17 @@ const markAsFinalResolver = async (
         );
     }
 
-    const finalizedTestResults = await finalizedTestResultsResolver(
-        testPlanReport,
-        null,
-        context
+    const runnableTests = runnableTestsResolver(testPlanReport);
+
+    const hasIncompleteTestRuns = testPlanReport.testPlanRuns.find(
+        testPlanRun => {
+            return testPlanRun.testResults.length !== runnableTests.length;
+        }
     );
-    if (!finalizedTestResults || !finalizedTestResults.length) {
+
+    if (hasIncompleteTestRuns) {
         throw new Error(
-            'Cannot mark test plan report as final because there are no ' +
-                'completed test results'
+            'Cannot mark test plan report as final because not all testers have completed their test runs.'
         );
     }
 

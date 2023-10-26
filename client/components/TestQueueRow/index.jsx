@@ -23,7 +23,6 @@ import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
-import { differenceBy } from 'lodash';
 
 const TestQueueRow = ({
     user = {},
