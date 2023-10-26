@@ -16,12 +16,15 @@ const populateData = require('../services/PopulatedData/populateData');
 const {
     getFinalizedTestResults
 } = require('../models/services/TestResultReadService');
+const http = require('http');
+const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
     headers: {
         'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
     },
-    timeout: 1000
+    timeout: 1000,
+    httpAgent,
 };
 
 const throwNoJobFoundError = jobId => {
@@ -240,5 +243,6 @@ module.exports = {
     cancelJob,
     getJobLog,
     updateJobStatus,
-    updateJobResults
+    updateJobResults,
+    axiosConfig
 };

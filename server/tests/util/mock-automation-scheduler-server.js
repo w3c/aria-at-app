@@ -7,6 +7,7 @@ const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const { default: axios } = require('axios');
 const { gql } = require('apollo-server-core');
 const { query } = require('../util/graphql-test-utilities');
+const { axiosConfig } = require('../../controllers/AutomationController');
 
 const setupMockAutomationSchedulerServer = async () => {
     const app = express();
@@ -28,13 +29,7 @@ const setupMockAutomationSchedulerServer = async () => {
             {
                 status: newStatus
             },
-            {
-                headers: {
-                    'x-automation-secret':
-                        process.env.AUTOMATION_SCHEDULER_SECRET
-                },
-                timeout: 1000
-            }
+            axiosConfig
         );
     };
 
@@ -64,13 +59,7 @@ const setupMockAutomationSchedulerServer = async () => {
             await axios.post(
                 `${process.env.APP_SERVER}/api/jobs/${jobId}/result`,
                 testResult,
-                {
-                    headers: {
-                        'x-automation-secret':
-                            process.env.AUTOMATION_SCHEDULER_SECRET
-                    },
-                    timeout: 1000
-                }
+                axiosConfig
             );
         } catch (e) {
             // Likely just means the test was cancelled
