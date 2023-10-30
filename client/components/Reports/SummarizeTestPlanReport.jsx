@@ -82,13 +82,13 @@ const getTestersRunHistory = (
 };
 
 const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
+    const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
     const location = useLocation();
     const { testPlanReportId } = useParams();
 
     const testPlanReport = testPlanReports.find(
         each => each.id == testPlanReportId
     );
-
     if (!testPlanReport) return <Navigate to="/404" />;
 
     const { at, browser } = testPlanReport;
@@ -105,7 +105,6 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         testPlanReport.finalizedTestResults,
         testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
     );
-
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -148,6 +147,45 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 assertions. The open test button next to each test allows you to
                 preview the test in your browser.
             </p>
+            <h2>Metadata</h2>
+            <ul>
+                <li>
+                    Generated from
+                    <a
+                        href={`/test-review/${testPlanVersion.gitSha}/${testPlanVersion.testPlan.directory}`}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        {testPlanVersion.versionString} of{' '}
+                        {testPlanVersion.title} Test Plan
+                    </a>
+                </li>
+                <li>
+                    Report completed on{' '}
+                    {convertDateToString(
+                        new Date(testPlanReport.markedFinalAt),
+                        'MMMM D, YYYY'
+                    )}
+                </li>
+                {exampleUrl ? (
+                    <li>
+                        <a href={exampleUrl} target="_blank" rel="noreferrer">
+                            Example Under Test
+                        </a>
+                    </li>
+                ) : null}
+                {designPatternUrl ? (
+                    <li>
+                        <a
+                            href={designPatternUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            Design Pattern
+                        </a>
+                    </li>
+                ) : null}
+            </ul>
             {testPlanReport.finalizedTestResults.map(testResult => {
                 const test = testResult.test;
 
