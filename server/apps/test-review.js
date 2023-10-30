@@ -11,6 +11,9 @@ const {
 const {
     createCommandTuplesATModeTaskLookup
 } = require('../handlebars/test-review/scripts/command-tuples-at-mode-task-lookup');
+const {
+    getTestPlanById
+} = require('../models/services/TestPlanVersionService');
 
 const app = express();
 
@@ -342,6 +345,8 @@ const generateTests = async (pattern, commit, commitDate) => {
 app.get('/:commit/:pattern', async (req, res) => {
     const commit = req.params.commit;
     const pattern = req.params.pattern;
+    const testPlan = await getTestPlanById(pattern);
+    const testPlanTitle = testPlan.title;
 
     const { commitDate, commitMessage } = await getCommitInfo(commit);
     const { tests, scripts: setupScripts } = await generateTests(
@@ -356,6 +361,7 @@ app.get('/:commit/:pattern', async (req, res) => {
             ats,
             tests,
             pattern,
+            testPlanTitle,
             setupScripts,
             commitMessage: convertTextToHTML(commitMessage),
             commitDate: moment(commitDate).format('YYYY.MM.DD')
