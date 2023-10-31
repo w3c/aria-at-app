@@ -150,7 +150,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
             <h2>Metadata</h2>
             <ul>
                 <li>
-                    Generated from
+                    Generated from&nbsp;
                     <a
                         href={`/test-review/${testPlanVersion.gitSha}/${testPlanVersion.testPlan.directory}`}
                         target="_blank"
