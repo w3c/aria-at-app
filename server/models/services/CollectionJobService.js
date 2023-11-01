@@ -8,7 +8,8 @@ const {
     At,
     Browser,
     AtVersion,
-    BrowserVersion
+    BrowserVersion,
+    sequelize
 } = require('../');
 const { COLLECTION_JOB_ATTRIBUTES } = require('./helpers');
 const { Op } = require('sequelize');
@@ -317,12 +318,10 @@ const scheduleCollectionJob = async (
     }
 
     // TODO: Replace by allowing CollectionJob id to auto-increment
-    const lastRecord = await CollectionJob.findAll({
-        limit: 1,
-        where: {},
-        order: [['id', 'DESC']]
-    });
-
+    const lastRecord = await sequelize.query(
+        `SELECT * FROM "CollectionJob" ORDER BY CAST(id AS INTEGER) DESC LIMIT 1`,
+        { model: CollectionJob, mapToModel: true }
+    );
     let jobId;
     if (lastRecord.length > 0) {
         jobId = (Number(lastRecord[0].id) + 1).toString();
