@@ -1,12 +1,11 @@
 const { gql } = require('@apollo/client');
 
-export const TEST_PLAN_RUN_TEST_RESULTS_COMPLETION_STATUS = gql`
-    query TestPlanRunTestResultsCompletionStatus($testPlanRunId: ID!) {
+export const TEST_PLAN_RUN_RESULT_IDS = gql`
+    query TestPlanRunIds($testPlanRunId: ID!) {
         testPlanRun(id: $testPlanRunId) {
             id
             testResults {
                 id
-                completedAt
             }
         }
     }

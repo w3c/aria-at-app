@@ -111,7 +111,7 @@ BasicModal.propTypes = {
     showFooter: PropTypes.bool,
     dialogClassName: PropTypes.string,
     title: PropTypes.node.isRequired,
-    content: PropTypes.node.isRequired,
+    content: PropTypes.node,
     closeLabel: PropTypes.string,
     handleClose: PropTypes.func,
     handleHide: PropTypes.func,

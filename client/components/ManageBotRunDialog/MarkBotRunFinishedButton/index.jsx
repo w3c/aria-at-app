@@ -1,20 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import { useMutation, useQuery } from '@apollo/client';
 import {
     SUBMIT_TEST_RESULT_MUTATION,
-    TEST_PLAN_RUN_TEST_RESULTS_COMPLETION_STATUS
+    TEST_PLAN_RUN_RESULT_IDS
 } from './queries';
 import { useTriggerLoad } from '../../common/LoadingStatus';
 import { useTestPlanRunValidatedAssertionCounts } from '../../../hooks/useTestPlanRunValidatedAssertionCounts';
+import BasicModal from '../../common/BasicModal';
+import { useTestPlanRunIsFinished } from '../../../hooks/useTestPlanRunIsFinished';
 
 const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
     const {
         data: testPlanRunCompletionQuery,
         loading,
         refetch
-    } = useQuery(TEST_PLAN_RUN_TEST_RESULTS_COMPLETION_STATUS, {
+    } = useQuery(TEST_PLAN_RUN_RESULT_IDS, {
         variables: {
             testPlanRunId: testPlanRun.id
         }
@@ -25,17 +27,11 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
     const { totalValidatedAssertions, totalPossibleAssertions } =
         useTestPlanRunValidatedAssertionCounts(testPlanRun);
 
-    const runIsFinished = useMemo(() => {
-        if (!testPlanRunCompletionQuery) {
-            return false;
-        }
-
-        return testPlanRunCompletionQuery.testPlanRun.testResults.every(
-            testResult => testResult.completedAt !== null
-        );
-    }, [testPlanRun, testPlanRunCompletionQuery]);
-
     const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
+
+    const [showConfirmation, setShowConfirmation] = useState(false);
+
+    const { runIsFinished } = useTestPlanRunIsFinished(testPlanRun.id);
 
     if (loading || !testPlanRunCompletionQuery) {
         return null;
@@ -57,13 +53,33 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
     };
 
     return (
-        <Button
-            variant="secondary"
-            onClick={handleClick}
-            disabled={totalValidatedAssertions < totalPossibleAssertions}
-        >
-            {runIsFinished ? 'Mark as unfinished' : 'Mark as finished'}
-        </Button>
+        <>
+            <BasicModal
+                title={`Are you sure you wish to mark ${testPlanRun.tester.username} run as finished?`}
+                cancelButton={true}
+                handleClose={() => setShowConfirmation(false)}
+                handleHide={() => setShowConfirmation(false)}
+                useOnHide={true}
+                closeLabel="No"
+                show={showConfirmation}
+                actions={[
+                    {
+                        label: 'Yes',
+                        onClick: handleClick
+                    }
+                ]}
+            />
+            <Button
+                variant="secondary"
+                onClick={() => setShowConfirmation(true)}
+                disabled={
+                    totalValidatedAssertions < totalPossibleAssertions ||
+                    runIsFinished
+                }
+            >
+                Mark as finished
+            </Button>
+        </>
     );
 };
 

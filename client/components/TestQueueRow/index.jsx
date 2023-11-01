@@ -325,6 +325,7 @@ const TestQueueRow = ({
         const botTestPlanRun = draftTestPlanRuns.find(({ tester }) =>
             isBot(tester)
         );
+
         if (isAdmin && !isLoading) {
             return (
                 <>

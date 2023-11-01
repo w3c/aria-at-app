@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import ManageBotRunDialog from '.';
+import { useTestPlanRunIsFinished } from '../../hooks/useTestPlanRunIsFinished';
 
 const ManageBotRunDialogWithButton = ({
     testPlanRun,
@@ -9,7 +10,11 @@ const ManageBotRunDialogWithButton = ({
     testers,
     onChange
 }) => {
+    const { runIsFinished } = useTestPlanRunIsFinished(testPlanRun.id);
     const [showDialog, setShowDialog] = useState(false);
+    if (runIsFinished) {
+        return null;
+    }
 
     return (
         <>
