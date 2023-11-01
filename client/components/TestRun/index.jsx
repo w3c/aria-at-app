@@ -137,7 +137,7 @@ const TestRun = () => {
             : null;
     const testerId = openAsUserId || userId;
     const isAdminReviewer = !!(isAdmin && openAsUserId);
-    const openAsUser = users.find(user => user.id === openAsUserId);
+    const openAsUser = users?.find(user => user.id === openAsUserId);
 
     useEffect(() => {
         if (data) setup(data);
