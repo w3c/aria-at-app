@@ -122,3 +122,6 @@ deploy/provision.retry
 # Migration generated files
 server/migrations/pg_dump_test_plan_target.sql
 server/migrations/test_plan_target_id.csv
+
+# Private Key Storage
+config/*.pem

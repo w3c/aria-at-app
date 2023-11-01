@@ -27,6 +27,7 @@ const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { runnableTests } = require('../../resolvers/TestPlanReport');
 const { default: axios } = require('axios');
+const { default: createGithubWorkflow } = require('./GithubWorkflowService');
 
 const includeBrowserVersion = {
     model: BrowserVersion,
@@ -329,19 +330,23 @@ const scheduleCollectionJob = async (
         jobId = '1';
     }
 
-    const automationSchedulerResponse = await axios.post(
-        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-        {
-            testPlanVersionGitSha: gitSha,
-            testIds: testIds ?? tests.map(t => t.id),
-            testPlanName: directory,
-            jobId
-        },
-        axiosConfig
-    );
+    let status = 'QUEUED';
 
-    const { status } = automationSchedulerResponse.data;
-    return createCollectionJob(
+    if (!process.env.AUTOMATION_CALLBACK_FQDN) {
+        const automationSchedulerResponse = await axios.post(
+            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
+            {
+                testPlanVersionGitSha: gitSha,
+                testIds: testIds ?? tests.map(t => t.id),
+                testPlanName: directory,
+                jobId
+            },
+            axiosConfig
+        );
+        status = automationSchedulerResponse.data.status;
+    }
+
+    const job = await createCollectionJob(
         {
             id: jobId,
             status,
@@ -350,6 +355,12 @@ const scheduleCollectionJob = async (
         COLLECTION_JOB_ATTRIBUTES,
         options
     );
+
+    if (process.env.AUTOMATION_CALLBACK_FQDN) {
+        await createGithubWorkflow({ job, directory, gitSha });
+    }
+
+    return job;
 };
 
 /**
