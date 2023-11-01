@@ -17,6 +17,7 @@ const {
     getFinalizedTestResults
 } = require('../models/services/TestResultReadService');
 const http = require('http');
+const { getTestIdFromCSVRow } = require('../util/getTestIdFromCSVRow');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -124,12 +125,17 @@ const getApprovedFinalizedTestResults = async testPlanRun => {
 };
 
 const updateOrCreateTestResultWithResponses = async ({
-    testId,
+    testCsvRow,
     testPlanRun,
     responses,
     atVersionId,
     browserVersionId
 }) => {
+    const testId = getTestIdFromCSVRow(
+        testCsvRow,
+        testPlanRun.testPlanReport.testPlanVersion
+    );
+
     const { testResult } = await findOrCreateTestResult({
         testId,
         testPlanRunId: testPlanRun.id,
@@ -204,7 +210,8 @@ const updateOrCreateTestResultWithResponses = async ({
 
 const updateJobResults = async (req, res) => {
     const id = req.params.jobID;
-    const { testId, responses, atVersionName, browserVersionName } = req.body;
+    const { testId, testCsvRow, responses, atVersionName, browserVersionName } =
+        req.body;
     const job = await getCollectionJobById(id);
     if (!job) {
         throwNoJobFoundError(id);
@@ -230,6 +237,7 @@ const updateJobResults = async (req, res) => {
 
     await updateOrCreateTestResultWithResponses({
         testId,
+        testCsvRow,
         responses,
         testPlanRun: job.testPlanRun,
         atVersionId: atVersion.id,

@@ -410,14 +410,15 @@ describe('Automation controller', () => {
                 collectionJob.testPlanRun.testPlanReport.testPlanVersion;
             const testResultsNumber =
                 collectionJob.testPlanRun.testResults.length;
-            const selectedTest = tests[0];
+            const selectedTestIndex = 0;
+            const selectedTest = tests[selectedTestIndex];
             const numberOfScenarios = selectedTest.scenarios.filter(
                 scenario => scenario.atId === at.id
             ).length;
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
                 .send({
-                    testId: selectedTest.id,
+                    testCsvRow: selectedTestIndex,
                     atVersionName: at.atVersions[0].name,
                     browserVersionName: browser.browserVersions[0].name,
                     responses: new Array(numberOfScenarios).fill(
@@ -496,7 +497,9 @@ describe('Automation controller', () => {
             const { testPlanReport } = await getTestPlanReport(
                 finalizedTestPlanVersion.testPlanReport.id
             );
-            const historicalTestResult = testPlanReport.finalizedTestResults[0];
+            const selectedTestIndex = 0;
+            const historicalTestResult =
+                testPlanReport.finalizedTestResults[selectedTestIndex];
             expect(historicalTestResult).not.toEqual(undefined);
             const historicalResponses =
                 historicalTestResult?.scenarioResults.map(
@@ -506,7 +509,7 @@ describe('Automation controller', () => {
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
                 .send({
-                    testId: historicalTestResult.test.id,
+                    testCsvRow: selectedTestIndex,
                     atVersionName: atVersion.name,
                     browserVersionName: browserVersion.name,
                     responses: historicalResponses

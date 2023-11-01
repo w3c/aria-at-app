@@ -41,7 +41,7 @@ const setupMockAutomationSchedulerServer = async () => {
         currentTestIndex
     ) => {
         const currentTest = tests[currentTestIndex];
-        const { id, scenarios, assertions } = currentTest;
+        const { scenarios, assertions } = currentTest;
 
         const responses = [];
         scenarios.forEach(() => {
@@ -50,7 +50,7 @@ const setupMockAutomationSchedulerServer = async () => {
             });
         });
         const testResult = {
-            testId: id,
+            testCsvRow: currentTestIndex,
             atVersionName,
             browserVersionName,
             responses
