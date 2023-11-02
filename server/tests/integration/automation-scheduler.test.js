@@ -15,7 +15,7 @@ let apiServer;
 let sessionAgent;
 
 const jobId = '2';
-const testPlanReportId = '1';
+const testPlanReportId = '4';
 
 beforeAll(async () => {
     apiServer = await startSupertestServer({

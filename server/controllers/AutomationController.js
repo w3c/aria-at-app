@@ -8,8 +8,16 @@ const {
 } = require('../models/services/TestResultWriteService');
 const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
-const { getAtVersions } = require('../models/services/AtService');
-const { getBrowserVersions } = require('../models/services/BrowserService');
+const {
+    getAtVersions,
+    getAts,
+    findOrCreateAtVersion
+} = require('../models/services/AtService');
+const {
+    getBrowserVersions,
+    getBrowsers,
+    findOrCreateBrowserVersion
+} = require('../models/services/BrowserService');
 const { HttpQueryError } = require('apollo-server-core');
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
 const populateData = require('../services/PopulatedData/populateData');
@@ -218,17 +226,20 @@ const updateJobResults = async (req, res) => {
         );
     }
 
-    const [atVersions, browserVersions] = await Promise.all([
-        getAtVersions(),
-        getBrowserVersions()
-    ]);
-    const atVersion = atVersions.find(each => each.name === atVersionName);
-    const browserVersion = browserVersions.find(
-        each => each.name === browserVersionName
-    );
+    /* TODO: Change this once we support more At + Browser Combos in Automation */
+    const [at] = await getAts(null, { name: 'NVDA' });
+    const [browser] = await getBrowsers(null, { name: 'Chrome' });
 
-    if (!atVersion) throw new Error('AT version not found');
-    if (!browserVersion) throw new Error('Browser version not found');
+    const [atVersion, browserVersion] = await Promise.all([
+        findOrCreateAtVersion({
+            atId: at.id,
+            name: atVersionName
+        }),
+        findOrCreateBrowserVersion({
+            browserId: browser.id,
+            name: browserVersionName
+        })
+    ]);
 
     await updateOrCreateTestResultWithResponses({
         testId,
