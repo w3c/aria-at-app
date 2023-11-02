@@ -9,6 +9,19 @@ export const COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY = gql`
     }
 `;
 
+export const TEST_PLAN_REPORT_ASSIGNED_TESTERS_QUERY = gql`
+    query TestPlanReportAssignedTesters($testPlanReportId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            id
+            draftTestPlanRuns {
+                tester {
+                    id
+                }
+            }
+        }
+    }
+`;
+
 export const CANCEL_COLLECTION_JOB = gql`
     mutation CancelCollectionJob($collectionJobId: ID!) {
         collectionJob(id: $collectionJobId) {

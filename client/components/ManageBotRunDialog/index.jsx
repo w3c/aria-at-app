@@ -5,7 +5,8 @@ import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
 import { useMutation, useQuery } from '@apollo/client';
 import {
     COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,
-    DELETE_TEST_PLAN_RUN
+    DELETE_TEST_PLAN_RUN,
+    TEST_PLAN_REPORT_ASSIGNED_TESTERS_QUERY
 } from './queries';
 import DeleteButton from '../common/DeleteButton';
 import { isBot } from '../../utils/automation';
@@ -42,9 +43,26 @@ const ManageBotRunDialog = ({
         }
     });
 
+    const { data: testPlanReportAssignedTestersQuery } = useQuery(
+        TEST_PLAN_REPORT_ASSIGNED_TESTERS_QUERY,
+        {
+            variables: {
+                testPlanReportId
+            },
+            fetchPolicy: 'cache-and-network'
+        }
+    );
+
     const possibleReassignees = useMemo(
-        () => testers.filter(t => !isBot(t)),
-        [testers]
+        () =>
+            testers.filter(
+                t =>
+                    !isBot(t) &&
+                    !testPlanReportAssignedTestersQuery?.testPlanReport.draftTestPlanRuns.some(
+                        d => d.tester.id === t.id
+                    )
+            ),
+        [testers, testPlanReportAssignedTestersQuery]
     );
 
     const actions = useMemo(() => {
