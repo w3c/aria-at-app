@@ -9,12 +9,10 @@ const {
 const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const {
-    getAtVersions,
     getAts,
     findOrCreateAtVersion
 } = require('../models/services/AtService');
 const {
-    getBrowserVersions,
     getBrowsers,
     findOrCreateBrowserVersion
 } = require('../models/services/BrowserService');
