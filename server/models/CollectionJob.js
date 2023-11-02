@@ -16,6 +16,11 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false,
                 defaultValue: COLLECTION_JOB_STATUS.QUEUED
             },
+            externalLogsUrl: {
+                type: DataTypes.STRING,
+                allowNull: true,
+                defaultValue: null
+            },
             testPlanRunId: {
                 type: DataTypes.INTEGER,
                 references: {
@@ -44,6 +49,7 @@ module.exports = function (sequelize, DataTypes) {
     Model.QUEUED = COLLECTION_JOB_STATUS.QUEUED;
     Model.RUNNING = COLLECTION_JOB_STATUS.RUNNING;
     Model.COMPLETED = COLLECTION_JOB_STATUS.COMPLETED;
+    Model.CANCELLED = COLLECTION_JOB_STATUS.CANCELLED;
     Model.ERROR = COLLECTION_JOB_STATUS.ERROR;
 
     return Model;

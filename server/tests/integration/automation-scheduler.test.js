@@ -111,6 +111,7 @@ const getTestCollectionJob = async () =>
             collectionJob(id: "${jobId}") {
                 id
                 status
+                externalLogsUrl
                 testPlanRun {
                     testPlanReport {
                         id
@@ -307,18 +308,6 @@ describe('Automation controller', () => {
         expect(res).toEqual(null);
     });
 
-    it('should get a job log', async () => {
-        await dbCleaner(async () => {
-            await scheduleCollectionJobByMutation();
-            const response = await sessionAgent.get(`/api/jobs/${jobId}/log`);
-            expect(response.statusCode).toBe(200);
-            expect(response.body).toEqual({
-                id: jobId,
-                log: 'TEST LOG'
-            });
-        });
-    });
-
     it('should not update a job status without verification', async () => {
         await dbCleaner(async () => {
             await scheduleCollectionJobByMutation();
@@ -386,6 +375,42 @@ describe('Automation controller', () => {
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);
             expect(storedCollectionJob.status).toEqual('RUNNING');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(null);
+            expect(storedCollectionJob.testPlanRun.testPlanReport.id).toEqual(
+                testPlanReportId
+            );
+        });
+    });
+
+    it('should update a job externalLogsUrl with verification', async () => {
+        await dbCleaner(async () => {
+            await scheduleCollectionJobByMutation();
+            const response = await sessionAgent
+                .post(`/api/jobs/${jobId}/update`)
+                .send({
+                    status: 'CANCELLED',
+                    externalLogsUrl: 'https://www.aol.com/'
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                );
+            const { body } = response;
+            expect(response.statusCode).toBe(200);
+            expect(body.id).toEqual(jobId);
+            expect(body.status).toEqual('CANCELLED');
+            expect(body).toHaveProperty('testPlanRunId');
+            expect(body.testPlanRun.testPlanReportId).toEqual(
+                parseInt(testPlanReportId)
+            );
+
+            const { collectionJob: storedCollectionJob } =
+                await getTestCollectionJob();
+            expect(storedCollectionJob.id).toEqual(jobId);
+            expect(storedCollectionJob.status).toEqual('CANCELLED');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                'https://www.aol.com/'
+            );
             expect(storedCollectionJob.testPlanRun.testPlanReport.id).toEqual(
                 testPlanReportId
             );

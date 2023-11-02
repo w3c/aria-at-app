@@ -69,27 +69,22 @@ const cancelJob = async (req, res) => {
     res.json(automationSchedulerResponse.data);
 };
 
-const getJobLog = async (req, res) => {
-    const automationSchedulerResponse = await axios.get(
-        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${req.params.jobID}/log`,
-        axiosConfig
-    );
-    if (!automationSchedulerResponse.data) {
-        throwSchedulerError(automationSchedulerResponse);
-    }
-    res.json(automationSchedulerResponse.data);
-};
-
 const updateJobStatus = async (req, res) => {
-    const { status } = req.body;
+    const { status, externalLogsUrl } = req.body;
 
     if (!Object.values(COLLECTION_JOB_STATUS).includes(status)) {
         throw new HttpQueryError(400, `Invalid status: ${status}`, true);
     }
 
-    const graphqlResponse = await updateCollectionJob(req.params.jobID, {
-        status
-    });
+    const updatePayload = {
+        status,
+        ...(externalLogsUrl != null && { externalLogsUrl })
+    };
+
+    const graphqlResponse = await updateCollectionJob(
+        req.params.jobID,
+        updatePayload
+    );
 
     if (!graphqlResponse) {
         throwNoJobFoundError(req.params.jobID);
@@ -249,7 +244,6 @@ const updateJobResults = async (req, res) => {
 
 module.exports = {
     cancelJob,
-    getJobLog,
     updateJobStatus,
     updateJobResults,
     axiosConfig

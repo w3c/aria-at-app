@@ -28,6 +28,7 @@ import { useDetectUa } from '../../hooks/useDetectUa';
 import DisplayNone from '../../utils/DisplayNone';
 import { navigateTests } from '../../utils/navigateTests';
 import {
+    COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
     DELETE_TEST_RESULT_MUTATION,
     FIND_OR_CREATE_BROWSER_VERSION_MUTATION,
     FIND_OR_CREATE_TEST_RESULT_MUTATION,
@@ -75,6 +76,15 @@ const TestRun = () => {
             variables: { testPlanRunId, testPlanReportId }
         }
     );
+
+    const { data: collectionJobQuery } = useQuery(
+        COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
+        {
+            variables: { testPlanRunId },
+            fetchPolicy: 'cache-and-network'
+        }
+    );
+
     const [createTestResult, { loading: createTestResultLoading }] =
         useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION);
     const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
@@ -972,12 +982,17 @@ const TestRun = () => {
                             href={issueLink}
                         />
                     </li>
-                    {isBot(openAsUser) ? (
+                    {isBot(openAsUser) &&
+                    collectionJobQuery?.collectionJobByTestPlanRunId
+                        ?.externalLogsUrl ? (
                         <li>
                             <OptionButton
                                 text="View Log"
                                 target="_blank"
-                                // href={TODO: link to automation job log}
+                                href={
+                                    collectionJobQuery?.collectionJob
+                                        ?.externalLogsUrl
+                                }
                             />
                         </li>
                     ) : (

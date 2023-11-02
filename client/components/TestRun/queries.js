@@ -722,6 +722,7 @@ export const COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY = gql`
         collectionJobByTestPlanRunId(testPlanRunId: $testPlanRunId) {
             id
             status
+            externalLogsUrl
         }
     }
 `;

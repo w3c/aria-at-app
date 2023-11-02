@@ -98,6 +98,10 @@ const graphqlSchema = gql`
         This will store the test results.
         """
         testPlanRun: TestPlanRun
+        """
+        The URL where the logs for the job can be found.
+        """
+        externalLogsUrl: String
     }
 
     type Browser {
@@ -1405,6 +1409,10 @@ const graphqlSchema = gql`
             The status of the CollectionJob.
             """
             status: CollectionJobStatus
+            """
+            The external logs url of the CollectionJob.
+            """
+            externalLogsUrl: String
         ): CollectionJob
         """
         Restart a CollectionJob by way of the Response Scheduler
