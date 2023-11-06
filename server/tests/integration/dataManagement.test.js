@@ -3,9 +3,7 @@ const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models');
 
-beforeAll(async () => {
-    jest.setTimeout(20000);
-});
+jest.setTimeout(20000);
 
 afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
