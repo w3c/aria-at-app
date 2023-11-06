@@ -20,6 +20,18 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 name
                 releasedAt
             }
+            browsers {
+                id
+                name
+            }
+            candidateBrowsers {
+                id
+                name
+            }
+            recommendedBrowsers {
+                id
+                name
+            }
         }
         browsers {
             id
