@@ -10,7 +10,6 @@ import {
     faExternalLinkAlt,
     faHome
 } from '@fortawesome/free-solid-svg-icons';
-import { differenceBy } from 'lodash';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
@@ -99,12 +98,6 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         at,
         browser
     };
-
-    const skippedTests = differenceBy(
-        testPlanReport.runnableTests,
-        testPlanReport.finalizedTestResults,
-        testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
-    );
 
     return (
         <Container id="main" as="main" tabIndex="-1">
@@ -231,26 +224,6 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     </Fragment>
                 );
             })}
-            {skippedTests.length ? (
-                <Fragment>
-                    <div className="skipped-tests-heading">
-                        <h2 id="skipped-tests" tabIndex="-1">
-                            Skipped Tests
-                        </h2>
-                        <p>
-                            The following tests have been skipped in this test
-                            run:
-                        </p>
-                    </div>
-                    <ol className="skipped-tests">
-                        {skippedTests.map(test => (
-                            <li key={test.id}>
-                                <a href={test.renderedUrl}>{test.title}</a>
-                            </li>
-                        ))}
-                    </ol>
-                </Fragment>
-            ) : null}
         </Container>
     );
 };
