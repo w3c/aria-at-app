@@ -64,7 +64,7 @@ const populateTestDatabase = async () => {
 
     await populateFakeTestResults(4, [
         'completeAndPassing',
-        null,
+        'completeAndPassing',
         'completeAndFailingDueToIncorrectAssertions',
         'completeAndFailingDueToNoOutputAssertions',
         'completeAndFailingDueToUnexpectedBehaviors',
@@ -78,7 +78,7 @@ const populateTestDatabase = async () => {
 
     await populateFakeTestResults(5, [
         'completeAndPassing',
-        null,
+        'completeAndPassing',
         'completeAndFailingDueToIncorrectAssertions',
         'completeAndPassing',
         'completeAndFailingDueToNoOutputAssertions',
@@ -89,7 +89,7 @@ const populateTestDatabase = async () => {
 
     await populateFakeTestResults(6, [
         'completeAndPassing',
-        null,
+        'completeAndPassing',
         'completeAndFailingDueToIncorrectAssertions',
         'completeAndPassing',
         'completeAndFailingDueToIncorrectAssertions',
