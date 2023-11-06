@@ -3,16 +3,16 @@ const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models');
 
-beforeAll(() => {
-    jest.setTimeout(40000);
-});
-
-afterAll(async () => {
-    // Closing the DB connection allows Jest to exit successfully.
-    await db.sequelize.close();
-});
-
 describe('data management', () => {
+    beforeAll(() => {
+    jest.setTimeout(40000);
+    });
+
+    afterAll(async () => {
+        // Closing the DB connection allows Jest to exit successfully.
+        await db.sequelize.close();
+    });
+    
     const testPlanVersionsQuery = () => {
         return query(gql`
             query {
