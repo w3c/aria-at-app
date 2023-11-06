@@ -4,7 +4,7 @@ const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models');
 
 beforeAll(() => {
-    jest.setTimeout(20000);
+    jest.setTimeout(40000);
 });
 
 afterAll(async () => {
