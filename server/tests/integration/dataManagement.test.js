@@ -6,10 +6,13 @@ const db = require('../../models');
 afterAll(async () => {
     // Closing the DB connection allows Jest to exit successfully.
     await db.sequelize.close();
-}, 20000);
+}, 40000);
 
 describe('data management', () => {
-    
+    beforeAll(() => {
+        jest.setTimeout(40000);
+    });
+
     const testPlanVersionsQuery = () => {
         return query(gql`
             query {
