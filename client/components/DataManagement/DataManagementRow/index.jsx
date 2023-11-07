@@ -863,9 +863,7 @@ const DataManagementRow = ({
                         );
 
                     const shouldShowAdvanceButton =
-                        isAdmin &&
-                        completedRequiredReports(latestVersion) &&
-                        issuesCount === 0;
+                        isAdmin && issuesCount === 0;
 
                     let coveredReports = [];
                     latestVersion.testPlanReports.forEach(testPlanReport => {
