@@ -9,7 +9,7 @@ import {
 } from '../queries';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import {
-    checkTimeBetweenDates,
+    checkDaysBetweenDates,
     convertDateToString,
     convertStringFormatToAnotherFormat
 } from '../../../utils/formatter';
@@ -843,18 +843,18 @@ const DataManagementRow = ({
                     let timeToTargetDate = 0;
                     if (currentDate > recommendedPhaseTargetDate) {
                         // Indicates that this is in the past
-                        timeToTargetDate = checkTimeBetweenDates(
+                        timeToTargetDate = checkDaysBetweenDates(
                             currentDate,
                             recommendedPhaseTargetDate
                         );
                         timeToTargetDate = -timeToTargetDate;
                     } else
-                        timeToTargetDate = checkTimeBetweenDates(
+                        timeToTargetDate = checkDaysBetweenDates(
                             recommendedPhaseTargetDate,
                             currentDate
                         );
 
-                    const daysBetweenDates = checkTimeBetweenDates(
+                    const daysBetweenDates = checkDaysBetweenDates(
                         currentDate,
                         latestVersion.candidatePhaseReachedAt
                     );
