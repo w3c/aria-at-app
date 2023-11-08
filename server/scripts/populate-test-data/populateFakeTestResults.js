@@ -12,7 +12,6 @@ const populateFakeTestResults = async (testPlanRunId, fakeTestResultTypes) => {
         query {
             populateData(locationOfData: { testPlanRunId: ${testPlanRunId} }) {
                 testPlanReport {
-                    isFinal
                     at {
                         id
                     }
@@ -149,10 +148,7 @@ const populateFakeTestResults = async (testPlanRunId, fakeTestResultTypes) => {
         index += 1;
     }
 
-    if (
-        testPlanReport.isFinal &&
-        testPlanReport.runnableTests.length - fakeTestResultTypes.length !== 0
-    ) {
+    if (testPlanReport.runnableTests.length !== fakeTestResultTypes.length) {
         for (let i = index; i < testPlanReport.runnableTests.length; i += 1) {
             await getFake({
                 testPlanReport,

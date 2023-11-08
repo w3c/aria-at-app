@@ -416,8 +416,7 @@ const TestQueueRow = ({
 
     const completedAllTests = !testPlanReport.draftTestPlanRuns.find(
         testPlanRun =>
-            testPlanRun.testResultsLength !==
-            testPlanReport.runnableTests.length
+            testPlanRun.testResultsLength !== testPlanReport.runnableTestsLength
     );
 
     return (

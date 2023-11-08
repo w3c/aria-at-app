@@ -595,13 +595,13 @@ describe('graphql', () => {
                                 }
                             }
                         }
-                        markReportAsFinal: testPlanReport(id: 2) {
+                        markReportAsFinal: testPlanReport(id: 8) {
                             __typename
                             markAsFinal {
                                 locationOfData
                             }
                         }
-                        unmarkReportAsFinal: testPlanReport(id: 2) {
+                        unmarkReportAsFinal: testPlanReport(id: 8) {
                             __typename
                             unmarkAsFinal {
                                 locationOfData
