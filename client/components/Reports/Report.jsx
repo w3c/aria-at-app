@@ -18,8 +18,8 @@ const Report = () => {
     if (error) {
         return (
             <PageStatus
-                title="Test Reports | ARIA-AT"
-                heading="Test Reports"
+                title="AT Interop Reports | ARIA-AT"
+                heading="Assistive Technology Interoperability Reports"
                 message={error.message}
                 isError
             />
@@ -29,8 +29,8 @@ const Report = () => {
     if (loading) {
         return (
             <PageStatus
-                title="Loading - Test Reports | ARIA-AT"
-                heading="Test Reports"
+                title="Loading - AT Interop Reports | ARIA-AT"
+                heading="Assistive Technology Interoperability Reports"
             />
         );
     }

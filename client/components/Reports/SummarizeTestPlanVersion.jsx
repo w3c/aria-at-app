@@ -36,7 +36,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 <LinkContainer to="/reports">
                     <Breadcrumb.Item>
                         <FontAwesomeIcon icon={faHome} />
-                        Test Reports
+                        AT Interoperability Reports
                     </Breadcrumb.Item>
                 </LinkContainer>
                 <Breadcrumb.Item active>
