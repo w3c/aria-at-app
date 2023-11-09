@@ -50,9 +50,10 @@ describe('BasicModal', () => {
             />
         );
         fireEvent.click(screen.getByText('Save'));
-        fireEvent.click(screen.getByText('Delete'));
         expect(saveFunction).toHaveBeenCalledTimes(1);
+        fireEvent.click(screen.getByText('Delete'));
         expect(deleteFunction).toHaveBeenCalledTimes(1);
+        expect(saveFunction).toHaveBeenCalledTimes(1);
     });
 
     test('close button triggers handleClose function', () => {
