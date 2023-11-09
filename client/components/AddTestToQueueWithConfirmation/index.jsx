@@ -6,7 +6,7 @@ import { useMutation } from '@apollo/client';
 import { ADD_TEST_QUEUE_MUTATION } from '../TestQueue/queries';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import {
-    getBotUserFromAtBrowser,
+    getBotUsernameFromAtBrowser,
     isSupportedByResponseCollector
 } from '../../utils/automation';
 import './AddTestToQueueWithConfirmation.css';
@@ -41,7 +41,7 @@ function AddTestToQueueWithConfirmation({
             Choose how the report for {at?.name} and {browser?.name} will be
             generated. Add it to the queue so it can be assigned to a tester at
             a later time or start running automated response collection with{' '}
-            {getBotUserFromAtBrowser(at, browser)?.username}.
+            {getBotUsernameFromAtBrowser(at, browser)}.
         </>
     ) : (
         <>

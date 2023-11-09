@@ -12,10 +12,8 @@ export const isAssertionValidated = assertion => {
 };
 
 // TODO: Stub, support for more bot users should be added
-export const getBotUserFromAtBrowser = (at, browser) => {
+export const getBotUsernameFromAtBrowser = (at, browser) => {
     if (at?.name === 'NVDA' && browser?.name === 'Chrome') {
-        return {
-            username: 'NVDA Bot'
-        };
+        return 'NVDA Bot';
     }
 };
