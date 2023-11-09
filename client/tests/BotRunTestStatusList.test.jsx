@@ -126,7 +126,7 @@ test('correctly displays statuses for CANCELLED test run', async () => {
     await waitFor(() => {
         expect(getByText('2 Tests Completed')).toBeInTheDocument();
         expect(getByText('0 Tests Queued')).toBeInTheDocument();
-        expect(getByText('1 Tests Cancelled')).toBeInTheDocument();
+        expect(getByText('1 Test Cancelled')).toBeInTheDocument();
     });
 });
 
@@ -172,8 +172,8 @@ test('correctly displays statuses for multiple RUNNING and QUEUED test runs', as
         // Imperfect but prevents needing to detect loading removal
         await setTimeout(() => {
             expect(getByText('2 Tests Completed')).toBeInTheDocument();
-            expect(getByText('1 Tests Queued')).toBeInTheDocument();
-            expect(getByText('1 Tests Cancelled')).toBeInTheDocument();
+            expect(getByText('1 Test Queued')).toBeInTheDocument();
+            expect(getByText('1 Test Cancelled')).toBeInTheDocument();
         }, 500);
     });
 });

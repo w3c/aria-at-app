@@ -37,7 +37,7 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
     const [collectedData, setCollectedData] = useState([]);
     const requestedTestRunIds = useRef(new Set());
 
-    const filteredTestPlanRuns = useMemo(() => {
+    const botTestPlanRuns = useMemo(() => {
         if (!testPlanRunsQueryResult?.testPlanRuns) {
             return [];
         }
@@ -47,8 +47,8 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
     }, [testPlanRunsQueryResult?.testPlanRuns]);
 
     useEffect(() => {
-        if (filteredTestPlanRuns && filteredTestPlanRuns.length > 0) {
-            const ids = filteredTestPlanRuns.map(run => run.id);
+        if (botTestPlanRuns && botTestPlanRuns.length > 0) {
+            const ids = botTestPlanRuns.map(run => run.id);
             for (const id of ids) {
                 if (!requestedTestRunIds.current.has(id)) {
                     requestedTestRunIds.current.add(id);
@@ -58,7 +58,7 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
                 }
             }
         }
-    }, [filteredTestPlanRuns]);
+    }, [botTestPlanRuns]);
 
     useEffect(() => {
         if (collectionJobStatusQueryResult?.collectionJobByTestPlanRunId) {
@@ -72,24 +72,24 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
         useMemo(() => {
             const res = [0, 0, 0];
             if (
-                filteredTestPlanRuns &&
-                filteredTestPlanRuns.length &&
-                collectedData.length === filteredTestPlanRuns.length
+                botTestPlanRuns &&
+                botTestPlanRuns.length &&
+                collectedData.length === botTestPlanRuns.length
             ) {
-                for (let i = 0; i < filteredTestPlanRuns.length; i++) {
+                for (let i = 0; i < botTestPlanRuns.length; i++) {
                     const status = collectedData[i];
-                    res[0] += filteredTestPlanRuns[i].testResults.length;
+                    res[0] += botTestPlanRuns[i].testResults.length;
                     switch (status) {
                         case 'COMPLETED':
                         case 'RUNNING':
                             res[1] +=
                                 runnableTestsLength -
-                                filteredTestPlanRuns[i].testResults.length;
+                                botTestPlanRuns[i].testResults.length;
                             break;
                         case 'CANCELLED':
                             res[2] +=
                                 runnableTestsLength -
-                                filteredTestPlanRuns[i].testResults.length;
+                                botTestPlanRuns[i].testResults.length;
                             break;
                         default:
                             break;
@@ -97,7 +97,7 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
                 }
                 if (
                     res[0] + res[2] ===
-                    runnableTestsLength * filteredTestPlanRuns.length
+                    runnableTestsLength * botTestPlanRuns.length
                 ) {
                     stopPolling();
                 }
@@ -106,10 +106,10 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
         }, [testPlanRunsQueryResult, collectedData, stopPolling, startPolling]);
 
     if (
-        !filteredTestPlanRuns ||
-        filteredTestPlanRuns.length === 0 ||
+        !botTestPlanRuns ||
+        botTestPlanRuns.length === 0 ||
         !collectedData ||
-        !(collectedData.length === filteredTestPlanRuns.length)
+        !(collectedData.length === botTestPlanRuns.length)
     ) {
         return null;
     }
@@ -117,16 +117,16 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
         <BotRunTestStatusUnorderedList className="text-secondary fs-6">
             <li className="m-2">
                 <ReportStatusDot className="tests-complete" />
-                {numTestsCompleted} Test{numTestsCompleted > 1 ? 's' : ''}{' '}
+                {numTestsCompleted} Test{numTestsCompleted === 1 ? '' : 's'}{' '}
                 Completed
             </li>
             <li className="m-2">
                 <ReportStatusDot className="tests-queued" />
-                {numTestsQueued} Test{numTestsQueued > 1 ? 's' : ''} Queued
+                {numTestsQueued} Test{numTestsQueued === 1 ? '' : 's'} Queued
             </li>
             <li className="m-2">
                 <ReportStatusDot className="tests-cancelled" />
-                {numTestsCancelled} Test{numTestsCancelled > 1 ? 's' : ''}{' '}
+                {numTestsCancelled} Test{numTestsCancelled === 1 ? '' : 's'}{' '}
                 Cancelled
             </li>
         </BotRunTestStatusUnorderedList>
