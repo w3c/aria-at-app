@@ -117,15 +117,17 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
         <BotRunTestStatusUnorderedList className="text-secondary fs-6">
             <li className="m-2">
                 <ReportStatusDot className="tests-complete" />
-                {numTestsCompleted} Tests Completed
+                {numTestsCompleted} Test{numTestsCompleted > 1 ? 's' : ''}{' '}
+                Completed
             </li>
             <li className="m-2">
                 <ReportStatusDot className="tests-queued" />
-                {numTestsQueued} Tests Queued
+                {numTestsQueued} Test{numTestsQueued > 1 ? 's' : ''} Queued
             </li>
             <li className="m-2">
                 <ReportStatusDot className="tests-cancelled" />
-                {numTestsCancelled} Tests Cancelled
+                {numTestsCancelled} Test{numTestsCancelled > 1 ? 's' : ''}{' '}
+                Cancelled
             </li>
         </BotRunTestStatusUnorderedList>
     );
