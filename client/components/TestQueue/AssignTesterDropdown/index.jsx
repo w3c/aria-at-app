@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { ASSIGN_TESTER_MUTATION, REMOVE_TESTER_MUTATION } from '../queries';
 import { useMutation } from '@apollo/client';
-import { useTriggerLoad } from '../../common/LoadingStatus';
+import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
 import { isBot } from '../../../utils/automation';
 
@@ -26,7 +26,7 @@ const AssignTesterDropdown = ({
     dropdownAssignTesterButtonRef,
     setAlertMessage = () => {}
 }) => {
-    const { triggerLoad } = useTriggerLoad();
+    const { triggerLoad, loadingMessage } = useTriggerLoad();
 
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
@@ -95,61 +95,67 @@ const AssignTesterDropdown = ({
     };
 
     return (
-        <Dropdown aria-label="Assign testers menu">
-            <Dropdown.Toggle
-                ref={dropdownAssignTesterButtonRef}
-                aria-label="Assign testers"
-                className="assign-tester"
-                variant="secondary"
-            >
-                {renderLabel()}
-            </Dropdown.Toggle>
-            <Dropdown.Menu role="menu" className="assign-menu">
-                {possibleTesters?.length ? (
-                    possibleTesters.map(tester => {
-                        const isTesterAssigned = checkIsTesterAssigned(
-                            tester.username
-                        );
-                        let classname = isTesterAssigned
-                            ? 'assigned'
-                            : 'not-assigned';
-                        let icon;
-                        if (isBot(tester)) {
-                            icon = faRobot;
-                        } else if (isTesterAssigned) {
-                            icon = faCheck;
-                        }
-                        return (
-                            <Dropdown.Item
-                                role="menuitem"
-                                variant="secondary"
-                                as="button"
-                                key={`tpr-${testPlanReportId}-assign-tester-${tester.username}`}
-                                onClick={async () => {
-                                    await toggleTesterAssign(tester.username);
-                                    setAlertMessage(
-                                        `You have been ${
-                                            classname.includes('not')
-                                                ? 'removed from'
-                                                : 'assigned to'
-                                        } this test run.`
-                                    );
-                                    await onChange();
-                                }}
-                                aria-checked={isTesterAssigned}
-                            >
-                                {icon && <FontAwesomeIcon icon={icon} />}
-                                <span className={classname}>
-                                    {`${tester.username}`}
-                                </span>
-                            </Dropdown.Item>
-                        );
-                    })
-                ) : (
-                    <span className="not-assigned">No testers to assign</span>
-                )}
-            </Dropdown.Menu>
-        </Dropdown>
+        <LoadingStatus message={loadingMessage}>
+            <Dropdown aria-label="Assign testers menu">
+                <Dropdown.Toggle
+                    ref={dropdownAssignTesterButtonRef}
+                    aria-label="Assign testers"
+                    className="assign-tester"
+                    variant="secondary"
+                >
+                    {renderLabel()}
+                </Dropdown.Toggle>
+                <Dropdown.Menu role="menu" className="assign-menu">
+                    {possibleTesters?.length ? (
+                        possibleTesters.map(tester => {
+                            const isTesterAssigned = checkIsTesterAssigned(
+                                tester.username
+                            );
+                            let classname = isTesterAssigned
+                                ? 'assigned'
+                                : 'not-assigned';
+                            let icon;
+                            if (isBot(tester)) {
+                                icon = faRobot;
+                            } else if (isTesterAssigned) {
+                                icon = faCheck;
+                            }
+                            return (
+                                <Dropdown.Item
+                                    role="menuitem"
+                                    variant="secondary"
+                                    as="button"
+                                    key={`tpr-${testPlanReportId}-assign-tester-${tester.username}`}
+                                    onClick={async () => {
+                                        await toggleTesterAssign(
+                                            tester.username
+                                        );
+                                        setAlertMessage(
+                                            `You have been ${
+                                                classname.includes('not')
+                                                    ? 'removed from'
+                                                    : 'assigned to'
+                                            } this test run.`
+                                        );
+                                        await onChange();
+                                    }}
+                                    aria-checked={isTesterAssigned}
+                                >
+                                    {icon && <FontAwesomeIcon icon={icon} />}
+                                    <span className={classname}>
+                                        {`${tester.username}`}
+                                    </span>
+                                </Dropdown.Item>
+                            );
+                        })
+                    ) : (
+                        <span className="not-assigned">
+                            No testers to assign
+                        </span>
+                    )}
+                </Dropdown.Menu>
+            </Dropdown>
+        </LoadingStatus>
     );
 };
 

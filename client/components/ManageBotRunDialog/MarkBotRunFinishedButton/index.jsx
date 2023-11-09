@@ -6,7 +6,7 @@ import {
     SUBMIT_TEST_RESULT_MUTATION,
     TEST_PLAN_RUN_RESULT_IDS
 } from './queries';
-import { useTriggerLoad } from '../../common/LoadingStatus';
+import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import { useTestPlanRunValidatedAssertionCounts } from '../../../hooks/useTestPlanRunValidatedAssertionCounts';
 import BasicModal from '../../common/BasicModal';
 import { useTestPlanRunIsFinished } from '../../../hooks/useTestPlanRunIsFinished';
@@ -22,7 +22,7 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
         }
     });
 
-    const { triggerLoad } = useTriggerLoad();
+    const { triggerLoad, loadingMessage } = useTriggerLoad();
 
     const { totalValidatedAssertions, totalPossibleAssertions } =
         useTestPlanRunValidatedAssertionCounts(testPlanRun);
@@ -53,7 +53,7 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
     };
 
     return (
-        <>
+        <LoadingStatus message={loadingMessage}>
             <BasicModal
                 title={`Are you sure you wish to mark ${testPlanRun.tester.username} run as finished?`}
                 cancelButton={true}
@@ -79,7 +79,7 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
             >
                 Mark as finished
             </Button>
-        </>
+        </LoadingStatus>
     );
 };
 

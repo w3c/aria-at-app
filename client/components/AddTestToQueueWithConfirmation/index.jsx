@@ -135,8 +135,7 @@ function AddTestToQueueWithConfirmation({
     };
 
     return (
-        <>
-            <LoadingStatus message={loadingMessage}></LoadingStatus>
+        <LoadingStatus message={loadingMessage}>
             <Button
                 ref={buttonRef}
                 disabled={disabled}
@@ -154,7 +153,7 @@ function AddTestToQueueWithConfirmation({
                 {buttonText}
             </Button>
             {renderConfirmation()}
-        </>
+        </LoadingStatus>
     );
 }
 
