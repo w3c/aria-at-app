@@ -351,17 +351,19 @@ const TestQueueRow = ({
                             }}
                         />
                     )}
-                    <Button
-                        ref={updateTestPlanStatusButtonRef}
-                        variant="secondary"
-                        onClick={async () => {
-                            focusButtonRef.current =
-                                updateTestPlanStatusButtonRef.current;
-                            await updateReportStatus();
-                        }}
-                    >
-                        Mark as Final
-                    </Button>
+                    {!testPlanReport.conflictsLength && (
+                        <Button
+                            ref={updateTestPlanStatusButtonRef}
+                            variant="secondary"
+                            onClick={async () => {
+                                focusButtonRef.current =
+                                    updateTestPlanStatusButtonRef.current;
+                                await updateReportStatus();
+                            }}
+                        >
+                            Mark as Final
+                        </Button>
+                    )}
                     {botTestPlanRun && (
                         <BotRunTestStatusList
                             testPlanReportId={testPlanReport.id}
