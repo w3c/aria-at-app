@@ -56,11 +56,10 @@ function AddTestToQueueWithConfirmation({
     const closeWithUpdate = async () => {
         setShowConfirmation(false);
         await triggerUpdate();
-        setTimeout(() => {
-            if (buttonRef?.current) {
-                buttonRef.current.focus();
-            }
-        }, 0);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (buttonRef?.current) {
+            buttonRef.current.focus();
+        }
     };
 
     const renderConfirmation = () => {
