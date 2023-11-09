@@ -47,15 +47,13 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
     }, [testPlanRunsQueryResult?.testPlanRuns]);
 
     useEffect(() => {
-        if (botTestPlanRuns && botTestPlanRuns.length > 0) {
-            const ids = botTestPlanRuns.map(run => run.id);
-            for (const id of ids) {
-                if (!requestedTestRunIds.current.has(id)) {
-                    requestedTestRunIds.current.add(id);
-                    getCollectionJobStatus({
-                        variables: { testPlanRunId: id }
-                    });
-                }
+        const ids = botTestPlanRuns.map(run => run.id);
+        for (const id of ids) {
+            if (!requestedTestRunIds.current.has(id)) {
+                requestedTestRunIds.current.add(id);
+                getCollectionJobStatus({
+                    variables: { testPlanRunId: id }
+                });
             }
         }
     }, [botTestPlanRuns]);
