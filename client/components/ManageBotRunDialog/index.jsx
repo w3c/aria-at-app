@@ -113,7 +113,7 @@ const ManageBotRunDialog = ({
         <>
             <p>
                 The test plan run for <b>{testPlanRun.tester.username}</b> will
-                be deleted:
+                be deleted.
             </p>
             <p>
                 <b>Please press Delete to confirm this action.</b>
