@@ -396,7 +396,7 @@ const graphqlSchema = gql`
         """
         The AT mode the test was written to expect.
         """
-        atMode: AtMode!
+        atMode: AtMode
         """
         Raw execution-specific data for the Test Renderer such as inputs needed
         to generate the manual test instructions or links to the setup scripts
@@ -495,11 +495,15 @@ const graphqlSchema = gql`
         considered as 'MUST Behaviors'.
         """
         REQUIRED
+        MUST
         """
         This assertion is not considered when deciding if a test is passing.
         This should be considered as 'SHOULD Behaviors'.
         """
         OPTIONAL
+        SHOULD
+        # TODO Define MAY
+        MAY
     }
 
     """

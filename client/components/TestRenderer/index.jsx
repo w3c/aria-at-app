@@ -21,6 +21,7 @@ import {
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../utils/aria';
 import OutputTextArea from './OutputTextArea';
+import commandsJson from '../../resources/commands.json';
 
 const Container = styled.div`
     width: 100%;
@@ -239,6 +240,7 @@ const TestRenderer = ({
         // Array.from(new URL(document.location).searchParams)
         const configQueryParams = [['at', evaluateAtNameKey(at.name)]];
 
+        testRunIO.setAllCommandsInputFromJSON(commandsJson);
         await testRunIO.setInputsFromCollectedTestAsync(renderableContent);
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
 
