@@ -64,7 +64,6 @@ const gitRun = (args, cwd = gitCloneDirectory) => {
 const importTestPlanVersions = async () => {
     await client.connect();
 
-    // const gitCommitDate = new Date();
     const { gitCommitDate } = await readRepo();
 
     console.log('Running `npm install` ...\n');
@@ -125,7 +124,6 @@ const importTestPlanVersions = async () => {
             gitCommitDate: updatedAt
         } = readDirectoryGitInfo(sourceDirectoryPath);
 
-        console.log('sourceDirectoryPath', sourceDirectoryPath);
         // Use existence of assertions.csv to determine if v2 format files exist
         const assertionsCsvPath = path.join(
             sourceDirectoryPath,
@@ -162,8 +160,6 @@ const importTestPlanVersions = async () => {
             const newTestPlan = await createTestPlan({ title, directory });
             testPlanId = newTestPlan.dataValues.id;
         }
-
-        if (directory === 'alert') console.log('tests', JSON.stringify(tests));
 
         // Check if any TestPlanVersions exist for the directory and is currently in RD, and set it
         // to DEPRECATED
@@ -282,7 +278,23 @@ const readCsv = ({ sourceDirectoryPath, isV2 }) => {
     };
 };
 
+const flattenObject = (obj, parentKey = '') => {
+    const flattened = {};
+
+    for (const key in obj) {
+        if (typeof obj[key] === 'object') {
+            const subObject = flattenObject(obj[key], parentKey + key + '.');
+            Object.assign(flattened, subObject);
+        } else {
+            flattened[parentKey + key] = obj[key];
+        }
+    }
+
+    return flattened;
+};
+
 const updateCommandsJson = async () => {
+    // Commands path info for v1 format
     const keysMjsPath = pathToFileURL(
         path.join(testsDirectory, 'resources', 'keys.mjs')
     );
@@ -290,9 +302,23 @@ const updateCommandsJson = async () => {
         ([id, text]) => ({ id, text })
     );
 
+    // Commands path info for v2 format
+    const commandsV2Path = pathToFileURL(
+        path.join(testsDirectory, 'commands.json')
+    );
+    const commandsV2PathString = fse.readFileSync(commandsV2Path, 'utf8');
+    const commandsV2Parsed = JSON.parse(commandsV2PathString);
+
+    // Write commands for v1 format
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/commands.json'),
         JSON.stringify(commands, null, 4)
+    );
+
+    // Write commands for v2 format
+    await fse.writeFile(
+        path.resolve(__dirname, '../../resources/commandsV2.json'),
+        JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
     );
 };
 
@@ -374,24 +400,8 @@ const getTests = ({
                     `${collected.target.at.key}:${collected.info.testId}`
                 );
 
-                const at = {
-                    key: collected.target.at.key,
-                    name: collected.target.at.name
-                };
+                // Common representation of settings text
                 const settings = collected.target.at.settings;
-                const atSettings = {
-                    [collected.target.at.settings]:
-                        collected.target.at.settings === 'defaultMode'
-                            ? {
-                                  screenText: '',
-                                  instructions: []
-                              }
-                            : {
-                                  ...collected.target.at.raw.settings[
-                                      collected.target.at.settings
-                                  ]
-                              }
-                };
 
                 // Common representation of renderedUrl
                 const renderedUrl = getAppUrl(renderedUrls[collectedIndex], {
@@ -410,7 +420,10 @@ const getTests = ({
                     const scenarios = [];
                     collected.commands.forEach(command => {
                         scenarios.push({
-                            id: createScenarioId(testId, scenarios.length),
+                            id: createScenarioId(
+                                testId,
+                                `${scenarios.length}:${settings}`
+                            ),
                             atId: ats.find(
                                 at => at.name === collected.target.at.name
                             ).id,
@@ -429,10 +442,7 @@ const getTests = ({
                 );
 
                 if (testFoundForAt) {
-                    testFoundForAt.at.settings[settings] = atSettings;
-                    testFoundForAt.renderableContent.target.at.settings[
-                        settings
-                    ] = atSettings;
+                    testFoundForAt.renderableContent.target.at.settings = `${testFoundForAt.renderableContent.target.at.settings}_${settings}`;
                     testFoundForAt.renderableContent.instructions.mode[
                         settings
                     ] = collected.instructions.mode;
@@ -445,7 +455,11 @@ const getTests = ({
                         rawTestId,
                         rowNumber: collected.info.presentationNumber,
                         title: collected.info.title,
-                        at: { ...at, settings: atSettings },
+                        at: {
+                            key: collected.target.at.key,
+                            name: collected.target.at.name,
+                            settings: collected.target.at.raw.settings // TODO: Populate AtMode table
+                        },
                         atIds: [
                             ats.find(at => at.name === collected.target.at.name)
                                 .id
@@ -453,10 +467,7 @@ const getTests = ({
                         renderableContent: {
                             info: collected.info,
                             target: {
-                                at: {
-                                    ...collected.target.at.raw,
-                                    settings: atSettings
-                                },
+                                at: collected.target.at,
                                 referencePage: collected.target.referencePage,
                                 setupScript: collected.target.setupScript
                             },
@@ -476,17 +487,22 @@ const getTests = ({
                                     assertionPhrase,
                                     refIds,
                                     tokenizedAssertionStatements
-                                }) => ({
-                                    assertionId,
-                                    priority,
-                                    assertionStatement,
-                                    assertionPhrase,
-                                    refIds,
-                                    tokenizedAssertionStatement:
+                                }) => {
+                                    const tokenizedAssertionStatement =
                                         tokenizedAssertionStatements[
-                                            collected.target.at.id
-                                        ]
-                                })
+                                            collected.target.at.key
+                                        ];
+
+                                    return {
+                                        assertionId,
+                                        priority,
+                                        assertionStatement:
+                                            tokenizedAssertionStatement ||
+                                            assertionStatement,
+                                        assertionPhrase,
+                                        refIds
+                                    };
+                                }
                             )
                         },
                         renderedUrls: {
