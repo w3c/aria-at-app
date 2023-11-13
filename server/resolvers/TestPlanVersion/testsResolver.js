@@ -126,9 +126,6 @@ const testsResolver = parentRecord => {
         : testPlanReport.testPlanVersion;
     const inferredAtId = testPlanReport?.atId;
     const isV2 = testPlanVersion.metadata.testFormatVersion;
-    console.log(findValuesByKeys(commandsV2, ['space']));
-    console.log(findValuesByKeys(commandsV2, ['space enter']));
-    console.log(findValuesByKeys(commandsV2, ['space enter+down']));
 
     // Populate nested At and Command fields
     return testPlanVersion.tests.map(test => ({
@@ -145,12 +142,20 @@ const testsResolver = parentRecord => {
                     ]);
 
                     if (commandIdentifier.length) {
+                        // TODO: Scenario contains identifier to the settings being displayed.
+                        //  May be best to display the settings text instead, ie.
+                        //  'PC cursor active' instead of having the client evaluate 'pcCursor'
                         return {
                             id: commandIdentifier[0].key,
                             text: commandIdentifier[0].value
+                            // TODO settingsText: atMode[atId][scenario.settings].screenText
                         };
                     }
-                    return { id: '', text: '' };
+                    return {
+                        id: '',
+                        text: ''
+                        // TODO settingsText: ''
+                    };
                 }
                 return commands.find(command => command.id === commandId);
             })
