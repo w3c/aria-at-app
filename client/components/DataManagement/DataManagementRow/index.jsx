@@ -627,7 +627,6 @@ const DataManagementRow = ({
                     return (
                         <PhaseCell role="list">
                             <VersionString role="listitem" iconColor="#818F98">
-                                {/* section: */}
                                 {otherLatestVersion.versionString}
                             </VersionString>
                             <span role="listitem" className="review-complete">
@@ -685,7 +684,6 @@ const DataManagementRow = ({
                                 linkRef={draftVersionStringRef}
                                 linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
                             >
-                                {/* section: */}
                                 {latestVersion.versionString}
                             </VersionString>
                             {isAdmin &&
