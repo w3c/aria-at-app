@@ -41,7 +41,11 @@ const InstructionsSection = styled.section``;
 
 const HeadingText = styled.h1``;
 
-const SubHeadingText = styled.h2``;
+const SubHeadingText = styled.h2`
+    &#instruction-list-heading {
+        margin-top: 0;
+    }
+`;
 
 const InnerSectionHeadingText = styled.h3``;
 
@@ -610,21 +614,12 @@ const TestRenderer = ({
                         }
                     />
                     <InstructionsSection>
-                        <HeadingText id="behavior-header" tabIndex="-1">
-                            {pageContent.instructions.header.header}
-                        </HeadingText>
-                        <Text>{pageContent.instructions.description}</Text>
                         <SubHeadingText id="instruction-list-heading">
-                            {pageContent.instructions.instructions.header}
+                            Instructions
                         </SubHeadingText>
+                        {/*TODO: Implement instructions format described in #977*/}
+                        {/*TODO: Include settings instructions where applicable*/}
                         <InstructionsContent labelIdRef="instruction-list-heading" />
-                        <SubHeadingText id="success-criteria-list-heading">
-                            {pageContent.instructions.assertions.header}
-                        </SubHeadingText>
-                        <Text>
-                            {pageContent.instructions.assertions.description}
-                        </Text>
-                        <AssertionsContent labelIdRef="success-criteria-list-heading" />
                         <Button
                             disabled={
                                 !pageContent.instructions.openTestPage.enabled
