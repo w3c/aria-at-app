@@ -121,6 +121,8 @@ const UpdateTargetDateModal = ({
             actionLabel={'Save'}
             handleAction={onSubmit}
             handleClose={handleClose}
+            useOnHide={true}
+            handleHide={handleClose}
             initialFocusRef={dateTextRef}
         />
     );
