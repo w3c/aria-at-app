@@ -16,6 +16,10 @@ const {
     createTestPlan
 } = require('../../models/services/TestPlanService');
 const {
+    createAtMode,
+    getAtModeByQuery
+} = require('../../models/services/AtService');
+const {
     createTestId,
     createScenarioId,
     createAssertionId
@@ -78,10 +82,10 @@ const importTestPlanVersions = async () => {
     });
     console.log('`npm run build` output', buildOutput.stdout.toString());
 
-    const ats = await At.findAll();
-    await updateAtsJson(ats);
+    const { support } = await updateJsons();
 
-    await updateCommandsJson();
+    const ats = await At.findAll();
+    await updateAtsJsonAndAtMode(ats, support.ats);
 
     for (const directory of fse.readdirSync(builtTestsDirectory)) {
         if (directory === 'resources') continue;
@@ -293,13 +297,19 @@ const flattenObject = (obj, parentKey = '') => {
     return flattened;
 };
 
-const updateCommandsJson = async () => {
+const updateJsons = async () => {
     // Commands path info for v1 format
     const keysMjsPath = pathToFileURL(
         path.join(testsDirectory, 'resources', 'keys.mjs')
     );
     const commands = Object.entries(await import(keysMjsPath)).map(
         ([id, text]) => ({ id, text })
+    );
+
+    // Write commands for v1 format
+    await fse.writeFile(
+        path.resolve(__dirname, '../../resources/commands.json'),
+        JSON.stringify(commands, null, 4)
     );
 
     // Commands path info for v2 format
@@ -309,27 +319,52 @@ const updateCommandsJson = async () => {
     const commandsV2PathString = fse.readFileSync(commandsV2Path, 'utf8');
     const commandsV2Parsed = JSON.parse(commandsV2PathString);
 
-    // Write commands for v1 format
-    await fse.writeFile(
-        path.resolve(__dirname, '../../resources/commands.json'),
-        JSON.stringify(commands, null, 4)
-    );
-
     // Write commands for v2 format
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/commandsV2.json'),
         JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
     );
+
+    // Path info for support.json
+    const supportPath = pathToFileURL(
+        path.join(testsDirectory, 'support.json')
+    );
+    const supportPathString = fse.readFileSync(supportPath, 'utf8');
+    const supportParsed = JSON.parse(supportPathString);
+
+    return { support: supportParsed };
 };
 
-const updateAtsJson = async ats => {
+const updateAtsJsonAndAtMode = async (ats, supportAts) => {
+    const atsResult = ats.map(at => ({
+        ...at.dataValues,
+        ...supportAts.find(supportAt => supportAt.name === at.dataValues.name)
+    }));
+
+    for (const at of atsResult) {
+        if (at.settings) {
+            for (const setting in at.settings) {
+                const existingAtMode = await getAtModeByQuery({
+                    atId: at.id,
+                    name: setting
+                });
+                console.log(existingAtMode);
+
+                if (!existingAtMode) {
+                    await createAtMode({
+                        atId: at.id,
+                        name: setting,
+                        screenText: at.settings[setting].screenText,
+                        instructions: at.settings[setting].instructions
+                    });
+                }
+            }
+        }
+    }
+
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/ats.json'),
-        JSON.stringify(
-            ats.map(at => at.dataValues),
-            null,
-            4
-        )
+        JSON.stringify(atsResult, null, 4)
     );
 };
 
@@ -458,7 +493,7 @@ const getTests = ({
                         at: {
                             key: collected.target.at.key,
                             name: collected.target.at.name,
-                            settings: collected.target.at.raw.settings // TODO: Populate AtMode table
+                            settings: collected.target.at.raw.settings
                         },
                         atIds: [
                             ats.find(at => at.name === collected.target.at.name)

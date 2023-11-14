@@ -473,12 +473,12 @@ const getAtModes = async (
  * @returns {Promise<*>}
  */
 const createAtMode = async (
-    { atId, name },
+    { atId, name, screenText, instructions },
     atModeAttributes = AT_MODE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     options = {}
 ) => {
-    await ModelService.create(AtMode, { atId, name });
+    await ModelService.create(AtMode, { atId, name, screenText, instructions });
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getByQuery(

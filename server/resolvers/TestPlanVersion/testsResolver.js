@@ -23,33 +23,36 @@ const testsResolver = parentRecord => {
         ...test,
         inferredAtId, // Not available in GraphQL, but used by child resolvers
         ats: test.atIds.map(atId => ats.find(at => at.id === atId)),
-        scenarios: test.scenarios.map(scenario => ({
-            ...scenario,
-            at: ats.find(at => at.id === scenario.atId),
-            commands: scenario.commandIds.map(commandId => {
-                if (isV2) {
-                    const commandKVs = getCommandV2(commandId);
-                    if (commandKVs.length) {
-                        // TODO: Scenario contains identifier to the settings being displayed.
-                        //  May be best to display the settings text instead, ie.
-                        //  'PC cursor active' instead of having the client evaluate 'pcCursor'
-                        return {
-                            id: commandKVs[0].key,
-                            text: commandKVs[0].value
-                            // TODO settingsText: atMode[atId][scenario.settings].screenText
-                        };
+        scenarios: test.scenarios.map(scenario => {
+            const at = ats.find(at => at.id === scenario.atId);
+            return {
+                ...scenario,
+                at,
+                commands: scenario.commandIds.map(commandId => {
+                    if (isV2) {
+                        const screenText =
+                            at.settings &&
+                            at?.settings[scenario.settings]?.screenText;
+                        const commandKVs = getCommandV2(commandId);
+                        if (commandKVs.length) {
+                            // `scenario` has an identifier to the settings being displayed.
+                            // May be best to display the settings text instead, ie.
+                            // 'PC cursor active' instead of having the client evaluate 'pcCursor'
+                            return {
+                                id: commandKVs[0].key,
+                                text: `${commandKVs[0].value}${
+                                    screenText ? ` (${screenText})` : ''
+                                }`
+                            };
+                        }
+                        return { id: '', text: '' };
                     }
-                    return {
-                        id: '',
-                        text: ''
-                        // TODO settingsText: ''
-                    };
-                }
 
-                // Return V1 command
-                return getCommandV1(commandId);
-            })
-        })),
+                    // Return V1 command
+                    return getCommandV1(commandId);
+                })
+            };
+        }),
         assertions: test.assertions.map(assertion => ({
             ...assertion,
             text: isV2 ? assertion.assertionStatement : assertion.text
