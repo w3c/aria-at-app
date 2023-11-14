@@ -133,6 +133,13 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                         passed
                         failedReason
                     }
+                    mayAssertionResults: assertionResults(priority: MAY) {
+                        assertion {
+                            text
+                        }
+                        passed
+                        failedReason
+                    }
                     unexpectedBehaviors {
                         id
                         text

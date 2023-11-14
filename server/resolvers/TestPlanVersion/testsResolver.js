@@ -33,6 +33,7 @@ const testsResolver = parentRecord => {
                         // TODO: Scenario contains identifier to the settings being displayed.
                         //  May be best to display the settings text instead, ie.
                         //  'PC cursor active' instead of having the client evaluate 'pcCursor'
+                        // console.log('Scenario', scenario);
                         return {
                             id: commandKVs[0].key,
                             text: commandKVs[0].value

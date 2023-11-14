@@ -54,6 +54,13 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         passed
                         failedReason
                     }
+                    mayAssertionResults: assertionResults(priority: MAY) {
+                        assertion {
+                            text
+                        }
+                        passed
+                        failedReason
+                    }
                     unexpectedBehaviors {
                         id
                         text
@@ -344,6 +351,15 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 passed
                                 failedReason
                             }
+                            mayAssertionResults: assertionResults(
+                                priority: MAY
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
                             unexpectedBehaviors {
                                 id
                                 text
@@ -623,6 +639,15 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 passed
                                 failedReason
                             }
+                            mayAssertionResults: assertionResults(
+                                priority: MAY
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
                             unexpectedBehaviors {
                                 id
                                 text
@@ -895,6 +920,15 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             }
                             optionalAssertionResults: assertionResults(
                                 priority: OPTIONAL
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
+                                failedReason
+                            }
+                            mayAssertionResults: assertionResults(
+                                priority: MAY
                             ) {
                                 assertion {
                                     text

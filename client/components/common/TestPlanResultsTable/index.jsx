@@ -42,6 +42,12 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                             a.passed === b.passed ? 0 : a.passed ? 1 : -1
                         );
 
+                const mayAssertionResults = scenarioResult.mayAssertionResults
+                    .slice()
+                    .sort((a, b) =>
+                        a.passed === b.passed ? 0 : a.passed ? 1 : -1
+                    );
+
                 const commandsString = scenarioResult.scenario.commands
                     .map(({ text }) => text)
                     .join(' then ');
@@ -82,6 +88,9 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                                         assertionResult,
                                         'SHOULD'
                                     )
+                                )}
+                                {mayAssertionResults.map(assertionResult =>
+                                    renderAssertionRow(assertionResult, 'MAY')
                                 )}
                             </tbody>
                         </Table>
