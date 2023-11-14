@@ -517,10 +517,16 @@ const getTests = ({
                                     priority = 'SHOULD';
                                 if (assertion.priority === 3) priority = 'MAY';
 
+                                const tokenizedAssertionStatement =
+                                    assertion.tokenizedAssertionStatements[
+                                        collected.target.at.key
+                                    ];
+
                                 return {
                                     id: createAssertionId(testId, index),
                                     priority,
                                     assertionStatement:
+                                        tokenizedAssertionStatement ||
                                         assertion.assertionStatement,
                                     assertionPhrase: assertion.assertionPhrase
                                 };
