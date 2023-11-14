@@ -348,7 +348,6 @@ const updateAtsJsonAndAtMode = async (ats, supportAts) => {
                     atId: at.id,
                     name: setting
                 });
-                console.log(existingAtMode);
 
                 if (!existingAtMode) {
                     await createAtMode({

@@ -543,7 +543,6 @@ const TestPlans = ({ testPlanVersions }) => {
                                         .filter(t =>
                                             uniqueFilter(t, uniqueLinks, 'link')
                                         );
-
                                     return (
                                         dataExists && (
                                             <tr key={testPlanVersion.id}>
