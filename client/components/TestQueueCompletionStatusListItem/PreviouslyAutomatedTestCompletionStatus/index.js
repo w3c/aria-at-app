@@ -30,9 +30,9 @@ const PreviouslyAutomatedTestCompletionStatus = ({
             return 0;
         }
 
-        const { testResults } = testPlanRun;
+        const { testResults = [] } = testPlanRun;
 
-        return testResults?.reduce((acc, testResult) => {
+        return testResults.reduce((acc, testResult) => {
             const isTestValidated = testResult.scenarioResults.every(
                 scenarioResult =>
                     scenarioResult.assertionResults.every(isAssertionValidated)
