@@ -23,11 +23,6 @@ const {
     getFinalizedTestResults
 } = require('../models/services/TestResultReadService');
 const http = require('http');
-const {
-    getTestIdFromTestPlanReportCSVRow
-} = require('../util/getTestIdFromCSVRow');
-const { getTestPlanRunById } = require('../models/services/TestPlanRunService');
-const { runnableTests } = require('../resolvers/TestPlanReport');
 const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
 const httpAgent = new http.Agent({ family: 4 });
 
