@@ -21,6 +21,7 @@ import {
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../utils/aria';
 import OutputTextArea from './OutputTextArea';
+import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
 
 const Container = styled.div`
@@ -542,20 +543,73 @@ const TestRenderer = ({
     };
 
     const InstructionsContent = ({ labelIdRef }) => {
-        const allInstructions = [
-            ...pageContent.instructions.instructions.instructions,
-            ...pageContent.instructions.instructions.strongInstructions,
-            pageContent.instructions.instructions.commands.description
-        ];
+        let allInstructions = [];
+        const isV2 =
+            !!renderableContent.target.at?.raw
+                ?.defaultConfigurationInstructionsHTML;
+        let settingsContent = [];
+
+        if (isV2) {
+            const commandSettingSpecified = renderableContent.commands.some(
+                ({ settings }) => settings && settings !== 'defaultMode'
+            );
+
+            allInstructions = [
+                renderableContent.target.at.raw
+                    .defaultConfigurationInstructionsHTML,
+                `${supportJson.testPlanStrings.openExampleInstruction} ${renderableContent.target.setupScript.scriptDescription}.`,
+                `${renderableContent.instructions.instructions} ${
+                    supportJson.testPlanStrings.commandListPreface
+                }${
+                    commandSettingSpecified
+                        ? ` ${supportJson.testPlanStrings.commandListSettingsPreface}`
+                        : ''
+                }`
+            ];
+
+            const settings = renderableContent.instructions.mode;
+            Object.keys(settings).forEach(key => {
+                if (key !== 'defaultMode') {
+                    const settingInstructions = settings[key];
+                    const text = `${supportJson.testPlanStrings.settingInstructionsPreface} ${renderableContent.target.at.raw.settings[key].screenText}:`;
+                    const instructions = settingInstructions.slice(1);
+
+                    settingsContent.push(
+                        <div key={key}>
+                            {text}
+                            <NumberedList aria-labelledby={labelIdRef}>
+                                {instructions.map((instruction, index) => {
+                                    return (
+                                        <li key={`SettingInstruction_${index}`}>
+                                            {instruction}
+                                        </li>
+                                    );
+                                })}
+                            </NumberedList>
+                        </div>
+                    );
+                }
+            });
+        } else {
+            allInstructions = [
+                ...pageContent.instructions.instructions.instructions,
+                ...pageContent.instructions.instructions.strongInstructions,
+                pageContent.instructions.instructions.commands.description
+            ];
+        }
 
         const commands =
             pageContent.instructions.instructions.commands.commands;
-
         const commandsContent = parseListContent(commands);
         const content = parseListContent(allInstructions, commandsContent);
 
         return (
-            <NumberedList aria-labelledby={labelIdRef}>{content}</NumberedList>
+            <>
+                <NumberedList aria-labelledby={labelIdRef}>
+                    {content}
+                </NumberedList>
+                {settingsContent.length && settingsContent}
+            </>
         );
     };
 
