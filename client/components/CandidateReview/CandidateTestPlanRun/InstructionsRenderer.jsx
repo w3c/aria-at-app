@@ -13,6 +13,7 @@ import {
 } from '../../../resources/aria-at-test-io-format.mjs';
 import { TestWindow } from '../../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../../utils/aria.js';
+import commandsJson from '../../../resources/commands.json';
 
 const Container = styled.div`
     padding: 20px;
@@ -78,6 +79,7 @@ const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
         const testRunIO = new TestRunInputOutput();
         const configQueryParams = [['at', evaluateAtNameKey(at.name)]];
 
+        testRunIO.setAllCommandsInputFromJSON(commandsJson);
         await testRunIO.setInputsFromCollectedTestAsync(renderableContent);
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
 

@@ -107,6 +107,17 @@ const getMetrics = ({
     });
     const optionalAssertionsFailedCount =
         optionalAssertionsCount - optionalAssertionsPassedCount;
+    const mayAssertionsPassedCount = countAssertions({
+        ...result,
+        priority: 'MAY',
+        passedOnly: true
+    });
+    const mayAssertionsCount = countAssertions({
+        ...result,
+        priority: 'MAY'
+    });
+    const mayAssertionsFailedCount =
+        mayAssertionsCount - mayAssertionsPassedCount;
 
     const testsPassedCount = countTests({
         ...result,
@@ -121,6 +132,10 @@ const getMetrics = ({
         optionalAssertionsCount === 0
             ? false
             : `${optionalAssertionsPassedCount} of ${optionalAssertionsCount} passed`;
+    const mayFormatted =
+        mayAssertionsCount === 0
+            ? false
+            : `${mayAssertionsPassedCount} of ${mayAssertionsCount} passed`;
 
     const unexpectedBehaviorCount = countUnexpectedBehaviors({ ...result });
     const unexpectedBehaviorsFormatted =
@@ -148,12 +163,16 @@ const getMetrics = ({
         optionalAssertionsPassedCount,
         optionalAssertionsCount,
         optionalAssertionsFailedCount,
+        mayAssertionsPassedCount,
+        mayAssertionsCount,
+        mayAssertionsFailedCount,
         testsPassedCount,
         testsCount,
         testsFailedCount,
         unexpectedBehaviorCount,
         requiredFormatted,
         optionalFormatted,
+        mayFormatted,
         unexpectedBehaviorsFormatted,
         supportLevel,
         supportPercent
