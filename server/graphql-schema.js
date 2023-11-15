@@ -571,7 +571,7 @@ const graphqlSchema = gql`
         """
         The BrowserVersion used during this testing session.
         """
-        browserVersion: BrowserVersion!
+        browserVersion: BrowserVersion
         """
         Automatically set by the server when a new test result is created.
         """
