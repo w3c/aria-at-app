@@ -21,8 +21,11 @@ export const useTestPlanRunValidatedAssertionCounts = (
     });
 
     const testResultsLength = useMemo(() => {
-        return testPlanRunAssertionsQueryResult?.testPlanRun?.testResults?.length || 0;
-    }, [testPlanRunAssertionsQueryResult, stopPolling, startPolling]);
+        return (
+            testPlanRunAssertionsQueryResult?.testPlanRun?.testResults
+                ?.length || 0
+        );
+    }, [testPlanRunAssertionsQueryResult]);
 
     const totalPossibleAssertions = useMemo(() => {
         if (testPlanRunAssertionsQueryResult) {
