@@ -8,7 +8,9 @@ const renderedUrl = (test, { atId }) => {
                 'explicitly provided.'
         );
     }
-    return test.renderedUrls[atId ?? test.inferredAtId];
+
+    if (test.renderedUrls) return test.renderedUrls[atId ?? test.inferredAtId];
+    return test.renderedUrl;
 };
 
 module.exports = renderedUrl;

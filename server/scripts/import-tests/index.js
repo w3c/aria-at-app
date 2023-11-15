@@ -434,143 +434,114 @@ const getTests = ({
                     `${collected.target.at.key}:${collected.info.testId}`
                 );
 
-                // Common representation of settings text
-                const settings = collected.target.at.settings;
-
-                // Common representation of renderedUrl
+                // Define renderedUrl
                 const renderedUrl = getAppUrl(renderedUrls[collectedIndex], {
                     gitSha,
                     directoryPath: builtDirectoryPath
                 });
 
-                // Common representation of commands
+                // Define commands
                 const commands = collected.commands.map(command => ({
                     ...command,
-                    settings
+                    settings: command.settings
                 }));
 
-                // Common representation of scenarios
+                // Define scenarios
                 const scenarios = (() => {
                     const scenarios = [];
                     collected.commands.forEach(command => {
                         scenarios.push({
                             id: createScenarioId(
                                 testId,
-                                `${scenarios.length}:${settings}`
+                                `${scenarios.length}:${command.settings}`
                             ),
                             atId: ats.find(
                                 at => at.name === collected.target.at.name
                             ).id,
                             commandIds: command.keypresses.map(({ id }) => id),
-                            settings
+                            settings: command.settings
                         });
                     });
                     return scenarios;
                 })();
 
-                // Each mode for AT has to be appended to exists tests[x]
-                const testFoundForAt = tests.find(
-                    test =>
-                        test.at.key === collected.target.at.key &&
-                        test.rawTestId === collected.info.testId
-                );
-
-                if (testFoundForAt) {
-                    testFoundForAt.renderableContent.target.at.settings = `${testFoundForAt.renderableContent.target.at.settings}_${settings}`;
-                    testFoundForAt.renderableContent.instructions.mode[
-                        settings
-                    ] = collected.instructions.mode;
-                    testFoundForAt.renderableContent.commands.push(...commands);
-                    testFoundForAt.renderedUrls[settings] = renderedUrl;
-                    testFoundForAt.scenarios.push(...scenarios);
-                } else {
-                    let test = {
-                        id: testId,
-                        rawTestId,
-                        rowNumber: collected.info.presentationNumber,
-                        title: collected.info.title,
-                        at: {
-                            key: collected.target.at.key,
-                            name: collected.target.at.name,
-                            settings: collected.target.at.raw.settings
+                let test = {
+                    id: testId,
+                    rawTestId,
+                    rowNumber: collected.info.presentationNumber,
+                    title: collected.info.title,
+                    at: {
+                        key: collected.target.at.key,
+                        name: collected.target.at.name,
+                        settings: collected.target.at.raw.settings
+                    },
+                    atIds: [
+                        ats.find(at => at.name === collected.target.at.name).id
+                    ],
+                    renderableContent: {
+                        info: collected.info,
+                        target: {
+                            at: collected.target.at,
+                            referencePage: collected.target.referencePage,
+                            setupScript: collected.target.setupScript
                         },
-                        atIds: [
-                            ats.find(at => at.name === collected.target.at.name)
-                                .id
-                        ],
-                        renderableContent: {
-                            info: collected.info,
-                            target: {
-                                at: collected.target.at,
-                                referencePage: collected.target.referencePage,
-                                setupScript: collected.target.setupScript
-                            },
-                            instructions: {
-                                instructions:
-                                    collected.instructions.instructions,
-                                mode: {
-                                    [settings]: collected.instructions.mode
-                                }
-                            },
-                            commands,
-                            assertions: collected.assertions.map(
-                                ({
-                                    assertionId,
-                                    priority,
-                                    assertionStatement,
-                                    assertionPhrase,
-                                    refIds,
-                                    tokenizedAssertionStatements
-                                }) => {
-                                    const tokenizedAssertionStatement =
-                                        tokenizedAssertionStatements[
-                                            collected.target.at.key
-                                        ];
-
-                                    return {
-                                        assertionId,
-                                        priority,
-                                        assertionStatement:
-                                            tokenizedAssertionStatement ||
-                                            assertionStatement,
-                                        assertionPhrase,
-                                        refIds
-                                    };
-                                }
-                            )
+                        instructions: {
+                            instructions: collected.instructions.instructions,
+                            mode: collected.instructions.mode
                         },
-                        renderedUrls: {
-                            [settings]: renderedUrl
-                        },
-                        scenarios,
+                        commands,
                         assertions: collected.assertions.map(
-                            (assertion, index) => {
-                                let priority = '';
-                                if (assertion.priority === 1) priority = 'MUST';
-                                if (assertion.priority === 2)
-                                    priority = 'SHOULD';
-                                if (assertion.priority === 3) priority = 'MAY';
-
+                            ({
+                                assertionId,
+                                priority,
+                                assertionStatement,
+                                assertionPhrase,
+                                refIds,
+                                tokenizedAssertionStatements
+                            }) => {
                                 const tokenizedAssertionStatement =
-                                    assertion.tokenizedAssertionStatements[
+                                    tokenizedAssertionStatements[
                                         collected.target.at.key
                                     ];
 
                                 return {
-                                    id: createAssertionId(testId, index),
+                                    assertionId,
                                     priority,
                                     assertionStatement:
                                         tokenizedAssertionStatement ||
-                                        assertion.assertionStatement,
-                                    assertionPhrase: assertion.assertionPhrase
+                                        assertionStatement,
+                                    assertionPhrase,
+                                    refIds
                                 };
                             }
-                        ),
-                        viewers: []
-                    };
+                        )
+                    },
+                    renderedUrl,
+                    scenarios,
+                    assertions: collected.assertions.map((assertion, index) => {
+                        let priority = '';
+                        if (assertion.priority === 1) priority = 'MUST';
+                        if (assertion.priority === 2) priority = 'SHOULD';
+                        if (assertion.priority === 3) priority = 'MAY';
 
-                    tests.push(test);
-                }
+                        const tokenizedAssertionStatement =
+                            assertion.tokenizedAssertionStatements[
+                                collected.target.at.key
+                            ];
+
+                        return {
+                            id: createAssertionId(testId, index),
+                            priority,
+                            assertionStatement:
+                                tokenizedAssertionStatement ||
+                                assertion.assertionStatement,
+                            assertionPhrase: assertion.assertionPhrase
+                        };
+                    }),
+                    viewers: []
+                };
+
+                tests.push(test);
             }
         } else {
             const common = allCollected[0];
