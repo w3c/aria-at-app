@@ -1,5 +1,9 @@
-export const isSupportedByResponseCollector = ({ at, browser }) =>
-    at?.name === 'NVDA' && browser?.name === 'Chrome';
+export const isSupportedByResponseCollector = ctx => {
+    if (!ctx || !ctx.at || !ctx.browser) {
+        return false;
+    }
+    return ctx.at.name === 'NVDA' && ctx.browser.name === 'Chrome';
+};
 
 export const isBot = user => user?.username?.toLowerCase().slice(-3) === 'bot';
 

@@ -8,11 +8,18 @@ import {
     faRobot,
     faUserPlus
 } from '@fortawesome/free-solid-svg-icons';
-import { ASSIGN_TESTER_MUTATION, REMOVE_TESTER_MUTATION } from '../queries';
-import { useMutation } from '@apollo/client';
+import {
+    ASSIGN_TESTER_MUTATION,
+    REMOVE_TESTER_MUTATION,
+    TEST_PLAN_REPORT_AT_BROWSER_QUERY
+} from '../queries';
+import { useMutation, useQuery } from '@apollo/client';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
-import { isBot } from '../../../utils/automation';
+import {
+    isBot,
+    isSupportedByResponseCollector
+} from '../../../utils/automation';
 
 import './AssignTesterDropdown.css';
 
@@ -28,11 +35,21 @@ const AssignTesterDropdown = ({
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
 
+    const { data: testPlanReportAtBrowserQuery } = useQuery(
+        TEST_PLAN_REPORT_AT_BROWSER_QUERY,
+        {
+            variables: {
+                testPlanReportId: testPlanReportId
+            },
+            fetchPolicy: 'cache-and-network'
+        }
+    );
+
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
     const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION);
 
-    const checkIsTesterAssigned = username => {
+    const isTesterAssigned = username => {
         if (testPlanRun) {
             return testPlanRun.tester?.username === username;
         } else if (draftTestPlanRuns?.length) {
@@ -45,12 +62,12 @@ const AssignTesterDropdown = ({
     };
 
     const toggleTesterAssign = async username => {
-        const isTesterAssigned = checkIsTesterAssigned(username);
+        const testerIsAssigned = isTesterAssigned(username);
         const tester = possibleTesters.find(
             tester => tester.username === username
         );
 
-        if (isTesterAssigned) {
+        if (testerIsAssigned) {
             await triggerLoad(async () => {
                 await removeTester({
                     variables: {
@@ -108,16 +125,23 @@ const AssignTesterDropdown = ({
                 <Dropdown.Menu role="menu" className="assign-menu">
                     {possibleTesters?.length ? (
                         possibleTesters.map(tester => {
-                            const isTesterAssigned = checkIsTesterAssigned(
+                            const testerIsAssigned = isTesterAssigned(
                                 tester.username
                             );
-                            let classname = isTesterAssigned
+                            let classname = testerIsAssigned
                                 ? 'assigned'
                                 : 'not-assigned';
                             let icon;
                             if (isBot(tester)) {
+                                const supportedByBot =
+                                    isSupportedByResponseCollector(
+                                        testPlanReportAtBrowserQuery?.testPlanReport
+                                    );
+                                if (!supportedByBot) {
+                                    return null;
+                                }
                                 icon = faRobot;
-                            } else if (isTesterAssigned) {
+                            } else if (testerIsAssigned) {
                                 icon = faCheck;
                             }
                             return (

@@ -129,6 +129,22 @@ export const TEST_PLAN_REPORT_QUERY = gql`
     }
 `;
 
+export const TEST_PLAN_REPORT_AT_BROWSER_QUERY = gql`
+    query TestPlanReportAtBrowser($testPlanReportId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            id
+            at {
+                id
+                name
+            }
+            browser {
+                id
+                name
+            }
+        }
+    }
+`;
+
 export const ADD_AT_VERSION_MUTATION = gql`
     mutation AddAtVersion($atId: ID!, $name: String!, $releasedAt: Timestamp!) {
         at(id: $atId) {
