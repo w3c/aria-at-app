@@ -44,9 +44,7 @@ export const useTestPlanRunValidatedAssertionCounts = (
                 const scenarios = testResults[i].scenarioResults;
                 for (let j = 0; j < scenarios.length; j++) {
                     const assertions = scenarios[j].assertionResults;
-                    for (let k = 0; k < assertions.length; k++) {
-                        count++;
-                    }
+                    count += assertions.length;
                 }
             }
             return count;
