@@ -577,7 +577,7 @@ const findOrCreateAtVersion = async (
     if (!version) {
         /* TODO: releasedAt manually entered by users submitting new version, support actual dates in automation */
         version = await createAtVersion(
-            { atId, name, releasedAt: releasedAt ?? new Date(Date.now()) },
+            { atId, name, releasedAt: releasedAt ?? new Date() },
             atVersionAttributes,
             atAttributes,
             options
