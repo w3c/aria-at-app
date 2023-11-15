@@ -155,10 +155,10 @@ const AssignTesterDropdown = ({
                                             tester.username
                                         );
                                         setAlertMessage(
-                                            `You have been ${
+                                            `${tester.username} has been ${
                                                 classname.includes('not')
-                                                    ? 'removed from'
-                                                    : 'assigned to'
+                                                    ? 'assigned to'
+                                                    : 'removed from'
                                             } this test run.`
                                         );
                                         await onChange();

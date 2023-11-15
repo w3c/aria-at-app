@@ -38,7 +38,7 @@ const getMocks = (testPlanRuns, collectionJobStatuses) => {
     return [testPlanRunMock, ...collectionJobStatusMocks];
 };
 
-test('correctly displays statuses for single COMPlETED test run', async () => {
+test('correctly displays statuses for single COMPLETED test run', async () => {
     const testPlanRuns = [
         {
             id: '0',
