@@ -23,7 +23,12 @@ const {
     getFinalizedTestResults
 } = require('../models/services/TestResultReadService');
 const http = require('http');
-const { getTestIdFromCSVRow } = require('../util/getTestIdFromCSVRow');
+const {
+    getTestIdFromTestPlanReportCSVRow
+} = require('../util/getTestIdFromCSVRow');
+const { getTestPlanRunById } = require('../models/services/TestPlanRunService');
+const { runnableTests } = require('../resolvers/TestPlanReport');
+const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -132,10 +137,10 @@ const updateOrCreateTestResultWithResponses = async ({
     atVersionId,
     browserVersionId
 }) => {
-    const testId = getTestIdFromCSVRow(
-        testCsvRow,
-        testPlanRun.testPlanReport.testPlanVersion
+    const runnableTests = await runnableTestsResolver(
+        testPlanRun.testPlanReport
     );
+    const testId = runnableTests[testCsvRow].id;
 
     const { testResult } = await findOrCreateTestResult({
         testId,
