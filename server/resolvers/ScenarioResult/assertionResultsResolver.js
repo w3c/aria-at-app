@@ -1,8 +1,4 @@
-const convertAssertionPriority = priority => {
-    if (priority === 'REQUIRED') return 'MUST';
-    if (priority === 'OPTIONAL') return 'SHOULD';
-    return priority;
-};
+const convertAssertionPriority = require('../helpers/convertAssertionPriority');
 
 const assertionResultsResolver = (scenarioResult, { priority }) => {
     if (!priority) return scenarioResult.assertionResults;
