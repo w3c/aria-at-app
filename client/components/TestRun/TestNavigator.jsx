@@ -79,7 +79,11 @@ const TestNavigator = ({
 
                         if (test) {
                             if (isBotCompletedTest) {
-                                if (test.testResult) {
+                                if (
+                                    test.testResult?.scenarioResults.some(
+                                        s => s.output
+                                    )
+                                ) {
                                     resultClassName = 'bot-complete';
                                     resultStatus = 'Completed by Bot';
                                 } else if (status !== 'CANCELLED') {
