@@ -481,5 +481,5 @@ module.exports = {
     scheduleCollectionJob,
     restartCollectionJob,
     cancelCollectionJob,
-    retryCancelledTests: retryCancelledCollections
+    retryCancelledCollections
 };
