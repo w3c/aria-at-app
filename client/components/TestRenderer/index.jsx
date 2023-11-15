@@ -233,6 +233,7 @@ const TestRenderer = ({
     testRunResultRef,
     submitButtonRef,
     isSubmitted = false,
+    isReviewingBot = false,
     isEdit = false,
     setIsRendererReady = false
 }) => {
@@ -791,6 +792,7 @@ const TestRenderer = ({
                                                     atOutput.focus
                                                 }
                                                 value={atOutput.value}
+                                                readOnly={isReviewingBot}
                                                 onChange={e =>
                                                     atOutput.change(
                                                         e.target.value
@@ -1257,6 +1259,7 @@ TestRenderer.propTypes = {
     submitButtonRef: PropTypes.any,
     isSubmitted: PropTypes.bool,
     isEdit: PropTypes.bool,
+    isReviewingBot: PropTypes.bool,
     setIsRendererReady: PropTypes.func
 };
 

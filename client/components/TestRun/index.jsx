@@ -1071,6 +1071,7 @@ const TestRun = () => {
                                     submitButtonRef={
                                         testRendererSubmitButtonRef
                                     }
+                                    isReviewingBot={isBot(openAsUser)}
                                     isSubmitted={isTestSubmitClicked}
                                     isEdit={isTestEditClicked}
                                     setIsRendererReady={setIsRendererReady}
