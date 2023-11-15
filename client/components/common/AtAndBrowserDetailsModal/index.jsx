@@ -221,9 +221,7 @@ const AtAndBrowserDetailsModal = ({
                         onClick: () => navigate('/test-queue')
                     }
                 ]}
-                actionLabel="Ok"
                 closeLabel="Cancel"
-                handleAction={() => navigate('/test-queue')}
                 handleClose={() => setShowExitModal(false)}
                 staticBackdrop={true}
             />
