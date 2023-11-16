@@ -113,11 +113,13 @@ export const TEST_PLAN_REPORT_QUERY = gql`
             testPlanVersion {
                 id
                 title
+                phase
                 gitSha
                 gitMessage
                 testPlan {
                     directory
                 }
+                versionString
                 updatedAt
             }
             draftTestPlanRuns {
