@@ -16,7 +16,7 @@ const testsResolver = parentRecord => {
         ? parentRecord
         : testPlanReport.testPlanVersion;
     const inferredAtId = testPlanReport?.atId;
-    const isV2 = testPlanVersion.metadata.testFormatVersion;
+    const isV2 = testPlanVersion.metadata?.testFormatVersion === 2;
 
     // Populate nested At and Command fields
     return testPlanVersion.tests.map(test => ({
