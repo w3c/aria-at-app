@@ -347,7 +347,8 @@ const TestQueueRow = ({
                     )}
                     {!testPlanReport.conflictsLength &&
                         testPlanReport.draftTestPlanRuns.length &&
-                        testPlanReport.draftTestPlanRuns[0](
+                        testPlanReport.draftTestPlanRuns[0]
+                            .testResultsLength && (
                             <Button
                                 ref={updateTestPlanStatusButtonRef}
                                 variant="secondary"
