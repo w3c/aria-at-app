@@ -19,6 +19,7 @@ const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
 const mutateTestPlanRun = require('./mutateTestPlanRunResolver');
 const mutateTestResult = require('./mutateTestResultResolver');
 const mutateTestPlanVersion = require('./mutateTestPlanVersionResolver');
+const mutateCollectionJob = require('./mutateCollectionJobResolver');
 const updateMe = require('./updateMe');
 const populateData = require('./populateDataResolver');
 const collectionJob = require('./collectionJobResolver');
@@ -28,7 +29,7 @@ const updateCollectionJob = require('./updateCollectionJobResolver');
 const deleteCollectionJob = require('./deleteCollectionJobResolver');
 const scheduleCollectionJob = require('./scheduleCollectionJobResolver');
 const restartCollectionJob = require('./restartCollectionJobResolver');
-const cancelCollectionJob = require('./cancelCollectionJobResolver');
+const collectionJobByTestPlanRunId = require('./collectionJobByTestPlanRunIdResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
@@ -40,6 +41,7 @@ const TestPlanReportOperations = require('./TestPlanReportOperations');
 const TestPlanRunOperations = require('./TestPlanRunOperations');
 const TestResultOperations = require('./TestResultOperations');
 const TestPlanVersionOperations = require('./TestPlanVersionOperations');
+const CollectionJobOperations = require('./CollectionJobOperations');
 const TestPlanRun = require('./TestPlanRun');
 const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
@@ -60,7 +62,8 @@ const resolvers = {
         testPlanRuns,
         populateData,
         collectionJob,
-        collectionJobs
+        collectionJobs,
+        collectionJobByTestPlanRunId
     },
     Mutation: {
         at: mutateAt,
@@ -70,6 +73,7 @@ const resolvers = {
         testPlanRun: mutateTestPlanRun,
         testResult: mutateTestResult,
         testPlanVersion: mutateTestPlanVersion,
+        collectionJob: mutateCollectionJob,
         findOrCreateTestPlanReport,
         updateMe,
         addViewer,
@@ -77,8 +81,7 @@ const resolvers = {
         updateCollectionJob,
         deleteCollectionJob,
         scheduleCollectionJob,
-        restartCollectionJob,
-        cancelCollectionJob
+        restartCollectionJob
     },
     AtOperations,
     AtVersionOperations,
@@ -93,7 +96,8 @@ const resolvers = {
     TestPlanReportOperations,
     TestPlanRunOperations,
     TestResultOperations,
-    TestPlanVersionOperations
+    TestPlanVersionOperations,
+    CollectionJobOperations
 };
 
 module.exports = resolvers;

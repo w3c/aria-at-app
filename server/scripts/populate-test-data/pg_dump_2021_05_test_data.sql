@@ -81,6 +81,8 @@ INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "bro
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (11, get_test_plan_version_id(text 'Modal Dialog Example'), '2021-05-14 14:18:23.602-05', 3, 2, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (12, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)'), '2021-05-14 14:18:23.602-05', '2022-07-06', 1, 2, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (13, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)'), '2021-05-14 14:18:23.602-05', '2022-07-07', 2, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (14, get_test_plan_version_id(text 'Toggle Button'), '2021-05-14 14:18:23.602-05', '2022-07-07', 2, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (15, get_test_plan_version_id(text 'Toggle Button'), '2021-05-14 14:18:23.602-05', '2022-07-07', 3, 3, 'READY');
 
 --
 -- Data for Name: TestPlanVersion; Type: TABLE DATA; Schema: public; Owner: atr
@@ -123,6 +125,8 @@ INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults"
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (11, 1, 11, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (12, 1, 12, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (13, 1, 13, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (14, 1, 14, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (15, 1, 15, '[]');
 
 --
 -- Data for Name: CollectionJob; Type: TABLE DATA; Schema: public; Owner: atr

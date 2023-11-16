@@ -6,8 +6,11 @@ import {
     faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import { Col } from 'react-bootstrap';
-import React from 'react';
+import React, { useMemo } from 'react';
 import '@fortawesome/fontawesome-svg-core/styles.css';
+import { isBot } from '../../utils/automation';
+import { COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY } from './queries';
+import { useQuery } from '@apollo/client';
 
 const TestNavigator = ({
     show = true,
@@ -18,8 +21,24 @@ const TestNavigator = ({
     tests = [],
     currentTestIndex = 0,
     toggleShowClick = () => {},
-    handleTestClick = () => {}
+    handleTestClick = () => {},
+    testPlanRun = null
 }) => {
+    const isBotCompletedTest = isBot(testPlanRun?.tester);
+
+    const { data: collectionJobQuery } = useQuery(
+        COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
+        {
+            variables: {
+                testPlanRunId: testPlanRun?.id
+            }
+        }
+    );
+
+    const status = useMemo(() => {
+        return collectionJobQuery?.collectionJobByTestPlanRunId?.status;
+    }, [collectionJobQuery]);
+
     return (
         <Col className="test-navigator" md={show ? 3 : 12}>
             <div className="test-navigator-toggle-container">
@@ -51,6 +70,7 @@ const TestNavigator = ({
                     {tests.map(test => {
                         let resultClassName = 'not-started';
                         let resultStatus = 'Not Started';
+
                         const issuesExist = testPlanReport.issues?.filter(
                             issue =>
                                 issue.isCandidateReview &&
@@ -58,30 +78,49 @@ const TestNavigator = ({
                         ).length;
 
                         if (test) {
-                            if (test.hasConflicts) {
-                                resultClassName = 'conflicts';
-                                resultStatus = 'Has Conflicts';
-                            } else if (test.testResult) {
-                                resultClassName = test.testResult.completedAt
-                                    ? 'complete'
-                                    : 'in-progress';
-                                resultStatus = test.testResult.completedAt
-                                    ? 'Complete Test'
-                                    : 'In Progress';
-                            } else if (
-                                !isSignedIn &&
-                                !isVendor &&
-                                test.index === currentTestIndex
-                            ) {
-                                resultClassName = 'in-progress';
-                                resultStatus = 'In Progress:';
-                            } else if (isVendor) {
-                                if (issuesExist) {
-                                    resultClassName = 'changes-requested';
-                                    resultStatus = 'Changes Requested';
-                                } else if (viewedTests.includes(test.id)) {
-                                    resultClassName = 'complete';
-                                    resultStatus = 'Test Viewed';
+                            if (isBotCompletedTest) {
+                                if (
+                                    test.testResult?.scenarioResults.some(
+                                        s => s.output
+                                    )
+                                ) {
+                                    resultClassName = 'bot-complete';
+                                    resultStatus = 'Completed by Bot';
+                                } else if (status !== 'CANCELLED') {
+                                    resultClassName = 'bot-queued';
+                                    resultStatus = 'In Progress by Bot';
+                                } else {
+                                    resultClassName = 'bot-cancelled';
+                                    resultStatus = 'Cancelled by Bot';
+                                }
+                            } else {
+                                // Existing logic for non-bot tests
+                                if (test.hasConflicts) {
+                                    resultClassName = 'conflicts';
+                                    resultStatus = 'Has Conflicts';
+                                } else if (test.testResult) {
+                                    resultClassName = test.testResult
+                                        .completedAt
+                                        ? 'complete'
+                                        : 'in-progress';
+                                    resultStatus = test.testResult.completedAt
+                                        ? 'Complete Test'
+                                        : 'In Progress';
+                                } else if (
+                                    !isSignedIn &&
+                                    !isVendor &&
+                                    test.index === currentTestIndex
+                                ) {
+                                    resultClassName = 'in-progress';
+                                    resultStatus = 'In Progress:';
+                                } else if (isVendor) {
+                                    if (issuesExist) {
+                                        resultClassName = 'changes-requested';
+                                        resultStatus = 'Changes Requested';
+                                    } else if (viewedTests.includes(test.id)) {
+                                        resultClassName = 'complete';
+                                        resultStatus = 'Test Viewed';
+                                    }
                                 }
                             }
                         }
@@ -126,7 +165,8 @@ TestNavigator.propTypes = {
     currentTestIndex: PropTypes.number,
     viewedTests: PropTypes.array,
     toggleShowClick: PropTypes.func,
-    handleTestClick: PropTypes.func
+    handleTestClick: PropTypes.func,
+    testPlanRun: PropTypes.object
 };
 
 export default TestNavigator;

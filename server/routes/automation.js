@@ -1,6 +1,5 @@
 const { Router } = require('express');
 const {
-    getJobLog,
     updateJobStatus,
     updateJobResults
 } = require('../controllers/AutomationController');
@@ -10,8 +9,6 @@ const {
 const { handleError } = require('../middleware/handleError');
 
 const router = Router();
-
-router.get('/:jobID/log', getJobLog);
 
 router.post('/:jobID/update', verifyAutomationScheduler, updateJobStatus);
 

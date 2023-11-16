@@ -1,5 +1,5 @@
 const responseCollectionUser = {
-    username: 'responseCollectionBot'
+    username: 'NVDA Bot'
 };
 
 module.exports = responseCollectionUser;

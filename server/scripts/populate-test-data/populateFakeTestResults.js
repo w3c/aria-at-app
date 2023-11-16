@@ -27,6 +27,15 @@ const populateFakeTestResults = async (testPlanRunId, fakeTestResultTypes) => {
                     submit: true
                 });
                 break;
+            case 'passingHistoricalResultsForMockAutomation':
+                await getFake({
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType:
+                        'passingHistoricalResultsForMockAutomation',
+                    submit: true
+                });
+                break;
             case 'completeAndFailingDueToIncorrectAssertions':
                 await getFake({
                     testPlanRunId,
@@ -202,12 +211,33 @@ const getFake = async ({
         }))
     });
 
-    const testResult = getPassing();
+    const getPassingHistoricalResultsForMockAutomation = () => ({
+        ...baseTestResult,
+        atVersionId: atVersion.id,
+        browserVersionId: browserVersion.id,
+        scenarioResults: baseTestResult.scenarioResults.map(scenarioResult => ({
+            ...scenarioResult,
+            output: 'Local development simulated output',
+            assertionResults: scenarioResult.assertionResults.map(
+                assertionResult => ({
+                    ...assertionResult,
+                    passed: true
+                })
+            ),
+            unexpectedBehaviors: []
+        }))
+    });
+
+    const testResult =
+        fakeTestResultType === 'passingHistoricalResultsForMockAutomation'
+            ? getPassingHistoricalResultsForMockAutomation()
+            : getPassing();
 
     switch (fakeTestResultType) {
         case 'empty':
             return;
         case 'passing':
+        case 'passingHistoricalResultsForMockAutomation':
             break;
         case 'failingDueToIncorrectAssertions':
             testResult.scenarioResults[0].assertionResults[0].passed = false;

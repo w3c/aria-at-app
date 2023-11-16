@@ -1,12 +1,13 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-    createTestPlanRun
+    createTestPlanRun,
+    updateTestPlanRun
 } = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const assignTesterResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { userId: testerUserId },
+    { userId: testerUserId, testPlanRunId },
     context
 ) => {
     const { user } = context;
@@ -19,11 +20,18 @@ const assignTesterResolver = async (
     ) {
         throw new AuthenticationError();
     }
-
-    const { id: testPlanRunId } = await createTestPlanRun({
-        testPlanReportId,
-        testerUserId
-    });
+    // If testPlanRunId is provided reassign the tester to the testPlanRun
+    if (testPlanRunId) {
+        await updateTestPlanRun(testPlanRunId, {
+            testerUserId
+        });
+    } else {
+        const { id } = await createTestPlanRun({
+            testPlanReportId,
+            testerUserId
+        });
+        testPlanRunId = id;
+    }
 
     return populateData({ testPlanRunId });
 };

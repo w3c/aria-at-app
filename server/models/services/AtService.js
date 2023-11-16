@@ -553,6 +553,40 @@ const getUniqueAtVersionsForReport = async testPlanReportId => {
     return results;
 };
 
+/**
+ * @param {object} params - values to be used to create or find the AtVersion record
+ * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} atAttributes  - At attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {BrowserVersion}
+ */
+const findOrCreateAtVersion = async (
+    { atId, name, releasedAt },
+    atVersionAttributes = AT_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    options = {}
+) => {
+    let version = await getAtVersionByQuery(
+        { atId, name },
+        atVersionAttributes,
+        atAttributes,
+        options
+    );
+
+    if (!version) {
+        /* TODO: releasedAt manually entered by users submitting new version, support actual dates in automation */
+        version = await createAtVersion(
+            { atId, name, releasedAt: releasedAt ?? new Date() },
+            atVersionAttributes,
+            atAttributes,
+            options
+        );
+    }
+
+    return version;
+};
+
 module.exports = {
     // Basic CRUD [At]
     getAtById,
@@ -579,5 +613,6 @@ module.exports = {
     removeAtModeByQuery,
 
     // Custom Methods
-    getUniqueAtVersionsForReport
+    getUniqueAtVersionsForReport,
+    findOrCreateAtVersion
 };

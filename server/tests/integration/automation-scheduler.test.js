@@ -4,8 +4,6 @@ const setupMockAutomationSchedulerServer = require('../util/mock-automation-sche
 const db = require('../../models/index');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const { markAsFinal } = require('../../resolvers/TestPlanReportOperations');
-const { getAtVersions } = require('../../models/services/AtService');
-const { getBrowserVersions } = require('../../models/services/BrowserService');
 const dbCleaner = require('../util/db-cleaner');
 const { default: axios } = require('axios');
 const {
@@ -16,8 +14,8 @@ let mockAutomationSchedulerServer;
 let apiServer;
 let sessionAgent;
 
-const jobId = '999';
-const testPlanReportId = '1';
+const jobId = '2';
+const testPlanReportId = '4';
 
 beforeAll(async () => {
     apiServer = await startSupertestServer({
@@ -32,6 +30,42 @@ afterAll(async () => {
     await apiServer.tearDown();
     await db.sequelize.close();
 });
+
+const getTestPlanReport = async id =>
+    await query(`
+        query {
+            testPlanReport(id: "${id}") {
+                id
+                markedFinalAt
+                finalizedTestResults {
+                    test{
+                        id
+                    }
+                    atVersion{
+                        name
+                    }
+                    browserVersion{
+                        name
+                    }
+                    scenarioResults {
+                        id
+                        scenario {
+                            id
+                        }
+                        output
+                        assertionResults {
+                            passed
+                            failedReason
+                        }
+                        unexpectedBehaviors {
+                            id
+                            otherUnexpectedBehaviorText
+                        }
+                    }
+                }
+            }
+        }
+    `);
 
 const getTestPlanRun = async id =>
     await query(`
@@ -77,6 +111,7 @@ const getTestCollectionJob = async () =>
             collectionJob(id: "${jobId}") {
                 id
                 status
+                externalLogsUrl
                 testPlanRun {
                     testPlanReport {
                         id
@@ -134,9 +169,11 @@ const restartCollectionJobByMutation = async () =>
 const cancelCollectionJobByMutation = async () =>
     await mutate(`
         mutation {
-            cancelCollectionJob(id: "${jobId}") {
-                id
-                status
+            collectionJob(id: "${jobId}") {
+                cancelCollectionJob {
+                    id
+                    status
+                }
             }
         }
     `);
@@ -201,7 +238,8 @@ describe('Automation controller', () => {
             const expectedRequestBody = {
                 testPlanVersionGitSha,
                 testIds,
-                testPlanName
+                testPlanName,
+                jobId
             };
 
             await scheduleCollectionJobByMutation();
@@ -225,9 +263,11 @@ describe('Automation controller', () => {
     it('should cancel a job', async () => {
         await dbCleaner(async () => {
             await scheduleCollectionJobByMutation();
-            const { cancelCollectionJob: canceledCollectionJob } =
-                await cancelCollectionJobByMutation();
-            expect(canceledCollectionJob).toEqual({
+            const {
+                collectionJob: { cancelCollectionJob: cancelledCollectionJob }
+            } = await cancelCollectionJobByMutation();
+
+            expect(cancelledCollectionJob).toEqual({
                 id: jobId,
                 status: 'CANCELLED'
             });
@@ -239,9 +279,10 @@ describe('Automation controller', () => {
     });
 
     it('should gracefully reject request to cancel a job that does not exist', async () => {
-        const { cancelCollectionJob: canceledCollectionJob } =
-            await cancelCollectionJobByMutation();
-        expect(canceledCollectionJob).toBe(null);
+        expect.assertions(1); // Make sure an assertion is made
+        await expect(cancelCollectionJobByMutation()).rejects.toThrow(
+            'Could not find collection job with id 2'
+        );
     });
 
     it('should restart a job', async () => {
@@ -265,18 +306,6 @@ describe('Automation controller', () => {
         const { restartCollectionJob: res } =
             await restartCollectionJobByMutation();
         expect(res).toEqual(null);
-    });
-
-    it('should get a job log', async () => {
-        await dbCleaner(async () => {
-            await scheduleCollectionJobByMutation();
-            const response = await sessionAgent.get(`/api/jobs/${jobId}/log`);
-            expect(response.statusCode).toBe(200);
-            expect(response.body).toEqual({
-                id: jobId,
-                log: 'TEST LOG'
-            });
-        });
     });
 
     it('should not update a job status without verification', async () => {
@@ -346,6 +375,42 @@ describe('Automation controller', () => {
                 await getTestCollectionJob();
             expect(storedCollectionJob.id).toEqual(jobId);
             expect(storedCollectionJob.status).toEqual('RUNNING');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(null);
+            expect(storedCollectionJob.testPlanRun.testPlanReport.id).toEqual(
+                testPlanReportId
+            );
+        });
+    });
+
+    it('should update a job externalLogsUrl with verification', async () => {
+        await dbCleaner(async () => {
+            await scheduleCollectionJobByMutation();
+            const response = await sessionAgent
+                .post(`/api/jobs/${jobId}/update`)
+                .send({
+                    status: 'CANCELLED',
+                    externalLogsUrl: 'https://www.aol.com/'
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                );
+            const { body } = response;
+            expect(response.statusCode).toBe(200);
+            expect(body.id).toEqual(jobId);
+            expect(body.status).toEqual('CANCELLED');
+            expect(body).toHaveProperty('testPlanRunId');
+            expect(body.testPlanRun.testPlanReportId).toEqual(
+                parseInt(testPlanReportId)
+            );
+
+            const { collectionJob: storedCollectionJob } =
+                await getTestCollectionJob();
+            expect(storedCollectionJob.id).toEqual(jobId);
+            expect(storedCollectionJob.status).toEqual('CANCELLED');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                'https://www.aol.com/'
+            );
             expect(storedCollectionJob.testPlanRun.testPlanReport.id).toEqual(
                 testPlanReportId
             );
@@ -370,14 +435,15 @@ describe('Automation controller', () => {
                 collectionJob.testPlanRun.testPlanReport.testPlanVersion;
             const testResultsNumber =
                 collectionJob.testPlanRun.testResults.length;
-            const selectedTest = tests[0];
+            const selectedTestIndex = 0;
+            const selectedTest = tests[selectedTestIndex];
             const numberOfScenarios = selectedTest.scenarios.filter(
                 scenario => scenario.atId === at.id
             ).length;
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
                 .send({
-                    testId: selectedTest.id,
+                    testCsvRow: selectedTestIndex,
                     atVersionName: at.atVersions[0].name,
                     browserVersionName: browser.browserVersions[0].name,
                     responses: new Array(numberOfScenarios).fill(
@@ -453,31 +519,22 @@ describe('Automation controller', () => {
                 }
             );
 
+            const { testPlanReport } = await getTestPlanReport(
+                finalizedTestPlanVersion.testPlanReport.id
+            );
+            const selectedTestIndex = 0;
             const historicalTestResult =
-                finalizedTestPlanVersion.testPlanReport.testPlanRuns[0]
-                    .testResults[0];
+                testPlanReport.finalizedTestResults[selectedTestIndex];
             expect(historicalTestResult).not.toEqual(undefined);
             const historicalResponses =
                 historicalTestResult?.scenarioResults.map(
                     scenarioResult => scenarioResult.output
                 );
-
-            const [atVersions, browserVersions] = await Promise.all([
-                getAtVersions(),
-                getBrowserVersions()
-            ]);
-            const atVersion = atVersions.find(
-                each => each.id === parseInt(historicalTestResult?.atVersionId)
-            );
-            const browserVersion = browserVersions.find(
-                each =>
-                    each.id === parseInt(historicalTestResult?.browserVersionId)
-            );
-
+            const { atVersion, browserVersion } = historicalTestResult;
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
                 .send({
-                    testId: historicalTestResult.testId,
+                    testCsvRow: selectedTestIndex,
                     atVersionName: atVersion.name,
                     browserVersionName: browserVersion.name,
                     responses: historicalResponses
@@ -495,7 +552,9 @@ describe('Automation controller', () => {
             const { testResults } = storedTestPlanRun.testPlanRun;
 
             testResults.forEach(testResult => {
-                expect(testResult.test.id).toEqual(historicalTestResult.testId);
+                expect(testResult.test.id).toEqual(
+                    historicalTestResult.test.id
+                );
                 expect(testResult.atVersion.name).toEqual(atVersion.name);
                 expect(testResult.browserVersion.name).toEqual(
                     browserVersion.name
@@ -506,6 +565,7 @@ describe('Automation controller', () => {
                     expect(scenarioResult.output).toEqual(
                         historicalScenarioResult.output
                     );
+
                     scenarioResult.assertionResults.forEach(
                         (assertionResult, index) => {
                             const historicalAssertionResult =

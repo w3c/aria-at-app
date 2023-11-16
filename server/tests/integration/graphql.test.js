@@ -155,11 +155,12 @@ describe('graphql', () => {
             ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers'],
             ['CollectionJob', 'testPlanRun'],
+            ['CollectionJob', 'externalLogsUrl'],
             // These interact with Response Scheduler API
             // which is mocked in other tests.
             ['Mutation', 'scheduleCollectionJob'],
             ['Mutation', 'restartCollectionJob'],
-            ['Mutation', 'cancelCollectionJob']
+            ['CollectionJobOperations', 'retryCancelledCollections']
         ];
         ({
             typeAwareQuery,
@@ -255,8 +256,16 @@ describe('graphql', () => {
                         __typename
                         id
                         status
+                        testPlanRun {
+                            id
+                        }
                     }
                     collectionJobs {
+                        __typename
+                        id
+                        status
+                    }
+                    collectionJobByTestPlanRunId(testPlanRunId: 1) {
                         __typename
                         id
                         status
@@ -479,6 +488,7 @@ describe('graphql', () => {
                     testPlanRun(id: 3) {
                         __typename
                         id
+                        initiatedByAutomation
                         testPlanReport {
                             id
                         }
@@ -727,6 +737,13 @@ describe('graphql', () => {
                             status
                             testPlanRun {
                                 id
+                            }
+                        }
+                        collectionJob(id: 333) {
+                            __typename
+                            cancelCollectionJob {
+                                id
+                                status
                             }
                         }
                         updateCollectionJob(id: 333, status: COMPLETED) {

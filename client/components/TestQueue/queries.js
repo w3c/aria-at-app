@@ -62,6 +62,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             }
             draftTestPlanRuns {
                 id
+                initiatedByAutomation
                 tester {
                     id
                     username
@@ -110,6 +111,7 @@ export const TEST_PLAN_REPORT_QUERY = gql`
             }
             draftTestPlanRuns {
                 id
+                initiatedByAutomation
                 tester {
                     id
                     username
@@ -122,6 +124,22 @@ export const TEST_PLAN_REPORT_QUERY = gql`
                     completedAt
                 }
                 testResultsLength
+            }
+        }
+    }
+`;
+
+export const TEST_PLAN_REPORT_AT_BROWSER_QUERY = gql`
+    query TestPlanReportAtBrowser($testPlanReportId: ID!) {
+        testPlanReport(id: $testPlanReportId) {
+            id
+            at {
+                id
+                name
+            }
+            browser {
+                id
+                name
             }
         }
     }
@@ -221,11 +239,16 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
 `;
 
 export const ASSIGN_TESTER_MUTATION = gql`
-    mutation AssignTester($testReportId: ID!, $testerId: ID!) {
+    mutation AssignTester(
+        $testReportId: ID!
+        $testerId: ID!
+        $testPlanRunId: ID
+    ) {
         testPlanReport(id: $testReportId) {
-            assignTester(userId: $testerId) {
+            assignTester(userId: $testerId, testPlanRunId: $testPlanRunId) {
                 testPlanReport {
                     draftTestPlanRuns {
+                        initiatedByAutomation
                         tester {
                             id
                             username

@@ -98,6 +98,10 @@ const graphqlSchema = gql`
         This will store the test results.
         """
         testPlanRun: TestPlanRun
+        """
+        The URL where the logs for the job can be found.
+        """
+        externalLogsUrl: String
     }
 
     type Browser {
@@ -567,7 +571,7 @@ const graphqlSchema = gql`
         """
         The BrowserVersion used during this testing session.
         """
-        browserVersion: BrowserVersion!
+        browserVersion: BrowserVersion
         """
         Automatically set by the server when a new test result is created.
         """
@@ -597,15 +601,15 @@ const graphqlSchema = gql`
         """
         See TestResult type for more information.
         """
-        atVersionId: ID!
+        atVersionId: ID
         """
         See TestResult type for more information.
         """
-        browserVersionId: ID!
+        browserVersionId: ID
         """
         See TestResult type for more information.
         """
-        scenarioResults: [ScenarioResultInput]!
+        scenarioResults: [ScenarioResultInput]
     }
 
     """
@@ -787,6 +791,10 @@ const graphqlSchema = gql`
         expensive time-consuming operations to calculate.
         """
         testResultsLength: Int!
+        """
+        Whether the TestPlanRun was initiated by the Response Collection System
+        """
+        initiatedByAutomation: Boolean!
     }
 
     """
@@ -1101,6 +1109,10 @@ const graphqlSchema = gql`
         """
         collectionJob(id: ID!): CollectionJob
         """
+        Get a CollectionJob by TestPlanRun ID.
+        """
+        collectionJobByTestPlanRunId(testPlanRunId: ID!): CollectionJob
+        """
         Get all CollectionJobs.
         """
         collectionJobs: [CollectionJob]!
@@ -1164,10 +1176,11 @@ const graphqlSchema = gql`
     """
     type TestPlanReportOperations {
         """
-        Assigns a user to a TestPlanReport, creating an associated TestPlanRun
-        with no results.
+        Assigns a user to a TestPlanReport, if a testPlanRunID is supplied the
+        the TestPlanRun will be reassigned, otherwise an associated TestPlanRun
+        with no results is created.
         """
-        assignTester(userId: ID!): PopulatedData!
+        assignTester(userId: ID!, testPlanRunId: ID): PopulatedData!
         """
         Permanently deletes the TestPlanRun from the TestPlanReport for the
         user.
@@ -1272,6 +1285,19 @@ const graphqlSchema = gql`
         """
         deleteTestResult: PopulatedData!
     }
+    """
+    Mutations scoped to a CollectionJob.
+    """
+    type CollectionJobOperations {
+        """
+        Mark a CollectionJob as finished.
+        """
+        cancelCollectionJob: CollectionJob!
+        """
+        Retry the 'cancelled' tests of a CollectionJob.
+        """
+        retryCancelledCollections: CollectionJob!
+    }
 
     """
     Generic response to findOrCreate mutations, which allow you to dictate an
@@ -1334,6 +1360,10 @@ const graphqlSchema = gql`
         """
         testPlanVersion(id: ID!): TestPlanVersionOperations!
         """
+        Get the available mutations for the given CollectionJob.
+        """
+        collectionJob(id: ID!): CollectionJobOperations
+        """
         Update the currently-logged-in User.
         """
         updateMe(input: UserInput): User!
@@ -1379,6 +1409,10 @@ const graphqlSchema = gql`
             The status of the CollectionJob.
             """
             status: CollectionJobStatus
+            """
+            The external logs url of the CollectionJob.
+            """
+            externalLogsUrl: String
         ): CollectionJob
         """
         Restart a CollectionJob by way of the Response Scheduler
@@ -1386,15 +1420,6 @@ const graphqlSchema = gql`
         restartCollectionJob(
             """
             The CollectionJob to restart.
-            """
-            id: ID!
-        ): CollectionJob
-        """
-        Cancel a CollectionJob by way of the Response Scheduler
-        """
-        cancelCollectionJob(
-            """
-            The CollectionJob to cancel.
             """
             id: ID!
         ): CollectionJob

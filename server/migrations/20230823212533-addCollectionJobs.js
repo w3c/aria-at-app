@@ -14,6 +14,11 @@ module.exports = {
                 allowNull: false,
                 defaultValue: 'QUEUED'
             },
+            externalLogsUrl: {
+                type: Sequelize.STRING,
+                allowNull: true,
+                defaultValue: null
+            },
             testPlanRunId: {
                 type: Sequelize.INTEGER,
                 references: {

@@ -361,6 +361,34 @@ const removeBrowserVersionById = async (
     return await ModelService.removeById(BrowserVersion, id, deleteOptions);
 };
 
+/**
+ * @param {object} params - values to be used to create or find the BrowserVersion record
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {BrowserVersion}
+ */
+const findOrCreateBrowserVersion = async (
+    { browserId, name },
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
+    options = {}
+) => {
+    let version = await getBrowserVersionByQuery(
+        { browserId, name },
+        browserVersionAttributes,
+        browserAttributes,
+        options
+    );
+
+    if (!version) {
+        version = await createBrowserVersion({ browserId, name });
+    }
+
+    return version;
+};
+
 module.exports = {
     // Basic CRUD [Browser]
     getBrowserById,
@@ -376,5 +404,8 @@ module.exports = {
     updateBrowserVersionByQuery,
     updateBrowserVersionById,
     removeBrowserVersionByQuery,
-    removeBrowserVersionById
+    removeBrowserVersionById,
+
+    // Custom [BrowserVersion]
+    findOrCreateBrowserVersion
 };

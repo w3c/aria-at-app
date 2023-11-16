@@ -244,7 +244,8 @@ const createTestPlanRun = async (
         {
             testerUserId,
             testPlanReportId,
-            testResults
+            testResults,
+            initiatedByAutomation: isAutomated
         },
         options
     );
@@ -286,7 +287,7 @@ const createTestPlanRun = async (
  */
 const updateTestPlanRun = async (
     id,
-    { testResults },
+    { testerUserId, testResults },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
@@ -296,8 +297,11 @@ const updateTestPlanRun = async (
     userAttributes = USER_ATTRIBUTES,
     options = {}
 ) => {
-    await ModelService.update(TestPlanRun, { id }, { testResults });
-
+    await ModelService.update(
+        TestPlanRun,
+        { id },
+        { testResults, testerUserId }
+    );
     return await ModelService.getById(
         TestPlanRun,
         id,

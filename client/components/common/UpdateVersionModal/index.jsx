@@ -157,8 +157,12 @@ const UpdateVersionModal = ({
                     </Form.Group>
                 </ModalInnerSectionContainer>
             }
-            actionLabel={actionType === 'add' ? 'Add Version' : 'Save'}
-            handleAction={onSubmit}
+            actions={[
+                {
+                    label: actionType === 'add' ? 'Add Version' : 'Save',
+                    onClick: onSubmit
+                }
+            ]}
             handleClose={handleClose}
         />
     );

@@ -10,6 +10,7 @@ const testRoutes = require('./routes/tests');
 const automationSchedulerRoutes = require('./routes/automation');
 const path = require('path');
 const apolloServer = require('./graphql-server');
+const setupMockAutomationSchedulerServer = require('./tests/util/mock-automation-scheduler-server');
 const app = express();
 
 // test session
@@ -41,6 +42,13 @@ listener.route('/aria-at/:branch*').get(
     proxyMiddleware.fileRedirect(baseUrl),
     proxyMiddleware.proxyPath(baseUrl)
 );
+
+// Conditionally initialize mock server
+if (process.env.ENVIRONMENT === 'dev') {
+    setupMockAutomationSchedulerServer().catch(error => {
+        console.error('Failed to initialize mock automation server:', error);
+    });
+}
 
 // Error handling must be the last middleware
 listener.use((error, req, res, next) => {
