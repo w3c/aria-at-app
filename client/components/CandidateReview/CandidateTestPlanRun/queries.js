@@ -40,6 +40,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             testPlanVersionPhases: [CANDIDATE]
             testPlanVersionId: $testPlanVersionId
             testPlanVersionIds: $testPlanVersionIds
+            isFinal: true
         ) {
             id
             vendorReviewStatus
