@@ -10,6 +10,10 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
         ats {
             id
             name
+            browsers {
+                id
+                name
+            }
             atVersions {
                 id
                 name
