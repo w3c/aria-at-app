@@ -554,11 +554,9 @@ const TestPlans = ({ testPlanVersions }) => {
                                                         {getTestPlanVersionTitle(
                                                             testPlanVersion
                                                         )}{' '}
-                                                        V
-                                                        {convertDateToString(
-                                                            testPlanVersion.updatedAt,
-                                                            'YY.MM.DD'
-                                                        )}{' '}
+                                                        {
+                                                            testPlanVersion.versionString
+                                                        }{' '}
                                                         ({testsCount} Test
                                                         {testsCount === 0 ||
                                                         testsCount > 1
@@ -761,11 +759,7 @@ const TestPlans = ({ testPlanVersions }) => {
                                             {getTestPlanVersionTitle(
                                                 testPlanVersion
                                             )}{' '}
-                                            V
-                                            {convertDateToString(
-                                                testPlanVersion.updatedAt,
-                                                'YY.MM.DD'
-                                            )}
+                                            {testPlanVersion.versionString}
                                         </td>
                                         <CenteredTd>
                                             {jawsDataExists

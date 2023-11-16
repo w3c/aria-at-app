@@ -22,10 +22,10 @@ import '../../TestRun/TestRun.css';
 import '../../App/App.css';
 import { useMediaQuery } from 'react-responsive';
 import { convertDateToString } from '../../../utils/formatter';
-import TestPlanResultsTable from '../../Reports/TestPlanResultsTable';
+import TestPlanResultsTable from '../../common/TestPlanResultsTable';
+import { calculateAssertionsCount } from '../../common/TestPlanResultsTable/utils';
 import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
 import ThankYouModal from '../CandidateModals/ThankYouModal';
-import getMetrics from '../../Reports/getMetrics';
 import FeedbackListItem from '../FeedbackListItem';
 import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
@@ -281,11 +281,6 @@ const CandidateTestPlanRun = () => {
     const { testPlanVersion, vendorReviewStatus } = testPlanReport;
     const { recommendedPhaseTargetDate } = testPlanVersion;
 
-    const versionString = `V${convertDateToString(
-        testPlanVersion.updatedAt,
-        'YY.MM.DD'
-    )}`;
-
     const vendorReviewStatusMap = {
         READY: 'Ready',
         IN_PROGRESS: 'In Progress',
@@ -319,7 +314,7 @@ const CandidateTestPlanRun = () => {
         isCandidateReviewChangesRequested: true,
         testPlanTitle: testPlanVersion.title,
         testPlanDirectory: testPlanVersion.testPlan.directory,
-        versionString,
+        versionString: testPlanVersion.versionString,
         testTitle: currentTest.title,
         testRowNumber: currentTest.rowNumber,
         testRenderedUrl: currentTest.renderedUrl,
@@ -345,7 +340,7 @@ const CandidateTestPlanRun = () => {
         isCandidateReview: true,
         isCandidateReviewChangesRequested: false,
         testPlanTitle: testPlanVersion.title,
-        versionString,
+        versionString: testPlanVersion.versionString,
         testRowNumber: currentTest.rowNumber,
         username: data.me.username,
         atName: testPlanReport.at.name
@@ -467,7 +462,8 @@ const CandidateTestPlanRun = () => {
                                         index === 0,
                                     atName: testPlanReport.at.name,
                                     testPlanTitle: testPlanVersion.title,
-                                    versionString,
+                                    versionString:
+                                        testPlanVersion.versionString,
                                     testRowNumber: currentTest.rowNumber
                                 })}
                             />
@@ -512,17 +508,20 @@ const CandidateTestPlanRun = () => {
                             testPlanReport.finalizedTestResults[
                                 currentTestIndex
                             ];
-                        const { testsPassedCount } = getMetrics({ testResult });
+
+                        const { passedAssertionsCount, failedAssertionsCount } =
+                            calculateAssertionsCount(testResult);
+
                         return (
                             <>
                                 <h2 className="test-results-header">
-                                    Test Result:{' '}
-                                    {testsPassedCount ? 'PASS' : 'FAIL'}
+                                    Test Results&nbsp;(
+                                    {passedAssertionsCount} passed,&nbsp;
+                                    {failedAssertionsCount} failed)
                                 </h2>
                                 <TestPlanResultsTable
-                                    tableClassName="test-results-table"
                                     key={`${testPlanReport.id} + ${testResult.id}`}
-                                    test={currentTest}
+                                    test={{ ...currentTest, at: { name: at } }}
                                     testResult={testResult}
                                 />
                             </>

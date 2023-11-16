@@ -1,6 +1,9 @@
 'use strict';
 
-const { TEST_PLAN_REPORT_ATTRIBUTES } = require('../models/services/helpers');
+const {
+    TEST_PLAN_REPORT_ATTRIBUTES,
+    TEST_PLAN_VERSION_ATTRIBUTES
+} = require('../models/services/helpers');
 const scenariosResolver = require('../resolvers/Test/scenariosResolver');
 const {
     getTestPlanReportById,
@@ -21,6 +24,10 @@ const {
     saveTestResult
 } = require('../resolvers/TestResultOperations');
 const { hashTests } = require('../util/aria');
+
+const testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES.filter(
+    attr => attr !== 'versionString'
+);
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -303,7 +310,9 @@ module.exports = {
 
                 const currentTestPlanReport = await getTestPlanReportById(
                     testPlanReportId,
-                    testPlanReportAttributes
+                    testPlanReportAttributes,
+                    undefined,
+                    testPlanVersionAttributes
                 );
 
                 for (
@@ -317,7 +326,8 @@ module.exports = {
                         testPlanRunId,
                         null,
                         null,
-                        testPlanReportAttributes
+                        testPlanReportAttributes,
+                        testPlanVersionAttributes
                     );
                     // testPlanReport = testPlanRun?.testPlanReport;
 
@@ -458,7 +468,9 @@ module.exports = {
                             atId,
                             browserId
                         },
-                        testPlanReportAttributes
+                        testPlanReportAttributes,
+                        undefined,
+                        testPlanVersionAttributes
                     );
 
                 const candidatePhaseReachedAt =
@@ -478,7 +490,9 @@ module.exports = {
                         recommendedPhaseTargetDate,
                         vendorReviewStatus
                     },
-                    testPlanReportAttributes
+                    testPlanReportAttributes,
+                    undefined,
+                    testPlanVersionAttributes
                 );
 
                 // const locationOfData = {
@@ -513,7 +527,8 @@ module.exports = {
                         },
                         null,
                         null,
-                        testPlanReportAttributes
+                        testPlanReportAttributes,
+                        testPlanVersionAttributes
                     );
 
                     for (const testResult of testPlanRun.testResults) {

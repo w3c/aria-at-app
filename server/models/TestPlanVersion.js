@@ -23,7 +23,10 @@ module.exports = function (sequelize, DataTypes) {
                 defaultValue: PHASE.RD
             },
             title: { type: DataTypes.TEXT },
-            directory: { type: DataTypes.TEXT },
+            directory: {
+                type: DataTypes.TEXT,
+                unique: 'uniqueVersionStringByDirectory'
+            },
             gitSha: { type: DataTypes.TEXT },
             gitMessage: { type: DataTypes.TEXT },
             testPageUrl: { type: DataTypes.TEXT },
@@ -35,6 +38,11 @@ module.exports = function (sequelize, DataTypes) {
             updatedAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW
+            },
+            versionString: {
+                type: DataTypes.TEXT,
+                allowNull: false,
+                unique: 'uniqueVersionStringByDirectory'
             },
             tests: { type: DataTypes.JSONB },
             testPlanId: { type: DataTypes.INTEGER },

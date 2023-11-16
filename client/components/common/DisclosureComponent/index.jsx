@@ -22,11 +22,10 @@ const DisclosureParent = styled.div`
     ${({ stacked }) =>
         stacked &&
         `
-    h1:not(:first-of-type) button {
-        border-top: 1px solid #d3d5da;
-    }
-
-    h3:not(:first-of-type) button {
+    h1:not(:first-of-type) button,
+    h2:not(:first-of-type) button,
+    h3:not(:first-of-type) button,
+    h4:not(:first-of-type) button {
         border-top: 1px solid #d3d5da;
     }`}
 `;
@@ -58,7 +57,7 @@ const DisclosureButton = styled.button`
         cursor: pointer;
     }
 
-    svg {
+    .disclosure-icon {
         position: absolute;
         margin: 0;
         top: 50%;
@@ -88,7 +87,8 @@ const DisclosureComponent = ({
     onClick = null,
     expanded = false,
     stacked = false,
-    headingLevel = '3'
+    headingLevel = '3',
+    className = null
 }) => {
     const [isExpanded, setIsExpanded] = useState(expanded);
     const Tag = `h${headingLevel}`;
@@ -96,7 +96,7 @@ const DisclosureComponent = ({
     return (
         <>
             {stacked ? (
-                <DisclosureParent stacked>
+                <DisclosureParent stacked className={className}>
                     {title.map((_, index) => {
                         const buttonTitle = title[index];
                         const buttonExpanded = expanded[index];
@@ -105,7 +105,7 @@ const DisclosureComponent = ({
                             disclosureContainerView[index];
 
                         return (
-                            <Fragment key={`disclosure-${buttonTitle}-key`}>
+                            <Fragment key={`disclosure-${index}-key`}>
                                 <Tag>
                                     <DisclosureButton
                                         id={`disclosure-btn-${componentId}-${buttonTitle}`}
@@ -117,6 +117,7 @@ const DisclosureComponent = ({
                                     >
                                         {buttonTitle}
                                         <FontAwesomeIcon
+                                            className="disclosure-icon"
                                             icon={
                                                 buttonExpanded
                                                     ? faChevronUp
@@ -139,7 +140,7 @@ const DisclosureComponent = ({
                     })}
                 </DisclosureParent>
             ) : (
-                <DisclosureParent>
+                <DisclosureParent className={className}>
                     <Tag>
                         <DisclosureButton
                             id={`disclosure-btn-${componentId}`}
@@ -150,6 +151,7 @@ const DisclosureComponent = ({
                         >
                             {title}
                             <FontAwesomeIcon
+                                className="disclosure-icon"
                                 icon={isExpanded ? faChevronUp : faChevronDown}
                             />
                         </DisclosureButton>
@@ -173,7 +175,9 @@ DisclosureComponent.propTypes = {
     componentId: PropTypes.string,
     title: PropTypes.oneOfType([
         PropTypes.string,
-        PropTypes.arrayOf(PropTypes.string)
+        PropTypes.node,
+        PropTypes.arrayOf(PropTypes.string),
+        PropTypes.arrayOf(PropTypes.node)
     ]),
     disclosureContainerView: PropTypes.oneOfType([
         PropTypes.node,
@@ -188,7 +192,8 @@ DisclosureComponent.propTypes = {
         PropTypes.arrayOf(PropTypes.bool)
     ]),
     stacked: PropTypes.bool,
-    headingLevel: PropTypes.string
+    headingLevel: PropTypes.string,
+    className: PropTypes.string
 };
 
 export default DisclosureComponent;

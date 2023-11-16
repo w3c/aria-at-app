@@ -3,6 +3,7 @@
 const path = require('path');
 const { Client } = require('pg');
 const fse = require('fs-extra');
+const { pathToFileURL } = require('url');
 const spawn = require('cross-spawn');
 const { At } = require('../../models');
 const {
@@ -21,6 +22,7 @@ const {
 } = require('../../services/PopulatedData/locationOfDataId');
 const deepPickEqual = require('../../util/deepPickEqual');
 const { hashTests } = require('../../util/aria');
+const convertDateToString = require('../../util/convertDateToString');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -173,6 +175,8 @@ const importTestPlanVersions = async () => {
             }
         }
 
+        const versionString = await getVersionString({ updatedAt, directory });
+
         await createTestPlanVersion({
             id: testPlanVersionId,
             title,
@@ -187,6 +191,7 @@ const importTestPlanVersions = async () => {
             gitMessage,
             hashedTests,
             updatedAt,
+            versionString,
             metadata: {
                 designPatternUrl,
                 exampleUrl
@@ -263,8 +268,9 @@ const readCsv = ({ sourceDirectoryPath }) => {
 };
 
 const updateCommandsJson = async () => {
-    const keysMjsPath = path.join(testsDirectory, 'resources', 'keys.mjs');
-
+    const keysMjsPath = pathToFileURL(
+        path.join(testsDirectory, 'resources', 'keys.mjs')
+    );
     const commands = Object.entries(await import(keysMjsPath)).map(
         ([id, text]) => ({ id, text })
     );
@@ -284,6 +290,27 @@ const updateAtsJson = async ats => {
             4
         )
     );
+};
+
+const getVersionString = async ({ directory, updatedAt }) => {
+    const versionStringBase = `V${convertDateToString(updatedAt, 'YY.MM.DD')}`;
+    const result = await client.query(
+        `
+            SELECT "versionString" FROM "TestPlanVersion"
+            WHERE directory = $1 AND "versionString" LIKE $2
+            ORDER BY "versionString" DESC;
+        `,
+        [directory, `${versionStringBase}%`]
+    );
+
+    let versionString = result.rows[0]?.versionString;
+
+    if (!versionString) return versionStringBase;
+
+    const currentCount = versionString.match(/V\d\d\.\d\d\.\d\d-(\d+)/);
+    let duplicateCount = currentCount ? Number(currentCount[1]) + 1 : 1;
+
+    return `${versionStringBase}-${duplicateCount}`;
 };
 
 const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {

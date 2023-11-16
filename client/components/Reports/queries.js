@@ -35,7 +35,7 @@ export const REPORT_PAGE_QUERY = gql`
             title
             phase
             gitSha
-            updatedAt
+            versionString
             testPlan {
                 directory
             }
@@ -43,6 +43,7 @@ export const REPORT_PAGE_QUERY = gql`
             testPlanReports(isFinal: true) {
                 id
                 metrics
+                markedFinalAt
                 at {
                     id
                     name

@@ -13,10 +13,20 @@ import {
 import { differenceBy } from 'lodash';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
-import TestPlanResultsTable from './TestPlanResultsTable';
+import TestPlanResultsTable from '../common/TestPlanResultsTable';
+import { calculateAssertionsCount } from '../common/TestPlanResultsTable/utils';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
+import styled from '@emotion/styled';
+
+const ResultsContainer = styled.div`
+    padding: 1em 1.75em;
+    border-left: 1px solid #dee2e6;
+    border-right: 1px solid #dee2e6;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 2em;
+`;
 
 const getTestersRunHistory = (
     testPlanReport,
@@ -72,13 +82,13 @@ const getTestersRunHistory = (
 };
 
 const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
+    const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
     const location = useLocation();
     const { testPlanReportId } = useParams();
 
     const testPlanReport = testPlanReports.find(
         each => each.id == testPlanReportId
     );
-
     if (!testPlanReport) return <Navigate to="/404" />;
 
     const { at, browser } = testPlanReport;
@@ -95,7 +105,6 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         testPlanReport.finalizedTestResults,
         testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
     );
-
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -117,7 +126,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 <LinkContainer to="/reports">
                     <Breadcrumb.Item>
                         <FontAwesomeIcon icon={faHome} />
-                        Test Reports
+                        AT Interoperability Reports
                     </Breadcrumb.Item>
                 </LinkContainer>
                 <LinkContainer to={`/report/${testPlanVersion.id}`}>
@@ -138,6 +147,45 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 assertions. The open test button next to each test allows you to
                 preview the test in your browser.
             </p>
+            <h2>Metadata</h2>
+            <ul>
+                <li>
+                    Generated from&nbsp;
+                    <a
+                        href={`/test-review/${testPlanVersion.gitSha}/${testPlanVersion.testPlan.directory}`}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
+                        {testPlanVersion.versionString} of{' '}
+                        {testPlanVersion.title} Test Plan
+                    </a>
+                </li>
+                <li>
+                    Report completed on{' '}
+                    {convertDateToString(
+                        new Date(testPlanReport.markedFinalAt),
+                        'MMMM D, YYYY'
+                    )}
+                </li>
+                {exampleUrl ? (
+                    <li>
+                        <a href={exampleUrl} target="_blank" rel="noreferrer">
+                            Example Under Test
+                        </a>
+                    </li>
+                ) : null}
+                {designPatternUrl ? (
+                    <li>
+                        <a
+                            href={designPatternUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                        >
+                            Design Pattern
+                        </a>
+                    </li>
+                ) : null}
+            </ul>
             {testPlanReport.finalizedTestResults.map(testResult => {
                 const test = testResult.test;
 
@@ -145,10 +193,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 const issueLink = createIssueLink({
                     testPlanTitle: testPlanVersion.title,
                     testPlanDirectory: testPlanVersion.testPlan.directory,
-                    versionString: `V${convertDateToString(
-                        testPlanVersion.updatedAt,
-                        'YY.MM.DD'
-                    )}`,
+                    versionString: testPlanVersion.versionString,
                     testTitle: test.title,
                     testRowNumber: test.rowNumber,
                     testRenderedUrl: test.renderedUrl,
@@ -165,14 +210,15 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     'https://aria-at.netlify.app'
                 );
 
+                const { passedAssertionsCount, failedAssertionsCount } =
+                    calculateAssertionsCount(testResult);
+
                 return (
                     <Fragment key={testResult.id}>
                         <div className="test-result-heading">
                             <h2 id={`result-${testResult.id}`} tabIndex="-1">
-                                <span className="test-details">
-                                    Details for test:
-                                </span>
-                                {test.title}
+                                {test.title}&nbsp;({passedAssertionsCount}
+                                &nbsp;passed, {failedAssertionsCount} failed)
                                 <DisclaimerInfo phase={testPlanVersion.phase} />
                             </h2>
                             <div className="test-result-buttons">
@@ -202,10 +248,14 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                                 </Button>
                             </div>
                         </div>
-                        <TestPlanResultsTable
-                            test={test}
-                            testResult={testResult}
-                        />
+
+                        <ResultsContainer>
+                            <TestPlanResultsTable
+                                key={`TestPlanResultsTable__${testResult.id}`}
+                                test={{ ...test, at }}
+                                testResult={testResult}
+                            />
+                        </ResultsContainer>
 
                         <DisclosureComponent
                             componentId={`run-history-${testResult.id}`}

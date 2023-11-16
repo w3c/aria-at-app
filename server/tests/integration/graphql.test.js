@@ -352,6 +352,7 @@ describe('graphql', () => {
                         recommendedPhaseTargetDate
                         recommendedPhaseReachedAt
                         deprecatedAt
+                        versionString
                     }
                     testPlanVersion(id: 1) {
                         __typename

@@ -61,7 +61,7 @@ a.nav-link {
 .nav-link[aria-current='true']:after {
     background: #0b60ab;
 }
-@media all and (min-width: 992px) {
+@media all and (min-width: 1200px) {
     .navbar-expand-lg .navbar-collapse ul {
         display: flex;
         flex-basis: auto;
@@ -79,7 +79,7 @@ a.nav-link {
         margin: auto;
     }
 }
-@media all and (max-width: 991px) {
+@media all and (max-width: 1199px) {
     .nav-link[aria-current='true']:after,
     .nav-link:hover:after {
         position: absolute;

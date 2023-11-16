@@ -38,7 +38,9 @@ export default (
                                 name: '2021.2111.13',
                                 releasedAt: '2021-11-01T04:00:00.000Z'
                             }
-                        ]
+                        ],
+                        candidateBrowsers: [{ id: '2' }],
+                        recommendedBrowsers: [{ id: '1' }, { id: '2' }]
                     },
                     {
                         id: '2',
@@ -49,7 +51,9 @@ export default (
                                 name: '2020.4',
                                 releasedAt: '2021-02-19T05:00:00.000Z'
                             }
-                        ]
+                        ],
+                        candidateBrowsers: [{ id: '2' }],
+                        recommendedBrowsers: [{ id: '1' }, { id: '2' }]
                     },
                     {
                         id: '3',
@@ -60,7 +64,9 @@ export default (
                                 name: '11.6 (20G165)',
                                 releasedAt: '2019-09-01T04:00:00.000Z'
                             }
-                        ]
+                        ],
+                        candidateBrowsers: [{ id: '3' }],
+                        recommendedBrowsers: [{ id: '2' }, { id: '3' }]
                     }
                 ],
                 browsers: [
@@ -263,6 +269,7 @@ export default (
                         gitMessage:
                             'Remove Tab and Shift+Tab from radiogroup tests when navigating out of the start and end of a radio group (reading mode and VoiceOver only) (#928)',
                         updatedAt: '2023-04-10T18:22:22.000Z',
+                        versionString: 'V23.04.10',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -280,6 +287,7 @@ export default (
                         gitMessage:
                             'Remove Tab and Shift+Tab from radiogroup tests when navigating out of the start and end of a radio group (reading mode and VoiceOver only) (#928)',
                         updatedAt: '2023-04-10T18:22:22.000Z',
+                        versionString: 'V23.04.10',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -297,6 +305,7 @@ export default (
                         gitMessage:
                             'Create tests for APG design pattern example: Horizontal Multi-Thumb Slider (#511)',
                         updatedAt: '2023-03-20T21:24:41.000Z',
+                        versionString: 'V23.03.20',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -314,6 +323,7 @@ export default (
                         gitMessage:
                             'Create tests for APG design pattern example: Link Example 3 (CSS :before content property on a span element) (#518)',
                         updatedAt: '2023-03-13T22:10:13.000Z',
+                        versionString: 'V23.03.13',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -331,6 +341,7 @@ export default (
                         gitMessage:
                             'Create tests for APG design pattern example: Link Example 2 (img element with alt attribute) (#516)',
                         updatedAt: '2023-03-13T19:51:48.000Z',
+                        versionString: 'V23.03.13',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -348,6 +359,7 @@ export default (
                         gitMessage:
                             'Alert and Radiogroup/activedescendent updates (#865)',
                         updatedAt: '2022-12-08T21:47:42.000Z',
+                        versionString: 'V22.12.08',
                         draftPhaseReachedAt: '2022-07-06T00:00:00.000Z',
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -360,6 +372,7 @@ export default (
                                 id: '7',
                                 metrics: {},
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -381,6 +394,7 @@ export default (
                         gitMessage:
                             'Delete up arrow command for VoiceOver when navigating backwards to a disclosure button (#845)',
                         updatedAt: '2022-10-31T19:29:17.000Z',
+                        versionString: 'V22.10.31',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -398,6 +412,7 @@ export default (
                         gitMessage:
                             'Add down arrow command to the Navigate forwards out of the Breadcrumb navigation landmark task for JAWS (#803)',
                         updatedAt: '2022-08-10T18:44:16.000Z',
+                        versionString: 'V22.08.10',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -415,6 +430,7 @@ export default (
                         gitMessage:
                             'Create updated tests for APG design pattern example: Main landmark (#707)',
                         updatedAt: '2022-08-05T17:46:37.000Z',
+                        versionString: 'V22.08.05',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -432,6 +448,7 @@ export default (
                         gitMessage:
                             'Create updated tests for APG design pattern example: Meter (#692)',
                         updatedAt: '2022-08-05T17:02:59.000Z',
+                        versionString: 'V22.08.05',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -449,6 +466,7 @@ export default (
                         gitMessage:
                             'Create updated tests for APG design pattern example: Switch (#691)',
                         updatedAt: '2022-08-05T16:13:44.000Z',
+                        versionString: 'V22.08.05',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -466,6 +484,7 @@ export default (
                         gitMessage:
                             'Tasks 4, 5 and 6: corrected link name "Navigate backwards from here" (#734)',
                         updatedAt: '2022-05-26T16:14:17.000Z',
+                        versionString: 'V22.05.26',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -483,6 +502,7 @@ export default (
                         gitMessage:
                             'Delete duplicated assertion for operating a not pressed togle button (VoiceOver) (#716)',
                         updatedAt: '2022-05-18T20:51:40.000Z',
+                        versionString: 'V22.05.18',
                         draftPhaseReachedAt: '2022-07-06T00:00:00.000Z',
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -512,6 +532,7 @@ export default (
                                     requiredAssertionsPassedCount: 28
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -661,6 +682,7 @@ export default (
                         gitMessage:
                             'Fix navigation link positions in three test plans: link, command button and toggle button (#709)',
                         updatedAt: '2022-05-04T21:33:31.000Z',
+                        versionString: 'V22.05.04',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -678,6 +700,7 @@ export default (
                         gitMessage:
                             'Fix navigation link positions in three test plans: link, command button and toggle button (#709)',
                         updatedAt: '2022-05-04T21:33:31.000Z',
+                        versionString: 'V22.05.04',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -695,6 +718,7 @@ export default (
                         gitMessage:
                             'Create updated tests for APG design pattern example: Color Viewer Slider (#686)',
                         updatedAt: '2022-04-14T18:06:40.000Z',
+                        versionString: 'V22.04.14',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -711,6 +735,7 @@ export default (
                         gitSha: '6b2cbcbdbd5f6867cd3c9e96362817c353335187',
                         gitMessage: "typo: double word 'the' (#595)",
                         updatedAt: '2022-03-29T16:02:56.000Z',
+                        versionString: 'V22.03.29',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -728,6 +753,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -745,6 +771,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -762,6 +789,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -779,6 +807,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -796,6 +825,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -813,6 +843,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -830,6 +861,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -847,6 +879,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -864,6 +897,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -881,6 +915,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -898,6 +933,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -915,6 +951,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -932,6 +969,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -949,6 +987,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: '2022-07-06T00:00:00.000Z',
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -978,6 +1017,7 @@ export default (
                                     requiredAssertionsPassedCount: 48
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -1243,6 +1283,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -1260,6 +1301,7 @@ export default (
                         gitMessage:
                             'Generate html source script to support aria-at-app (#646)',
                         updatedAt: '2022-03-17T18:34:51.000Z',
+                        versionString: 'V22.03.17',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
@@ -1277,6 +1319,7 @@ export default (
                         gitMessage:
                             'Modify VoiceOver commands for task 7 (#842)',
                         updatedAt: '2022-10-24T21:33:12.000Z',
+                        versionString: 'V22.10.24',
                         draftPhaseReachedAt: null,
                         candidatePhaseReachedAt: '2022-07-06T00:00:00.000Z',
                         recommendedPhaseTargetDate: '2023-01-02T00:00:00.000Z',
@@ -1306,6 +1349,7 @@ export default (
                                     requiredAssertionsPassedCount: 44
                                 },
                                 markedFinalAt: '2022-07-06T00:00:00.000Z',
+                                isFinal: true,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -1454,6 +1498,7 @@ export default (
                                     requiredAssertionsPassedCount: 25
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -1542,6 +1587,7 @@ export default (
                                     requiredAssertionsPassedCount: 25
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -1619,6 +1665,7 @@ export default (
                         gitMessage:
                             'Delete down arrow command for navigating to the beginning of a dialog with JAWS and add the ESC command to exit forms or focus mode (#759)',
                         updatedAt: '2022-06-22T17:56:16.000Z',
+                        versionString: 'V22.06.22',
                         draftPhaseReachedAt: '2022-07-06T00:00:00.000Z',
                         candidatePhaseReachedAt: '2022-07-06T00:00:00.000Z',
                         recommendedPhaseTargetDate: '2023-01-02T00:00:00.000Z',
@@ -1648,6 +1695,7 @@ export default (
                                     requiredAssertionsPassedCount: 14
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -1736,6 +1784,7 @@ export default (
                                     requiredAssertionsPassedCount: 16
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -1824,6 +1873,7 @@ export default (
                                     requiredAssertionsPassedCount: 14
                                 },
                                 markedFinalAt: '2022-07-06T00:00:00.000Z',
+                                isFinal: true,
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -1942,6 +1992,7 @@ export default (
                                     requiredAssertionsPassedCount: 14
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -2030,6 +2081,7 @@ export default (
                                     requiredAssertionsPassedCount: 20
                                 },
                                 markedFinalAt: '2022-07-06T00:00:00.000Z',
+                                isFinal: true,
                                 at: {
                                     id: '2',
                                     name: 'NVDA'
@@ -2178,6 +2230,7 @@ export default (
                                     requiredAssertionsPassedCount: 23
                                 },
                                 markedFinalAt: '2022-07-06T00:00:00.000Z',
+                                isFinal: true,
                                 at: {
                                     id: '3',
                                     name: 'VoiceOver for macOS'
@@ -2311,6 +2364,7 @@ export default (
                                     requiredAssertionsPassedCount: 16
                                 },
                                 markedFinalAt: null,
+                                isFinal: false,
                                 at: {
                                     id: '1',
                                     name: 'JAWS'
@@ -2399,6 +2453,7 @@ export default (
                     gitMessage:
                         'Alert and Radiogroup/activedescendent updates (#865)',
                     updatedAt: '2022-12-08T21:47:42.000Z',
+                    versionString: 'V22.12.08',
                     draftPhaseReachedAt: '2022-07-06T00:00:00.000Z',
                     candidatePhaseReachedAt: null,
                     recommendedPhaseTargetDate: null,
@@ -2411,6 +2466,7 @@ export default (
                             id: '7',
                             metrics: {},
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -2470,6 +2526,7 @@ export default (
                                 requiredAssertionsPassedCount: 44
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -2618,6 +2675,7 @@ export default (
                                 requiredAssertionsPassedCount: 25
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '1',
                                 name: 'JAWS'
@@ -2706,6 +2764,7 @@ export default (
                                 requiredAssertionsPassedCount: 25
                             },
                             markedFinalAt: '2022-07-07T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '2',
                                 name: 'NVDA'
@@ -2822,6 +2881,7 @@ export default (
                                 requiredAssertionsPassedCount: 48
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '2',
                                 name: 'NVDA'
@@ -3126,6 +3186,7 @@ export default (
                                 requiredAssertionsPassedCount: 14
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -3214,6 +3275,7 @@ export default (
                                 requiredAssertionsPassedCount: 16
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '2',
                                 name: 'NVDA'
@@ -3302,6 +3364,7 @@ export default (
                                 requiredAssertionsPassedCount: 14
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '1',
                                 name: 'JAWS'
@@ -3420,6 +3483,7 @@ export default (
                                 requiredAssertionsPassedCount: 14
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -3508,6 +3572,7 @@ export default (
                                 requiredAssertionsPassedCount: 20
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '2',
                                 name: 'NVDA'
@@ -3656,6 +3721,7 @@ export default (
                                 requiredAssertionsPassedCount: 23
                             },
                             markedFinalAt: '2022-07-06T00:00:00.000Z',
+                            isFinal: true,
                             at: {
                                 id: '3',
                                 name: 'VoiceOver for macOS'
@@ -3789,6 +3855,7 @@ export default (
                                 requiredAssertionsPassedCount: 16
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '1',
                                 name: 'JAWS'
@@ -3905,6 +3972,7 @@ export default (
                                 requiredAssertionsPassedCount: 28
                             },
                             markedFinalAt: null,
+                            isFinal: false,
                             at: {
                                 id: '1',
                                 name: 'JAWS'

@@ -18,7 +18,6 @@ import {
 import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
-import { convertDateToString } from '../../utils/formatter';
 import './TestQueueRow.css';
 import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListItem';
 import { isBot } from '../../utils/automation';
@@ -171,14 +170,9 @@ const TestQueueRow = ({
     };
 
     const renderAssignedUserToTestPlan = () => {
-        const dateString = convertDateToString(
-            testPlanVersion.updatedAt,
-            'YY.MM.DD'
-        );
-
         const titleElement = (
             <>
-                {testPlanVersion.title} {'V' + dateString}
+                {testPlanVersion.title} {testPlanVersion.versionString}
                 &nbsp;({runnableTestsLength} Test
                 {runnableTestsLength === 0 || runnableTestsLength > 1
                     ? `s`
@@ -351,19 +345,21 @@ const TestQueueRow = ({
                             }}
                         />
                     )}
-                    {!testPlanReport.conflictsLength && (
-                        <Button
-                            ref={updateTestPlanStatusButtonRef}
-                            variant="secondary"
-                            onClick={async () => {
-                                focusButtonRef.current =
-                                    updateTestPlanStatusButtonRef.current;
-                                await updateReportStatus();
-                            }}
-                        >
-                            Mark as Final
-                        </Button>
-                    )}
+                    {!testPlanReport.conflictsLength &&
+                        testPlanReport.draftTestPlanRuns.length &&
+                        testPlanReport.draftTestPlanRuns[0](
+                            <Button
+                                ref={updateTestPlanStatusButtonRef}
+                                variant="secondary"
+                                onClick={async () => {
+                                    focusButtonRef.current =
+                                        updateTestPlanStatusButtonRef.current;
+                                    await updateReportStatus();
+                                }}
+                            >
+                                Mark as Final
+                            </Button>
+                        )}
                     {botTestPlanRun && (
                         <BotRunTestStatusList
                             testPlanReportId={testPlanReport.id}
