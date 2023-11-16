@@ -7,9 +7,10 @@ import React, {
 } from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
-import nextId from 'react-id-generator';
+import { unescape } from 'lodash';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import { calculateAssertionsCount } from '../common/TestPlanResultsTable/utils';
+import { parseListContent, parseSettingsContent } from './utils.js';
 import {
     userCloseWindow,
     userOpenWindow
@@ -190,16 +191,6 @@ const Fieldset = styled.fieldset`
 
 const NumberedList = styled.ol`
     > li {
-    }
-`;
-
-const BulletList = styled.ul`
-    padding-inline-start: 2.5rem;
-    list-style-type: circle;
-
-    > li {
-        display: list-item;
-        list-style: circle;
     }
 `;
 
@@ -488,62 +479,8 @@ const TestRenderer = ({
         return false;
     };
 
-    const parseRichContent = (instruction = []) => {
-        let content = null;
-        for (let value of instruction) {
-            if (typeof value === 'string') {
-                if (value === '.')
-                    content = (
-                        <>
-                            {content}
-                            {value}
-                        </>
-                    );
-                else
-                    content = content = (
-                        <>
-                            {content} {value}
-                        </>
-                    );
-            } else if ('href' in value) {
-                const { href, description } = value;
-                content = (
-                    <>
-                        {content} <a href={href}>{description}</a>
-                    </>
-                );
-            }
-        }
-        return content;
-    };
-
-    const parseListContent = (instructions = [], commandsContent = null) => {
-        return instructions.map((value, index) => {
-            if (typeof value === 'string')
-                return (
-                    <li key={nextId()}>
-                        {value}
-                        {commandsContent &&
-                            index === instructions.length - 1 && (
-                                <BulletList>{commandsContent}</BulletList>
-                            )}
-                    </li>
-                );
-            else if (Array.isArray(value))
-                return (
-                    <li key={nextId()}>
-                        {parseRichContent(value)}
-                        {commandsContent &&
-                            index === instructions.length - 1 && (
-                                <BulletList>{commandsContent}</BulletList>
-                            )}
-                    </li>
-                );
-        });
-    };
-
     const InstructionsContent = ({ labelIdRef }) => {
-        let allInstructions = [];
+        let allInstructions;
         const isV2 =
             !!renderableContent.target.at?.raw
                 ?.defaultConfigurationInstructionsHTML;
@@ -565,31 +502,11 @@ const TestRenderer = ({
                         ? ` ${supportJson.testPlanStrings.commandListSettingsPreface}`
                         : ''
                 }`
-            ];
-
-            const settings = renderableContent.instructions.mode;
-            Object.keys(settings).forEach(key => {
-                if (key !== 'defaultMode') {
-                    const settingInstructions = settings[key];
-                    const text = `${supportJson.testPlanStrings.settingInstructionsPreface} ${renderableContent.target.at.raw.settings[key].screenText}:`;
-                    const instructions = settingInstructions.slice(1);
-
-                    settingsContent.push(
-                        <div key={key}>
-                            {text}
-                            <NumberedList aria-labelledby={labelIdRef}>
-                                {instructions.map((instruction, index) => {
-                                    return (
-                                        <li key={`SettingInstruction_${index}`}>
-                                            {instruction}
-                                        </li>
-                                    );
-                                })}
-                            </NumberedList>
-                        </div>
-                    );
-                }
-            });
+            ].map(e => unescape(e));
+            settingsContent = parseSettingsContent(
+                renderableContent.instructions.mode,
+                renderableContent.target.at.raw.settings
+            );
         } else {
             allInstructions = [
                 ...pageContent.instructions.instructions.instructions,
@@ -608,7 +525,7 @@ const TestRenderer = ({
                 <NumberedList aria-labelledby={labelIdRef}>
                     {content}
                 </NumberedList>
-                {settingsContent.length && settingsContent}
+                {settingsContent.length ? settingsContent : null}
             </>
         );
     };
@@ -671,8 +588,6 @@ const TestRenderer = ({
                         <SubHeadingText id="instruction-list-heading">
                             Instructions
                         </SubHeadingText>
-                        {/*TODO: Implement instructions format described in #977*/}
-                        {/*TODO: Include settings instructions where applicable*/}
                         <InstructionsContent labelIdRef="instruction-list-heading" />
                         <Button
                             disabled={

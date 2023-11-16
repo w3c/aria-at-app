@@ -43,6 +43,7 @@
     "react-bootstrap": "^2.7.0",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.0.0",
+    "react-html-parser": "^2.0.2",
     "react-id-generator": "^3.0.0",
     "react-responsive": "^9.0.0-beta.10",
     "react-router-bootstrap": "^0.26.2",
