@@ -49,6 +49,14 @@
   become: yes
   register: environment_config
 
+- name: Insert JWT signing key
+  copy:
+    dest: '{{source_dir}}/{{application_user}}/jwt-signing-key.pem'
+    src: files/jwt-signing-key.pem.enc
+    owner: '{{application_user}}'
+  become: yes
+  when: deployment_mode != 'development'
+
 - name: Create database and database user
   command: ./db/scripts/db_init.sh {{environment_config.dest}}
   become: yes

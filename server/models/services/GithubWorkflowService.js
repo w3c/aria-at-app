@@ -24,11 +24,7 @@ const WORKFLOW_REPO = 'bocoup/aria-at-gh-actions-helper';
 let privateKey = null;
 try {
     privateKey = fs.readFileSync(
-        path.join(
-            __dirname,
-            '../../../config',
-            'aria-at-collection-scheduler.2023-09-27.private-key.pem'
-        )
+        path.join(__dirname, '../../../jwt-signing-key.pem')
     );
 } catch (e) {
     // Empty catch block, if the key is null we will hear about it later.
