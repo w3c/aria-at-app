@@ -26,10 +26,6 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                 id
             }
         }
-        browsers {
-            id
-            name
-        }
         testPlans {
             id
             directory

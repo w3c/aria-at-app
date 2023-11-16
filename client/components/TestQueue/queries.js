@@ -33,10 +33,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 name
             }
         }
-        browsers {
-            id
-            name
-        }
         testPlanVersions {
             id
             title
