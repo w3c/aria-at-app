@@ -5,7 +5,7 @@ const AtLoader = () => {
     let activePromise;
 
     return {
-        getAll: async () => {
+        getAll: async ({ transaction } = {}) => {
             if (ats) {
                 return ats;
             }
@@ -13,7 +13,16 @@ const AtLoader = () => {
             if (activePromise) {
                 return activePromise;
             }
-            activePromise = getAts();
+            activePromise = getAts(
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                { transaction }
+            );
 
             ats = await activePromise;
 

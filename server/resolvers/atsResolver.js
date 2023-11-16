@@ -1,5 +1,5 @@
 const atsResolver = async (_, __, context) => {
-    return context.atLoader.getAll();
+    return context.atLoader.getAll({ transaction: context.transaction });
 };
 
 module.exports = atsResolver;

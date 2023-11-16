@@ -7,16 +7,26 @@ const {
 const findOrCreateAtVersionResolver = async (
     { parentContext: { id: atId } },
     { input: { name, releasedAt } },
-    { user }
+    { user, transaction }
 ) => {
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    let version = await getAtVersionByQuery({ atId, name });
+    let version = await getAtVersionByQuery(
+        { atId, name },
+        undefined,
+        undefined,
+        { transaction }
+    );
 
     if (!version) {
-        version = await createAtVersion({ atId, name, releasedAt });
+        version = await createAtVersion(
+            { atId, name, releasedAt },
+            undefined,
+            undefined,
+            { transaction }
+        );
     }
 
     return version;
