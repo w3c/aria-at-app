@@ -53,11 +53,9 @@ Default use:
 const client = new Client();
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-
 // TODO: Revert before pushing to main
 // const ariaAtDefaultBranch = 'master';
 const ariaAtDefaultBranch = 'build-v2-test-format-with-new-csvs';
-
 const gitCloneDirectory = path.resolve(__dirname, 'tmp');
 const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
