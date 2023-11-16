@@ -21,7 +21,12 @@ const NoOutputCheckbox = styled(Form.Check)`
     }
 `;
 
-const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
+const OutputTextArea = ({
+    commandIndex,
+    atOutput,
+    isSubmitted,
+    readOnly = false
+}) => {
     const [noOutput, setNoOutput] = useState(
         atOutput.value === noOutputTextAreaValue
     );
@@ -78,6 +83,7 @@ const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
                 value={atOutput.value}
                 onChange={e => atOutput.change(e.target.value)}
                 disabled={noOutput}
+                readOnly={readOnly}
             />
         </OutputTextAreaWrapper>
     );
@@ -100,6 +106,7 @@ OutputTextArea.propTypes = {
         change: PropTypes.func.isRequired,
         focus: PropTypes.bool.isRequired
     }).isRequired,
+    readOnly: PropTypes.bool,
     isSubmitted: PropTypes.bool.isRequired
 };
 

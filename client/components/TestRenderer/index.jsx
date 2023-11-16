@@ -661,6 +661,7 @@ const TestRenderer = ({
                                             commandIndex={commandIndex}
                                             atOutput={atOutput}
                                             isSubmitted={isSubmitted}
+                                            readOnly={isReviewingBot}
                                         />
                                         <h4
                                             id={`command-${commandIndex}-assertions-heading`}
