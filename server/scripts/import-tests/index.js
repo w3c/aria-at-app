@@ -312,18 +312,22 @@ const updateJsons = async () => {
         JSON.stringify(commands, null, 4)
     );
 
-    // Commands path info for v2 format
-    const commandsV2Path = pathToFileURL(
-        path.join(testsDirectory, 'commands.json')
-    );
-    const commandsV2PathString = fse.readFileSync(commandsV2Path, 'utf8');
-    const commandsV2Parsed = JSON.parse(commandsV2PathString);
+    try {
+        // Commands path info for v2 format
+        const commandsV2Path = pathToFileURL(
+            path.join(testsDirectory, 'commands.json')
+        );
+        const commandsV2PathString = fse.readFileSync(commandsV2Path, 'utf8');
+        const commandsV2Parsed = JSON.parse(commandsV2PathString);
 
-    // Write commands for v2 format
-    await fse.writeFile(
-        path.resolve(__dirname, '../../resources/commandsV2.json'),
-        JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
-    );
+        // Write commands for v2 format
+        await fse.writeFile(
+            path.resolve(__dirname, '../../resources/commandsV2.json'),
+            JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
+        );
+    } catch (error) {
+        console.error("commands.json for v2 test format doesn't exist");
+    }
 
     // Path info for support.json
     const supportPath = pathToFileURL(
