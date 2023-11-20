@@ -117,7 +117,7 @@ const TestReview = () => {
                     <Link
                         to={`/data-management/${testPlanVersion.testPlan.directory}`}
                     >
-                        {`View all versions of this test plan.`}
+                        (View all versions of this test plan)
                     </Link>
                 </li>
                 <li>
@@ -127,7 +127,7 @@ const TestReview = () => {
                             {`R&D completed on ${convertDateToString(
                                 testPlanVersion.updatedAt,
                                 'MMM D, YYYY'
-                            )}`}
+                            )}.`}
                         </li>
                         {!testPlanVersion.draftPhaseReachedAt ? null : (
                             <li>
@@ -155,7 +155,7 @@ const TestReview = () => {
                                     `${convertDateToString(
                                         testPlanVersion.recommendedPhaseReachedAt,
                                         'MMM D, YYYY'
-                                    )}`}
+                                    )}.`}
                             </li>
                         )}
                         {!testPlanVersion.deprecatedAt ? null : (
@@ -164,7 +164,7 @@ const TestReview = () => {
                                     `${convertDateToString(
                                         testPlanVersion.deprecatedAt,
                                         'MMM D, YYYY'
-                                    )}`}
+                                    )}.`}
                             </li>
                         )}
                     </Ul>
