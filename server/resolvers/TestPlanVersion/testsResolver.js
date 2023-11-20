@@ -31,7 +31,6 @@ const testsResolver = parentRecord => {
                 commands: scenario.commandIds.map(commandId => {
                     if (isV2) {
                         const screenText =
-                            at.settings &&
                             at?.settings[scenario.settings]?.screenText;
                         const commandKVs = getCommandV2(commandId);
                         if (commandKVs.length) {
