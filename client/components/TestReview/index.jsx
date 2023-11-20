@@ -2,13 +2,22 @@ import React, { Fragment, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { TEST_REVIEW_PAGE_QUERY } from './queries';
 import { Container } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import PageStatus from '../common/PageStatus';
 import InstructionsRenderer from '../CandidateReview/CandidateTestPlanRun/InstructionsRenderer';
 import FilterButtons from '../common/FilterButtons';
 import { uniq as unique } from 'lodash';
 import styled from '@emotion/styled';
+import { derivePhaseName } from '../../utils/aria';
+import { convertDateToString } from '../../utils/formatter';
+
+const Ul = styled.ul`
+    li {
+        list-style-type: disc;
+        margin-left: 20px;
+    }
+`;
 
 const FilterButtonContainer = styled.div`
     padding: 0 0.75rem;
@@ -84,7 +93,11 @@ const TestReview = () => {
             <Helmet>
                 <title>{`Tests for ${testPlanVersion.title} ${testPlanVersion.versionString} | ARIA-AT`}</title>
             </Helmet>
-            <h1>{`Tests for ${testPlanVersion.title} ${testPlanVersion.versionString}`}</h1>
+            <h1>
+                {`Tests for ${testPlanVersion.title} ` +
+                    `${testPlanVersion.versionString}` +
+                    `${testPlanVersion.deprecatedAt ? ' (Deprecated)' : ''}`}
+            </h1>
             <h2>Introduction</h2>
             <p>
                 {`This page contains the full content of all ${testCount} ` +
@@ -92,15 +105,76 @@ const TestReview = () => {
                     `${testPlanVersion.title} as of version ` +
                     `${testPlanVersion.versionString}.`}
             </p>
+            <h2>Metadata</h2>
+            <ul>
+                <li>
+                    <strong>Phase:&nbsp;</strong>
+                    {derivePhaseName(testPlanVersion.phase)}
+                </li>
+                <li>
+                    <strong>Version:&nbsp;</strong>
+                    {`${testPlanVersion.versionString} `}
+                    <Link
+                        to={`/data-management/${testPlanVersion.testPlan.directory}`}
+                    >
+                        {`View all versions of this test plan.`}
+                    </Link>
+                </li>
+                <li>
+                    <strong>Version History:&nbsp;</strong>
+                    <Ul>
+                        <li>
+                            {`R&D completed on ${convertDateToString(
+                                testPlanVersion.updatedAt,
+                                'MMM D, YYYY'
+                            )}`}
+                        </li>
+                        {!testPlanVersion.draftPhaseReachedAt ? null : (
+                            <li>
+                                {`ARIA-AT draft review process started on ` +
+                                    `${convertDateToString(
+                                        testPlanVersion.draftPhaseReachedAt,
+                                        'MMM D, YYYY'
+                                    )} ` +
+                                    `for this version.`}
+                            </li>
+                        )}
+                        {!testPlanVersion.candidatePhaseReachedAt ? null : (
+                            <li>
+                                {`ARIA-AT candidate review process started on ` +
+                                    `${convertDateToString(
+                                        testPlanVersion.candidatePhaseReachedAt,
+                                        'MMM D, YYYY'
+                                    )} ` +
+                                    `for this version.`}
+                            </li>
+                        )}
+                        {!testPlanVersion.recommendedPhaseReachedAt ? null : (
+                            <li>
+                                {`Version reached ARIA-AT recommended status on ` +
+                                    `${convertDateToString(
+                                        testPlanVersion.recommendedPhaseReachedAt,
+                                        'MMM D, YYYY'
+                                    )}`}
+                            </li>
+                        )}
+                        {!testPlanVersion.deprecatedAt ? null : (
+                            <li>
+                                {`Version deprecated on ` +
+                                    `${convertDateToString(
+                                        testPlanVersion.deprecatedAt,
+                                        'MMM D, YYYY'
+                                    )}`}
+                            </li>
+                        )}
+                    </Ul>
+                </li>
+                <li>
+                    <strong>Commit:&nbsp;</strong>
+                    {testPlanVersion.gitMessage}
+                </li>
+            </ul>
             <h2>List of Tests</h2>
-            <p>
-                <strong>Version:&nbsp;</strong>
-                {testPlanVersion.versionString}
-            </p>
-            <p>
-                <strong>Commit:&nbsp;</strong>
-                {testPlanVersion.gitMessage}
-            </p>
             <FilterButtonContainer>
                 <FilterButtons
                     filterLabel="Filter tests by AT"
@@ -136,33 +210,35 @@ const TestReview = () => {
                     <Fragment key={test.id}>
                         {isFirst ? null : <hr />}
                         <h3>{`Test ${test.rowNumber}: ${test.title}`}</h3>
-                        <p>
-                            <strong>Mode:&nbsp;</strong>
-                            {atMode}
-                        </p>
-                        <p>
-                            <strong>Assistive technologies:&nbsp;</strong>
-                            {test.ats.map(at => at.name).join(', ')}
-                        </p>
-                        <p>
-                            <strong>Relevant specifications:&nbsp;</strong>
-                            {specifications.map(([title, link], index) => {
-                                const isLast =
-                                    index === specifications.length - 1;
-                                return (
-                                    <Fragment key={title}>
-                                        <a
-                                            href={link}
-                                            rel="noreferrer"
-                                            target="_blank"
-                                        >
-                                            {title}
-                                        </a>
-                                        {isLast ? '' : ', '}
-                                    </Fragment>
-                                );
-                            })}
-                        </p>
+                        <ul>
+                            <li>
+                                <strong>Mode:&nbsp;</strong>
+                                {atMode}
+                            </li>
+                            <li>
+                                <strong>Assistive technologies:&nbsp;</strong>
+                                {test.ats.map(at => at.name).join(', ')}
+                            </li>
+                            <li>
+                                <strong>Relevant specifications:&nbsp;</strong>
+                                {specifications.map(([title, link], index) => {
+                                    const isLast =
+                                        index === specifications.length - 1;
+                                    return (
+                                        <Fragment key={title}>
+                                            <a
+                                                href={link}
+                                                rel="noreferrer"
+                                                target="_blank"
+                                            >
+                                                {title}
+                                            </a>
+                                            {isLast ? '' : ', '}
+                                        </Fragment>
+                                    );
+                                })}
+                            </li>
+                        </ul>
                         {filteredAts.map(at => {
                             const renderableContent =
                                 test.renderableContents.find(

@@ -9,6 +9,15 @@ export const TEST_REVIEW_PAGE_QUERY = gql`
             gitSha
             gitMessage
             testPageUrl
+            phase
+            updatedAt
+            draftPhaseReachedAt
+            candidatePhaseReachedAt
+            recommendedPhaseReachedAt
+            deprecatedAt
+            testPlan {
+                directory
+            }
             tests {
                 id
                 rowNumber
