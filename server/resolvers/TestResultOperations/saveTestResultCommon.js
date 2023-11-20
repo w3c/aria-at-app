@@ -131,12 +131,8 @@ const assertTestResultIsValid = newTestResult => {
 
     const checkAssertionResult = assertionResult => {
         if (
-            !(
-                (assertionResult.passed === true &&
-                    !assertionResult.failedReason) ||
-                (assertionResult.passed === false &&
-                    !!assertionResult.failedReason)
-            )
+            assertionResult.passed === null ||
+            assertionResult.passed === undefined
         ) {
             failed = true;
         }
