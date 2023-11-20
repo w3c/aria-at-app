@@ -29,13 +29,18 @@ const BasicModal = ({
     handleAction = null,
     handleHide = null,
     staticBackdrop = false,
-    useOnHide = false
+    useOnHide = false,
+    initialFocusRef = null
 }) => {
     const headerRef = useRef();
 
     useEffect(() => {
         if (!show) return;
-        headerRef.current.focus();
+        if (initialFocusRef?.current) {
+            initialFocusRef.current.focus();
+        } else {
+            headerRef.current.focus();
+        }
     }, [show]);
 
     const id = useMemo(() => {
@@ -111,7 +116,10 @@ BasicModal.propTypes = {
     handleAction: PropTypes.func,
     handleHide: PropTypes.func,
     staticBackdrop: PropTypes.bool,
-    useOnHide: PropTypes.bool
+    useOnHide: PropTypes.bool,
+    initialFocusRef: PropTypes.shape({
+        current: PropTypes.any
+    })
 };
 
 export default BasicModal;
