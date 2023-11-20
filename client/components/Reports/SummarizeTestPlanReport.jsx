@@ -24,7 +24,7 @@ const ResultsContainer = styled.div`
     border-left: 1px solid #dee2e6;
     border-right: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
-    margin-bottom: 2em;
+    margin-bottom: 0.5em;
 `;
 
 const getTestersRunHistory = (
@@ -249,6 +249,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                                 key={`TestPlanResultsTable__${testResult.id}`}
                                 test={{ ...test, at }}
                                 testResult={testResult}
+                                isReportsPage={true}
                             />
                         </ResultsContainer>
 

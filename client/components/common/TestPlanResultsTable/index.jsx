@@ -14,9 +14,16 @@ const renderAssertionRow = (assertionResult, priorityString) => {
     );
 };
 
-const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
+const TestPlanResultsTable = ({
+    test,
+    testResult,
+    tableClassName = '',
+    isReportsPage = false
+}) => {
     return (
         <>
+            {isReportsPage ? <h3>Results for each command</h3> : null}
+
             {testResult.scenarioResults.map((scenarioResult, index) => {
                 const passedAssertions = scenarioResult.assertionResults.filter(
                     assertionResult => assertionResult.passed
@@ -56,11 +63,19 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
 
                 return (
                     <React.Fragment key={scenarioResult.id}>
-                        <h3>
-                            {commandsString}&nbsp;Results:&nbsp;
-                            {passedAssertions.length} passed,&nbsp;
-                            {failedAssertions.length} failed
-                        </h3>
+                        {isReportsPage ? (
+                            <h4>
+                                {commandsString}&nbsp;Results:&nbsp;
+                                {passedAssertions.length} passed,&nbsp;
+                                {failedAssertions.length} failed
+                            </h4>
+                        ) : (
+                            <h3>
+                                {commandsString}&nbsp;Results:&nbsp;
+                                {passedAssertions.length} passed,&nbsp;
+                                {failedAssertions.length} failed
+                            </h3>
+                        )}
                         <p className="test-plan-results-response-p">
                             {test.at?.name} Response:
                         </p>
@@ -135,7 +150,8 @@ TestPlanResultsTable.propTypes = {
     testResult: PropTypes.shape({
         scenarioResults: PropTypes.array.isRequired
     }),
-    tableClassName: PropTypes.string
+    tableClassName: PropTypes.string,
+    isReportsPage: PropTypes.bool
 };
 
 export default TestPlanResultsTable;
