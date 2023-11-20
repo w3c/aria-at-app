@@ -193,10 +193,7 @@ const InstructionsRenderer = ({ test, testPageUrl, at, headingLevel = 2 }) => {
 
     const assertionsContent = parseListContent(assertions);
 
-    const HeadingUnstyled = `h${headingLevel}`;
-    const Heading = styled(HeadingUnstyled)`
-        margin: 0 0 0.5em 0;
-    `;
+    const Heading = `h${headingLevel}`;
 
     return (
         <>

@@ -419,7 +419,7 @@ const graphqlSchema = gql`
         renderedUrl(atId: ID): String
         """
         For more information, see the renderedUrl field. Returns an array
-        containing all renderedUrl objects along with the associated AT.
+        containing all renderedUrls along with the associated AT.
         """
         renderedUrls: [RenderedUrlByAt]!
         """

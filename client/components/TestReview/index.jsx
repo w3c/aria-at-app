@@ -36,7 +36,7 @@ const TestReview = () => {
         );
     }
 
-    if (error || (data && !data.testPlanVersion)) {
+    if (error || !data?.testPlanVersion) {
         const errorMessage =
             error?.message ??
             `Failed to find a test plan version with ID ${testPlanVersionId}`;
@@ -49,8 +49,6 @@ const TestReview = () => {
             />
         );
     }
-
-    if (!data) return null;
 
     const testPlanVersion = data.testPlanVersion;
     const testCount = testPlanVersion.tests.length;
