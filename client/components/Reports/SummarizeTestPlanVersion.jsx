@@ -55,11 +55,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             <ul>
                 <li>
                     Generated from&nbsp;
-                    <a
-                        href={`/test-review/${testPlanVersion.gitSha}/${testPlanVersion.testPlan.directory}`}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
+                    <a href={`/test-review/${testPlanVersion.id}`}>
                         {testPlanVersion.versionString} of{' '}
                         {testPlanVersion.title} Test Plan
                     </a>

@@ -553,7 +553,7 @@ const DataManagementRow = ({
                         <VersionString
                             role="listitem"
                             iconColor="#2BA51C"
-                            linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                            linkHref={`/test-review/${latestVersion.id}`}
                         >
                             {latestVersion.versionString}
                         </VersionString>
@@ -682,7 +682,7 @@ const DataManagementRow = ({
                                 role="listitem"
                                 iconColor="#2BA51C"
                                 linkRef={draftVersionStringRef}
-                                linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                                linkHref={`/test-review/${latestVersion.id}`}
                             >
                                 {latestVersion.versionString}
                             </VersionString>
@@ -889,7 +889,7 @@ const DataManagementRow = ({
                                 role="listitem"
                                 iconColor="#2BA51C"
                                 linkRef={candidateVersionStringRef}
-                                linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                                linkHref={`/test-review/${latestVersion.id}`}
                             >
                                 {latestVersion.versionString}
                             </VersionString>
@@ -1004,7 +1004,7 @@ const DataManagementRow = ({
                             role="listitem"
                             iconColor="#2BA51C"
                             linkRef={recommendedVersionStringRef}
-                            linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                            linkHref={`/test-review/${latestVersion.id}`}
                         >
                             {latestVersion.versionString}
                         </VersionString>

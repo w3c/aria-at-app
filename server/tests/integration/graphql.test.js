@@ -356,7 +356,21 @@ describe('graphql', () => {
                             __typename
                             id
                             renderableContent
+                            renderableContents {
+                                __typename
+                                at {
+                                    id
+                                }
+                                renderableContent
+                            }
                             renderedUrl
+                            renderedUrls {
+                                __typename
+                                at {
+                                    id
+                                }
+                                renderedUrl
+                            }
                         }
                         runnableTestsLength
                         draftTestPlanRuns {

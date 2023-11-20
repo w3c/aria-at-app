@@ -409,6 +409,7 @@ const TestPlanVersionsPage = () => {
                                                 testPlanVersion
                                             )}
                                             autoWidth={false}
+                                            linkHref={`/test-review/${testPlanVersion.id}`}
                                         >
                                             {testPlanVersion.versionString}
                                         </VersionString>
@@ -674,9 +675,7 @@ const TestPlanVersionsPage = () => {
                                         </li>
                                         <li>
                                             <a
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                href={`/test-review/${testPlanVersion.gitSha}/${testPlanDirectory}`}
+                                                href={`/test-review/${testPlanVersion.id}`}
                                             >
                                                 <FontAwesomeIcon
                                                     icon={
