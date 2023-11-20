@@ -108,6 +108,7 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
                     phase
                     gitSha
                     gitMessage
+                    versionString
                     updatedAt
                     draftPhaseReachedAt
                     candidatePhaseReachedAt
@@ -153,6 +154,7 @@ export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE = gql`
                     phase
                     gitSha
                     gitMessage
+                    versionString
                     updatedAt
                     draftPhaseReachedAt
                     candidatePhaseReachedAt
