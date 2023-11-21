@@ -419,57 +419,114 @@ const getTests = ({
         renderedUrlsById[collected.info.testId].push(renderedUrl);
     });
 
-    Object.entries(allCollectedById).forEach(([rawTestId, allCollected]) => {
-        const renderedUrls = renderedUrlsById[rawTestId];
+    /**
+     * Creates tests to be included in [TestPlanVersion.tests]
+     * @param {object} allCollected Generated tests coming from aria-at through test-{number}-{at}-collected.json files.
+     * @param {string|number} rawTestId Numeric id for tests in v1 format, string id for tests in v2 format. Comes directly from `tests.csv` files.
+     * @param {string[]} renderedUrls Paths to .collected.json files.
+     * @param {boolean} isV2 Boolean check to see if the testFormatVersion of the collected tests are for v2, otherwise for v1.
+     */
+    const createTestsForFormat = ({
+        allCollected,
+        rawTestId,
+        renderedUrls,
+        // There MAY be a need to handle additional versions. This may be changed to handle that
+        // when that time comes
+        isV2
+    }) => {
+        const getRenderedUrl = index =>
+            getAppUrl(renderedUrls[index], {
+                gitSha,
+                directoryPath: builtDirectoryPath
+            });
 
-        if (
-            !deepPickEqual(allCollected, {
-                excludeKeys: ['at', 'mode', 'commands']
-            })
-        ) {
-            throw new Error(
-                'Difference found in a part of a .collected.json file which ' +
-                    'should be equivalent'
+        const getAssertions = (data, testId) => {
+            return data.assertions.map((assertion, index) => {
+                let priority = '';
+                if (assertion.priority === 1) priority = 'MUST';
+                if (assertion.priority === 2) priority = 'SHOULD';
+                // Available for v2
+                if (assertion.priority === 3) priority = 'MAY';
+
+                let result = {
+                    id: createAssertionId(testId, index),
+                    priority
+                };
+
+                // Available for v1
+                if (assertion.expectation) result.text = assertion.expectation;
+
+                // Available for v2
+                if (assertion.assertionStatement) {
+                    const tokenizedAssertionStatement =
+                        assertion?.tokenizedAssertionStatements[
+                            data.target.at.key
+                        ];
+
+                    result.assertionStatement =
+                        tokenizedAssertionStatement ||
+                        assertion.assertionStatement;
+                    result.assertionPhrase = assertion.assertionPhrase;
+                }
+
+                return result;
+            });
+        };
+
+        // Using the v1 test format, https://github.com/w3c/aria-at/wiki/Test-Format-V1-Definition
+        if (!isV2) {
+            const common = allCollected[0];
+            const testId = createTestId(testPlanVersionId, common.info.testId);
+            const atIds = allCollected.map(
+                collected =>
+                    ats.find(at => at.name === collected.target.at.name).id
             );
+
+            tests.push({
+                id: testId,
+                rowNumber: rawTestId,
+                title: common.info.title,
+                atIds,
+                atMode: common.target.mode.toUpperCase(),
+                renderableContent: Object.fromEntries(
+                    allCollected.map((collected, index) => {
+                        return [atIds[index], collected];
+                    })
+                ),
+                renderedUrls: Object.fromEntries(
+                    atIds.map((atId, index) => {
+                        return [atId, getRenderedUrl(index)];
+                    })
+                ),
+                scenarios: (() => {
+                    const scenarios = [];
+                    allCollected.forEach(collected => {
+                        collected.commands.forEach(command => {
+                            scenarios.push({
+                                id: createScenarioId(testId, scenarios.length),
+                                atId: ats.find(
+                                    at => at.name === collected.target.at.name
+                                ).id,
+                                commandIds: command.keypresses.map(
+                                    ({ id }) => id
+                                )
+                            });
+                        });
+                    });
+                    return scenarios;
+                })(),
+                assertions: getAssertions(common, testId),
+                viewers: []
+            });
         }
 
+        // Using the v2 test format, https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2
         if (isV2) {
             for (const [collectedIndex, collected] of allCollected.entries()) {
                 const testId = createTestId(
                     testPlanVersionId,
                     `${collected.target.at.key}:${collected.info.testId}`
                 );
-
-                // Define renderedUrl
-                const renderedUrl = getAppUrl(renderedUrls[collectedIndex], {
-                    gitSha,
-                    directoryPath: builtDirectoryPath
-                });
-
-                // Define commands
-                const commands = collected.commands.map(command => ({
-                    ...command,
-                    settings: command.settings
-                }));
-
-                // Define scenarios
-                const scenarios = (() => {
-                    const scenarios = [];
-                    collected.commands.forEach(command => {
-                        scenarios.push({
-                            id: createScenarioId(
-                                testId,
-                                `${scenarios.length}:${command.settings}`
-                            ),
-                            atId: ats.find(
-                                at => at.name === collected.target.at.name
-                            ).id,
-                            commandIds: command.keypresses.map(({ id }) => id),
-                            settings: command.settings
-                        });
-                    });
-                    return scenarios;
-                })();
 
                 let test = {
                     id: testId,
@@ -491,11 +548,8 @@ const getTests = ({
                             referencePage: collected.target.referencePage,
                             setupScript: collected.target.setupScript
                         },
-                        instructions: {
-                            instructions: collected.instructions.instructions,
-                            mode: collected.instructions.mode
-                        },
-                        commands,
+                        instructions: collected.instructions,
+                        commands: collected.commands,
                         assertions: collected.assertions.map(
                             ({
                                 assertionId,
@@ -522,90 +576,50 @@ const getTests = ({
                             }
                         )
                     },
-                    renderedUrl,
-                    scenarios,
-                    assertions: collected.assertions.map((assertion, index) => {
-                        let priority = '';
-                        if (assertion.priority === 1) priority = 'MUST';
-                        if (assertion.priority === 2) priority = 'SHOULD';
-                        if (assertion.priority === 3) priority = 'MAY';
-
-                        const tokenizedAssertionStatement =
-                            assertion.tokenizedAssertionStatements[
-                                collected.target.at.key
-                            ];
-
-                        return {
-                            id: createAssertionId(testId, index),
-                            priority,
-                            assertionStatement:
-                                tokenizedAssertionStatement ||
-                                assertion.assertionStatement,
-                            assertionPhrase: assertion.assertionPhrase
-                        };
-                    }),
-                    viewers: []
-                };
-
-                tests.push(test);
-            }
-        } else {
-            const common = allCollected[0];
-
-            const testId = createTestId(testPlanVersionId, common.info.testId);
-
-            const atIds = allCollected.map(
-                collected =>
-                    ats.find(at => at.name === collected.target.at.name).id
-            );
-
-            tests.push({
-                id: testId,
-                rowNumber: rawTestId,
-                title: common.info.title,
-                atIds,
-                atMode: common.target.mode.toUpperCase(),
-                renderableContent: Object.fromEntries(
-                    allCollected.map((collected, index) => {
-                        return [atIds[index], collected];
-                    })
-                ),
-                renderedUrls: Object.fromEntries(
-                    atIds.map((atId, index) => {
-                        return [
-                            atId,
-                            getAppUrl(renderedUrls[index], {
-                                gitSha,
-                                directoryPath: builtDirectoryPath
-                            })
-                        ];
-                    })
-                ),
-                scenarios: (() => {
-                    const scenarios = [];
-                    allCollected.forEach(collected => {
+                    renderedUrl: getRenderedUrl(collectedIndex),
+                    scenarios: (() => {
+                        const scenarios = [];
                         collected.commands.forEach(command => {
                             scenarios.push({
-                                id: createScenarioId(testId, scenarios.length),
+                                id: createScenarioId(
+                                    testId,
+                                    `${scenarios.length}:${command.settings}`
+                                ),
                                 atId: ats.find(
                                     at => at.name === collected.target.at.name
                                 ).id,
                                 commandIds: command.keypresses.map(
                                     ({ id }) => id
-                                )
+                                ),
+                                settings: command.settings
                             });
                         });
-                    });
-                    return scenarios;
-                })(),
-                assertions: common.assertions.map((assertion, index) => ({
-                    id: createAssertionId(testId, index),
-                    priority: assertion.priority === 1 ? 'MUST' : 'SHOULD',
-                    text: assertion.expectation
-                })),
-                viewers: []
-            });
+                        return scenarios;
+                    })(),
+                    assertions: getAssertions(collected, testId),
+                    viewers: []
+                };
+
+                tests.push(test);
+            }
         }
+    };
+
+    Object.entries(allCollectedById).forEach(([rawTestId, allCollected]) => {
+        const renderedUrls = renderedUrlsById[rawTestId];
+
+        if (
+            !deepPickEqual(allCollected, {
+                excludeKeys: ['at', 'mode', 'commands']
+            })
+        ) {
+            throw new Error(
+                'Difference found in a part of a .collected.json file which ' +
+                    'should be equivalent'
+            );
+        }
+
+        createTestsForFormat({ allCollected, rawTestId, renderedUrls, isV2 });
     });
 
     return tests;
