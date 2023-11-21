@@ -135,7 +135,7 @@ button.test-navigator-toggle:focus {
     left: 4px;
 }
 
-.test-name-wrapper.skipped .progress-indicator {
+.test-name-wrapper .progress-indicator {
     background: White;
     border: 2px dashed black;
 }

@@ -56,36 +56,6 @@
     margin-top: 1em;
 }
 
-.skipped-tests-heading {
-    background: #fefbea;
-    padding: 1.75em 1.75em 1em 1.75em;
-    border: 1px solid #eddfbe;
-    border-bottom: 0;
-    margin-top: 2em;
-}
-
-.skipped-tests {
-    columns: 2;
-    line-height: 2;
-    border: 1px solid #eddfbe;
-    padding: 1.5em 3em;
-    background: #fdfcf6;
-}
-
-.skipped-tests li {
-    margin-bottom: 0.5em;
-    border-bottom: 1px solid #eddfbe;
-    padding-bottom: 0.5em;
-    margin-right: 3em;
-    -webkit-column-break-inside: avoid;
-    page-break-inside: avoid;
-    break-inside: avoid;
-}
-
-.skipped-tests li:last-child {
-    border-bottom: none;
-}
-
 .test-result-heading {
     display: flex;
     justify-content: space-between;
@@ -100,7 +70,6 @@
     margin-bottom: 0;
 }
 
-.skipped-tests-heading h2,
 .test-result-heading h2 {
     margin-top: 0;
 }
