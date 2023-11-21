@@ -563,9 +563,9 @@ const TestRenderer = ({
                                     header,
                                     atOutput,
                                     assertions,
-                                    unexpectedBehaviors
+                                    unexpectedBehaviors,
+                                    assertionsHeader
                                 } = value;
-
                                 return (
                                     <Fragment
                                         key={`AtOutputKey_${commandIndex}`}
@@ -578,14 +578,10 @@ const TestRenderer = ({
                                             atOutput={atOutput}
                                             isSubmitted={isSubmitted}
                                         />
-                                        <h4
-                                            id={`command-${commandIndex}-assertions-heading`}
-                                        >
-                                            Assertions {header}
-                                        </h4>
                                         <AssertionsFieldset
                                             assertions={assertions}
                                             commandIndex={commandIndex}
+                                            assertionsHeader={assertionsHeader}
                                         />
                                         {/*Unexpected Behaviors*/}
                                         <Fieldset

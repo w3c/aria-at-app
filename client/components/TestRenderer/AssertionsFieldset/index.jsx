@@ -1,16 +1,31 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Fieldset } from '..';
 import styled from '@emotion/styled';
+import supportJson from '../../../resources/support.json';
 
 const Label = styled.label`
     display: block;
+
+    input {
+        margin-right: 0.25rem;
+    }
 `;
 
-const AssertionsFieldset = ({ assertions, commandIndex }) => {
+const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
+    // Handle case where build process didn't include assertionResponseQuestion
+    const normalizedHeader = useMemo(() => {
+        return assertionsHeader?.descriptionHeader?.replace(
+            'undefined',
+            supportJson.testPlanStrings.assertionResponseQuestion
+        );
+    }, [assertionsHeader]);
+
     return (
         <Fieldset>
-            <legend>Assertions</legend>
+            <legend id={`command-${commandIndex}-assertions-heading`}>
+                {normalizedHeader}
+            </legend>
             {assertions.map((assertion, assertionIndex) => {
                 const { description, passed, click } = assertion;
 
@@ -33,7 +48,8 @@ const AssertionsFieldset = ({ assertions, commandIndex }) => {
 
 AssertionsFieldset.propTypes = {
     assertions: PropTypes.array.isRequired,
-    commandIndex: PropTypes.number.isRequired
+    commandIndex: PropTypes.number.isRequired,
+    assertionsHeader: PropTypes.string.isRequired
 };
 
 export default AssertionsFieldset;
