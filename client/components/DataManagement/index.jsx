@@ -30,7 +30,6 @@ const DataManagement = () => {
 
     const [pageReady, setPageReady] = useState(false);
     const [ats, setAts] = useState([]);
-    const [browsers, setBrowsers] = useState([]);
     const [testPlans, setTestPlans] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [filter, setFilter] = useState(
@@ -42,14 +41,8 @@ const DataManagement = () => {
 
     useEffect(() => {
         if (data) {
-            const {
-                ats = [],
-                browsers = [],
-                testPlanVersions = [],
-                testPlans = []
-            } = data;
+            const { ats = [], testPlanVersions = [], testPlans = [] } = data;
             setAts(ats);
-            setBrowsers(browsers);
             setTestPlans(testPlans);
             setTestPlanVersions(testPlanVersions);
             setPageReady(true);
@@ -131,7 +124,6 @@ const DataManagement = () => {
 
                     <ManageTestQueue
                         ats={ats}
-                        browsers={browsers}
                         testPlanVersions={testPlanVersions}
                         triggerUpdate={refetch}
                     />
