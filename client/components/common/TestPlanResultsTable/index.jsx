@@ -18,12 +18,14 @@ const TestPlanResultsTable = ({
     test,
     testResult,
     tableClassName = '',
-    isReportsPage = false
+    optionalHeader = null,
+    commandHeadingLevel = 3
 }) => {
+    const Heading = `h${commandHeadingLevel}`;
+
     return (
         <>
-            {isReportsPage ? <h3>Results for each command</h3> : null}
-
+            {optionalHeader}
             {testResult.scenarioResults.map((scenarioResult, index) => {
                 const passedAssertions = scenarioResult.assertionResults.filter(
                     assertionResult => assertionResult.passed
@@ -63,19 +65,11 @@ const TestPlanResultsTable = ({
 
                 return (
                     <React.Fragment key={scenarioResult.id}>
-                        {isReportsPage ? (
-                            <h4>
-                                {commandsString}&nbsp;Results:&nbsp;
-                                {passedAssertions.length} passed,&nbsp;
-                                {failedAssertions.length} failed
-                            </h4>
-                        ) : (
-                            <h3>
-                                {commandsString}&nbsp;Results:&nbsp;
-                                {passedAssertions.length} passed,&nbsp;
-                                {failedAssertions.length} failed
-                            </h3>
-                        )}
+                        <Heading>
+                            {commandsString}&nbsp;Results:&nbsp;
+                            {passedAssertions.length} passed,&nbsp;
+                            {failedAssertions.length} failed
+                        </Heading>
                         <p className="test-plan-results-response-p">
                             {test.at?.name} Response:
                         </p>
@@ -151,7 +145,8 @@ TestPlanResultsTable.propTypes = {
         scenarioResults: PropTypes.array.isRequired
     }),
     tableClassName: PropTypes.string,
-    isReportsPage: PropTypes.bool
+    optionalHeader: PropTypes.node,
+    commandHeadingLevel: PropTypes.number
 };
 
 export default TestPlanResultsTable;

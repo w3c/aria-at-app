@@ -249,7 +249,10 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                                 key={`TestPlanResultsTable__${testResult.id}`}
                                 test={{ ...test, at }}
                                 testResult={testResult}
-                                isReportsPage={true}
+                                optionalHeader={
+                                    <h3>Results for each command</h3>
+                                }
+                                commandHeadingLevel={4}
                             />
                         </ResultsContainer>
 
