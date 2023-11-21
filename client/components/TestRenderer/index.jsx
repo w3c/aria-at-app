@@ -212,6 +212,7 @@ const TestRenderer = ({
     at,
     testResult = {},
     testPageUrl,
+    testFormatVersion = 1,
     testRunStateRef,
     recentTestRunStateRef,
     testRunResultRef,
@@ -481,9 +482,7 @@ const TestRenderer = ({
 
     const InstructionsContent = ({ labelIdRef }) => {
         let allInstructions;
-        const isV2 =
-            !!renderableContent.target.at?.raw
-                ?.defaultConfigurationInstructionsHTML;
+        const isV2 = testFormatVersion === 2;
         let settingsContent = [];
 
         if (isV2) {
@@ -1080,6 +1079,7 @@ TestRenderer.propTypes = {
     testResult: PropTypes.object,
     support: PropTypes.object,
     testPageUrl: PropTypes.string,
+    testFormatVersion: PropTypes.number,
     testRunStateRef: PropTypes.any,
     recentTestRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,

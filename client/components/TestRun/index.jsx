@@ -1011,6 +1011,10 @@ const TestRun = () => {
                                               )
                                     }
                                     testPageUrl={testPlanVersion.testPageUrl}
+                                    testFormatVersion={
+                                        testPlanVersion.metadata
+                                            .testFormatVersion
+                                    }
                                     testRunStateRef={testRunStateRef}
                                     recentTestRunStateRef={
                                         recentTestRunStateRef

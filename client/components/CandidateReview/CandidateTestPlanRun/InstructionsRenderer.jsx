@@ -52,7 +52,12 @@ const NumberedList = styled.ol`
     }
 `;
 
-const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
+const InstructionsRenderer = ({
+    testResult,
+    testPageUrl,
+    at,
+    testFormatVersion = 1
+}) => {
     const { test = {} } = testResult;
     const { renderableContent } = test;
     const [testRunExport, setTestRunExport] = useState();
@@ -122,9 +127,7 @@ const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
     }, [testRunExport]);
 
     let allInstructions;
-    const isV2 =
-        !!renderableContent.target.at?.raw
-            ?.defaultConfigurationInstructionsHTML;
+    const isV2 = testFormatVersion === 2;
 
     if (isV2) {
         const commandSettingSpecified = renderableContent.commands.some(
@@ -185,7 +188,8 @@ InstructionsRenderer.propTypes = {
     testPageUrl: PropTypes.string,
     at: PropTypes.shape({
         name: PropTypes.string.isRequired
-    })
+    }),
+    testFormatVersion: PropTypes.number
 };
 
 export default InstructionsRenderer;
