@@ -38,13 +38,9 @@ module.exports = {
             });
 
             for (const data of Object.values(dataById)) {
-                let isComplete = true;
-
-                data.runLengths.forEach(runLength => {
-                    if (runLength !== data.runnableTestsLength) {
-                        isComplete = false;
-                    }
-                });
+                const isComplete = data.runLengths.every(
+                    runLength => runLength === data.runnableTestsLength
+                );
                 if (!isComplete) {
                     console.info(`Found incomplete report ${data.id}`); // eslint-disable-line
                     // Since final test plan reports can

@@ -148,6 +148,10 @@ const populateFakeTestResults = async (testPlanRunId, fakeTestResultTypes) => {
         index += 1;
     }
 
+    // The following makes it so that fake tests are made for
+    // all possible tests that can be completed for any given
+    // test plan. Therefore, there will be no missing or skipped
+    // fake tests in the database.
     if (testPlanReport.runnableTests.length !== fakeTestResultTypes.length) {
         for (let i = index; i < testPlanReport.runnableTests.length; i += 1) {
             await getFake({
