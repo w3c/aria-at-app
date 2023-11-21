@@ -21,7 +21,7 @@ const TestPlanResultsTable = ({
     optionalHeader = null,
     commandHeadingLevel = 3
 }) => {
-    const Heading = `h${commandHeadingLevel}`;
+    const CommandHeading = `h${commandHeadingLevel}`;
 
     return (
         <>
@@ -65,11 +65,11 @@ const TestPlanResultsTable = ({
 
                 return (
                     <React.Fragment key={scenarioResult.id}>
-                        <Heading>
+                        <CommandHeading>
                             {commandsString}&nbsp;Results:&nbsp;
                             {passedAssertions.length} passed,&nbsp;
                             {failedAssertions.length} failed
-                        </Heading>
+                        </CommandHeading>
                         <p className="test-plan-results-response-p">
                             {test.at?.name} Response:
                         </p>
