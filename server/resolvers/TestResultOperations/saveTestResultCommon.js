@@ -131,8 +131,7 @@ const assertTestResultIsValid = newTestResult => {
 
     const checkAssertionResult = assertionResult => {
         if (
-            assertionResult.passed === null ||
-            assertionResult.passed === undefined
+            !assertionResult.passed
         ) {
             failed = true;
         }
