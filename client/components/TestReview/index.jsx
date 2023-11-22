@@ -100,9 +100,8 @@ const TestReview = () => {
             </h1>
             <h2>Introduction</h2>
             <p>
-                {`This page contains the full content of all ${testCount} ` +
-                    `tests the ARIA-AT team has authored for ` +
-                    `${testPlanVersion.title} as of version ` +
+                {`This page contains ${testCount} tests the ARIA-AT team ` +
+                    `has authored for ${testPlanVersion.title}, version ` +
                     `${testPlanVersion.versionString}.`}
             </p>
             <h2>Metadata</h2>
