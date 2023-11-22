@@ -130,7 +130,10 @@ const assertTestResultIsValid = newTestResult => {
     let failed = false;
 
     const checkAssertionResult = assertionResult => {
-        if (!assertionResult.passed) {
+        if (
+            assertionResult.passed === null ||
+            assertionResult.passed === undefined
+        ) {
             failed = true;
         }
     };
