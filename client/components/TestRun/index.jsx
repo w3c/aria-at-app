@@ -387,13 +387,7 @@ const TestRun = () => {
                 const { result, highlightRequired } = assertions[j];
                 const assertionResult = {
                     ...scenarioResult.assertionResults[j],
-                    passed: result === 'pass',
-                    failedReason:
-                        result === 'failMissing'
-                            ? 'NO_OUTPUT'
-                            : result === 'failIncorrect'
-                            ? 'INCORRECT_OUTPUT'
-                            : null
+                    passed: result === 'pass'
                 };
                 assertionResults.push(
                     captureHighlightRequired
@@ -633,7 +627,6 @@ const TestRun = () => {
          * ....{
          * ......id
          * ......passed
-         * ......failedReason
          * ....},
          * ....other assertionResults,
          * ..],
@@ -645,13 +638,10 @@ const TestRun = () => {
                 id,
                 output: output,
                 unexpectedBehaviors: unexpectedBehaviors,
-                assertionResults: assertionResults.map(
-                    ({ failedReason, id, passed }) => ({
-                        id,
-                        passed: passed,
-                        failedReason: failedReason
-                    })
-                )
+                assertionResults: assertionResults.map(({ id, passed }) => ({
+                    id,
+                    passed
+                }))
             })
         );
 

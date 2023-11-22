@@ -418,7 +418,6 @@ describe('test queue', () => {
                             }
                             assertionResult {
                                 passed
-                                failedReason
                             }
                         }
                     }
@@ -445,7 +444,6 @@ describe('test queue', () => {
                   "conflictingResults": [
                     {
                       "assertionResult": {
-                        "failedReason": null,
                         "passed": true,
                       },
                       "scenarioResult": {
@@ -461,7 +459,6 @@ describe('test queue', () => {
                     },
                     {
                       "assertionResult": {
-                        "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
                       "scenarioResult": {

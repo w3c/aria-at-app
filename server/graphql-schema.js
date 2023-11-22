@@ -645,8 +645,7 @@ const graphqlSchema = gql`
         unexpectedBehaviors: [UnexpectedBehaviorInput]
     }
 
-    # TODO: figure out if this type can be removed and NO_OUTPUT can become an
-    # unexpected behavior instead
+    # NOTE: This has been deprecated
     enum AssertionFailedReason {
         INCORRECT_OUTPUT
         NO_OUTPUT
@@ -672,7 +671,7 @@ const graphqlSchema = gql`
         passed: Boolean
         # TODO: propose removing this for the reason given above
         """
-        When passed is false, a failedReason must be given.
+        NOTE: This has been deprecated, legacy use = when passed is false, a failedReason must be given.
         """
         failedReason: AssertionFailedReason
     }

@@ -49,7 +49,7 @@ const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
 AssertionsFieldset.propTypes = {
     assertions: PropTypes.array.isRequired,
     commandIndex: PropTypes.number.isRequired,
-    assertionsHeader: PropTypes.string.isRequired
+    assertionsHeader: PropTypes.object.isRequired
 };
 
 export default AssertionsFieldset;

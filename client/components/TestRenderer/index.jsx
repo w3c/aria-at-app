@@ -262,13 +262,9 @@ const TestRenderer = ({
                 const assertionResult = assertionResults[j];
                 const { highlightRequired } = assertionResult;
 
-                if (assertionResult.passed)
-                    commands[i].assertions[j].result = 'pass';
-                else if (assertionResult.failedReason === 'NO_OUTPUT')
-                    commands[i].assertions[j].result = 'failMissing';
-                else if (assertionResult.failedReason === 'INCORRECT_OUTPUT')
-                    commands[i].assertions[j].result = 'failIncorrect';
-                else commands[i].assertions[j].result = 'notSet';
+                commands[i].assertions[j].result = assertionResult.passed
+                    ? 'pass'
+                    : 'fail';
 
                 commands[i].assertions[j].highlightRequired = highlightRequired;
             }

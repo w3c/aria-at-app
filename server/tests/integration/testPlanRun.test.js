@@ -193,17 +193,14 @@ describe('testPlanRun', () => {
                                             {
                                                 id: "${assertionResultId1}"
                                                 passed: true
-                                                failedReason: null
                                             }
                                             {
                                                 id: "${assertionResultId2}"
                                                 passed: null
-                                                failedReason: null
                                             }
                                             {
                                                 id: "${assertionResultId3}"
                                                 passed: null
-                                                failedReason: null
                                             }
                                         ]
                                         unexpectedBehaviors: []
@@ -252,17 +249,14 @@ describe('testPlanRun', () => {
                                             {
                                                 id: "${assertionResultId1}"
                                                 passed: true
-                                                failedReason: null
                                             }
                                             {
                                                 id: "${assertionResultId2}"
                                                 passed: null
-                                                failedReason: null
                                             }
                                             {
                                                 id: "invalid-id-123" # invalid
                                                 passed: null
-                                                failedReason: null
                                             }
                                         ]
                                         unexpectedBehaviors: []
@@ -305,17 +299,14 @@ describe('testPlanRun', () => {
                                                 {
                                                     id: "${assertionResultId1}"
                                                     passed: true
-                                                    failedReason: null
                                                 }
                                                 {
                                                     id: "${assertionResultId2}"
                                                     passed: false
-                                                    failedReason: NO_OUTPUT
                                                 }
                                                 {
                                                     id: "${assertionResultId3}"
                                                     passed: false
-                                                    failedReason: INCORRECT_OUTPUT
                                                 }
                                             ]
                                             unexpectedBehaviors: []
@@ -359,17 +350,14 @@ describe('testPlanRun', () => {
                                             {
                                                 id: "${assertionResultId1}"
                                                 passed: true
-                                                failedReason: null
                                             }
                                             {
                                                 id: "${assertionResultId2}"
                                                 passed: false
-                                                failedReason: NO_OUTPUT
                                             }
                                             {
                                                 id: "${assertionResultId3}"
                                                 passed: null # invalid
-                                                failedReason: INCORRECT_OUTPUT
                                             }
                                         ]
                                         unexpectedBehaviors: []

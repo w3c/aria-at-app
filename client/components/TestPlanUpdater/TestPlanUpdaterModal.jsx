@@ -181,9 +181,7 @@ const TestPlanUpdaterModal = ({
                                         ];
                                     return {
                                         id: assertionResultSkeleton.id,
-                                        passed: assertionResult.passed,
-                                        failedReason:
-                                            assertionResult.failedReason
+                                        passed: assertionResult.passed
                                     };
                                 }
                             ),
