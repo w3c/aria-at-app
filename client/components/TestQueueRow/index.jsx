@@ -414,6 +414,11 @@ const TestQueueRow = ({
             'completed'
         ].join('-');
 
+    const completedAllTests = testPlanReport.draftTestPlanRuns.every(
+        testPlanRun =>
+            testPlanRun.testResultsLength === testPlanReport.runnableTestsLength
+    );
+
     return (
         <LoadingStatus message={loadingMessage}>
             <tr className="test-queue-run-row">
@@ -494,7 +499,8 @@ const TestQueueRow = ({
                             !testPlanReport.conflictsLength &&
                             testPlanReport.draftTestPlanRuns.length &&
                             testPlanReport.draftTestPlanRuns[0]
-                                .testResultsLength ? (
+                                .testResultsLength &&
+                            completedAllTests ? (
                                 <>
                                     <Button
                                         ref={updateTestPlanStatusButtonRef}
