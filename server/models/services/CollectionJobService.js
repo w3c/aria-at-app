@@ -27,7 +27,7 @@ const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { runnableTests } = require('../../resolvers/TestPlanReport');
 const { default: axios } = require('axios');
-const { default: createGithubWorkflow } = require('./GithubWorkflowService');
+const { default: createGithubWorkflow } = require('../../services/GithubWorkflowService');
 
 const includeBrowserVersion = {
     model: BrowserVersion,
