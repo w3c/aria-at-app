@@ -32,7 +32,7 @@ const parseRichContentFromArray = (instruction = []) => {
                     </>
                 );
             else
-                content = content = (
+                content = (
                     <>
                         {content} {value}
                     </>
