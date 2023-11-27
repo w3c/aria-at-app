@@ -212,7 +212,7 @@ const TestRenderer = ({
     at,
     testResult = {},
     testPageUrl,
-    testFormatVersion = 1,
+    testFormatVersion,
     testRunStateRef,
     recentTestRunStateRef,
     testRunResultRef,
@@ -533,7 +533,6 @@ const TestRenderer = ({
 
     const AssertionsContent = ({ labelIdRef }) => {
         const assertions = [...pageContent.instructions.assertions.assertions];
-
         const content = parseListContent(assertions);
 
         return (
