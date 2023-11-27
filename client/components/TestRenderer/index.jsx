@@ -483,21 +483,29 @@ const TestRenderer = ({
         let settingsContent = [];
 
         if (isV2) {
+            // There is at least one defined 'setting' for the list of AT commands
             const commandSettingSpecified = renderableContent.commands.some(
                 ({ settings }) => settings && settings !== 'defaultMode'
             );
 
-            allInstructions = [
+            const defaultInstructions =
                 renderableContent.target.at.raw
-                    .defaultConfigurationInstructionsHTML,
-                `${supportJson.testPlanStrings.openExampleInstruction} ${renderableContent.target.setupScript.scriptDescription}.`,
-                `${renderableContent.instructions.instructions} ${
-                    supportJson.testPlanStrings.commandListPreface
-                }${
-                    commandSettingSpecified
-                        ? ` ${supportJson.testPlanStrings.commandListSettingsPreface}`
-                        : ''
-                }`
+                    .defaultConfigurationInstructionsHTML;
+            const setupScriptDescription = `${supportJson.testPlanStrings.openExampleInstruction} ${renderableContent.target.setupScript.scriptDescription}`;
+            const testInstructions =
+                renderableContent.instructions.instructions;
+            const settingsInstructions = `${
+                supportJson.testPlanStrings.commandListPreface
+            }${
+                commandSettingSpecified
+                    ? ` ${supportJson.testPlanStrings.commandListSettingsPreface}`
+                    : ''
+            }`;
+
+            allInstructions = [
+                defaultInstructions,
+                setupScriptDescription + '.',
+                testInstructions + ' ' + settingsInstructions
             ].map(e => unescape(e));
             settingsContent = parseSettingsContent(
                 renderableContent.instructions.mode,
