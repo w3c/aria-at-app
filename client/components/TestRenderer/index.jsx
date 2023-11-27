@@ -189,10 +189,7 @@ const Fieldset = styled.fieldset`
     }
 `;
 
-const NumberedList = styled.ol`
-    > li {
-    }
-`;
+const NumberedList = styled.ol``;
 
 const Button = styled.button``;
 

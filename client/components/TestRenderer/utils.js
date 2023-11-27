@@ -15,11 +15,6 @@ const BulletList = styled.ul`
     }
 `;
 
-const NumberedList = styled.ol`
-    > li {
-    }
-`;
-
 const parseRichContentFromArray = (instruction = []) => {
     let content = null;
     for (let value of instruction) {
@@ -85,7 +80,7 @@ const parseSettingsContent = (settings, settingsMap) => {
             settingsContent.push(
                 <div key={key}>
                     {text}
-                    <NumberedList>
+                    <ol>
                         {instructions.map((instruction, index) => {
                             return (
                                 <li key={`SettingInstruction_${index}`}>
@@ -93,7 +88,7 @@ const parseSettingsContent = (settings, settingsMap) => {
                                 </li>
                             );
                         })}
-                    </NumberedList>
+                    </ol>
                 </div>
             );
         }
