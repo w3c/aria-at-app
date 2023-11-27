@@ -328,7 +328,7 @@ const updateJsons = async () => {
             JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
         );
     } catch (error) {
-        console.error("commands.json for v2 test format doesn't exist");
+        console.error('commands.json for v2 test format may not exist');
     }
 
     // Path info for support.json
