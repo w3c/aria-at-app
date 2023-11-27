@@ -82,6 +82,11 @@ const axiosConfig = {
     timeout: 1000
 };
 
+const automationSchedulerMockEnabled = !(
+    process.env.ENVRIONMENT == 'production' ||
+    process.env.AUTOMATION_CALLBACK_FQDN
+);
+
 /**
  * @param {object} collectionJob - CollectionJob to be created
  * @param {string} collectionJob.id - id for the CollectionJob
@@ -249,30 +254,37 @@ const retryCancelledCollections = async (
 
     const testIds = cancelledTests.map(test => test.id);
     const { testPlanVersion } = collectionJob.testPlanRun.testPlanReport;
-    const res = await axios.post(
-        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-        {
-            testPlanVersionGitSha: testPlanVersion.gitSha,
-            testIds,
-            testPlanName: testPlanVersion.directory,
-            jobId: collectionJob.id
-        },
-        axiosConfig
-    );
-
-    if (res.status !== 200) {
-        throw new Error(
-            `Error from Github while retrying cancelled tests: ${res.data}`
+    if (automationSchedulerMockEnabled) {
+        const res = await axios.post(
+            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
+            {
+                testPlanVersionGitSha: testPlanVersion.gitSha,
+                testIds,
+                testPlanName: testPlanVersion.directory,
+                jobId: collectionJob.id
+            },
+            axiosConfig
         );
+        if (res.status !== 200) {
+            throw new Error(
+                `Error from Github while retrying cancelled tests: ${res.data}`
+            );
+        }
     }
 
-    return ModelService.getById(
+    const job = ModelService.getById(
         CollectionJob,
         collectionJob.id,
         collectionJobAttributes,
         [includeTestPlanRun],
         options
     );
+
+    if (!automationSchedulerMockEnabled) {
+        const { directory } = testPlanVersion.testPlan;
+        const { gitSha } = testPlanVersion;
+        await createGithubWorkflow({ job, directory, gitSha });
+    }
 };
 
 /**
@@ -334,7 +346,7 @@ const scheduleCollectionJob = async (
 
     let status = 'QUEUED';
 
-    if (!process.env.AUTOMATION_CALLBACK_FQDN) {
+    if (automationSchedulerMockEnabled) {
         const automationSchedulerResponse = await axios.post(
             `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
             {
@@ -358,7 +370,7 @@ const scheduleCollectionJob = async (
         options
     );
 
-    if (process.env.AUTOMATION_CALLBACK_FQDN) {
+    if (!automationSchedulerMockEnabled) {
         await createGithubWorkflow({ job, directory, gitSha });
     }
 
