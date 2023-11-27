@@ -288,7 +288,7 @@ const flattenObject = (obj, parentKey = '') => {
     const flattened = {};
 
     for (const key in obj) {
-        if (typeof obj[key] === 'object') {
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
             const subObject = flattenObject(obj[key], parentKey + key + '.');
             Object.assign(flattened, subObject);
         } else {
