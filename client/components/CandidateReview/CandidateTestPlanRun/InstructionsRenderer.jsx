@@ -14,14 +14,6 @@ import {
 import { TestWindow } from '../../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../../utils/aria.js';
 
-const Container = styled.div`
-    padding: 20px;
-`;
-
-const Heading = styled.h2`
-    margin: 0 0 0.5em 0;
-`;
-
 const NumberedList = styled.ol`
     counter-reset: numbered-list;
     list-style: none;
@@ -59,8 +51,7 @@ const BulletList = styled.ul`
     }
 `;
 
-const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
-    const { test = {} } = testResult;
+const InstructionsRenderer = ({ test, testPageUrl, at, headingLevel = 2 }) => {
     const { renderableContent } = test;
     const [testRunExport, setTestRunExport] = useState();
     const [instructionsContent, setInstructionsContent] = useState({
@@ -202,8 +193,10 @@ const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
 
     const assertionsContent = parseListContent(assertions);
 
+    const Heading = `h${headingLevel}`;
+
     return (
-        <Container>
+        <>
             <p>{instructionsContent.instructions.description}</p>
             <Heading>
                 {instructionsContent.instructions.instructions.header}
@@ -222,18 +215,17 @@ const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
             >
                 {instructionsContent.instructions.openTestPage.button}
             </Button>
-        </Container>
+        </>
     );
 };
 
 InstructionsRenderer.propTypes = {
-    testResult: PropTypes.shape({
-        test: PropTypes.object.isRequired
-    }),
+    test: PropTypes.object.isRequired,
     testPageUrl: PropTypes.string,
     at: PropTypes.shape({
         name: PropTypes.string.isRequired
-    })
+    }),
+    headingLevel: PropTypes.number
 };
 
 export default InstructionsRenderer;
