@@ -48,14 +48,7 @@ if (
     process.env.ENVIRONMENT === 'production' ||
     process.env.AUTOMATION_CALLBACK_FQDN
 ) {
-    require('./services/GithubWorkflowService')
-        .setup()
-        .catch(error => {
-            console.error(
-                'Failed to initialize github workflow service:',
-                error
-            );
-        });
+    require('./services/GithubWorkflowService').setup();
 } else {
     setupMockAutomationSchedulerServer().catch(error => {
         console.error('Failed to initialize mock automation server:', error);
