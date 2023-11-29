@@ -283,6 +283,15 @@ const retryCancelledCollections = async (
 
     const testIds = cancelledTests.map(test => test.id);
     const { testPlanVersion } = collectionJob.testPlanRun.testPlanReport;
+
+    const job = ModelService.getById(
+        CollectionJob,
+        collectionJob.id,
+        collectionJobAttributes,
+        [includeTestPlanRun],
+        options
+    );
+
     if (automationSchedulerMockEnabled) {
         const res = await axios.post(
             `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
@@ -299,17 +308,7 @@ const retryCancelledCollections = async (
                 `Error from Github while retrying cancelled tests: ${res.data}`
             );
         }
-    }
-
-    const job = ModelService.getById(
-        CollectionJob,
-        collectionJob.id,
-        collectionJobAttributes,
-        [includeTestPlanRun],
-        options
-    );
-
-    if (!automationSchedulerMockEnabled) {
+    } else {
         // TODO: pass the reduced list of testIds along / deal with them somehow
         return await triggerWorkflow(job, options);
     }
@@ -373,10 +372,18 @@ const scheduleCollectionJob = async (
         jobId = '1';
     }
 
-    let status = 'QUEUED';
+    const job = await createCollectionJob(
+        {
+            id: jobId,
+            status: COLLECTION_JOB_STATUS.QUEUED,
+            testPlanReportId
+        },
+        COLLECTION_JOB_ATTRIBUTES,
+        options
+    );
 
     if (automationSchedulerMockEnabled) {
-        const automationSchedulerResponse = await axios.post(
+        await axios.post(
             `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
             {
                 testPlanVersionGitSha: gitSha,
@@ -386,20 +393,7 @@ const scheduleCollectionJob = async (
             },
             axiosConfig
         );
-        status = automationSchedulerResponse.data.status;
-    }
-
-    const job = await createCollectionJob(
-        {
-            id: jobId,
-            status,
-            testPlanReportId
-        },
-        COLLECTION_JOB_ATTRIBUTES,
-        options
-    );
-
-    if (!automationSchedulerMockEnabled) {
+    } else {
         return await triggerWorkflow(job, options);
     }
 
@@ -449,35 +443,14 @@ const getOrCreateCollectionJob = async (
  * @returns {Promise<[*, [*]]>}
  */
 const cancelCollectionJob = async ({ id }, options) => {
-    // Not currently in use as the Response Scheduler does not support cancelling jobs
-    let errorCanceling = false;
-    if (automationSchedulerMockEnabled) {
-        const automationSchedulerResponse = await axios.post(
-            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${id}/cancel`,
-            {},
-            axiosConfig
-        );
-        errorCanceling =
-            automationSchedulerResponse.data.status !== 'CANCELLED' &&
-            JSON.stringify(automationSchedulerResponse);
-    }
-
-    if (!errorCanceling) {
-        return updateCollectionJob(
-            id,
-            {
-                status: 'CANCELLED'
-            },
-            COLLECTION_JOB_ATTRIBUTES,
-            options
-        );
-    } else {
-        throw new HttpQueryError(
-            502,
-            `Error cancelling job: ${errorCanceling}`,
-            true
-        );
-    }
+    return updateCollectionJob(
+        id,
+        {
+            status: 'CANCELLED'
+        },
+        COLLECTION_JOB_ATTRIBUTES,
+        options
+    );
 };
 
 /**
@@ -504,37 +477,19 @@ const deleteCollectionJob = async (id, options) => {
  * @returns
  */
 const restartCollectionJob = async ({ id }, options) => {
-    let continueRestart = !automationSchedulerMockEnabled;
-    if (automationSchedulerMockEnabled) {
-        const automationSchedulerResponse = await axios.post(
-            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/${id}/restart`,
-            {},
-            axiosConfig
-        );
-        continueRestart =
-            automationSchedulerResponse?.data?.status === 'QUEUED';
-    }
+    const job = updateCollectionJob(
+        id,
+        {
+            status: 'QUEUED'
+        },
+        COLLECTION_JOB_ATTRIBUTES,
+        options
+    );
 
-    if (continueRestart) {
-        const job = updateCollectionJob(
-            id,
-            {
-                status: 'QUEUED'
-            },
-            COLLECTION_JOB_ATTRIBUTES,
-            options
-        );
-        if (!automationSchedulerMockEnabled) {
-            return await triggerWorkflow(job, options);
-        }
-        return job;
-    } else {
-        throw new HttpQueryError(
-            502,
-            `Error restarting job with id ${id}`,
-            true
-        );
+    if (automationSchedulerMockEnabled) {
+        return await triggerWorkflow(job, options);
     }
+    return job;
 };
 
 module.exports = {
