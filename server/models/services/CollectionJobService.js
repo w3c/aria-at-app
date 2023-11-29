@@ -215,8 +215,7 @@ const getCollectionJobs = async (
  */
 const triggerWorkflow = async (job, options) => {
     const { testPlanVersion } = job.testPlanRun.testPlanReport;
-    const { directory } = testPlanVersion.testPlan;
-    const { gitSha } = testPlanVersion;
+    const { gitSha, directory } = testPlanVersion;
     try {
         await createGithubWorkflow({ job, directory, gitSha });
     } catch (error) {

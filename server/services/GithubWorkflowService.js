@@ -119,11 +119,7 @@ const fetchInstallationAccessToken = async (jsonWebToken, installationID) => {
     return (await response.json()).token;
 };
 
-const createGithubWorkflow = async ({
-    job,
-    directory = 'alert',
-    gitSha = 'master'
-}) => {
+const createGithubWorkflow = async ({ job, directory, gitSha }) => {
     const payload = {
         iat: calculateIssuedAt(),
         exp: calculateExpiresAt(),
@@ -138,7 +134,6 @@ const createGithubWorkflow = async ({
         nonce: job.id,
         callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/result`,
         status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/update`,
-        // TODO: This should probably just be configured instead of us passing it to the scheduler every time
         callback_header: `x-automation-secret:${process.env.AUTOMATION_SCHEDULER_SECRET}`,
         work_dir: `tests/${directory}`,
         test_pattern: 'reference/**,test-*-nvda.*',
