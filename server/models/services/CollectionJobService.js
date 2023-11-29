@@ -456,7 +456,7 @@ const deleteCollectionJob = async (id, options) => {
  * @returns
  */
 const restartCollectionJob = async ({ id }, options) => {
-    const job = updateCollectionJob(
+    const job = await updateCollectionJob(
         id,
         {
             status: 'QUEUED'
@@ -464,6 +464,10 @@ const restartCollectionJob = async ({ id }, options) => {
         COLLECTION_JOB_ATTRIBUTES,
         options
     );
+
+    if (!job) {
+        return null;
+    }
 
     return await triggerWorkflow(job, [], options);
 };
