@@ -135,11 +135,6 @@ button.test-navigator-toggle:focus {
     left: 4px;
 }
 
-.test-name-wrapper .progress-indicator {
-    background: White;
-    border: 2px dashed black;
-}
-
 .test-name-wrapper.conflicts .progress-indicator {
     background: #ffcd00;
 }
