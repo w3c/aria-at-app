@@ -131,7 +131,6 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
         GITHUB_APP_INSTALLATION_ID
     );
     const inputs = {
-        nonce: job.id,
         callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/result`,
         status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/update`,
         callback_header: `x-automation-secret:${process.env.AUTOMATION_SCHEDULER_SECRET}`,
