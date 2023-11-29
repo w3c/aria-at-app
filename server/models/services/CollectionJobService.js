@@ -465,7 +465,7 @@ const restartCollectionJob = async ({ id }, options) => {
         options
     );
 
-    return await triggerWorkflow(job, options);
+    return await triggerWorkflow(job, [], options);
 };
 
 module.exports = {
