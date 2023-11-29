@@ -19,6 +19,9 @@ export class TestRun {
       setCommandAssertion: bindDispatch(userChangeCommandAssertion),
       setCommandHasUnexpectedBehavior: bindDispatch(userChangeCommandHasUnexpectedBehavior),
       setCommandUnexpectedBehavior: bindDispatch(userChangeCommandUnexpectedBehavior),
+      setCommandUnexpectedBehaviorSeverity: bindDispatch(
+        userChangeCommandUnexpectedBehaviorSeverity
+      ),
       setCommandUnexpectedBehaviorMore: bindDispatch(userChangeCommandUnexpectedBehaviorMore),
       setCommandOutput: bindDispatch(userChangeCommandOutput),
       submit: () => submitResult(this),
@@ -295,6 +298,7 @@ export function instructionDocument(resultState, hooks) {
             options: resultUnexpectedBehavior.behaviors.map((behavior, unexpectedIndex) => {
               return {
                 description: behavior.description,
+                severity: behavior.severity,
                 enabled:
                   resultUnexpectedBehavior.hasUnexpected ===
                   HasUnexpectedBehaviorMap.HAS_UNEXPECTED,
@@ -312,6 +316,12 @@ export function instructionDocument(resultState, hooks) {
                       focusFirstRequired(),
                 change: checked =>
                   hooks.setCommandUnexpectedBehavior({ commandIndex, unexpectedIndex, checked }),
+                severitychange: severity =>
+                  hooks.setCommandUnexpectedBehaviorSeverity({
+                    commandIndex,
+                    unexpectedIndex,
+                    severity,
+                  }),
                 keydown: key => {
                   const increment = keyToFocusIncrement(key);
                   if (increment) {
@@ -324,30 +334,28 @@ export function instructionDocument(resultState, hooks) {
                   }
                   return false;
                 },
-                more: behavior.more
-                  ? {
-                      description: /** @type {Description[]} */ ([
-                        `If "other" selected, explain`,
-                        {
-                          required: true,
-                          highlightRequired: behavior.more.highlightRequired,
-                          description: '(required)',
-                        },
-                      ]),
-                      enabled: behavior.checked,
-                      value: behavior.more.value,
-                      focus:
-                        resultState.currentUserAction === 'validateResults' &&
-                        behavior.more.highlightRequired &&
-                        focusFirstRequired(),
-                      change: value =>
-                        hooks.setCommandUnexpectedBehaviorMore({
-                          commandIndex,
-                          unexpectedIndex,
-                          more: value,
-                        }),
-                    }
-                  : null,
+                more: {
+                  description: /** @type {Description[]} */ ([
+                    `Details: `,
+                    {
+                      required: true,
+                      highlightRequired: behavior.more.highlightRequired,
+                      description: '(required)',
+                    },
+                  ]),
+                  enabled: behavior.checked,
+                  value: behavior.more.value,
+                  focus:
+                    resultState.currentUserAction === 'validateResults' &&
+                    behavior.more.highlightRequired &&
+                    focusFirstRequired(),
+                  change: value =>
+                    hooks.setCommandUnexpectedBehaviorMore({
+                      commandIndex,
+                      unexpectedIndex,
+                      more: value,
+                    }),
+                },
               };
             }),
           },
@@ -461,6 +469,15 @@ export const AssertionResultMap = createEnumMap({
   FAIL_MISSING: 'failMissing',
   FAIL_INCORRECT: 'failIncorrect',
   FAIL: 'fail',
+});
+
+/**
+ * @typedef {EnumValues<typeof UnexpectedBehaviorSeverityMap>} UnexpectedBehaviorSeverity
+ */
+
+export const UnexpectedBehaviorSeverityMap = createEnumMap({
+  MODERATE: 'Moderate',
+  HIGH: 'High',
 });
 
 /**
@@ -606,6 +623,44 @@ export function userChangeCommandUnexpectedBehavior({ commandIndex, unexpectedIn
                 ),
               },
             }
+      ),
+    };
+  };
+}
+
+/**
+ * @param {object} props
+ * @param {number} props.commandIndex
+ * @param {number} props.unexpectedIndex
+ * @param {string} props.severity
+ * @returns {(state: TestRunState) => TestRunState}
+ */
+export function userChangeCommandUnexpectedBehaviorSeverity({
+  commandIndex,
+  unexpectedIndex,
+  severity,
+}) {
+  return function (state) {
+    return {
+      ...state,
+      currentUserAction: UserActionMap.CHANGE_TEXT,
+      commands: state.commands.map((command, commandI) =>
+        commandI !== commandIndex
+          ? command
+          : /** @type {TestRunCommand} */ ({
+              ...command,
+              unexpected: {
+                ...command.unexpected,
+                behaviors: command.unexpected.behaviors.map((unexpected, unexpectedI) =>
+                  unexpectedI !== unexpectedIndex
+                    ? unexpected
+                    : /** @type {TestRunUnexpectedBehavior} */ ({
+                        ...unexpected,
+                        severity: severity,
+                      })
+                ),
+              },
+            })
       ),
     };
   };
@@ -762,7 +817,7 @@ function resultsTableDocument(state) {
 
         let passingAssertions = ['No passing assertions.'];
         let failingAssertions = ['No failing assertions.'];
-        let unexpectedBehaviors = ['No unexpect behaviors.'];
+        let unexpectedBehaviors = ['No unexpected behaviors.'];
 
         if (allAssertions.some(({ result }) => result === CommonResultMap.PASS)) {
           passingAssertions = allAssertions
@@ -777,7 +832,12 @@ function resultsTableDocument(state) {
         if (command.unexpected.behaviors.some(({ checked }) => checked)) {
           unexpectedBehaviors = command.unexpected.behaviors
             .filter(({ checked }) => checked)
-            .map(({ description, more }) => (more ? more.value : description));
+            .map(({ description, more, severity }) => {
+              let result = `${description} (`;
+              if (more) result = `${result}Details: ${more.value}, `;
+              result = `${result}Impact: ${severity})`;
+              return result;
+            });
         }
 
         return {
@@ -794,7 +854,7 @@ function resultsTableDocument(state) {
               : 'FULL',
           details: {
             output: /** @type {Description} */ [
-              'output:',
+              'Output:',
               /** @type {DescriptionWhitespace} */ ({ whitespace: WhitespaceStyleMap.LINE_BREAK }),
               ' ',
               ...command.atOutput.value.split(/(\r\n|\r|\n)/g).map(output =>
@@ -814,7 +874,7 @@ function resultsTableDocument(state) {
               items: failingAssertions,
             },
             unexpectedBehaviors: {
-              description: 'Unexpected Behavior',
+              description: 'Unexpected Behaviors',
               items: unexpectedBehaviors,
             },
           },
@@ -1122,6 +1182,7 @@ export function userValidateState() {
  * @property {(options: {commandIndex: number, hasUnexpected: HasUnexpectedBehavior}) => void } setCommandHasUnexpectedBehavior
  * @property {(options: {commandIndex: number, atOutput: string}) => void} setCommandOutput
  * @property {(options: {commandIndex: number, unexpectedIndex: number, checked}) => void } setCommandUnexpectedBehavior
+ * @property {(options: {commandIndex: number, unexpectedIndex: number, severity: string}) => void } setCommandUnexpectedBehaviorSeverity
  * @property {(options: {commandIndex: number, unexpectedIndex: number, more: string}) => void } setCommandUnexpectedBehaviorMore
  * @property {() => void} submit
  */
@@ -1161,6 +1222,7 @@ export function userValidateState() {
  * @property {object} [more]
  * @property {boolean} more.highlightRequired
  * @property {string} more.value
+ * @property {string} severity
  */
 
 /**
