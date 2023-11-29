@@ -502,6 +502,9 @@ const CandidateTestPlanRun = () => {
                             completedAt: new Date()
                         }}
                         testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
+                        testFormatVersion={
+                            testPlanVersion.metadata.testFormatVersion
+                        }
                     />,
                     ...testPlanReports.map(testPlanReport => {
                         const testResult =

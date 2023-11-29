@@ -142,6 +142,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     testPlan {
                         directory
                     }
+                    metadata
                 }
                 runnableTests {
                     id
@@ -252,6 +253,7 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                 testPlan {
                     directory
                 }
+                metadata
             }
             runnableTests {
                 id
@@ -441,6 +443,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             testPlan {
                                 directory
                             }
+                            metadata
                         }
                         runnableTests {
                             id
@@ -536,6 +539,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                         testPlan {
                             directory
                         }
+                        metadata
                     }
                     runnableTests {
                         id
@@ -729,6 +733,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             testPlan {
                                 directory
                             }
+                            metadata
                         }
                         runnableTests {
                             id
@@ -824,6 +829,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                         testPlan {
                             directory
                         }
+                        metadata
                     }
                     runnableTests {
                         id
@@ -1017,6 +1023,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             testPlan {
                                 directory
                             }
+                            metadata
                         }
                         runnableTests {
                             id
@@ -1112,6 +1119,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                         testPlan {
                             directory
                         }
+                        metadata
                     }
                     runnableTests {
                         id

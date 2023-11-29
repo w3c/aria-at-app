@@ -7,9 +7,10 @@ import React, {
 } from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
-import nextId from 'react-id-generator';
+import { unescape } from 'lodash';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import { calculateAssertionsCount } from '../common/TestPlanResultsTable/utils';
+import { parseListContent, parseSettingsContent } from './utils.js';
 import {
     userCloseWindow,
     userOpenWindow
@@ -21,6 +22,7 @@ import {
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../utils/aria';
 import OutputTextArea from './OutputTextArea';
+import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
 
 const Container = styled.div`
@@ -41,7 +43,11 @@ const InstructionsSection = styled.section``;
 
 const HeadingText = styled.h1``;
 
-const SubHeadingText = styled.h2``;
+const SubHeadingText = styled.h2`
+    &#instruction-list-heading {
+        margin-top: 0;
+    }
+`;
 
 const InnerSectionHeadingText = styled.h3``;
 
@@ -183,20 +189,7 @@ const Fieldset = styled.fieldset`
     }
 `;
 
-const NumberedList = styled.ol`
-    > li {
-    }
-`;
-
-const BulletList = styled.ul`
-    padding-inline-start: 2.5rem;
-    list-style-type: circle;
-
-    > li {
-        display: list-item;
-        list-style: circle;
-    }
-`;
+const NumberedList = styled.ol``;
 
 const Button = styled.button``;
 
@@ -216,6 +209,7 @@ const TestRenderer = ({
     at,
     testResult = {},
     testPageUrl,
+    testFormatVersion,
     testRunStateRef,
     recentTestRunStateRef,
     testRunResultRef,
@@ -483,75 +477,60 @@ const TestRenderer = ({
         return false;
     };
 
-    const parseRichContent = (instruction = []) => {
-        let content = null;
-        for (let value of instruction) {
-            if (typeof value === 'string') {
-                if (value === '.')
-                    content = (
-                        <>
-                            {content}
-                            {value}
-                        </>
-                    );
-                else
-                    content = content = (
-                        <>
-                            {content} {value}
-                        </>
-                    );
-            } else if ('href' in value) {
-                const { href, description } = value;
-                content = (
-                    <>
-                        {content} <a href={href}>{description}</a>
-                    </>
-                );
-            }
-        }
-        return content;
-    };
-
-    const parseListContent = (instructions = [], commandsContent = null) => {
-        return instructions.map((value, index) => {
-            if (typeof value === 'string')
-                return (
-                    <li key={nextId()}>
-                        {value}
-                        {commandsContent &&
-                            index === instructions.length - 1 && (
-                                <BulletList>{commandsContent}</BulletList>
-                            )}
-                    </li>
-                );
-            else if (Array.isArray(value))
-                return (
-                    <li key={nextId()}>
-                        {parseRichContent(value)}
-                        {commandsContent &&
-                            index === instructions.length - 1 && (
-                                <BulletList>{commandsContent}</BulletList>
-                            )}
-                    </li>
-                );
-        });
-    };
-
     const InstructionsContent = ({ labelIdRef }) => {
-        const allInstructions = [
-            ...pageContent.instructions.instructions.instructions,
-            ...pageContent.instructions.instructions.strongInstructions,
-            pageContent.instructions.instructions.commands.description
-        ];
+        let allInstructions;
+        const isV2 = testFormatVersion === 2;
+        let settingsContent = [];
+
+        if (isV2) {
+            // There is at least one defined 'setting' for the list of AT commands
+            const commandSettingSpecified = renderableContent.commands.some(
+                ({ settings }) => settings && settings !== 'defaultMode'
+            );
+
+            const defaultInstructions =
+                renderableContent.target.at.raw
+                    .defaultConfigurationInstructionsHTML;
+            const setupScriptDescription = `${supportJson.testPlanStrings.openExampleInstruction} ${renderableContent.target.setupScript.scriptDescription}`;
+            const testInstructions =
+                renderableContent.instructions.instructions;
+            const settingsInstructions = `${
+                supportJson.testPlanStrings.commandListPreface
+            }${
+                commandSettingSpecified
+                    ? ` ${supportJson.testPlanStrings.commandListSettingsPreface}`
+                    : ''
+            }`;
+
+            allInstructions = [
+                defaultInstructions,
+                setupScriptDescription + '.',
+                testInstructions + ' ' + settingsInstructions
+            ].map(e => unescape(e));
+            settingsContent = parseSettingsContent(
+                renderableContent.instructions.mode,
+                renderableContent.target.at.raw.settings
+            );
+        } else {
+            allInstructions = [
+                ...pageContent.instructions.instructions.instructions,
+                ...pageContent.instructions.instructions.strongInstructions,
+                pageContent.instructions.instructions.commands.description
+            ];
+        }
 
         const commands =
             pageContent.instructions.instructions.commands.commands;
-
         const commandsContent = parseListContent(commands);
         const content = parseListContent(allInstructions, commandsContent);
 
         return (
-            <NumberedList aria-labelledby={labelIdRef}>{content}</NumberedList>
+            <>
+                <NumberedList aria-labelledby={labelIdRef}>
+                    {content}
+                </NumberedList>
+                {settingsContent.length ? settingsContent : null}
+            </>
         );
     };
 
@@ -559,7 +538,6 @@ const TestRenderer = ({
 
     const AssertionsContent = ({ labelIdRef }) => {
         const assertions = [...pageContent.instructions.assertions.assertions];
-
         const content = parseListContent(assertions);
 
         return (
@@ -610,21 +588,10 @@ const TestRenderer = ({
                         }
                     />
                     <InstructionsSection>
-                        <HeadingText id="behavior-header" tabIndex="-1">
-                            {pageContent.instructions.header.header}
-                        </HeadingText>
-                        <Text>{pageContent.instructions.description}</Text>
                         <SubHeadingText id="instruction-list-heading">
-                            {pageContent.instructions.instructions.header}
+                            Instructions
                         </SubHeadingText>
                         <InstructionsContent labelIdRef="instruction-list-heading" />
-                        <SubHeadingText id="success-criteria-list-heading">
-                            {pageContent.instructions.assertions.header}
-                        </SubHeadingText>
-                        <Text>
-                            {pageContent.instructions.assertions.description}
-                        </Text>
-                        <AssertionsContent labelIdRef="success-criteria-list-heading" />
                         <Button
                             disabled={
                                 !pageContent.instructions.openTestPage.enabled
@@ -1116,6 +1083,7 @@ TestRenderer.propTypes = {
     testResult: PropTypes.object,
     support: PropTypes.object,
     testPageUrl: PropTypes.string,
+    testFormatVersion: PropTypes.number,
     testRunStateRef: PropTypes.any,
     recentTestRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,
