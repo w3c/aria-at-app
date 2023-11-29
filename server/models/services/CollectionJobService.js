@@ -212,7 +212,7 @@ const getCollectionJobs = async (
  * @param {object} job - CollectionJob to trigger workflow for.
  * @param {number[]} testIds - Array of testIds
  * @param {object} options - Generic Options for sequelize
- * @returns CollectionJob
+ * @returns Promise<CollectionJob>
  */
 const triggerWorkflow = async (job, testIds, options) => {
     const { testPlanVersion } = job.testPlanRun.testPlanReport;
@@ -298,7 +298,7 @@ const retryCancelledCollections = async (
 
     const testIds = cancelledTests.map(test => test.id);
 
-    const job = ModelService.getById(
+    const job = await ModelService.getById(
         CollectionJob,
         collectionJob.id,
         collectionJobAttributes,
