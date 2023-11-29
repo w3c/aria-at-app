@@ -210,14 +210,29 @@ const getCollectionJobs = async (
 /**
  * Trigger a workflow, set job status to ERROR if workflow creation fails.
  * @param {object} job - CollectionJob to trigger workflow for.
+ * @param {number[]} testIds - Array of testIds
  * @param {object} options - Generic Options for sequelize
  * @returns CollectionJob
  */
-const triggerWorkflow = async (job, options) => {
+const triggerWorkflow = async (job, testIds, options) => {
     const { testPlanVersion } = job.testPlanRun.testPlanReport;
     const { gitSha, directory } = testPlanVersion;
     try {
-        await createGithubWorkflow({ job, directory, gitSha });
+        if (automationSchedulerMockEnabled) {
+            await axios.post(
+                `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
+                {
+                    testPlanVersionGitSha: gitSha,
+                    testIds,
+                    testPlanName: directory,
+                    jobId: job.id
+                },
+                axiosConfig
+            );
+        } else {
+            // TODO: pass the reduced list of testIds along / deal with them somehow
+            await createGithubWorkflow({ job, directory, gitSha });
+        }
     } catch (error) {
         // TODO: What to do with the actual error (could be nice to have an additional "string" status field?)
         return await updateCollectionJob(
@@ -282,7 +297,6 @@ const retryCancelledCollections = async (
     );
 
     const testIds = cancelledTests.map(test => test.id);
-    const { testPlanVersion } = collectionJob.testPlanRun.testPlanReport;
 
     const job = ModelService.getById(
         CollectionJob,
@@ -292,27 +306,7 @@ const retryCancelledCollections = async (
         options
     );
 
-    if (automationSchedulerMockEnabled) {
-        const res = await axios.post(
-            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-            {
-                testPlanVersionGitSha: testPlanVersion.gitSha,
-                testIds,
-                testPlanName: testPlanVersion.directory,
-                jobId: collectionJob.id
-            },
-            axiosConfig
-        );
-        if (res.status !== 200) {
-            throw new Error(
-                `Error from Github while retrying cancelled tests: ${res.data}`
-            );
-        }
-    } else {
-        // TODO: pass the reduced list of testIds along / deal with them somehow
-        return await triggerWorkflow(job, options);
-    }
-    return job;
+    return await triggerWorkflow(job, testIds, options);
 };
 
 /**
@@ -382,22 +376,7 @@ const scheduleCollectionJob = async (
         options
     );
 
-    if (automationSchedulerMockEnabled) {
-        await axios.post(
-            `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-            {
-                testPlanVersionGitSha: gitSha,
-                testIds: testIds ?? tests.map(t => t.id),
-                testPlanName: directory,
-                jobId
-            },
-            axiosConfig
-        );
-    } else {
-        return await triggerWorkflow(job, options);
-    }
-
-    return job;
+    return await triggerWorkflow(job, testIds ?? tests.map(t => t.id), options);
 };
 
 /**
@@ -486,10 +465,7 @@ const restartCollectionJob = async ({ id }, options) => {
         options
     );
 
-    if (automationSchedulerMockEnabled) {
-        return await triggerWorkflow(job, options);
-    }
-    return job;
+    return await triggerWorkflow(job, options);
 };
 
 module.exports = {
