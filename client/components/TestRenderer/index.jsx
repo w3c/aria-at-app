@@ -24,6 +24,7 @@ import { evaluateAtNameKey } from '../../utils/aria';
 import OutputTextArea from './OutputTextArea';
 import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
+import AssertionsFieldset from './AssertionsFieldset';
 
 const Container = styled.div`
     width: 100%;
@@ -76,49 +77,7 @@ export const Feedback = styled.span`
     }
 `;
 
-const Table = styled.table`
-    width: 100%;
-
-    display: table;
-    margin-bottom: 1em;
-    border-spacing: 2px;
-
-    border: black solid 1px;
-
-    text-indent: initial;
-    box-sizing: border-box;
-    border-collapse: collapse;
-
-    > tbody > tr {
-        td,
-        th {
-            border: 1px solid black;
-            padding: 0.25em;
-        }
-
-        td {
-            > label {
-                display: initial;
-                vertical-align: middle;
-            }
-
-            > input[type='radio'] {
-                margin: 0 5px 0 0;
-                vertical-align: middle;
-
-                &:nth-of-type(n + 2) {
-                    margin: 0 5px;
-                }
-            }
-        }
-
-        th {
-            font-weight: bold;
-        }
-    }
-`;
-
-const Fieldset = styled.fieldset`
+export const Fieldset = styled.fieldset`
     display: block;
     margin-inline-start: 2px;
     margin-inline-end: 2px;
@@ -303,13 +262,9 @@ const TestRenderer = ({
                 const assertionResult = assertionResults[j];
                 const { highlightRequired } = assertionResult;
 
-                if (assertionResult.passed)
-                    commands[i].assertions[j].result = 'pass';
-                else if (assertionResult.failedReason === 'NO_OUTPUT')
-                    commands[i].assertions[j].result = 'failMissing';
-                else if (assertionResult.failedReason === 'INCORRECT_OUTPUT')
-                    commands[i].assertions[j].result = 'failIncorrect';
-                else commands[i].assertions[j].result = 'notSet';
+                commands[i].assertions[j].result = assertionResult.passed
+                    ? 'pass'
+                    : 'fail';
 
                 commands[i].assertions[j].highlightRequired = highlightRequired;
             }
@@ -425,11 +380,6 @@ const TestRenderer = ({
                 const atOutputError = item.atOutput.highlightRequired;
                 if (atOutputError) return true;
 
-                const assertionsError = item.assertions.some(
-                    item => item.highlightRequired
-                );
-                if (assertionsError) return true;
-
                 const unexpectedError = item.unexpected.highlightRequired;
                 if (unexpectedError) return true;
 
@@ -453,11 +403,6 @@ const TestRenderer = ({
                 const atOutputError =
                     item.atOutput.description[1].highlightRequired;
                 if (atOutputError) return true;
-
-                const assertionsError = item.assertions.some(
-                    item => item.description[1].highlightRequired
-                );
-                if (assertionsError) return true;
 
                 const unexpectedBehaviorError =
                     item.unexpectedBehaviors.description[1].highlightRequired;
@@ -613,11 +558,10 @@ const TestRenderer = ({
                                 const {
                                     header,
                                     atOutput,
-                                    assertionsHeader,
                                     assertions,
-                                    unexpectedBehaviors
+                                    unexpectedBehaviors,
+                                    assertionsHeader
                                 } = value;
-
                                 return (
                                     <Fragment
                                         key={`AtOutputKey_${commandIndex}`}
@@ -630,208 +574,11 @@ const TestRenderer = ({
                                             atOutput={atOutput}
                                             isSubmitted={isSubmitted}
                                         />
-                                        <h4
-                                            id={`command-${commandIndex}-assertions-heading`}
-                                        >
-                                            Assertions {header}
-                                        </h4>
-                                        <Table
-                                            aria-labelledby={`command-${commandIndex}-assertions-heading`}
-                                        >
-                                            <tbody>
-                                                <tr>
-                                                    <th>
-                                                        {assertionsHeader.descriptionHeader ||
-                                                            'Assertion'}
-                                                    </th>
-                                                    <th>
-                                                        {assertionsHeader.passHeader ||
-                                                            'Success case'}
-                                                    </th>
-                                                    <th>
-                                                        {assertionsHeader.failHeader ||
-                                                            'Failure cases'}
-                                                    </th>
-                                                </tr>
-                                                {assertions.map(
-                                                    (
-                                                        assertion,
-                                                        assertionIndex
-                                                    ) => {
-                                                        const {
-                                                            description,
-                                                            passChoice,
-                                                            failChoices
-                                                        } = assertion;
-
-                                                        const [
-                                                            missingChoice,
-                                                            failureChoice
-                                                        ] = failChoices;
-
-                                                        return (
-                                                            <tr
-                                                                key={`AssertionKey_${assertionIndex}`}
-                                                            >
-                                                                {/*Assertion*/}
-                                                                <td
-                                                                    id={`assertion-${commandIndex}-${assertionIndex}`}
-                                                                >
-                                                                    {
-                                                                        description[0]
-                                                                    }
-                                                                    {isSubmitted && (
-                                                                        <Feedback
-                                                                            className={`${
-                                                                                description[1]
-                                                                                    .required &&
-                                                                                'required'
-                                                                            } ${
-                                                                                description[1]
-                                                                                    .highlightRequired &&
-                                                                                'highlight-required'
-                                                                            }`}
-                                                                        >
-                                                                            {
-                                                                                description[1]
-                                                                                    .description
-                                                                            }
-                                                                        </Feedback>
-                                                                    )}
-                                                                </td>
-                                                                {/*Success case*/}
-                                                                <td>
-                                                                    <input
-                                                                        key={`Pass__${commandIndex}__${assertionIndex}`}
-                                                                        type="radio"
-                                                                        id={`pass-${commandIndex}-${assertionIndex}`}
-                                                                        name={`result-${commandIndex}-${assertionIndex}`}
-                                                                        aria-labelledby={`pass-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
-                                                                        autoFocus={
-                                                                            isSubmitted &&
-                                                                            passChoice.focus
-                                                                        }
-                                                                        defaultChecked={
-                                                                            passChoice.checked
-                                                                        }
-                                                                        onClick={
-                                                                            passChoice.click
-                                                                        }
-                                                                    />
-                                                                    <label
-                                                                        id={`pass-${commandIndex}-${assertionIndex}-label`}
-                                                                        htmlFor={`pass-${commandIndex}-${assertionIndex}`}
-                                                                    >
-                                                                        {
-                                                                            passChoice
-                                                                                .label[0]
-                                                                        }
-                                                                        <Feedback
-                                                                            className={`${
-                                                                                passChoice
-                                                                                    .label[1]
-                                                                                    .offScreen &&
-                                                                                'off-screen'
-                                                                            }`}
-                                                                        >
-                                                                            {
-                                                                                passChoice
-                                                                                    .label[1]
-                                                                                    .description
-                                                                            }
-                                                                        </Feedback>
-                                                                    </label>
-                                                                </td>
-                                                                {/*Failure cases*/}
-                                                                <td>
-                                                                    <input
-                                                                        key={`Missing__${commandIndex}__${assertionIndex}`}
-                                                                        type="radio"
-                                                                        id={`missing-${commandIndex}-${assertionIndex}`}
-                                                                        name={`result-${commandIndex}-${assertionIndex}`}
-                                                                        aria-labelledby={`missing-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
-                                                                        autoFocus={
-                                                                            isSubmitted &&
-                                                                            missingChoice.focus
-                                                                        }
-                                                                        defaultChecked={
-                                                                            missingChoice.checked
-                                                                        }
-                                                                        onClick={
-                                                                            missingChoice.click
-                                                                        }
-                                                                    />
-                                                                    <label
-                                                                        id={`missing-${commandIndex}-${assertionIndex}-label`}
-                                                                        htmlFor={`missing-${commandIndex}-${assertionIndex}`}
-                                                                    >
-                                                                        {
-                                                                            missingChoice
-                                                                                .label[0]
-                                                                        }
-                                                                        <Feedback
-                                                                            className={`${
-                                                                                missingChoice
-                                                                                    .label[1]
-                                                                                    .offScreen &&
-                                                                                'off-screen'
-                                                                            }`}
-                                                                        >
-                                                                            {
-                                                                                missingChoice
-                                                                                    .label[1]
-                                                                                    .description
-                                                                            }
-                                                                        </Feedback>
-                                                                    </label>
-
-                                                                    <input
-                                                                        key={`Fail__${commandIndex}__${assertionIndex}`}
-                                                                        type="radio"
-                                                                        id={`fail-${commandIndex}-${assertionIndex}`}
-                                                                        name={`result-${commandIndex}-${assertionIndex}`}
-                                                                        aria-labelledby={`fail-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
-                                                                        autoFocus={
-                                                                            isSubmitted &&
-                                                                            failureChoice.focus
-                                                                        }
-                                                                        defaultChecked={
-                                                                            failureChoice.checked
-                                                                        }
-                                                                        onClick={
-                                                                            failureChoice.click
-                                                                        }
-                                                                    />
-                                                                    <label
-                                                                        id={`fail-${commandIndex}-${assertionIndex}-label`}
-                                                                        htmlFor={`fail-${commandIndex}-${assertionIndex}`}
-                                                                    >
-                                                                        {
-                                                                            failureChoice
-                                                                                .label[0]
-                                                                        }
-                                                                        <Feedback
-                                                                            className={`${
-                                                                                failureChoice
-                                                                                    .label[1]
-                                                                                    .offScreen &&
-                                                                                'off-screen'
-                                                                            }`}
-                                                                        >
-                                                                            {
-                                                                                failureChoice
-                                                                                    .label[1]
-                                                                                    .description
-                                                                            }
-                                                                        </Feedback>
-                                                                    </label>
-                                                                </td>
-                                                            </tr>
-                                                        );
-                                                    }
-                                                )}
-                                            </tbody>
-                                        </Table>
+                                        <AssertionsFieldset
+                                            assertions={assertions}
+                                            commandIndex={commandIndex}
+                                            assertionsHeader={assertionsHeader}
+                                        />
                                         {/*Unexpected Behaviors*/}
                                         <Fieldset
                                             id={`cmd-${commandIndex}-problems`}

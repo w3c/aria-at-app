@@ -205,7 +205,6 @@ const getFake = async ({
                             assertionResults {
                                 id
                                 passed
-                                failedReason
                             }
                         }
                     }

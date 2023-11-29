@@ -298,7 +298,6 @@ SummarizeTestPlanReport.propTypes = {
                                 PropTypes.shape({
                                     id: PropTypes.string.isRequired,
                                     passed: PropTypes.bool.isRequired,
-                                    failedReason: PropTypes.string,
                                     assertion: PropTypes.shape({
                                         text: PropTypes.string.isRequired
                                     }).isRequired
