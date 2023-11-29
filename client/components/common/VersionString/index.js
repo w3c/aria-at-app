@@ -64,21 +64,12 @@ const VersionString = ({
     if (linkHref) {
         if (linkRef) {
             possibleLink = (
-                <a
-                    ref={linkRef}
-                    href={linkHref}
-                    target="_blank"
-                    rel="noreferrer"
-                >
+                <a ref={linkRef} href={linkHref}>
                     {body}
                 </a>
             );
         } else {
-            possibleLink = (
-                <a href={linkHref} target="_blank" rel="noreferrer">
-                    {body}
-                </a>
-            );
+            possibleLink = <a href={linkHref}>{body}</a>;
         }
     } else {
         possibleLink = body;

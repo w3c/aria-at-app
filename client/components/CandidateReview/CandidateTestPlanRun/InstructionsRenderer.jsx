@@ -17,14 +17,6 @@ import { evaluateAtNameKey } from '../../../utils/aria.js';
 import commandsJson from '../../../resources/commands.json';
 import supportJson from '../../../resources/support.json';
 
-const Container = styled.div`
-    padding: 20px;
-`;
-
-const Heading = styled.h2`
-    margin: 0 0 0.5em 0;
-`;
-
 const NumberedList = styled.ol`
     counter-reset: numbered-list;
     list-style: none;
@@ -53,12 +45,12 @@ const NumberedList = styled.ol`
 `;
 
 const InstructionsRenderer = ({
-    testResult,
+    test,
     testPageUrl,
     at,
-    testFormatVersion = 1
+    headingLevel = 2,
+    testFormatVersion
 }) => {
-    const { test = {} } = testResult;
     const { renderableContent } = test;
     const [testRunExport, setTestRunExport] = useState();
     const [pageContent, setPageContent] = useState({
@@ -171,8 +163,10 @@ const InstructionsRenderer = ({
     const assertions = [...pageContent.instructions.assertions.assertions];
     const assertionsContent = parseListContent(assertions);
 
+    const Heading = `h${headingLevel}`;
+
     return (
-        <Container>
+        <>
             <NumberedList>{allInstructionsContent}</NumberedList>
             <Heading>{pageContent.instructions.assertions.header}</Heading>
             {pageContent.instructions.assertions.description}
@@ -183,19 +177,18 @@ const InstructionsRenderer = ({
             >
                 {pageContent.instructions.openTestPage.button}
             </Button>
-        </Container>
+        </>
     );
 };
 
 InstructionsRenderer.propTypes = {
-    testResult: PropTypes.shape({
-        test: PropTypes.object.isRequired
-    }),
+    test: PropTypes.object.isRequired,
     testPageUrl: PropTypes.string,
     at: PropTypes.shape({
         name: PropTypes.string.isRequired
     }),
-    testFormatVersion: PropTypes.number
+    testFormatVersion: PropTypes.number,
+    headingLevel: PropTypes.number
 };
 
 export default InstructionsRenderer;

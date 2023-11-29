@@ -144,8 +144,9 @@ const DataManagement = () => {
 
             <h2>Test Plans Status Summary</h2>
             <FilterButtons
-                filterOptions={DATA_MANAGEMENT_TABLE_FILTER_OPTIONS}
-                optionLabels={filterLabels}
+                filterLabel="Filter"
+                filterAriaLabel="Filter tests plans by status"
+                filterOptions={filterLabels}
                 activeFilter={filter}
                 onFilterChange={setFilter}
             />

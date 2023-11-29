@@ -24,30 +24,30 @@ const StyledFilterButton = styled(Button)`
 `;
 
 const FilterButtons = ({
+    filterLabel,
+    filterAriaLabel,
     filterOptions,
-    optionLabels,
     activeFilter,
     onFilterChange
 }) => {
     return (
         <ul
             className="d-flex align-items-center my-3"
-            aria-label="Filter tests plans by status"
+            aria-label={filterAriaLabel || filterLabel}
             role="group"
         >
-            <li aria-hidden="true">Filter</li>
-            {Object.keys(optionLabels).map(key => {
-                const option = filterOptions[key];
-                const isActive = activeFilter === option;
+            <li aria-hidden="true">{filterLabel}</li>
+            {Object.entries(filterOptions).map(([value, label]) => {
+                const isActive = activeFilter === value;
                 return (
-                    <li key={key}>
+                    <li key={value}>
                         <StyledFilterButton
                             variant="secondary"
                             aria-pressed={isActive}
                             active={isActive}
-                            onClick={() => onFilterChange(option)}
+                            onClick={() => onFilterChange(value)}
                         >
-                            {optionLabels[option]}
+                            {label}
                         </StyledFilterButton>
                     </li>
                 );
@@ -57,8 +57,9 @@ const FilterButtons = ({
 };
 
 FilterButtons.propTypes = {
+    filterLabel: PropTypes.string.isRequired,
+    filterAriaLabel: PropTypes.string,
     filterOptions: PropTypes.objectOf(PropTypes.string).isRequired,
-    optionLabels: PropTypes.objectOf(PropTypes.string).isRequired,
     activeFilter: PropTypes.string.isRequired,
     onFilterChange: PropTypes.func.isRequired
 };
