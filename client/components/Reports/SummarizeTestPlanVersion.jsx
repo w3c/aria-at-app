@@ -125,9 +125,9 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                             <thead>
                                 <tr>
                                     <th>Test Name</th>
-                                    <th>MUST-DO Behaviors</th>
-                                    <th>SHOULD-DO Behaviors</th>
-                                    <th>Unexpected Behaviors</th>
+                                    <th>MUST HAVE Behaviors</th>
+                                    <th>SHOULD HAVE Behaviors</th>
+                                    <th>MAY HAVE Behaviors</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -136,7 +136,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                         const {
                                             requiredFormatted,
                                             optionalFormatted,
-                                            unexpectedBehaviorsFormatted
+                                            mayFormatted
                                         } = getMetrics({
                                             testResult
                                         });
@@ -155,11 +155,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                                 </td>
                                                 <td>{requiredFormatted}</td>
                                                 <td>{optionalFormatted}</td>
-                                                <td>
-                                                    {
-                                                        unexpectedBehaviorsFormatted
-                                                    }
-                                                </td>
+                                                <td>{mayFormatted}</td>
                                             </tr>
                                         );
                                     }
@@ -168,11 +164,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                     <td>All Tests</td>
                                     <td>{overallMetrics.requiredFormatted}</td>
                                     <td>{overallMetrics.optionalFormatted}</td>
-                                    <td>
-                                        {
-                                            overallMetrics.unexpectedBehaviorsFormatted
-                                        }
-                                    </td>
+                                    <td>{overallMetrics.mayFormatted}</td>
                                 </tr>
                             </tbody>
                         </Table>

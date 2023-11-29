@@ -723,6 +723,11 @@ const graphqlSchema = gql`
         OTHER
     }
 
+    enum UnexpectedBehaviorSeverity {
+        MODERATE
+        HIGH
+    }
+
     """
     A failure state such as "AT became excessively sluggish" which, if it
     occurs, should count as a scenario failure.
@@ -738,11 +743,20 @@ const graphqlSchema = gql`
         """
         text: String!
         """
+        NOTE: This has been deprecated in favor of unexpectedBehaviorText.
         One of the unexpected behaviors is "other", which means the user must
         provide text explaining what occurred. For all other unexpected
         behaviors this field can be ignored.
         """
         otherUnexpectedBehaviorText: String
+        """
+        The user must provide text explaining what occurred.
+        """
+        unexpectedBehaviorText: String!
+        """
+        The user must indicate how severe is impact of the behavior.
+        """
+        severity: UnexpectedBehaviorSeverity!
     }
 
     """
@@ -757,6 +771,14 @@ const graphqlSchema = gql`
         See UnexpectedBehavior for more information.
         """
         otherUnexpectedBehaviorText: String
+        """
+        See UnexpectedBehavior for more information.
+        """
+        unexpectedBehaviorText: String!
+        """
+        See UnexpectedBehavior for more information.
+        """
+        severity: UnexpectedBehaviorSeverity!
     }
 
     """

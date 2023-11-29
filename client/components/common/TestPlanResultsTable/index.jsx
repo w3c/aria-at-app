@@ -109,15 +109,23 @@ const TestPlanResultsTable = ({
                         {scenarioResult.unexpectedBehaviors.length ? (
                             <ul>
                                 {scenarioResult.unexpectedBehaviors.map(
-                                    unexpected => (
-                                        <li
-                                            key={unexpected.id}
-                                            className="test-plan-results-li"
-                                        >
-                                            {unexpected.otherUnexpectedBehaviorText ??
-                                                unexpected.text}
-                                        </li>
-                                    )
+                                    ({
+                                        id,
+                                        text,
+                                        severity,
+                                        unexpectedBehaviorText
+                                    }) => {
+                                        const description = `${text} (Details: ${unexpectedBehaviorText}, Impact: ${severity})`;
+
+                                        return (
+                                            <li
+                                                key={id}
+                                                className="test-plan-results-li"
+                                            >
+                                                {description}
+                                            </li>
+                                        );
+                                    }
                                 )}
                             </ul>
                         ) : (

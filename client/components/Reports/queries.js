@@ -106,7 +106,8 @@ export const REPORT_PAGE_QUERY = gql`
                         unexpectedBehaviors {
                             id
                             text
-                            otherUnexpectedBehaviorText
+                            severity
+                            unexpectedBehaviorText
                         }
                     }
                     atVersion {
