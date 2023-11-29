@@ -313,6 +313,7 @@ const retryCancelledCollections = async (
         // TODO: pass the reduced list of testIds along / deal with them somehow
         return await triggerWorkflow(job, options);
     }
+    return job;
 };
 
 /**
