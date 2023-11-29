@@ -166,8 +166,6 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
         throw new Error(message);
     }
 
-    // TODO: Listen for GitHub Webhook event describing the new workflow, and
-    // return its ID.
     return true;
 };
 
