@@ -24,7 +24,7 @@ const ResultsContainer = styled.div`
     border-left: 1px solid #dee2e6;
     border-right: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
-    margin-bottom: 2em;
+    margin-bottom: 0.5em;
 `;
 
 const getTestersRunHistory = (
@@ -180,7 +180,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     </li>
                 ) : null}
             </ul>
-            {testPlanReport.finalizedTestResults.map(testResult => {
+            {testPlanReport.finalizedTestResults.map((testResult, index) => {
                 const test = testResult.test;
 
                 const reportLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
@@ -211,7 +211,8 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     <Fragment key={testResult.id}>
                         <div className="test-result-heading">
                             <h2 id={`result-${testResult.id}`} tabIndex="-1">
-                                {test.title}&nbsp;({passedAssertionsCount}
+                                Test {index + 1}: {test.title}&nbsp;(
+                                {passedAssertionsCount}
                                 &nbsp;passed, {failedAssertionsCount} failed)
                                 <DisclaimerInfo phase={testPlanVersion.phase} />
                             </h2>
@@ -248,6 +249,10 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                                 key={`TestPlanResultsTable__${testResult.id}`}
                                 test={{ ...test, at }}
                                 testResult={testResult}
+                                optionalHeader={
+                                    <h3>Results for each command</h3>
+                                }
+                                commandHeadingLevel={4}
                             />
                         </ResultsContainer>
 

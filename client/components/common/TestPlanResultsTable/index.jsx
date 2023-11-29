@@ -14,9 +14,18 @@ const renderAssertionRow = (assertionResult, priorityString) => {
     );
 };
 
-const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
+const TestPlanResultsTable = ({
+    test,
+    testResult,
+    tableClassName = '',
+    optionalHeader = null,
+    commandHeadingLevel = 3
+}) => {
+    const CommandHeading = `h${commandHeadingLevel}`;
+
     return (
         <>
+            {optionalHeader}
             {testResult.scenarioResults.map((scenarioResult, index) => {
                 const passedAssertions = scenarioResult.assertionResults.filter(
                     assertionResult => assertionResult.passed
@@ -56,11 +65,11 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
 
                 return (
                     <React.Fragment key={scenarioResult.id}>
-                        <h3>
+                        <CommandHeading>
                             {commandsString}&nbsp;Results:&nbsp;
                             {passedAssertions.length} passed,&nbsp;
                             {failedAssertions.length} failed
-                        </h3>
+                        </CommandHeading>
                         <p className="test-plan-results-response-p">
                             {test.at?.name} Response:
                         </p>
@@ -135,7 +144,9 @@ TestPlanResultsTable.propTypes = {
     testResult: PropTypes.shape({
         scenarioResults: PropTypes.array.isRequired
     }),
-    tableClassName: PropTypes.string
+    tableClassName: PropTypes.string,
+    optionalHeader: PropTypes.node,
+    commandHeadingLevel: PropTypes.number
 };
 
 export default TestPlanResultsTable;
