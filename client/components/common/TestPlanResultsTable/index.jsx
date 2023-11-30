@@ -33,6 +33,24 @@ const TestPlanResultsTable = ({
                 const failedAssertions = scenarioResult.assertionResults.filter(
                     assertionResult => !assertionResult.passed
                 );
+                const hasNoHighUnexpectedBehavior =
+                    !scenarioResult.unexpectedBehaviors.some(
+                        unexpectedBehavior =>
+                            unexpectedBehavior.severity === 'HIGH'
+                    );
+                const hasNoModerateUnexpectedBehavior =
+                    !scenarioResult.unexpectedBehaviors.some(
+                        unexpectedBehavior =>
+                            unexpectedBehavior.severity === 'MODERATE'
+                    );
+                const passedAssertionsLength =
+                    passedAssertions.length +
+                    (hasNoHighUnexpectedBehavior ? 1 : 0) +
+                    (hasNoModerateUnexpectedBehavior ? 1 : 0);
+                const failedAssertionsLength =
+                    failedAssertions.length +
+                    (hasNoHighUnexpectedBehavior ? 0 : 1) +
+                    (hasNoModerateUnexpectedBehavior ? 0 : 1);
 
                 // Rows are sorted by priority descending, then result (failures then passes), then
                 // assertion order. Assertion order refers to the order of assertion columns in the
@@ -63,12 +81,43 @@ const TestPlanResultsTable = ({
                     .map(({ text }) => text)
                     .join(' then ');
 
+                const sortedAssertionResults = [
+                    ...requiredAssertionResults.map(e => ({
+                        ...e,
+                        priorityString: 'MUST'
+                    })),
+                    {
+                        id: `UnexpectedBehavior_MUST_${nextId()}`,
+                        assertion: {
+                            text: 'Other behaviors that create high negative-impacts are not exhibited'
+                        },
+                        passed: hasNoHighUnexpectedBehavior,
+                        priorityString: 'MUST'
+                    },
+                    ...optionalAssertionResults.map(e => ({
+                        ...e,
+                        priorityString: 'SHOULD'
+                    })),
+                    {
+                        id: `UnexpectedBehavior_SHOULD_${nextId()}`,
+                        assertion: {
+                            text: 'Other behaviors that create moderate negative-impacts are not exhibited'
+                        },
+                        passed: hasNoModerateUnexpectedBehavior,
+                        priorityString: 'SHOULD'
+                    },
+                    ...mayAssertionResults.map(e => ({
+                        ...e,
+                        priorityString: 'MAY'
+                    }))
+                ].sort((a, b) => a.passed - b.passed);
+
                 return (
                     <React.Fragment key={scenarioResult.id}>
                         <CommandHeading>
                             {commandsString}&nbsp;Results:&nbsp;
-                            {passedAssertions.length} passed,&nbsp;
-                            {failedAssertions.length} failed
+                            {passedAssertionsLength} passed,&nbsp;
+                            {failedAssertionsLength} failed
                         </CommandHeading>
                         <p className="test-plan-results-response-p">
                             {test.at?.name} Response:
@@ -91,17 +140,11 @@ const TestPlanResultsTable = ({
                                 </tr>
                             </thead>
                             <tbody>
-                                {requiredAssertionResults.map(assertionResult =>
-                                    renderAssertionRow(assertionResult, 'MUST')
-                                )}
-                                {optionalAssertionResults.map(assertionResult =>
+                                {sortedAssertionResults.map(assertionResult =>
                                     renderAssertionRow(
                                         assertionResult,
-                                        'SHOULD'
+                                        assertionResult.priorityString
                                     )
-                                )}
-                                {mayAssertionResults.map(assertionResult =>
-                                    renderAssertionRow(assertionResult, 'MAY')
                                 )}
                             </tbody>
                         </Table>
@@ -116,7 +159,6 @@ const TestPlanResultsTable = ({
                                         unexpectedBehaviorText
                                     }) => {
                                         const description = `${text} (Details: ${unexpectedBehaviorText}, Impact: ${severity})`;
-
                                         return (
                                             <li
                                                 key={id}
