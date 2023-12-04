@@ -7,10 +7,12 @@ import { Helmet } from 'react-helmet';
 import PageStatus from '../common/PageStatus';
 import InstructionsRenderer from '../CandidateReview/CandidateTestPlanRun/InstructionsRenderer';
 import FilterButtons from '../common/FilterButtons';
-import { uniq as unique } from 'lodash';
+// import { uniq as unique } from 'lodash';
 import styled from '@emotion/styled';
 import { derivePhaseName } from '../../utils/aria';
 import { convertDateToString } from '../../utils/formatter';
+import supportJson from '../../resources/support.json';
+import { convertNodeToElement } from 'react-html-parser';
 
 const Ul = styled.ul`
     li {
@@ -58,12 +60,15 @@ const TestReview = () => {
             />
         );
     }
-
+    // section:
     const testPlanVersion = data.testPlanVersion;
     const testCount = testPlanVersion.tests.length;
-    const atNames = unique(
-        testPlanVersion.tests.flatMap(test => test.ats.map(at => at.name))
-    );
+    const atNames = supportJson.ats.map(at => at.name);
+    // const atNames = unique(
+    //     testPlanVersion.tests.flatMap(test => test.ats.map(at => at.name))
+    // );
+    // console.log(atNames);
+    // console.log(testPlanVersion.tests);
 
     let filteredTests;
     if (activeFilter === 'All ATs') {
@@ -87,7 +92,13 @@ const TestReview = () => {
             return [key, `${key} (${count})`];
         })
     );
-
+    // section:
+    const testPlanVersionList = Object.keys(testPlanVersion.tests);
+    let testList = [];
+    testPlanVersionList.forEach(pop => {
+        testList.push(testPlanVersion.tests[pop]);
+    });
+    console.log('Yo', testList);
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -174,9 +185,10 @@ const TestReview = () => {
                 </li>
             </ul>
             <h2>List of Tests</h2>
+            {/* section: */}
             <FilterButtonContainer>
                 <FilterButtons
-                    filterLabel="Filter tests by AT"
+                    filterLabel="Filter tests by covered AT"
                     filterOptions={filterOptions}
                     activeFilter={activeFilter}
                     onFilterChange={selectedFilter => {
@@ -184,6 +196,19 @@ const TestReview = () => {
                     }}
                 />
             </FilterButtonContainer>
+            {/* section: */}
+            <h2>Supporting Documentation</h2>
+            {/* <ul> */}
+            {testPlanVersion.tests.map(test => {
+                return test.renderableContents.map(rContents => {
+                    return rContents.renderableContent.info.references.map(
+                        reference => {
+                            return reference.refId;
+                        }
+                    );
+                });
+            })}
+            {/* </ul> */}
             {filteredTests.map((test, index) => {
                 const isFirst = index === 0;
 
