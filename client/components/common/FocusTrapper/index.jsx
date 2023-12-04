@@ -2,9 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
 
-const FocusTrapper = ({ children, isActive, trappedElId }) => {
+const FocusTrapper = ({ children, isActive, initialFocusRef, trappedElId }) => {
     const focusableElsRef = useRef([]);
-
     const updateFocusableElements = () => {
         if (focusableElsRef.current.length > 0) return;
 
@@ -41,13 +40,22 @@ const FocusTrapper = ({ children, isActive, trappedElId }) => {
         const firstFocusableEl = focusableEls[1];
         // Last focusable element is before the blank 'after' div
         const lastFocusableEl = focusableEls[focusableEls.length - 2];
-
-        if (event.shiftKey && document.activeElement === firstFocusableEl) {
+        // When SHIFT + TAB is pressed and the active element is the first focusable element
+        if (
+            event.shiftKey &&
+            (document.activeElement === firstFocusableEl ||
+                document.activeElement === focusableEls[0] ||
+                document.activeElement === initialFocusRef.current)
+        ) {
             lastFocusableEl.focus();
             event.preventDefault();
-        } else if (
+        }
+        // When TAB is pressed and the active element is the last focusable element
+        else if (
             !event.shiftKey &&
-            document.activeElement === lastFocusableEl
+            (document.activeElement === lastFocusableEl ||
+                document.activeElement ===
+                    focusableEls[focusableEls.length - 1])
         ) {
             firstFocusableEl.focus();
             event.preventDefault();
@@ -60,9 +68,11 @@ const FocusTrapper = ({ children, isActive, trappedElId }) => {
             document.addEventListener('keydown', trapFocus);
         } else {
             document.removeEventListener('keydown', trapFocus);
+            focusableElsRef.current = [];
         }
 
         return () => {
+            focusableElsRef.current = [];
             document.removeEventListener('keydown', trapFocus);
         };
     }, [isActive]);
@@ -73,7 +83,10 @@ const FocusTrapper = ({ children, isActive, trappedElId }) => {
 FocusTrapper.propTypes = {
     children: PropTypes.node.isRequired,
     isActive: PropTypes.bool.isRequired,
-    trappedElId: PropTypes.string.isRequired
+    trappedElId: PropTypes.string.isRequired,
+    initialFocusRef: PropTypes.shape({
+        current: PropTypes.object
+    })
 };
 
 export default FocusTrapper;
