@@ -48,13 +48,7 @@ const BasicModal = ({
     }, []);
 
     return (
-        <FocusTrapper
-            isActive={show}
-            initialFocusRef={
-                initialFocusRef?.current ? initialFocusRef : headerRef
-            }
-            trappedElId={`focus-trapped-${id}`}
-        >
+        <FocusTrapper isActive={show} trappedElId={`focus-trapped-${id}`}>
             <Modal
                 show={show}
                 id={`focus-trapped-${id}`}
