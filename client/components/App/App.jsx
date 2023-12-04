@@ -39,7 +39,7 @@ const App = () => {
             <Container fluid>
                 <Navbar
                     bg="light"
-                    expand="lg"
+                    expand="xl"
                     aria-label="Menu"
                     expanded={isNavbarExpanded}
                     onToggle={() => setIsNavbarExpanded(previous => !previous)}
@@ -67,16 +67,21 @@ const App = () => {
                                         '/report'
                                     )}
                                 >
-                                    Test Reports
+                                    AT Interoperability Reports
                                 </Nav.Link>
                             </li>
                             <li>
                                 <Nav.Link
                                     as={Link}
                                     to="/data-management"
-                                    aria-current={location.pathname.startsWith(
-                                        '/data-management'
-                                    )}
+                                    aria-current={
+                                        location.pathname.startsWith(
+                                            '/data-management'
+                                        ) ||
+                                        location.pathname.startsWith(
+                                            '/test-review'
+                                        )
+                                    }
                                 >
                                     Data Management
                                 </Nav.Link>

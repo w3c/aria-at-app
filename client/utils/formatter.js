@@ -43,9 +43,9 @@ export const isValidDate = (date, format = 'DD-MM-YYYY') => {
     return moment(date, format).isValid();
 };
 
-export const checkTimeBetweenDates = (date, otherDate, unit = 'days') => {
+export const checkDaysBetweenDates = (date, otherDate) => {
     const _date = moment(date);
     const _otherDate = moment(otherDate);
-
-    return _date.diff(_otherDate, unit);
+    const hours = _date.diff(_otherDate, 'hours');
+    return Math.ceil(hours / 24);
 };

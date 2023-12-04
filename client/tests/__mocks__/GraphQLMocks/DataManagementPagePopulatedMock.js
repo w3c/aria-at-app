@@ -39,6 +39,16 @@ export default (
                                 releasedAt: '2021-11-01T04:00:00.000Z'
                             }
                         ],
+                        browsers: [
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            },
+                            {
+                                id: '1',
+                                name: 'Firefox'
+                            }
+                        ],
                         candidateBrowsers: [{ id: '2' }],
                         recommendedBrowsers: [{ id: '1' }, { id: '2' }]
                     },
@@ -50,6 +60,16 @@ export default (
                                 id: '2',
                                 name: '2020.4',
                                 releasedAt: '2021-02-19T05:00:00.000Z'
+                            }
+                        ],
+                        browsers: [
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            },
+                            {
+                                id: '1',
+                                name: 'Firefox'
                             }
                         ],
                         candidateBrowsers: [{ id: '2' }],
@@ -65,22 +85,22 @@ export default (
                                 releasedAt: '2019-09-01T04:00:00.000Z'
                             }
                         ],
+                        browsers: [
+                            {
+                                id: '2',
+                                name: 'Chrome'
+                            },
+                            {
+                                id: '1',
+                                name: 'Firefox'
+                            },
+                            {
+                                id: '3',
+                                name: 'Safari'
+                            }
+                        ],
                         candidateBrowsers: [{ id: '3' }],
                         recommendedBrowsers: [{ id: '2' }, { id: '3' }]
-                    }
-                ],
-                browsers: [
-                    {
-                        id: '2',
-                        name: 'Chrome'
-                    },
-                    {
-                        id: '1',
-                        name: 'Firefox'
-                    },
-                    {
-                        id: '3',
-                        name: 'Safari'
                     }
                 ],
                 testPlans: [

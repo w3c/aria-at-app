@@ -37,9 +37,9 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
         return (
             <FullHeightContainer id="main" as="main" tabIndex="-1">
                 <Helmet>
-                    <title>Test Reports | ARIA-AT</title>
+                    <title>AT Interop Reports | ARIA-AT</title>
                 </Helmet>
-                <h1>Test Reports</h1>
+                <h1>Assistive Technology Interoperability Reports</h1>
                 <p>
                     There are no results to show just yet. Please check back
                     soon!
@@ -66,9 +66,9 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>Test Reports | ARIA-AT</title>
+                <title>AT Interop Reports | ARIA-AT</title>
             </Helmet>
-            <h1>Test Reports</h1>
+            <h1>Assistive Technology Interoperability Reports</h1>
             <h2>Introduction</h2>
             <p>
                 This page offers a high-level view of all results which have

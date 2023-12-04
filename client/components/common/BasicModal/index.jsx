@@ -29,31 +29,42 @@ const BasicModal = ({
     handleAction = null,
     handleHide = null,
     staticBackdrop = false,
-    useOnHide = false
+    useOnHide = false,
+    initialFocusRef = null
 }) => {
     const headerRef = useRef();
 
     useEffect(() => {
         if (!show) return;
-        headerRef.current.focus();
+        if (initialFocusRef?.current) {
+            initialFocusRef.current.focus();
+        } else {
+            headerRef.current.focus();
+        }
     }, [show]);
 
     const id = useMemo(() => {
-        return uniqueId('focus-trapped-modal-');
+        return uniqueId('modal-');
     }, []);
 
     return (
-        <FocusTrapper isActive={show} trappedElId={id}>
+        <FocusTrapper
+            isActive={show}
+            initialFocusRef={
+                initialFocusRef?.current ? initialFocusRef : headerRef
+            }
+            trappedElId={`focus-trapped-${id}`}
+        >
             <Modal
                 show={show}
-                id={id}
+                id={`focus-trapped-${id}`}
                 centered={centered}
                 animation={animation}
                 onHide={useOnHide ? handleHide || handleClose : null}
                 onExit={!useOnHide ? handleHide || handleClose : null}
                 /* Disabled due to buggy implementation which jumps the page */
                 autoFocus={false}
-                aria-labelledby="basic-modal"
+                aria-labelledby={`title-${id}`}
                 dialogClassName={dialogClassName}
                 backdrop={staticBackdrop ? 'static' : true}
             >
@@ -65,6 +76,7 @@ const BasicModal = ({
                         as={ModalTitleStyle}
                         tabIndex="-1"
                         ref={headerRef}
+                        id={`title-${id}`}
                     >
                         {title}
                     </Modal.Title>
@@ -111,7 +123,10 @@ BasicModal.propTypes = {
     handleAction: PropTypes.func,
     handleHide: PropTypes.func,
     staticBackdrop: PropTypes.bool,
-    useOnHide: PropTypes.bool
+    useOnHide: PropTypes.bool,
+    initialFocusRef: PropTypes.shape({
+        current: PropTypes.any
+    })
 };
 
 export default BasicModal;

@@ -21,7 +21,6 @@ const TestQueue = () => {
     const [pageReady, setPageReady] = useState(false);
     const [testers, setTesters] = useState([]);
     const [ats, setAts] = useState([]);
-    const [browsers, setBrowsers] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
     const [testPlanReports, setTestPlanReports] = useState([]);
     const [latestTestPlanVersions, setLatestTestPlanVersions] = useState([]);
@@ -45,7 +44,6 @@ const TestQueue = () => {
             const {
                 users = [],
                 ats = [],
-                browsers = [],
                 testPlanVersions = [],
                 testPlanReports = [],
                 testPlans = []
@@ -60,7 +58,6 @@ const TestQueue = () => {
             setAts(ats);
             setTestPlanVersions(testPlanVersions);
             setTestPlanReports(testPlanReports);
-            setBrowsers(browsers);
             setLatestTestPlanVersions(testPlans);
             setPageReady(true);
         }
@@ -254,7 +251,6 @@ const TestQueue = () => {
             {isAdmin && (
                 <ManageTestQueue
                     ats={ats}
-                    browsers={browsers}
                     testPlanVersions={testPlanVersions}
                     triggerUpdate={refetch}
                 />

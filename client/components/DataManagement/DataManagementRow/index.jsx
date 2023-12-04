@@ -9,7 +9,7 @@ import {
 } from '../queries';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import {
-    checkTimeBetweenDates,
+    checkDaysBetweenDates,
     convertDateToString,
     convertStringFormatToAnotherFormat
 } from '../../../utils/formatter';
@@ -553,7 +553,7 @@ const DataManagementRow = ({
                         <VersionString
                             role="listitem"
                             iconColor="#2BA51C"
-                            linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                            linkHref={`/test-review/${latestVersion.id}`}
                         >
                             {latestVersion.versionString}
                         </VersionString>
@@ -682,7 +682,7 @@ const DataManagementRow = ({
                                 role="listitem"
                                 iconColor="#2BA51C"
                                 linkRef={draftVersionStringRef}
-                                linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                                linkHref={`/test-review/${latestVersion.id}`}
                             >
                                 {latestVersion.versionString}
                             </VersionString>
@@ -842,7 +842,7 @@ const DataManagementRow = ({
                     const candidatePhaseReachedDate = new Date(
                         latestVersion.candidatePhaseReachedAt
                     );
-                    const daysInReview = checkTimeBetweenDates(
+                    const daysInReview = checkDaysBetweenDates(
                         currentDate,
                         candidatePhaseReachedDate
                     );
@@ -851,19 +851,16 @@ const DataManagementRow = ({
                     let timeToTargetDate = 0;
                     if (currentDate > recommendedPhaseTargetDate) {
                         // Indicates that this is in the past
-                        timeToTargetDate = checkTimeBetweenDates(
+                        timeToTargetDate = checkDaysBetweenDates(
                             currentDate,
                             recommendedPhaseTargetDate
                         );
                         timeToTargetDate = -timeToTargetDate;
                     } else
-                        timeToTargetDate = checkTimeBetweenDates(
+                        timeToTargetDate = checkDaysBetweenDates(
                             recommendedPhaseTargetDate,
                             currentDate
                         );
-
-                    const shouldShowAdvanceButton =
-                        isAdmin && issuesCount === 0;
 
                     let coveredReports = [];
                     latestVersion.testPlanReports.forEach(testPlanReport => {
@@ -879,19 +876,16 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
                     return (
-                        <PhaseCell
-                            role="list"
-                            aria-setsize={shouldShowAdvanceButton ? 5 : 4}
-                        >
+                        <PhaseCell role="list" aria-setsize={isAdmin ? 5 : 4}>
                             <VersionString
                                 role="listitem"
                                 iconColor="#2BA51C"
                                 linkRef={candidateVersionStringRef}
-                                linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                                linkHref={`/test-review/${latestVersion.id}`}
                             >
                                 {latestVersion.versionString}
                             </VersionString>
-                            {shouldShowAdvanceButton && (
+                            {isAdmin && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
                                     className="advance-button"
@@ -1006,7 +1000,7 @@ const DataManagementRow = ({
                             role="listitem"
                             iconColor="#2BA51C"
                             linkRef={recommendedVersionStringRef}
-                            linkHref={`/test-review/${latestVersion.gitSha}/${latestVersion.testPlan.directory}`}
+                            linkHref={`/test-review/${latestVersion.id}`}
                         >
                             {latestVersion.versionString}
                         </VersionString>

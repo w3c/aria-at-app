@@ -33,10 +33,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 name
             }
         }
-        browsers {
-            id
-            name
-        }
         testPlanVersions {
             id
             title
@@ -113,11 +109,13 @@ export const TEST_PLAN_REPORT_QUERY = gql`
             testPlanVersion {
                 id
                 title
+                phase
                 gitSha
                 gitMessage
                 testPlan {
                     directory
                 }
+                versionString
                 updatedAt
             }
             draftTestPlanRuns {
