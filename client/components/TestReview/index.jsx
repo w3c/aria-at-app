@@ -98,7 +98,8 @@ const TestReview = () => {
     testPlanVersionList.forEach(pop => {
         testList.push(testPlanVersion.tests[pop]);
     });
-    console.log('Yo', testList);
+    // console.log('Yo', testList);
+    console.log('Yo', filteredTests);
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -198,17 +199,51 @@ const TestReview = () => {
             </FilterButtonContainer>
             {/* section: */}
             <h2>Supporting Documentation</h2>
-            {/* <ul> */}
-            {testPlanVersion.tests.map(test => {
-                return test.renderableContents.map(rContents => {
-                    return rContents.renderableContent.info.references.map(
-                        reference => {
-                            return reference.refId;
+            <ul>
+                {/* {testPlanVersion.tests.map(test => {
+                    return test.renderableContents.map(rContents => {
+                        return rContents.renderableContent.info.references.map(
+                            reference => {
+                                return (
+                                    <li key={reference.value}>
+                                        {reference.refId}
+                                    </li>
+                                );
+                            }
+                        );
+                    });
+                })} */}
+                {testPlanVersion.tests[0].renderableContents[0].renderableContent.info.references.map(
+                    reference => {
+                        let refId = '';
+                        let refValue = '';
+                        if (reference.refId === 'example') {
+                            refId = reference.refId;
+                            refValue = reference.value;
                         }
-                    );
-                });
-            })}
-            {/* </ul> */}
+                        if (reference.refId === 'designPattern') {
+                            refId = reference.refId;
+                            refValue = reference.value;
+                        }
+                        if (reference.refId === 'developmentDocumentation') {
+                            refId = reference.refId;
+                            refValue = reference.value;
+                        }
+                        return (
+                            <li key={refValue}>
+                                {/* {reference.refId}:{' '} */}
+                                <a
+                                    href={refValue}
+                                    rel="noreferrer"
+                                    target="_blank"
+                                >
+                                    {refId}
+                                </a>
+                            </li>
+                        );
+                    }
+                )}
+            </ul>
             {filteredTests.map((test, index) => {
                 const isFirst = index === 0;
 
