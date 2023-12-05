@@ -507,6 +507,12 @@ const DataManagementRow = ({
             }
         };
 
+        // TODO: Remove this testFormatVersion check when #745 is implemented
+        const getLinkHref = version =>
+            version.metadata?.testFormatVersion === 2
+                ? null
+                : `/test-review/${version.id}`;
+
         switch (phase) {
             case 'RD': {
                 // If the latest version of the plan is in the draft, candidate, or recommended
@@ -548,12 +554,15 @@ const DataManagementRow = ({
                 // Otherwise, show VERSION_STRING link with a draft transition button. Phase is
                 // "active"
                 insertActivePhaseForTestPlan(latestVersion);
+
+                // TODO: Remove this testFormatVersion check when #745 is implemented
+                const linkHref = getLinkHref(latestVersion);
                 return (
                     <PhaseCell role="list" aria-setsize={isAdmin ? 2 : 1}>
                         <VersionString
                             role="listitem"
                             iconColor="#2BA51C"
-                            linkHref={`/test-review/${latestVersion.id}`}
+                            linkHref={linkHref}
                         >
                             {latestVersion.versionString}
                         </VersionString>
@@ -676,13 +685,15 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
 
+                    // TODO: Remove this testFormatVersion check when #745 is implemented
+                    const linkHref = getLinkHref(latestVersion);
                     return (
                         <PhaseCell role="list" aria-setsize={isAdmin ? 3 : 2}>
                             <VersionString
                                 role="listitem"
                                 iconColor="#2BA51C"
                                 linkRef={draftVersionStringRef}
-                                linkHref={`/test-review/${latestVersion.id}`}
+                                linkHref={linkHref}
                             >
                                 {latestVersion.versionString}
                             </VersionString>
@@ -880,6 +891,9 @@ const DataManagementRow = ({
 
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
+
+                    // TODO: Remove this testFormatVersion check when #745 is implemented
+                    const linkHref = getLinkHref(latestVersion);
                     return (
                         <PhaseCell
                             role="list"
@@ -889,7 +903,7 @@ const DataManagementRow = ({
                                 role="listitem"
                                 iconColor="#2BA51C"
                                 linkRef={candidateVersionStringRef}
-                                linkHref={`/test-review/${latestVersion.id}`}
+                                linkHref={linkHref}
                             >
                                 {latestVersion.versionString}
                             </VersionString>
@@ -998,13 +1012,16 @@ const DataManagementRow = ({
 
                 // Phase is "active"
                 insertActivePhaseForTestPlan(latestVersion);
+
+                // TODO: Remove this testFormatVersion check when #745 is implemented
+                const linkHref = getLinkHref(latestVersion);
                 return (
                     <PhaseCell role="list">
                         <VersionString
                             role="listitem"
                             iconColor="#2BA51C"
                             linkRef={recommendedVersionStringRef}
-                            linkHref={`/test-review/${latestVersion.id}`}
+                            linkHref={linkHref}
                         >
                             {latestVersion.versionString}
                         </VersionString>
