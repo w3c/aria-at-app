@@ -25,11 +25,11 @@ export const useTestPlanRunIsFinished = testPlanRunId => {
     );
 
     const runIsFinished = useMemo(() => {
-        if (!testPlanRunCompletionQuery) {
+        if (!testPlanRunCompletionQuery?.testPlanRun?.testResults.length) {
             return false;
         }
 
-        return testPlanRunCompletionQuery.testPlanRun?.testResults.every(
+        return testPlanRunCompletionQuery.testPlanRun.testResults.every(
             testResult => testResult.completedAt !== null
         );
     }, [testPlanRunId, testPlanRunCompletionQuery]);
