@@ -142,6 +142,7 @@ describe('graphql', () => {
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
+            ['AssertionResult', 'failedReason'], // Deprecated
             ['PopulatedData', 'atVersion'],
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
@@ -410,7 +411,6 @@ describe('graphql', () => {
                                             id
                                         }
                                         passed
-                                        failedReason
                                     }
                                     unexpectedBehaviors {
                                         __typename
@@ -832,7 +832,6 @@ const getMutationInputs = async () => {
                 assertionResults {
                     id
                     passed
-                    failedReason
                 }
                 unexpectedBehaviors {
                     id

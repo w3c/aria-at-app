@@ -30,6 +30,13 @@ const testPlanReportsResolver = async (
         attributes: testPlanReportAttributes
     } = retrieveAttributes('testPlanReport', TEST_PLAN_REPORT_ATTRIBUTES, info);
 
+    const { attributes: testPlanRunAttributes } = retrieveAttributes(
+        'draftTestPlanRuns',
+        TEST_PLAN_RUN_ATTRIBUTES,
+        info,
+        false
+    );
+
     const { attributes: testPlanVersionAttributes } = retrieveAttributes(
         'testPlanVersion',
         TEST_PLAN_VERSION_ATTRIBUTES,
@@ -57,7 +64,7 @@ const testPlanReportsResolver = async (
         null,
         where,
         testPlanReportAttributes,
-        TEST_PLAN_RUN_ATTRIBUTES,
+        testPlanRunAttributes,
         testPlanVersionAttributes,
         null,
         null,

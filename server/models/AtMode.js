@@ -21,14 +21,17 @@ module.exports = function (sequelize, DataTypes) {
             },
             name: {
                 type: DataTypes.TEXT,
-                // type: DataTypes.ENUM(
-                //     MODE.READING,
-                //     MODE.INTERACTION,
-                //     MODE.MODELESS
-                // ),
                 defaultValue: MODE.MODELESS,
                 allowNull: false,
                 primaryKey: true
+            },
+            screenText: {
+                type: DataTypes.TEXT,
+                allowNull: true
+            },
+            instructions: {
+                type: DataTypes.ARRAY(DataTypes.TEXT),
+                allowNull: true
             }
         },
         {

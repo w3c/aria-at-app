@@ -15,17 +15,21 @@ let assertionResultId1;
 let assertionResultId2;
 let assertionResultId3;
 
-const getTestPlanVersionId = async () => {
+const getTestPlanVersionId = async (testFormatVersion = 1) => {
     const queryResult = await query(gql`
         query {
             testPlanVersions {
                 id
                 title
+                metadata
             }
         }
     `);
     testPlanVersionId = queryResult.testPlanVersions.find(
-        each => each.title === 'Checkbox Example (Two State)'
+        each =>
+            each.title === 'Checkbox Example (Two State)' &&
+            (!each.metadata.testFormatVersion ||
+                each.metadata.testFormatVersion === testFormatVersion)
     ).id;
 };
 
@@ -189,17 +193,14 @@ describe('testPlanRun', () => {
                                             {
                                                 id: "${assertionResultId1}"
                                                 passed: true
-                                                failedReason: null
                                             }
                                             {
                                                 id: "${assertionResultId2}"
                                                 passed: null
-                                                failedReason: null
                                             }
                                             {
                                                 id: "${assertionResultId3}"
                                                 passed: null
-                                                failedReason: null
                                             }
                                         ]
                                         unexpectedBehaviors: []
@@ -248,17 +249,14 @@ describe('testPlanRun', () => {
                                             {
                                                 id: "${assertionResultId1}"
                                                 passed: true
-                                                failedReason: null
                                             }
                                             {
                                                 id: "${assertionResultId2}"
                                                 passed: null
-                                                failedReason: null
                                             }
                                             {
                                                 id: "invalid-id-123" # invalid
                                                 passed: null
-                                                failedReason: null
                                             }
                                         ]
                                         unexpectedBehaviors: []
@@ -301,17 +299,14 @@ describe('testPlanRun', () => {
                                                 {
                                                     id: "${assertionResultId1}"
                                                     passed: true
-                                                    failedReason: null
                                                 }
                                                 {
                                                     id: "${assertionResultId2}"
                                                     passed: false
-                                                    failedReason: NO_OUTPUT
                                                 }
                                                 {
                                                     id: "${assertionResultId3}"
                                                     passed: false
-                                                    failedReason: INCORRECT_OUTPUT
                                                 }
                                             ]
                                             unexpectedBehaviors: []
@@ -355,17 +350,14 @@ describe('testPlanRun', () => {
                                             {
                                                 id: "${assertionResultId1}"
                                                 passed: true
-                                                failedReason: null
                                             }
                                             {
                                                 id: "${assertionResultId2}"
                                                 passed: false
-                                                failedReason: NO_OUTPUT
                                             }
                                             {
                                                 id: "${assertionResultId3}"
                                                 passed: null # invalid
-                                                failedReason: INCORRECT_OUTPUT
                                             }
                                         ]
                                         unexpectedBehaviors: []

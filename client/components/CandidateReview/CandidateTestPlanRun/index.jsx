@@ -498,6 +498,9 @@ const CandidateTestPlanRun = () => {
                         at={testPlanReport.at}
                         test={currentTest}
                         testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
+                        testFormatVersion={
+                            testPlanVersion.metadata.testFormatVersion
+                        }
                     />,
                     ...testPlanReports.map(testPlanReport => {
                         const testResult =
