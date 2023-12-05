@@ -25,7 +25,7 @@ export const useTestPlanRunIsFinished = testPlanRunId => {
     );
 
     const runIsFinished = useMemo(() => {
-        if (!testPlanRunCompletionQuery?.testPlanRun?.testResults?.length) {
+        if (!testPlanRunCompletionQuery?.testPlanRun?.testResults.length) {
             return false;
         }
 
