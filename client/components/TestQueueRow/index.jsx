@@ -569,7 +569,7 @@ const TestQueueRow = ({
                             {isAdmin && renderOpenAsDropdown()}
                             {isAdmin && renderDeleteMenu()}
                             {(!isAdmin &&
-                                currentUserTestPlanRun.testResultsLength && (
+                                currentUserTestPlanRun.testResultsLength > 0 && (
                                     <Button
                                         ref={deleteTesterResultsButtonRef}
                                         variant="danger"
