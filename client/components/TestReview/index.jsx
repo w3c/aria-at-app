@@ -69,7 +69,6 @@ const TestReview = () => {
     // );
     // console.log(atNames);
     // console.log(testPlanVersion.tests);
-
     let filteredTests;
     if (activeFilter === 'All ATs') {
         filteredTests = testPlanVersion.tests;
@@ -99,7 +98,6 @@ const TestReview = () => {
         testList.push(testPlanVersion.tests[pop]);
     });
     // console.log('Yo', testList);
-    console.log('Yo', filteredTests);
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -213,36 +211,56 @@ const TestReview = () => {
                         );
                     });
                 })} */}
-                {testPlanVersion.tests[0].renderableContents[0].renderableContent.info.references.map(
-                    reference => {
-                        let refId = '';
-                        let refValue = '';
-                        if (reference.refId === 'example') {
-                            refId = reference.refId;
-                            refValue = reference.value;
-                        }
-                        if (reference.refId === 'designPattern') {
-                            refId = reference.refId;
-                            refValue = reference.value;
-                        }
-                        if (reference.refId === 'developmentDocumentation') {
-                            refId = reference.refId;
-                            refValue = reference.value;
-                        }
-                        return (
-                            <li key={refValue}>
-                                {/* {reference.refId}:{' '} */}
-                                <a
-                                    href={refValue}
-                                    rel="noreferrer"
-                                    target="_blank"
-                                >
-                                    {refId}
-                                </a>
-                            </li>
-                        );
-                    }
-                )}
+
+                {testPlanVersion.tests[0].renderableContents.info
+                    ? testPlanVersion.tests[0].renderableContents.info.references.map(
+                          reference => {
+                              return (
+                                  <li key={reference.value}>
+                                      {/* {reference.refId}:{' '} */}
+                                      <a
+                                          href={reference.value}
+                                          rel="noreferrer"
+                                          target="_blank"
+                                      >
+                                          {reference.linkText}
+                                      </a>
+                                  </li>
+                              );
+                          }
+                      )
+                    : testPlanVersion.tests[0].renderableContents[0].renderableContent.info.references.map(
+                          reference => {
+                              let refId = '';
+                              let refValue = '';
+                              if (reference.refId === 'example') {
+                                  refId = reference.refId;
+                                  refValue = reference.value;
+                              }
+                              if (reference.refId === 'designPattern') {
+                                  refId = reference.refId;
+                                  refValue = reference.value;
+                              }
+                              if (
+                                  reference.refId === 'developmentDocumentation'
+                              ) {
+                                  refId = reference.refId;
+                                  refValue = reference.value;
+                              }
+                              return (
+                                  <li key={refValue}>
+                                      {/* {reference.refId}:{' '} */}
+                                      <a
+                                          href={refValue}
+                                          rel="noreferrer"
+                                          target="_blank"
+                                      >
+                                          {refId}
+                                      </a>
+                                  </li>
+                              );
+                          }
+                      )}
             </ul>
             {filteredTests.map((test, index) => {
                 const isFirst = index === 0;
