@@ -24,6 +24,7 @@ const {
 } = require('../models/services/TestResultReadService');
 const http = require('http');
 const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
+const { NO_OUTPUT_STRING } = require('../util/constants');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -257,9 +258,7 @@ const updateJobResults = async (req, res) => {
 // This checkbox stores 'No output was detected.' as the output value for that scenarioResult.
 const convertEmptyStringsToNoOutputMessages = outputs =>
     outputs.map(output =>
-        output === null || output.trim() === ''
-            ? 'No output was detected.'
-            : output
+        output === null || output.trim() === '' ? NO_OUTPUT_STRING : output
     );
 
 module.exports = {
