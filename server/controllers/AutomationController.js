@@ -256,7 +256,11 @@ const updateJobResults = async (req, res) => {
 // Human test runners are able to use a checkbox to indicate no output was detected.
 // This checkbox stores 'No output was detected.' as the output value for that scenarioResult.
 const convertEmptyStringsToNoOutputMessages = outputs =>
-    outputs.map(output => (output === '' ? 'No output was detected.' : output));
+    outputs.map(output =>
+        output === null || output.trim() === ''
+            ? 'No output was detected.'
+            : output
+    );
 
 module.exports = {
     cancelJob,
