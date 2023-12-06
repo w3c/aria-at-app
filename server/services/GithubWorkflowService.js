@@ -1,4 +1,5 @@
 //import token from '../.github-app-token.json';
+const axios = require('axios');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
@@ -92,31 +93,25 @@ const createJWT = (payload, privateKey, algorithm) => {
 const calculateExpiresAt = () => Math.round(Date.now() / 1000) + 9 * ONE_MINUTE;
 
 const fetchInstallationAccessToken = async (jsonWebToken, installationID) => {
-    const response = await fetch(
-        `https://api.github.com/app/installations/${installationID}/access_tokens`,
-        {
-            method: 'POST',
-            headers: {
-                Accept: 'application/vnd.github+json',
-                Authorization: `Bearer ${jsonWebToken}`,
-                'X-GitHub-Api-Version': '2022-11-28'
-            }
-        }
-    );
+    const response = await axios({
+        method: 'POST',
+        url: `https://api.github.com/app/installations/${installationID}/access_tokens`,
+        headers: {
+            Accept: 'application/vnd.github+json',
+            Authorization: `Bearer ${jsonWebToken}`,
+            'X-GitHub-Api-Version': '2022-11-28'
+        },
+        transformResponse: [],
+        validateStatus: () => true,
+        responseType: 'text'
+    });
 
-    if (!response.ok) {
-        const message = await (() => {
-            try {
-                return response.text();
-            } catch (_) {
-                return 'Unable to retrieve installation access token';
-            }
-        })();
-
-        throw new Error(message);
+    if (response.status < 200 || response.status >= 300) {
+        throw new Error(
+            response.data ?? 'Unable to retrieve installation access token'
+        );
     }
-
-    return (await response.json()).token;
+    return JSON.parse(response.data).token;
 };
 
 const createGithubWorkflow = async ({ job, directory, gitSha }) => {
@@ -138,32 +133,25 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
         test_pattern: 'reference/**,test-*-nvda.*',
         aria_at_ref: gitSha
     };
-    const response = await fetch(
-        `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${WORKFLOW_FILE_NAME}/dispatches`,
-        {
-            method: 'POST',
-            headers: {
-                Accept: 'application/vnd.github+json',
-                Authorization: `Bearer ${accessToken}`,
-                'X-GitHub-Api-Version': '2022-11-28'
-            },
-            body: JSON.stringify({
-                ref: 'main',
-                inputs
-            })
-        }
-    );
+    const axiosConfig = {
+        method: 'POST',
+        url: `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${WORKFLOW_FILE_NAME}/dispatches`,
 
-    if (!response.ok) {
-        const message = await (() => {
-            try {
-                return response.text();
-            } catch (_) {
-                return 'Unable to initiate workflow';
-            }
-        })();
-
-        throw new Error(message);
+        headers: {
+            Accept: 'application/vnd.github+json',
+            Authorization: `Bearer ${accessToken}`,
+            'X-GitHub-Api-Version': '2022-11-28'
+        },
+        data: JSON.stringify({
+            ref: 'main',
+            inputs
+        }),
+        validateStatus: () => true,
+        responseType: 'text'
+    };
+    const response = await axios(axiosConfig);
+    if (response.status < 200 || response.status >= 300) {
+        throw new Error(response.data ?? 'Unable to initiate workflow');
     }
 
     return true;
