@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { Feedback } from '..';
 import { Form } from 'react-bootstrap';
-import { noOutputTextAreaValue } from './constants';
+import { NO_OUTPUT_STRING } from './constants';
 
 const OutputTextAreaWrapper = styled.div`
     > textarea {
@@ -28,7 +28,7 @@ const OutputTextArea = ({
     readOnly = false
 }) => {
     const [noOutput, setNoOutput] = useState(
-        atOutput.value === noOutputTextAreaValue
+        atOutput.value === NO_OUTPUT_STRING
     );
 
     const isMounted = useRef(false);
@@ -36,7 +36,7 @@ const OutputTextArea = ({
     useEffect(() => {
         if (isMounted.current) {
             if (noOutput) {
-                atOutput.change(noOutputTextAreaValue);
+                atOutput.change(NO_OUTPUT_STRING);
             } else {
                 atOutput.change('');
             }
@@ -46,7 +46,7 @@ const OutputTextArea = ({
     }, [noOutput]);
 
     useEffect(() => {
-        setNoOutput(atOutput.value === noOutputTextAreaValue);
+        setNoOutput(atOutput.value === NO_OUTPUT_STRING);
     }, [atOutput.value]);
 
     return (
@@ -68,9 +68,7 @@ const OutputTextArea = ({
             </label>
             <NoOutputCheckbox
                 checked={noOutput}
-                disabled={
-                    atOutput.value && atOutput.value !== noOutputTextAreaValue
-                }
+                disabled={atOutput.value && atOutput.value !== NO_OUTPUT_STRING}
                 label="No output"
                 id={`no-output-checkbox-${commandIndex}`}
                 type="checkbox"
