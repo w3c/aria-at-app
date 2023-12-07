@@ -29,7 +29,8 @@ const { HttpQueryError } = require('apollo-server-core');
 const { runnableTests } = require('../../resolvers/TestPlanReport');
 const { default: axios } = require('axios');
 const {
-    default: createGithubWorkflow
+    default: createGithubWorkflow,
+    isEnabled: isGithubWorkflowEnabled,
 } = require('../../services/GithubWorkflowService');
 
 const includeBrowserVersion = {
@@ -82,11 +83,6 @@ const axiosConfig = {
     },
     timeout: 1000
 };
-
-const automationSchedulerMockEnabled = !(
-    process.env.ENVRIONMENT == 'production' ||
-    process.env.AUTOMATION_CALLBACK_FQDN
-);
 
 /**
  * @param {object} collectionJob - CollectionJob to be created
@@ -218,7 +214,10 @@ const triggerWorkflow = async (job, testIds, options) => {
     const { testPlanVersion } = job.testPlanRun.testPlanReport;
     const { gitSha, directory } = testPlanVersion;
     try {
-        if (automationSchedulerMockEnabled) {
+        if (isGithubWorkflowEnabled()) {
+            // TODO: pass the reduced list of testIds along / deal with them somehow
+            await createGithubWorkflow({ job, directory, gitSha });
+        } else {
             await axios.post(
                 `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
                 {
@@ -229,9 +228,6 @@ const triggerWorkflow = async (job, testIds, options) => {
                 },
                 axiosConfig
             );
-        } else {
-            // TODO: pass the reduced list of testIds along / deal with them somehow
-            await createGithubWorkflow({ job, directory, gitSha });
         }
     } catch (error) {
         // TODO: What to do with the actual error (could be nice to have an additional "string" status field?)
