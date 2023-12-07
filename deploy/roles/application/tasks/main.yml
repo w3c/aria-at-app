@@ -51,7 +51,7 @@
 
 - name: Insert JWT signing key
   copy:
-    dest: '{{source_dir}}/{{application_user}}/jwt-signing-key.pem'
+    dest: '{{source_dir}}/jwt-signing-key.pem'
     src: files/jwt-signing-key.pem.enc
     owner: '{{application_user}}'
   become: yes
