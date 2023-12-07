@@ -68,7 +68,7 @@ const TestReview = () => {
     //     testPlanVersion.tests.flatMap(test => test.ats.map(at => at.name))
     // );
     // console.log(atNames);
-    // console.log(testPlanVersion.tests);
+    console.log(testPlanVersion.tests);
     let filteredTests;
     if (activeFilter === 'All ATs') {
         filteredTests = testPlanVersion.tests;
