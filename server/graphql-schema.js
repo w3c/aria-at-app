@@ -779,7 +779,6 @@ const graphqlSchema = gql`
         Postgres-provided numeric ID.
         """
         id: ID!
-        # TODO: make optional once automation is introduced.
         """
         The person who executed the tests.
         """

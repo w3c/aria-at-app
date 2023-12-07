@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import BasicModal from '../common/BasicModal';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { ADD_TEST_QUEUE_MUTATION } from '../TestQueue/queries';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import {
@@ -10,7 +10,10 @@ import {
     isSupportedByResponseCollector
 } from '../../utils/automation';
 import './AddTestToQueueWithConfirmation.css';
-import { SCHEDULE_COLLECTION_JOB_MUTATION } from './queries';
+import {
+    SCHEDULE_COLLECTION_JOB_MUTATION,
+    TEST_PLAN_RUN_REPORTS_INITIATED_BY_AUTOMATION
+} from './queries';
 
 function AddTestToQueueWithConfirmation({
     testPlanVersion,
@@ -23,6 +26,17 @@ function AddTestToQueueWithConfirmation({
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
     const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION);
+    const { data: testPlanReportsInitiatedByAutomation } = useQuery(
+        TEST_PLAN_RUN_REPORTS_INITIATED_BY_AUTOMATION,
+        {
+            variables: {
+                testPlanVersionId: testPlanVersion?.id
+            },
+            fetchPolicy: 'cache-and-network',
+            skip: !testPlanVersion?.id
+        }
+    );
+
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const buttonRef = useRef();
 
@@ -30,6 +44,12 @@ function AddTestToQueueWithConfirmation({
         at,
         browser
     });
+    const alreadyHasBotInTestPlanReport =
+        testPlanReportsInitiatedByAutomation?.testPlanVersion.testPlanReports.some(
+            tpr =>
+                tpr.markedFinalAt === null &&
+                tpr.draftTestPlanRuns.some(run => run.initiatedByAutomation)
+        );
 
     const feedbackModalTitle =
         hasAutomationSupport && testPlanVersion
@@ -65,23 +85,24 @@ function AddTestToQueueWithConfirmation({
     const renderConfirmation = () => {
         const actions = [];
         if (hasAutomationSupport) {
-            actions.push(
-                {
-                    label: 'Add and run later',
-                    onClick: async () => {
-                        await addTestToQueue();
-                        await closeWithUpdate();
-                    }
-                },
-                {
+            actions.push({
+                label: 'Add and run later',
+                onClick: async () => {
+                    await addTestToQueue();
+                    await closeWithUpdate();
+                }
+            });
+
+            if (!alreadyHasBotInTestPlanReport) {
+                actions.push({
                     label: 'Add and run with bot',
                     onClick: async () => {
                         const testPlanReport = await addTestToQueue();
                         await scheduleCollectionJob(testPlanReport);
                         await closeWithUpdate();
                     }
-                }
-            );
+                });
+            }
         }
         return (
             <BasicModal
