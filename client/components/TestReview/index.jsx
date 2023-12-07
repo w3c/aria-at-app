@@ -39,8 +39,8 @@ const TestReview = () => {
     if (loading) {
         return (
             <PageStatus
-                title="Loading - Tests for Test Plan Version | ARIA-AT"
-                heading="Tests for Test Plan Version"
+                title="Loading - Test Plan Version | ARIA-AT"
+                heading="Test Plan Version"
             />
         );
     }
@@ -51,8 +51,8 @@ const TestReview = () => {
             `Failed to find a test plan version with ID ${testPlanVersionId}`;
         return (
             <PageStatus
-                title="Tests for Test Plan Version | ARIA-AT"
-                heading="Tests for Test Plan Version"
+                title="Test Plan Version | ARIA-AT"
+                heading="Test Plan Version"
                 message={errorMessage}
                 isError
             />
@@ -91,20 +91,14 @@ const TestReview = () => {
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
-                <title>{`Tests for ${testPlanVersion.title} ${testPlanVersion.versionString} | ARIA-AT`}</title>
+                <title>{`${testPlanVersion.title} Test Plan ${testPlanVersion.versionString} | ARIA-AT`}</title>
             </Helmet>
             <h1>
-                {`Tests for ${testPlanVersion.title} ` +
+                {`${testPlanVersion.title} Test Plan ` +
                     `${testPlanVersion.versionString}` +
                     `${testPlanVersion.deprecatedAt ? ' (Deprecated)' : ''}`}
             </h1>
-            <h2>Introduction</h2>
-            <p>
-                {`This page contains ${testCount} tests the ARIA-AT team ` +
-                    `has authored for ${testPlanVersion.title}, version ` +
-                    `${testPlanVersion.versionString}.`}
-            </p>
-            <h2>Metadata</h2>
+            <h2>About This Test Plan</h2>
             <ul>
                 <li>
                     <strong>Phase:&nbsp;</strong>
@@ -173,7 +167,7 @@ const TestReview = () => {
                     {testPlanVersion.gitMessage}
                 </li>
             </ul>
-            <h2>List of Tests</h2>
+            <h2>Tests</h2>
             <FilterButtonContainer>
                 <FilterButtons
                     filterLabel="Filter tests by AT"
