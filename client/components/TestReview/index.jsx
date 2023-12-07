@@ -266,8 +266,8 @@ const TestReview = () => {
                 const isFirst = index === 0;
 
                 const atMode =
-                    test.atMode.substring(0, 1) +
-                    test.atMode.toLowerCase().substring(1);
+                    test.atMode?.substring(0, 1) +
+                    test.atMode?.toLowerCase().substring(1);
 
                 const specifications =
                     test.renderableContents[0].renderableContent.info.references.map(

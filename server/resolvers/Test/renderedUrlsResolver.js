@@ -1,6 +1,25 @@
+const populateData = require('../../services/PopulatedData/populateData');
+
 const renderedUrls = async (test, _, context) => {
     const ats = await context.atLoader.getAll();
 
+    const { testPlanVersion } = await populateData(
+        { testId: test.id },
+        { context }
+    );
+
+    const isV2 = testPlanVersion.metadata.testFormatVersion === 2;
+    if (isV2) {
+        // TODO: This is only accounting for 1 test however so this needs to be fixed
+        return [
+            {
+                at: ats.find(at => at.id === test.atIds[0]),
+                renderedUrl: test.renderedUrl // { renderedUrl: '/url/file/path.html' }
+            }
+        ];
+    }
+
+    // v1: { renderedUrls: { 1: '/url/file/path.html' } }
     return Object.entries(test.renderedUrls).map(([atId, renderedUrl]) => {
         const at = ats.find(at => at.id == atId);
         return { at, renderedUrl };
