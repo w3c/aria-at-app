@@ -30,16 +30,22 @@ const createTestResultSkeleton = ({
                     id: scenarioResultId,
                     scenarioId: scenario.id,
                     output: null,
-                    assertionResults: test.assertions.map(assertion => {
-                        return {
-                            id: createAssertionResultId(
-                                scenarioResultId,
-                                assertion.id
-                            ),
-                            assertionId: assertion.id,
-                            passed: null
-                        };
-                    }),
+                    assertionResults: test.assertions.map(assertion => ({
+                        id: createAssertionResultId(
+                            scenarioResultId,
+                            assertion.id
+                        ),
+                        assertionId: assertion.id,
+                        passed: null,
+                        exclude: assertion.assertionExceptions?.some(
+                            e =>
+                                scenario.commands.find(
+                                    c =>
+                                        c.id === e.commandId &&
+                                        c.settings === e.settings
+                                ) && e.priority === 'EXCLUDE'
+                        )
+                    })),
                     unexpectedBehaviors: null
                 };
             })

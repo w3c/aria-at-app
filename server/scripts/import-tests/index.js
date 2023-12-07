@@ -465,6 +465,33 @@ const getTests = ({
                         tokenizedAssertionStatement ||
                         assertion.assertionStatement;
                     result.assertionPhrase = assertion.assertionPhrase;
+                    result.assertionExceptions = data.commands.flatMap(
+                        command => {
+                            return command.assertionExceptions
+                                .filter(
+                                    exception =>
+                                        exception.assertionId ===
+                                        assertion.assertionId
+                                )
+                                .map(({ priority: assertionPriority }) => {
+                                    let priority = '';
+                                    if (assertionPriority === 0)
+                                        priority = 'EXCLUDE';
+                                    if (assertionPriority === 1)
+                                        priority = 'MUST';
+                                    if (assertionPriority === 2)
+                                        priority = 'SHOULD';
+                                    if (assertionPriority === 3)
+                                        priority = 'MAY';
+
+                                    return {
+                                        priority,
+                                        commandId: command.id,
+                                        settings: command.settings
+                                    };
+                                });
+                        }
+                    );
                 }
 
                 return result;
