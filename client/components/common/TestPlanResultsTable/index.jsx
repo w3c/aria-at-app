@@ -28,10 +28,12 @@ const TestPlanResultsTable = ({
             {optionalHeader}
             {testResult.scenarioResults.map((scenarioResult, index) => {
                 const passedAssertions = scenarioResult.assertionResults.filter(
-                    assertionResult => assertionResult.passed
+                    assertionResult =>
+                        assertionResult.passed && !assertionResult.exclude
                 );
                 const failedAssertions = scenarioResult.assertionResults.filter(
-                    assertionResult => !assertionResult.passed
+                    assertionResult =>
+                        !assertionResult.passed && !assertionResult.exclude
                 );
 
                 // Rows are sorted by priority descending, then result (failures then passes), then

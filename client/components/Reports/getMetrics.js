@@ -9,6 +9,7 @@ const StyledNone = styled.span`
 const none = <StyledNone>None</StyledNone>;
 
 const sum = arr => arr?.reduce((total, item) => total + item, 0) || 0;
+const validAssertionResults = a => !a.exclude;
 
 const countTests = ({
     testPlanReport, // Choose one to provide
@@ -18,9 +19,9 @@ const countTests = ({
 }) => {
     const countScenarioResult = scenarioResult => {
         return (
-            scenarioResult?.assertionResults?.every(
-                assertionResult => assertionResult.passed
-            ) || 0
+            scenarioResult?.assertionResults
+                ?.filter(validAssertionResults)
+                .every(assertionResult => assertionResult.passed) || 0
         );
     };
 
