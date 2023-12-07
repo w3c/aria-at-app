@@ -575,7 +575,7 @@ const graphqlSchema = gql`
         """
         The AtVersion used during this testing session.
         """
-        atVersion: AtVersion!
+        atVersion: AtVersion
         """
         The BrowserVersion used during this testing session.
         """
