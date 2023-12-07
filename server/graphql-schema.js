@@ -492,6 +492,12 @@ const graphqlSchema = gql`
         A human-readable version of the command, such as "Control+Alt+Down"
         """
         text: String!
+        """
+        The AT mode this command may be getting ran in, such as "quickNavOn".
+        The same command can be ran during the same test, but in a different
+        mode
+        """
+        settings: String
     }
 
     """
@@ -689,6 +695,11 @@ const graphqlSchema = gql`
         results require this field to be filled in.
         """
         passed: Boolean
+        """
+        Indicates if this assertion result needs to be ignored because it is included with
+        a 0-level priority
+        """
+        exclude: Boolean
         # TODO: propose removing this for the reason given above
         """
         NOTE: This has been deprecated, legacy use = when passed is false, a failedReason must be given.
