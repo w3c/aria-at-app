@@ -109,3 +109,8 @@ From the `deploy` folder:
 2. Load the backup that was created
   `psql -d aria_at_report -f <environment>_dump_<timestamp>.sql`
 
+## Github Workflow Automation Configuration
+* The `jwt-signing-key.pem` file should be located in the project root folder.
+  `ansible-vault view --vault-password-file ansible-vault-password.txt files/jwt-signing-key.pem.enc > ../jwt-signing-key.pem`
+* The `AUTOMATION_CALLBACK_FQDN` environment variable in the environment configuration file should be a **fully qualified domain name** that is accessible from the github workflow server pointing at the running instance of aria-at-app.  For local development testing of these features, a forwarding proxy server like `ngrok` is recommended: `npx ngrok http 3000 --host-header=rewrite` will setup a server forwarding to your local 3000 development port.  You can then use the domain it gives you when launching the app:
+  `AUTOMATION_CALLBACK_FQDN=128935b17294.ngrok.app yarn dev`
