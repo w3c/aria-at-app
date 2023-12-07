@@ -60,7 +60,6 @@ const TestReview = () => {
     }
 
     const testPlanVersion = data.testPlanVersion;
-    const testCount = testPlanVersion.tests.length;
     const atNames = unique(
         testPlanVersion.tests.flatMap(test => test.ats.map(at => at.name))
     );
