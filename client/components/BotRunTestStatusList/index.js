@@ -80,6 +80,7 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
                     switch (status) {
                         case 'COMPLETED':
                         case 'RUNNING':
+                        case 'QUEUED':
                             res[1] +=
                                 runnableTestsLength -
                                 botTestPlanRuns[i].testResults.length;
