@@ -46,6 +46,8 @@ listener.route('/aria-at/:branch*').get(
 // Conditionally initialize github workflow service, or mock automation scheduler
 if (
     process.env.ENVIRONMENT === 'production' ||
+    process.env.ENVIRONMENT === 'staging' ||
+    process.env.ENVIRONMENT === 'sandbox' ||
     process.env.AUTOMATION_CALLBACK_FQDN
 ) {
     require('./services/GithubWorkflowService').setup();

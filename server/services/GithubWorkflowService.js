@@ -54,6 +54,7 @@ exports.setup = async () => {
     }
 };
 
+exports.isEnabled = () => privateKey && callbackUrlHostname;
 // > 2. Get the ID of the installation that you want to authenticate as.
 // >
 // >   If you are responding to a webhook event, the webhook payload will
