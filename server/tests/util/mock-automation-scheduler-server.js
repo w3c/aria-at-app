@@ -50,7 +50,7 @@ const setupMockAutomationSchedulerServer = async () => {
             });
         });
         const testResult = {
-            testCsvRow: currentTestIndex,
+            testCsvRow: currentTest.rowNumber,
             atVersionName,
             browserVersionName,
             responses
@@ -122,6 +122,7 @@ const setupMockAutomationSchedulerServer = async () => {
                             }
                             runnableTests {
                                 id
+                                rowNumber
                                 scenarios {
                                     id
                                 }

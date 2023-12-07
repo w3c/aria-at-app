@@ -436,6 +436,8 @@ describe('Automation controller', () => {
             const testResultsNumber =
                 collectionJob.testPlanRun.testResults.length;
             const selectedTestIndex = 0;
+            const selectedTestRowNumber = 1;
+
             const selectedTest = tests[selectedTestIndex];
             const numberOfScenarios = selectedTest.scenarios.filter(
                 scenario => scenario.atId === at.id
@@ -443,7 +445,7 @@ describe('Automation controller', () => {
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
                 .send({
-                    testCsvRow: selectedTestIndex,
+                    testCsvRow: selectedTestRowNumber,
                     atVersionName: at.atVersions[0].name,
                     browserVersionName: browser.browserVersions[0].name,
                     responses: new Array(numberOfScenarios).fill(
@@ -523,6 +525,8 @@ describe('Automation controller', () => {
                 finalizedTestPlanVersion.testPlanReport.id
             );
             const selectedTestIndex = 0;
+            const selectedTestRowNumber = 1;
+
             const historicalTestResult =
                 testPlanReport.finalizedTestResults[selectedTestIndex];
             expect(historicalTestResult).not.toEqual(undefined);
@@ -534,7 +538,7 @@ describe('Automation controller', () => {
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
                 .send({
-                    testCsvRow: selectedTestIndex,
+                    testCsvRow: selectedTestRowNumber,
                     atVersionName: atVersion.name,
                     browserVersionName: browserVersion.name,
                     responses: historicalResponses
