@@ -87,6 +87,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                     }
                 }
             }
+            metadata
         }
     }
 `;
@@ -133,6 +134,7 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
                             feedbackType
                         }
                     }
+                    metadata
                 }
             }
         }
@@ -179,6 +181,7 @@ export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE = gql`
                             feedbackType
                         }
                     }
+                    metadata
                 }
             }
         }

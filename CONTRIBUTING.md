@@ -3,7 +3,7 @@ We want to make contributing to this project as approachable and transparent as 
 ARIA-AT App is maintained by [Bocoup](https://bocoup.com/) and designed and developed with the [W3C ARIA-AT Community Group](https://www.w3.org/community/aria-at/).
 
 ## Code of Conduct
-This project is governed by the [Bocoup](https://github.com/w3c/aria-at-app/blob/develop/CODE_OF_CONDUCT.md) and [W3C](https://www.w3.org/Consortium/cepc/) Codes of Conduct 
+This project is governed by the [Bocoup](https://github.com/w3c/aria-at-app/blob/develop/CODE_OF_CONDUCT.md) and [W3C](https://www.w3.org/Consortium/cepc/) Codes of Conduct.
 
 ## Development Process
 We use GitHub to host code, track issues and feature requests, and accept pull requests.
@@ -16,10 +16,11 @@ If your issue relates to a specific ARIA-AT test plan or the behavior of the ARI
 ## Pull Requests
 Pull requests are the best way to propose changes to the codebase. We use [GitHub Flow](https://guides.github.com/introduction/flow/index.html) as a development methodology.
 
-If the pull request is not a bug fix, an implementation proposal should first be submitted via a new issue, in order to reach consensus with the maintainers on scope, technical approach, and design implications. 
+If the pull request is not a bug fix, an implementation proposal should first be submitted via a new issue, in order to reach consensus with the maintainers on scope, technical approach, and design implications.
+
 Implementation proposals and pull requests that affect the overall design or user experience of the app may require a design review before implementation.
 
-Pull requests should be small and granular, ideally addressing one issue or feature at a time. Try to keep each pull request independently mergeable. Multiple dependent PRs should only be used when absolutely necessary to land a longer term change.
+Pull requests should be small and granular, ideally addressing one issue or feature at a time. Try to keep each pull request independently mergeable. Multiple dependent PRs should only be used when absolutely necessary to land a longer-term change.
 
 In order to open a pull request:
 
@@ -30,11 +31,14 @@ In order to open a pull request:
 1. If the pull request is not a bug fix, please link to the related implementation proposal and consensus issue.
 1. Submit a pull request!
 
-## Reviewing pull requests, merging, and deploying
+Maintainers with write access to the repository will create branches directly within the repository.
 
-All pull requests require code review from a maintainer before merging.
-Maintainers are responsible for merging pull requests into the protected `main` branch.
+## Reviewing pull requests, merging, and deploying
+All pull requests, including pull requests opened by maintainers, require code review from two maintainers before merging.
+
+The second maintainer who reviews is responsible for merging the pull request into the protected `main` branch.
+
 Maintainers will periodically deploy the `main` branch to the [staging environments](https://github.com/w3c/aria-at-app/wiki).
 
 ## License
-When you submit code changes, your submissions are understood to be under the same [W3C Document License](https://github.com/w3c/aria-at-app/blob/main/LICENSE.md) that covers the project. Feel free to contact the maintainers if that's a concern.
+When you submit code changes, your submissions are understood to be under the same [W3C Document License](https://github.com/w3c/aria-at-app/blob/main/LICENSE.md) that covers the project.

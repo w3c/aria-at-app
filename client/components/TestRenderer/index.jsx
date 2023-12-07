@@ -582,7 +582,6 @@ const TestRenderer = ({
                                     unexpectedBehaviors,
                                     assertionsHeader
                                 } = value;
-
                                 return (
                                     <Fragment
                                         key={`AtOutputKey_${commandIndex}`}
