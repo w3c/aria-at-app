@@ -40,6 +40,7 @@ export const TEST_REVIEW_PAGE_QUERY = gql`
                     renderableContent
                 }
             }
+            metadata
         }
     }
 `;

@@ -29,14 +29,12 @@ const FilterButtonContainer = styled.div`
 `;
 
 const TestReview = () => {
-    console.log(1);
     const { testPlanVersionId } = useParams();
 
     const { loading, data, error } = useQuery(TEST_REVIEW_PAGE_QUERY, {
         variables: { testPlanVersionId },
         fetchPolicy: 'cache-and-network'
     });
-    console.log(2);
     const [activeFilter, setActiveFilter] = useState('All ATs');
 
     if (loading) {
@@ -47,9 +45,7 @@ const TestReview = () => {
             />
         );
     }
-    console.log(3);
     if (error || !data?.testPlanVersion) {
-        console.log(error);
         const errorMessage =
             error?.message ??
             `Failed to find a test plan version with ID ${testPlanVersionId}`;
@@ -70,7 +66,7 @@ const TestReview = () => {
     //     testPlanVersion.tests.flatMap(test => test.ats.map(at => at.name))
     // );
     // console.log(atNames);
-    console.log(testPlanVersion.tests);
+    console.log(testPlanVersion.metadata);
     let filteredTests;
     if (activeFilter === 'All ATs') {
         filteredTests = testPlanVersion.tests;
@@ -95,10 +91,13 @@ const TestReview = () => {
     );
     // section:
     const testPlanVersionList = Object.keys(testPlanVersion.tests);
+    // console.log(isV2);
+    // console.log(!!testPlanVersion.tests[0].renderableContents[0].renderableContent.info.references[0].linkText)
     let testList = [];
     testPlanVersionList.forEach(pop => {
         testList.push(testPlanVersion.tests[pop]);
     });
+    const isV2 = testPlanVersion.metadata.testFormatVersion === 2;
     // console.log('Yo', testList);
     return (
         <Container id="main" as="main" tabIndex="-1">
@@ -214,62 +213,60 @@ const TestReview = () => {
                     });
                 })} */}
 
-                {testPlanVersion.tests[0].renderableContents.info
-                    ? testPlanVersion.tests[0].renderableContents.info.references.map(
-                          reference => {
-                              return (
-                                  <li key={reference.value}>
-                                      {/* {reference.refId}:{' '} */}
-                                      <a
-                                          href={reference.value}
-                                          rel="noreferrer"
-                                          target="_blank"
-                                      >
-                                          {reference.linkText}
-                                      </a>
-                                  </li>
-                              );
-                          }
-                      )
-                    : testPlanVersion.tests[0].renderableContents[0].renderableContent.info.references.map(
-                          reference => {
-                              let refId = '';
-                              let refValue = '';
-                              if (reference.refId === 'example') {
-                                  refId = reference.refId;
-                                  refValue = reference.value;
-                              }
-                              if (reference.refId === 'designPattern') {
-                                  refId = reference.refId;
-                                  refValue = reference.value;
-                              }
-                              if (
-                                  reference.refId === 'developmentDocumentation'
-                              ) {
-                                  refId = reference.refId;
-                                  refValue = reference.value;
-                              }
-                              return (
-                                  <li key={refValue}>
-                                      {/* {reference.refId}:{' '} */}
-                                      <a
-                                          href={refValue}
-                                          rel="noreferrer"
-                                          target="_blank"
-                                      >
-                                          {refId}
-                                      </a>
-                                  </li>
-                              );
-                          }
-                      )}
+                {testPlanVersion.tests[0].renderableContents[0].renderableContent.info.references.map(
+                    reference => {
+                        if (isV2) {
+                            return (
+                                <li key={reference.value}>
+                                    {/* {reference.refId}:{' '} */}
+                                    <a
+                                        href={reference.value}
+                                        rel="noreferrer"
+                                        target="_blank"
+                                    >
+                                        {reference.linkText}
+                                    </a>
+                                </li>
+                            );
+                        } else {
+                            let refId = '';
+                            let refValue = '';
+                            if (reference.refId === 'example') {
+                                refId = reference.refId;
+                                refValue = reference.value;
+                            }
+                            if (reference.refId === 'designPattern') {
+                                refId = reference.refId;
+                                refValue = reference.value;
+                            }
+                            if (
+                                reference.refId === 'developmentDocumentation'
+                            ) {
+                                refId = reference.refId;
+                                refValue = reference.value;
+                            }
+                            return (
+                                <li key={refValue}>
+                                    {/* {reference.refId}:{' '} */}
+                                    <a
+                                        href={refValue}
+                                        rel="noreferrer"
+                                        target="_blank"
+                                    >
+                                        {refId}
+                                    </a>
+                                </li>
+                            );
+                        }
+                    }
+                )}
             </ul>
             {filteredTests.map((test, index) => {
                 const isFirst = index === 0;
 
-                const atMode =
-                    test.atMode?.substring(0, 1) +
-                    test.atMode?.toLowerCase().substring(1);
+                // const atMode =
+                //     test.atMode?.substring(0, 1) +
+                //     test.atMode?.toLowerCase().substring(1);
 
                 const specifications =
                     test.renderableContents[0].renderableContent.info.references.map(
@@ -288,12 +285,12 @@ const TestReview = () => {
                 return (
                     <Fragment key={test.id}>
                         {isFirst ? null : <hr />}
-                        <h3>{`Test ${test.rowNumber}: ${test.title}`}</h3>
+                        <h3>{`Test ${index + 1}: ${test.title}`}</h3>
                         <ul>
-                            <li>
+                            {/* <li>
                                 <strong>Mode:&nbsp;</strong>
                                 {atMode}
-                            </li>
+                            </li> */}
                             <li>
                                 <strong>Assistive technologies:&nbsp;</strong>
                                 {test.ats.map(at => at.name).join(', ')}
