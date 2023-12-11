@@ -29,13 +29,14 @@ const FilterButtonContainer = styled.div`
 `;
 
 const TestReview = () => {
+    console.log(1);
     const { testPlanVersionId } = useParams();
 
     const { loading, data, error } = useQuery(TEST_REVIEW_PAGE_QUERY, {
         variables: { testPlanVersionId },
         fetchPolicy: 'cache-and-network'
     });
-
+    console.log(2);
     const [activeFilter, setActiveFilter] = useState('All ATs');
 
     if (loading) {
@@ -46,8 +47,9 @@ const TestReview = () => {
             />
         );
     }
-
+    console.log(3);
     if (error || !data?.testPlanVersion) {
+        console.log(error);
         const errorMessage =
             error?.message ??
             `Failed to find a test plan version with ID ${testPlanVersionId}`;
