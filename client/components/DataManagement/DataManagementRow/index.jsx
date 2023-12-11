@@ -850,6 +850,14 @@ const DataManagementRow = ({
                     const recommendedPhaseTargetDate = new Date(
                         latestVersion.recommendedPhaseTargetDate
                     );
+                    const candidatePhaseReachedDate = new Date(
+                        latestVersion.candidatePhaseReachedAt
+                    );
+                    const daysInReview = checkDaysBetweenDates(
+                        currentDate,
+                        candidatePhaseReachedDate
+                    );
+                    const workingModeDaysToReview = 120;
 
                     let timeToTargetDate = 0;
                     if (currentDate > recommendedPhaseTargetDate) {
@@ -864,19 +872,6 @@ const DataManagementRow = ({
                             recommendedPhaseTargetDate,
                             currentDate
                         );
-
-                    const daysBetweenDates = checkDaysBetweenDates(
-                        currentDate,
-                        latestVersion.candidatePhaseReachedAt
-                    );
-                    const DAYS_TO_PROVIDE_FEEDBACK = 120;
-                    const shouldShowAdvanceButton =
-                        isAdmin &&
-                        completedRequiredReports(latestVersion) &&
-                        issuesCount === 0 &&
-                        (recommendedTestPlanVersions.length ||
-                            (!recommendedTestPlanVersions.length &&
-                                daysBetweenDates > DAYS_TO_PROVIDE_FEEDBACK));
 
                     let coveredReports = [];
                     latestVersion.testPlanReports.forEach(testPlanReport => {
@@ -895,10 +890,7 @@ const DataManagementRow = ({
                     // TODO: Remove this testFormatVersion check when #745 is implemented
                     const linkHref = getLinkHref(latestVersion);
                     return (
-                        <PhaseCell
-                            role="list"
-                            aria-setsize={shouldShowAdvanceButton ? 5 : 4}
-                        >
+                        <PhaseCell role="list" aria-setsize={isAdmin ? 5 : 4}>
                             <VersionString
                                 role="listitem"
                                 iconColor="#2BA51C"
@@ -907,7 +899,7 @@ const DataManagementRow = ({
                             >
                                 {latestVersion.versionString}
                             </VersionString>
-                            {shouldShowAdvanceButton && (
+                            {isAdmin && (
                                 <Button
                                     ref={ref => setFocusRef(ref)}
                                     className="advance-button"
@@ -928,7 +920,11 @@ const DataManagementRow = ({
                                                     testPlanVersionDataToInclude
                                                 );
                                             },
-                                            coveredReports
+                                            coveredReports,
+                                            candidateDaysInReview: daysInReview,
+                                            candidateWorkingModeDaysToReview:
+                                                workingModeDaysToReview,
+                                            testPlanTitle: testPlan.title
                                         });
                                     }}
                                 >
@@ -1067,7 +1063,6 @@ const DataManagementRow = ({
                     )}
                 </td>
             </tr>
-
             {showThemedModal && themedModal}
             {showAdvanceModal && (
                 <BasicModal
@@ -1076,6 +1071,22 @@ const DataManagementRow = ({
                     title={`Advancing test plan, ${testPlan.title}, ${advanceModalData.version}`}
                     content={
                         <>
+                            {advanceModalData.candidateWorkingModeDaysToReview -
+                                advanceModalData.candidateDaysInReview >
+                            0 ? (
+                                <p>
+                                    Warning! the {testPlan.title} test plan has
+                                    been in candidate review for{' '}
+                                    {advanceModalData.candidateDaysInReview}{' '}
+                                    days, which is{' '}
+                                    {advanceModalData.candidateWorkingModeDaysToReview -
+                                        advanceModalData.candidateDaysInReview}{' '}
+                                    fewer days than recommended by the ARIA-AT
+                                    working mode. Confirm this action only if
+                                    impacted stakeholders have had sufficient
+                                    opportunity to provide consensus.
+                                </p>
+                            ) : null}
                             This version will be updated to&nbsp;
                             <b>{advanceModalData.phase}</b>.&nbsp;
                             {advanceModalData.coveredReports?.length ? (
