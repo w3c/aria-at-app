@@ -18,6 +18,7 @@ describe('FilterButtons', () => {
     };
     const defaultProps = {
         filterOptions,
+        filterLabel: 'Filter',
         activeFilter: DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL,
         onFilterChange: () => {}
     };
