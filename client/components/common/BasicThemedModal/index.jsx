@@ -101,8 +101,7 @@ const BasicThemedModal = ({
                             {closeLabel}
                         </Button>
                     )}
-                    {actionButtons.length &&
-                        actionButtons.map(({ action, text }) => (
+                    {actionButtons.map(({ action, text }) => (
                             <Button
                                 key={text}
                                 variant={

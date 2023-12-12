@@ -409,7 +409,13 @@ const TestPlanVersionsPage = () => {
                                                 testPlanVersion
                                             )}
                                             autoWidth={false}
-                                            linkHref={`/test-review/${testPlanVersion.id}`}
+                                            // TODO: Remove this testFormatVersion check when #745 is implemented
+                                            linkHref={
+                                                testPlanVersion.metadata
+                                                    ?.testFormatVersion === 2
+                                                    ? null
+                                                    : `/test-review/${testPlanVersion.id}`
+                                            }
                                         >
                                             {testPlanVersion.versionString}
                                         </VersionString>
@@ -673,21 +679,27 @@ const TestPlanVersionsPage = () => {
                                                 : {testPlanVersion.gitMessage}
                                             </a>
                                         </li>
-                                        <li>
-                                            <a
-                                                href={`/test-review/${testPlanVersion.id}`}
-                                            >
-                                                <FontAwesomeIcon
-                                                    icon={
-                                                        faArrowUpRightFromSquare
+                                        {/* TODO: Remove this testFormatVersion check when #745 is implemented */}
+                                        {testPlanVersion.metadata
+                                            .testFormatVersion === 2 ? null : (
+                                            <li>
+                                                <a
+                                                    href={`/test-review/${testPlanVersion.id}`}
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={
+                                                            faArrowUpRightFromSquare
+                                                        }
+                                                        size="xs"
+                                                        color="#818F98"
+                                                    />
+                                                    View tests in{' '}
+                                                    {
+                                                        testPlanVersion.versionString
                                                     }
-                                                    size="xs"
-                                                    color="#818F98"
-                                                />
-                                                View tests in{' '}
-                                                {testPlanVersion.versionString}
-                                            </a>
-                                        </li>
+                                                </a>
+                                            </li>
+                                        )}
                                         {!hasFinalReports ? null : (
                                             <li>
                                                 <a
