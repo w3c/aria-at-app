@@ -6,7 +6,7 @@ import { render, fireEvent, act } from '@testing-library/react';
 import FocusTrapper from '../components/common/FocusTrapper';
 
 describe('FocusTrapper', () => {
-    let trappedDiv;
+    let trappedDiv, initialFocusRef;
 
     beforeEach(() => {
         trappedDiv = document.createElement('div');
@@ -19,8 +19,20 @@ describe('FocusTrapper', () => {
     });
 
     const renderEls = async () => {
+        initialFocusRef = React.createRef();
         return render(
-            <FocusTrapper isActive={true} trappedElId="trapped-div">
+            <FocusTrapper
+                isActive={true}
+                initialFocusRef={initialFocusRef}
+                trappedElId="trapped-div"
+            >
+                <h1
+                    className="modal-header"
+                    tabIndex="-1"
+                    ref={initialFocusRef}
+                >
+                    Modal Header
+                </h1>
                 <button>Click Me</button>
                 <a href="www">Link</a>
             </FocusTrapper>,
@@ -67,11 +79,10 @@ describe('FocusTrapper', () => {
 
         const container = document.getElementById('trapped-div');
 
-        const firstFocusable = container.querySelector('button');
         const lastFocusable = container.querySelector('a');
 
         act(() => {
-            firstFocusable.focus();
+            initialFocusRef.current.focus();
         });
 
         act(() => {
