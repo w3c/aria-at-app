@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import BasicModal from '../common/BasicModal';
@@ -44,12 +44,16 @@ function AddTestToQueueWithConfirmation({
         at,
         browser
     });
-    const alreadyHasBotInTestPlanReport =
-        testPlanReportsInitiatedByAutomation?.testPlanVersion.testPlanReports.some(
-            tpr =>
-                tpr.markedFinalAt === null &&
-                tpr.draftTestPlanRuns.some(run => run.initiatedByAutomation)
-        );
+
+    const alreadyHasBotInTestPlanReport = useMemo(
+        () =>
+            testPlanReportsInitiatedByAutomation?.testPlanVersion.testPlanReports.some(
+                tpr =>
+                    tpr.markedFinalAt === null &&
+                    tpr.draftTestPlanRuns.some(run => run.initiatedByAutomation)
+            ),
+        [testPlanReportsInitiatedByAutomation?.testPlanVersion.testPlanReports]
+    );
 
     const feedbackModalTitle =
         hasAutomationSupport && testPlanVersion
