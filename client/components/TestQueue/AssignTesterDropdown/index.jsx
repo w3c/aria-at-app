@@ -132,7 +132,9 @@ const AssignTesterDropdown = ({
                                 ? 'assigned'
                                 : 'not-assigned';
                             let icon;
-                            if (isBot(tester) && !testerIsAssigned) {
+                            if (testerIsAssigned) {
+                                icon = faCheck;
+                            } else if (isBot(tester)) {
                                 const supportedByBot =
                                     isSupportedByResponseCollector(
                                         testPlanReportAtBrowserQuery?.testPlanReport
@@ -141,8 +143,6 @@ const AssignTesterDropdown = ({
                                     return null;
                                 }
                                 icon = faRobot;
-                            } else if (testerIsAssigned) {
-                                icon = faCheck;
                             }
                             return (
                                 <Dropdown.Item
