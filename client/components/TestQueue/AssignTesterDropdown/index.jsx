@@ -128,9 +128,10 @@ const AssignTesterDropdown = ({
                             const testerIsAssigned = isTesterAssigned(
                                 tester.username
                             );
-                            let classname = testerIsAssigned
-                                ? 'assigned'
-                                : 'not-assigned';
+                            const classname = [
+                                testerIsAssigned ? 'assigned' : 'not-assigned',
+                                isBot(tester) ? 'bot' : 'human',
+                            ].join(' ');
                             let icon;
                             if (isBot(tester)) {
                                 const supportedByBot =
