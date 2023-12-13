@@ -695,11 +695,6 @@ const graphqlSchema = gql`
         results require this field to be filled in.
         """
         passed: Boolean
-        """
-        Indicates if this assertion result needs to be ignored because it is included with
-        a 0-level priority
-        """
-        exclude: Boolean
         # TODO: propose removing this for the reason given above
         """
         NOTE: This has been deprecated, legacy use = when passed is false, a failedReason must be given.

@@ -153,8 +153,7 @@ describe('graphql', () => {
             ['TestPlanVersion', 'recommendedPhaseTargetDate'],
             ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers'],
-            ['Command', 'settings'], // TODO: Uncomment when v2 test format CI tests are done
-            ['AssertionResult', 'exclude'] // TODO: Uncomment when v2 test format CI tests are done
+            ['Command', 'settings'] // TODO: Uncomment when v2 test format CI tests are done
         ];
         ({
             typeAwareQuery,
@@ -414,7 +413,6 @@ describe('graphql', () => {
                                             id
                                         }
                                         passed
-                                        exclude
                                     }
                                     unexpectedBehaviors {
                                         __typename

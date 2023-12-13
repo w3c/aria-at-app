@@ -1,7 +1,6 @@
 const convertAssertionPriority = require('../resolvers/helpers/convertAssertionPriority');
 
 const sum = arr => arr.reduce((total, item) => total + item, 0);
-const validAssertionResults = a => !a.exclude;
 
 const countTests = ({
     testPlanReport, // Choose one to provide
@@ -10,9 +9,9 @@ const countTests = ({
     passedOnly
 }) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.assertionResults
-            .filter(validAssertionResults)
-            .every(assertionResult => assertionResult.passed);
+        return scenarioResult.assertionResults.every(
+            assertionResult => assertionResult.passed
+        );
     };
 
     const countTestResult = testResult => {
@@ -39,13 +38,11 @@ const countAssertions = ({
     passedOnly
 }) => {
     const countScenarioResult = scenarioResult => {
-        const all = scenarioResult.assertionResults
-            .filter(validAssertionResults)
-            .filter(
-                a =>
-                    convertAssertionPriority(a.assertion.priority) ===
-                    convertAssertionPriority(priority)
-            );
+        const all = scenarioResult.assertionResults.filter(
+            a =>
+                convertAssertionPriority(a.assertion.priority) ===
+                convertAssertionPriority(priority)
+        );
         if (passedOnly) return all.filter(each => each.passed).length;
         return all.length;
     };

@@ -30,22 +30,26 @@ const createTestResultSkeleton = ({
                     id: scenarioResultId,
                     scenarioId: scenario.id,
                     output: null,
-                    assertionResults: test.assertions.map(assertion => ({
-                        id: createAssertionResultId(
-                            scenarioResultId,
-                            assertion.id
-                        ),
-                        assertionId: assertion.id,
-                        passed: null,
-                        exclude: assertion.assertionExceptions?.some(
-                            e =>
-                                scenario.commands.find(
-                                    c =>
-                                        c.id === e.commandId &&
-                                        c.settings === e.settings
-                                ) && e.priority === 'EXCLUDE'
-                        )
-                    })),
+                    assertionResults: test.assertions
+                        // Filter out assertionResults which were marked with a 0-priority exception
+                        .filter(assertion => {
+                            return !assertion.assertionExceptions?.some(
+                                e =>
+                                    scenario.commands.find(
+                                        c =>
+                                            c.id === e.commandId &&
+                                            c.settings === e.settings
+                                    ) && e.priority === 'EXCLUDE'
+                            );
+                        })
+                        .map(assertion => ({
+                            id: createAssertionResultId(
+                                scenarioResultId,
+                                assertion.id
+                            ),
+                            assertionId: assertion.id,
+                            passed: null
+                        })),
                     unexpectedBehaviors: null
                 };
             })

@@ -384,9 +384,12 @@ const TestRun = () => {
 
             // process assertion results
             for (let j = 0; j < assertions.length; j++) {
-                const { result, highlightRequired } = assertions[j];
+                const { description, result, highlightRequired } =
+                    assertions[j];
                 const assertionResult = {
-                    ...scenarioResult.assertionResults[j],
+                    ...scenarioResult.assertionResults.find(
+                        ({ assertion: { text } }) => text === description
+                    ),
                     passed: result === 'pass'
                 };
                 assertionResults.push(
@@ -638,10 +641,14 @@ const TestRun = () => {
                 id,
                 output: output,
                 unexpectedBehaviors: unexpectedBehaviors,
-                assertionResults: assertionResults.map(({ id, passed }) => ({
-                    id,
-                    passed
-                }))
+                assertionResults: assertionResults
+                    // All assertions are always being passed from the TestRenderer results, but in the instance where
+                    // there is a 0-priority exception, and id won't be provided and that cannot be saved
+                    .filter(el => !!el.id)
+                    .map(({ id, passed }) => ({
+                        id,
+                        passed
+                    }))
             })
         );
 

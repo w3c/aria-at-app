@@ -106,7 +106,6 @@ export const ASSERTION_RESULT_FIELDS = gql`
             text
         }
         passed
-        exclude
     }
 `;
 
