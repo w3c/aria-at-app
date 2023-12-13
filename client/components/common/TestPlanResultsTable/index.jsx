@@ -14,9 +14,18 @@ const renderAssertionRow = (assertionResult, priorityString) => {
     );
 };
 
-const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
+const TestPlanResultsTable = ({
+    test,
+    testResult,
+    tableClassName = '',
+    optionalHeader = null,
+    commandHeadingLevel = 3
+}) => {
+    const CommandHeading = `h${commandHeadingLevel}`;
+
     return (
         <>
+            {optionalHeader}
             {testResult.scenarioResults.map((scenarioResult, index) => {
                 const passedAssertions = scenarioResult.assertionResults.filter(
                     assertionResult => assertionResult.passed
@@ -28,6 +37,7 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                 // Rows are sorted by priority descending, then result (failures then passes), then
                 // assertion order. Assertion order refers to the order of assertion columns in the
                 // tests.csv file.
+                // TODO: Update named references of REQUIRED to MUST
                 const requiredAssertionResults =
                     scenarioResult.requiredAssertionResults
                         .slice()
@@ -35,6 +45,7 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                             a.passed === b.passed ? 0 : a.passed ? 1 : -1
                         );
 
+                // TODO: Update named references of OPTIONAL to SHOULD
                 const optionalAssertionResults =
                     scenarioResult.optionalAssertionResults
                         .slice()
@@ -42,17 +53,23 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                             a.passed === b.passed ? 0 : a.passed ? 1 : -1
                         );
 
+                const mayAssertionResults = scenarioResult.mayAssertionResults
+                    .slice()
+                    .sort((a, b) =>
+                        a.passed === b.passed ? 0 : a.passed ? 1 : -1
+                    );
+
                 const commandsString = scenarioResult.scenario.commands
                     .map(({ text }) => text)
                     .join(' then ');
 
                 return (
                     <React.Fragment key={scenarioResult.id}>
-                        <h3>
+                        <CommandHeading>
                             {commandsString}&nbsp;Results:&nbsp;
                             {passedAssertions.length} passed,&nbsp;
                             {failedAssertions.length} failed
-                        </h3>
+                        </CommandHeading>
                         <p className="test-plan-results-response-p">
                             {test.at?.name} Response:
                         </p>
@@ -82,6 +99,9 @@ const TestPlanResultsTable = ({ test, testResult, tableClassName = '' }) => {
                                         assertionResult,
                                         'SHOULD'
                                     )
+                                )}
+                                {mayAssertionResults.map(assertionResult =>
+                                    renderAssertionRow(assertionResult, 'MAY')
                                 )}
                             </tbody>
                         </Table>
@@ -124,7 +144,9 @@ TestPlanResultsTable.propTypes = {
     testResult: PropTypes.shape({
         scenarioResults: PropTypes.array.isRequired
     }),
-    tableClassName: PropTypes.string
+    tableClassName: PropTypes.string,
+    optionalHeader: PropTypes.node,
+    commandHeadingLevel: PropTypes.number
 };
 
 export default TestPlanResultsTable;

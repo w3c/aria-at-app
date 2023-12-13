@@ -53,15 +53,9 @@ const ReviewConflicts = ({
         const results = conflictingResults.map(result => {
             const { testPlanRun, scenarioResult, assertionResult } = result;
             let assertionResultFormatted;
-            if (assertionResult.passed) {
-                assertionResultFormatted = 'passing';
-            } else {
-                const reasonFormatted =
-                    assertionResult.failedReason === 'INCORRECT_OUTPUT'
-                        ? 'incorrect output'
-                        : 'no output';
-                assertionResultFormatted = `failing with ${reasonFormatted}`;
-            }
+            assertionResultFormatted = assertionResult.passed
+                ? 'passing'
+                : 'failing';
             return (
                 <li key={testPlanRun.id}>
                     Tester {testPlanRun.tester.username} recorded output &quot;
@@ -167,8 +161,7 @@ ReviewConflicts.propTypes = {
                             ).isRequired
                         }),
                         assertionResult: PropTypes.shape({
-                            passed: PropTypes.bool.isRequired,
-                            failedReason: PropTypes.string
+                            passed: PropTypes.bool.isRequired
                         })
                     })
                 ).isRequired

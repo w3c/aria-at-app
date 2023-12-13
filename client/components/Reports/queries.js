@@ -80,7 +80,6 @@ export const REPORT_PAGE_QUERY = gql`
                                 text
                             }
                             passed
-                            failedReason
                         }
                         requiredAssertionResults: assertionResults(
                             priority: REQUIRED
@@ -89,7 +88,6 @@ export const REPORT_PAGE_QUERY = gql`
                                 text
                             }
                             passed
-                            failedReason
                         }
                         optionalAssertionResults: assertionResults(
                             priority: OPTIONAL
@@ -98,7 +96,12 @@ export const REPORT_PAGE_QUERY = gql`
                                 text
                             }
                             passed
-                            failedReason
+                        }
+                        mayAssertionResults: assertionResults(priority: MAY) {
+                            assertion {
+                                text
+                            }
+                            passed
                         }
                         unexpectedBehaviors {
                             id

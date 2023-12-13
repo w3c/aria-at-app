@@ -37,8 +37,7 @@ const createTestResultSkeleton = ({
                                 assertion.id
                             ),
                             assertionId: assertion.id,
-                            passed: null,
-                            failedReason: null
+                            passed: null
                         };
                     }),
                     unexpectedBehaviors: null

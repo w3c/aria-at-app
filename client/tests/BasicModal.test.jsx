@@ -126,4 +126,15 @@ describe('BasicModal', () => {
         fireEvent.click(screen.getByText('Custom Action'));
         expect(customAction).toHaveBeenCalledTimes(1);
     });
+
+    test('has aria-labelledby matching the modal title id', () => {
+        const { getByRole, getByText } = render(
+            <BasicModal show title="Test Title" content="Test Content" />
+        );
+
+        const modal = getByRole('dialog');
+        const title = getByText('Test Title');
+
+        expect(modal).toHaveAttribute('aria-labelledby', title.id);
+    });
 });

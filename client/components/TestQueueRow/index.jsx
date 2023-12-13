@@ -347,8 +347,9 @@ const TestQueueRow = ({
                     )}
                     {!testPlanReport.conflictsLength &&
                         testPlanReport.draftTestPlanRuns.length > 0 &&
-                        testPlanReport.draftTestPlanRuns[0]
-                            .testResultsLength > 0 && (
+                        testPlanReport.draftTestPlanRuns[0].testResultsLength >
+                            0 &&
+                        completedAllTests && (
                             <Button
                                 ref={updateTestPlanStatusButtonRef}
                                 variant="secondary"
@@ -428,6 +429,12 @@ const TestQueueRow = ({
             tester.username,
             'completed'
         ].join('-');
+
+    const completedAllTests = testPlanReport.draftTestPlanRuns.every(
+        testPlanRun =>
+            testPlanRun.testResultsLength === testPlanReport.runnableTestsLength
+    );
+
     return (
         <LoadingStatus message={loadingMessage}>
             <tr className="test-queue-run-row">
@@ -545,7 +552,8 @@ const TestQueueRow = ({
                             {isAdmin && renderOpenAsDropdown()}
                             {isAdmin && renderDeleteMenu()}
                             {(!isAdmin &&
-                                currentUserTestPlanRun.testResultsLength && (
+                                currentUserTestPlanRun.testResultsLength >
+                                    0 && (
                                     <Button
                                         ref={deleteTesterResultsButtonRef}
                                         variant="danger"

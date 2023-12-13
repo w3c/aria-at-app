@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { differenceBy } from 'lodash';
 import getMetrics from './getMetrics';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
@@ -55,11 +54,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             <ul>
                 <li>
                     Generated from&nbsp;
-                    <a
-                        href={`/test-review/${testPlanVersion.gitSha}/${testPlanVersion.testPlan.directory}`}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
+                    <a href={`/test-review/${testPlanVersion.id}`}>
                         {testPlanVersion.versionString} of{' '}
                         {testPlanVersion.title} Test Plan
                     </a>
@@ -86,12 +81,6 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
 
             {testPlanReports.map(testPlanReport => {
                 if (testPlanReport.status === 'DRAFT') return null;
-                const skippedTests = differenceBy(
-                    testPlanReport.runnableTests,
-                    testPlanReport.finalizedTestResults,
-                    testOrTestResult =>
-                        testOrTestResult.test?.id ?? testOrTestResult.id
-                );
                 const overallMetrics = getMetrics({ testPlanReport });
 
                 const { at, browser } = testPlanReport;
@@ -124,17 +113,6 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                 View Complete Results
                             </Button>
                         </LinkContainer>
-                        {skippedTests.length ? (
-                            <Link
-                                to={
-                                    `/report/${testPlanVersion.id}` +
-                                    `/targets/${testPlanReport.id}` +
-                                    `#skipped-tests`
-                                }
-                            >
-                                {skippedTests.length} Tests Were Skipped
-                            </Link>
-                        ) : null}
                         <Table
                             className="mt-3"
                             bordered

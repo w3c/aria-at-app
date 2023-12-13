@@ -35,7 +35,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
                             text
                         }
                         passed
-                        failedReason
                     }
                     requiredAssertionResults: assertionResults(
                         priority: REQUIRED
@@ -44,7 +43,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
                             text
                         }
                         passed
-                        failedReason
                     }
                     optionalAssertionResults: assertionResults(
                         priority: OPTIONAL
@@ -53,7 +51,12 @@ export const TEST_RUN_PAGE_QUERY = gql`
                             text
                         }
                         passed
-                        failedReason
+                    }
+                    mayAssertionResults: assertionResults(priority: MAY) {
+                        assertion {
+                            text
+                        }
+                        passed
                     }
                     unexpectedBehaviors {
                         id
@@ -106,7 +109,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         }
                         assertionResult {
                             passed
-                            failedReason
                         }
                     }
                 }
@@ -136,6 +138,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     testPlan {
                         directory
                     }
+                    metadata
                 }
                 runnableTests {
                     id
@@ -216,7 +219,6 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                     }
                     assertionResult {
                         passed
-                        failedReason
                     }
                 }
             }
@@ -246,6 +248,7 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                 testPlan {
                     directory
                 }
+                metadata
             }
             runnableTests {
                 id
@@ -325,7 +328,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                     text
                                 }
                                 passed
-                                failedReason
                             }
                             requiredAssertionResults: assertionResults(
                                 priority: REQUIRED
@@ -334,7 +336,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                     text
                                 }
                                 passed
-                                failedReason
                             }
                             optionalAssertionResults: assertionResults(
                                 priority: OPTIONAL
@@ -343,7 +344,14 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                     text
                                 }
                                 passed
-                                failedReason
+                            }
+                            mayAssertionResults: assertionResults(
+                                priority: MAY
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
                             }
                             unexpectedBehaviors {
                                 id
@@ -396,7 +404,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 }
                                 assertionResult {
                                     passed
-                                    failedReason
                                 }
                             }
                         }
@@ -426,6 +433,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             testPlan {
                                 directory
                             }
+                            metadata
                         }
                         runnableTests {
                             id
@@ -492,7 +500,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             }
                             assertionResult {
                                 passed
-                                failedReason
                             }
                         }
                     }
@@ -521,6 +528,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                         testPlan {
                             directory
                         }
+                        metadata
                     }
                     runnableTests {
                         id
@@ -604,7 +612,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                     text
                                 }
                                 passed
-                                failedReason
                             }
                             requiredAssertionResults: assertionResults(
                                 priority: REQUIRED
@@ -613,7 +620,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                     text
                                 }
                                 passed
-                                failedReason
                             }
                             optionalAssertionResults: assertionResults(
                                 priority: OPTIONAL
@@ -622,7 +628,14 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                     text
                                 }
                                 passed
-                                failedReason
+                            }
+                            mayAssertionResults: assertionResults(
+                                priority: MAY
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
                             }
                             unexpectedBehaviors {
                                 id
@@ -675,7 +688,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 }
                                 assertionResult {
                                     passed
-                                    failedReason
                                 }
                             }
                         }
@@ -705,6 +717,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             testPlan {
                                 directory
                             }
+                            metadata
                         }
                         runnableTests {
                             id
@@ -771,7 +784,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             }
                             assertionResult {
                                 passed
-                                failedReason
                             }
                         }
                     }
@@ -800,6 +812,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                         testPlan {
                             directory
                         }
+                        metadata
                     }
                     runnableTests {
                         id
@@ -883,7 +896,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                     text
                                 }
                                 passed
-                                failedReason
                             }
                             requiredAssertionResults: assertionResults(
                                 priority: REQUIRED
@@ -892,7 +904,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                     text
                                 }
                                 passed
-                                failedReason
                             }
                             optionalAssertionResults: assertionResults(
                                 priority: OPTIONAL
@@ -901,7 +912,14 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                     text
                                 }
                                 passed
-                                failedReason
+                            }
+                            mayAssertionResults: assertionResults(
+                                priority: MAY
+                            ) {
+                                assertion {
+                                    text
+                                }
+                                passed
                             }
                             unexpectedBehaviors {
                                 id
@@ -954,7 +972,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 }
                                 assertionResult {
                                     passed
-                                    failedReason
                                 }
                             }
                         }
@@ -984,6 +1001,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             testPlan {
                                 directory
                             }
+                            metadata
                         }
                         runnableTests {
                             id
@@ -1050,7 +1068,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             }
                             assertionResult {
                                 passed
-                                failedReason
                             }
                         }
                     }
@@ -1079,6 +1096,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                         testPlan {
                             directory
                         }
+                        metadata
                     }
                     runnableTests {
                         id

@@ -7,9 +7,10 @@ import React, {
 } from 'react';
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
-import nextId from 'react-id-generator';
+import { unescape } from 'lodash';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import { calculateAssertionsCount } from '../common/TestPlanResultsTable/utils';
+import { parseListContent, parseSettingsContent } from './utils.js';
 import {
     userCloseWindow,
     userOpenWindow
@@ -21,6 +22,9 @@ import {
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../utils/aria';
 import OutputTextArea from './OutputTextArea';
+import supportJson from '../../resources/support.json';
+import commandsJson from '../../resources/commands.json';
+import AssertionsFieldset from './AssertionsFieldset';
 
 const Container = styled.div`
     width: 100%;
@@ -40,7 +44,11 @@ const InstructionsSection = styled.section``;
 
 const HeadingText = styled.h1``;
 
-const SubHeadingText = styled.h2``;
+const SubHeadingText = styled.h2`
+    &#instruction-list-heading {
+        margin-top: 0;
+    }
+`;
 
 const InnerSectionHeadingText = styled.h3``;
 
@@ -69,49 +77,7 @@ export const Feedback = styled.span`
     }
 `;
 
-const Table = styled.table`
-    width: 100%;
-
-    display: table;
-    margin-bottom: 1em;
-    border-spacing: 2px;
-
-    border: black solid 1px;
-
-    text-indent: initial;
-    box-sizing: border-box;
-    border-collapse: collapse;
-
-    > tbody > tr {
-        td,
-        th {
-            border: 1px solid black;
-            padding: 0.25em;
-        }
-
-        td {
-            > label {
-                display: initial;
-                vertical-align: middle;
-            }
-
-            > input[type='radio'] {
-                margin: 0 5px 0 0;
-                vertical-align: middle;
-
-                &:nth-of-type(n + 2) {
-                    margin: 0 5px;
-                }
-            }
-        }
-
-        th {
-            font-weight: bold;
-        }
-    }
-`;
-
-const Fieldset = styled.fieldset`
+export const Fieldset = styled.fieldset`
     display: block;
     margin-inline-start: 2px;
     margin-inline-end: 2px;
@@ -182,20 +148,7 @@ const Fieldset = styled.fieldset`
     }
 `;
 
-const NumberedList = styled.ol`
-    > li {
-    }
-`;
-
-const BulletList = styled.ul`
-    padding-inline-start: 2.5rem;
-    list-style-type: circle;
-
-    > li {
-        display: list-item;
-        list-style: circle;
-    }
-`;
+const NumberedList = styled.ol``;
 
 const Button = styled.button``;
 
@@ -215,6 +168,7 @@ const TestRenderer = ({
     at,
     testResult = {},
     testPageUrl,
+    testFormatVersion,
     testRunStateRef,
     recentTestRunStateRef,
     testRunResultRef,
@@ -240,6 +194,7 @@ const TestRenderer = ({
         // Array.from(new URL(document.location).searchParams)
         const configQueryParams = [['at', evaluateAtNameKey(at.name)]];
 
+        testRunIO.setAllCommandsInputFromJSON(commandsJson);
         await testRunIO.setInputsFromCollectedTestAsync(renderableContent);
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
 
@@ -308,13 +263,9 @@ const TestRenderer = ({
                 const assertionResult = assertionResults[j];
                 const { highlightRequired } = assertionResult;
 
-                if (assertionResult.passed)
-                    commands[i].assertions[j].result = 'pass';
-                else if (assertionResult.failedReason === 'NO_OUTPUT')
-                    commands[i].assertions[j].result = 'failMissing';
-                else if (assertionResult.failedReason === 'INCORRECT_OUTPUT')
-                    commands[i].assertions[j].result = 'failIncorrect';
-                else commands[i].assertions[j].result = 'notSet';
+                commands[i].assertions[j].result = assertionResult.passed
+                    ? 'pass'
+                    : 'fail';
 
                 commands[i].assertions[j].highlightRequired = highlightRequired;
             }
@@ -430,11 +381,6 @@ const TestRenderer = ({
                 const atOutputError = item.atOutput.highlightRequired;
                 if (atOutputError) return true;
 
-                const assertionsError = item.assertions.some(
-                    item => item.highlightRequired
-                );
-                if (assertionsError) return true;
-
                 const unexpectedError = item.unexpected.highlightRequired;
                 if (unexpectedError) return true;
 
@@ -459,11 +405,6 @@ const TestRenderer = ({
                     item.atOutput.description[1].highlightRequired;
                 if (atOutputError) return true;
 
-                const assertionsError = item.assertions.some(
-                    item => item.description[1].highlightRequired
-                );
-                if (assertionsError) return true;
-
                 const unexpectedBehaviorError =
                     item.unexpectedBehaviors.description[1].highlightRequired;
                 if (unexpectedBehaviorError) return true;
@@ -482,75 +423,60 @@ const TestRenderer = ({
         return false;
     };
 
-    const parseRichContent = (instruction = []) => {
-        let content = null;
-        for (let value of instruction) {
-            if (typeof value === 'string') {
-                if (value === '.')
-                    content = (
-                        <>
-                            {content}
-                            {value}
-                        </>
-                    );
-                else
-                    content = content = (
-                        <>
-                            {content} {value}
-                        </>
-                    );
-            } else if ('href' in value) {
-                const { href, description } = value;
-                content = (
-                    <>
-                        {content} <a href={href}>{description}</a>
-                    </>
-                );
-            }
-        }
-        return content;
-    };
-
-    const parseListContent = (instructions = [], commandsContent = null) => {
-        return instructions.map((value, index) => {
-            if (typeof value === 'string')
-                return (
-                    <li key={nextId()}>
-                        {value}
-                        {commandsContent &&
-                            index === instructions.length - 1 && (
-                                <BulletList>{commandsContent}</BulletList>
-                            )}
-                    </li>
-                );
-            else if (Array.isArray(value))
-                return (
-                    <li key={nextId()}>
-                        {parseRichContent(value)}
-                        {commandsContent &&
-                            index === instructions.length - 1 && (
-                                <BulletList>{commandsContent}</BulletList>
-                            )}
-                    </li>
-                );
-        });
-    };
-
     const InstructionsContent = ({ labelIdRef }) => {
-        const allInstructions = [
-            ...pageContent.instructions.instructions.instructions,
-            ...pageContent.instructions.instructions.strongInstructions,
-            pageContent.instructions.instructions.commands.description
-        ];
+        let allInstructions;
+        const isV2 = testFormatVersion === 2;
+        let settingsContent = [];
+
+        if (isV2) {
+            // There is at least one defined 'setting' for the list of AT commands
+            const commandSettingSpecified = renderableContent.commands.some(
+                ({ settings }) => settings && settings !== 'defaultMode'
+            );
+
+            const defaultInstructions =
+                renderableContent.target.at.raw
+                    .defaultConfigurationInstructionsHTML;
+            const setupScriptDescription = `${supportJson.testPlanStrings.openExampleInstruction} ${renderableContent.target.setupScript.scriptDescription}`;
+            const testInstructions =
+                renderableContent.instructions.instructions;
+            const settingsInstructions = `${
+                supportJson.testPlanStrings.commandListPreface
+            }${
+                commandSettingSpecified
+                    ? ` ${supportJson.testPlanStrings.commandListSettingsPreface}`
+                    : ''
+            }`;
+
+            allInstructions = [
+                defaultInstructions,
+                setupScriptDescription + '.',
+                testInstructions + ' ' + settingsInstructions
+            ].map(e => unescape(e));
+            settingsContent = parseSettingsContent(
+                renderableContent.instructions.mode,
+                renderableContent.target.at.raw.settings
+            );
+        } else {
+            allInstructions = [
+                ...pageContent.instructions.instructions.instructions,
+                ...pageContent.instructions.instructions.strongInstructions,
+                pageContent.instructions.instructions.commands.description
+            ];
+        }
 
         const commands =
             pageContent.instructions.instructions.commands.commands;
-
         const commandsContent = parseListContent(commands);
         const content = parseListContent(allInstructions, commandsContent);
 
         return (
-            <NumberedList aria-labelledby={labelIdRef}>{content}</NumberedList>
+            <>
+                <NumberedList aria-labelledby={labelIdRef}>
+                    {content}
+                </NumberedList>
+                {settingsContent.length ? settingsContent : null}
+            </>
         );
     };
 
@@ -558,7 +484,6 @@ const TestRenderer = ({
 
     const AssertionsContent = ({ labelIdRef }) => {
         const assertions = [...pageContent.instructions.assertions.assertions];
-
         const content = parseListContent(assertions);
 
         return (
@@ -609,21 +534,10 @@ const TestRenderer = ({
                         }
                     />
                     <InstructionsSection>
-                        <HeadingText id="behavior-header" tabIndex="-1">
-                            {pageContent.instructions.header.header}
-                        </HeadingText>
-                        <Text>{pageContent.instructions.description}</Text>
                         <SubHeadingText id="instruction-list-heading">
-                            {pageContent.instructions.instructions.header}
+                            Instructions
                         </SubHeadingText>
                         <InstructionsContent labelIdRef="instruction-list-heading" />
-                        <SubHeadingText id="success-criteria-list-heading">
-                            {pageContent.instructions.assertions.header}
-                        </SubHeadingText>
-                        <Text>
-                            {pageContent.instructions.assertions.description}
-                        </Text>
-                        <AssertionsContent labelIdRef="success-criteria-list-heading" />
                         <Button
                             disabled={
                                 !pageContent.instructions.openTestPage.enabled
@@ -645,11 +559,10 @@ const TestRenderer = ({
                                 const {
                                     header,
                                     atOutput,
-                                    assertionsHeader,
                                     assertions,
-                                    unexpectedBehaviors
+                                    unexpectedBehaviors,
+                                    assertionsHeader
                                 } = value;
-
                                 return (
                                     <Fragment
                                         key={`AtOutputKey_${commandIndex}`}
@@ -663,208 +576,11 @@ const TestRenderer = ({
                                             isSubmitted={isSubmitted}
                                             readOnly={isReviewingBot}
                                         />
-                                        <h4
-                                            id={`command-${commandIndex}-assertions-heading`}
-                                        >
-                                            Assertions {header}
-                                        </h4>
-                                        <Table
-                                            aria-labelledby={`command-${commandIndex}-assertions-heading`}
-                                        >
-                                            <tbody>
-                                                <tr>
-                                                    <th>
-                                                        {assertionsHeader.descriptionHeader ||
-                                                            'Assertion'}
-                                                    </th>
-                                                    <th>
-                                                        {assertionsHeader.passHeader ||
-                                                            'Success case'}
-                                                    </th>
-                                                    <th>
-                                                        {assertionsHeader.failHeader ||
-                                                            'Failure cases'}
-                                                    </th>
-                                                </tr>
-                                                {assertions.map(
-                                                    (
-                                                        assertion,
-                                                        assertionIndex
-                                                    ) => {
-                                                        const {
-                                                            description,
-                                                            passChoice,
-                                                            failChoices
-                                                        } = assertion;
-
-                                                        const [
-                                                            missingChoice,
-                                                            failureChoice
-                                                        ] = failChoices;
-
-                                                        return (
-                                                            <tr
-                                                                key={`AssertionKey_${assertionIndex}`}
-                                                            >
-                                                                {/*Assertion*/}
-                                                                <td
-                                                                    id={`assertion-${commandIndex}-${assertionIndex}`}
-                                                                >
-                                                                    {
-                                                                        description[0]
-                                                                    }
-                                                                    {isSubmitted && (
-                                                                        <Feedback
-                                                                            className={`${
-                                                                                description[1]
-                                                                                    .required &&
-                                                                                'required'
-                                                                            } ${
-                                                                                description[1]
-                                                                                    .highlightRequired &&
-                                                                                'highlight-required'
-                                                                            }`}
-                                                                        >
-                                                                            {
-                                                                                description[1]
-                                                                                    .description
-                                                                            }
-                                                                        </Feedback>
-                                                                    )}
-                                                                </td>
-                                                                {/*Success case*/}
-                                                                <td>
-                                                                    <input
-                                                                        key={`Pass__${commandIndex}__${assertionIndex}`}
-                                                                        type="radio"
-                                                                        id={`pass-${commandIndex}-${assertionIndex}`}
-                                                                        name={`result-${commandIndex}-${assertionIndex}`}
-                                                                        aria-labelledby={`pass-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
-                                                                        autoFocus={
-                                                                            isSubmitted &&
-                                                                            passChoice.focus
-                                                                        }
-                                                                        defaultChecked={
-                                                                            passChoice.checked
-                                                                        }
-                                                                        onClick={
-                                                                            passChoice.click
-                                                                        }
-                                                                    />
-                                                                    <label
-                                                                        id={`pass-${commandIndex}-${assertionIndex}-label`}
-                                                                        htmlFor={`pass-${commandIndex}-${assertionIndex}`}
-                                                                    >
-                                                                        {
-                                                                            passChoice
-                                                                                .label[0]
-                                                                        }
-                                                                        <Feedback
-                                                                            className={`${
-                                                                                passChoice
-                                                                                    .label[1]
-                                                                                    .offScreen &&
-                                                                                'off-screen'
-                                                                            }`}
-                                                                        >
-                                                                            {
-                                                                                passChoice
-                                                                                    .label[1]
-                                                                                    .description
-                                                                            }
-                                                                        </Feedback>
-                                                                    </label>
-                                                                </td>
-                                                                {/*Failure cases*/}
-                                                                <td>
-                                                                    <input
-                                                                        key={`Missing__${commandIndex}__${assertionIndex}`}
-                                                                        type="radio"
-                                                                        id={`missing-${commandIndex}-${assertionIndex}`}
-                                                                        name={`result-${commandIndex}-${assertionIndex}`}
-                                                                        aria-labelledby={`missing-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
-                                                                        autoFocus={
-                                                                            isSubmitted &&
-                                                                            missingChoice.focus
-                                                                        }
-                                                                        defaultChecked={
-                                                                            missingChoice.checked
-                                                                        }
-                                                                        onClick={
-                                                                            missingChoice.click
-                                                                        }
-                                                                    />
-                                                                    <label
-                                                                        id={`missing-${commandIndex}-${assertionIndex}-label`}
-                                                                        htmlFor={`missing-${commandIndex}-${assertionIndex}`}
-                                                                    >
-                                                                        {
-                                                                            missingChoice
-                                                                                .label[0]
-                                                                        }
-                                                                        <Feedback
-                                                                            className={`${
-                                                                                missingChoice
-                                                                                    .label[1]
-                                                                                    .offScreen &&
-                                                                                'off-screen'
-                                                                            }`}
-                                                                        >
-                                                                            {
-                                                                                missingChoice
-                                                                                    .label[1]
-                                                                                    .description
-                                                                            }
-                                                                        </Feedback>
-                                                                    </label>
-
-                                                                    <input
-                                                                        key={`Fail__${commandIndex}__${assertionIndex}`}
-                                                                        type="radio"
-                                                                        id={`fail-${commandIndex}-${assertionIndex}`}
-                                                                        name={`result-${commandIndex}-${assertionIndex}`}
-                                                                        aria-labelledby={`fail-${commandIndex}-${assertionIndex}-label assertion-${commandIndex}-${assertionIndex}`}
-                                                                        autoFocus={
-                                                                            isSubmitted &&
-                                                                            failureChoice.focus
-                                                                        }
-                                                                        defaultChecked={
-                                                                            failureChoice.checked
-                                                                        }
-                                                                        onClick={
-                                                                            failureChoice.click
-                                                                        }
-                                                                    />
-                                                                    <label
-                                                                        id={`fail-${commandIndex}-${assertionIndex}-label`}
-                                                                        htmlFor={`fail-${commandIndex}-${assertionIndex}`}
-                                                                    >
-                                                                        {
-                                                                            failureChoice
-                                                                                .label[0]
-                                                                        }
-                                                                        <Feedback
-                                                                            className={`${
-                                                                                failureChoice
-                                                                                    .label[1]
-                                                                                    .offScreen &&
-                                                                                'off-screen'
-                                                                            }`}
-                                                                        >
-                                                                            {
-                                                                                failureChoice
-                                                                                    .label[1]
-                                                                                    .description
-                                                                            }
-                                                                        </Feedback>
-                                                                    </label>
-                                                                </td>
-                                                            </tr>
-                                                        );
-                                                    }
-                                                )}
-                                            </tbody>
-                                        </Table>
+                                        <AssertionsFieldset
+                                            assertions={assertions}
+                                            commandIndex={commandIndex}
+                                            assertionsHeader={assertionsHeader}
+                                        />
                                         {/*Unexpected Behaviors*/}
                                         <Fieldset
                                             id={`cmd-${commandIndex}-problems`}
@@ -1116,6 +832,7 @@ TestRenderer.propTypes = {
     testResult: PropTypes.object,
     support: PropTypes.object,
     testPageUrl: PropTypes.string,
+    testFormatVersion: PropTypes.number,
     testRunStateRef: PropTypes.any,
     recentTestRunStateRef: PropTypes.any,
     testRunResultRef: PropTypes.any,

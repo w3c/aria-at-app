@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import nextId from 'react-id-generator';
 import styled from '@emotion/styled';
 import { Button } from 'react-bootstrap';
+import { unescape } from 'lodash';
+import { parseListContent } from '../../TestRenderer/utils';
 import {
     userCloseWindow,
     userOpenWindow
@@ -13,14 +14,8 @@ import {
 } from '../../../resources/aria-at-test-io-format.mjs';
 import { TestWindow } from '../../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../../utils/aria.js';
-
-const Container = styled.div`
-    padding: 20px;
-`;
-
-const Heading = styled.h2`
-    margin: 0 0 0.5em 0;
-`;
+import commandsJson from '../../../resources/commands.json';
+import supportJson from '../../../resources/support.json';
 
 const NumberedList = styled.ol`
     counter-reset: numbered-list;
@@ -49,21 +44,16 @@ const NumberedList = styled.ol`
     }
 `;
 
-const BulletList = styled.ul`
-    padding-inline-start: 2.5rem;
-    list-style-type: circle;
-
-    > li {
-        display: list-item;
-        list-style: circle;
-    }
-`;
-
-const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
-    const { test = {} } = testResult;
+const InstructionsRenderer = ({
+    test,
+    testPageUrl,
+    at,
+    headingLevel = 2,
+    testFormatVersion
+}) => {
     const { renderableContent } = test;
     const [testRunExport, setTestRunExport] = useState();
-    const [instructionsContent, setInstructionsContent] = useState({
+    const [pageContent, setPageContent] = useState({
         instructions: {
             assertions: { assertions: [] },
             instructions: {
@@ -78,6 +68,7 @@ const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
         const testRunIO = new TestRunInputOutput();
         const configQueryParams = [['at', evaluateAtNameKey(at.name)]];
 
+        testRunIO.setAllCommandsInputFromJSON(commandsJson);
         await testRunIO.setInputsFromCollectedTestAsync(renderableContent);
         testRunIO.setConfigInputFromQueryParamsAndSupport(configQueryParams);
 
@@ -123,117 +114,81 @@ const InstructionsRenderer = ({ testResult, testPageUrl, at }) => {
 
     useEffect(() => {
         if (testRunExport) {
-            setInstructionsContent(testRunExport.instructions());
+            setPageContent(testRunExport.instructions());
         }
     }, [testRunExport]);
 
-    const parseRichContent = (instruction = []) => {
-        let content = null;
-        for (let value of instruction) {
-            if (typeof value === 'string') {
-                if (value === '.')
-                    content = (
-                        <>
-                            {content}
-                            {value}
-                        </>
-                    );
-                else
-                    content = content = (
-                        <>
-                            {content} {value}
-                        </>
-                    );
-            } else if ('href' in value) {
-                const { href, description } = value;
-                content = (
-                    <>
-                        {content} <a href={href}>{description}</a>
-                    </>
-                );
-            }
-        }
-        return content;
-    };
+    let allInstructions;
+    const isV2 = testFormatVersion === 2;
 
-    const parseListContent = (instructions = [], commandsContent = null) => {
-        return instructions.map((value, index) => {
-            if (typeof value === 'string')
-                return (
-                    <li key={nextId()}>
-                        {value}
-                        {commandsContent &&
-                            index === instructions.length - 1 && (
-                                <BulletList>{commandsContent}</BulletList>
-                            )}
-                    </li>
-                );
-            else if (Array.isArray(value))
-                return (
-                    <li key={nextId()}>
-                        {parseRichContent(value)}
-                        {commandsContent &&
-                            index === instructions.length - 1 && (
-                                <BulletList>{commandsContent}</BulletList>
-                            )}
-                    </li>
-                );
-        });
-    };
+    if (isV2) {
+        const commandSettingSpecified = renderableContent.commands.some(
+            ({ settings }) => settings && settings !== 'defaultMode'
+        );
 
-    const allInstructions = [
-        ...instructionsContent.instructions.instructions.instructions,
-        ...instructionsContent.instructions.instructions.strongInstructions,
-        instructionsContent.instructions.instructions.commands.description
-    ];
+        const defaultInstructions =
+            renderableContent.target.at.raw
+                .defaultConfigurationInstructionsHTML;
+        const setupScriptDescription = `${supportJson.testPlanStrings.openExampleInstruction} ${renderableContent.target.setupScript.scriptDescription}`;
+        const testInstructions = renderableContent.instructions.instructions;
+        const settingsInstructions = `${
+            supportJson.testPlanStrings.commandListPreface
+        }${
+            commandSettingSpecified
+                ? ` ${supportJson.testPlanStrings.commandListSettingsPreface}`
+                : ''
+        }`;
 
-    const commands =
-        instructionsContent.instructions.instructions.commands.commands;
+        allInstructions = [
+            defaultInstructions,
+            setupScriptDescription + '.',
+            testInstructions + ' ' + settingsInstructions
+        ].map(e => unescape(e));
+    } else {
+        allInstructions = [
+            ...pageContent.instructions.instructions.instructions,
+            ...pageContent.instructions.instructions.strongInstructions,
+            pageContent.instructions.instructions.commands.description
+        ];
+    }
 
+    const commands = pageContent.instructions.instructions.commands.commands;
     const commandsContent = parseListContent(commands);
+
     const allInstructionsContent = parseListContent(
         allInstructions,
         commandsContent
     );
 
-    const assertions = [
-        ...instructionsContent.instructions.assertions.assertions
-    ];
-
+    const assertions = [...pageContent.instructions.assertions.assertions];
     const assertionsContent = parseListContent(assertions);
 
+    const Heading = `h${headingLevel}`;
+
     return (
-        <Container>
-            <p>{instructionsContent.instructions.description}</p>
-            <Heading>
-                {instructionsContent.instructions.instructions.header}
-            </Heading>
+        <>
             <NumberedList>{allInstructionsContent}</NumberedList>
-            <Heading>
-                {instructionsContent.instructions.assertions.header}
-            </Heading>
-            {instructionsContent.instructions.assertions.description}
+            <Heading>{pageContent.instructions.assertions.header}</Heading>
+            {pageContent.instructions.assertions.description}
             <NumberedList>{assertionsContent}</NumberedList>
             <Button
-                disabled={
-                    !instructionsContent.instructions.openTestPage.enabled
-                }
-                onClick={instructionsContent.instructions.openTestPage.click}
+                disabled={!pageContent.instructions.openTestPage.enabled}
+                onClick={pageContent.instructions.openTestPage.click}
             >
-                {instructionsContent.instructions.openTestPage.button}
+                {pageContent.instructions.openTestPage.button}
             </Button>
-        </Container>
+        </>
     );
 };
 
 InstructionsRenderer.propTypes = {
-    testResult: PropTypes.shape({
-        test: PropTypes.object.isRequired
-    }),
+    test: PropTypes.object.isRequired,
     testPageUrl: PropTypes.string,
     at: PropTypes.shape({
         name: PropTypes.string.isRequired
-    })
+    }),
+    testFormatVersion: PropTypes.number,
+    headingLevel: PropTypes.number
 };
 
 export default InstructionsRenderer;

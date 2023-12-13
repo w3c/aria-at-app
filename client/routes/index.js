@@ -13,6 +13,7 @@ import UserSettings from '@components/UserSettings';
 import CandidateTestPlanRun from '@components/CandidateReview/CandidateTestPlanRun';
 import DataManagement from 'client/components/DataManagement';
 import TestPlanVersionsPage from '../components/TestPlanVersionsPage';
+import TestReview from '../components/TestReview';
 
 export default () => (
     <Routes>
@@ -54,6 +55,11 @@ export default () => (
                     <TestRun />
                 </ConfirmAuth>
             }
+        />
+        <Route
+            exact
+            path="/test-review/:testPlanVersionId"
+            element={<TestReview />}
         />
         <Route exact path="/reports" element={<Reports />} />
         <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />

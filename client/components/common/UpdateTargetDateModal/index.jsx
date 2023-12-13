@@ -92,8 +92,11 @@ const UpdateTargetDateModal = ({
             content={
                 <ModalInnerSectionContainer>
                     <Form.Group className="form-group">
-                        <Form.Label>Target Date</Form.Label>
+                        <Form.Label htmlFor="target-date-input">
+                            Target Date
+                        </Form.Label>
                         <Form.Control
+                            id="target-date-input"
                             ref={dateTextRef}
                             type="text"
                             placeholder="DD-MM-YYYY"
@@ -122,6 +125,9 @@ const UpdateTargetDateModal = ({
                 }
             ]}
             handleClose={handleClose}
+            useOnHide={true}
+            handleHide={handleClose}
+            initialFocusRef={dateTextRef}
         />
     );
 };

@@ -41,6 +41,7 @@ export const TEST_PLAN_VERSIONS_PAGE_QUERY = gql`
                         name
                     }
                 }
+                metadata
             }
         }
     }

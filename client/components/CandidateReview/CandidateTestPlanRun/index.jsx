@@ -496,12 +496,11 @@ const CandidateTestPlanRun = () => {
                     <InstructionsRenderer
                         key={`instructions-${currentTest.id}`}
                         at={testPlanReport.at}
-                        testResult={{
-                            scenarioResults: {},
-                            test: currentTest,
-                            completedAt: new Date()
-                        }}
+                        test={currentTest}
                         testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
+                        testFormatVersion={
+                            testPlanVersion.metadata.testFormatVersion
+                        }
                     />,
                     ...testPlanReports.map(testPlanReport => {
                         const testResult =

@@ -38,7 +38,7 @@ jobs:
           yarn sequelize:test db:seed:all
           yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_1}
           yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_2}
-          yarn workspace server db-import-tests:test
+          yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_3}
           yarn workspace server db-populate-sample-data:test
       - name: test
         run: yarn test
