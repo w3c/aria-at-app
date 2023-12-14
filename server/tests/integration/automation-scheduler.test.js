@@ -9,9 +9,6 @@ const { default: axios } = require('axios');
 const {
     getCollectionJobById
 } = require('../../models/services/CollectionJobService');
-const {
-    getTestPlanReportById
-} = require('../../models/services/TestPlanReportService');
 
 let mockAutomationSchedulerServer;
 let apiServer;
