@@ -40,6 +40,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
             testPlanVersionPhases: [CANDIDATE]
             testPlanVersionId: $testPlanVersionId
             testPlanVersionIds: $testPlanVersionIds
+            isFinal: true
         ) {
             id
             vendorReviewStatus
@@ -113,7 +114,6 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                             text
                         }
                         passed
-                        failedReason
                     }
                     requiredAssertionResults: assertionResults(
                         priority: REQUIRED
@@ -122,7 +122,6 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                             text
                         }
                         passed
-                        failedReason
                     }
                     optionalAssertionResults: assertionResults(
                         priority: OPTIONAL
@@ -131,7 +130,12 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                             text
                         }
                         passed
-                        failedReason
+                    }
+                    mayAssertionResults: assertionResults(priority: MAY) {
+                        assertion {
+                            text
+                        }
+                        passed
                     }
                     unexpectedBehaviors {
                         id

@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
+import { uniqueId } from 'lodash';
 
 const ModalTitleStyle = styled.h1`
     border: 0;
@@ -50,6 +51,10 @@ const BasicThemedModal = ({
         headerRef.current.focus();
     }, [show]);
 
+    const id = useMemo(() => {
+        return uniqueId('modal-');
+    }, []);
+
     return (
         <>
             <Modal
@@ -59,7 +64,7 @@ const BasicThemedModal = ({
                 onExit={handleClose}
                 /* Disabled due to buggy implementation which jumps the page */
                 autoFocus={false}
-                aria-labelledby="basic-modal"
+                aria-labelledby={`title-${id}`}
                 dialogClassName={dialogClassName}
             >
                 <ColorStrip theme={theme} />
@@ -68,6 +73,7 @@ const BasicThemedModal = ({
                         as={ModalTitleStyle}
                         tabIndex="-1"
                         ref={headerRef}
+                        id={`title-${id}`}
                     >
                         <ModalInnerSectionContainer>
                             <FontAwesomeIcon
@@ -95,18 +101,15 @@ const BasicThemedModal = ({
                             {closeLabel}
                         </Button>
                     )}
-                    {actionButtons.length &&
-                        actionButtons.map(({ action, text }) => (
-                            <Button
-                                key={text}
-                                variant={
-                                    theme === 'danger' ? 'danger' : 'primary'
-                                }
-                                onClick={action}
-                            >
-                                {text}
-                            </Button>
-                        ))}
+                    {actionButtons.map(({ action, text }) => (
+                        <Button
+                            key={text}
+                            variant={theme === 'danger' ? 'danger' : 'primary'}
+                            onClick={action}
+                        >
+                            {text}
+                        </Button>
+                    ))}
                 </Modal.Footer>
             </Modal>
         </>

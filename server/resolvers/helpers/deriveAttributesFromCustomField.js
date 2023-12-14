@@ -29,16 +29,22 @@ const getChildPaths = (parent, fields) => {
     });
 };
 
-const deriveAttributesFromCustomField = (modelName, customFields) => {
+/**
+ * Returns the required database attributes to be called to support GraphQL field(s) being called
+ * @param {string} fieldName - The referenced field name defined in graphql-schema
+ * @param {string[]} customFields - Gathered graphql query field names to check if there is a matching database attribute
+ * @returns {{fields: *[], derived: *[]}|*[]}
+ */
+const deriveAttributesFromCustomField = (fieldName, customFields) => {
     if (!customFields) return [];
     const derived = [];
     const fields = [
         ...customFields.map(({ value }) => value),
         ...customFields.flatMap(mapParentFn)
     ];
-    fields.push(...getChildPaths(modelName, fields));
+    fields.push(...getChildPaths(fieldName, fields));
 
-    switch (modelName) {
+    switch (fieldName) {
         case 'testPlanVersion':
         case 'latestTestPlanVersion': {
             if (
@@ -58,8 +64,6 @@ const deriveAttributesFromCustomField = (modelName, customFields) => {
         }
         case 'draftTestPlanRuns': {
             if (fields.includes('tester')) derived.push('testerUserId');
-            if (fields.includes('testPlanReport'))
-                derived.push('testPlanReportId');
             if (fields.includes('testPlanReport'))
                 derived.push('testPlanReportId');
         }

@@ -6,132 +6,6 @@ const {
 const { query, mutate } = require('../../tests/util/graphql-test-utilities');
 
 const populateFakeTestResults = async (testPlanRunId, fakeTestResultTypes) => {
-    let index = 0;
-    for (const fakeTestResultType of fakeTestResultTypes) {
-        // eslint-disable-next-line no-console
-        console.info(
-            'Populating sample for TestPlanRun',
-            testPlanRunId,
-            'TestResult',
-            index
-        );
-
-        switch (fakeTestResultType) {
-            case null:
-                break;
-            case 'completeAndPassing':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'passing',
-                    submit: true
-                });
-                break;
-            case 'passingHistoricalResultsForMockAutomation':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType:
-                        'passingHistoricalResultsForMockAutomation',
-                    submit: true
-                });
-                break;
-            case 'completeAndFailingDueToIncorrectAssertions':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'failingDueToIncorrectAssertions',
-                    submit: true
-                });
-                break;
-            case 'completeAndFailingDueToNoOutputAssertions':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'failingDueToNoOutputAssertions',
-                    submit: true
-                });
-                break;
-            case 'completeAndFailingDueToUnexpectedBehaviors':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'failingDueToUnexpectedBehaviors',
-                    submit: true
-                });
-                break;
-            case 'completeAndFailingDueToMultiple':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'failingDueToMultiple',
-                    submit: true
-                });
-                break;
-            case 'incompleteAndEmpty':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'empty',
-                    submit: false
-                });
-                break;
-            case 'incompleteAndPassing':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'passing',
-                    submit: false
-                });
-                break;
-            case 'incompleteAndFailingDueToIncorrectAssertions':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'failingDueToIncorrectAssertions',
-                    submit: false
-                });
-                break;
-            case 'incompleteAndFailingDueToNoOutputAssertions':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'failingDueToNoOutputAssertions',
-                    submit: false
-                });
-                break;
-            case 'incompleteAndFailingDueToUnexpectedBehaviors':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'failingDueToUnexpectedBehaviors',
-                    submit: false
-                });
-                break;
-            case 'incompleteAndFailingDueToMultiple':
-                await getFake({
-                    testPlanRunId,
-                    index,
-                    fakeTestResultType: 'failingDueToMultiple',
-                    submit: false
-                });
-                break;
-            default:
-                throw new Error(
-                    `Invalid fake test result type '${fakeTestResultType}'`
-                );
-        }
-
-        index += 1;
-    }
-};
-
-const getFake = async ({
-    testPlanRunId,
-    index,
-    fakeTestResultType,
-    submit
-}) => {
     const {
         populateData: { testPlanReport }
     } = await query(gql`
@@ -152,6 +26,152 @@ const getFake = async ({
         }
     `);
 
+    let index = 0;
+
+    for (const fakeTestResultType of fakeTestResultTypes) {
+        // eslint-disable-next-line no-console
+        console.info(
+            'Populating sample for TestPlanRun',
+            testPlanRunId,
+            'TestResult',
+            index
+        );
+
+        switch (fakeTestResultType) {
+            case null:
+                break;
+            case 'completeAndPassing':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'passing',
+                    submit: true
+                });
+                break;
+            case 'completeAndFailingDueToIncorrectAssertions':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToIncorrectAssertions',
+                    submit: true
+                });
+                break;
+            case 'completeAndFailingDueToNoOutputAssertions':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToNoOutputAssertions',
+                    submit: true
+                });
+                break;
+            case 'completeAndFailingDueToUnexpectedBehaviors':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToUnexpectedBehaviors',
+                    submit: true
+                });
+                break;
+            case 'completeAndFailingDueToMultiple':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToMultiple',
+                    submit: true
+                });
+                break;
+            case 'incompleteAndEmpty':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'empty',
+                    submit: false
+                });
+                break;
+            case 'incompleteAndPassing':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'passing',
+                    submit: false
+                });
+                break;
+            case 'incompleteAndFailingDueToIncorrectAssertions':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToIncorrectAssertions',
+                    submit: false
+                });
+                break;
+            case 'incompleteAndFailingDueToNoOutputAssertions':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToNoOutputAssertions',
+                    submit: false
+                });
+                break;
+            case 'incompleteAndFailingDueToUnexpectedBehaviors':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToUnexpectedBehaviors',
+                    submit: false
+                });
+                break;
+            case 'incompleteAndFailingDueToMultiple':
+                await getFake({
+                    testPlanReport,
+                    testPlanRunId,
+                    index,
+                    fakeTestResultType: 'failingDueToMultiple',
+                    submit: false
+                });
+                break;
+            default:
+                throw new Error(
+                    `Invalid fake test result type '${fakeTestResultType}'`
+                );
+        }
+
+        index += 1;
+    }
+
+    // The following makes it so that fake tests are made for
+    // all possible tests that can be completed for any given
+    // test plan. Therefore, there will be no missing or skipped
+    // fake tests in the database.
+    if (testPlanReport.runnableTests.length !== fakeTestResultTypes.length) {
+        for (let i = index; i < testPlanReport.runnableTests.length; i += 1) {
+            await getFake({
+                testPlanReport,
+                testPlanRunId,
+                index: i,
+                fakeTestResultType: 'passing',
+                submit: true
+            });
+        }
+    }
+};
+
+const getFake = async ({
+    testPlanReport,
+    testPlanRunId,
+    index,
+    fakeTestResultType,
+    submit
+}) => {
     const testId = testPlanReport.runnableTests[index].id;
 
     const atVersion = await getAtVersionByQuery(
@@ -185,7 +205,6 @@ const getFake = async ({
                             assertionResults {
                                 id
                                 passed
-                                failedReason
                             }
                         }
                     }
@@ -211,33 +230,12 @@ const getFake = async ({
         }))
     });
 
-    const getPassingHistoricalResultsForMockAutomation = () => ({
-        ...baseTestResult,
-        atVersionId: atVersion.id,
-        browserVersionId: browserVersion.id,
-        scenarioResults: baseTestResult.scenarioResults.map(scenarioResult => ({
-            ...scenarioResult,
-            output: 'Local development simulated output',
-            assertionResults: scenarioResult.assertionResults.map(
-                assertionResult => ({
-                    ...assertionResult,
-                    passed: true
-                })
-            ),
-            unexpectedBehaviors: []
-        }))
-    });
-
-    const testResult =
-        fakeTestResultType === 'passingHistoricalResultsForMockAutomation'
-            ? getPassingHistoricalResultsForMockAutomation()
-            : getPassing();
+    const testResult = getPassing();
 
     switch (fakeTestResultType) {
         case 'empty':
             return;
         case 'passing':
-        case 'passingHistoricalResultsForMockAutomation':
             break;
         case 'failingDueToIncorrectAssertions':
             testResult.scenarioResults[0].assertionResults[0].passed = false;

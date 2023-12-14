@@ -34,7 +34,7 @@ const testPlanReportsResolver = async (
         'draftTestPlanRuns',
         TEST_PLAN_RUN_ATTRIBUTES,
         info,
-        true
+        false
     );
 
     const { attributes: testPlanVersionAttributes } = retrieveAttributes(

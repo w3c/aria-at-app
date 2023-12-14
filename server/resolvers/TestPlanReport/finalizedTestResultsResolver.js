@@ -1,12 +1,23 @@
-const {
-    getFinalizedTestResults
-} = require('../../models/services/TestResultReadService');
+const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 
-/**
- * Completed test results sourced from all the report's runs. The runs must be
- * merged because each run might have skipped different tests.
- */
-const finalizedTestResultsResolver = async testPlanReport =>
-    getFinalizedTestResults(testPlanReport);
+const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
+    if (!testPlanReport.testPlanRuns.length) {
+        return null;
+    }
+
+    // Since conflicts are now resolved, all testPlanRuns are interchangeable.
+    const testPlanRun = testPlanReport.testPlanRuns[0];
+
+    return testResultsResolver(
+        {
+            testPlanReport,
+            testResults: testPlanRun.testResults.filter(
+                testResult => !!testResult.completedAt
+            )
+        },
+        null,
+        context
+    );
+};
 
 module.exports = finalizedTestResultsResolver;

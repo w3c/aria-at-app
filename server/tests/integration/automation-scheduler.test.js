@@ -496,17 +496,7 @@ describe('Automation controller', () => {
 
     it('should copy assertion results when updating with results that match historical results', async () => {
         await dbCleaner(async () => {
-            const { scheduleCollectionJob: job } =
-                await scheduleCollectionJobByMutation();
-            const collectionJob = await getCollectionJobById(job.id);
-            await sessionAgent
-                .post(`/api/jobs/${jobId}/update`)
-                .send({ status: 'RUNNING' })
-                .set(
-                    'x-automation-secret',
-                    process.env.AUTOMATION_SCHEDULER_SECRET
-                );
-
+            // Start by getting historical results for comparing later
             // Test plan report used for test is in Draft so it
             // must be markedAsFinal to have historical results
             const finalizedTestPlanVersion = await markAsFinal(
@@ -535,6 +525,18 @@ describe('Automation controller', () => {
                     scenarioResult => scenarioResult.output
                 );
             const { atVersion, browserVersion } = historicalTestResult;
+
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation();
+            const collectionJob = await getCollectionJobById(job.id);
+            await sessionAgent
+                .post(`/api/jobs/${jobId}/update`)
+                .send({ status: 'RUNNING' })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                );
+
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
                 .send({

@@ -91,35 +91,44 @@ const countUnexpectedBehaviors = ({
     return countScenarioResult(scenarioResult);
 };
 
+const calculateAssertionPriorityCounts = (result, priority) => {
+    const assertionsPassedCount = countAssertions({
+        ...result,
+        priority,
+        passedOnly: true
+    });
+    const assertionsCount = countAssertions({
+        ...result,
+        priority
+    });
+    const assertionsFailedCount = assertionsCount - assertionsPassedCount;
+
+    return { assertionsCount, assertionsPassedCount, assertionsFailedCount };
+};
+
 const getMetrics = ({
     scenarioResult, // Choose one to provide
     testResult, // Choose one to provide
     testPlanReport // Choose one to provide
 }) => {
     const result = { scenarioResult, testResult, testPlanReport };
-    const requiredAssertionsPassedCount = countAssertions({
-        ...result,
-        priority: 'REQUIRED',
-        passedOnly: true
-    });
-    const requiredAssertionsCount = countAssertions({
-        ...result,
-        priority: 'REQUIRED'
-    });
-    const requiredAssertionsFailedCount =
-        requiredAssertionsCount - requiredAssertionsPassedCount;
+    const {
+        assertionsCount: requiredAssertionsCount,
+        assertionsPassedCount: requiredAssertionsPassedCount,
+        assertionsFailedCount: requiredAssertionsFailedCount
+    } = calculateAssertionPriorityCounts(result, 'REQUIRED');
 
-    const optionalAssertionsPassedCount = countAssertions({
-        ...result,
-        priority: 'OPTIONAL',
-        passedOnly: true
-    });
-    const optionalAssertionsCount = countAssertions({
-        ...result,
-        priority: 'OPTIONAL'
-    });
-    const optionalAssertionsFailedCount =
-        optionalAssertionsCount - optionalAssertionsPassedCount;
+    const {
+        assertionsCount: optionalAssertionsCount,
+        assertionsPassedCount: optionalAssertionsPassedCount,
+        assertionsFailedCount: optionalAssertionsFailedCount
+    } = calculateAssertionPriorityCounts(result, 'OPTIONAL');
+
+    const {
+        assertionsCount: mayAssertionsCount,
+        assertionsPassedCount: mayAssertionsPassedCount,
+        assertionsFailedCount: mayAssertionsFailedCount
+    } = calculateAssertionPriorityCounts(result, 'MAY');
 
     const testsPassedCount = countTests({
         ...result,
@@ -134,6 +143,10 @@ const getMetrics = ({
         optionalAssertionsCount === 0
             ? none
             : `${optionalAssertionsPassedCount} of ${optionalAssertionsCount} passed`;
+    const mayFormatted =
+        mayAssertionsCount === 0
+            ? false
+            : `${mayAssertionsPassedCount} of ${mayAssertionsCount} passed`;
 
     const unexpectedBehaviorCount = countUnexpectedBehaviors({ ...result });
     const unexpectedBehaviorsFormatted =
@@ -161,12 +174,16 @@ const getMetrics = ({
         optionalAssertionsPassedCount,
         optionalAssertionsCount,
         optionalAssertionsFailedCount,
+        mayAssertionsPassedCount,
+        mayAssertionsCount,
+        mayAssertionsFailedCount,
         testsPassedCount,
         testsCount,
         testsFailedCount,
         unexpectedBehaviorCount,
         requiredFormatted,
         optionalFormatted,
+        mayFormatted,
         unexpectedBehaviorsFormatted,
         supportLevel,
         supportPercent

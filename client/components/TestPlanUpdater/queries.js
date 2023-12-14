@@ -79,7 +79,6 @@ export const VERSION_QUERY = gql`
                         output
                         assertionResults {
                             passed
-                            failedReason
                         }
                         unexpectedBehaviors {
                             id

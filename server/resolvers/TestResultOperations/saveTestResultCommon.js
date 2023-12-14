@@ -8,8 +8,19 @@ const deepPickEqual = require('../../util/deepPickEqual');
 const convertTestResultToInput = require('../TestPlanRunOperations/convertTestResultToInput');
 const createTestResultSkeleton = require('../TestPlanRunOperations/createTestResultSkeleton');
 const persistConflictsCount = require('../helpers/persistConflictsCount');
+const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
+const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
+const getMetrics = require('../../util/getMetrics');
+const {
+    updateTestPlanReport
+} = require('../../models/services/TestPlanReportService');
 
-const saveTestResultCommon = async ({ testResultId, input, isSubmit }) => {
+const saveTestResultCommon = async ({
+    testResultId,
+    input,
+    isSubmit,
+    context
+}) => {
     const {
         testPlanRun,
         testPlanReport,
@@ -76,10 +87,32 @@ const saveTestResultCommon = async ({ testResultId, input, isSubmit }) => {
 
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
 
-    // TODO: Avoid blocking loads in test runs with a larger amount of tests
-    //       and/or test results
-    await persistConflictsCount(testPlanRun);
-    return populateData({ testResultId });
+    if (isSubmit) {
+        // Update metrics when result is saved
+        const { testPlanReport: testPlanReportPopulated } = await populateData(
+            { testPlanReportId: testPlanReport.id },
+            { context }
+        );
+        const runnableTests = runnableTestsResolver(testPlanReportPopulated);
+        const finalizedTestResults = await finalizedTestResultsResolver(
+            testPlanReportPopulated,
+            null,
+            context
+        );
+        const metrics = getMetrics({
+            testPlanReport: {
+                ...testPlanReportPopulated,
+                finalizedTestResults,
+                runnableTests
+            }
+        });
+        await updateTestPlanReport(testPlanReportPopulated.id, {
+            metrics: { ...testPlanReportPopulated.metrics, ...metrics }
+        });
+    }
+
+    await persistConflictsCount(testPlanRun, context);
+    return populateData({ testResultId }, { context });
 };
 
 const assertTestResultIsValid = newTestResult => {
@@ -87,12 +120,8 @@ const assertTestResultIsValid = newTestResult => {
 
     const checkAssertionResult = assertionResult => {
         if (
-            !(
-                (assertionResult.passed === true &&
-                    !assertionResult.failedReason) ||
-                (assertionResult.passed === false &&
-                    !!assertionResult.failedReason)
-            )
+            assertionResult.passed === null ||
+            assertionResult.passed === undefined
         ) {
             failed = true;
         }

@@ -8,7 +8,12 @@ const renderedUrl = (test, { atId }) => {
                 'explicitly provided.'
         );
     }
-    return test.renderedUrls[atId ?? test.inferredAtId];
+
+    // Support for V1 test format
+    if (test.renderedUrls) return test.renderedUrls[atId ?? test.inferredAtId];
+
+    // Support for V2 test format
+    return test.renderedUrl;
 };
 
 module.exports = renderedUrl;

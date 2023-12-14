@@ -91,7 +91,6 @@ const DisclosureContainer = styled.div`
 
 const ManageTestQueue = ({
     ats = [],
-    browsers = [],
     testPlanVersions = [],
     triggerUpdate = () => {}
 }) => {
@@ -667,9 +666,11 @@ const ManageTestQueue = ({
                                 item => item.id === selectedTestPlanVersionId
                             )}
                             at={ats.find(item => item.id === selectedAtId)}
-                            browser={browsers.find(
-                                item => item.id === selectedBrowserId
-                            )}
+                            browser={ats
+                                .find(at => at.id === selectedAtId)
+                                ?.browsers.find(
+                                    browser => browser.id === selectedBrowserId
+                                )}
                             triggerUpdate={triggerUpdate}
                             disabled={
                                 !selectedTestPlanVersionId ||
@@ -738,7 +739,6 @@ const ManageTestQueue = ({
 
 ManageTestQueue.propTypes = {
     ats: PropTypes.array,
-    browsers: PropTypes.array,
     testPlanVersions: PropTypes.array,
     triggerUpdate: PropTypes.func
 };

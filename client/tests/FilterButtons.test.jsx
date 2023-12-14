@@ -9,8 +9,7 @@ import FilterButtons from '../components/common/FilterButtons';
 import { DATA_MANAGEMENT_TABLE_FILTER_OPTIONS } from '../components/DataManagement/utils';
 
 describe('FilterButtons', () => {
-    const filterOptions = DATA_MANAGEMENT_TABLE_FILTER_OPTIONS;
-    const optionLabels = {
+    const filterOptions = {
         [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD]: `R&D Complete`,
         [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT]: `In Draft Review`,
         [DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE]: `In Candidate Review`,
@@ -19,7 +18,7 @@ describe('FilterButtons', () => {
     };
     const defaultProps = {
         filterOptions,
-        optionLabels,
+        filterLabel: 'Filter',
         activeFilter: DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL,
         onFilterChange: () => {}
     };
@@ -31,7 +30,7 @@ describe('FilterButtons', () => {
 
     it('should render the correct filter labels', () => {
         render(<FilterButtons {...defaultProps} />);
-        Object.values(optionLabels).forEach(label => {
+        Object.values(filterOptions).forEach(label => {
             expect(screen.getByText(label)).toBeInTheDocument();
         });
     });
@@ -39,7 +38,7 @@ describe('FilterButtons', () => {
     it('should render the active filter with correct styles', () => {
         render(<FilterButtons {...defaultProps} />);
         const activeButton = screen
-            .getByText(optionLabels[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL])
+            .getByText(filterOptions[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL])
             .closest('button');
         expect(activeButton).toHaveAttribute('aria-pressed', 'true');
         expect(activeButton).toHaveClass('active');
@@ -52,7 +51,7 @@ describe('FilterButtons', () => {
         );
         const button = screen
             .getByText(
-                optionLabels[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED]
+                filterOptions[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED]
             )
             .closest('button');
         fireEvent.click(button);

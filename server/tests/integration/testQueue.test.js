@@ -418,7 +418,6 @@ describe('test queue', () => {
                             }
                             assertionResult {
                                 passed
-                                failedReason
                             }
                         }
                     }
@@ -445,7 +444,6 @@ describe('test queue', () => {
                   "conflictingResults": [
                     {
                       "assertionResult": {
-                        "failedReason": null,
                         "passed": true,
                       },
                       "scenarioResult": {
@@ -461,7 +459,6 @@ describe('test queue', () => {
                     },
                     {
                       "assertionResult": {
-                        "failedReason": "INCORRECT_OUTPUT",
                         "passed": false,
                       },
                       "scenarioResult": {
@@ -490,58 +487,6 @@ describe('test queue', () => {
                     "test": {
                       "rowNumber": 4,
                       "title": "Navigate backwards to a collapsed select-only combobox in interaction mode",
-                    },
-                  },
-                },
-                {
-                  "conflictingResults": [
-                    {
-                      "assertionResult": {
-                        "failedReason": "INCORRECT_OUTPUT",
-                        "passed": false,
-                      },
-                      "scenarioResult": {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [],
-                      },
-                      "testPlanRun": {
-                        "id": "2",
-                        "tester": {
-                          "username": "esmeralda-baggins",
-                        },
-                      },
-                    },
-                    {
-                      "assertionResult": {
-                        "failedReason": "NO_OUTPUT",
-                        "passed": false,
-                      },
-                      "scenarioResult": {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [],
-                      },
-                      "testPlanRun": {
-                        "id": "3",
-                        "tester": {
-                          "username": "tom-proudfeet",
-                        },
-                      },
-                    },
-                  ],
-                  "source": {
-                    "assertion": {
-                      "text": "Role 'combobox' is conveyed",
-                    },
-                    "scenario": {
-                      "commands": [
-                        {
-                          "text": "Insert+Tab",
-                        },
-                      ],
-                    },
-                    "test": {
-                      "rowNumber": 7,
-                      "title": "Read information about a collapsed select-only combobox in reading mode",
                     },
                   },
                 },
@@ -634,67 +579,6 @@ describe('test queue', () => {
                   ],
                   "source": {
                     "assertion": null,
-                    "scenario": {
-                      "commands": [
-                        {
-                          "text": "Alt+Down",
-                        },
-                      ],
-                    },
-                    "test": {
-                      "rowNumber": 10,
-                      "title": "Open a collapsed select-only combobox in reading mode",
-                    },
-                  },
-                },
-                {
-                  "conflictingResults": [
-                    {
-                      "assertionResult": {
-                        "failedReason": "NO_OUTPUT",
-                        "passed": false,
-                      },
-                      "scenarioResult": {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [],
-                      },
-                      "testPlanRun": {
-                        "id": "2",
-                        "tester": {
-                          "username": "esmeralda-baggins",
-                        },
-                      },
-                    },
-                    {
-                      "assertionResult": {
-                        "failedReason": "INCORRECT_OUTPUT",
-                        "passed": false,
-                      },
-                      "scenarioResult": {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [
-                          {
-                            "otherUnexpectedBehaviorText": null,
-                            "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
-                          },
-                          {
-                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
-                            "text": "Other",
-                          },
-                        ],
-                      },
-                      "testPlanRun": {
-                        "id": "3",
-                        "tester": {
-                          "username": "tom-proudfeet",
-                        },
-                      },
-                    },
-                  ],
-                  "source": {
-                    "assertion": {
-                      "text": "State of the combobox (expanded) is conveyed",
-                    },
                     "scenario": {
                       "commands": [
                         {

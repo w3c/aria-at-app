@@ -144,6 +144,7 @@ describe('graphql', () => {
         const excludedTypeNameAndField = [
             // Items formatted like this:
             // ['TestResult', 'startedAt'],
+            ['AssertionResult', 'failedReason'], // Deprecated
             ['PopulatedData', 'atVersion'],
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
@@ -386,7 +387,21 @@ describe('graphql', () => {
                             __typename
                             id
                             renderableContent
+                            renderableContents {
+                                __typename
+                                at {
+                                    id
+                                }
+                                renderableContent
+                            }
                             renderedUrl
+                            renderedUrls {
+                                __typename
+                                at {
+                                    id
+                                }
+                                renderedUrl
+                            }
                         }
                         runnableTestsLength
                         draftTestPlanRuns {
@@ -426,7 +441,6 @@ describe('graphql', () => {
                                             id
                                         }
                                         passed
-                                        failedReason
                                     }
                                     unexpectedBehaviors {
                                         __typename
@@ -626,13 +640,13 @@ describe('graphql', () => {
                                 }
                             }
                         }
-                        markReportAsFinal: testPlanReport(id: 2) {
+                        markReportAsFinal: testPlanReport(id: 8) {
                             __typename
                             markAsFinal {
                                 locationOfData
                             }
                         }
-                        unmarkReportAsFinal: testPlanReport(id: 2) {
+                        unmarkReportAsFinal: testPlanReport(id: 8) {
                             __typename
                             unmarkAsFinal {
                                 locationOfData
@@ -874,7 +888,6 @@ const getMutationInputs = async () => {
                 assertionResults {
                     id
                     passed
-                    failedReason
                 }
                 unexpectedBehaviors {
                     id

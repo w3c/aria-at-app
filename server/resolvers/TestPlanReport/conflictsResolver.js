@@ -78,8 +78,7 @@ const conflictsResolver = async testPlanReport => {
             ) {
                 const assertionResultComparisons = testResults.map(testResult =>
                     pick(testResult.scenarioResults[i].assertionResults[j], [
-                        'passed',
-                        'failedReason'
+                        'passed'
                     ])
                 );
                 if (!allEqual(assertionResultComparisons)) {

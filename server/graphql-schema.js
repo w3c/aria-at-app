@@ -430,7 +430,7 @@ const graphqlSchema = gql`
         """
         The AT mode the test was written to expect.
         """
-        atMode: AtMode!
+        atMode: AtMode
         """
         Raw execution-specific data for the Test Renderer such as inputs needed
         to generate the manual test instructions or links to the setup scripts
@@ -441,11 +441,21 @@ const graphqlSchema = gql`
         """
         renderableContent(atId: ID): Any
         """
+        For more information, see the renderableContent field. Returns an array
+        containing all renderableContent objects along with the associated AT.
+        """
+        renderableContents: [RenderableContentByAt]!
+        """
         The URL to a HTML page which loads the Test Renderer and displays
         the Test. The atId is optional in cases where it can be inferred from
         context (i.e. the test is a child of a TestPlanReport with a known AT).
         """
         renderedUrl(atId: ID): String
+        """
+        For more information, see the renderedUrl field. Returns an array
+        containing all renderedUrls along with the associated AT.
+        """
+        renderedUrls: [RenderedUrlByAt]!
         """
         List of ways the test can be completed, each of which needs to be
         executed separately. There might be a different number of Scenarios
@@ -462,6 +472,16 @@ const graphqlSchema = gql`
         Vendors who viewed the tests
         """
         viewers: [User]
+    }
+
+    type RenderableContentByAt {
+        at: At!
+        renderableContent: Any!
+    }
+
+    type RenderedUrlByAt {
+        at: At!
+        renderedUrl: String!
     }
 
     """
@@ -529,11 +549,15 @@ const graphqlSchema = gql`
         considered as 'MUST Behaviors'.
         """
         REQUIRED
+        MUST
         """
         This assertion is not considered when deciding if a test is passing.
         This should be considered as 'SHOULD Behaviors'.
         """
         OPTIONAL
+        SHOULD
+        # TODO Define MAY
+        MAY
     }
 
     """
@@ -675,8 +699,7 @@ const graphqlSchema = gql`
         unexpectedBehaviors: [UnexpectedBehaviorInput]
     }
 
-    # TODO: figure out if this type can be removed and NO_OUTPUT can become an
-    # unexpected behavior instead
+    # NOTE: This has been deprecated
     enum AssertionFailedReason {
         INCORRECT_OUTPUT
         NO_OUTPUT
@@ -703,7 +726,7 @@ const graphqlSchema = gql`
         passed: Boolean
         # TODO: propose removing this for the reason given above
         """
-        When passed is false, a failedReason must be given.
+        NOTE: This has been deprecated, legacy use = when passed is false, a failedReason must be given.
         """
         failedReason: AssertionFailedReason
     }

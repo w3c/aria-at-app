@@ -16,6 +16,10 @@ const {
     createTestPlan
 } = require('../../models/services/TestPlanService');
 const {
+    createAtMode,
+    getAtModeByQuery
+} = require('../../models/services/AtService');
+const {
     createTestId,
     createScenarioId,
     createAssertionId
@@ -78,10 +82,10 @@ const importTestPlanVersions = async () => {
     });
     console.log('`npm run build` output', buildOutput.stdout.toString());
 
-    const ats = await At.findAll();
-    await updateAtsJson(ats);
+    const { support } = await updateJsons();
 
-    await updateCommandsJson();
+    const ats = await At.findAll();
+    await updateAtsJsonAndAtMode(ats, support.ats);
 
     for (const directory of fse.readdirSync(builtTestsDirectory)) {
         if (directory === 'resources') continue;
@@ -124,11 +128,20 @@ const importTestPlanVersions = async () => {
             gitCommitDate: updatedAt
         } = readDirectoryGitInfo(sourceDirectoryPath);
 
+        // Use existence of assertions.csv to determine if v2 format files exist
+        const assertionsCsvPath = path.join(
+            sourceDirectoryPath,
+            'data',
+            'assertions.csv'
+        );
+        const isV2 = fse.existsSync(assertionsCsvPath);
+
         const tests = getTests({
             builtDirectoryPath,
             testPlanVersionId,
             ats,
-            gitSha
+            gitSha,
+            isV2
         });
 
         const hashedTests = hashTests(tests);
@@ -138,7 +151,8 @@ const importTestPlanVersions = async () => {
         if (existing.length) continue;
 
         const { title, exampleUrl, designPatternUrl, testPageUrl } = readCsv({
-            sourceDirectoryPath
+            sourceDirectoryPath,
+            isV2
         });
 
         let testPlanId = null;
@@ -194,7 +208,8 @@ const importTestPlanVersions = async () => {
             versionString,
             metadata: {
                 designPatternUrl,
-                exampleUrl
+                exampleUrl,
+                testFormatVersion: isV2 ? 2 : 1
             },
             tests,
             testPlanId
@@ -209,18 +224,7 @@ const readRepo = async () => {
     spawn.sync('git', ['clone', ariaAtRepo, gitCloneDirectory]);
     console.info('Cloning aria-at repo complete.');
 
-    // Temporary deviation from master to support release to sandbox while v2 tests are being authored
-    // and this branch has yet to be rebased to main in the app
-    if (args.commit) {
-        gitRun(`checkout ${args.commit}`);
-    } else {
-        // Find the last commit on or before November 30th, 2023 on the master branch
-        const beforeDate = '2023-11-30T23:59:59';
-        const lastCommitBeforeDate = gitRun(
-            `rev-list -n 1 --before="${beforeDate}" ${ariaAtDefaultBranch}`
-        );
-        gitRun(`checkout ${lastCommitBeforeDate}`);
-    }
+    gitRun(`checkout ${args.commit ?? ariaAtDefaultBranch}`);
 
     const gitCommitDate = new Date(gitRun(`log --format=%aI -n 1`));
 
@@ -249,7 +253,7 @@ const getAppUrl = (directoryRelativePath, { gitSha, directoryPath }) => {
     );
 };
 
-const readCsv = ({ sourceDirectoryPath }) => {
+const readCsv = ({ sourceDirectoryPath, isV2 }) => {
     // 'references.csv' only exists in <root>/tests/<directory>/data/references.csv
     // doesn't exist in <root>/build/tests/<directory>/data/references.csv
     const referencesCsvPath = path.join(
@@ -267,7 +271,7 @@ const readCsv = ({ sourceDirectoryPath }) => {
             .split('\n')
             .find(line => line.includes(refId));
         const columns = line?.split(',');
-        return columns?.[1];
+        return columns?.[isV2 ? 2 : 1];
     };
 
     return {
@@ -278,7 +282,23 @@ const readCsv = ({ sourceDirectoryPath }) => {
     };
 };
 
-const updateCommandsJson = async () => {
+const flattenObject = (obj, parentKey = '') => {
+    const flattened = {};
+
+    for (const key in obj) {
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+            const subObject = flattenObject(obj[key], parentKey + key + '.');
+            Object.assign(flattened, subObject);
+        } else {
+            flattened[parentKey + key] = obj[key];
+        }
+    }
+
+    return flattened;
+};
+
+const updateJsons = async () => {
+    // Commands path info for v1 format
     const keysMjsPath = pathToFileURL(
         path.join(testsDirectory, 'resources', 'keys.mjs')
     );
@@ -286,20 +306,68 @@ const updateCommandsJson = async () => {
         ([id, text]) => ({ id, text })
     );
 
+    // Write commands for v1 format
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/commands.json'),
         JSON.stringify(commands, null, 4)
     );
+
+    try {
+        // Commands path info for v2 format
+        const commandsV2Path = pathToFileURL(
+            path.join(testsDirectory, 'commands.json')
+        );
+        const commandsV2PathString = fse.readFileSync(commandsV2Path, 'utf8');
+        const commandsV2Parsed = JSON.parse(commandsV2PathString);
+
+        // Write commands for v2 format
+        await fse.writeFile(
+            path.resolve(__dirname, '../../resources/commandsV2.json'),
+            JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
+        );
+    } catch (error) {
+        console.error('commands.json for v2 test format may not exist');
+    }
+
+    // Path info for support.json
+    const supportPath = pathToFileURL(
+        path.join(testsDirectory, 'support.json')
+    );
+    const supportPathString = fse.readFileSync(supportPath, 'utf8');
+    const supportParsed = JSON.parse(supportPathString);
+
+    return { support: supportParsed };
 };
 
-const updateAtsJson = async ats => {
+const updateAtsJsonAndAtMode = async (ats, supportAts) => {
+    const atsResult = ats.map(at => ({
+        ...at.dataValues,
+        ...supportAts.find(supportAt => supportAt.name === at.dataValues.name)
+    }));
+
+    for (const at of atsResult) {
+        if (at.settings) {
+            for (const setting in at.settings) {
+                const existingAtMode = await getAtModeByQuery({
+                    atId: at.id,
+                    name: setting
+                });
+
+                if (!existingAtMode) {
+                    await createAtMode({
+                        atId: at.id,
+                        name: setting,
+                        screenText: at.settings[setting].screenText,
+                        instructions: at.settings[setting].instructions
+                    });
+                }
+            }
+        }
+    }
+
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/ats.json'),
-        JSON.stringify(
-            ats.map(at => at.dataValues),
-            null,
-            4
-        )
+        JSON.stringify(atsResult, null, 4)
     );
 };
 
@@ -324,27 +392,219 @@ const getVersionString = async ({ directory, updatedAt }) => {
     return `${versionStringBase}-${duplicateCount}`;
 };
 
-const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
+const getTests = ({
+    builtDirectoryPath,
+    testPlanVersionId,
+    ats,
+    gitSha,
+    isV2
+}) => {
     const tests = [];
+    const renderedUrlsById = {};
+    const allCollectedById = {};
 
-    const renderedUrlsByNumber = {};
-    const allCollectedByNumber = {};
     fse.readdirSync(builtDirectoryPath).forEach(filePath => {
         if (!filePath.endsWith('.collected.json')) return;
         const jsonPath = path.join(builtDirectoryPath, filePath);
         const jsonString = fse.readFileSync(jsonPath, 'utf8');
         const collected = JSON.parse(jsonString);
         const renderedUrl = filePath.replace(/\.json$/, '.html');
-        if (!allCollectedByNumber[collected.info.testId]) {
-            allCollectedByNumber[collected.info.testId] = [];
-            renderedUrlsByNumber[collected.info.testId] = [];
+        if (!allCollectedById[collected.info.testId]) {
+            allCollectedById[collected.info.testId] = [];
+            renderedUrlsById[collected.info.testId] = [];
         }
-        allCollectedByNumber[collected.info.testId].push(collected);
-        renderedUrlsByNumber[collected.info.testId].push(renderedUrl);
+        allCollectedById[collected.info.testId].push(collected);
+        renderedUrlsById[collected.info.testId].push(renderedUrl);
     });
 
-    Object.entries(allCollectedByNumber).forEach(([number, allCollected]) => {
-        const renderedUrls = renderedUrlsByNumber[number];
+    /**
+     * Creates tests to be included in [TestPlanVersion.tests]
+     * @param {object} allCollected Generated tests coming from aria-at through test-{number}-{at}-collected.json files.
+     * @param {string|number} rawTestId Numeric id for tests in v1 format, string id for tests in v2 format. Comes directly from `tests.csv` files.
+     * @param {string[]} renderedUrls Paths to .collected.json files.
+     * @param {boolean} isV2 Boolean check to see if the testFormatVersion of the collected tests are for v2, otherwise for v1.
+     */
+    const createTestsForFormat = ({
+        allCollected,
+        rawTestId,
+        renderedUrls,
+        // There MAY be a need to handle additional versions. This may be changed to handle that
+        // when that time comes
+        isV2
+    }) => {
+        const getRenderedUrl = index =>
+            getAppUrl(renderedUrls[index], {
+                gitSha,
+                directoryPath: builtDirectoryPath
+            });
+
+        const getAssertions = (data, testId) => {
+            return data.assertions.map((assertion, index) => {
+                let priority = '';
+                if (assertion.priority === 1) priority = 'MUST';
+                if (assertion.priority === 2) priority = 'SHOULD';
+                // Available for v2
+                if (assertion.priority === 3) priority = 'MAY';
+
+                let result = {
+                    id: createAssertionId(testId, index),
+                    priority
+                };
+
+                // Available for v1
+                if (assertion.expectation) result.text = assertion.expectation;
+
+                // Available for v2
+                if (assertion.assertionStatement) {
+                    const tokenizedAssertionStatement =
+                        assertion?.tokenizedAssertionStatements[
+                            data.target.at.key
+                        ];
+
+                    result.assertionStatement =
+                        tokenizedAssertionStatement ||
+                        assertion.assertionStatement;
+                    result.assertionPhrase = assertion.assertionPhrase;
+                }
+
+                return result;
+            });
+        };
+
+        // Using the v1 test format, https://github.com/w3c/aria-at/wiki/Test-Format-V1-Definition
+        if (!isV2) {
+            const common = allCollected[0];
+            const testId = createTestId(testPlanVersionId, common.info.testId);
+            const atIds = allCollected.map(
+                collected =>
+                    ats.find(at => at.name === collected.target.at.name).id
+            );
+
+            tests.push({
+                id: testId,
+                rowNumber: rawTestId,
+                title: common.info.title,
+                atIds,
+                atMode: common.target.mode.toUpperCase(),
+                renderableContent: Object.fromEntries(
+                    allCollected.map((collected, index) => {
+                        /** @type RenderableContent **/
+                        return [atIds[index], collected];
+                    })
+                ),
+                renderedUrls: Object.fromEntries(
+                    atIds.map((atId, index) => {
+                        return [atId, getRenderedUrl(index)];
+                    })
+                ),
+                scenarios: (() => {
+                    const scenarios = [];
+                    allCollected.forEach(collected => {
+                        collected.commands.forEach(command => {
+                            scenarios.push({
+                                id: createScenarioId(testId, scenarios.length),
+                                atId: ats.find(
+                                    at => at.name === collected.target.at.name
+                                ).id,
+                                commandIds: command.keypresses.map(
+                                    ({ id }) => id
+                                )
+                            });
+                        });
+                    });
+                    return scenarios;
+                })(),
+                assertions: getAssertions(common, testId),
+                viewers: []
+            });
+        }
+
+        // Using the v2 test format, https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2
+        if (isV2) {
+            for (const [collectedIndex, collected] of allCollected.entries()) {
+                const testId = createTestId(
+                    testPlanVersionId,
+                    `${collected.target.at.key}:${collected.info.testId}`
+                );
+
+                let test = {
+                    id: testId,
+                    rawTestId,
+                    rowNumber: collected.info.presentationNumber,
+                    title: collected.info.title,
+                    at: {
+                        key: collected.target.at.key,
+                        name: collected.target.at.name,
+                        settings: collected.target.at.raw.settings
+                    },
+                    atIds: [
+                        ats.find(at => at.name === collected.target.at.name).id
+                    ],
+                    /** @type RenderableContent **/
+                    renderableContent: {
+                        ...collected,
+                        target: {
+                            at: collected.target.at,
+                            referencePage: collected.target.referencePage,
+                            setupScript: collected.target.setupScript
+                        },
+                        assertions: collected.assertions.map(
+                            ({
+                                assertionId,
+                                priority,
+                                assertionStatement,
+                                assertionPhrase,
+                                refIds,
+                                tokenizedAssertionStatements
+                            }) => {
+                                const tokenizedAssertionStatement =
+                                    tokenizedAssertionStatements[
+                                        collected.target.at.key
+                                    ];
+
+                                return {
+                                    assertionId,
+                                    priority,
+                                    assertionStatement:
+                                        tokenizedAssertionStatement ||
+                                        assertionStatement,
+                                    assertionPhrase,
+                                    refIds
+                                };
+                            }
+                        )
+                    },
+                    renderedUrl: getRenderedUrl(collectedIndex),
+                    scenarios: (() => {
+                        const scenarios = [];
+                        collected.commands.forEach(command => {
+                            scenarios.push({
+                                id: createScenarioId(
+                                    testId,
+                                    `${scenarios.length}:${command.settings}`
+                                ),
+                                atId: ats.find(
+                                    at => at.name === collected.target.at.name
+                                ).id,
+                                commandIds: command.keypresses.map(
+                                    ({ id }) => id
+                                ),
+                                settings: command.settings
+                            });
+                        });
+                        return scenarios;
+                    })(),
+                    assertions: getAssertions(collected, testId),
+                    viewers: []
+                };
+
+                tests.push(test);
+            }
+        }
+    };
+
+    Object.entries(allCollectedById).forEach(([rawTestId, allCollected]) => {
+        const renderedUrls = renderedUrlsById[rawTestId];
 
         if (
             !deepPickEqual(allCollected, {
@@ -357,58 +617,7 @@ const getTests = ({ builtDirectoryPath, testPlanVersionId, ats, gitSha }) => {
             );
         }
 
-        const common = allCollected[0];
-
-        const testId = createTestId(testPlanVersionId, common.info.testId);
-
-        const atIds = allCollected.map(
-            collected => ats.find(at => at.name === collected.target.at.name).id
-        );
-
-        tests.push({
-            id: testId,
-            rowNumber: number,
-            title: common.info.title,
-            atIds,
-            atMode: common.target.mode.toUpperCase(),
-            renderableContent: Object.fromEntries(
-                allCollected.map((collected, index) => {
-                    return [atIds[index], collected];
-                })
-            ),
-            renderedUrls: Object.fromEntries(
-                atIds.map((atId, index) => {
-                    return [
-                        atId,
-                        getAppUrl(renderedUrls[index], {
-                            gitSha,
-                            directoryPath: builtDirectoryPath
-                        })
-                    ];
-                })
-            ),
-            scenarios: (() => {
-                const scenarios = [];
-                allCollected.forEach(collected => {
-                    collected.commands.forEach(command => {
-                        scenarios.push({
-                            id: createScenarioId(testId, scenarios.length),
-                            atId: ats.find(
-                                at => at.name === collected.target.at.name
-                            ).id,
-                            commandIds: command.keypresses.map(({ id }) => id)
-                        });
-                    });
-                });
-                return scenarios;
-            })(),
-            assertions: common.assertions.map((assertion, index) => ({
-                id: createAssertionId(testId, index),
-                priority: assertion.priority === 1 ? 'REQUIRED' : 'OPTIONAL',
-                text: assertion.expectation
-            })),
-            viewers: []
-        });
+        createTestsForFormat({ allCollected, rawTestId, renderedUrls, isV2 });
     });
 
     return tests;
@@ -428,3 +637,105 @@ importTestPlanVersions()
         client.end();
         process.exit();
     });
+
+/**
+ * @typedef Reference
+ * @property {string} refId
+ * @property {string} value
+ * @property {string} type - Available in v2
+ * @property {string} linkText - Available in v2
+ */
+
+/**
+ * @typedef AtSetting
+ * @property {string} screenText
+ * @property {string[]} instructions
+ */
+
+/**
+ * @typedef AssertionToken
+ * @property {string} readingMode
+ * @property {string} screenReader
+ * @property {string} interactionMode
+ */
+
+/**
+ * @typedef SetupScript
+ * @property {string} name
+ * @property {string} script
+ * @property {string} source
+ * @property {string} jsonpPath
+ * @property {string} modulePath
+ * @property {string} scriptDescription
+ */
+
+/**
+ * @typedef Keypress
+ * @property {string} id
+ * @property {string} keystroke
+ */
+
+/**
+ * @typedef AssertionException
+ * @property {number} priority
+ * @property {string} assertionId
+ */
+
+/**
+ * @typedef Command
+ * @property {string} id
+ * @property {string} keystroke
+ * @property {Keypress[]} keypresses
+ * @property {string} settings - Available in v2
+ * @property {number} presentationNumber - Available in v2
+ * @property {AssertionException[]} assertionExceptions - Available in v2
+ */
+
+/**
+ * @typedef Assertion
+ * @property {number} priority
+ * @property {string} expectation - Available in v1
+ * @property {string} refIds - Available in v2
+ * @property {string} assertionId - Available in v2
+ * @property {string} assertionPhrase - Available in v2
+ * @property {string} assertionStatement - Available in v2
+ */
+
+/**
+ * @typedef Instructions
+ * @property {string|Object<key, string[]>} instructions.mode - {string} in v1, {Object<key, string[]>} in v2
+ * @property {string} instructions.raw - Available in v1
+ * @property {string[]} instructions.user - Available in v2
+ * @property {string} instructions.instructions - Available in v2 (should be same as {instructions.raw} in v1)
+ */
+
+/**
+ * @typedef RenderableContent
+ *
+ * @property {Object} info
+ * @property {string} info.task - Available in v1
+ * @property {string} info.title
+ * @property {number|string} info.testId - {number} in v1, {string} in v2
+ * @property {Reference[]} info.references
+ * @property {number} info.presentationNumber - Available in v2
+ *
+ * @property {Object} target
+ * @property {Object} target.at
+ * @property {string} target.at.key
+ * @property {string} target.name
+ * @property {string|Object} target.at.raw - {string} in v1, {Object} in v2
+ * @property {string} target.settings - Available in v2
+ * @property {string} target.at.raw.key - Available in v2
+ * @property {string} target.at.raw.name - Available in v2
+ * @property {Object<key, AtSetting>} target.at.raw.settings - Available in v2
+ * @property {AssertionToken} target.at.raw.assertionTokens - Available in v2
+ * @property {string} target.at.raw.defaultConfigurationInstructionsHTML - Available in v2
+ * @property {SetupScript} target.setupScript
+ * @property {string} target.referencePage
+ *
+ * @property {Command[]} commands
+ *
+ * @property {Assertion[]} assertions
+ *
+ * @property {Instructions} instructions
+ */

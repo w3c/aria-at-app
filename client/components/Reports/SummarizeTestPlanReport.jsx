@@ -10,7 +10,6 @@ import {
     faExternalLinkAlt,
     faHome
 } from '@fortawesome/free-solid-svg-icons';
-import { differenceBy } from 'lodash';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
@@ -25,7 +24,7 @@ const ResultsContainer = styled.div`
     border-left: 1px solid #dee2e6;
     border-right: 1px solid #dee2e6;
     border-bottom: 1px solid #dee2e6;
-    margin-bottom: 2em;
+    margin-bottom: 0.5em;
 `;
 
 const getTestersRunHistory = (
@@ -100,11 +99,6 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         browser
     };
 
-    const skippedTests = differenceBy(
-        testPlanReport.runnableTests,
-        testPlanReport.finalizedTestResults,
-        testOrTestResult => testOrTestResult.test?.id ?? testOrTestResult.id
-    );
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -151,11 +145,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
             <ul>
                 <li>
                     Generated from&nbsp;
-                    <a
-                        href={`/test-review/${testPlanVersion.gitSha}/${testPlanVersion.testPlan.directory}`}
-                        target="_blank"
-                        rel="noreferrer"
-                    >
+                    <a href={`/test-review/${testPlanVersion.id}`}>
                         {testPlanVersion.versionString} of{' '}
                         {testPlanVersion.title} Test Plan
                     </a>
@@ -186,7 +176,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     </li>
                 ) : null}
             </ul>
-            {testPlanReport.finalizedTestResults.map(testResult => {
+            {testPlanReport.finalizedTestResults.map((testResult, index) => {
                 const test = testResult.test;
 
                 const reportLink = `https://aria-at.w3.org${location.pathname}#result-${testResult.id}`;
@@ -217,7 +207,8 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     <Fragment key={testResult.id}>
                         <div className="test-result-heading">
                             <h2 id={`result-${testResult.id}`} tabIndex="-1">
-                                {test.title}&nbsp;({passedAssertionsCount}
+                                Test {index + 1}: {test.title}&nbsp;(
+                                {passedAssertionsCount}
                                 &nbsp;passed, {failedAssertionsCount} failed)
                                 <DisclaimerInfo phase={testPlanVersion.phase} />
                             </h2>
@@ -254,6 +245,10 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                                 key={`TestPlanResultsTable__${testResult.id}`}
                                 test={{ ...test, at }}
                                 testResult={testResult}
+                                optionalHeader={
+                                    <h3>Results for each command</h3>
+                                }
+                                commandHeadingLevel={4}
                             />
                         </ResultsContainer>
 
@@ -269,26 +264,6 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     </Fragment>
                 );
             })}
-            {skippedTests.length ? (
-                <Fragment>
-                    <div className="skipped-tests-heading">
-                        <h2 id="skipped-tests" tabIndex="-1">
-                            Skipped Tests
-                        </h2>
-                        <p>
-                            The following tests have been skipped in this test
-                            run:
-                        </p>
-                    </div>
-                    <ol className="skipped-tests">
-                        {skippedTests.map(test => (
-                            <li key={test.id}>
-                                <a href={test.renderedUrl}>{test.title}</a>
-                            </li>
-                        ))}
-                    </ol>
-                </Fragment>
-            ) : null}
         </Container>
     );
 };
@@ -323,7 +298,6 @@ SummarizeTestPlanReport.propTypes = {
                                 PropTypes.shape({
                                     id: PropTypes.string.isRequired,
                                     passed: PropTypes.bool.isRequired,
-                                    failedReason: PropTypes.string,
                                     assertion: PropTypes.shape({
                                         text: PropTypes.string.isRequired
                                     }).isRequired

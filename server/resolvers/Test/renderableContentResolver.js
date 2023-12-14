@@ -8,7 +8,16 @@ const renderableContent = (test, { atId }) => {
                 'explicitly provided.'
         );
     }
-    return test.renderableContent[atId ?? test.inferredAtId];
+
+    // Support for V1 test format
+    let explicitRenderableContent =
+        test.renderableContent[atId ?? test.inferredAtId];
+    if (explicitRenderableContent) {
+        return explicitRenderableContent;
+    }
+
+    // Support for V2 test format
+    return test.renderableContent;
 };
 
 module.exports = renderableContent;

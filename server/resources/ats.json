@@ -1,14 +1,17 @@
 [
     {
         "id": 1,
-        "name": "JAWS"
+        "name": "JAWS",
+        "key": "jaws"
     },
     {
         "id": 2,
-        "name": "NVDA"
+        "name": "NVDA",
+        "key": "nvda"
     },
     {
         "id": 3,
-        "name": "VoiceOver for macOS"
+        "name": "VoiceOver for macOS",
+        "key": "voiceover_macos"
     }
 ]

@@ -61,8 +61,7 @@ const copyTestResult = (testResultSkeleton, testResult) => {
                                     ];
                                 return {
                                     id: assertionResultSkeleton.id,
-                                    passed: assertionResult.passed,
-                                    failedReason: assertionResult.failedReason
+                                    passed: assertionResult.passed
                                 };
                             }
                         ),
@@ -191,9 +190,8 @@ const updateTestPlanReportTestPlanVersionResolver = async (
                                 }) => ({
                                     output,
                                     assertionResults: assertionResults.map(
-                                        ({ failedReason, passed }) => ({
-                                            passed,
-                                            failedReason
+                                        ({ passed }) => ({
+                                            passed
                                         })
                                     ),
                                     unexpectedBehaviors:

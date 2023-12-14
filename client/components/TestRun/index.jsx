@@ -405,13 +405,7 @@ const TestRun = () => {
                 const { result, highlightRequired } = assertions[j];
                 const assertionResult = {
                     ...scenarioResult.assertionResults[j],
-                    passed: result === 'pass',
-                    failedReason:
-                        result === 'failMissing'
-                            ? 'NO_OUTPUT'
-                            : result === 'failIncorrect'
-                            ? 'INCORRECT_OUTPUT'
-                            : null
+                    passed: result === 'pass'
                 };
                 assertionResults.push(
                     captureHighlightRequired
@@ -651,7 +645,6 @@ const TestRun = () => {
          * ....{
          * ......id
          * ......passed
-         * ......failedReason
          * ....},
          * ....other assertionResults,
          * ..],
@@ -663,13 +656,10 @@ const TestRun = () => {
                 id,
                 output: output,
                 unexpectedBehaviors: unexpectedBehaviors,
-                assertionResults: assertionResults.map(
-                    ({ failedReason, id, passed }) => ({
-                        id,
-                        passed: passed,
-                        failedReason: failedReason
-                    })
-                )
+                assertionResults: assertionResults.map(({ id, passed }) => ({
+                    id,
+                    passed
+                }))
             })
         );
 
@@ -1062,8 +1052,8 @@ const TestRun = () => {
         return (
             <>
                 <h1 ref={titleRef} data-test="testing-task" tabIndex={-1}>
-                    <span className="task-label">Testing task:</span>{' '}
-                    {`${currentTest.seq}.`} {currentTest.title}
+                    <span className="task-label">Test {currentTest.seq}:</span>
+                    {currentTest.title}
                 </h1>
                 <span>{heading}</span>
                 <StatusBar
@@ -1096,6 +1086,10 @@ const TestRun = () => {
                                               )
                                     }
                                     testPageUrl={testPlanVersion.testPageUrl}
+                                    testFormatVersion={
+                                        testPlanVersion.metadata
+                                            .testFormatVersion
+                                    }
                                     testRunStateRef={testRunStateRef}
                                     recentTestRunStateRef={
                                         recentTestRunStateRef
