@@ -38,7 +38,7 @@ const createTestResultSkeleton = ({
                                     scenario.commands.find(
                                         c =>
                                             c.id === e.commandId &&
-                                            c.settings === e.settings
+                                            c.atOperatingMode === e.settings
                                     ) && e.priority === 'EXCLUDE'
                             );
                         })

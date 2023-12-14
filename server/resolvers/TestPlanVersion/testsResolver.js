@@ -42,7 +42,7 @@ const testsResolver = parentRecord => {
                                 text: `${commandKVs[0].value}${
                                     screenText ? ` (${screenText})` : ''
                                 }`,
-                                settings: scenario.settings
+                                atOperatingMode: scenario.settings
                             };
                         }
                         return { id: '', text: '' };

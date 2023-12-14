@@ -153,7 +153,7 @@ describe('graphql', () => {
             ['TestPlanVersion', 'recommendedPhaseTargetDate'],
             ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers'],
-            ['Command', 'settings'] // TODO: Uncomment when v2 test format CI tests are done
+            ['Command', 'atOperatingMode'] // TODO: Include when v2 test format CI tests are done
         ];
         ({
             typeAwareQuery,
@@ -279,7 +279,7 @@ describe('graphql', () => {
                                         __typename
                                         id
                                         text
-                                        settings
+                                        atOperatingMode
                                     }
                                 }
                                 assertions {
@@ -530,7 +530,6 @@ describe('graphql', () => {
                 }
             `
         );
-        // console.info(queryResult);
 
         await dbCleaner(async () => {
             const {
