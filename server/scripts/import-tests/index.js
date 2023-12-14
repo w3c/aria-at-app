@@ -224,18 +224,7 @@ const readRepo = async () => {
     spawn.sync('git', ['clone', ariaAtRepo, gitCloneDirectory]);
     console.info('Cloning aria-at repo complete.');
 
-    // Temporary deviation from master to support release to sandbox while v2 tests are being authored
-    // and this branch has yet to be rebased to main in the app
-    if (args.commit) {
-        gitRun(`checkout ${args.commit}`);
-    } else {
-        // Find the last commit on or before November 30th, 2023 on the master branch
-        const beforeDate = '2023-11-30T23:59:59';
-        const lastCommitBeforeDate = gitRun(
-            `rev-list -n 1 --before="${beforeDate}" ${ariaAtDefaultBranch}`
-        );
-        gitRun(`checkout ${lastCommitBeforeDate}`);
-    }
+    gitRun(`checkout ${args.commit ?? ariaAtDefaultBranch}`);
 
     const gitCommitDate = new Date(gitRun(`log --format=%aI -n 1`));
 

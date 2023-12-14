@@ -161,10 +161,7 @@ const populateTestDatabase = async () => {
         'completeAndPassing'
     ]);
 
-    await populateFakeTestResults(
-        14,
-        new Array(16).fill('passingHistoricalResultsForMockAutomation')
-    );
+    await populateFakeTestResults(14, new Array(16).fill('completeAndPassing'));
 
     await populateFakeTestResults(15, new Array(8).fill('completeAndPassing'));
 
