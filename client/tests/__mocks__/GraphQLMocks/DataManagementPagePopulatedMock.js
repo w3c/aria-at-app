@@ -297,7 +297,8 @@ export default (
                         testPlan: {
                             directory: 'radiogroup-roving-tabindex'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '27',
@@ -315,7 +316,8 @@ export default (
                         testPlan: {
                             directory: 'radiogroup-aria-activedescendant'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '31',
@@ -333,7 +335,8 @@ export default (
                         testPlan: {
                             directory: 'slider-multithumb'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '16',
@@ -351,7 +354,8 @@ export default (
                         testPlan: {
                             directory: 'link-css'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '17',
@@ -369,7 +373,8 @@ export default (
                         testPlan: {
                             directory: 'link-img-alt'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '1',
@@ -404,7 +409,8 @@ export default (
                                 issues: [],
                                 draftTestPlanRuns: []
                             }
-                        ]
+                        ],
+                        metadata: {}
                     },
                     {
                         id: '13',
@@ -422,7 +428,8 @@ export default (
                         testPlan: {
                             directory: 'disclosure-navigation'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '3',
@@ -440,7 +447,8 @@ export default (
                         testPlan: {
                             directory: 'breadcrumb'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '19',
@@ -458,7 +466,8 @@ export default (
                         testPlan: {
                             directory: 'main'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '24',
@@ -476,7 +485,8 @@ export default (
                         testPlan: {
                             directory: 'meter'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '32',
@@ -494,7 +504,8 @@ export default (
                         testPlan: {
                             directory: 'switch'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '22',
@@ -512,7 +523,8 @@ export default (
                         testPlan: {
                             directory: 'menu-button-navigation'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '34',
@@ -692,7 +704,8 @@ export default (
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        metadata: {}
                     },
                     {
                         id: '8',
@@ -710,7 +723,8 @@ export default (
                         testPlan: {
                             directory: 'command-button'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '18',
@@ -728,7 +742,8 @@ export default (
                         testPlan: {
                             directory: 'link-span-text'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '15',
@@ -746,7 +761,8 @@ export default (
                         testPlan: {
                             directory: 'horizontal-slider'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '6',
@@ -763,7 +779,8 @@ export default (
                         testPlan: {
                             directory: 'combobox-autocomplete-both-updated'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '21',
@@ -781,7 +798,8 @@ export default (
                         testPlan: {
                             directory: 'menu-button-actions-active-descendant'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '20',
@@ -799,7 +817,8 @@ export default (
                         testPlan: {
                             directory: 'menu-button-actions'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '2',
@@ -817,7 +836,8 @@ export default (
                         testPlan: {
                             directory: 'banner'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '4',
@@ -835,7 +855,8 @@ export default (
                         testPlan: {
                             directory: 'checkbox'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '9',
@@ -853,7 +874,8 @@ export default (
                         testPlan: {
                             directory: 'complementary'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '10',
@@ -871,7 +893,8 @@ export default (
                         testPlan: {
                             directory: 'contentinfo'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '25',
@@ -889,7 +912,8 @@ export default (
                         testPlan: {
                             directory: 'minimal-data-grid'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '11',
@@ -907,7 +931,8 @@ export default (
                         testPlan: {
                             directory: 'datepicker-spin-button'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '12',
@@ -925,7 +950,8 @@ export default (
                         testPlan: {
                             directory: 'disclosure-faq'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '23',
@@ -943,7 +969,8 @@ export default (
                         testPlan: {
                             directory: 'menubar-editor'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '14',
@@ -961,7 +988,8 @@ export default (
                         testPlan: {
                             directory: 'form'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '30',
@@ -979,7 +1007,8 @@ export default (
                         testPlan: {
                             directory: 'seek-slider'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '29',
@@ -997,7 +1026,8 @@ export default (
                         testPlan: {
                             directory: 'rating-slider'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '7',
@@ -1293,7 +1323,8 @@ export default (
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        metadata: {}
                     },
                     {
                         id: '33',
@@ -1311,7 +1342,8 @@ export default (
                         testPlan: {
                             directory: 'tabs-manual-activation'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '35',
@@ -1329,7 +1361,8 @@ export default (
                         testPlan: {
                             directory: 'vertical-temperature-slider'
                         },
-                        testPlanReports: []
+                        testPlanReports: [],
+                        metadata: {}
                     },
                     {
                         id: '5',
@@ -1675,7 +1708,8 @@ export default (
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        metadata: {}
                     },
                     {
                         id: '26',
@@ -2452,7 +2486,8 @@ export default (
                                     }
                                 ]
                             }
-                        ]
+                        ],
+                        metadata: {}
                     }
                 ]
             }
@@ -2498,7 +2533,8 @@ export default (
                             issues: [],
                             draftTestPlanRuns: []
                         }
-                    ]
+                    ],
+                    metadata: {}
                 }
             }
         }
@@ -2852,7 +2888,8 @@ export default (
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    metadata: {}
                 }
             }
         }
@@ -3157,7 +3194,8 @@ export default (
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    metadata: {}
                 }
             }
         }
@@ -3943,7 +3981,8 @@ export default (
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    metadata: {}
                 }
             }
         }
@@ -4132,7 +4171,8 @@ export default (
                                 }
                             ]
                         }
-                    ]
+                    ],
+                    metadata: {}
                 }
             }
         }
