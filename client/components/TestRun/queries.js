@@ -259,6 +259,7 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                 }
                 atMode
                 renderedUrl
+                renderableContent
                 scenarios {
                     id
                     at {
