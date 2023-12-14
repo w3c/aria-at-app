@@ -30,7 +30,7 @@ const { runnableTests } = require('../../resolvers/TestPlanReport');
 const { default: axios } = require('axios');
 const {
     default: createGithubWorkflow,
-    isEnabled: isGithubWorkflowEnabled,
+    isEnabled: isGithubWorkflowEnabled
 } = require('../../services/GithubWorkflowService');
 
 const includeBrowserVersion = {

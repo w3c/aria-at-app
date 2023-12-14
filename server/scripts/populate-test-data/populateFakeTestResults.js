@@ -78,6 +78,7 @@ const populateFakeTestResults = async (testPlanRunId, fakeTestResultTypes) => {
                 break;
             case 'passingHistoricalResultsForMockAutomation':
                 await getFake({
+                    testPlanReport,
                     testPlanRunId,
                     index,
                     fakeTestResultType:
