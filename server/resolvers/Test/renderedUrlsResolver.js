@@ -10,13 +10,12 @@ const renderedUrls = async (test, _, context) => {
 
     const isV2 = testPlanVersion.metadata.testFormatVersion === 2;
     if (isV2) {
-        // TODO: This is only accounting for 1 test however so this needs to be fixed
-        return [
-            {
-                at: ats.find(at => at.id === test.atIds[0]),
+        return test.atIds.map(atId => {
+            return {
+                at: ats.find(at => at.id === atId),
                 renderedUrl: test.renderedUrl // { renderedUrl: '/url/file/path.html' }
-            }
-        ];
+            };
+        });
     }
 
     // v1: { renderedUrls: { 1: '/url/file/path.html' } }
