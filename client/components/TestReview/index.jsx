@@ -59,12 +59,42 @@ const TestReview = () => {
     }
     const testPlanVersion = data.testPlanVersion;
     const atNames = supportJson.ats.map(at => at.name);
+    const isV2 = testPlanVersion.metadata.testFormatVersion === 2;
+
+    let testPlanVersionTests;
+    if (isV2) {
+        testPlanVersionTests = [];
+        testPlanVersion.tests.forEach(test => {
+            const testIndex = testPlanVersionTests.findIndex(
+                el => el.title === test.title
+            );
+
+            if (testIndex < 0) testPlanVersionTests.push(test);
+            else {
+                testPlanVersionTests[testIndex] = {
+                    ...testPlanVersionTests[testIndex],
+                    id: `${testPlanVersionTests[testIndex].id}${test.id}`,
+                    ats: [...testPlanVersionTests[testIndex].ats, ...test.ats],
+                    renderableContents: [
+                        ...testPlanVersionTests[testIndex].renderableContents,
+                        ...test.renderableContents
+                    ],
+                    renderedUrls: [
+                        ...testPlanVersionTests[testIndex].renderedUrls,
+                        ...test.renderedUrls
+                    ]
+                };
+            }
+        });
+    } else {
+        testPlanVersionTests = testPlanVersion.tests;
+    }
 
     let filteredTests;
     if (activeFilter === 'All ATs') {
-        filteredTests = testPlanVersion.tests;
+        filteredTests = testPlanVersionTests;
     } else {
-        filteredTests = testPlanVersion.tests.filter(test =>
+        filteredTests = testPlanVersionTests.filter(test =>
             test.ats.find(at => at.name === activeFilter)
         );
     }
@@ -73,16 +103,16 @@ const TestReview = () => {
         ['All ATs', ...atNames].map(key => {
             let count;
             if (key === 'All ATs') {
-                count = testPlanVersion.tests.length;
+                count = testPlanVersionTests.length;
             } else {
-                count = testPlanVersion.tests.filter(test =>
+                count = testPlanVersionTests.filter(test =>
                     test.ats.find(at => at.name === key)
                 ).length;
             }
             return [key, `${key} (${count})`];
         })
     );
-    const isV2 = testPlanVersion.metadata.testFormatVersion === 2;
+
     return (
         <Container id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -175,7 +205,7 @@ const TestReview = () => {
             </FilterButtonContainer>
             <h2>Supporting Documentation</h2>
             <ul>
-                {testPlanVersion.tests[0].renderableContents[0].renderableContent.info.references.map(
+                {testPlanVersionTests[0].renderableContents[0].renderableContent.info.references.map(
                     reference => {
                         if (isV2) {
                             let refValue = '';
@@ -217,6 +247,10 @@ const TestReview = () => {
             </ul>
             {filteredTests.map((test, index) => {
                 const isFirst = index === 0;
+                const hasAriaReference =
+                    test.renderableContents[0].renderableContent.info.references.some(
+                        reference => reference.type === 'aria'
+                    );
 
                 let filteredAts;
                 if (activeFilter === 'All ATs') {
@@ -226,34 +260,46 @@ const TestReview = () => {
                         at => at.name === activeFilter
                     );
                 }
+
                 return (
                     <Fragment key={test.id}>
                         {isFirst ? null : <hr />}
                         <h3>{`Test ${index + 1}: ${test.title}`}</h3>
-                        <p>{supportJson.testPlanStrings.ariaSpecsPreface}</p>
-                        <ul>
-                            {test.renderableContents[0].renderableContent.info.references.map(
-                                reference => {
-                                    let refValue = '';
-                                    let refLinkText = '';
-                                    if (reference.type === 'aria') {
-                                        refValue = reference.value;
-                                        refLinkText = reference.linkText;
+                        {/* A defined 'aria' type is only available in v2 */}
+                        {isV2 && hasAriaReference ? (
+                            <>
+                                <p>
+                                    {
+                                        supportJson.testPlanStrings
+                                            .ariaSpecsPreface
                                     }
-                                    return refValue ? (
-                                        <li key={refValue}>
-                                            <a
-                                                href={refValue}
-                                                rel="noreferrer"
-                                                target="_blank"
-                                            >
-                                                {refLinkText}
-                                            </a>
-                                        </li>
-                                    ) : null;
-                                }
-                            )}
-                        </ul>
+                                </p>
+                                <ul>
+                                    {test.renderableContents[0].renderableContent.info.references.map(
+                                        reference => {
+                                            let refValue = '';
+                                            let refLinkText = '';
+                                            if (reference.type === 'aria') {
+                                                refValue = reference.value;
+                                                refLinkText =
+                                                    reference.linkText;
+                                            }
+                                            return refValue ? (
+                                                <li key={refValue}>
+                                                    <a
+                                                        href={refValue}
+                                                        rel="noreferrer"
+                                                        target="_blank"
+                                                    >
+                                                        {refLinkText}
+                                                    </a>
+                                                </li>
+                                            ) : null;
+                                        }
+                                    )}
+                                </ul>
+                            </>
+                        ) : null}
                         {filteredAts.map(at => {
                             const renderableContent =
                                 test.renderableContents.find(
