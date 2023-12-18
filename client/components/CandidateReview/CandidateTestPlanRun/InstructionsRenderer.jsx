@@ -184,8 +184,7 @@ const InstructionsRenderer = ({
             {pageContent.instructions.assertions.description}
             <NumberedList>{assertionsContent}</NumberedList>
             {settingsContent.length ? settingsContent : null}
-
-            {/* TODO */}
+            {/* TODO: Show commands and assertions specification table with #863 is merged */}
             {/*{commandAssertionsTable}*/}
             <Button
                 disabled={!pageContent.instructions.openTestPage.enabled}
