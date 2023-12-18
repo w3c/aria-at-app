@@ -102,16 +102,14 @@ const BasicThemedModal = ({
                         </Button>
                     )}
                     {actionButtons.map(({ action, text }) => (
-                            <Button
-                                key={text}
-                                variant={
-                                    theme === 'danger' ? 'danger' : 'primary'
-                                }
-                                onClick={action}
-                            >
-                                {text}
-                            </Button>
-                        ))}
+                        <Button
+                            key={text}
+                            variant={theme === 'danger' ? 'danger' : 'primary'}
+                            onClick={action}
+                        >
+                            {text}
+                        </Button>
+                    ))}
                 </Modal.Footer>
             </Modal>
         </>
