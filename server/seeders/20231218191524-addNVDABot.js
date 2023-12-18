@@ -1,13 +1,14 @@
 'use strict';
 
+const responseCollectionUser = require('../util/responseCollectionUser');
+
 module.exports = {
     async up(queryInterface) {
-        // Insert a user
         const user = await queryInterface.bulkInsert(
             'User',
             [
                 {
-                    id: 9999,
+                    id: responseCollectionUser.id, // Specified ID for NVDA Bot
                     username: 'NVDA Bot',
                     createdAt: new Date(),
                     updatedAt: new Date()
@@ -25,6 +26,8 @@ module.exports = {
     },
 
     async down(queryInterface) {
-        await queryInterface.bulkDelete('User', { id: 9999 });
+        await queryInterface.bulkDelete('User', {
+            id: responseCollectionUser.id
+        });
     }
 };
