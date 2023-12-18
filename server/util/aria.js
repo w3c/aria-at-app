@@ -8,7 +8,14 @@ const evaluateAtNameKey = atName => {
 };
 
 const testWithNoIds = test => ({
-    ...omit(test, ['id', 'renderedUrls', 'viewers']),
+    ...omit(test, [
+        'id',
+        'at',
+        'renderedUrls',
+        'renderedUrl',
+        'renderableContent.target.at.raw',
+        'viewers'
+    ]),
     assertions: test.assertions.map(assertion => omit(assertion, ['id'])),
     scenarios: test.scenarios.map(scenario => omit(scenario, ['id']))
 });
