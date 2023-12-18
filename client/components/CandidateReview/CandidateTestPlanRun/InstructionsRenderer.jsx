@@ -177,10 +177,16 @@ const InstructionsRenderer = ({
     return (
         <>
             <NumberedList>{allInstructionsContent}</NumberedList>
+            {/* TODO: Remove 3 following lines to remove the Success Criteria once #863 is merged. Will need that
+                  functionality to show the commands and assertions specification table and if there are any
+                  exceptions, especially 0-level assertions */}
             <Heading>{pageContent.instructions.assertions.header}</Heading>
             {pageContent.instructions.assertions.description}
             <NumberedList>{assertionsContent}</NumberedList>
             {settingsContent.length ? settingsContent : null}
+
+            {/* TODO */}
+            {/*{commandAssertionsTable}*/}
             <Button
                 disabled={!pageContent.instructions.openTestPage.enabled}
                 onClick={pageContent.instructions.openTestPage.click}
