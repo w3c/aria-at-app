@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { isAssertionValidated } from '../utils/automation';
 import { useQuery } from '@apollo/client';
 import { TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY } from '../components/TestQueueCompletionStatusListItem/queries';
 
@@ -49,18 +48,6 @@ export const useTestPlanRunValidatedAssertionCounts = (
         }
     }, [testPlanRunAssertionsQueryResult]);
 
-    const countNonNullAssertionsInScenario = scenario => {
-        return scenario.assertionResults.reduce((acc, assertion) => {
-            return acc + (isAssertionValidated(assertion) ? 1 : 0);
-        }, 0);
-    };
-
-    const countNonNullAssertionsInTest = test => {
-        return test.scenarioResults.reduce((acc, scenario) => {
-            return acc + countNonNullAssertionsInScenario(scenario);
-        }, 0);
-    };
-
     const totalValidatedAssertions = useMemo(() => {
         if (!testPlanRunAssertionsQueryResult?.testPlanRun) {
             return 0;
@@ -70,7 +57,14 @@ export const useTestPlanRunValidatedAssertionCounts = (
             testPlanRun: { testResults }
         } = testPlanRunAssertionsQueryResult;
         return testResults.reduce((acc, test) => {
-            return acc + countNonNullAssertionsInTest(test);
+            return (
+                acc +
+                (test.completedAt
+                    ? test.scenarioResults.reduce((acc, scenario) => {
+                          return acc + scenario.assertionResults.length;
+                      }, 0)
+                    : 0)
+            );
         }, 0);
     }, [testPlanRunAssertionsQueryResult]);
     if (pollInterval) {

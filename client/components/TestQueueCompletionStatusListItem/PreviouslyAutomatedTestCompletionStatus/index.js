@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/client';
 import { TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY } from '../queries';
-import { isAssertionValidated } from '../../../utils/automation';
 
 const PreviouslyAutomatedTestCompletionStatus = ({
     runnableTestsLength,
@@ -32,14 +31,10 @@ const PreviouslyAutomatedTestCompletionStatus = ({
 
         const { testResults = [] } = testPlanRun;
 
-        return testResults.reduce((acc, testResult) => {
-            const isTestValidated = testResult.scenarioResults.every(
-                scenarioResult =>
-                    scenarioResult.assertionResults.every(isAssertionValidated)
-            );
-
-            return isTestValidated ? acc + 1 : acc;
-        }, 0);
+        return testResults.reduce(
+            (acc, { completedAt }) => acc + (completedAt ? 1 : 0),
+            0
+        );
     }, [testPlanRunAssertionsQueryResult]);
 
     return (
