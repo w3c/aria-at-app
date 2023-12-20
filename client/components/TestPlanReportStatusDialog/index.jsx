@@ -136,13 +136,9 @@ const TestPlanReportStatusDialog = ({
     };
 
     const renderReportStatus = testPlanReport => {
-        const { metrics, at, browser, markedFinalAt } = testPlanReport;
-        const { phase } = testPlanVersion;
+        const { metrics, at, browser, isFinal } = testPlanReport;
         if (metrics) {
-            if (
-                markedFinalAt &&
-                (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
-            ) {
+            if (isFinal) {
                 return renderCompleteReportStatus(testPlanReport);
             } else {
                 return renderPartialCompleteReportStatus(testPlanReport);

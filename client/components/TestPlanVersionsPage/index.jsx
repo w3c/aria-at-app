@@ -642,17 +642,10 @@ const TestPlanVersionsPage = () => {
                 })}
                 disclosureContainerView={testPlanVersions.map(
                     testPlanVersion => {
-                        // Gets the derived phase even if deprecated by checking
-                        // the known dates on the testPlanVersion object
-                        const derivedDeprecatedAtPhase =
-                            deriveDeprecatedDuringPhase(testPlanVersion);
-
                         const hasFinalReports =
-                            (derivedDeprecatedAtPhase === 'CANDIDATE' ||
-                                derivedDeprecatedAtPhase === 'RECOMMENDED') &&
-                            !!testPlanVersion.testPlanReports.filter(
-                                report => report.isFinal
-                            ).length;
+                            testPlanVersion.testPlanReports.some(
+                                testPlanReport => testPlanReport.isFinal
+                            );
 
                         return (
                             <div key={testPlanVersion.id}>
