@@ -81,108 +81,116 @@ module.exports = {
                 }
             );
 
-            const testPlanReports = await queryInterface.sequelize.query(
-                `SELECT id, "testPlanVersionId" FROM "TestPlanReport" WHERE "testPlanVersionId" IN (?)`,
-                {
-                    replacements: [testPlanVersions.map(e => e.id)],
-                    type: Sequelize.QueryTypes.SELECT,
-                    transaction
-                }
-            );
-
-            for (const key in testPlanReports) {
-                const { id: testPlanReportId } = testPlanReports[key];
-
-                const testPlanRuns = await queryInterface.sequelize.query(
-                    `SELECT testPlanRun.id, "testPlanReportId", "atId", "testPlanVersionId", "testResults", tests
-                                 FROM "TestPlanRun" testPlanRun
-                                          JOIN "TestPlanReport" testPlanReport ON testPlanReport.id = testPlanRun."testPlanReportId"
-                                          JOIN "TestPlanVersion" testPlanVersion ON testPlanVersion.id = testPlanReport."testPlanVersionId"
-                                 WHERE "testPlanReportId" = ?`,
+            if (testPlanVersions.length) {
+                const testPlanReports = await queryInterface.sequelize.query(
+                    `select id, "testPlanVersionId"
+                     from "TestPlanReport"
+                     where "testPlanVersionId" in (?)`,
                     {
-                        replacements: [testPlanReportId],
+                        replacements: [testPlanVersions.map(e => e.id)],
                         type: Sequelize.QueryTypes.SELECT,
                         transaction
                     }
                 );
 
-                for (const key in testPlanRuns) {
-                    const {
-                        id: testPlanRunId,
-                        atId,
-                        testResults,
-                        tests
-                    } = testPlanRuns[key];
+                for (const key in testPlanReports) {
+                    const { id: testPlanReportId } = testPlanReports[key];
 
-                    tests.forEach(test => {
-                        const testId = test.id;
-
-                        testResults.forEach(testResult => {
-                            if (testResult.testId === testId) {
-                                // Update testResult.id
-                                const testResultId = createTestResultId(
-                                    testPlanRunId,
-                                    testResult.testId
-                                );
-                                testResult.id = testResultId;
-
-                                // The sub-arrays should be in the same order
-                                testResult.scenarioResults.forEach(
-                                    (eachScenarioResult, scenarioIndex) => {
-                                        eachScenarioResult.scenarioId =
-                                            test.scenarios.filter(
-                                                scenario =>
-                                                    scenario.atId === atId
-                                            )[scenarioIndex].id;
-
-                                        // Update eachScenarioResult.id
-                                        const scenarioResultId =
-                                            createScenarioResultId(
-                                                testResultId,
-                                                eachScenarioResult.scenarioId
-                                            );
-                                        eachScenarioResult.id =
-                                            scenarioResultId;
-
-                                        eachScenarioResult.assertionResults.forEach(
-                                            (
-                                                eachAssertionResult,
-                                                assertionIndex
-                                            ) => {
-                                                eachAssertionResult.assertionId =
-                                                    test.assertions[
-                                                        assertionIndex
-                                                    ].id;
-
-                                                // Update eachAssertionResult.id
-                                                eachAssertionResult.id =
-                                                    createAssertionResultId(
-                                                        scenarioResultId,
-                                                        eachAssertionResult.assertionId
-                                                    );
-                                            }
-                                        );
-                                    }
-                                );
-                            }
-                        });
-                    });
-
-                    await queryInterface.sequelize.query(
-                        `UPDATE "TestPlanRun" SET "testResults" = ? WHERE id = ?`,
+                    const testPlanRuns = await queryInterface.sequelize.query(
+                        `select testPlanRun.id, "testPlanReportId", "atId", "testPlanVersionId", "testResults", tests
+                         from "TestPlanRun" testPlanRun
+                                  join "TestPlanReport" testPlanReport
+                                       on testPlanReport.id = testPlanRun."testPlanReportId"
+                                  join "TestPlanVersion" testPlanVersion
+                                       on testPlanVersion.id = testPlanReport."testPlanVersionId"
+                         where "testPlanReportId" = ?`,
                         {
-                            replacements: [
-                                JSON.stringify(testResults),
-                                testPlanRunId
-                            ],
+                            replacements: [testPlanReportId],
+                            type: Sequelize.QueryTypes.SELECT,
                             transaction
                         }
                     );
-                    // eslint-disable-next-line no-console
-                    console.info(
-                        'Fixing testResults for TestPlanRun',
-                        testPlanRunId
-                    );
+
+                    for (const key in testPlanRuns) {
+                        const {
+                            id: testPlanRunId,
+                            atId,
+                            testResults,
+                            tests
+                        } = testPlanRuns[key];
+
+                        tests.forEach(test => {
+                            const testId = test.id;
+
+                            testResults.forEach(testResult => {
+                                if (testResult.testId === testId) {
+                                    // Update testResult.id
+                                    const testResultId = createTestResultId(
+                                        testPlanRunId,
+                                        testResult.testId
+                                    );
+                                    testResult.id = testResultId;
+
+                                    // The sub-arrays should be in the same order
+                                    testResult.scenarioResults.forEach(
+                                        (eachScenarioResult, scenarioIndex) => {
+                                            eachScenarioResult.scenarioId =
+                                                test.scenarios.filter(
+                                                    scenario =>
+                                                        scenario.atId === atId
+                                                )[scenarioIndex].id;
+
+                                            // Update eachScenarioResult.id
+                                            const scenarioResultId =
+                                                createScenarioResultId(
+                                                    testResultId,
+                                                    eachScenarioResult.scenarioId
+                                                );
+                                            eachScenarioResult.id =
+                                                scenarioResultId;
+
+                                            eachScenarioResult.assertionResults.forEach(
+                                                (
+                                                    eachAssertionResult,
+                                                    assertionIndex
+                                                ) => {
+                                                    eachAssertionResult.assertionId =
+                                                        test.assertions[
+                                                            assertionIndex
+                                                        ].id;
+
+                                                    // Update eachAssertionResult.id
+                                                    eachAssertionResult.id =
+                                                        createAssertionResultId(
+                                                            scenarioResultId,
+                                                            eachAssertionResult.assertionId
+                                                        );
+                                                }
+                                            );
+                                        }
+                                    );
+                                }
+                            });
+                        });
+
+                        await queryInterface.sequelize.query(
+                            `update "TestPlanRun"
+                             set "testResults" = ?
+                             where id = ?`,
+                            {
+                                replacements: [
+                                    JSON.stringify(testResults),
+                                    testPlanRunId
+                                ],
+                                transaction
+                            }
+                        );
+                        // eslint-disable-next-line no-console
+                        console.info(
+                            'Fixing testResults for TestPlanRun',
+                            testPlanRunId
+                        );
+                    }
                 }
             }
         };
