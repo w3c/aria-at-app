@@ -94,7 +94,7 @@ const TestNavigator = ({
                                     resultStatus = 'Cancelled by Bot';
                                 }
                             } else {
-                                // Existing logic for non-bot tests
+                                // Non-bot tests
                                 if (test.hasConflicts) {
                                     resultClassName = 'conflicts';
                                     resultStatus = 'Has Conflicts';
