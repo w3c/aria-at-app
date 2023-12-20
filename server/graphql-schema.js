@@ -641,7 +641,7 @@ const graphqlSchema = gql`
         """
         See TestResult type for more information.
         """
-        scenarioResults: [ScenarioResultInput]
+        scenarioResults: [ScenarioResultInput]!
     }
 
     """
