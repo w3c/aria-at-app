@@ -13,7 +13,7 @@ import { isBot } from '../../utils/automation';
 
 import './ManageBotRunDialog.css';
 import MarkBotRunFinishedButton from './MarkBotRunFinishedButton';
-import RetryCancelledCollectionsButton from './RetryCancelledCollectionsButton';
+import RetryCanceledCollectionsButton from './RetryCanceledCollectionsButton';
 import StopRunningCollectionButton from './StopRunningCollectionButton';
 
 const ManageBotRunDialog = ({
@@ -86,7 +86,7 @@ const ManageBotRunDialog = ({
                 }
             },
             {
-                component: RetryCancelledCollectionsButton,
+                component: RetryCanceledCollectionsButton,
                 props: {
                     collectionJob:
                         collectionJobQuery?.collectionJobByTestPlanRunId,

@@ -1327,7 +1327,7 @@ const graphqlSchema = gql`
         """
         Retry the 'cancelled' tests of a CollectionJob.
         """
-        retryCancelledCollections: CollectionJob!
+        retryCanceledCollections: CollectionJob!
     }
 
     """

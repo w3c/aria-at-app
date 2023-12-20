@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import { useMutation } from '@apollo/client';
-import { RETRY_CANCELLED_COLLECTIONS } from '../queries';
+import { RETRY_CANCELED_COLLECTIONS } from '../queries';
 
-const RetryCancelledCollectionsButton = ({
+const RetryCanceledCollectionsButton = ({
     collectionJob,
     onClick = () => {}
 }) => {
@@ -12,17 +12,12 @@ const RetryCancelledCollectionsButton = ({
         return null;
     }
 
-    const [retryCancelledCollections] = useMutation(
-        RETRY_CANCELLED_COLLECTIONS,
-        {
-            variables: {
-                collectionJobId: collectionJob.id
-            }
-        }
-    );
+    const [retryCanceledCollections] = useMutation(RETRY_CANCELED_COLLECTIONS, {
+        variables: { collectionJobId: collectionJob.id }
+    });
 
     const handleClick = async () => {
-        await retryCancelledCollections();
+        await retryCanceledCollections();
         await onClick();
     };
 
@@ -37,7 +32,7 @@ const RetryCancelledCollectionsButton = ({
     );
 };
 
-RetryCancelledCollectionsButton.propTypes = {
+RetryCanceledCollectionsButton.propTypes = {
     collectionJob: PropTypes.shape({
         id: PropTypes.string,
         status: PropTypes.oneOf([
@@ -51,4 +46,4 @@ RetryCancelledCollectionsButton.propTypes = {
     onClick: PropTypes.func
 };
 
-export default RetryCancelledCollectionsButton;
+export default RetryCanceledCollectionsButton;

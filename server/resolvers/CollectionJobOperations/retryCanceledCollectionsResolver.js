@@ -2,12 +2,12 @@ const { AuthenticationError } = require('apollo-server');
 
 const {
     getCollectionJobById,
-    retryCancelledCollections
+    retryCanceledCollections
 } = require('../../models/services/CollectionJobService');
 
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 
-const retryCancelledCollectionsResolver = async (
+const retryCanceledCollectionsResolver = async (
     { parentContext: { id: collectionJobId } },
     _,
     { user }
@@ -34,7 +34,7 @@ const retryCancelledCollectionsResolver = async (
         );
     }
 
-    return retryCancelledCollections({ collectionJob });
+    return retryCanceledCollections({ collectionJob });
 };
 
-module.exports = retryCancelledCollectionsResolver;
+module.exports = retryCanceledCollectionsResolver;

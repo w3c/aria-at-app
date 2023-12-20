@@ -275,7 +275,7 @@ const updateCollectionJob = async (
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const retryCancelledCollections = async (
+const retryCanceledCollections = async (
     { collectionJob },
     collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
     options
@@ -481,5 +481,5 @@ module.exports = {
     scheduleCollectionJob,
     restartCollectionJob,
     cancelCollectionJob,
-    retryCancelledCollections
+    retryCanceledCollections
 };

@@ -45,10 +45,10 @@ export const DELETE_TEST_PLAN_RUN = gql`
     }
 `;
 
-export const RETRY_CANCELLED_COLLECTIONS = gql`
-    mutation RetryCancelledCollections($collectionJobId: ID!) {
+export const RETRY_CANCELED_COLLECTIONS = gql`
+    mutation RetryCanceledCollections($collectionJobId: ID!) {
         collectionJob(id: $collectionJobId) {
-            retryCancelledCollections {
+            retryCanceledCollections {
                 id
                 status
             }
