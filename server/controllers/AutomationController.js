@@ -206,7 +206,7 @@ const updateOrCreateTestResultWithResponses = async ({
                                 : 'AUTOMATED_OUTPUT'
                         })
                     ),
-                    unexpectedBehaviors: []
+                    unexpectedBehaviors: null
                 };
             }
         )
