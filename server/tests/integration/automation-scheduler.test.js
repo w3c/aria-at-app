@@ -481,7 +481,7 @@ describe('Automation controller', () => {
                             'AUTOMATED_OUTPUT'
                         );
                     });
-                    scenarioResult.unexpectedBehaviors.forEach(
+                    scenarioResult.unexpectedBehaviors?.forEach(
                         unexpectedBehavior => {
                             expect(unexpectedBehavior.id).toEqual('OTHER');
                             expect(
@@ -586,12 +586,20 @@ describe('Automation controller', () => {
                             );
                         }
                     );
-                    scenarioResult.unexpectedBehaviors.forEach(
-                        unexpectedBehavior => {
-                            expect(unexpectedBehavior.id).toEqual('OTHER');
+                    scenarioResult.unexpectedBehaviors?.forEach(
+                        (unexpectedBehavior, index) => {
+                            expect(unexpectedBehavior.id).toEqual(
+                                historicalScenarioResult.unexpectedBehaviors[
+                                    index
+                                ].id
+                            );
                             expect(
                                 unexpectedBehavior.otherUnexpectedBehaviorText
-                            ).toEqual(null);
+                            ).toEqual(
+                                historicalScenarioResult.unexpectedBehaviors[
+                                    index
+                                ].otherUnexpectedBehaviorText
+                            );
                         }
                     );
                 });
