@@ -5,7 +5,12 @@ const BrowserLoader = require('../loaders/BrowserLoader');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 
 /**
- *
+ * Returns an array of test results with nested test, atVersion, browserVersion,
+ * scenario, assertion and unexpectedBehavior fields populated.
+ * @param {Object} testPlanRun
+ * @param {Object} testPlanRun.testPlanReport
+ * @param {Object[]} testPlanRun.testResults
+ * @returns {Promise<Object[]>}
  */
 const getTestResults = async testPlanRun => {
     const { testPlanReport } = testPlanRun;
@@ -58,6 +63,13 @@ const getTestResults = async testPlanRun => {
     });
 };
 
+/**
+ * Returns an array of finalized test results with nested test, atVersion,
+ * browserVersion, scenario, assertion and unexpectedBehavior fields populated.
+ * @param {Object} testPlanReport
+ * @param {Object[]} testPlanReport.testPlanRuns
+ * @returns {Promise<Object[]>}
+ */
 const getFinalizedTestResults = testPlanReport => {
     if (!testPlanReport.testPlanRuns.length) {
         return null;
