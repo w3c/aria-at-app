@@ -8,6 +8,7 @@ import { NO_OUTPUT_STRING } from './constants';
 const OutputTextAreaWrapper = styled.div`
     > textarea {
         width: 100%;
+        height: 3.5rem;
     }
 `;
 
