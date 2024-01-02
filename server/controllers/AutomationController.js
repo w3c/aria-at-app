@@ -43,10 +43,10 @@ const throwNoJobFoundError = jobId => {
     );
 };
 
-const throwNoTestFoundError = testCsvRow => {
+const throwNoTestFoundError = rowNumber => {
     throw new HttpQueryError(
         404,
-        `Could not find test at CSV row number ${testCsvRow}`,
+        `Could not find test at row number ${rowNumber}`,
         true
     );
 };
