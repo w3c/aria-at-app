@@ -59,6 +59,7 @@ To deploy this project to  server:
     Host *.w3.internal
       ProxyJump bocoupinfra@ssh-aws.w3.org
     ```
+    - The RSA key fingerprint for `ssh-aws.w3.org` is `SHA256:Nlyly0XFZebw0/k8yCGUXA+Y03W7WB7CPnXiZZb7XE8`.
   - Run `ssh root@bestla.w3.internal` (aria-at-staging.w3.org's server) and `ssh root@fenrir.w3.internal` (aria-at.w3.org's server) to verify that you can connect to the servers.
     - The RSA key fingerprint for `bestla.w3.internal` is `SHA256:F16aX2Wx4e39jbHhqEkeH8iRgY41C3WgxvAgvh7PQZ0`.
     - The RSA key fingerprint for `fenrir.w3.internal` is `SHA256:cF6u/K00P2ELEVbIazVVqqMz5q+Sbh4+Jog/VmXZomg`.
