@@ -54,10 +54,18 @@ To deploy this project to  server:
   - Place it in the ~/.ssh directory.
   - For security, set permissions on the key file, which is required by the OS: `chmod 600 ~/.ssh/aria-at-bocoup`.
   - Add it to your keychain with the following command: `ssh-add ~/.ssh/aria-at-bocoup`.
-  - Run `ssh root@aria-at-staging.w3.org` and `ssh root@aria-at.w3.org` to verify that you can connect to the servers.
+  - Add the following `Host` client configuration option to `~/.ssh/config`:
+    ```
+    Host *.w3.internal
+      ProxyJump bocoupinfra@ssh-aws.w3.org
+    ```
+    - The RSA key fingerprint for `ssh-aws.w3.org` is `SHA256:Nlyly0XFZebw0/k8yCGUXA+Y03W7WB7CPnXiZZb7XE8`.
+  - Run `ssh root@bestla.w3.internal` (aria-at-staging.w3.org's server) and `ssh root@fenrir.w3.internal` (aria-at.w3.org's server) to verify that you can connect to the servers.
+    - The RSA key fingerprint for `bestla.w3.internal` is `SHA256:F16aX2Wx4e39jbHhqEkeH8iRgY41C3WgxvAgvh7PQZ0`.
+    - The RSA key fingerprint for `fenrir.w3.internal` is `SHA256:cF6u/K00P2ELEVbIazVVqqMz5q+Sbh4+Jog/VmXZomg`.
 2. Bocoup maintains its own instance of the app on its internal infrastructure for quick and easy testing. Note that you must be a Bocouper to deploy to this environment. Follow the steps below to verify you are able to connect.
   - Run `ssh aria-at-app-sandbox.bocoup.com` and confirm you can connect.
-  - Confirm that `sudo su` successfully switches you to the root user. You will need to enter the sodoer password you chose during your Bocoup onboarding. This password will be required when deploying to the Sandbox.
+  - Confirm that `sudo su` successfully switches you to the root user. You will need to enter the sudo password you chose during your Bocoup onboarding. This password will be required when deploying to the Sandbox.
 3. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the directory which contains this document.
 4. Install [Ansible](https://www.ansible.com/) version 2.11. Instructions for macOS are as follows:
   - Install Ansible at the specific 2.11 version: `python3 -m pip install --user ansible-core==2.11.1`
