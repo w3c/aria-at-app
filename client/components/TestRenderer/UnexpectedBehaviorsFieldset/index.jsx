@@ -1,6 +1,40 @@
 import React from 'react';
-import { Feedback, Fieldset } from '@components/TestRenderer';
 import PropTypes from 'prop-types';
+import styled from '@emotion/styled';
+import { Feedback, Fieldset } from '..';
+
+const ProblemOptionContainer = styled.div`
+    &.enabled {
+        margin-bottom: 15px;
+    }
+`;
+
+const Label = styled.label`
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 5px;
+
+    > select,
+    > input[type='text'] {
+        min-width: 120px;
+        width: 50%;
+        height: 26px;
+        margin-left: 5px;
+    }
+
+    > input[type='checkbox'] {
+        margin-right: 5px;
+    }
+
+    &.off-screen {
+        position: absolute !important;
+        height: 1px;
+        width: 1px;
+        overflow: hidden;
+        clip: rect(1px, 1px, 1px, 1px);
+        white-space: nowrap;
+    }
+`;
 
 const UnexpectedBehaviorsFieldset = ({
     commandIndex,
@@ -81,39 +115,40 @@ const UnexpectedBehaviorsFieldset = ({
                             severitychange
                         } = option;
 
+                        const descriptionId = description
+                            .toLowerCase()
+                            .replace(/[.,]/g, '')
+                            .replace(/\s+/g, '-');
+
                         return (
-                            <Fieldset
+                            <ProblemOptionContainer
+                                className={checked ? 'enabled' : ''}
                                 key={`AssertionOptionsKey_${optionIndex}`}
-                                className="undesirable-fieldset"
                             >
-                                <legend>{description}</legend>
-                                <div>
+                                {/* Undesirable behavior checkbox */}
+                                <Label
+                                    key={`${descriptionId}_${commandIndex}__checkbox`}
+                                >
                                     <input
-                                        key={`${description}__${commandIndex}`}
                                         type="checkbox"
                                         value={description}
-                                        id={`${description}-${commandIndex}`}
                                         className={`undesirable-${commandIndex}`}
                                         tabIndex={optionIndex === 0 ? 0 : -1}
                                         autoFocus={isSubmitted && focus}
                                         defaultChecked={checked}
                                         onClick={e => change(e.target.checked)}
                                     />
-                                    <label
-                                        htmlFor={`${description}-${commandIndex}`}
-                                    >
-                                        Behavior occurred
-                                    </label>
-                                </div>
-                                <div>
-                                    <label
-                                        htmlFor={`${description}-${commandIndex}-severity`}
-                                    >
-                                        Impact:
-                                    </label>
+                                    {description} behavior occurred
+                                </Label>
+
+                                {/* Severity select */}
+                                <Label
+                                    key={`${descriptionId}_${commandIndex}__severity`}
+                                    className={!checked ? 'off-screen' : ''}
+                                    aria-hidden={!checked}
+                                >
+                                    Impact:
                                     <select
-                                        id={`${description}-${commandIndex}-severity`}
-                                        name={`${description}-${commandIndex}-severity`}
                                         onChange={e =>
                                             severitychange(e.target.value)
                                         }
@@ -122,56 +157,60 @@ const UnexpectedBehaviorsFieldset = ({
                                     >
                                         {severityOptions.map(option => (
                                             <option
-                                                key={`${description}-${commandIndex}-severity-${option}`}
+                                                key={`${descriptionId}-${commandIndex}-severity-${option}`}
                                                 value={option.toUpperCase()}
                                             >
                                                 {option}
                                             </option>
                                         ))}
                                     </select>
-                                </div>
+                                </Label>
+
+                                {/* Details text input */}
                                 {more && (
-                                    <div>
-                                        <label
-                                            htmlFor={`${description}-${commandIndex}-input`}
+                                    <>
+                                        <Label
+                                            key={`${descriptionId}_${commandIndex}__details`}
+                                            className={
+                                                !checked ? 'off-screen' : ''
+                                            }
+                                            aria-hidden={!checked}
                                         >
                                             Details:
-                                        </label>
-                                        <input
-                                            key={`${description}__${commandIndex}__input`}
-                                            type="text"
-                                            id={`${description}-${commandIndex}-input`}
-                                            name={`${description}-${commandIndex}-input`}
-                                            className={`undesirable-${description.toLowerCase()}-input`}
-                                            autoFocus={
-                                                isSubmitted && more.focus
-                                            }
-                                            value={more.value}
-                                            onChange={e =>
-                                                more.change(e.target.value)
-                                            }
-                                            disabled={!checked}
-                                        />
-                                        {isSubmitted && (
-                                            <Feedback
-                                                className={`${
-                                                    more.description[1]
-                                                        .required && 'required'
-                                                } ${
-                                                    more.description[1]
-                                                        .highlightRequired &&
-                                                    'highlight-required'
-                                                }`}
-                                            >
-                                                {
-                                                    more.description[1]
-                                                        .description
+                                            <input
+                                                type="text"
+                                                className={`undesirable-${descriptionId.toLowerCase()}-details`}
+                                                autoFocus={
+                                                    isSubmitted && more.focus
                                                 }
-                                            </Feedback>
-                                        )}
-                                    </div>
+                                                value={more.value}
+                                                onChange={e =>
+                                                    more.change(e.target.value)
+                                                }
+                                                disabled={!checked}
+                                            />
+                                            {isSubmitted && (
+                                                <Feedback
+                                                    className={`${
+                                                        more.description[1]
+                                                            .required &&
+                                                        'required'
+                                                    } ${
+                                                        more.description[1]
+                                                            .highlightRequired &&
+                                                        'highlight-required'
+                                                    }`}
+                                                >
+                                                    {
+                                                        more.description[1]
+                                                            .description
+                                                    }
+                                                </Feedback>
+                                            )}
+                                        </Label>
+                                    </>
                                 )}
-                            </Fieldset>
+                            </ProblemOptionContainer>
                         );
                     }
                 )}

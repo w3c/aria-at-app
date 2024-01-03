@@ -111,12 +111,6 @@ export const Fieldset = styled.fieldset`
     }
 
     > div {
-        > label {
-            display: initial;
-            vertical-align: middle;
-            margin-right: 5px;
-        }
-
         > input[type='radio'] {
             margin: 0 5px 0 0;
             vertical-align: middle;
@@ -132,30 +126,9 @@ export const Fieldset = styled.fieldset`
         margin-top: 1em;
         margin-left: 1em;
 
-        > label {
-            display: initial;
-            vertical-align: middle;
-        }
-
         > input[type='checkbox'] {
             margin: 0 5px 0 0;
             vertical-align: middle;
-        }
-    }
-
-    &.undesirable-fieldset {
-        > legend {
-            font-size: 14px;
-        }
-
-        > div {
-            margin-bottom: 5px;
-
-            > select,
-            > input[type='text'] {
-                width: 120px;
-                height: 26px;
-            }
         }
     }
 `;
