@@ -54,6 +54,9 @@ const AtAndBrowserDetailsModal = ({
     handleAction = () => {},
     handleClose = () => {}
 }) => {
+    if (browserVersion.includes('.')) {
+        browserVersion = browserVersion.split('.')[0];
+    }
     // Detect UA information
     const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
 
@@ -109,10 +112,7 @@ const AtAndBrowserDetailsModal = ({
 
     useEffect(() => {
         // check to support Tester Scenario 5
-        if (
-            uaMajor !== '0' &&
-            !updatedBrowserVersion.includes(`${uaMajor}.${uaMinor}.${uaPatch}`)
-        )
+        if (uaMajor !== '0' && !updatedBrowserVersion.includes(`${uaMajor}`))
             setBrowserVersionMismatchMessage(true);
         else setBrowserVersionMismatchMessage(!isAdmin && false);
     }, [updatedBrowserVersion, uaMajor, uaMinor, uaPatch]);
@@ -414,8 +414,7 @@ const AtAndBrowserDetailsModal = ({
                                                 We have automatically detected
                                                 you are using{' '}
                                                 <b>
-                                                    {uaBrowser} {uaMajor}.
-                                                    {uaMinor}.{uaPatch}
+                                                    {uaBrowser} {uaMajor}
                                                 </b>
                                                 . This test plan requires{' '}
                                                 <b>{browserName}</b>. If you are
@@ -441,8 +440,7 @@ const AtAndBrowserDetailsModal = ({
                                                 We have automatically detected
                                                 you are now using{' '}
                                                 <b>
-                                                    {uaBrowser} {uaMajor}.
-                                                    {uaMinor}.{uaPatch}
+                                                    {uaBrowser} {uaMajor}
                                                 </b>
                                                 , which is a different browser
                                                 from the last one you were
@@ -457,8 +455,7 @@ const AtAndBrowserDetailsModal = ({
                                                 You can&apos;t edit your Browser
                                                 type, but you can continue with{' '}
                                                 <b>
-                                                    {uaBrowser} {uaMajor}.
-                                                    {uaMinor}.{uaPatch}
+                                                    {uaBrowser} {uaMajor}
                                                 </b>
                                                 . Keep in mind that your test
                                                 results will be recorded as if
@@ -487,10 +484,7 @@ const AtAndBrowserDetailsModal = ({
                                                 have set is different from the
                                                 one we have automatically
                                                 detected, which is{' '}
-                                                <b>
-                                                    {uaMajor}.{uaMinor}.
-                                                    {uaPatch}
-                                                </b>
+                                                <b>{uaMajor}</b>
                                                 .
                                                 <br />
                                                 <br />
@@ -536,8 +530,7 @@ const AtAndBrowserDetailsModal = ({
                                                 We have automatically detected
                                                 you are using{' '}
                                                 <b>
-                                                    {uaBrowser} {uaMajor}.
-                                                    {uaMinor}.{uaPatch}
+                                                    {uaBrowser} {uaMajor}
                                                 </b>
                                                 . This version is different than
                                                 what <b>{testerName}</b> was
