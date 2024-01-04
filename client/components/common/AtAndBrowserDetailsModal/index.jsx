@@ -54,6 +54,8 @@ const AtAndBrowserDetailsModal = ({
     handleAction = () => {},
     handleClose = () => {}
 }) => {
+    // Only take into account the major version
+    // of the provided browser version
     if (browserVersion.includes('.')) {
         browserVersion = browserVersion.split('.')[0];
     }
@@ -93,15 +95,13 @@ const AtAndBrowserDetailsModal = ({
         }
 
         const foundBrowserVersion =
-            uaBrowser === browserName &&
-            uaMajor !== '0' &&
-            `${uaMajor}.${uaMinor}.${uaPatch}`;
+            uaBrowser === browserName && uaMajor !== '0' && `${uaMajor}`;
 
         if (
             // don't force browserVersion update with admin (unless first run)
             (!isAdmin || (isAdmin && firstLoad)) &&
             // check that saved browserVersion is the same as detected
-            !browserVersion.includes(`${uaMajor}.${uaMinor}.${uaPatch}`) &&
+            !browserVersion.includes(`${uaMajor}`) &&
             uaBrowser === browserName &&
             foundBrowserVersion
         ) {
@@ -194,7 +194,16 @@ const AtAndBrowserDetailsModal = ({
                 );
         }
 
-        handleAction(updatedAtVersion, updatedBrowserVersion, updateMessage);
+        // Save full version even though we don't display it
+        // This will only take effect if the updatedBrowserVersion
+        // matches the found major version
+        let fullVersion = updatedBrowserVersion;
+
+        if (!fullVersion.includes('.') && fullVersion == uaMajor) {
+            fullVersion = `${uaMajor}.${uaMinor}.${uaPatch}`;
+        }
+
+        handleAction(updatedAtVersion, fullVersion, updateMessage);
     };
 
     const handleHide = () => setShowExitModal(true);
