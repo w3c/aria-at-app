@@ -438,6 +438,12 @@ const graphqlSchema = gql`
         Vendors who viewed the tests
         """
         viewers: [User]
+        """
+        Version number to indicate which of the following test writing specs this test is based on:
+        1: https://github.com/w3c/aria-at/wiki/Test-Format-V1-Definition
+        2: https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2
+        """
+        testFormatVersion: Int!
     }
 
     type RenderableContentByAt {

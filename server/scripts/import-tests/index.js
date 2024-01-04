@@ -515,7 +515,8 @@ const getTests = ({
                     return scenarios;
                 })(),
                 assertions: getAssertions(common, testId),
-                viewers: []
+                viewers: [],
+                testFormatVersion: 1
             });
         }
 
@@ -595,7 +596,8 @@ const getTests = ({
                         return scenarios;
                     })(),
                     assertions: getAssertions(collected, testId),
-                    viewers: []
+                    viewers: [],
+                    testFormatVersion: 2
                 };
 
                 tests.push(test);

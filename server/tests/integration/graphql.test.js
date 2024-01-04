@@ -286,6 +286,7 @@ describe('graphql', () => {
                                     priority
                                     text
                                 }
+                                testFormatVersion
                             }
                         }
                         testPlanVersions {
