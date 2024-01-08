@@ -6,15 +6,13 @@ import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import getMetrics from '../Reports/getMetrics';
+// import getMetrics from '../Reports/getMetrics';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 import { convertDateToString } from '../../utils/formatter';
 import { ThemeTable } from '../common/ThemeTable';
 import BasicModal from '../common/BasicModal';
-import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from './queries';
-
 import './TestPlanReportStatusDialog.css';
-import { at } from 'lodash';
+// import { at } from 'lodash';
 
 const IncompleteStatusReport = styled.span`
     min-width: 5rem;
@@ -148,7 +146,6 @@ const TestPlanReportStatusDialog = ({
             index += 1;
         });
     }
-
 
     const renderTableRow = (testPlanReport, required = 'Yes') => {
         return (
@@ -329,7 +326,8 @@ TestPlanReportStatusDialog.propTypes = {
     }).isRequired,
     handleHide: PropTypes.func.isRequired,
     triggerUpdate: PropTypes.func,
-    show: PropTypes.bool.isRequired
+    show: PropTypes.bool.isRequired,
+    ats: PropTypes.array
 };
 
 export default TestPlanReportStatusDialog;
