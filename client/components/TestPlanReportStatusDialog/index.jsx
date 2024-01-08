@@ -42,17 +42,6 @@ const TestPlanReportStatusDialog = ({
         [testPlanVersion]
     );
 
-    // const allRequiredReports = [];
-    // ats.forEach(at => {
-    //     at.browsers.forEach(browser => {
-    //         allRequiredReports.push({
-    //             browser: { name: browser.name, id: browser.id },
-    //             at: { name: at.name, id: at.id }
-    //         });
-    //     });
-    // });
-    // console.log('allRequiredReports', allRequiredReports)
-
     // section:
     // Declare array of all reports
     const allReports = ats
@@ -63,60 +52,17 @@ const TestPlanReportStatusDialog = ({
             }))
         )
         .flat();
-    // console.log('allReports', allReports);
 
-    // Declare array of known required report combinations
     const requiredReportIds = requiredReports.map(
         report => `${report.at.id}-${report.browser.id}`
     );
-    // console.log('requiredReportIds', requiredReportIds)
-    // console.log('requiredReports', requiredReports);
 
-    // Declare other array of reports from allReports which is NOT a known required report combination
     const newOthers = allReports.filter(report => {
         return !requiredReportIds.includes(
             `${report.at.id}-${report.browser.id}`
         );
     });
-    // console.log('newOthers', newOthers);
 
-    // let others = [...allRequiredReports];
-    // console.log(allRequiredReports.length)
-    // console.log(requiredReports.length)
-    // useMemo(() => {
-    //     for (let i = 0; i < allRequiredReports.length; i += 1) {
-    //         for (let k = 0; k < requiredReports.length; k += 1) {
-    //             //    if (allRequiredReports[i].at.id === requiredReports[k].at.id && allRequiredReports[i].browser.id === requiredReports[k].browser.id) {
-    //             //     continue
-    //             //    }
-    //             // if (allRequiredReports.includes(requiredReports[k])){
-    //             //     console.log('ITran')
-    //             //     break;
-    //             // }
-    //             if (
-    //                 allRequiredReports[i].at.name ===
-    //                     requiredReports[k].at.name &&
-    //                 allRequiredReports[i].browser.name ===
-    //                     requiredReports[k].browser.name
-    //             ) {
-    //                 // console.log(requiredReports.length)
-    //                 others.splice(
-    //                     allRequiredReports.indexOf(allRequiredReports[i])
-    //                 );
-    //                 // delete others[allRequiredReports.indexOf(allRequiredReports[i])]
-    //             }
-    //             // console.log(others);
-
-    //             // others.push(allRequiredReports[i]);
-    //             // console.log(allRequiredReports[i].at.id !== requiredReports[k].at.id && allRequiredReports[i].browser.id !== requiredReports[k].browser.id)
-    //             // console.log('requiredReports', requiredReports[k])
-    //             // break
-    //         }
-    //         //    break
-    //     }
-    // });
-
-    // let otherReports = [...others];
     // section:
     const [matchedReports, unmatchedTestPlanReports, unmatchedRequiredReports] =
         useMemo(() => {
@@ -132,14 +78,6 @@ const TestPlanReportStatusDialog = ({
                         requiredReports[i].browser.name ===
                             testPlanReports[j].browser.name
                     ) {
-                        // console.log('stat', testPlanReports[j])
-                        // if (testPlanReports[j].status === 'DRAFT') {
-                        //     matched.push({
-                        //         ...testPlanReports[j],
-                        //         metrics: getMetrics(testPlanReports[j])
-                        //     });
-                        // } else {
-                        // }
                         matched.push(testPlanReports[j]);
 
                         unmatchedTestPlan.splice(
@@ -158,7 +96,6 @@ const TestPlanReportStatusDialog = ({
         }, [testPlanReports, requiredReports]);
 
     // section:
-    const lastOthers = [...newOthers];
     if (newOthers.length > 0) {
         let index = 0;
         newOthers.forEach(otherReport => {
@@ -168,22 +105,13 @@ const TestPlanReportStatusDialog = ({
                         otherReport.at.id === matchedReport.id &&
                         otherReport.browser.id === matchedReport.browser.id
                     ) {
-                        // console.log("IT RAN - 1", newOthers)
-                        // console.log("INDEX", index)
                         delete newOthers[index];
-                        // console.log("IT RAN - 2", newOthers)
                     }
                 });
             }
             index += 1;
         });
     }
-    // useMemo(() => {
-    //     // console.log('matched', matchedReports)
-    //     // console.log('newOthers', newOthers)
-    //     // console.log('lastOthers', lastOthers)
-    //     // console.log('unRequired', unmatchedRequiredReports)
-    // }, []);
 
     if (newOthers.length > 0) {
         let index = 0;
@@ -195,23 +123,14 @@ const TestPlanReportStatusDialog = ({
                         otherReport.browser.id ===
                             unmatchedTestPlanReport.browser.id
                     ) {
-                        // console.log(otherReport.at.name, otherReport.browser.name)
-                        // console.log(unmatchedTestPlanReport.at.name, unmatchedTestPlanReport.browser.name)
-                        // console.log("INDEX", index)
                         delete newOthers[index];
-                        // console.log("IT RAN - 2", newOthers)
                     }
                 });
             }
             index += 1;
         });
     }
-    useMemo(() => {
-    // console.log('matched', matchedReports)
-    console.log('newOthers', newOthers)
-    console.log('unmatchedTestPlanReports', unmatchedTestPlanReports)
-    // console.log('unRequired', unmatchedRequiredReports)
-    }, [])
+
     if (newOthers.length > 0) {
         let index = 0;
         newOthers.forEach(otherReport => {
@@ -230,28 +149,8 @@ const TestPlanReportStatusDialog = ({
         });
     }
 
-    // useMemo(() => {
-    //     console.log('matched', matchedReports)
-    //     console.log('newOthers', newOthers)
-    //     console.log('unmatchedTestPlanReports', unmatchedTestPlanReports)
-    //     console.log('unRequired', unmatchedRequiredReports)
-    // }, []);
-    // console.log(ats.map((at) => {
-    //    return unmatchedRequiredReports.map((report) => {
-    //     if (at.id === report.at.id ) {
 
-    //     }
-    //     })
-    // }))
-
-    // useMemo(() => {
-    // // console.log('matched', matchedReports)
-    // console.log('newOthers', newOthers)
-    // console.log('lastOthers', lastOthers)
-    // // console.log('unRequired', unmatchedRequiredReports)
-    // }, [])
     const renderTableRow = (testPlanReport, required = 'Yes') => {
-        // console.log(testPlanReport)
         return (
             <tr
                 key={`${testPlanReport.at.name}-${testPlanReport.browser.name}`}
@@ -376,16 +275,9 @@ const TestPlanReportStatusDialog = ({
                         renderTableRow(report)
                     )}
                     {newOthers.map(report => renderTableRow(report, 'No'))}
-                    {/* {console.log('OTHER', otherReports)} */}
                     {unmatchedTestPlanReports.map(report =>
                         renderTableRow(report, 'No')
                     )}
-
-                    {/* {Loop All Combos Even If There Is No Report} */}
-                    {/* {Call renderTableRow With The AT-Browser Combo And The Report If It Exists} */}
-                    {/* {ats.map((at) => {
-                        return 
-                    })} */}
                 </tbody>
             </ThemeTable>
         </>
