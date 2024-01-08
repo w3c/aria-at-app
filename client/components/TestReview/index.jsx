@@ -7,7 +7,6 @@ import { Helmet } from 'react-helmet';
 import PageStatus from '../common/PageStatus';
 import InstructionsRenderer from '../CandidateReview/CandidateTestPlanRun/InstructionsRenderer';
 import FilterButtons from '../common/FilterButtons';
-// import { uniq as unique } from 'lodash';
 import styled from '@emotion/styled';
 import { derivePhaseName } from '../../utils/aria';
 import { convertDateToString } from '../../utils/formatter';
