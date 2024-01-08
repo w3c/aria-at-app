@@ -191,11 +191,12 @@ const TestPlanReportStatusDialog = ({
             if (unmatchedTestPlanReports.length > 0) {
                 unmatchedTestPlanReports.forEach(unmatchedTestPlanReport => {
                     if (
-                        otherReport.at.id === unmatchedTestPlanReport.id &&
+                        otherReport.at.id === unmatchedTestPlanReport.at.id &&
                         otherReport.browser.id ===
                             unmatchedTestPlanReport.browser.id
                     ) {
-                        console.log("IT RAN - 1")
+                        // console.log(otherReport.at.name, otherReport.browser.name)
+                        // console.log(unmatchedTestPlanReport.at.name, unmatchedTestPlanReport.browser.name)
                         // console.log("INDEX", index)
                         delete newOthers[index];
                         // console.log("IT RAN - 2", newOthers)
