@@ -28,7 +28,7 @@ const TestPlanReportStatusDialogButton = styled(Button)`
 
 const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
     const {
-        data: { testPlanVersion } = {},
+        data: { testPlanVersion, ats } = {},
         refetch,
         loading
     } = useQuery(TEST_PLAN_REPORT_STATUS_DIALOG_QUERY, {
@@ -149,6 +149,7 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
                     buttonRef.current.focus();
                 }}
                 triggerUpdate={refetch}
+                ats={ats}
             />
         </>
     );

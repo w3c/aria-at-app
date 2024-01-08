@@ -11,8 +11,10 @@ import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlan
 import { convertDateToString } from '../../utils/formatter';
 import { ThemeTable } from '../common/ThemeTable';
 import BasicModal from '../common/BasicModal';
+import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from './queries';
 
 import './TestPlanReportStatusDialog.css';
+import { at } from 'lodash';
 
 const IncompleteStatusReport = styled.span`
     min-width: 5rem;
@@ -22,6 +24,7 @@ const IncompleteStatusReport = styled.span`
 const TestPlanReportStatusDialog = ({
     testPlanVersion,
     show,
+    ats,
     handleHide = () => {},
     triggerUpdate = () => {}
 }) => {
@@ -39,6 +42,82 @@ const TestPlanReportStatusDialog = ({
         [testPlanVersion]
     );
 
+    // const allRequiredReports = [];
+    // ats.forEach(at => {
+    //     at.browsers.forEach(browser => {
+    //         allRequiredReports.push({
+    //             browser: { name: browser.name, id: browser.id },
+    //             at: { name: at.name, id: at.id }
+    //         });
+    //     });
+    // });
+    // console.log('allRequiredReports', allRequiredReports)
+
+    // section:
+    // Declare array of all reports
+    const allReports = ats
+        .map(at =>
+            at.browsers.map(browser => ({
+                browser: { name: browser.name, id: browser.id },
+                at: { name: at.name, id: at.id }
+            }))
+        )
+        .flat();
+    // console.log('allReports', allReports);
+
+    // Declare array of known required report combinations
+    const requiredReportIds = requiredReports.map(
+        report => `${report.at.id}-${report.browser.id}`
+    );
+    // console.log('requiredReportIds', requiredReportIds)
+    // console.log('requiredReports', requiredReports);
+
+    // Declare other array of reports from allReports which is NOT a known required report combination
+    const newOthers = allReports.filter(report => {
+        return !requiredReportIds.includes(
+            `${report.at.id}-${report.browser.id}`
+        );
+    });
+    // console.log('newOthers', newOthers);
+
+    // let others = [...allRequiredReports];
+    // console.log(allRequiredReports.length)
+    // console.log(requiredReports.length)
+    // useMemo(() => {
+    //     for (let i = 0; i < allRequiredReports.length; i += 1) {
+    //         for (let k = 0; k < requiredReports.length; k += 1) {
+    //             //    if (allRequiredReports[i].at.id === requiredReports[k].at.id && allRequiredReports[i].browser.id === requiredReports[k].browser.id) {
+    //             //     continue
+    //             //    }
+    //             // if (allRequiredReports.includes(requiredReports[k])){
+    //             //     console.log('ITran')
+    //             //     break;
+    //             // }
+    //             if (
+    //                 allRequiredReports[i].at.name ===
+    //                     requiredReports[k].at.name &&
+    //                 allRequiredReports[i].browser.name ===
+    //                     requiredReports[k].browser.name
+    //             ) {
+    //                 // console.log(requiredReports.length)
+    //                 others.splice(
+    //                     allRequiredReports.indexOf(allRequiredReports[i])
+    //                 );
+    //                 // delete others[allRequiredReports.indexOf(allRequiredReports[i])]
+    //             }
+    //             // console.log(others);
+
+    //             // others.push(allRequiredReports[i]);
+    //             // console.log(allRequiredReports[i].at.id !== requiredReports[k].at.id && allRequiredReports[i].browser.id !== requiredReports[k].browser.id)
+    //             // console.log('requiredReports', requiredReports[k])
+    //             // break
+    //         }
+    //         //    break
+    //     }
+    // });
+
+    // let otherReports = [...others];
+    // section:
     const [matchedReports, unmatchedTestPlanReports, unmatchedRequiredReports] =
         useMemo(() => {
             const matched = [];
@@ -53,14 +132,15 @@ const TestPlanReportStatusDialog = ({
                         requiredReports[i].browser.name ===
                             testPlanReports[j].browser.name
                     ) {
-                        if (testPlanReports[j].status === 'DRAFT') {
-                            matched.push({
-                                ...testPlanReports[j],
-                                metrics: getMetrics(testPlanReports[j])
-                            });
-                        } else {
-                            matched.push(testPlanReports[j]);
-                        }
+                        // console.log('stat', testPlanReports[j])
+                        // if (testPlanReports[j].status === 'DRAFT') {
+                        //     matched.push({
+                        //         ...testPlanReports[j],
+                        //         metrics: getMetrics(testPlanReports[j])
+                        //     });
+                        // } else {
+                        // }
+                        matched.push(testPlanReports[j]);
 
                         unmatchedTestPlan.splice(
                             unmatchedTestPlan.indexOf(testPlanReports[j]),
@@ -77,7 +157,100 @@ const TestPlanReportStatusDialog = ({
             return [matched, unmatchedTestPlan, unmatchedRequired];
         }, [testPlanReports, requiredReports]);
 
+    // section:
+    const lastOthers = [...newOthers];
+    if (newOthers.length > 0) {
+        let index = 0;
+        newOthers.forEach(otherReport => {
+            if (matchedReports.length > 0) {
+                matchedReports.forEach(matchedReport => {
+                    if (
+                        otherReport.at.id === matchedReport.id &&
+                        otherReport.browser.id === matchedReport.browser.id
+                    ) {
+                        // console.log("IT RAN - 1", newOthers)
+                        // console.log("INDEX", index)
+                        delete newOthers[index];
+                        // console.log("IT RAN - 2", newOthers)
+                    }
+                });
+            }
+            index += 1;
+        });
+    }
+    // useMemo(() => {
+    //     // console.log('matched', matchedReports)
+    //     // console.log('newOthers', newOthers)
+    //     // console.log('lastOthers', lastOthers)
+    //     // console.log('unRequired', unmatchedRequiredReports)
+    // }, []);
+
+    if (newOthers.length > 0) {
+        let index = 0;
+        newOthers.forEach(otherReport => {
+            if (unmatchedTestPlanReports.length > 0) {
+                unmatchedTestPlanReports.forEach(unmatchedTestPlanReport => {
+                    if (
+                        otherReport.at.id === unmatchedTestPlanReport.id &&
+                        otherReport.browser.id ===
+                            unmatchedTestPlanReport.browser.id
+                    ) {
+                        console.log("IT RAN - 1")
+                        // console.log("INDEX", index)
+                        delete newOthers[index];
+                        // console.log("IT RAN - 2", newOthers)
+                    }
+                });
+            }
+            index += 1;
+        });
+    }
+    useMemo(() => {
+    // console.log('matched', matchedReports)
+    console.log('newOthers', newOthers)
+    console.log('unmatchedTestPlanReports', unmatchedTestPlanReports)
+    // console.log('unRequired', unmatchedRequiredReports)
+    }, [])
+    if (newOthers.length > 0) {
+        let index = 0;
+        newOthers.forEach(otherReport => {
+            if (unmatchedRequiredReports.length > 0) {
+                unmatchedRequiredReports.forEach(unmatchedRequiredReport => {
+                    if (
+                        otherReport.at.id === unmatchedRequiredReport.id &&
+                        otherReport.browser.id ===
+                            unmatchedRequiredReport.browser.id
+                    ) {
+                        newOthers.splice(index, 1);
+                    }
+                });
+            }
+            index += 1;
+        });
+    }
+
+    // useMemo(() => {
+    //     console.log('matched', matchedReports)
+    //     console.log('newOthers', newOthers)
+    //     console.log('unmatchedTestPlanReports', unmatchedTestPlanReports)
+    //     console.log('unRequired', unmatchedRequiredReports)
+    // }, []);
+    // console.log(ats.map((at) => {
+    //    return unmatchedRequiredReports.map((report) => {
+    //     if (at.id === report.at.id ) {
+
+    //     }
+    //     })
+    // }))
+
+    // useMemo(() => {
+    // // console.log('matched', matchedReports)
+    // console.log('newOthers', newOthers)
+    // console.log('lastOthers', lastOthers)
+    // // console.log('unRequired', unmatchedRequiredReports)
+    // }, [])
     const renderTableRow = (testPlanReport, required = 'Yes') => {
+        // console.log(testPlanReport)
         return (
             <tr
                 key={`${testPlanReport.at.name}-${testPlanReport.browser.name}`}
@@ -181,7 +354,7 @@ const TestPlanReportStatusDialog = ({
                             testPlanVersion.phase.slice(1).toLowerCase()}
                     </span>
                     &nbsp;Review phase.&nbsp;
-                    <strong>{requiredReports.length} AT/browser&nbsp;</strong>
+                    {/* <strong>{requiredReports.length} AT/browser&nbsp;</strong> */}
                     pairs require reports in this phase.
                 </p>
             )}
@@ -196,13 +369,22 @@ const TestPlanReportStatusDialog = ({
                     </tr>
                 </thead>
                 <tbody>
+                    {/* section: */}
                     {matchedReports.map(report => renderTableRow(report))}
                     {unmatchedRequiredReports.map(report =>
                         renderTableRow(report)
                     )}
+                    {newOthers.map(report => renderTableRow(report, 'No'))}
+                    {/* {console.log('OTHER', otherReports)} */}
                     {unmatchedTestPlanReports.map(report =>
                         renderTableRow(report, 'No')
                     )}
+
+                    {/* {Loop All Combos Even If There Is No Report} */}
+                    {/* {Call renderTableRow With The AT-Browser Combo And The Report If It Exists} */}
+                    {/* {ats.map((at) => {
+                        return 
+                    })} */}
                 </tbody>
             </ThemeTable>
         </>
