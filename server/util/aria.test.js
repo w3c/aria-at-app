@@ -140,7 +140,6 @@ describe('Verify test hashes are matching as expected - (v2 test format)', () =>
         expect(v2TestHash_1_NVDA).toEqual(v2TestHash_2_NVDA);
     });
 
-    /* eslint-disable */
     it('should ONLY match affected individual tests for AT with updated settings', () => {
         // The difference between them is that there have been updated setting identifiers for VoiceOver tests;
         // quickNavOn -> singleQuickKeyNavOn
@@ -152,28 +151,41 @@ describe('Verify test hashes are matching as expected - (v2 test format)', () =>
             t.at.key === 'voiceover_macos' && t.rawTestId === testId;
 
         // Original VO tests
-        const navForwardsToButtonVO_1 = commandButton_V20231206_V2.find(t => findFn(t, 'navForwardsToButton'));
+        const navForwardsToButtonVO_1 = commandButton_V20231206_V2.find(t =>
+            findFn(t, 'navForwardsToButton')
+        );
         const navForwardsToButtonVOHash_1 = hashTest(navForwardsToButtonVO_1);
 
-        const navBackToButtonVO_1 = commandButton_V20231206_V2.find(t => findFn(t, 'navBackToButton'));
+        const navBackToButtonVO_1 = commandButton_V20231206_V2.find(t =>
+            findFn(t, 'navBackToButton')
+        );
         const navBackToButtonVOHash_1 = hashTest(navBackToButtonVO_1);
 
-        const reqInfoAboutButtonVO_1 = commandButton_V20231206_V2.find(t => findFn(t, 'reqInfoAboutButton'));
+        const reqInfoAboutButtonVO_1 = commandButton_V20231206_V2.find(t =>
+            findFn(t, 'reqInfoAboutButton')
+        );
         const reqInfoAboutButtonVOHash_1 = hashTest(reqInfoAboutButtonVO_1);
 
         // Updated VO tests
-        const navForwardsToButtonVO_2 = commandButton_V20231213_V2.find(t => findFn(t, 'navForwardsToButton'));
+        const navForwardsToButtonVO_2 = commandButton_V20231213_V2.find(t =>
+            findFn(t, 'navForwardsToButton')
+        );
         const navForwardsToButtonVOHash_2 = hashTest(navForwardsToButtonVO_2);
 
-        const navBackToButtonVO_2 = commandButton_V20231213_V2.find(t => findFn(t, 'navBackToButton'));
+        const navBackToButtonVO_2 = commandButton_V20231213_V2.find(t =>
+            findFn(t, 'navBackToButton')
+        );
         const navBackToButtonVOHash_2 = hashTest(navBackToButtonVO_2);
 
-        const reqInfoAboutButtonVO_2 = commandButton_V20231213_V2.find(t => findFn(t, 'reqInfoAboutButton'));
+        const reqInfoAboutButtonVO_2 = commandButton_V20231213_V2.find(t =>
+            findFn(t, 'reqInfoAboutButton')
+        );
         const reqInfoAboutButtonVOHash_2 = hashTest(reqInfoAboutButtonVO_2);
 
-        expect(navForwardsToButtonVOHash_1).not.toEqual(navForwardsToButtonVOHash_2);
+        expect(navForwardsToButtonVOHash_1).not.toEqual(
+            navForwardsToButtonVOHash_2
+        );
         expect(navBackToButtonVOHash_1).not.toEqual(navBackToButtonVOHash_2);
         expect(reqInfoAboutButtonVOHash_1).toEqual(reqInfoAboutButtonVOHash_2);
     });
-    /* eslint-enable */
 });
