@@ -49,11 +49,13 @@ const UnexpectedBehaviorsFieldset = ({
             {isSubmitted && (
                 <Feedback
                     className={`${
-                        unexpectedBehaviors.description[1].required &&
-                        'required'
+                        unexpectedBehaviors.description[1].required
+                            ? 'required'
+                            : ''
                     } ${
-                        unexpectedBehaviors.description[1].highlightRequired &&
-                        'highlight-required'
+                        unexpectedBehaviors.description[1].highlightRequired
+                            ? 'highlight-required'
+                            : ''
                     }`}
                 >
                     {unexpectedBehaviors.description[1].description}
@@ -193,12 +195,14 @@ const UnexpectedBehaviorsFieldset = ({
                                                 <Feedback
                                                     className={`${
                                                         more.description[1]
-                                                            .required &&
-                                                        'required'
+                                                            .required
+                                                            ? 'required'
+                                                            : ''
                                                     } ${
                                                         more.description[1]
-                                                            .highlightRequired &&
-                                                        'highlight-required'
+                                                            .highlightRequired
+                                                            ? 'highlight-required'
+                                                            : ''
                                                     }`}
                                                 >
                                                     {
