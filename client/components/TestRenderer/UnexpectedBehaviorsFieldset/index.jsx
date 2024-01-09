@@ -41,7 +41,7 @@ const UnexpectedBehaviorsFieldset = ({
     unexpectedBehaviors,
     isSubmitted
 }) => {
-    const severityOptions = ['Moderate', 'High'];
+    const impactOptions = ['Moderate', 'High'];
 
     return (
         <Fieldset id={`cmd-${commandIndex}-problems`}>
@@ -112,9 +112,9 @@ const UnexpectedBehaviorsFieldset = ({
                             focus,
                             description,
                             more,
-                            severity,
+                            impact,
                             change,
-                            severitychange
+                            impactchange
                         } = option;
 
                         const descriptionId = description
@@ -143,23 +143,23 @@ const UnexpectedBehaviorsFieldset = ({
                                     {description} behavior occurred
                                 </Label>
 
-                                {/* Severity select */}
+                                {/* Impact select */}
                                 <Label
-                                    key={`${descriptionId}_${commandIndex}__severity`}
+                                    key={`${descriptionId}_${commandIndex}__impact`}
                                     className={!checked ? 'off-screen' : ''}
                                     aria-hidden={!checked}
                                 >
                                     Impact:
                                     <select
                                         onChange={e =>
-                                            severitychange(e.target.value)
+                                            impactchange(e.target.value)
                                         }
                                         disabled={!checked}
-                                        defaultValue={severity}
+                                        defaultValue={impact}
                                     >
-                                        {severityOptions.map(option => (
+                                        {impactOptions.map(option => (
                                             <option
-                                                key={`${descriptionId}-${commandIndex}-severity-${option}`}
+                                                key={`${descriptionId}-${commandIndex}-impact-${option}`}
                                                 value={option.toUpperCase()}
                                             >
                                                 {option}

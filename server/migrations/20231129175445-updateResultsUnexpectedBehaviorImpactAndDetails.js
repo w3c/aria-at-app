@@ -23,17 +23,16 @@ module.exports = {
                                 if (
                                     unexpectedBehavior.otherUnexpectedBehaviorText
                                 )
-                                    unexpectedBehavior.unexpectedBehaviorText =
+                                    unexpectedBehavior.details =
                                         unexpectedBehavior.otherUnexpectedBehaviorText;
 
-                                // Default severity to Moderate
-                                if (!unexpectedBehavior.severity)
-                                    unexpectedBehavior.severity = 'MODERATE';
+                                // Default impact to Moderate
+                                if (!unexpectedBehavior.impact)
+                                    unexpectedBehavior.impact = 'MODERATE';
 
                                 // Default the text to N/A. Text content is required
-                                if (!unexpectedBehavior.unexpectedBehaviorText)
-                                    unexpectedBehavior.unexpectedBehaviorText =
-                                        'N/A';
+                                if (!unexpectedBehavior.details)
+                                    unexpectedBehavior.details = 'N/A';
                             }
                             needsUpdate = true;
                         }

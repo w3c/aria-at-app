@@ -723,7 +723,7 @@ const graphqlSchema = gql`
         OTHER
     }
 
-    enum UnexpectedBehaviorSeverity {
+    enum UnexpectedBehaviorImpact {
         MODERATE
         HIGH
     }
@@ -743,7 +743,7 @@ const graphqlSchema = gql`
         """
         text: String!
         """
-        NOTE: This has been deprecated in favor of unexpectedBehaviorText.
+        NOTE: This has been deprecated in favor of 'details'.
         One of the unexpected behaviors is "other", which means the user must
         provide text explaining what occurred. For all other unexpected
         behaviors this field can be ignored.
@@ -752,11 +752,11 @@ const graphqlSchema = gql`
         """
         The user must provide text explaining what occurred.
         """
-        unexpectedBehaviorText: String!
+        details: String!
         """
         The user must indicate how severe is impact of the behavior.
         """
-        severity: UnexpectedBehaviorSeverity!
+        impact: UnexpectedBehaviorImpact!
     }
 
     """
@@ -774,11 +774,11 @@ const graphqlSchema = gql`
         """
         See UnexpectedBehavior for more information.
         """
-        unexpectedBehaviorText: String!
+        details: String!
         """
         See UnexpectedBehavior for more information.
         """
-        severity: UnexpectedBehaviorSeverity!
+        impact: UnexpectedBehaviorImpact!
     }
 
     """

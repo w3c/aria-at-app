@@ -20,7 +20,7 @@ export const calculateAssertionsCount = testResult => {
         (acc, scenarioResult) =>
             acc +
             (scenarioResult.unexpectedBehaviors.some(
-                e => e.severity === 'HIGH' || e.severity === 'MODERATE'
+                e => e.impact === 'HIGH' || e.impact === 'MODERATE'
             )
                 ? 1
                 : 0),

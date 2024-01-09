@@ -91,18 +91,16 @@ const countUnexpectedBehaviors = ({
     return countScenarioResult(scenarioResult);
 };
 
-const countUnexpectedBehaviorsSeverity = (
+const countUnexpectedBehaviorsImpact = (
     {
         scenarioResult, // Choose one to provide
         testResult, // Choose one to provide
         testPlanReport // Choose one to provide
     },
-    severity
+    impact
 ) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.unexpectedBehaviors.some(
-            e => e.severity === severity
-        )
+        return scenarioResult.unexpectedBehaviors.some(e => e.impact === impact)
             ? 1
             : 0;
     };
@@ -163,11 +161,11 @@ const getMetrics = ({
     // Each of MUST command will get an additional 'Other behaviors that create high negative impact' assertion
     // Each of SHOULD command will get an additional 'Other behaviors that create moderate negative impact' assertion
     const commandsCount = countCommands({ ...result });
-    const highUnexpectedFailedCount = countUnexpectedBehaviorsSeverity(
+    const highUnexpectedFailedCount = countUnexpectedBehaviorsImpact(
         { ...result },
         'HIGH'
     );
-    const moderateUnexpectedFailedCount = countUnexpectedBehaviorsSeverity(
+    const moderateUnexpectedFailedCount = countUnexpectedBehaviorsImpact(
         { ...result },
         'MODERATE'
     );
@@ -206,7 +204,7 @@ const getMetrics = ({
     });
     const testsCount =
         (testPlanReport?.runnableTests?.length || countTests({ ...result })) +
-        commandsCount * 2; // 2 to account for high AND moderate severity changes
+        commandsCount * 2; // 2 to account for high AND moderate impact changes
     const testsFailedCount = testsCount - testsPassedCount;
 
     const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;

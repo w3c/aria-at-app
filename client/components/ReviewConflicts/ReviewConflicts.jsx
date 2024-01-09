@@ -86,8 +86,8 @@ const ReviewConflicts = ({
             let resultFormatted;
             if (scenarioResult.unexpectedBehaviors.length) {
                 resultFormatted = scenarioResult.unexpectedBehaviors
-                    .map(({ text, severity, unexpectedBehaviorText }) => {
-                        return `"${text} (Details: ${unexpectedBehaviorText}, Impact: ${severity})"`;
+                    .map(({ text, impact, details }) => {
+                        return `"${text} (Details: ${details}, Impact: ${impact})"`;
                     })
                     .join(' and ');
             } else {
@@ -155,9 +155,8 @@ ReviewConflicts.propTypes = {
                             unexpectedBehaviors: PropTypes.arrayOf(
                                 PropTypes.shape({
                                     text: PropTypes.string.isRequired,
-                                    severity: PropTypes.string.isRequired,
-                                    unexpectedBehaviorText:
-                                        PropTypes.string.isRequired
+                                    impact: PropTypes.string.isRequired,
+                                    details: PropTypes.string.isRequired
                                 })
                             ).isRequired
                         }),

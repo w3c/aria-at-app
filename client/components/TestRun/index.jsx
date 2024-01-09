@@ -422,8 +422,8 @@ const TestRun = () => {
                     if (behavior.checked) {
                         unexpectedBehaviors.push({
                             id: UnexpectedBehaviorsArray[i],
-                            unexpectedBehaviorText: behavior.more.value,
-                            severity: behavior.severity.toUpperCase(),
+                            details: behavior.more.value,
+                            impact: behavior.impact.toUpperCase(),
                             highlightRequired: captureHighlightRequired
                                 ? behavior.more.highlightRequired
                                 : false
@@ -621,8 +621,8 @@ const TestRun = () => {
          * ..unexpectedBehaviors: [
          * ....{
          * ......id
-         * ......severity
-         * ......unexpectedBehaviorText
+         * ......impact
+         * ......details
          * ....},
          * ....other unexpectedBehaviors,
          * ..]
@@ -633,10 +633,10 @@ const TestRun = () => {
                 id,
                 output: output,
                 unexpectedBehaviors: unexpectedBehaviors.map(
-                    ({ id, severity, unexpectedBehaviorText }) => ({
+                    ({ id, impact, details }) => ({
                         id,
-                        severity,
-                        unexpectedBehaviorText
+                        impact,
+                        details
                     })
                 ),
                 assertionResults: assertionResults.map(({ id, passed }) => ({

@@ -276,21 +276,17 @@ const TestRenderer = ({
                      * 5 = OTHER
                      */
 
-                    const {
-                        id,
-                        unexpectedBehaviorText,
-                        severity,
-                        highlightRequired
-                    } = unexpectedBehaviors[k];
+                    const { id, details, impact, highlightRequired } =
+                        unexpectedBehaviors[k];
 
                     // Capture positional index of unexpected behavior based on id
                     const index = UnexpectedBehaviorsMap[id];
 
                     commands[i].unexpected.behaviors[index].checked = true;
                     commands[i].unexpected.behaviors[index].more.value =
-                        unexpectedBehaviorText;
-                    commands[i].unexpected.behaviors[index].severity =
-                        severity.toUpperCase();
+                        details;
+                    commands[i].unexpected.behaviors[index].impact =
+                        impact.toUpperCase();
                     commands[i].unexpected.behaviors[
                         index
                     ].more.highlightRequired = highlightRequired;

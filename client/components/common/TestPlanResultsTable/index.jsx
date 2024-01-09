@@ -36,12 +36,12 @@ const TestPlanResultsTable = ({
                 const hasNoHighUnexpectedBehavior =
                     !scenarioResult.unexpectedBehaviors.some(
                         unexpectedBehavior =>
-                            unexpectedBehavior.severity === 'HIGH'
+                            unexpectedBehavior.impact === 'HIGH'
                     );
                 const hasNoModerateUnexpectedBehavior =
                     !scenarioResult.unexpectedBehaviors.some(
                         unexpectedBehavior =>
-                            unexpectedBehavior.severity === 'MODERATE'
+                            unexpectedBehavior.impact === 'MODERATE'
                     );
                 const passedAssertionsLength =
                     passedAssertions.length +
@@ -152,13 +152,8 @@ const TestPlanResultsTable = ({
                         {scenarioResult.unexpectedBehaviors.length ? (
                             <ul>
                                 {scenarioResult.unexpectedBehaviors.map(
-                                    ({
-                                        id,
-                                        text,
-                                        severity,
-                                        unexpectedBehaviorText
-                                    }) => {
-                                        const description = `${text} (Details: ${unexpectedBehaviorText}, Impact: ${severity})`;
+                                    ({ id, text, impact, details }) => {
+                                        const description = `${text} (Details: ${details}, Impact: ${impact})`;
                                         return (
                                             <li
                                                 key={id}
