@@ -137,8 +137,8 @@ const UnexpectedBehaviorsFieldset = ({
                                         className={`undesirable-${commandIndex}`}
                                         tabIndex={optionIndex === 0 ? 0 : -1}
                                         autoFocus={isSubmitted && focus}
-                                        defaultChecked={checked}
-                                        onClick={e => change(e.target.checked)}
+                                        checked={checked}
+                                        onChange={e => change(e.target.checked)}
                                     />
                                     {description} behavior occurred
                                 </Label>
