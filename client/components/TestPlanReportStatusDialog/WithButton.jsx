@@ -26,9 +26,9 @@ const TestPlanReportStatusDialogButton = styled(Button)`
     margin-top: auto;
 `;
 
-const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
+const TestPlanReportStatusDialogWithButton = ({ ats, testPlanVersionId }) => {
     const {
-        data: { testPlanVersion, ats } = {},
+        data: { testPlanVersion } = {},
         refetch,
         loading
     } = useQuery(TEST_PLAN_REPORT_STATUS_DIALOG_QUERY, {
@@ -156,6 +156,25 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
 };
 
 TestPlanReportStatusDialogWithButton.propTypes = {
+    ats: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            browsers: PropTypes.arrayOf(
+                PropTypes.shape({ id: PropTypes.string.isRequired }).isRequired
+            ).isRequired,
+            candidateBrowsers: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired
+                }).isRequired
+            ).isRequired,
+            recommendedBrowsers: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired
+                }).isRequired
+            ).isRequired
+        }).isRequired
+    ).isRequired,
     testPlanVersionId: PropTypes.string.isRequired
 };
 

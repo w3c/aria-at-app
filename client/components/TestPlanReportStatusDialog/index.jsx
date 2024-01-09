@@ -40,8 +40,6 @@ const TestPlanReportStatusDialog = ({
         [testPlanVersion]
     );
 
-    // section:
-    // Declare array of all reports
     const allReports = ats
         .map(at =>
             at.browsers.map(browser => ({
@@ -61,7 +59,6 @@ const TestPlanReportStatusDialog = ({
         );
     });
 
-    // section:
     const [matchedReports, unmatchedTestPlanReports, unmatchedRequiredReports] =
         useMemo(() => {
             const matched = [];
@@ -93,7 +90,6 @@ const TestPlanReportStatusDialog = ({
             return [matched, unmatchedTestPlan, unmatchedRequired];
         }, [testPlanReports, requiredReports]);
 
-    // section:
     if (newOthers.length > 0) {
         let index = 0;
         newOthers.forEach(otherReport => {
@@ -109,10 +105,8 @@ const TestPlanReportStatusDialog = ({
             }
             index += 1;
         });
-    }
 
-    if (newOthers.length > 0) {
-        let index = 0;
+        index = 0;
         newOthers.forEach(otherReport => {
             if (unmatchedTestPlanReports.length > 0) {
                 unmatchedTestPlanReports.forEach(unmatchedTestPlanReport => {
@@ -127,10 +121,8 @@ const TestPlanReportStatusDialog = ({
             }
             index += 1;
         });
-    }
 
-    if (newOthers.length > 0) {
-        let index = 0;
+        index = 0;
         newOthers.forEach(otherReport => {
             if (unmatchedRequiredReports.length > 0) {
                 unmatchedRequiredReports.forEach(unmatchedRequiredReport => {
@@ -327,7 +319,25 @@ TestPlanReportStatusDialog.propTypes = {
     handleHide: PropTypes.func.isRequired,
     triggerUpdate: PropTypes.func,
     show: PropTypes.bool.isRequired,
-    ats: PropTypes.array
+    ats: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            browsers: PropTypes.arrayOf(
+                PropTypes.shape({ id: PropTypes.string.isRequired }).isRequired
+            ).isRequired,
+            candidateBrowsers: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired
+                }).isRequired
+            ).isRequired,
+            recommendedBrowsers: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired
+                }).isRequired
+            ).isRequired
+        }).isRequired
+    ).isRequired
 };
 
 export default TestPlanReportStatusDialog;

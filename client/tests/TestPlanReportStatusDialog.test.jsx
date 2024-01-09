@@ -35,9 +35,18 @@ describe('TestPlanReportStatusDialog', () => {
         const show = true;
         const handleHide = jest.fn();
         const testPlanVersion = mockedTestPlanVersion;
+        const [
+            ,
+            {
+                result: {
+                    data: { ats }
+                }
+            }
+        ] = TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA;
+        // console.log('HERE MockData', JSON.stringify(TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA, null, 2));
 
         const result = setup(
-            { testPlanVersion, show, handleHide },
+            { testPlanVersion, show, ats, handleHide },
             TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA
         );
 
