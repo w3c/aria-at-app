@@ -126,14 +126,13 @@ export async function loadCollectedTestAsync(testRoot, testFileName) {
   const collectedTestResponse = await fetch(`${testRoot}/${testFileName}`);
   const collectedTestJson = await collectedTestResponse.json();
 
-  try {
-    // v2 commands.json
-    const commandsJsonResponse = await fetch(`../commands.json`);
+  // v2 commands.json
+  const commandsJsonResponse = await fetch('../commands.json');
+  if (commandsJsonResponse.ok) {
     const commandsJson = await commandsJsonResponse.json();
     testRunIO.setAllCommandsInputFromJSON(commandsJson);
-  } catch (e) {
-    // v2 commands.json isn't available
   }
+
   await testRunIO.setInputsFromCollectedTestAsync(collectedTestJson, testRoot);
   testRunIO.setConfigInputFromQueryParamsAndSupport([
     ['at', collectedTestJson.target.at.key],
@@ -454,73 +453,74 @@ function renderVirtualInstructionDocument(doc) {
             .replace(/[.,]/g, '')
             .replace(/\s+/g, '-');
 
-          return div(
-            className([`problem-option-container ${failOption.checked ? 'enabled' : ''}`]),
-            // Undesirable behavior checkbox
-            div(
-              input(
-                type('checkbox'),
-                value(failOption.description),
-                id(`${failOptionId}-${commandIndex}-checkbox`),
-                className([`undesirable-${commandIndex}`]),
-                tabIndex(failOption.tabbable ? '0' : '-1'),
-                disabled(!failOption.enabled),
-                checked(failOption.checked),
-                focus(failOption.focus),
-                onchange(ev =>
-                  failOption.change(/** @type {HTMLInputElement} */ (ev.currentTarget).checked)
-                ),
-                onkeydown(ev => {
-                  if (failOption.keydown(ev.key)) {
-                    ev.stopPropagation();
-                    ev.preventDefault();
-                  }
-                })
+          const undesirableBehaviorCheckbox = div(
+            input(
+              type('checkbox'),
+              value(failOption.description),
+              id(`${failOptionId}-${commandIndex}-checkbox`),
+              className([`undesirable-${commandIndex}`]),
+              tabIndex(failOption.tabbable ? '0' : '-1'),
+              disabled(!failOption.enabled),
+              checked(failOption.checked),
+              focus(failOption.focus),
+              onchange(ev =>
+                failOption.change(/** @type {HTMLInputElement} */ (ev.currentTarget).checked)
               ),
-              label(
-                id(`${failOptionId}-${commandIndex}-label`),
-                forInput(`${failOptionId}-${commandIndex}-checkbox`),
-                rich(`${failOption.description} behavior occurred`)
-              )
+              onkeydown(ev => {
+                if (failOption.keydown(ev.key)) {
+                  ev.stopPropagation();
+                  ev.preventDefault();
+                }
+              })
             ),
-            // Severity select
-            div(
-              className([!failOption.checked ? 'off-screen' : '']),
-              ariaHidden(!failOption.checked),
-              label(forInput(`${failOptionId}-${commandIndex}-severity`), rich('Impact:')),
-              select(
-                id(`${failOptionId}-${commandIndex}-severity`),
-                ariaLabel(`Impact for ${failOption.description}`),
-                option(UnexpectedBehaviorSeverityMap.MODERATE),
-                option(UnexpectedBehaviorSeverityMap.HIGH),
-                disabled(!failOption.checked),
-                onchange(ev =>
-                  failOption.severitychange(
-                    /** @type {HTMLInputElement} */ (ev.currentTarget).value
-                  )
-                )
-              )
-            ),
-            // Details text input
-            div(
-              className([!failOption.checked ? 'off-screen' : '']),
-              ariaHidden(!failOption.checked),
-              label(
-                forInput(`${failOptionId}-${commandIndex}-details`),
-                rich(failOption.more.description)
-              ),
-              input(
-                type('text'),
-                id(`${failOptionId}-${commandIndex}-details`),
-                ariaLabel(`Details for ${failOption.description}`),
-                className(['undesirable-other-input']),
-                disabled(!failOption.more.enabled),
-                value(failOption.more.value),
-                onchange(ev =>
-                  failOption.more.change(/** @type {HTMLInputElement} */ (ev.currentTarget).value)
-                )
+            label(
+              id(`${failOptionId}-${commandIndex}-label`),
+              forInput(`${failOptionId}-${commandIndex}-checkbox`),
+              rich(`${failOption.description} behavior occurred`)
+            )
+          );
+
+          const severitySelect = div(
+            className([!failOption.checked && 'off-screen']),
+            ariaHidden(!failOption.checked),
+            label(forInput(`${failOptionId}-${commandIndex}-severity`), rich('Impact:')),
+            select(
+              id(`${failOptionId}-${commandIndex}-severity`),
+              ariaLabel(`Impact for ${failOption.description}`),
+              option(UnexpectedBehaviorSeverityMap.MODERATE),
+              option(UnexpectedBehaviorSeverityMap.HIGH),
+              disabled(!failOption.checked),
+              onchange(ev =>
+                failOption.severitychange(/** @type {HTMLInputElement} */ (ev.currentTarget).value)
               )
             )
+          );
+
+          const detailsTextInput = div(
+            className([!failOption.checked && 'off-screen']),
+            ariaHidden(!failOption.checked),
+            label(
+              forInput(`${failOptionId}-${commandIndex}-details`),
+              rich(failOption.more.description)
+            ),
+            input(
+              type('text'),
+              id(`${failOptionId}-${commandIndex}-details`),
+              ariaLabel(`Details for ${failOption.description}`),
+              className(['undesirable-other-input']),
+              disabled(!failOption.more.enabled),
+              value(failOption.more.value),
+              onchange(ev =>
+                failOption.more.change(/** @type {HTMLInputElement} */ (ev.currentTarget).value)
+              )
+            )
+          );
+
+          return div(
+            className(['problem-option-container', failOption.checked && 'enabled']),
+            undesirableBehaviorCheckbox,
+            severitySelect,
+            detailsTextInput
           );
         })
       )
