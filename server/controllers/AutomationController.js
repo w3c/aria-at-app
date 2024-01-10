@@ -23,8 +23,8 @@ const {
     getFinalizedTestResults
 } = require('../models/services/TestResultReadService');
 const http = require('http');
-const testsResolver = require('../resolvers/TestPlanVersion/testsResolver');
 const { NO_OUTPUT_STRING } = require('../util/constants');
+const getTests = require('../models/services/TestsService');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -141,7 +141,7 @@ const updateOrCreateTestResultWithResponses = async ({
     atVersionId,
     browserVersionId
 }) => {
-    const allTestsForTestPlanVersion = await testsResolver(
+    const allTestsForTestPlanVersion = await getTests(
         testPlanRun.testPlanReport.testPlanVersion
     );
     const testId = allTestsForTestPlanVersion.find(
