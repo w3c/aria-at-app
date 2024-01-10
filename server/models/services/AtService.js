@@ -7,6 +7,7 @@ const {
     BROWSER_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, At, AtVersion, AtMode } = require('../');
+const { clearCachedAts } = require('../loaders/utils');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -202,6 +203,7 @@ const updateAt = async (
  * @returns {Promise<boolean>}
  */
 const removeAt = async (id, deleteOptions = { truncate: false }) => {
+    clearCachedAts();
     return await ModelService.removeById(At, id, deleteOptions);
 };
 
@@ -307,7 +309,7 @@ const createAtVersion = async (
     options = {}
 ) => {
     await ModelService.create(AtVersion, { atId, name, releasedAt }, options);
-
+    clearCachedAts();
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getByQuery(
         AtVersion,
@@ -339,7 +341,7 @@ const updateAtVersionByQuery = async (
         { atId, name, releasedAt },
         updateParams
     );
-
+    clearCachedAts();
     return await ModelService.getByQuery(
         AtVersion,
         { atId, name: updateParams.name || name, releasedAt },
@@ -366,7 +368,7 @@ const updateAtVersionById = async (
     options = {}
 ) => {
     await ModelService.update(AtVersion, { id }, updateParams);
-
+    clearCachedAts();
     return await ModelService.getById(
         AtVersion,
         id,
@@ -385,6 +387,7 @@ const removeAtVersionByQuery = async (
     { atId, name, releasedAt },
     deleteOptions = { truncate: false }
 ) => {
+    clearCachedAts();
     return await ModelService.removeByQuery(
         AtVersion,
         { atId, name, releasedAt },
@@ -398,6 +401,7 @@ const removeAtVersionByQuery = async (
  * @returns {Promise<boolean>}
  */
 const removeAtVersionById = async (id, deleteOptions = { truncate: false }) => {
+    clearCachedAts();
     return await ModelService.removeById(AtVersion, id, deleteOptions);
 };
 

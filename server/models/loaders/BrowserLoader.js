@@ -35,6 +35,10 @@ const BrowserLoader = () => {
             }));
 
             return browsers;
+        },
+        clearCache: () => {
+            browsers = null;
+            activePromise = null;
         }
     };
     return singletonInstance;

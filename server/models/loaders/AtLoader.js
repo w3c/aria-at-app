@@ -39,6 +39,10 @@ const AtLoader = () => {
             }));
 
             return ats;
+        },
+        clearCache: () => {
+            ats = null;
+            activePromise = null;
         }
     };
 
