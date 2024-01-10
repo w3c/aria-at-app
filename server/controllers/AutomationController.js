@@ -145,9 +145,13 @@ const updateOrCreateTestResultWithResponses = async ({
         testPlanRun.testPlanReport.testPlanVersion
     );
 
+    const isV2 =
+        testPlanRun.testPlanReport.testPlanVersion.metadata
+            .testFormatVersion === 2;
+
     const testId = allTestsForTestPlanVersion.find(
         test =>
-            test.at?.name === 'NVDA' &&
+            (!isV2 || test.at?.name === 'NVDA') &&
             parseInt(test.rowNumber, 10) === testRowIdentifier
     )?.id;
 
