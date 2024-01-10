@@ -11,8 +11,7 @@ const { hashTests } = require('../util/aria');
 module.exports = {
     async up(queryInterface, Sequelize) {
         /**
-         * Compute TestPlanVersion.hashedTests and return the unique TestPlanVersions found for each
-         * hash
+         * Recompute TestPlanVersion.hashedTests
          * @param transaction - The Sequelize.Transaction object.
          * See {@https://sequelize.org/api/v6/class/src/sequelize.js~sequelize#instance-method-transaction}
          * @returns {Promise<{testPlanVersionsByHashedTests: {}}>}
