@@ -144,8 +144,11 @@ const updateOrCreateTestResultWithResponses = async ({
     const allTestsForTestPlanVersion = await getTests(
         testPlanRun.testPlanReport.testPlanVersion
     );
+
     const testId = allTestsForTestPlanVersion.find(
-        test => parseInt(test.rowNumber, 10) === testRowIdentifier
+        test =>
+            test.at?.name === 'NVDA' &&
+            parseInt(test.rowNumber, 10) === testRowIdentifier
     )?.id;
 
     if (testId === undefined) {

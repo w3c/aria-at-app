@@ -38,7 +38,8 @@ const setupMockAutomationSchedulerServer = async () => {
         atVersionName,
         browserVersionName,
         jobId,
-        currentTestIndex
+        currentTestIndex,
+        isV2
     ) => {
         const currentTest = tests[currentTestIndex];
         const { scenarios, assertions } = currentTest;
@@ -49,12 +50,15 @@ const setupMockAutomationSchedulerServer = async () => {
                 responses.push('Local development simulated output');
             });
         });
+
         const testResult = {
-            testCsvRow: currentTest.rowNumber,
             atVersionName,
             browserVersionName,
             responses
         };
+
+        testResult[isV2 ? 'presentationNumber' : 'testCsvRow'] =
+            currentTest.rowNumber;
         try {
             await axios.post(
                 `${process.env.APP_SERVER}/api/jobs/${jobId}/result`,
@@ -73,7 +77,8 @@ const setupMockAutomationSchedulerServer = async () => {
                     atVersionName,
                     browserVersionName,
                     jobId,
-                    currentTestIndex + 1
+                    currentTestIndex + 1,
+                    isV2
                 );
             }, Math.random() * 5000);
         } else {
@@ -104,6 +109,7 @@ const setupMockAutomationSchedulerServer = async () => {
                     testPlanVersions {
                         id
                         gitSha
+                        metadata
                         testPlan {
                             id
                         }
@@ -152,6 +158,8 @@ const setupMockAutomationSchedulerServer = async () => {
             const atVersionName = testPlanReport.at.atVersions[0].name;
             const { runnableTests } = testPlanReport;
 
+            const isV2 = testPlanVersion.metadata?.testFormatVersion === 2;
+
             setTimeout(
                 () =>
                     simulateJobStatusUpdate(
@@ -168,7 +176,8 @@ const setupMockAutomationSchedulerServer = async () => {
                         atVersionName,
                         browserVersionName,
                         jobId,
-                        0
+                        0,
+                        isV2
                     ),
                 3000
             );
