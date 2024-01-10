@@ -18,16 +18,19 @@ import {
     TEST_QUEUE_PAGE_ADMIN_POPULATED_MOCK_DATA,
     TEST_QUEUE_PAGE_TESTER_POPULATED_MOCK_DATA
 } from './__mocks__/GraphQLMocks';
+import { AriaLiveRegionProvider } from '../components/providers/AriaLiveRegionProvider';
 
 const setup = (mocks = []) => {
     return render(
         <BrowserRouter>
-            <MockedProvider
-                mocks={mocks}
-                cache={new InMemoryCache({ addTypename: false })}
-            >
-                <TestQueue />
-            </MockedProvider>
+            <AriaLiveRegionProvider>
+                <MockedProvider
+                    mocks={mocks}
+                    cache={new InMemoryCache({ addTypename: false })}
+                >
+                    <TestQueue />
+                </MockedProvider>
+            </AriaLiveRegionProvider>
         </BrowserRouter>
     );
 };

@@ -26,16 +26,19 @@ import {
     DATA_MANAGEMENT_TABLE_SORT_OPTIONS
 } from '../components/DataManagement/utils';
 import { TABLE_SORT_ORDERS } from '../components/common/SortableTableHeader';
+import { AriaLiveRegionProvider } from '../components/providers/AriaLiveRegionProvider';
 
 const setup = (mocks = []) => {
     return render(
         <BrowserRouter>
-            <MockedProvider
-                mocks={mocks}
-                cache={new InMemoryCache({ addTypename: false })}
-            >
-                <DataManagement />
-            </MockedProvider>
+            <AriaLiveRegionProvider>
+                <MockedProvider
+                    mocks={mocks}
+                    cache={new InMemoryCache({ addTypename: false })}
+                >
+                    <DataManagement />
+                </MockedProvider>
+            </AriaLiveRegionProvider>
         </BrowserRouter>
     );
 };
