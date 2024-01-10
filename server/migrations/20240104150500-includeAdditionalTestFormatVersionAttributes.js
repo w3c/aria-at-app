@@ -14,7 +14,7 @@ module.exports = {
          * Recompute TestPlanVersion.hashedTests
          * @param transaction - The Sequelize.Transaction object.
          * See {@https://sequelize.org/api/v6/class/src/sequelize.js~sequelize#instance-method-transaction}
-         * @returns {Promise<{testPlanVersionsByHashedTests: {}}>}
+         * @returns {Promise<void>}
          */
         const computeTestPlanVersionHashedTests = async transaction => {
             const results = await queryInterface.sequelize.query(
