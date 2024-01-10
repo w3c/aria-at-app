@@ -43,10 +43,10 @@ const throwNoJobFoundError = jobId => {
     );
 };
 
-const throwNoTestFoundError = testCsvRow => {
+const throwNoTestFoundError = rowNumber => {
     throw new HttpQueryError(
         404,
-        `Could not find test at CSV row number ${testCsvRow}`,
+        `Could not find test at row number ${rowNumber}`,
         true
     );
 };
@@ -135,7 +135,7 @@ const getApprovedFinalizedTestResults = async testPlanRun => {
 };
 
 const updateOrCreateTestResultWithResponses = async ({
-    testCsvRow,
+    testRowIdentifier,
     testPlanRun,
     responses,
     atVersionId,
@@ -145,11 +145,11 @@ const updateOrCreateTestResultWithResponses = async ({
         testPlanRun.testPlanReport.testPlanVersion
     );
     const testId = allTestsForTestPlanVersion.find(
-        test => parseInt(test.rowNumber, 10) === testCsvRow
+        test => parseInt(test.rowNumber, 10) === testRowIdentifier
     )?.id;
 
     if (testId === undefined) {
-        throwNoTestFoundError(testCsvRow);
+        throwNoTestFoundError(testRowIdentifier);
     }
 
     const { testResult } = await findOrCreateTestResult({
@@ -226,8 +226,13 @@ const updateOrCreateTestResultWithResponses = async ({
 
 const updateJobResults = async (req, res) => {
     const id = req.params.jobID;
-    const { testId, testCsvRow, responses, atVersionName, browserVersionName } =
-        req.body;
+    const {
+        testCsvRow,
+        presentationNumber,
+        responses,
+        atVersionName,
+        browserVersionName
+    } = req.body;
     const job = await getCollectionJobById(id);
     if (!job) {
         throwNoJobFoundError(id);
@@ -256,9 +261,11 @@ const updateJobResults = async (req, res) => {
 
     const processedResponses = convertEmptyStringsToNoOutputMessages(responses);
 
+    // v1 tests store testCsvRow in rowNumber, v2 tests store presentationNumber in rowNumber
+    const testRowIdentifier = presentationNumber ?? testCsvRow;
+
     await updateOrCreateTestResultWithResponses({
-        testId,
-        testCsvRow,
+        testRowIdentifier,
         responses: processedResponses,
         testPlanRun: job.testPlanRun,
         atVersionId: atVersion.id,
