@@ -18,11 +18,6 @@ const {
     createTestPlanRun,
     removeTestPlanRun
 } = require('./TestPlanRunService');
-const {
-    createUser,
-    getUserByUsername,
-    addUserToRole
-} = require('./UserService');
 const responseCollectionUser = require('../../util/responseCollectionUser');
 const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
@@ -106,26 +101,8 @@ const createCollectionJob = async (
     options
 ) => {
     if (!testPlanRun) {
-        let user = await getUserByUsername(responseCollectionUser.username);
-        if (!user) {
-            const roles = [{ name: User.TESTER }];
-            user = await createUser(
-                responseCollectionUser,
-                { roles },
-                undefined,
-                undefined,
-                [],
-                []
-            );
-        }
-
-        const { id: botUserId, roles } = user.get({ plain: true });
-        if (!roles.find(role => role.name === User.TESTER)) {
-            await addUserToRole(botUserId, User.TESTER);
-        }
-
         testPlanRun = await createTestPlanRun({
-            testerUserId: botUserId,
+            testerUserId: responseCollectionUser.id,
             testPlanReportId: testPlanReportId,
             isAutomated: true
         });
