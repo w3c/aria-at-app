@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { AriaLiveRegionProvider } from './components/providers/AriaLiveRegionProvider';
 // Order matters for the following two imports
 import '../node_modules/bootstrap/dist/css/bootstrap.css';
 import App from './components/App';
@@ -31,8 +32,10 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
     <ApolloProvider client={client}>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+        <AriaLiveRegionProvider>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </AriaLiveRegionProvider>
     </ApolloProvider>
 );

@@ -112,6 +112,6 @@ button.more-actions:active {
 } */
 
 [role='menu'].assign-menu {
-    height: 200px;
+    max-height: 200px;
     overflow-y: scroll;
 }
