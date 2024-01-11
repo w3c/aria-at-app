@@ -168,8 +168,7 @@ const InstructionsRenderer = ({
     return (
         <>
             <NumberedList>{allInstructionsContent}</NumberedList>
-            <Heading>{pageContent.instructions.assertions.header}</Heading>
-            {pageContent.instructions.assertions.description}
+            <Heading>Assertions</Heading>
             <NumberedList>{assertionsContent}</NumberedList>
             <Button
                 disabled={!pageContent.instructions.openTestPage.enabled}
