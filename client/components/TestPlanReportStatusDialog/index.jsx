@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { getRequiredReports } from './isRequired';
+// import { getRequiredReports } from './isRequired';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
@@ -34,174 +34,6 @@ const TestPlanReportStatusDialog = ({
 
     const auth = evaluateAuth(me ?? {});
     const { isSignedIn, isAdmin } = auth;
-
-    // console.log('ats', ats)
-    console.log('testPlanReports', testPlanReports);
-    const tableRows = [];
-    ats.forEach(at => {
-        at.browsers.forEach(browser => {
-            const report = testPlanReports.find(eachReport => {
-                return (
-                    eachReport.at.id === at.id &&
-                    eachReport.browser.id === browser.id
-                );
-            });
-            let isRequired;
-            if (testPlanVersion.phase === 'CANDIDATE') {
-                isRequired = at.candidateBrowsers.some(candidateBrowser => {
-                    return candidateBrowser.id === browser.id;
-                });
-            } else if (testPlanVersion.phase === 'RECOMMENDED') {
-                isRequired = at.recommendedBrowsers.some(recommendedBrowser => {
-                    return recommendedBrowser.id === browser.id;
-                });
-            } else {
-                isRequired = false;
-            }
-            tableRows.push(
-                <tr key={`${at.name}-${browser.name}`}>
-                    <td>{isRequired ? 'Yes' : 'No'}</td>
-                    <td>{at.name}</td>
-                    <td>{browser.name}</td>
-                    <td></td>
-                    {/* <td>{renderReportStatus(report)}</td> */}
-                </tr>
-            );
-        });
-    });
-    /*
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-*/
-    const requiredReports = useMemo(
-        () => getRequiredReports(testPlanVersion?.phase),
-        [testPlanVersion]
-    );
-
-    const allReports = ats
-        .map(at =>
-            at.browsers.map(browser => ({
-                browser: { name: browser.name, id: browser.id },
-                at: { name: at.name, id: at.id }
-            }))
-        )
-        .flat();
-
-    const requiredReportIds = requiredReports.map(
-        report => `${report.at.id}-${report.browser.id}`
-    );
-
-    const newOthers = allReports.filter(report => {
-        return !requiredReportIds.includes(
-            `${report.at.id}-${report.browser.id}`
-        );
-    });
-
-    const [matchedReports, unmatchedTestPlanReports, unmatchedRequiredReports] =
-        useMemo(() => {
-            const matched = [];
-            const unmatchedTestPlan = [...testPlanReports];
-            const unmatchedRequired = [...requiredReports];
-
-            for (let i = 0; i < requiredReports.length; i++) {
-                for (let j = 0; j < testPlanReports.length; j++) {
-                    if (
-                        requiredReports[i].at.name ===
-                            testPlanReports[j].at.name &&
-                        requiredReports[i].browser.name ===
-                            testPlanReports[j].browser.name
-                    ) {
-                        matched.push(testPlanReports[j]);
-
-                        unmatchedTestPlan.splice(
-                            unmatchedTestPlan.indexOf(testPlanReports[j]),
-                            1
-                        );
-                        unmatchedRequired.splice(
-                            unmatchedRequired.indexOf(requiredReports[i]),
-                            1
-                        );
-                        break;
-                    }
-                }
-            }
-            return [matched, unmatchedTestPlan, unmatchedRequired];
-        }, [testPlanReports, requiredReports]);
-
-    if (newOthers.length > 0) {
-        let index = 0;
-        newOthers.forEach(otherReport => {
-            if (matchedReports.length > 0) {
-                matchedReports.forEach(matchedReport => {
-                    if (
-                        otherReport.at.id === matchedReport.id &&
-                        otherReport.browser.id === matchedReport.browser.id
-                    ) {
-                        delete newOthers[index];
-                    }
-                });
-            }
-            index += 1;
-        });
-
-        index = 0;
-        newOthers.forEach(otherReport => {
-            if (unmatchedTestPlanReports.length > 0) {
-                unmatchedTestPlanReports.forEach(unmatchedTestPlanReport => {
-                    if (
-                        otherReport.at.id === unmatchedTestPlanReport.at.id &&
-                        otherReport.browser.id ===
-                            unmatchedTestPlanReport.browser.id
-                    ) {
-                        delete newOthers[index];
-                    }
-                });
-            }
-            index += 1;
-        });
-
-        index = 0;
-        newOthers.forEach(otherReport => {
-            if (unmatchedRequiredReports.length > 0) {
-                unmatchedRequiredReports.forEach(unmatchedRequiredReport => {
-                    if (
-                        otherReport.at.id === unmatchedRequiredReport.id &&
-                        otherReport.browser.id ===
-                            unmatchedRequiredReport.browser.id
-                    ) {
-                        newOthers.splice(index, 1);
-                    }
-                });
-            }
-            index += 1;
-        });
-    }
-
-    const renderTableRow = (testPlanReport, required = 'Yes') => {
-        return (
-            <tr
-                key={`${testPlanReport.at.name}-${testPlanReport.browser.name}`}
-            >
-                <td>{required}</td>
-                <td>{testPlanReport.at.name}</td>
-                <td>{testPlanReport.browser.name}</td>
-                <td>{renderReportStatus(testPlanReport)}</td>
-            </tr>
-        );
-    };
 
     const renderCompleteReportStatus = testPlanReport => {
         const formattedDate = convertDateToString(
@@ -248,34 +80,75 @@ const TestPlanReportStatusDialog = ({
         }
     };
 
-    const renderReportStatus = testPlanReport => {
-        const { metrics, at, browser, markedFinalAt } = testPlanReport;
-        const { phase } = testPlanVersion;
-        if (metrics) {
+    const renderReportStatus = ({ report, at, browser }) => {
+        if (report) {
+            const { markedFinalAt } = report;
+            const { phase } = testPlanVersion;
             if (
                 markedFinalAt &&
                 (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
             ) {
-                return renderCompleteReportStatus(testPlanReport);
+                return renderCompleteReportStatus(report);
             } else {
-                return renderPartialCompleteReportStatus(testPlanReport);
+                return renderPartialCompleteReportStatus(report);
             }
-        } else {
-            return (
-                <>
-                    <IncompleteStatusReport>Missing</IncompleteStatusReport>
-                    {isSignedIn && isAdmin ? (
-                        <AddTestToQueueWithConfirmation
-                            at={at}
-                            browser={browser}
-                            testPlanVersion={testPlanVersion}
-                            triggerUpdate={triggerUpdate}
-                        />
-                    ) : null}
-                </>
-            );
         }
+        return (
+            <>
+                <IncompleteStatusReport>Missing</IncompleteStatusReport>
+                {isSignedIn && isAdmin ? (
+                    <AddTestToQueueWithConfirmation
+                        at={at}
+                        browser={browser}
+                        testPlanVersion={testPlanVersion}
+                        triggerUpdate={triggerUpdate}
+                    />
+                ) : null}
+            </>
+        );
     };
+
+    // console.log('ats', ats)
+    const rowData = [];
+    ats.forEach(at => {
+        at.browsers.forEach(browser => {
+            const report = testPlanReports.find(eachReport => {
+                return (
+                    eachReport.at.id === at.id &&
+                    eachReport.browser.id === browser.id
+                );
+            });
+            let isRequired;
+            if (testPlanVersion.phase === 'CANDIDATE') {
+                isRequired = at.candidateBrowsers.some(candidateBrowser => {
+                    return candidateBrowser.id === browser.id;
+                });
+            } else if (testPlanVersion.phase === 'RECOMMENDED') {
+                isRequired = at.recommendedBrowsers.some(recommendedBrowser => {
+                    return recommendedBrowser.id === browser.id;
+                });
+            } else {
+                isRequired = false;
+            }
+            rowData.push({ report, at, browser, isRequired });
+        });
+    });
+    // Sort by required then AT then browser
+    rowData.sort((a, b) => {
+        if (a.isRequired !== b.isRequired) return a.isRequired ? -1 : 1;
+        if (a.at.name !== b.at.name) return a.at.name.localeCompare(b.at.name);
+        return a.browser.name.localeCompare(b.browser.name);
+    });
+    const tableRows = rowData.map(({ report, at, browser, isRequired }) => {
+        return (
+            <tr key={`${at.name}-${browser.name}`}>
+                <td>{isRequired ? 'Yes' : 'No'}</td>
+                <td>{at.name}</td>
+                <td>{browser.name}</td>
+                <td>{renderReportStatus({ report, at, browser })}</td>
+            </tr>
+        );
+    });
 
     const getContent = () => (
         <>
