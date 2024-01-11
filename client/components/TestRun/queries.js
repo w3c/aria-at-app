@@ -60,7 +60,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     unexpectedBehaviors {
                         id
                         text
-                        otherUnexpectedBehaviorText
+                        impact
+                        details
                     }
                 }
                 atVersion {
@@ -103,7 +104,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
                             output
                             unexpectedBehaviors {
                                 text
-                                otherUnexpectedBehaviorText
+                                impact
+                                details
                             }
                         }
                         assertionResult {
@@ -213,7 +215,8 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                         output
                         unexpectedBehaviors {
                             text
-                            otherUnexpectedBehaviorText
+                            impact
+                            details
                         }
                     }
                     assertionResult {
@@ -355,7 +358,8 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             unexpectedBehaviors {
                                 id
                                 text
-                                otherUnexpectedBehaviorText
+                                impact
+                                details
                             }
                         }
                         atVersion {
@@ -398,7 +402,8 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                     output
                                     unexpectedBehaviors {
                                         text
-                                        otherUnexpectedBehaviorText
+                                        impact
+                                        details
                                     }
                                 }
                                 assertionResult {
@@ -494,7 +499,8 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 output
                                 unexpectedBehaviors {
                                     text
-                                    otherUnexpectedBehaviorText
+                                    impact
+                                    details
                                 }
                             }
                             assertionResult {
@@ -639,7 +645,8 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             unexpectedBehaviors {
                                 id
                                 text
-                                otherUnexpectedBehaviorText
+                                impact
+                                details
                             }
                         }
                         atVersion {
@@ -682,7 +689,8 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                     output
                                     unexpectedBehaviors {
                                         text
-                                        otherUnexpectedBehaviorText
+                                        impact
+                                        details
                                     }
                                 }
                                 assertionResult {
@@ -778,7 +786,8 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 output
                                 unexpectedBehaviors {
                                     text
-                                    otherUnexpectedBehaviorText
+                                    impact
+                                    details
                                 }
                             }
                             assertionResult {
@@ -923,7 +932,8 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             unexpectedBehaviors {
                                 id
                                 text
-                                otherUnexpectedBehaviorText
+                                impact
+                                details
                             }
                         }
                         atVersion {
@@ -966,7 +976,8 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                     output
                                     unexpectedBehaviors {
                                         text
-                                        otherUnexpectedBehaviorText
+                                        impact
+                                        details
                                     }
                                 }
                                 assertionResult {
@@ -1062,7 +1073,8 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 output
                                 unexpectedBehaviors {
                                     text
-                                    otherUnexpectedBehaviorText
+                                    impact
+                                    details
                                 }
                             }
                             assertionResult {

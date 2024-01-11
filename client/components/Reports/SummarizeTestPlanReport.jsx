@@ -307,8 +307,8 @@ SummarizeTestPlanReport.propTypes = {
                                 PropTypes.shape({
                                     id: PropTypes.string.isRequired,
                                     text: PropTypes.string.isRequired,
-                                    otherUnexpectedBehaviorText:
-                                        PropTypes.string
+                                    impact: PropTypes.string.isRequired,
+                                    details: PropTypes.string.isRequired
                                 }).isRequired
                             ).isRequired
                         }).isRequired
