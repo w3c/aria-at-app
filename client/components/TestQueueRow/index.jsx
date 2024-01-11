@@ -19,7 +19,6 @@ import {
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
 } from '../TestQueue/queries';
-import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
@@ -60,14 +59,11 @@ const TestQueueRow = ({
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
     const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
 
-    const [showTestPlanUpdaterModal, setShowTestPlanUpdaterModal] =
-        useState(false);
     const [testPlanReport, setTestPlanReport] = useState(testPlanReportData);
     const [isLoading, setIsLoading] = useState(false);
 
     const { id, isAdmin, isTester, isVendor, username } = user;
     const {
-        id: testPlanReportId,
         testPlanVersion,
         draftTestPlanRuns,
         runnableTestsLength = 0
@@ -609,14 +605,7 @@ const TestQueueRow = ({
                     )}
                 </td>
             </tr>
-            {showTestPlanUpdaterModal && (
-                <TestPlanUpdaterModal
-                    show={showTestPlanUpdaterModal}
-                    handleClose={() => setShowTestPlanUpdaterModal(false)}
-                    testPlanReportId={testPlanReportId}
-                    triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
-                />
-            )}
+
             {showThemedModal && (
                 <BasicThemedModal
                     show={showThemedModal}
