@@ -53,7 +53,8 @@ Default use:
 const client = new Client();
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-const ariaAtDefaultBranch = 'master';
+// const ariaAtDefaultBranch = 'master';
+const ariaAtDefaultBranch = 'collection-0-priority-support-test'; // TODO: Remove before merging
 const gitCloneDirectory = path.resolve(__dirname, 'tmp');
 const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
@@ -465,6 +466,33 @@ const getTests = ({
                         tokenizedAssertionStatement ||
                         assertion.assertionStatement;
                     result.assertionPhrase = assertion.assertionPhrase;
+                    result.assertionExceptions = data.commands.flatMap(
+                        command => {
+                            return command.assertionExceptions
+                                .filter(
+                                    exception =>
+                                        exception.assertionId ===
+                                        assertion.assertionId
+                                )
+                                .map(({ priority: assertionPriority }) => {
+                                    let priority = '';
+                                    if (assertionPriority === 0)
+                                        priority = 'EXCLUDE';
+                                    if (assertionPriority === 1)
+                                        priority = 'MUST';
+                                    if (assertionPriority === 2)
+                                        priority = 'SHOULD';
+                                    if (assertionPriority === 3)
+                                        priority = 'MAY';
+
+                                    return {
+                                        priority,
+                                        commandId: command.id,
+                                        settings: command.settings
+                                    };
+                                });
+                        }
+                    );
                 }
 
                 return result;

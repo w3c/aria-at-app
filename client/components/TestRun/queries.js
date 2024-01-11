@@ -528,6 +528,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                         id
                         title
                         phase
+                        updatedAt
                         gitSha
                         testPageUrl
                         testPlan {
@@ -815,6 +816,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                         id
                         title
                         phase
+                        updatedAt
                         gitSha
                         testPageUrl
                         testPlan {
@@ -1102,6 +1104,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                         id
                         title
                         phase
+                        updatedAt
                         gitSha
                         testPageUrl
                         testPlan {
