@@ -28,6 +28,7 @@ module.exports = {
                 testPlanVersionCount / testPlanVersionBatchSize
             );
 
+            const knownHashedTests = [];
             for (let i = 0; i < iterationsNeeded; i += 1) {
                 const multipleOf100 = i % testPlanVersionBatchSize === 0;
                 if (multipleOf100)
@@ -52,13 +53,28 @@ module.exports = {
                     testPlanVersions.map(async testPlanVersion => {
                         const hashedTests = hashTests(testPlanVersion.tests);
 
-                        await queryInterface.sequelize.query(
-                            `UPDATE "TestPlanVersion" SET "hashedTests" = ? WHERE id = ?`,
-                            {
-                                replacements: [hashedTests, testPlanVersion.id],
-                                transaction
-                            }
-                        );
+                        if (!knownHashedTests.includes(hashedTests)) {
+                            knownHashedTests.push(hashedTests);
+                            await queryInterface.sequelize.query(
+                                `UPDATE "TestPlanVersion" SET "hashedTests" = ? WHERE id = ?`,
+                                {
+                                    replacements: [
+                                        hashedTests,
+                                        testPlanVersion.id
+                                    ],
+                                    transaction
+                                }
+                            );
+                        } else {
+                            // Remove any accidentally created TestPlanVersion rows
+                            await queryInterface.sequelize.query(
+                                `DELETE FROM "TestPlanVersion" WHERE id = ?`,
+                                {
+                                    replacements: [testPlanVersion.id],
+                                    transaction
+                                }
+                            );
+                        }
                     })
                 );
             }
