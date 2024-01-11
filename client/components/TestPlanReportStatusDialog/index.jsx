@@ -35,6 +35,57 @@ const TestPlanReportStatusDialog = ({
     const auth = evaluateAuth(me ?? {});
     const { isSignedIn, isAdmin } = auth;
 
+    // console.log('ats', ats)
+    console.log('testPlanReports', testPlanReports);
+    const tableRows = [];
+    ats.forEach(at => {
+        at.browsers.forEach(browser => {
+            const report = testPlanReports.find(eachReport => {
+                return (
+                    eachReport.at.id === at.id &&
+                    eachReport.browser.id === browser.id
+                );
+            });
+            let isRequired;
+            if (testPlanVersion.phase === 'CANDIDATE') {
+                isRequired = at.candidateBrowsers.some(candidateBrowser => {
+                    return candidateBrowser.id === browser.id;
+                });
+            } else if (testPlanVersion.phase === 'RECOMMENDED') {
+                isRequired = at.recommendedBrowsers.some(recommendedBrowser => {
+                    return recommendedBrowser.id === browser.id;
+                });
+            } else {
+                isRequired = false;
+            }
+            tableRows.push(
+                <tr key={`${at.name}-${browser.name}`}>
+                    <td>{isRequired ? 'Yes' : 'No'}</td>
+                    <td>{at.name}</td>
+                    <td>{browser.name}</td>
+                    <td></td>
+                    {/* <td>{renderReportStatus(report)}</td> */}
+                </tr>
+            );
+        });
+    });
+    /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
     const requiredReports = useMemo(
         () => getRequiredReports(testPlanVersion?.phase),
         [testPlanVersion]
@@ -259,7 +310,7 @@ const TestPlanReportStatusDialog = ({
                 </thead>
                 <tbody>
                     {/* section: */}
-                    {matchedReports.map(report => renderTableRow(report))}
+                    {/* {matchedReports.map(report => renderTableRow(report))}
                     {unmatchedRequiredReports.map(report =>
                         renderTableRow(report)
                     )}
@@ -267,6 +318,8 @@ const TestPlanReportStatusDialog = ({
                     {unmatchedTestPlanReports.map(report =>
                         renderTableRow(report, 'No')
                     )}
+                     */}
+                    {tableRows}
                 </tbody>
             </ThemeTable>
         </>
