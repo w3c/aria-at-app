@@ -1,7 +1,7 @@
 ---
 all:
   hosts:
-    aria-at-staging.w3.org:
+    bestla.w3.internal:
       ansible_user: root
   vars:
     deployment_mode: staging

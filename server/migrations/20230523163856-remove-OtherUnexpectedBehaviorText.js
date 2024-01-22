@@ -5,8 +5,6 @@ const {
     getTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 const conflictsResolver = require('../resolvers/TestPlanReport/conflictsResolver');
-const BrowserLoader = require('../models/loaders/BrowserLoader');
-const AtLoader = require('../models/loaders/AtLoader');
 const { TEST_PLAN_REPORT_ATTRIBUTES } = require('../models/services/helpers');
 
 module.exports = {
@@ -26,8 +24,6 @@ module.exports = {
                 }
             );
 
-            const atLoader = AtLoader();
-            const browserLoader = BrowserLoader();
             const testPlanRunData = testPlanRunQuery[0];
             const testPlanReportsData = testPlanReportQuery[0];
             if (!testPlanRunData) {
@@ -157,11 +153,7 @@ module.exports = {
                         ['id', 'tests']
                     );
 
-                    const conflicts = await conflictsResolver(
-                        testPlanReport,
-                        null,
-                        { atLoader, browserLoader }
-                    );
+                    const conflicts = await conflictsResolver(testPlanReport);
 
                     updateParams = {
                         metrics: {

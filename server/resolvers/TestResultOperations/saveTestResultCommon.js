@@ -1,4 +1,4 @@
-const { AuthenticationError, UserInputError } = require('apollo-server');
+const { UserInputError } = require('apollo-server');
 const {
     updateTestPlanRun
 } = require('../../models/services/TestPlanRunService');
@@ -18,7 +18,6 @@ const {
 const saveTestResultCommon = async ({
     testResultId,
     input,
-    user,
     isSubmit,
     context
 }) => {
@@ -27,17 +26,7 @@ const saveTestResultCommon = async ({
         testPlanReport,
         test,
         testResult: testResultPopulated
-    } = await populateData({ testResultId }, { context });
-
-    if (
-        !(
-            user?.roles.find(role => role.name === 'ADMIN') ||
-            (user?.roles.find(role => role.name === 'TESTER') &&
-                testPlanRun.testerUserId == user.id)
-        )
-    ) {
-        throw new AuthenticationError();
-    }
+    } = await populateData({ testResultId });
 
     // The populateData function will populate associations of JSON-based
     // models, but not Sequelize-based models. This is why the

@@ -1,7 +1,7 @@
 ---
 all:
   hosts:
-    aria-at.w3.org:
+    fenrir.w3.internal:
       ansible_user: root
   vars:
     deployment_mode: production

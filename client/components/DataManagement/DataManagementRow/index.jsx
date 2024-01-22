@@ -1123,11 +1123,15 @@ const DataManagementRow = ({
                             )}
                         </>
                     }
-                    actionLabel="Continue"
+                    actions={[
+                        {
+                            label: 'Continue',
+                            onClick: async () => {
+                                await advanceModalData.advanceFunc();
+                            }
+                        }
+                    ]}
                     closeLabel="Cancel"
-                    handleAction={async () => {
-                        await advanceModalData.advanceFunc();
-                    }}
                     handleClose={() => setShowAdvanceModal(false)}
                     staticBackdrop={true}
                 />

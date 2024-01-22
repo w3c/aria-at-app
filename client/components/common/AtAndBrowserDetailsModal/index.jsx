@@ -215,9 +215,13 @@ const AtAndBrowserDetailsModal = ({
                         Browser versions will not be saved.
                     </>
                 }
-                actionLabel="Ok"
+                actions={[
+                    {
+                        label: 'Ok',
+                        onClick: () => navigate('/test-queue')
+                    }
+                ]}
                 closeLabel="Cancel"
-                handleAction={() => navigate('/test-queue')}
                 handleClose={() => setShowExitModal(false)}
                 staticBackdrop={true}
             />
@@ -586,18 +590,20 @@ const AtAndBrowserDetailsModal = ({
                             </FieldsetRow>
                         </ModalInnerSectionContainer>
                     }
-                    actionLabel={
-                        updatedAtVersion !== atVersion ||
-                        updatedBrowserVersion !== browserVersion
-                            ? 'Save and Continue'
-                            : 'Continue'
-                    }
-                    handleAction={
-                        updatedAtVersion !== atVersion ||
-                        updatedBrowserVersion !== browserVersion
-                            ? onSubmit
-                            : handleClose
-                    }
+                    actions={[
+                        {
+                            label:
+                                updatedAtVersion !== atVersion ||
+                                updatedBrowserVersion !== browserVersion
+                                    ? 'Save and Continue'
+                                    : 'Continue',
+                            onClick:
+                                updatedAtVersion !== atVersion ||
+                                updatedBrowserVersion !== browserVersion
+                                    ? onSubmit
+                                    : handleClose
+                        }
+                    ]}
                     handleClose={!isFirstLoad ? handleClose : null}
                     handleHide={handleHide}
                     staticBackdrop={true}

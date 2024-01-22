@@ -10,7 +10,6 @@ const ThankYouModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
     return (
         <BasicModal
             show={true}
-            actionLabel={'Close'}
             centered={true}
             closeButton={false}
             content={
@@ -30,7 +29,12 @@ const ThankYouModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
                 </>
             }
             dialogClassName="thank-you"
-            handleAction={handleAction}
+            actions={[
+                {
+                    label: 'Close',
+                    onClick: handleAction
+                }
+            ]}
             title={
                 <div className="thank-you-title">
                     <FontAwesomeIcon

@@ -161,6 +161,10 @@ const populateTestDatabase = async () => {
         'completeAndPassing'
     ]);
 
+    await populateFakeTestResults(14, new Array(16).fill('completeAndPassing'));
+
+    await populateFakeTestResults(15, new Array(8).fill('completeAndPassing'));
+
     console.info(
         'Successfully populated. Please wait a moment for the process to close.'
     );
