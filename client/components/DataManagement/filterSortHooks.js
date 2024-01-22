@@ -158,7 +158,10 @@ export const useDataManagementTableFiltering = (
         if (!filter || filter === DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL) {
             return testPlans;
         } else {
-            if (Object.values(derivedDraftTestPlans).length > 0) {
+            if (
+                Object.values(derivedDraftTestPlans).length > 0 &&
+                filter == DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
+            ) {
                 return Object.values(derivedDraftTestPlans);
             } else {
                 return testPlansByPhase[filter];
@@ -195,13 +198,13 @@ export const useDataManagementTableFiltering = (
 
     if (
         testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length > 0 ||
-        Object.keys(derivedDraftTestPlans).length > 0
+        Object.values(derivedDraftTestPlans).length > 0
     ) {
         filterLabels[
             DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
         ] = `In Draft Review (${
-            testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length ||
-            Object.keys(derivedDraftTestPlans).length.toString()
+            Object.values(derivedDraftTestPlans).length.toString() ||
+            testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length
         })`;
     }
 

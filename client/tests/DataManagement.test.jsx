@@ -93,35 +93,30 @@ const testPlanVersions = [
     {
         phase: 'RD',
         id: '101',
-        title: 'testA',
         testPlan: { directory: 'dirA' },
         updatedAt: '2022-03-17T18:34:51.000Z'
     },
     {
         phase: 'DRAFT',
         id: '102',
-        title: 'testB',
         testPlan: { directory: 'dirB' },
         draftStatusReachedAt: '2022-05-18T20:51:40.000Z'
     },
     {
         phase: 'CANDIDATE',
         id: '103',
-        title: 'testC',
         testPlan: { directory: 'dirC' },
         candidatePhaseReachedAt: '2022-04-10T00:00:00.000Z'
     },
     {
         phase: 'RD',
         id: '104',
-        title: 'testD',
         testPlan: { directory: 'dirD' },
         updatedAt: '2022-03-18T18:34:51.000Z'
     },
     {
         phase: 'RECOMMENDED',
         id: '105',
-        title: 'testD',
         testPlan: { directory: 'dirD' },
         recommendedPhaseReachedAt: '2022-05-18T20:51:40.000Z'
     },
@@ -210,8 +205,10 @@ describe('useDataManagementTableFiltering hook', () => {
             )
         );
         expect(result.current.filteredTestPlans).toEqual([
-            testPlans[1] // DRAFT
+            testPlans[1], // DRAFT
+            testPlans[3] // DRAFT
         ]);
+        console.log(result);
         expect(
             result.current.filterLabels[
                 DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
@@ -276,7 +273,9 @@ describe('useDerivedTestPlanOverallPhase hook', () => {
         const { result } = renderHook(() =>
             useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions)
         );
-        const { derivedOverallPhaseByTestPlanId } = result.current;
+        const {
+            derivedOverallPhaseByTestPlanId: { derivedOverallPhaseByTestPlanId }
+        } = result.current;
         expect(derivedOverallPhaseByTestPlanId).toEqual({
             1: 'RD',
             2: 'DRAFT',
