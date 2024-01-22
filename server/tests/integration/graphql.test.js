@@ -155,6 +155,7 @@ describe('graphql', () => {
             ['TestPlanVersion', 'recommendedPhaseTargetDate'],
             ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers'],
+            ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
             ['CollectionJob', 'testPlanRun'],
             ['CollectionJob', 'externalLogsUrl'],
             // These interact with Response Scheduler API
@@ -305,6 +306,7 @@ describe('graphql', () => {
                                         __typename
                                         id
                                         text
+                                        atOperatingMode
                                     }
                                 }
                                 assertions {
@@ -562,7 +564,6 @@ describe('graphql', () => {
                 }
             `
         );
-        // console.info(queryResult);
 
         await dbCleaner(async () => {
             const {

@@ -242,7 +242,7 @@ const TestRenderer = ({
         };
 
         for (let i = 0; i < scenarioResults.length; i++) {
-            const {
+            let {
                 output,
                 assertionResults,
                 unexpectedBehaviors,
@@ -253,15 +253,23 @@ const TestRenderer = ({
             if (output) commands[i].atOutput.value = output;
             commands[i].atOutput.highlightRequired = highlightRequired;
 
-            for (let j = 0; j < assertionResults.length; j++) {
-                const assertionResult = assertionResults[j];
-                const { highlightRequired } = assertionResult;
+            // Required because assertionResults can now be returned without an id if there is a 0-priority exception
+            // applied
+            assertionResults = assertionResults.filter(el => !!el.id);
 
-                commands[i].assertions[j].result = assertionResult.passed
+            for (let j = 0; j < assertionResults.length; j++) {
+                const { passed, highlightRequired, assertion } =
+                    assertionResults[j];
+
+                let assertionForCommandIndex = commands[i].assertions.findIndex(
+                    ({ description }) => description === assertion?.text
+                );
+                commands[i].assertions[assertionForCommandIndex].result = passed
                     ? 'pass'
                     : 'fail';
-
-                commands[i].assertions[j].highlightRequired = highlightRequired;
+                commands[i].assertions[
+                    assertionForCommandIndex
+                ].highlightRequired = highlightRequired;
             }
 
             if (unexpectedBehaviors && unexpectedBehaviors.length) {
