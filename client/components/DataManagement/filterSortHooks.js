@@ -51,6 +51,7 @@ export const useDerivedOverallPhaseByTestPlanId = (
 
     const derivedOverallPhaseByTestPlanId = useMemo(() => {
         const derivedOverallPhaseByTestPlanId = {};
+        const derivedDraftTestPlans = {};
         const phases = [
             {
                 phase: TEST_PLAN_VERSION_PHASES.RECOMMENDED,
@@ -75,19 +76,53 @@ export const useDerivedOverallPhaseByTestPlanId = (
                 );
                 if (derivedPhase) {
                     derivedOverallPhaseByTestPlanId[testPlan.id] = derivedPhase;
+                    if (
+                        testPlanVersionsByPhase[
+                            TEST_PLAN_VERSION_PHASES.DRAFT
+                        ].some(
+                            version =>
+                                version.testPlan.directory ===
+                                testPlan.directory
+                        )
+                    ) {
+                        const latestVersion = testPlanVersions
+                            .filter(
+                                version =>
+                                    version.testPlan.directory ===
+                                    testPlan.directory
+                            )
+                            .sort((a, b) => {
+                                if (!(timeKey in a) || !(timeKey in b)) {
+                                    return -1;
+                                }
+                                return a[timeKey] > b[timeKey];
+                            })[0];
+
+                        if (
+                            latestVersion.phase ===
+                            TEST_PLAN_VERSION_PHASES.DRAFT
+                        ) {
+                            derivedDraftTestPlans[testPlan.id] = {
+                                id: testPlan.id,
+                                directory: testPlan.directory,
+                                title: testPlan.title
+                            };
+                        }
+                    }
                     break;
                 }
             }
         }
-        return derivedOverallPhaseByTestPlanId;
+        return { derivedOverallPhaseByTestPlanId, derivedDraftTestPlans };
     }, [testPlans, testPlanVersions]);
 
     return { derivedOverallPhaseByTestPlanId };
 };
 
 export const useTestPlansByPhase = (testPlans, testPlanVersions) => {
-    const { derivedOverallPhaseByTestPlanId } =
-        useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
+    const {
+        derivedOverallPhaseByTestPlanId: { derivedOverallPhaseByTestPlanId }
+    } = useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
 
     const testPlansByPhase = useMemo(() => {
         const testPlansByPhase = {};
@@ -115,11 +150,19 @@ export const useDataManagementTableFiltering = (
         testPlanVersions
     );
 
+    const {
+        derivedOverallPhaseByTestPlanId: { derivedDraftTestPlans }
+    } = useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
+
     const filteredTestPlans = useMemo(() => {
         if (!filter || filter === DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL) {
             return testPlans;
         } else {
-            return testPlansByPhase[filter];
+            if (Object.values(derivedDraftTestPlans).length > 0) {
+                return Object.values(derivedDraftTestPlans);
+            } else {
+                return testPlansByPhase[filter];
+            }
         }
     }, [filter, testPlansByPhase, testPlans]);
 
@@ -135,11 +178,30 @@ export const useDataManagementTableFiltering = (
         })`;
     }
 
-    if (testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length > 0) {
+    // Find test plan versions with DRAFT advanced, even if
+    // the overall phase is not draft
+    // const testPlansWithDraft = new Map();
+    // const draftCount = testPlanVersions.reduce((acc, version) => {
+    //     if (
+    //         version.draftPhaseReachedAt !== null &&
+    //         version.phase == TEST_PLAN_VERSION_PHASES.DRAFT &&
+    //         !testPlansWithDraft.has(version.title)
+    //     ) {
+    //         acc++;
+    //         testPlansWithDraft.set(version.title, version);
+    //     }
+    //     return acc;
+    // }, 0);
+
+    if (
+        testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length > 0 ||
+        Object.keys(derivedDraftTestPlans).length > 0
+    ) {
         filterLabels[
             DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
         ] = `In Draft Review (${
-            testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length
+            testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length ||
+            Object.keys(derivedDraftTestPlans).length.toString()
         })`;
     }
 
@@ -173,8 +235,9 @@ export const useDataManagementTableSorting = (
         direction: initialSortDirection
     });
 
-    const { derivedOverallPhaseByTestPlanId } =
-        useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
+    const {
+        derivedOverallPhaseByTestPlanId: { derivedOverallPhaseByTestPlanId }
+    } = useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
 
     const sortedTestPlans = useMemo(() => {
         // Ascending and descending interpreted differently for statuses

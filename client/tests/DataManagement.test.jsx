@@ -93,32 +93,44 @@ const testPlanVersions = [
     {
         phase: 'RD',
         id: '101',
+        title: 'testA',
         testPlan: { directory: 'dirA' },
         updatedAt: '2022-03-17T18:34:51.000Z'
     },
     {
         phase: 'DRAFT',
         id: '102',
+        title: 'testB',
         testPlan: { directory: 'dirB' },
         draftStatusReachedAt: '2022-05-18T20:51:40.000Z'
     },
     {
         phase: 'CANDIDATE',
         id: '103',
+        title: 'testC',
         testPlan: { directory: 'dirC' },
         candidatePhaseReachedAt: '2022-04-10T00:00:00.000Z'
     },
     {
         phase: 'RD',
         id: '104',
+        title: 'testD',
         testPlan: { directory: 'dirD' },
         updatedAt: '2022-03-18T18:34:51.000Z'
     },
     {
         phase: 'RECOMMENDED',
         id: '105',
+        title: 'testD',
         testPlan: { directory: 'dirD' },
         recommendedPhaseReachedAt: '2022-05-18T20:51:40.000Z'
+    },
+    {
+        phase: 'DRAFT',
+        id: '106',
+        title: 'testD',
+        testPlan: { directory: 'dirD' },
+        draftStatusReachedAt: '2024-01-08T20:51:40.000Z'
     }
 ];
 
@@ -204,7 +216,7 @@ describe('useDataManagementTableFiltering hook', () => {
             result.current.filterLabels[
                 DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
             ]
-        ).toEqual(`In Draft Review (1)`);
+        ).toEqual(`In Draft Review (2)`); // Test plan 106 is in DRAFT while the overall plan is RECOMMENDED
     });
 
     it('can filter by CANDIDATE phase', () => {
@@ -252,7 +264,7 @@ describe('useTestPlanVersionsByPhase hook', () => {
         const { testPlanVersionsByPhase } = result.current;
         expect(testPlanVersionsByPhase).toEqual({
             RD: [testPlanVersions[0], testPlanVersions[3]],
-            DRAFT: [testPlanVersions[1]],
+            DRAFT: [testPlanVersions[1], testPlanVersions[5]],
             CANDIDATE: [testPlanVersions[2]],
             RECOMMENDED: [testPlanVersions[4]]
         });
