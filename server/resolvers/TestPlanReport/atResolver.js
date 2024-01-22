@@ -1,7 +1,10 @@
-const atResolver = async (testPlanReport, _, context) => {
-    const ats = await context.atLoader.getAll();
+const AtLoader = require('../../models/loaders/AtLoader');
 
-    return ats.find(at => at.id === testPlanReport.at.id);
+const atResolver = async testPlanReport => {
+    const atLoader = AtLoader();
+    const ats = await atLoader.getAll();
+
+    return ats.find(at => at.id === testPlanReport.atId);
 };
 
 module.exports = atResolver;

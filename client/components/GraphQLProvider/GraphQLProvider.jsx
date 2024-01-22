@@ -4,7 +4,28 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 
 const client = new ApolloClient({
     uri: '/api/graphql',
-    cache: new InMemoryCache({ addTypename: false })
+    cache: new InMemoryCache({
+        addTypename: false,
+        typePolicies: {
+            Query: {
+                fields: {
+                    testPlanReport: { merge: true },
+                    testPlanReports: { merge: false },
+                    collectionJobByTestPlanRunId: {
+                        merge(existing, incoming) {
+                            return { ...existing, ...incoming };
+                        }
+                    }
+                }
+            },
+            Mutation: {
+                fields: {
+                    testPlanReport: { merge: false },
+                    testPlanRun: { merge: false }
+                }
+            }
+        }
+    })
 });
 
 const GraphQLProvider = ({ children }) => {

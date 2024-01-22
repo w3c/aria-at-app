@@ -1,7 +1,8 @@
 const populateData = require('../../services/PopulatedData/populateData');
+const AtLoader = require('../../models/loaders/AtLoader');
 
 const renderableContents = async (test, _, context) => {
-    const ats = await context.atLoader.getAll();
+    const ats = await AtLoader().getAll();
 
     const { testPlanVersion } = await populateData(
         { testId: test.id },

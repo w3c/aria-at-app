@@ -137,7 +137,9 @@ describe('graphql', () => {
         const excludedTypeNames = [
             // Items formatted like this:
             // 'TestResult'
-            'Vendor'
+            'Issue',
+            'Vendor',
+            'scheduleCollectionJob'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
@@ -152,7 +154,14 @@ describe('graphql', () => {
             ['TestPlanVersion', 'recommendedPhaseReachedAt'],
             ['TestPlanVersion', 'recommendedPhaseTargetDate'],
             ['TestPlanVersion', 'deprecatedAt'],
-            ['Test', 'viewers']
+            ['Test', 'viewers'],
+            ['CollectionJob', 'testPlanRun'],
+            ['CollectionJob', 'externalLogsUrl'],
+            // These interact with Response Scheduler API
+            // which is mocked in other tests.
+            ['Mutation', 'scheduleCollectionJob'],
+            ['Mutation', 'restartCollectionJob'],
+            ['CollectionJobOperations', 'retryCanceledCollections']
         ];
         ({
             typeAwareQuery,
@@ -244,6 +253,24 @@ describe('graphql', () => {
                             name
                         }
                     }
+                    collectionJob(id: 1) {
+                        __typename
+                        id
+                        status
+                        testPlanRun {
+                            id
+                        }
+                    }
+                    collectionJobs {
+                        __typename
+                        id
+                        status
+                    }
+                    collectionJobByTestPlanRunId(testPlanRunId: 1) {
+                        __typename
+                        id
+                        status
+                    }
                     testPlan(id: "checkbox") {
                         __typename
                         id
@@ -286,6 +313,7 @@ describe('graphql', () => {
                                     priority
                                     text
                                 }
+                                testFormatVersion
                             }
                         }
                         testPlanVersions {
@@ -313,6 +341,9 @@ describe('graphql', () => {
                     testPlans {
                         directory
                         title
+                    }
+                    testPlanRuns {
+                        id
                     }
                     testPlanVersions {
                         __typename
@@ -473,6 +504,7 @@ describe('graphql', () => {
                     testPlanRun(id: 3) {
                         __typename
                         id
+                        initiatedByAutomation
                         testPlanReport {
                             id
                         }
@@ -713,6 +745,31 @@ describe('graphql', () => {
                         ) {
                             username
                         }
+                        findOrCreateCollectionJob(
+                            id: 333
+                            testPlanReportId: 4
+                        ) {
+                            id
+                            status
+                            testPlanRun {
+                                id
+                            }
+                        }
+                        collectionJob(id: 333) {
+                            __typename
+                            cancelCollectionJob {
+                                id
+                                status
+                            }
+                        }
+                        updateCollectionJob(id: 333, status: COMPLETED) {
+                            id
+                            status
+                            testPlanRun {
+                                id
+                            }
+                        }
+                        deleteCollectionJob(id: 333)
                     }
                 `,
                 {
