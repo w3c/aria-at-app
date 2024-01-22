@@ -51,6 +51,16 @@ const saveTestResultCommon = async ({
             ) {
                 delete unexpectedBehavior.otherUnexpectedBehaviorText;
             }
+
+            if (
+                unexpectedBehavior.id === 'OTHER' &&
+                unexpectedBehavior.otherUnexpectedBehaviorText &&
+                !unexpectedBehavior.details
+            ) {
+                unexpectedBehavior.details =
+                    unexpectedBehavior.otherUnexpectedBehaviorText;
+                unexpectedBehavior.impact = 'MODERATE';
+            }
         });
     });
 
@@ -128,14 +138,8 @@ const assertTestResultIsValid = newTestResult => {
     };
 
     const checkUnexpectedBehavior = unexpectedBehavior => {
-        if (
-            (!!unexpectedBehavior.otherUnexpectedBehaviorText &&
-                unexpectedBehavior.id !== 'OTHER') ||
-            (!unexpectedBehavior.otherUnexpectedBehaviorText &&
-                unexpectedBehavior.id === 'OTHER')
-        ) {
-            failed = true;
-        }
+        const { impact, details } = unexpectedBehavior;
+        if (!impact || !details) failed = true;
     };
 
     const checkScenarioResult = scenarioResult => {

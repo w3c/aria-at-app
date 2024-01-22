@@ -447,6 +447,8 @@ describe('graphql', () => {
                                         __typename
                                         id
                                         text
+                                        impact
+                                        details
                                         otherUnexpectedBehaviorText
                                     }
                                 }
