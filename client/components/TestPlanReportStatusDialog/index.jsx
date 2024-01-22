@@ -108,9 +108,17 @@ const TestPlanReportStatusDialog = ({
         );
     };
 
-    // console.log('ats', ats)
+    let requiredReports = 0;
     const rowData = [];
+
     ats.forEach(at => {
+        if (testPlanVersion.phase === 'CANDIDATE') {
+            requiredReports += at.candidateBrowsers.length;
+        }
+        if (testPlanVersion.phase === 'RECOMMENDED') {
+            requiredReports += at.recommendedBrowsers.length;
+        }
+
         at.browsers.forEach(browser => {
             const report = testPlanReports.find(eachReport => {
                 return (
@@ -133,6 +141,7 @@ const TestPlanReportStatusDialog = ({
             rowData.push({ report, at, browser, isRequired });
         });
     });
+
     // Sort by required then AT then browser
     rowData.sort((a, b) => {
         if (a.isRequired !== b.isRequired) return a.isRequired ? -1 : 1;
@@ -167,7 +176,7 @@ const TestPlanReportStatusDialog = ({
                             testPlanVersion.phase.slice(1).toLowerCase()}
                     </span>
                     &nbsp;Review phase.&nbsp;
-                    {/* <strong>{requiredReports.length} AT/browser&nbsp;</strong> */}
+                    <strong>{requiredReports} AT/browser&nbsp;</strong>
                     pairs require reports in this phase.
                 </p>
             )}
