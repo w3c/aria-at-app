@@ -208,7 +208,6 @@ describe('useDataManagementTableFiltering hook', () => {
             testPlans[1], // DRAFT
             testPlans[3] // DRAFT
         ]);
-        console.log(result);
         expect(
             result.current.filterLabels[
                 DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT

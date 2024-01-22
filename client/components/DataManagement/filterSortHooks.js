@@ -181,30 +181,23 @@ export const useDataManagementTableFiltering = (
         })`;
     }
 
-    // Find test plan versions with DRAFT advanced, even if
-    // the overall phase is not draft
-    // const testPlansWithDraft = new Map();
-    // const draftCount = testPlanVersions.reduce((acc, version) => {
-    //     if (
-    //         version.draftPhaseReachedAt !== null &&
-    //         version.phase == TEST_PLAN_VERSION_PHASES.DRAFT &&
-    //         !testPlansWithDraft.has(version.title)
-    //     ) {
-    //         acc++;
-    //         testPlansWithDraft.set(version.title, version);
-    //     }
-    //     return acc;
-    // }, 0);
-
     if (
         testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length > 0 ||
         Object.values(derivedDraftTestPlans).length > 0
     ) {
+        const allDrafts = [
+            ...Object.values(derivedDraftTestPlans),
+            ...testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT]
+        ];
         filterLabels[
             DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
         ] = `In Draft Review (${
-            Object.values(derivedDraftTestPlans).length.toString() ||
-            testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length
+            allDrafts.filter((draft, index) => {
+                return (
+                    index ===
+                    allDrafts.findIndex(testPlan => draft.id === testPlan.id)
+                );
+            }).length
         })`;
     }
 
