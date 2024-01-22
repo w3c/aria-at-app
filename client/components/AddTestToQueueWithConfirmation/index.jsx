@@ -1,10 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import BasicModal from '../common/BasicModal';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { ADD_TEST_QUEUE_MUTATION } from '../TestQueue/queries';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
+import {
+    getBotUsernameFromAtBrowser,
+    isSupportedByResponseCollector
+} from '../../utils/automation';
+import './AddTestToQueueWithConfirmation.css';
+import {
+    SCHEDULE_COLLECTION_JOB_MUTATION,
+    TEST_PLAN_RUN_REPORTS_INITIATED_BY_AUTOMATION
+} from './queries';
 
 function AddTestToQueueWithConfirmation({
     testPlanVersion,
@@ -16,12 +25,49 @@ function AddTestToQueueWithConfirmation({
 }) {
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
+    const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION);
+    const { data: testPlanReportsInitiatedByAutomation } = useQuery(
+        TEST_PLAN_RUN_REPORTS_INITIATED_BY_AUTOMATION,
+        {
+            variables: {
+                testPlanVersionId: testPlanVersion?.id
+            },
+            fetchPolicy: 'cache-and-network',
+            skip: !testPlanVersion?.id
+        }
+    );
+
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const buttonRef = useRef();
 
-    const feedbackModalTitle = 'Successfully Added Test Plan';
+    const hasAutomationSupport = isSupportedByResponseCollector({
+        at,
+        browser
+    });
 
-    const feedbackModalContent = (
+    const alreadyHasBotInTestPlanReport = useMemo(
+        () =>
+            testPlanReportsInitiatedByAutomation?.testPlanVersion.testPlanReports.some(
+                tpr =>
+                    tpr.markedFinalAt === null &&
+                    tpr.draftTestPlanRuns.some(run => run.initiatedByAutomation)
+            ),
+        [testPlanReportsInitiatedByAutomation?.testPlanVersion.testPlanReports]
+    );
+
+    const feedbackModalTitle =
+        hasAutomationSupport && testPlanVersion
+            ? `Adding ${testPlanVersion.title} Test Plan to the Test Queue`
+            : 'Successfully Added Test Plan';
+
+    const feedbackModalContent = hasAutomationSupport ? (
+        <>
+            Choose how the report for {at?.name} and {browser?.name} will be
+            generated. Add it to the queue so it can be assigned to a tester at
+            a later time or start running automated response collection with{' '}
+            {getBotUsernameFromAtBrowser(at, browser)}.
+        </>
+    ) : (
         <>
             Successfully added <b>{testPlanVersion?.title}</b> for{' '}
             <b>
@@ -31,49 +77,108 @@ function AddTestToQueueWithConfirmation({
         </>
     );
 
+    const closeWithUpdate = async () => {
+        setShowConfirmation(false);
+        await triggerUpdate();
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (buttonRef?.current) {
+            buttonRef.current.focus();
+        }
+    };
+
+    const renderConfirmation = () => {
+        const actions = [];
+        if (hasAutomationSupport) {
+            actions.push({
+                label: 'Add and run later',
+                onClick: async () => {
+                    await addTestToQueue();
+                    await closeWithUpdate();
+                }
+            });
+
+            if (!alreadyHasBotInTestPlanReport) {
+                actions.push({
+                    label: 'Add and run with bot',
+                    onClick: async () => {
+                        const testPlanReport = await addTestToQueue();
+                        await scheduleCollectionJob(testPlanReport);
+                        await closeWithUpdate();
+                    }
+                });
+            }
+        }
+        return (
+            <BasicModal
+                dialogClassName={'add-test-to-queue-confirmation'}
+                show={showConfirmation}
+                title={feedbackModalTitle}
+                content={feedbackModalContent}
+                closeLabel={hasAutomationSupport ? 'Cancel' : 'Ok'}
+                staticBackdrop={true}
+                actions={actions}
+                useOnHide
+                handleClose={async () => {
+                    if (hasAutomationSupport) {
+                        setShowConfirmation(false);
+                    } else {
+                        await closeWithUpdate();
+                    }
+                }}
+            />
+        );
+    };
+
     const addTestToQueue = async () => {
+        let tpr;
         await triggerLoad(async () => {
-            await addTestPlanReport({
+            const res = await addTestPlanReport({
                 variables: {
                     testPlanVersionId: testPlanVersion.id,
                     atId: at.id,
                     browserId: browser.id
                 }
             });
+            const testPlanReport =
+                res?.data?.findOrCreateTestPlanReport?.populatedData
+                    ?.testPlanReport ?? null;
+            tpr = testPlanReport;
         }, 'Adding Test Plan to Test Queue');
+        setShowConfirmation(true);
+        return tpr;
+    };
+
+    const scheduleCollectionJob = async testPlanReport => {
+        await triggerLoad(async () => {
+            await scheduleCollection({
+                variables: {
+                    testPlanReportId: testPlanReport.id
+                }
+            });
+        }, 'Scheduling Collection Job');
         setShowConfirmation(true);
     };
 
     return (
-        <>
-            <LoadingStatus message={loadingMessage}></LoadingStatus>
+        <LoadingStatus message={loadingMessage}>
             <Button
                 ref={buttonRef}
                 disabled={disabled}
                 variant="secondary"
-                onClick={addTestToQueue}
+                onClick={async () => {
+                    if (hasAutomationSupport) {
+                        setShowConfirmation(true);
+                    } else {
+                        await addTestToQueue();
+                    }
+                }}
                 className="w-auto"
                 data-testid="add-button"
             >
                 {buttonText}
             </Button>
-            <BasicModal
-                show={showConfirmation}
-                closeButton={false}
-                title={feedbackModalTitle}
-                content={feedbackModalContent}
-                closeLabel="Ok"
-                handleClose={async () => {
-                    await triggerUpdate();
-                    setShowConfirmation(false);
-                    setTimeout(() => {
-                        if (buttonRef?.current) {
-                            buttonRef.current.focus();
-                        }
-                    }, 0);
-                }}
-            />
-        </>
+            {renderConfirmation()}
+        </LoadingStatus>
     );
 }
 

@@ -174,6 +174,7 @@ const TestRenderer = ({
     testRunResultRef,
     submitButtonRef,
     isSubmitted = false,
+    isReviewingBot = false,
     isEdit = false,
     setIsRendererReady = false
 }) => {
@@ -581,6 +582,7 @@ const TestRenderer = ({
                                             commandIndex={commandIndex}
                                             atOutput={atOutput}
                                             isSubmitted={isSubmitted}
+                                            readOnly={isReviewingBot}
                                         />
                                         <AssertionsFieldset
                                             assertions={assertions}
@@ -845,6 +847,7 @@ TestRenderer.propTypes = {
     submitButtonRef: PropTypes.any,
     isSubmitted: PropTypes.bool,
     isEdit: PropTypes.bool,
+    isReviewingBot: PropTypes.bool,
     setIsRendererReady: PropTypes.func
 };
 

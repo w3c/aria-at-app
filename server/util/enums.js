@@ -1,0 +1,11 @@
+const COLLECTION_JOB_STATUS = {
+    QUEUED: 'QUEUED',
+    RUNNING: 'RUNNING',
+    COMPLETED: 'COMPLETED',
+    ERROR: 'ERROR',
+    CANCELLED: 'CANCELLED'
+};
+
+module.exports = {
+    COLLECTION_JOB_STATUS
+};

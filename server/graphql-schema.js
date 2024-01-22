@@ -70,6 +70,40 @@ const graphqlSchema = gql`
         atIds: [ID]!
     }
 
+    """
+    The possible statuses for a CollectionJob.
+    """
+    enum CollectionJobStatus {
+        QUEUED
+        RUNNING
+        COMPLETED
+        ERROR
+        CANCELLED
+    }
+    """
+    A job which was scheduled to collect automated test results using the Response Collection System.
+    """
+    type CollectionJob {
+        """
+        Job Scheduler server-provided ID.
+        """
+        id: ID!
+        """
+        The status of the job, which can be "QUEUED", "RUNNING", "COMPLETED",
+        "ERROR", or "CANCELLED".
+        """
+        status: CollectionJobStatus!
+        """
+        An ID for the Test Plan Run which was created as a result of the Collection Job.
+        This will store the test results.
+        """
+        testPlanRun: TestPlanRun
+        """
+        The URL where the logs for the job can be found.
+        """
+        externalLogsUrl: String
+    }
+
     type Browser {
         """
         Postgres-provided numeric ID.
@@ -438,6 +472,12 @@ const graphqlSchema = gql`
         Vendors who viewed the tests
         """
         viewers: [User]
+        """
+        Version number to indicate which of the following test writing specs this test is based on:
+        1: https://github.com/w3c/aria-at/wiki/Test-Format-V1-Definition
+        2: https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2
+        """
+        testFormatVersion: Int!
     }
 
     type RenderableContentByAt {
@@ -573,11 +613,11 @@ const graphqlSchema = gql`
         """
         The AtVersion used during this testing session.
         """
-        atVersion: AtVersion!
+        atVersion: AtVersion
         """
         The BrowserVersion used during this testing session.
         """
-        browserVersion: BrowserVersion!
+        browserVersion: BrowserVersion
         """
         Automatically set by the server when a new test result is created.
         """
@@ -607,11 +647,11 @@ const graphqlSchema = gql`
         """
         See TestResult type for more information.
         """
-        atVersionId: ID!
+        atVersionId: ID
         """
         See TestResult type for more information.
         """
-        browserVersionId: ID!
+        browserVersionId: ID
         """
         See TestResult type for more information.
         """
@@ -677,6 +717,7 @@ const graphqlSchema = gql`
     enum AssertionFailedReason {
         INCORRECT_OUTPUT
         NO_OUTPUT
+        AUTOMATED_OUTPUT
     }
 
     """
@@ -775,7 +816,6 @@ const graphqlSchema = gql`
         Postgres-provided numeric ID.
         """
         id: ID!
-        # TODO: make optional once automation is introduced.
         """
         The person who executed the tests.
         """
@@ -795,6 +835,10 @@ const graphqlSchema = gql`
         expensive time-consuming operations to calculate.
         """
         testResultsLength: Int!
+        """
+        Whether the TestPlanRun was initiated by the Response Collection System
+        """
+        initiatedByAutomation: Boolean!
     }
 
     """
@@ -1095,11 +1139,27 @@ const graphqlSchema = gql`
         """
         testPlanRun(id: ID!): TestPlanRun
         """
+        Get all TestPlanRuns.
+        """
+        testPlanRuns(testPlanReportId: ID): [TestPlanRun]!
+        """
         For a given ID, load all the associated data which can be inferred from
         that ID. For more information, take a look at the description of the
         LocationOfDatInput type.
         """
         populateData(locationOfData: LocationOfDataInput!): PopulatedData!
+        """
+        Get a CollectionJob by ID.
+        """
+        collectionJob(id: ID!): CollectionJob
+        """
+        Get a CollectionJob by TestPlanRun ID.
+        """
+        collectionJobByTestPlanRunId(testPlanRunId: ID!): CollectionJob
+        """
+        Get all CollectionJobs.
+        """
+        collectionJobs: [CollectionJob]!
     }
 
     # Mutation-specific types below
@@ -1160,10 +1220,11 @@ const graphqlSchema = gql`
     """
     type TestPlanReportOperations {
         """
-        Assigns a user to a TestPlanReport, creating an associated TestPlanRun
-        with no results.
+        Assigns a user to a TestPlanReport, if a testPlanRunID is supplied the
+        the TestPlanRun will be reassigned, otherwise an associated TestPlanRun
+        with no results is created.
         """
-        assignTester(userId: ID!): PopulatedData!
+        assignTester(userId: ID!, testPlanRunId: ID): PopulatedData!
         """
         Permanently deletes the TestPlanRun from the TestPlanReport for the
         user.
@@ -1268,6 +1329,19 @@ const graphqlSchema = gql`
         """
         deleteTestResult: PopulatedData!
     }
+    """
+    Mutations scoped to a CollectionJob.
+    """
+    type CollectionJobOperations {
+        """
+        Mark a CollectionJob as finished.
+        """
+        cancelCollectionJob: CollectionJob!
+        """
+        Retry the 'cancelled' tests of a CollectionJob.
+        """
+        retryCanceledCollections: CollectionJob!
+    }
 
     """
     Generic response to findOrCreate mutations, which allow you to dictate an
@@ -1330,6 +1404,10 @@ const graphqlSchema = gql`
         """
         testPlanVersion(id: ID!): TestPlanVersionOperations!
         """
+        Get the available mutations for the given CollectionJob.
+        """
+        collectionJob(id: ID!): CollectionJobOperations
+        """
         Update the currently-logged-in User.
         """
         updateMe(input: UserInput): User!
@@ -1337,6 +1415,62 @@ const graphqlSchema = gql`
         Add a viewer to a test
         """
         addViewer(testPlanVersionId: ID!, testId: ID!): User!
+        """
+        Schedule a new CollectionJob through the Response Scheduler
+        """
+        scheduleCollectionJob(
+            """
+            The CollectionJob to schedule.
+            """
+            testPlanReportId: ID!
+        ): CollectionJob!
+        """
+        Find or create a CollectionJob
+        """
+        findOrCreateCollectionJob(
+            """
+            The CollectionJob to find or create.
+            """
+            id: ID!
+            """
+            The status of the CollectionJob.
+            """
+            status: CollectionJobStatus
+            """
+            The TestPlanReport id to use to create the TestPlanRun associated with the CollectionJob.
+            """
+            testPlanReportId: ID
+        ): CollectionJob!
+        """
+        Update a CollectionJob
+        """
+        updateCollectionJob(
+            """
+            The CollectionJob to update.
+            """
+            id: ID!
+            """
+            The status of the CollectionJob.
+            """
+            status: CollectionJobStatus
+            """
+            The external logs url of the CollectionJob.
+            """
+            externalLogsUrl: String
+        ): CollectionJob
+        """
+        Restart a CollectionJob by way of the Response Scheduler
+        """
+        restartCollectionJob(
+            """
+            The CollectionJob to restart.
+            """
+            id: ID!
+        ): CollectionJob
+        """
+        Delete a CollectionJob
+        """
+        deleteCollectionJob(id: ID!): NoResponse!
     }
 `;
 

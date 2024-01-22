@@ -5,8 +5,7 @@ const populateData = require('../../services/PopulatedData/populateData');
 
 const promoteVendorReviewStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { vendorReviewStatus },
-    context
+    { vendorReviewStatus }
 ) => {
     let updateParams = { vendorReviewStatus };
 
@@ -24,7 +23,7 @@ const promoteVendorReviewStatusResolver = async (
         await updateTestPlanReport(testPlanReportId, updateParams);
     }
 
-    return populateData({ testPlanReportId }, { context });
+    return populateData({ testPlanReportId });
 };
 
 module.exports = promoteVendorReviewStatusResolver;
