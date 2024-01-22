@@ -1,0 +1,19 @@
+/* Allow multiple dialogs to be open at the same time */
+div[role='dialog'][aria-modal='true']:nth-last-child(1) {
+    z-index: 1125;
+}
+.modal-backdrop.show:nth-last-child(2) {
+    z-index: 1100;
+}
+div[role='dialog'][aria-modal='true']:nth-last-child(3) {
+    z-index: 1075;
+}
+.modal-backdrop.show:nth-last-child(4) {
+    z-index: 1050;
+}
+div[role='dialog'][aria-modal='true']:nth-last-child(5) {
+    z-index: 1025;
+}
+.modal-backdrop.show:nth-last-child(6) {
+    z-index: 1000;
+}

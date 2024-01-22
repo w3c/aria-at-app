@@ -1,8 +1,5 @@
 const { AuthenticationError } = require('apollo-server');
-const {
-    createAtVersion,
-    getAtVersionByQuery
-} = require('../../models/services/AtService');
+const { findOrCreateAtVersion } = require('../../models/services/AtService');
 
 const findOrCreateAtVersionResolver = async (
     { parentContext: { id: atId } },
@@ -13,13 +10,7 @@ const findOrCreateAtVersionResolver = async (
         throw new AuthenticationError();
     }
 
-    let version = await getAtVersionByQuery({ atId, name });
-
-    if (!version) {
-        version = await createAtVersion({ atId, name, releasedAt });
-    }
-
-    return version;
+    return findOrCreateAtVersion({ atId, name, releasedAt });
 };
 
 module.exports = findOrCreateAtVersionResolver;

@@ -25,6 +25,7 @@ const {
     createScenarioResultId,
     createAssertionResultId
 } = require('../../services/PopulatedData/locationOfDataId');
+const AtLoader = require('../../models/loaders/AtLoader');
 
 const updatePhaseResolver = async (
     { parentContext: { id: testPlanVersionId } },
@@ -271,9 +272,7 @@ const updatePhaseResolver = async (
 
                         // Calculate the metrics (happens if updating to DRAFT)
                         const conflicts = await conflictsResolver(
-                            populatedTestPlanReport,
-                            null,
-                            context
+                            populatedTestPlanReport
                         );
 
                         if (conflicts.length > 0) {
@@ -393,7 +392,8 @@ const updatePhaseResolver = async (
                 reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
             });
 
-        const ats = await context.atLoader.getAll();
+        const atLoader = AtLoader();
+        const ats = await atLoader.getAll();
 
         const missingAtBrowserCombinations = [];
 
@@ -434,11 +434,7 @@ const updatePhaseResolver = async (
             createdTestPlanReportIdsFromOldResults.includes(testPlanReport.id);
 
         if (phase === 'DRAFT') {
-            const conflicts = await conflictsResolver(
-                testPlanReport,
-                null,
-                context
-            );
+            const conflicts = await conflictsResolver(testPlanReport);
 
             updateParams = {
                 metrics: {
@@ -461,11 +457,7 @@ const updatePhaseResolver = async (
                 : testPlanReport.markedFinalAt;
 
         if (shouldThrowErrorIfFound) {
-            const conflicts = await conflictsResolver(
-                testPlanReport,
-                null,
-                context
-            );
+            const conflicts = await conflictsResolver(testPlanReport);
             if (conflicts.length > 0) {
                 // Throw away newly created test plan reports if exception was hit
                 if (createdTestPlanReportIdsFromOldResults.length)
@@ -571,7 +563,7 @@ const updatePhaseResolver = async (
         });
 
     await updateTestPlanVersion(testPlanVersionId, updateParams);
-    return populateData({ testPlanVersionId }, { context });
+    return populateData({ testPlanVersionId });
 };
 
 module.exports = updatePhaseResolver;
