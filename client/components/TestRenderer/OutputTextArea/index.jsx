@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { Feedback } from '..';
 import { Form } from 'react-bootstrap';
-import { noOutputTextAreaValue } from './constants';
+import { NO_OUTPUT_STRING } from './constants';
 
 const OutputTextAreaWrapper = styled.div`
     > textarea {
         width: 100%;
+        height: 3.5rem;
     }
 `;
 
@@ -21,9 +22,14 @@ const NoOutputCheckbox = styled(Form.Check)`
     }
 `;
 
-const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
+const OutputTextArea = ({
+    commandIndex,
+    atOutput,
+    isSubmitted,
+    readOnly = false
+}) => {
     const [noOutput, setNoOutput] = useState(
-        atOutput.value === noOutputTextAreaValue
+        atOutput.value === NO_OUTPUT_STRING
     );
 
     const isMounted = useRef(false);
@@ -31,7 +37,7 @@ const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
     useEffect(() => {
         if (isMounted.current) {
             if (noOutput) {
-                atOutput.change(noOutputTextAreaValue);
+                atOutput.change(NO_OUTPUT_STRING);
             } else {
                 atOutput.change('');
             }
@@ -41,7 +47,7 @@ const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
     }, [noOutput]);
 
     useEffect(() => {
-        setNoOutput(atOutput.value === noOutputTextAreaValue);
+        setNoOutput(atOutput.value === NO_OUTPUT_STRING);
     }, [atOutput.value]);
 
     return (
@@ -63,9 +69,7 @@ const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
             </label>
             <NoOutputCheckbox
                 checked={noOutput}
-                disabled={
-                    atOutput.value && atOutput.value !== noOutputTextAreaValue
-                }
+                disabled={atOutput.value && atOutput.value !== NO_OUTPUT_STRING}
                 label="No output"
                 id={`no-output-checkbox-${commandIndex}`}
                 type="checkbox"
@@ -78,6 +82,7 @@ const OutputTextArea = ({ commandIndex, atOutput, isSubmitted }) => {
                 value={atOutput.value}
                 onChange={e => atOutput.change(e.target.value)}
                 disabled={noOutput}
+                readOnly={readOnly}
             />
         </OutputTextAreaWrapper>
     );
@@ -100,6 +105,7 @@ OutputTextArea.propTypes = {
         change: PropTypes.func.isRequired,
         focus: PropTypes.bool.isRequired
     }).isRequired,
+    readOnly: PropTypes.bool,
     isSubmitted: PropTypes.bool.isRequired
 };
 

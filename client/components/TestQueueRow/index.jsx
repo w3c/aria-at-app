@@ -2,11 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useApolloClient, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faCheck,
-    faTrashAlt,
-    faUserPlus
-} from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -19,10 +15,14 @@ import {
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
 } from '../TestQueue/queries';
-import TestPlanUpdaterModal from '../TestPlanUpdater/TestPlanUpdaterModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
+import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListItem';
+import { isBot } from '../../utils/automation';
+import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
+import BotRunTestStatusList from '../BotRunTestStatusList';
+import ManageBotRunDialogWithButton from '../ManageBotRunDialog/WithButton';
 
 const TestQueueRow = ({
     user = {},
@@ -60,14 +60,11 @@ const TestQueueRow = ({
     const [removeTester] = useMutation(REMOVE_TESTER_MUTATION);
     const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
 
-    const [showTestPlanUpdaterModal, setShowTestPlanUpdaterModal] =
-        useState(false);
     const [testPlanReport, setTestPlanReport] = useState(testPlanReportData);
     const [isLoading, setIsLoading] = useState(false);
 
     const { id, isAdmin, isTester, isVendor, username } = user;
     const {
-        id: testPlanReportId,
         testPlanVersion,
         draftTestPlanRuns,
         runnableTestsLength = 0
@@ -207,61 +204,18 @@ const TestQueueRow = ({
 
     const renderAssignMenu = () => {
         return (
-            <>
-                <Dropdown aria-label="Assign testers menu">
-                    <Dropdown.Toggle
-                        ref={dropdownAssignTesterButtonRef}
-                        aria-label="Assign testers"
-                        className="assign-tester"
-                        variant="secondary"
-                    >
-                        <FontAwesomeIcon icon={faUserPlus} />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu role="menu" className="assign-menu">
-                        {testers.length ? (
-                            testers.map(({ username }) => {
-                                const isTesterAssigned =
-                                    checkIsTesterAssigned(username);
-                                let classname = isTesterAssigned
-                                    ? 'assigned'
-                                    : 'not-assigned';
-                                return (
-                                    <Dropdown.Item
-                                        role="menuitem"
-                                        variant="secondary"
-                                        as="button"
-                                        key={nextId()}
-                                        onClick={async () => {
-                                            focusButtonRef.current =
-                                                dropdownAssignTesterButtonRef.current;
-                                            await toggleTesterAssign(username);
-                                            setAlertMessage(
-                                                `You have been ${
-                                                    classname.includes('not')
-                                                        ? 'removed from'
-                                                        : 'assigned to'
-                                                } this test run.`
-                                            );
-                                        }}
-                                        aria-checked={isTesterAssigned}
-                                    >
-                                        {isTesterAssigned && (
-                                            <FontAwesomeIcon icon={faCheck} />
-                                        )}
-                                        <span className={classname}>
-                                            {`${username}`}
-                                        </span>
-                                    </Dropdown.Item>
-                                );
-                            })
-                        ) : (
-                            <span className="not-assigned">
-                                No testers to assign
-                            </span>
-                        )}
-                    </Dropdown.Menu>
-                </Dropdown>
-            </>
+            <AssignTesterDropdown
+                onChange={async () => {
+                    focusButtonRef.current =
+                        dropdownAssignTesterButtonRef.current;
+                    await triggerTestPlanReportUpdate();
+                }}
+                setAlertMessage={setAlertMessage}
+                testPlanReportId={testPlanReport.id}
+                possibleTesters={testers}
+                draftTestPlanRuns={draftTestPlanRuns}
+                dropdownAssignTesterButtonRef={dropdownAssignTesterButtonRef}
+            />
         );
     };
 
@@ -352,6 +306,64 @@ const TestQueueRow = ({
                             })}
                         </Dropdown.Menu>
                     </Dropdown>
+                </>
+            );
+        }
+    };
+
+    const renderSecondaryActions = () => {
+        const botTestPlanRun = draftTestPlanRuns.find(({ tester }) =>
+            isBot(tester)
+        );
+
+        if (isAdmin && !isLoading) {
+            return (
+                <>
+                    {botTestPlanRun && (
+                        <ManageBotRunDialogWithButton
+                            testPlanRun={botTestPlanRun}
+                            testPlanReportId={testPlanReport.id}
+                            testers={testers}
+                            onChange={triggerTestPlanReportUpdate}
+                            onDelete={() => {
+                                triggerDeleteResultsModal(
+                                    evaluateTestPlanRunTitle(),
+                                    botTestPlanRun.tester.username,
+                                    async () => {
+                                        await triggerLoad(async () => {
+                                            await handleRemoveTesterResults(
+                                                botTestPlanRun.id
+                                            );
+                                        }, 'Removing Test Results');
+                                        dropdownDeleteTesterResultsButtonRef.current.focus();
+                                    }
+                                );
+                            }}
+                        />
+                    )}
+                    {!testPlanReport.conflictsLength &&
+                        testPlanReport.draftTestPlanRuns.length > 0 &&
+                        testPlanReport.draftTestPlanRuns[0].testResultsLength >
+                            0 &&
+                        completedAllTests && (
+                            <Button
+                                ref={updateTestPlanStatusButtonRef}
+                                variant="secondary"
+                                onClick={async () => {
+                                    focusButtonRef.current =
+                                        updateTestPlanStatusButtonRef.current;
+                                    await updateReportStatus();
+                                }}
+                            >
+                                Mark as Final
+                            </Button>
+                        )}
+                    {botTestPlanRun && (
+                        <BotRunTestStatusList
+                            testPlanReportId={testPlanReport.id}
+                            runnableTestsLength={runnableTestsLength}
+                        />
+                    )}
                 </>
             );
         }
@@ -455,31 +467,18 @@ const TestQueueRow = ({
                                             ? -1
                                             : 1
                                     )
-                                    .map(
-                                        ({ tester, testResultsLength = 0 }) => (
-                                            <li key={nextId()}>
-                                                <a
-                                                    href={
-                                                        `https://github.com/` +
-                                                        `${tester.username}`
-                                                    }
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    // Allows ATs to read the number of
-                                                    // completed tests when tabbing to this
-                                                    // link
-                                                    aria-describedby={getRowId(
-                                                        tester
-                                                    )}
-                                                >
-                                                    {tester.username}
-                                                </a>
-                                                <div id={getRowId(tester)}>
-                                                    {`${testResultsLength} of ${runnableTestsLength} tests complete`}
-                                                </div>
-                                            </li>
-                                        )
-                                    )}
+                                    .map(draftTestPlanRun => (
+                                        <TestQueueCompletionStatusListItem
+                                            key={nextId()}
+                                            runnableTestsLength={
+                                                runnableTestsLength
+                                            }
+                                            testPlanRun={draftTestPlanRun}
+                                            id={getRowId(
+                                                draftTestPlanRun.tester
+                                            )}
+                                        />
+                                    ))}
                             </ul>
                         ) : (
                             <div className="no-assignees">
@@ -494,27 +493,7 @@ const TestQueueRow = ({
                     </div>
                     {isSignedIn && isTester && (
                         <div className="secondary-actions">
-                            {isAdmin &&
-                            !isLoading &&
-                            !testPlanReport.conflictsLength &&
-                            testPlanReport.draftTestPlanRuns.length &&
-                            testPlanReport.draftTestPlanRuns[0]
-                                .testResultsLength &&
-                            completedAllTests ? (
-                                <>
-                                    <Button
-                                        ref={updateTestPlanStatusButtonRef}
-                                        variant="secondary"
-                                        onClick={async () => {
-                                            focusButtonRef.current =
-                                                updateTestPlanStatusButtonRef.current;
-                                            await updateReportStatus();
-                                        }}
-                                    >
-                                        Mark as Final
-                                    </Button>
-                                </>
-                            ) : null}
+                            {renderSecondaryActions()}
                         </div>
                     )}
                 </td>
@@ -569,7 +548,8 @@ const TestQueueRow = ({
                             {isAdmin && renderOpenAsDropdown()}
                             {isAdmin && renderDeleteMenu()}
                             {(!isAdmin &&
-                                currentUserTestPlanRun.testResultsLength > 0 && (
+                                currentUserTestPlanRun.testResultsLength >
+                                    0 && (
                                     <Button
                                         ref={deleteTesterResultsButtonRef}
                                         variant="danger"
@@ -608,14 +588,7 @@ const TestQueueRow = ({
                     )}
                 </td>
             </tr>
-            {showTestPlanUpdaterModal && (
-                <TestPlanUpdaterModal
-                    show={showTestPlanUpdaterModal}
-                    handleClose={() => setShowTestPlanUpdaterModal(false)}
-                    testPlanReportId={testPlanReportId}
-                    triggerTestPlanReportUpdate={triggerTestPlanReportUpdate}
-                />
-            )}
+
             {showThemedModal && (
                 <BasicThemedModal
                     show={showThemedModal}

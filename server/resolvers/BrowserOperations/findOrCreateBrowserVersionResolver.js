@@ -1,7 +1,6 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-    getBrowserVersionByQuery,
-    createBrowserVersion
+    findOrCreateBrowserVersion
 } = require('../../models/services/BrowserService');
 
 const findOrCreateBrowserVersionResolver = async (
@@ -17,11 +16,7 @@ const findOrCreateBrowserVersionResolver = async (
         throw new AuthenticationError();
     }
 
-    let version = await getBrowserVersionByQuery({ browserId, name });
-
-    if (!version) {
-        version = await createBrowserVersion({ browserId, name });
-    }
+    let version = await findOrCreateBrowserVersion({ browserId, name });
 
     return version;
 };

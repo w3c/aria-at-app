@@ -29,13 +29,10 @@ const deleteTestPlanRunResolver = async (
         testerUserId
     });
 
-    const { testPlanReport } = await populateData(
-        {
-            testPlanReportId
-        },
-        context
-    );
-    const conflicts = await conflictsResolver(testPlanReport, null, context);
+    const { testPlanReport } = await populateData({
+        testPlanReportId
+    });
+    const conflicts = await conflictsResolver(testPlanReport);
     await updateTestPlanReport(testPlanReport.id, {
         metrics: {
             ...testPlanReport.metrics,
@@ -43,7 +40,7 @@ const deleteTestPlanRunResolver = async (
         }
     });
 
-    return populateData({ testPlanReportId }, { context });
+    return populateData({ testPlanReportId });
 };
 
 module.exports = deleteTestPlanRunResolver;
