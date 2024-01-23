@@ -10,7 +10,7 @@ const deleteTestResultResolver = async (
     context
 ) => {
     const { user } = context;
-    const { testPlanRun } = await populateData({ testResultId }, { context });
+    const { testPlanRun } = await populateData({ testResultId });
 
     if (
         !(
@@ -32,7 +32,7 @@ const deleteTestResultResolver = async (
 
     await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
 
-    return populateData({ testPlanRunId: testPlanRun.id }, { context });
+    return populateData({ testPlanRunId: testPlanRun.id });
 };
 
 module.exports = deleteTestResultResolver;

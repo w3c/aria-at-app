@@ -3,19 +3,16 @@ const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
 
-const conflictsResolver = async (testPlanReport, _, context) => {
+const conflictsResolver = async testPlanReport => {
     let testPlanReportData = {};
 
     // Used in cases where the testPlanRuns to evaluate the conflicts doesn't
     // exist for `testPlanReport`, such as this function being called from
     // `conflictsLengthResolver.js`
     if (testPlanReport.testPlanRuns.some(t => !t.testResults)) {
-        const { testPlanReport: _testPlanReport } = await populateData(
-            {
-                testPlanReportId: testPlanReport.id
-            },
-            { context }
-        );
+        const { testPlanReport: _testPlanReport } = await populateData({
+            testPlanReportId: testPlanReport.id
+        });
         testPlanReportData = _testPlanReport;
     } else testPlanReportData = testPlanReport;
 
@@ -24,11 +21,7 @@ const conflictsResolver = async (testPlanReport, _, context) => {
     const testResultsByTestId = {};
     for (const testPlanRun of testPlanReportData.testPlanRuns) {
         testPlanRun.testPlanReport = testPlanReportData; // TODO: remove hacky fix
-        const testResults = await testResultsResolver(
-            testPlanRun,
-            null,
-            context
-        );
+        const testResults = await testResultsResolver(testPlanRun);
         testResults
             .filter(testResult => testResult.completedAt)
             .forEach(testResult => {
@@ -99,10 +92,10 @@ const conflictsResolver = async (testPlanReport, _, context) => {
 
     return Promise.all(
         conflicts.map(async ({ source, conflictingResults }) => ({
-            source: await populateData(source, { preloaded, context }),
+            source: await populateData(source, { preloaded }),
             conflictingResults: await Promise.all(
                 conflictingResults.map(conflictingResult =>
-                    populateData(conflictingResult, { preloaded, context })
+                    populateData(conflictingResult, { preloaded })
                 )
             )
         }))
