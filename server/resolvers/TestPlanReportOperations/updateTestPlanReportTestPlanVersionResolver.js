@@ -123,10 +123,9 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     for (let i = 0; i < currentTestPlanReport.testPlanRuns.length; i++) {
         const testPlanRun = currentTestPlanReport.testPlanRuns[i];
-        const { testPlanRun: populatedTestPlanRun } = await populateData(
-            { testPlanRunId: testPlanRun.id },
-            { context }
-        );
+        const { testPlanRun: populatedTestPlanRun } = await populateData({
+            testPlanRunId: testPlanRun.id
+        });
 
         testPlanRun.testResults = await testResults(
             populatedTestPlanRun.toJSON(),
@@ -266,7 +265,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     const created = await Promise.all(
         createdLocationsOfData.map(createdLocationOfData =>
-            populateData(createdLocationOfData, { preloaded, context })
+            populateData(createdLocationOfData, { preloaded })
         )
     );
     const reportIsNew = !!created.find(item => item.testPlanReport.id);
@@ -327,7 +326,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     // await removeTestPlanRunByQuery({ testPlanReportId });
     // await removeTestPlanReport(testPlanReportId);
 
-    return populateData(locationOfData, { preloaded, context });
+    return populateData(locationOfData, { preloaded });
 };
 
 module.exports = updateTestPlanReportTestPlanVersionResolver;

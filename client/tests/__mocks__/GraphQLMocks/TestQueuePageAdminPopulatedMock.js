@@ -245,7 +245,8 @@ export default testQueuePageQuery => [
                                     id: '1',
                                     username: 'esmeralda-baggins'
                                 },
-                                testResultsLength: 0
+                                testResultsLength: 0,
+                                initiatedByAutomation: false
                             }
                         ]
                     },
@@ -273,7 +274,8 @@ export default testQueuePageQuery => [
                                     id: '1',
                                     username: 'esmeralda-baggins'
                                 },
-                                testResultsLength: 0
+                                testResultsLength: 0,
+                                initiatedByAutomation: false
                             }
                         ]
                     },
@@ -298,12 +300,14 @@ export default testQueuePageQuery => [
                             {
                                 id: '3',
                                 tester: { id: '2', username: 'tom-proudfeet' },
-                                testResultsLength: 3
+                                testResultsLength: 3,
+                                initiatedByAutomation: false
                             },
                             {
                                 id: '101',
                                 tester: { id: '101', username: 'alflennik' },
-                                testResultsLength: 1
+                                testResultsLength: 1,
+                                initiatedByAutomation: false
                             },
                             {
                                 id: '2',
@@ -311,7 +315,8 @@ export default testQueuePageQuery => [
                                     id: '1',
                                     username: 'esmeralda-baggins'
                                 },
-                                testResultsLength: 3
+                                testResultsLength: 3,
+                                initiatedByAutomation: false
                             }
                         ]
                     }

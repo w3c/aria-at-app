@@ -258,7 +258,8 @@ export default testQueuePageQuery => [
                                     id: '1',
                                     username: 'foo-bar'
                                 },
-                                testResultsLength: 0
+                                testResultsLength: 0,
+                                initiatedByAutomation: false
                             },
                             {
                                 id: '19',
@@ -266,7 +267,8 @@ export default testQueuePageQuery => [
                                     id: '4',
                                     username: 'bar-foo'
                                 },
-                                testResultsLength: 0
+                                testResultsLength: 0,
+                                initiatedByAutomation: false
                             }
                         ]
                     },
@@ -302,7 +304,8 @@ export default testQueuePageQuery => [
                                     id: '5',
                                     username: 'boo-far'
                                 },
-                                testResultsLength: 0
+                                testResultsLength: 0,
+                                initiatedByAutomation: false
                             }
                         ]
                     },

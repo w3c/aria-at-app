@@ -9,9 +9,11 @@ const {
     getTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
 const { decodeLocationOfDataId } = require('./locationOfDataId');
-const testsResolver = require('../../resolvers/TestPlanVersion/testsResolver');
-const testResultsResolver = require('../../resolvers/TestPlanRun/testResultsResolver');
 const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanResolver');
+const {
+    getTestResults
+} = require('../../models/services/TestResultReadService');
+const getTests = require('../../models/services/TestsService');
 
 /**
  *
@@ -22,7 +24,7 @@ const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion
  * and no database queries will be run by this function.
  * @returns
  */
-const populateData = async (locationOfData, { preloaded, context }) => {
+const populateData = async (locationOfData, { preloaded } = {}) => {
     let {
         testPlanId,
         testPlanVersionId,
@@ -130,11 +132,7 @@ const populateData = async (locationOfData, { preloaded, context }) => {
     let browserVersion;
 
     if (testResultId) {
-        const testResults = await testResultsResolver(
-            testPlanRun,
-            null,
-            context
-        );
+        const testResults = await getTestResults(testPlanRun);
         testResult = testResults.find(each => each.id === testResultId);
         if (!testResult) {
             throw new Error(
@@ -157,7 +155,7 @@ const populateData = async (locationOfData, { preloaded, context }) => {
         assertionId = assertionResult.assertionId;
     }
     if (testId) {
-        const tests = testsResolver(testPlanReport ?? testPlanVersion);
+        const tests = getTests(testPlanReport ?? testPlanVersion);
         test = tests.find(each => each.id === testId);
         if (!test) {
             throw new Error(

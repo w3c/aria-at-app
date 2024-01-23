@@ -1,5 +1,7 @@
-const renderableContents = async (test, _, context) => {
-    const ats = await context.atLoader.getAll();
+const AtLoader = require('../../models/loaders/AtLoader');
+
+const renderableContents = async test => {
+    const ats = await AtLoader().getAll();
 
     return Object.entries(test.renderableContent).map(
         ([atId, renderableContent]) => {

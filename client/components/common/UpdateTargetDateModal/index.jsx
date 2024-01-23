@@ -118,8 +118,12 @@ const UpdateTargetDateModal = ({
                     </Form.Group>
                 </ModalInnerSectionContainer>
             }
-            actionLabel={'Save'}
-            handleAction={onSubmit}
+            actions={[
+                {
+                    label: 'Save',
+                    onClick: onSubmit
+                }
+            ]}
             handleClose={handleClose}
             useOnHide={true}
             handleHide={handleClose}

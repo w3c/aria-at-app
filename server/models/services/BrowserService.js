@@ -5,6 +5,7 @@ const {
     AT_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, Browser, BrowserVersion } = require('../');
+const { clearCachedBrowsers } = require('../loaders/utils');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -179,6 +180,7 @@ const updateBrowser = async (
  * @returns {Promise<boolean>}
  */
 const removeBrowser = async (id, deleteOptions = { truncate: false }) => {
+    clearCachedBrowsers();
     return await ModelService.removeById(Browser, id, deleteOptions);
 };
 
@@ -261,6 +263,7 @@ const createBrowserVersion = async (
 ) => {
     await ModelService.create(BrowserVersion, { browserId, name }, options);
 
+    clearCachedBrowsers();
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return await ModelService.getByQuery(
         BrowserVersion,
@@ -294,6 +297,7 @@ const updateBrowserVersionByQuery = async (
         options
     );
 
+    clearCachedBrowsers();
     return await ModelService.getByQuery(
         BrowserVersion,
         {
@@ -324,6 +328,7 @@ const updateBrowserVersionById = async (
 ) => {
     await ModelService.update(BrowserVersion, { id }, updateParams, options);
 
+    clearCachedBrowsers();
     return await ModelService.getById(
         BrowserVersion,
         id,
@@ -342,6 +347,7 @@ const removeBrowserVersionByQuery = async (
     { browserId, name },
     deleteOptions = { truncate: false }
 ) => {
+    clearCachedBrowsers();
     return await ModelService.removeByQuery(
         BrowserVersion,
         { browserId, name },
@@ -358,7 +364,36 @@ const removeBrowserVersionById = async (
     id,
     deleteOptions = { truncate: false }
 ) => {
+    clearCachedBrowsers();
     return await ModelService.removeById(BrowserVersion, id, deleteOptions);
+};
+
+/**
+ * @param {object} params - values to be used to create or find the BrowserVersion record
+ * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
+ * @param {object} options - Generic options for Sequelize
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {BrowserVersion}
+ */
+const findOrCreateBrowserVersion = async (
+    { browserId, name },
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
+    options = {}
+) => {
+    let version = await getBrowserVersionByQuery(
+        { browserId, name },
+        browserVersionAttributes,
+        browserAttributes,
+        options
+    );
+
+    if (!version) {
+        version = await createBrowserVersion({ browserId, name });
+    }
+
+    return version;
 };
 
 module.exports = {
@@ -376,5 +411,8 @@ module.exports = {
     updateBrowserVersionByQuery,
     updateBrowserVersionById,
     removeBrowserVersionByQuery,
-    removeBrowserVersionById
+    removeBrowserVersionById,
+
+    // Custom [BrowserVersion]
+    findOrCreateBrowserVersion
 };

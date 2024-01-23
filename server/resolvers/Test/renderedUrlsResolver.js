@@ -1,5 +1,7 @@
-const renderedUrls = async (test, _, context) => {
-    const ats = await context.atLoader.getAll();
+const AtLoader = require('../../models/loaders/AtLoader');
+
+const renderedUrls = async test => {
+    const ats = await AtLoader().getAll();
 
     return Object.entries(test.renderedUrls).map(([atId, renderedUrl]) => {
         const at = ats.find(at => at.id == atId);
