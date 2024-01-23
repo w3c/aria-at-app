@@ -23,6 +23,8 @@ function AddTestToQueueWithConfirmation({
     buttonText = 'Add to Test Queue',
     triggerUpdate = () => {}
 }) {
+    // section: Set Variables
+    const [errorMessage, setErrorMessage] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
     const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION);
@@ -129,6 +131,33 @@ function AddTestToQueueWithConfirmation({
         );
     };
 
+    // section: Error Modal
+    const renderErrorDialog = () => {
+        // setErrorMessage(true)
+        console.log('CHECK', errorMessage);
+        return (
+            <BasicModal
+                // dialogClassName={'add-test-to-queue-confirmation'}
+                show={errorMessage}
+                title={'Yippeee'}
+                content={'yippee yippee'}
+                closeLabel={'Cancel'}
+                staticBackdrop={true}
+                // actions={actions}
+                useOnHide
+                handleClose={async () => {
+                    // if (hasAutomationSupport) {
+                    //     setShowConfirmation(false);
+                    // } else {
+                    //     await closeWithUpdate();
+                    // }
+                    setErrorMessage(false);
+                }}
+            />
+        );
+        // console.log('It RAN');
+    };
+
     const addTestToQueue = async () => {
         let tpr;
         await triggerLoad(async () => {
@@ -159,25 +188,32 @@ function AddTestToQueueWithConfirmation({
         setShowConfirmation(true);
     };
 
+    // section: Button
     return (
         <LoadingStatus message={loadingMessage}>
             <Button
                 ref={buttonRef}
                 disabled={disabled}
                 variant="secondary"
-                onClick={async () => {
-                    if (hasAutomationSupport) {
-                        setShowConfirmation(true);
-                    } else {
-                        await addTestToQueue();
+                onClick={
+                    // async () => {
+                    //     if (hasAutomationSupport) {
+                    //         setShowConfirmation(true);
+                    //     } else {
+                    //         await addTestToQueue();
+                    //     }
+                    // }
+                    async () => {
+                        setErrorMessage(true);
+                        // renderErrorDialog();
                     }
-                }}
+                }
                 className="w-auto"
                 data-testid="add-button"
             >
                 {buttonText}
             </Button>
-            {renderConfirmation()}
+            {renderErrorDialog()}
         </LoadingStatus>
     );
 }
