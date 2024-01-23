@@ -1,18 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-// import { getRequiredReports } from './isRequired';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-// import getMetrics from '../Reports/getMetrics';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 import { convertDateToString } from '../../utils/formatter';
 import { ThemeTable } from '../common/ThemeTable';
 import BasicModal from '../common/BasicModal';
 import './TestPlanReportStatusDialog.css';
-// import { at } from 'lodash';
 
 const IncompleteStatusReport = styled.span`
     min-width: 5rem;
@@ -190,19 +187,7 @@ const TestPlanReportStatusDialog = ({
                         <th>Report Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {/* section: */}
-                    {/* {matchedReports.map(report => renderTableRow(report))}
-                    {unmatchedRequiredReports.map(report =>
-                        renderTableRow(report)
-                    )}
-                    {newOthers.map(report => renderTableRow(report, 'No'))}
-                    {unmatchedTestPlanReports.map(report =>
-                        renderTableRow(report, 'No')
-                    )}
-                     */}
-                    {tableRows}
-                </tbody>
+                <tbody>{tableRows}</tbody>
             </ThemeTable>
         </>
     );

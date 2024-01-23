@@ -43,7 +43,6 @@ describe('TestPlanReportStatusDialog', () => {
                 }
             }
         ] = TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA;
-        // console.log('HERE MockData', JSON.stringify(TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA, null, 2));
 
         const result = setup(
             { testPlanVersion, show, ats, handleHide },
