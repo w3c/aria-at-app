@@ -761,15 +761,16 @@ describe('data management', () => {
                     0
                 );
 
-            // The difference between them is that there have been updated setting identifiers for VoiceOver tests;
-            // 2 were switched to quickNavOn -> singleQuickKeyNavOn
+            // The difference between them is that there have been updated settings for VoiceOver tests;
+            // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn'
             //
             // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
-            // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for 'reqInfoAboutButton'
-            // should still match
+            // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
+            // 'reqInfoAboutButton' should still match
             //
-            // This means only 1 test plan report should be affected and now unmarked as final because the JAWS and NVDA
-            // reports are unaffected
+            // This means only 1 test plan report should be affected, for VoiceOver and now unmarked as final.
+            // The single JAWS and NVDA reports should be unaffected
+            expect(oldCommandButtonVersionMarkedFinalReportsCount).toEqual(3);
             expect(
                 newCommandButtonVersionInDraftMarkedFinalReportsCount
             ).toEqual(oldCommandButtonVersionMarkedFinalReportsCount - 1);
