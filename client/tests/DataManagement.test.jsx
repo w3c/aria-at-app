@@ -123,7 +123,6 @@ const testPlanVersions = [
     {
         phase: 'DRAFT',
         id: '106',
-        title: 'testD',
         testPlan: { directory: 'dirD' },
         draftStatusReachedAt: '2024-01-08T20:51:40.000Z'
     }
