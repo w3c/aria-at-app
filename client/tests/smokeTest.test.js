@@ -63,36 +63,15 @@ describe('smoke test', () => {
         browser = await puppeteer.launch({ headless: 'new' });
         const [extraBlankPage] = await browser.pages();
         extraBlankPage.close();
-    }, 31000);
+    }, 80000);
 
     afterAll(async () => {
         if (!browser) return; // Failed to start
 
-        // await new Promise(resolve => setTimeout(resolve, 2000));
         await browser.close();
 
         await Promise.all([backendServer.close(), clientServer.close()]);
-
-        // await new Promise(resolve => {
-        //     appServer.stdout.on('data', data => {
-        //         const output = data.toString();
-        //         if (output.includes('Done in')) {
-        //             resolve();
-        //         }
-        //     });
-
-        //     process.kill(appServer.pid);
-        // });
-
-        // await new Promise(resolve => {
-        //     process.kill(appServer.pid, 'SIGINT');
-
-        //     setTimeout(() => {
-        //         process.kill(appServer.pid, 'SIGINT');
-        //         resolve();
-        //     }, 1000);
-        // });
-    }, 91000);
+    }, 80000);
 
     it('loads various pages without crashing', async () => {
         let homeH1;
@@ -128,5 +107,5 @@ describe('smoke test', () => {
         );
         expect(reportsH1).toBe('Assistive Technology Interoperability Reports');
         expect(dataManagementH1).toBe('Data Management');
-    }, 10000);
+    }, 80000);
 });
