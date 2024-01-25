@@ -35,7 +35,7 @@
   "homepage": "https://github.com/bocoup/aria-at-report#readme",
   "dependencies": {
     "patch-package": "^6.5.1",
-    "postinstall-postinstall": "^2.1.0"
+    "puppeteer": "^21.7.0"
   },
   "workspaces": [
     "client",
