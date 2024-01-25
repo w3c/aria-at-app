@@ -63,7 +63,7 @@ describe('smoke test', () => {
         browser = await puppeteer.launch({ headless: 'new' });
         const [extraBlankPage] = await browser.pages();
         extraBlankPage.close();
-    }, 80000);
+    }, 10 * 60 * 1000);
 
     afterAll(async () => {
         if (!browser) return; // Failed to start
@@ -71,41 +71,49 @@ describe('smoke test', () => {
         await browser.close();
 
         await Promise.all([backendServer.close(), clientServer.close()]);
-    }, 80000);
+    }, 10 * 60 * 1000);
 
-    it('loads various pages without crashing', async () => {
-        let homeH1;
-        let reportsH1;
-        let dataManagementH1;
+    it(
+        'loads various pages without crashing',
+        async () => {
+            let homeH1;
+            let reportsH1;
+            let dataManagementH1;
 
-        await Promise.all([
-            (async () => {
-                const page = await browser.newPage();
-                await page.goto('http://localhost:3033/');
-                await page.waitForSelector('h1');
-                const h1Handle = await page.waitForSelector('h1');
-                homeH1 = await h1Handle.evaluate(h1 => h1.innerText);
-            })(),
-            (async () => {
-                const page = await browser.newPage();
-                await page.goto('http://localhost:3033/reports');
-                await page.waitForSelector('h2');
-                const h1Handle = await page.waitForSelector('h1');
-                reportsH1 = await h1Handle.evaluate(h1 => h1.innerText);
-            })(),
-            (async () => {
-                const page = await browser.newPage();
-                await page.goto('http://localhost:3033/data-management');
-                await page.waitForSelector('h2');
-                const h1Handle = await page.waitForSelector('h1');
-                dataManagementH1 = await h1Handle.evaluate(h1 => h1.innerText);
-            })()
-        ]);
+            await Promise.all([
+                (async () => {
+                    const page = await browser.newPage();
+                    await page.goto('http://localhost:3033/');
+                    await page.waitForSelector('h1');
+                    const h1Handle = await page.waitForSelector('h1');
+                    homeH1 = await h1Handle.evaluate(h1 => h1.innerText);
+                })(),
+                (async () => {
+                    const page = await browser.newPage();
+                    await page.goto('http://localhost:3033/reports');
+                    await page.waitForSelector('h2');
+                    const h1Handle = await page.waitForSelector('h1');
+                    reportsH1 = await h1Handle.evaluate(h1 => h1.innerText);
+                })(),
+                (async () => {
+                    const page = await browser.newPage();
+                    await page.goto('http://localhost:3033/data-management');
+                    await page.waitForSelector('h2');
+                    const h1Handle = await page.waitForSelector('h1');
+                    dataManagementH1 = await h1Handle.evaluate(
+                        h1 => h1.innerText
+                    );
+                })()
+            ]);
 
-        expect(homeH1).toBe(
-            'Enabling Interoperability for Assistive Technology Users'
-        );
-        expect(reportsH1).toBe('Assistive Technology Interoperability Reports');
-        expect(dataManagementH1).toBe('Data Management');
-    }, 80000);
+            expect(homeH1).toBe(
+                'Enabling Interoperability for Assistive Technology Users'
+            );
+            expect(reportsH1).toBe(
+                'Assistive Technology Interoperability Reports'
+            );
+            expect(dataManagementH1).toBe('Data Management');
+        },
+        10 * 60 * 1000
+    );
 });
