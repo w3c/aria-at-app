@@ -13,7 +13,10 @@ const startServer = async serverOrClient => {
                 AUTOMATION_SCHEDULER_PORT: 8833,
                 API_SERVER: 'http://localhost:8033',
                 APP_SERVER: 'http://localhost:3033',
-                AUTOMATION_SCHEDULER_URL: 'http://localhost:8833'
+                AUTOMATION_SCHEDULER_URL: 'http://localhost:8833',
+                PGDATABASE: 'aria_at_report_test',
+                PGPORT: 5432,
+                ENVIRONMENT: 'test'
             }
         });
 
