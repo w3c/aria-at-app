@@ -61,7 +61,10 @@ describe('smoke test', () => {
         ]);
         console.log('hi 2');
 
-        browser = await puppeteer.launch({ headless: 'new' });
+        browser = await puppeteer.launch({
+            headless: 'new',
+            args: ['--no-sandbox'] // TODO: explain
+        });
         console.log('hi 3');
         const [extraBlankPage] = await browser.pages();
         console.log('hi 4');
