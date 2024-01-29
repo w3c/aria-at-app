@@ -55,14 +55,19 @@ describe('smoke test', () => {
     let clientServer;
 
     beforeAll(async () => {
+        console.log('hi 1');
         [clientServer, backendServer] = await Promise.all([
             startServer('client'),
             startServer('server')
         ]);
+        console.log('hi 2');
 
         browser = await puppeteer.launch({ headless: false });
+        console.log('hi 3');
         const [extraBlankPage] = await browser.pages();
+        console.log('hi 4');
         extraBlankPage.close();
+        console.log('hi 5');
     }, 60000);
 
     afterAll(async () => {
