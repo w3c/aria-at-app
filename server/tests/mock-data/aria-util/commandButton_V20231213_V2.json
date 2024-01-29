@@ -1,0 +1,1909 @@
+[
+  {
+    "at": {
+      "key": "jaws",
+      "name": "JAWS",
+      "settings": {
+        "pcCursor": {
+          "screenText": "PC cursor active",
+          "instructions": [
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the virtual cursor is active, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;z&lt;/kbd&gt; to disable the virtual cursor."
+          ]
+        },
+        "virtualCursor": {
+          "screenText": "virtual cursor active",
+          "instructions": [
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the PC cursor is active, press &lt;kbd&gt;Escape&lt;/kbd&gt; to activate the virtual cursor."
+          ]
+        }
+      }
+    },
+    "id": "ZTQzMeyIyIjoiNTYzNjgifQDk1ZW",
+    "atIds": [1],
+    "title": "Navigate forwards to a button",
+    "viewers": [],
+    "rawTestId": "navForwardsToButton",
+    "rowNumber": 5,
+    "scenarios": [
+      {
+        "id": "NmFiMeyIzIjoiWlRRek1leUl5SWpvaU5UWXpOamdpZlFEazFaVyJ9jYxND",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["down"]
+      },
+      {
+        "id": "ZjA0YeyIzIjoiWlRRek1leUl5SWpvaU5UWXpOamdpZlFEazFaVyJ9jZkOD",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["b"]
+      },
+      {
+        "id": "NjU5NeyIzIjoiWlRRek1leUl5SWpvaU5UWXpOamdpZlFEazFaVyJ9jdhNW",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["f"]
+      },
+      {
+        "id": "ZTIyNeyIzIjoiWlRRek1leUl5SWpvaU5UWXpOamdpZlFEazFaVyJ9DgwZj",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["tab"]
+      },
+      {
+        "id": "MTBkZeyIzIjoiWlRRek1leUl5SWpvaU5UWXpOamdpZlFEazFaVyJ9mMwOW",
+        "atId": 1,
+        "settings": "pcCursor",
+        "commandIds": ["tab"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "Yzc5YeyIzIjoiWlRRek1leUl5SWpvaU5UWXpOamdpZlFEazFaVyJ9jcyZT",
+        "priority": "MUST",
+        "assertionPhrase": "convey role 'button'",
+        "assertionStatement": "Role 'button' is conveyed"
+      },
+      {
+        "id": "YWU2ZeyIzIjoiWlRRek1leUl5SWpvaU5UWXpOamdpZlFEazFaVyJ9TQ4YW",
+        "priority": "MUST",
+        "assertionPhrase": "convey name 'Print Page'",
+        "assertionStatement": "Name 'Print Page' is conveyed"
+      }
+    ],
+    "renderedUrl": "/aria-at/565a87b4111acebdb883d187b581e82c42a73844/build/tests/command-button/test-05-navForwardsToButton-jaws.collected.html",
+    "renderableContent": {
+      "info": {
+        "title": "Navigate forwards to a button",
+        "testId": "navForwardsToButton",
+        "references": [
+          {
+            "type": "metadata",
+            "refId": "example",
+            "value": "https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/",
+            "linkText": "APG Example: Button"
+          }
+        ],
+        "presentationNumber": 5
+      },
+      "target": {
+        "at": {
+          "key": "jaws",
+          "raw": {
+            "key": "jaws",
+            "name": "JAWS",
+            "settings": {
+              "pcCursor": {
+                "screenText": "PC cursor active",
+                "instructions": [
+                  "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+                  "If the virtual cursor is active, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;z&lt;/kbd&gt; to disable the virtual cursor."
+                ]
+              },
+              "virtualCursor": {
+                "screenText": "virtual cursor active",
+                "instructions": [
+                  "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+                  "If the PC cursor is active, press &lt;kbd&gt;Escape&lt;/kbd&gt; to activate the virtual cursor."
+                ]
+              }
+            },
+            "assertionTokens": {
+              "readingMode": "virtual cursor active",
+              "screenReader": "JAWS",
+              "interactionMode": "PC cursor active"
+            },
+            "defaultConfigurationInstructionsHTML": "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          },
+          "name": "JAWS",
+          "settings": "virtualCursor_pcCursor"
+        },
+        "setupScript": {
+          "name": "setFocusBeforeButton",
+          "script": "setFocusBeforeButton",
+          "source": "// sets focus on a link before the button\ntestPageDocument.querySelector('#beforelink').focus();\n",
+          "jsonpPath": "scripts/setFocusBeforeButton.jsonp.js",
+          "modulePath": "scripts/setFocusBeforeButton.module.js",
+          "scriptDescription": "sets focus on a link before the button"
+        },
+        "referencePage": "reference/2022-4-8_124112/button.setFocusBeforeButton.html"
+      },
+      "commands": [
+        {
+          "id": "down",
+          "settings": "virtualCursor",
+          "keystroke": "Down Arrow",
+          "keypresses": [{ "id": "down", "keystroke": "Down Arrow" }],
+          "presentationNumber": 1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "b",
+          "settings": "virtualCursor",
+          "keystroke": "b",
+          "keypresses": [{ "id": "b", "keystroke": "b" }],
+          "presentationNumber": 1.1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "f",
+          "settings": "virtualCursor",
+          "keystroke": "f",
+          "keypresses": [{ "id": "f", "keystroke": "f" }],
+          "presentationNumber": 1.2,
+          "assertionExceptions": []
+        },
+        {
+          "id": "tab",
+          "settings": "virtualCursor",
+          "keystroke": "Tab",
+          "keypresses": [{ "id": "tab", "keystroke": "Tab" }],
+          "presentationNumber": 1.3,
+          "assertionExceptions": []
+        },
+        {
+          "id": "tab",
+          "settings": "pcCursor",
+          "keystroke": "Tab",
+          "keypresses": [{ "id": "tab", "keystroke": "Tab" }],
+          "presentationNumber": 3,
+          "assertionExceptions": []
+        }
+      ],
+      "assertions": [
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "roleButton",
+          "assertionPhrase": "convey role 'button'",
+          "assertionStatement": "Role 'button' is conveyed"
+        },
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "namePrintPage",
+          "assertionPhrase": "convey name 'Print Page'",
+          "assertionStatement": "Name 'Print Page' is conveyed"
+        }
+      ],
+      "instructions": {
+        "mode": {
+          "pcCursor": [
+            "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the virtual cursor is active, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;z&lt;/kbd&gt; to disable the virtual cursor."
+          ],
+          "virtualCursor": [
+            "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the PC cursor is active, press &lt;kbd&gt;Escape&lt;/kbd&gt; to activate the virtual cursor."
+          ]
+        },
+        "instructions": "Starting at the 'Navigate forwards from here' link, navigate to the 'Print Page' button."
+      }
+    }
+  },
+  {
+    "at": {
+      "key": "nvda",
+      "name": "NVDA",
+      "settings": {
+        "focusMode": {
+          "screenText": "focus mode on",
+          "instructions": [
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+          ]
+        },
+        "browseMode": {
+          "screenText": "browse mode on",
+          "instructions": [
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+          ]
+        }
+      }
+    },
+    "id": "YzNjOeyIyIjoiNTYzNjgifQTNlMD",
+    "atIds": [2],
+    "title": "Navigate forwards to a button",
+    "viewers": [],
+    "rawTestId": "navForwardsToButton",
+    "rowNumber": 5,
+    "scenarios": [
+      {
+        "id": "YWJlYeyIzIjoiWXpOak9leUl5SWpvaU5UWXpOamdpZlFUTmxNRCJ9Tc1MD",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["down"]
+      },
+      {
+        "id": "OThhOeyIzIjoiWXpOak9leUl5SWpvaU5UWXpOamdpZlFUTmxNRCJ9DRlNz",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["b"]
+      },
+      {
+        "id": "YWNmNeyIzIjoiWXpOak9leUl5SWpvaU5UWXpOamdpZlFUTmxNRCJ9jA2ZT",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["f"]
+      },
+      {
+        "id": "OTljOeyIzIjoiWXpOak9leUl5SWpvaU5UWXpOamdpZlFUTmxNRCJ9GU1Mj",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["tab"]
+      },
+      {
+        "id": "MGZiYeyIzIjoiWXpOak9leUl5SWpvaU5UWXpOamdpZlFUTmxNRCJ9WMyNm",
+        "atId": 2,
+        "settings": "focusMode",
+        "commandIds": ["tab"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "NGUzZeyIzIjoiWXpOak9leUl5SWpvaU5UWXpOamdpZlFUTmxNRCJ9mIzN2",
+        "priority": "MUST",
+        "assertionPhrase": "convey role 'button'",
+        "assertionStatement": "Role 'button' is conveyed"
+      },
+      {
+        "id": "M2JjOeyIzIjoiWXpOak9leUl5SWpvaU5UWXpOamdpZlFUTmxNRCJ9DYwOT",
+        "priority": "MUST",
+        "assertionPhrase": "convey name 'Print Page'",
+        "assertionStatement": "Name 'Print Page' is conveyed"
+      }
+    ],
+    "renderedUrl": "/aria-at/565a87b4111acebdb883d187b581e82c42a73844/build/tests/command-button/test-05-navForwardsToButton-nvda.collected.html",
+    "renderableContent": {
+      "info": {
+        "title": "Navigate forwards to a button",
+        "testId": "navForwardsToButton",
+        "references": [
+          {
+            "type": "metadata",
+            "refId": "example",
+            "value": "https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/",
+            "linkText": "APG Example: Button"
+          }
+        ],
+        "presentationNumber": 5
+      },
+      "target": {
+        "at": {
+          "key": "nvda",
+          "raw": {
+            "key": "nvda",
+            "name": "NVDA",
+            "settings": {
+              "focusMode": {
+                "screenText": "focus mode on",
+                "instructions": [
+                  "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+                  "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+                ]
+              },
+              "browseMode": {
+                "screenText": "browse mode on",
+                "instructions": [
+                  "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+                  "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+                ]
+              }
+            },
+            "assertionTokens": {
+              "readingMode": "browse mode",
+              "screenReader": "NVDA",
+              "interactionMode": "focus mode"
+            },
+            "defaultConfigurationInstructionsHTML": "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          },
+          "name": "NVDA",
+          "settings": "browseMode_focusMode"
+        },
+        "setupScript": {
+          "name": "setFocusBeforeButton",
+          "script": "setFocusBeforeButton",
+          "source": "// sets focus on a link before the button\ntestPageDocument.querySelector('#beforelink').focus();\n",
+          "jsonpPath": "scripts/setFocusBeforeButton.jsonp.js",
+          "modulePath": "scripts/setFocusBeforeButton.module.js",
+          "scriptDescription": "sets focus on a link before the button"
+        },
+        "referencePage": "reference/2022-4-8_124112/button.setFocusBeforeButton.html"
+      },
+      "commands": [
+        {
+          "id": "down",
+          "settings": "browseMode",
+          "keystroke": "Down Arrow",
+          "keypresses": [{ "id": "down", "keystroke": "Down Arrow" }],
+          "presentationNumber": 1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "b",
+          "settings": "browseMode",
+          "keystroke": "b",
+          "keypresses": [{ "id": "b", "keystroke": "b" }],
+          "presentationNumber": 1.1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "f",
+          "settings": "browseMode",
+          "keystroke": "f",
+          "keypresses": [{ "id": "f", "keystroke": "f" }],
+          "presentationNumber": 1.2,
+          "assertionExceptions": []
+        },
+        {
+          "id": "tab",
+          "settings": "browseMode",
+          "keystroke": "Tab",
+          "keypresses": [{ "id": "tab", "keystroke": "Tab" }],
+          "presentationNumber": 1.3,
+          "assertionExceptions": []
+        },
+        {
+          "id": "tab",
+          "settings": "focusMode",
+          "keystroke": "Tab",
+          "keypresses": [{ "id": "tab", "keystroke": "Tab" }],
+          "presentationNumber": 3,
+          "assertionExceptions": []
+        }
+      ],
+      "assertions": [
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "roleButton",
+          "assertionPhrase": "convey role 'button'",
+          "assertionStatement": "Role 'button' is conveyed"
+        },
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "namePrintPage",
+          "assertionPhrase": "convey name 'Print Page'",
+          "assertionStatement": "Name 'Print Page' is conveyed"
+        }
+      ],
+      "instructions": {
+        "mode": {
+          "focusMode": [
+            "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+          ],
+          "browseMode": [
+            "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+          ]
+        },
+        "instructions": "Starting at the 'Navigate forwards from here' link, navigate to the 'Print Page' button."
+      }
+    }
+  },
+  {
+    "at": {
+      "key": "voiceover_macos",
+      "name": "VoiceOver for macOS",
+      "settings": {
+        "quickNavOn": {
+          "screenText": "quick nav on",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'quick nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "quickNavOff": {
+          "screenText": "quick nav off",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'quick nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+          ]
+        },
+        "arrowQuickKeyNavOn": {
+          "screenText": "arrow quick key nav on",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'arrow quick key nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "arrowQuickKeyNavOff": {
+          "screenText": "arrow quick key nav off",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'arrow quick key nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+          ]
+        },
+        "singleQuickKeyNavOn": {
+          "screenText": "single quick key nav on",
+          "instructions": [
+            "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+            "If VoiceOver said 'single quick key nav off', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "singleQuickKeyNavOff": {
+          "screenText": "single quick key nav off",
+          "instructions": [
+            "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+            "If VoiceOver said 'single quick key nav on', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back off."
+          ]
+        }
+      }
+    },
+    "id": "ZDU1MeyIyIjoiNTYzNjgifQ2FjYz",
+    "atIds": [3],
+    "title": "Navigate forwards to a button",
+    "viewers": [],
+    "rawTestId": "navForwardsToButton",
+    "rowNumber": 5,
+    "scenarios": [
+      {
+        "id": "ODk0NeyIzIjoiWkRVMU1leUl5SWpvaU5UWXpOamdpZlEyRmpZeiJ9mI2Mj",
+        "atId": 3,
+        "settings": "defaultMode",
+        "commandIds": ["ctrl+opt+right"]
+      },
+      {
+        "id": "NWQyMeyIzIjoiWkRVMU1leUl5SWpvaU5UWXpOamdpZlEyRmpZeiJ9mZlMW",
+        "atId": 3,
+        "settings": "defaultMode",
+        "commandIds": ["tab"]
+      },
+      {
+        "id": "YmU3ZeyIzIjoiWkRVMU1leUl5SWpvaU5UWXpOamdpZlEyRmpZeiJ9jhmNm",
+        "atId": 3,
+        "settings": "singleQuickKeyNavOn",
+        "commandIds": ["j"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "NGNjMeyIzIjoiWkRVMU1leUl5SWpvaU5UWXpOamdpZlEyRmpZeiJ9DEyM2",
+        "priority": "MUST",
+        "assertionPhrase": "convey role 'button'",
+        "assertionStatement": "Role 'button' is conveyed"
+      },
+      {
+        "id": "NzMyYeyIzIjoiWkRVMU1leUl5SWpvaU5UWXpOamdpZlEyRmpZeiJ92VmMD",
+        "priority": "MUST",
+        "assertionPhrase": "convey name 'Print Page'",
+        "assertionStatement": "Name 'Print Page' is conveyed"
+      }
+    ],
+    "renderedUrl": "/aria-at/565a87b4111acebdb883d187b581e82c42a73844/build/tests/command-button/test-05-navForwardsToButton-voiceover_macos.collected.html",
+    "renderableContent": {
+      "info": {
+        "title": "Navigate forwards to a button",
+        "testId": "navForwardsToButton",
+        "references": [
+          {
+            "type": "metadata",
+            "refId": "example",
+            "value": "https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/",
+            "linkText": "APG Example: Button"
+          }
+        ],
+        "presentationNumber": 5
+      },
+      "target": {
+        "at": {
+          "key": "voiceover_macos",
+          "raw": {
+            "key": "voiceover_macos",
+            "name": "VoiceOver for macOS",
+            "settings": {
+              "quickNavOn": {
+                "screenText": "quick nav on",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'quick nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+                ]
+              },
+              "quickNavOff": {
+                "screenText": "quick nav off",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'quick nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+                ]
+              },
+              "arrowQuickKeyNavOn": {
+                "screenText": "arrow quick key nav on",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'arrow quick key nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+                ]
+              },
+              "arrowQuickKeyNavOff": {
+                "screenText": "arrow quick key nav off",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'arrow quick key nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+                ]
+              },
+              "singleQuickKeyNavOn": {
+                "screenText": "single quick key nav on",
+                "instructions": [
+                  "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+                  "If VoiceOver said 'single quick key nav off', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back on."
+                ]
+              },
+              "singleQuickKeyNavOff": {
+                "screenText": "single quick key nav off",
+                "instructions": [
+                  "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+                  "If VoiceOver said 'single quick key nav on', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back off."
+                ]
+              }
+            },
+            "defaultConfigurationInstructionsHTML": "Configure VoiceOver with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          },
+          "name": "VoiceOver for macOS",
+          "settings": "defaultMode_singleQuickKeyNavOn"
+        },
+        "setupScript": {
+          "name": "setFocusBeforeButton",
+          "script": "setFocusBeforeButton",
+          "source": "// sets focus on a link before the button\ntestPageDocument.querySelector('#beforelink').focus();\n",
+          "jsonpPath": "scripts/setFocusBeforeButton.jsonp.js",
+          "modulePath": "scripts/setFocusBeforeButton.module.js",
+          "scriptDescription": "sets focus on a link before the button"
+        },
+        "referencePage": "reference/2022-4-8_124112/button.setFocusBeforeButton.html"
+      },
+      "commands": [
+        {
+          "id": "ctrl+opt+right",
+          "settings": "defaultMode",
+          "keystroke": "Control+Option+Right Arrow",
+          "keypresses": [
+            {
+              "id": "ctrl+opt+right",
+              "keystroke": "Control+Option+Right Arrow"
+            }
+          ],
+          "presentationNumber": 5,
+          "assertionExceptions": []
+        },
+        {
+          "id": "tab",
+          "settings": "defaultMode",
+          "keystroke": "Tab",
+          "keypresses": [{ "id": "tab", "keystroke": "Tab" }],
+          "presentationNumber": 5.1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "j",
+          "settings": "singleQuickKeyNavOn",
+          "keystroke": "j",
+          "keypresses": [{ "id": "j", "keystroke": "j" }],
+          "presentationNumber": 5.2,
+          "assertionExceptions": []
+        }
+      ],
+      "assertions": [
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "roleButton",
+          "assertionPhrase": "convey role 'button'",
+          "assertionStatement": "Role 'button' is conveyed"
+        },
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "namePrintPage",
+          "assertionPhrase": "convey name 'Print Page'",
+          "assertionStatement": "Name 'Print Page' is conveyed"
+        }
+      ],
+      "instructions": {
+        "mode": {
+          "defaultMode": [
+            "Configure VoiceOver with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          ],
+          "singleQuickKeyNavOn": [
+            "Configure VoiceOver with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+            "If VoiceOver said 'single quick key nav off', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "instructions": "Starting at the 'Navigate forwards from here' link, navigate to the 'Print Page' button."
+      }
+    }
+  },
+  {
+    "at": {
+      "key": "jaws",
+      "name": "JAWS",
+      "settings": {
+        "pcCursor": {
+          "screenText": "PC cursor active",
+          "instructions": [
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the virtual cursor is active, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;z&lt;/kbd&gt; to disable the virtual cursor."
+          ]
+        },
+        "virtualCursor": {
+          "screenText": "virtual cursor active",
+          "instructions": [
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the PC cursor is active, press &lt;kbd&gt;Escape&lt;/kbd&gt; to activate the virtual cursor."
+          ]
+        }
+      }
+    },
+    "id": "MzRiMeyIyIjoiNTYzNjgifQWM5NT",
+    "atIds": [1],
+    "title": "Navigate backwards to a button",
+    "viewers": [],
+    "rawTestId": "navBackToButton",
+    "rowNumber": 6,
+    "scenarios": [
+      {
+        "id": "ODAzYeyIzIjoiTXpSaU1leUl5SWpvaU5UWXpOamdpZlFXTTVOVCJ9WM0Nj",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["up"]
+      },
+      {
+        "id": "NDZiNeyIzIjoiTXpSaU1leUl5SWpvaU5UWXpOamdpZlFXTTVOVCJ9GQ1MT",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["shift+b"]
+      },
+      {
+        "id": "MTlmNeyIzIjoiTXpSaU1leUl5SWpvaU5UWXpOamdpZlFXTTVOVCJ9WM3Mz",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["shift+f"]
+      },
+      {
+        "id": "MTVhMeyIzIjoiTXpSaU1leUl5SWpvaU5UWXpOamdpZlFXTTVOVCJ9DcyZW",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["shift+tab"]
+      },
+      {
+        "id": "NDE4ZeyIzIjoiTXpSaU1leUl5SWpvaU5UWXpOamdpZlFXTTVOVCJ9jkwYW",
+        "atId": 1,
+        "settings": "pcCursor",
+        "commandIds": ["shift+tab"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "MGI1YeyIzIjoiTXpSaU1leUl5SWpvaU5UWXpOamdpZlFXTTVOVCJ9jViMD",
+        "priority": "MUST",
+        "assertionPhrase": "convey role 'button'",
+        "assertionStatement": "Role 'button' is conveyed"
+      },
+      {
+        "id": "YzViMeyIzIjoiTXpSaU1leUl5SWpvaU5UWXpOamdpZlFXTTVOVCJ9zFkMz",
+        "priority": "MUST",
+        "assertionPhrase": "convey name 'Print Page'",
+        "assertionStatement": "Name 'Print Page' is conveyed"
+      }
+    ],
+    "renderedUrl": "/aria-at/565a87b4111acebdb883d187b581e82c42a73844/build/tests/command-button/test-06-navBackToButton-jaws.collected.html",
+    "renderableContent": {
+      "info": {
+        "title": "Navigate backwards to a button",
+        "testId": "navBackToButton",
+        "references": [
+          {
+            "type": "metadata",
+            "refId": "example",
+            "value": "https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/",
+            "linkText": "APG Example: Button"
+          }
+        ],
+        "presentationNumber": 6
+      },
+      "target": {
+        "at": {
+          "key": "jaws",
+          "raw": {
+            "key": "jaws",
+            "name": "JAWS",
+            "settings": {
+              "pcCursor": {
+                "screenText": "PC cursor active",
+                "instructions": [
+                  "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+                  "If the virtual cursor is active, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;z&lt;/kbd&gt; to disable the virtual cursor."
+                ]
+              },
+              "virtualCursor": {
+                "screenText": "virtual cursor active",
+                "instructions": [
+                  "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+                  "If the PC cursor is active, press &lt;kbd&gt;Escape&lt;/kbd&gt; to activate the virtual cursor."
+                ]
+              }
+            },
+            "assertionTokens": {
+              "readingMode": "virtual cursor active",
+              "screenReader": "JAWS",
+              "interactionMode": "PC cursor active"
+            },
+            "defaultConfigurationInstructionsHTML": "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          },
+          "name": "JAWS",
+          "settings": "virtualCursor_pcCursor"
+        },
+        "setupScript": {
+          "name": "setFocusAfterButton",
+          "script": "setFocusAfterButton",
+          "source": "// sets focus on a link after the button\ntestPageDocument.querySelector('#afterlink').focus();\n",
+          "jsonpPath": "scripts/setFocusAfterButton.jsonp.js",
+          "modulePath": "scripts/setFocusAfterButton.module.js",
+          "scriptDescription": "sets focus on a link after the button"
+        },
+        "referencePage": "reference/2022-4-8_124112/button.setFocusAfterButton.html"
+      },
+      "commands": [
+        {
+          "id": "up",
+          "settings": "virtualCursor",
+          "keystroke": "Up Arrow",
+          "keypresses": [{ "id": "up", "keystroke": "Up Arrow" }],
+          "presentationNumber": 2,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+b",
+          "settings": "virtualCursor",
+          "keystroke": "Shift+b",
+          "keypresses": [{ "id": "shift+b", "keystroke": "Shift+b" }],
+          "presentationNumber": 2.1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+f",
+          "settings": "virtualCursor",
+          "keystroke": "Shift+f",
+          "keypresses": [{ "id": "shift+f", "keystroke": "Shift+f" }],
+          "presentationNumber": 2.2,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+tab",
+          "settings": "virtualCursor",
+          "keystroke": "Shift+Tab",
+          "keypresses": [
+            { "id": "shift+tab", "keystroke": "Shift+Tab" }
+          ],
+          "presentationNumber": 2.3,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+tab",
+          "settings": "pcCursor",
+          "keystroke": "Shift+Tab",
+          "keypresses": [
+            { "id": "shift+tab", "keystroke": "Shift+Tab" }
+          ],
+          "presentationNumber": 4,
+          "assertionExceptions": []
+        }
+      ],
+      "assertions": [
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "roleButton",
+          "assertionPhrase": "convey role 'button'",
+          "assertionStatement": "Role 'button' is conveyed"
+        },
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "namePrintPage",
+          "assertionPhrase": "convey name 'Print Page'",
+          "assertionStatement": "Name 'Print Page' is conveyed"
+        }
+      ],
+      "instructions": {
+        "mode": {
+          "pcCursor": [
+            "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the virtual cursor is active, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;z&lt;/kbd&gt; to disable the virtual cursor."
+          ],
+          "virtualCursor": [
+            "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the PC cursor is active, press &lt;kbd&gt;Escape&lt;/kbd&gt; to activate the virtual cursor."
+          ]
+        },
+        "instructions": "Starting at the 'Navigate backwards from here' link, navigate to the 'Print Page' button."
+      }
+    }
+  },
+  {
+    "at": {
+      "key": "nvda",
+      "name": "NVDA",
+      "settings": {
+        "focusMode": {
+          "screenText": "focus mode on",
+          "instructions": [
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+          ]
+        },
+        "browseMode": {
+          "screenText": "browse mode on",
+          "instructions": [
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+          ]
+        }
+      }
+    },
+    "id": "ZWM3NeyIyIjoiNTYzNjgifQzRhMj",
+    "atIds": [2],
+    "title": "Navigate backwards to a button",
+    "viewers": [],
+    "rawTestId": "navBackToButton",
+    "rowNumber": 6,
+    "scenarios": [
+      {
+        "id": "MTVhZeyIzIjoiWldNM05leUl5SWpvaU5UWXpOamdpZlF6UmhNaiJ9jQwNT",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["up"]
+      },
+      {
+        "id": "NDJkZeyIzIjoiWldNM05leUl5SWpvaU5UWXpOamdpZlF6UmhNaiJ9GY4NT",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["shift+b"]
+      },
+      {
+        "id": "NzI3NeyIzIjoiWldNM05leUl5SWpvaU5UWXpOamdpZlF6UmhNaiJ9WJjMD",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["shift+f"]
+      },
+      {
+        "id": "NjU0OeyIzIjoiWldNM05leUl5SWpvaU5UWXpOamdpZlF6UmhNaiJ9WY4ZT",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["shift+tab"]
+      },
+      {
+        "id": "ZmEwNeyIzIjoiWldNM05leUl5SWpvaU5UWXpOamdpZlF6UmhNaiJ9mNlYT",
+        "atId": 2,
+        "settings": "focusMode",
+        "commandIds": ["shift+tab"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "YzE4OeyIzIjoiWldNM05leUl5SWpvaU5UWXpOamdpZlF6UmhNaiJ9DkxOG",
+        "priority": "MUST",
+        "assertionPhrase": "convey role 'button'",
+        "assertionStatement": "Role 'button' is conveyed"
+      },
+      {
+        "id": "Y2I1OeyIzIjoiWldNM05leUl5SWpvaU5UWXpOamdpZlF6UmhNaiJ9TVjZW",
+        "priority": "MUST",
+        "assertionPhrase": "convey name 'Print Page'",
+        "assertionStatement": "Name 'Print Page' is conveyed"
+      }
+    ],
+    "renderedUrl": "/aria-at/565a87b4111acebdb883d187b581e82c42a73844/build/tests/command-button/test-06-navBackToButton-nvda.collected.html",
+    "renderableContent": {
+      "info": {
+        "title": "Navigate backwards to a button",
+        "testId": "navBackToButton",
+        "references": [
+          {
+            "type": "metadata",
+            "refId": "example",
+            "value": "https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/",
+            "linkText": "APG Example: Button"
+          }
+        ],
+        "presentationNumber": 6
+      },
+      "target": {
+        "at": {
+          "key": "nvda",
+          "raw": {
+            "key": "nvda",
+            "name": "NVDA",
+            "settings": {
+              "focusMode": {
+                "screenText": "focus mode on",
+                "instructions": [
+                  "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+                  "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+                ]
+              },
+              "browseMode": {
+                "screenText": "browse mode on",
+                "instructions": [
+                  "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+                  "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+                ]
+              }
+            },
+            "assertionTokens": {
+              "readingMode": "browse mode",
+              "screenReader": "NVDA",
+              "interactionMode": "focus mode"
+            },
+            "defaultConfigurationInstructionsHTML": "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          },
+          "name": "NVDA",
+          "settings": "browseMode_focusMode"
+        },
+        "setupScript": {
+          "name": "setFocusAfterButton",
+          "script": "setFocusAfterButton",
+          "source": "// sets focus on a link after the button\ntestPageDocument.querySelector('#afterlink').focus();\n",
+          "jsonpPath": "scripts/setFocusAfterButton.jsonp.js",
+          "modulePath": "scripts/setFocusAfterButton.module.js",
+          "scriptDescription": "sets focus on a link after the button"
+        },
+        "referencePage": "reference/2022-4-8_124112/button.setFocusAfterButton.html"
+      },
+      "commands": [
+        {
+          "id": "up",
+          "settings": "browseMode",
+          "keystroke": "Up Arrow",
+          "keypresses": [{ "id": "up", "keystroke": "Up Arrow" }],
+          "presentationNumber": 2,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+b",
+          "settings": "browseMode",
+          "keystroke": "Shift+b",
+          "keypresses": [{ "id": "shift+b", "keystroke": "Shift+b" }],
+          "presentationNumber": 2.1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+f",
+          "settings": "browseMode",
+          "keystroke": "Shift+f",
+          "keypresses": [{ "id": "shift+f", "keystroke": "Shift+f" }],
+          "presentationNumber": 2.2,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+tab",
+          "settings": "browseMode",
+          "keystroke": "Shift+Tab",
+          "keypresses": [
+            { "id": "shift+tab", "keystroke": "Shift+Tab" }
+          ],
+          "presentationNumber": 2.3,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+tab",
+          "settings": "focusMode",
+          "keystroke": "Shift+Tab",
+          "keypresses": [
+            { "id": "shift+tab", "keystroke": "Shift+Tab" }
+          ],
+          "presentationNumber": 4,
+          "assertionExceptions": []
+        }
+      ],
+      "assertions": [
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "roleButton",
+          "assertionPhrase": "convey role 'button'",
+          "assertionStatement": "Role 'button' is conveyed"
+        },
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "namePrintPage",
+          "assertionPhrase": "convey name 'Print Page'",
+          "assertionStatement": "Name 'Print Page' is conveyed"
+        }
+      ],
+      "instructions": {
+        "mode": {
+          "focusMode": [
+            "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+          ],
+          "browseMode": [
+            "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+          ]
+        },
+        "instructions": "Starting at the 'Navigate backwards from here' link, navigate to the 'Print Page' button."
+      }
+    }
+  },
+  {
+    "at": {
+      "key": "voiceover_macos",
+      "name": "VoiceOver for macOS",
+      "settings": {
+        "quickNavOn": {
+          "screenText": "quick nav on",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'quick nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "quickNavOff": {
+          "screenText": "quick nav off",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'quick nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+          ]
+        },
+        "arrowQuickKeyNavOn": {
+          "screenText": "arrow quick key nav on",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'arrow quick key nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "arrowQuickKeyNavOff": {
+          "screenText": "arrow quick key nav off",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'arrow quick key nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+          ]
+        },
+        "singleQuickKeyNavOn": {
+          "screenText": "single quick key nav on",
+          "instructions": [
+            "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+            "If VoiceOver said 'single quick key nav off', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "singleQuickKeyNavOff": {
+          "screenText": "single quick key nav off",
+          "instructions": [
+            "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+            "If VoiceOver said 'single quick key nav on', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back off."
+          ]
+        }
+      }
+    },
+    "id": "YWYxMeyIyIjoiNTYzNjgifQjAzZD",
+    "atIds": [3],
+    "title": "Navigate backwards to a button",
+    "viewers": [],
+    "rawTestId": "navBackToButton",
+    "rowNumber": 6,
+    "scenarios": [
+      {
+        "id": "NmVkMeyIzIjoiWVdZeE1leUl5SWpvaU5UWXpOamdpZlFqQXpaRCJ9DhkMT",
+        "atId": 3,
+        "settings": "defaultMode",
+        "commandIds": ["ctrl+opt+left"]
+      },
+      {
+        "id": "ZjE5ZeyIzIjoiWVdZeE1leUl5SWpvaU5UWXpOamdpZlFqQXpaRCJ9TEwNG",
+        "atId": 3,
+        "settings": "defaultMode",
+        "commandIds": ["shift+tab"]
+      },
+      {
+        "id": "NjViYeyIzIjoiWVdZeE1leUl5SWpvaU5UWXpOamdpZlFqQXpaRCJ9TYzYT",
+        "atId": 3,
+        "settings": "singleQuickKeyNavOn",
+        "commandIds": ["shift+j"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "YzJkZeyIzIjoiWVdZeE1leUl5SWpvaU5UWXpOamdpZlFqQXpaRCJ9mVjNm",
+        "priority": "MUST",
+        "assertionPhrase": "convey role 'button'",
+        "assertionStatement": "Role 'button' is conveyed"
+      },
+      {
+        "id": "NTY4NeyIzIjoiWVdZeE1leUl5SWpvaU5UWXpOamdpZlFqQXpaRCJ9GJhMm",
+        "priority": "MUST",
+        "assertionPhrase": "convey name 'Print Page'",
+        "assertionStatement": "Name 'Print Page' is conveyed"
+      }
+    ],
+    "renderedUrl": "/aria-at/565a87b4111acebdb883d187b581e82c42a73844/build/tests/command-button/test-06-navBackToButton-voiceover_macos.collected.html",
+    "renderableContent": {
+      "info": {
+        "title": "Navigate backwards to a button",
+        "testId": "navBackToButton",
+        "references": [
+          {
+            "type": "metadata",
+            "refId": "example",
+            "value": "https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/",
+            "linkText": "APG Example: Button"
+          }
+        ],
+        "presentationNumber": 6
+      },
+      "target": {
+        "at": {
+          "key": "voiceover_macos",
+          "raw": {
+            "key": "voiceover_macos",
+            "name": "VoiceOver for macOS",
+            "settings": {
+              "quickNavOn": {
+                "screenText": "quick nav on",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'quick nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+                ]
+              },
+              "quickNavOff": {
+                "screenText": "quick nav off",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'quick nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+                ]
+              },
+              "arrowQuickKeyNavOn": {
+                "screenText": "arrow quick key nav on",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'arrow quick key nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+                ]
+              },
+              "arrowQuickKeyNavOff": {
+                "screenText": "arrow quick key nav off",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'arrow quick key nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+                ]
+              },
+              "singleQuickKeyNavOn": {
+                "screenText": "single quick key nav on",
+                "instructions": [
+                  "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+                  "If VoiceOver said 'single quick key nav off', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back on."
+                ]
+              },
+              "singleQuickKeyNavOff": {
+                "screenText": "single quick key nav off",
+                "instructions": [
+                  "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+                  "If VoiceOver said 'single quick key nav on', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back off."
+                ]
+              }
+            },
+            "defaultConfigurationInstructionsHTML": "Configure VoiceOver with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          },
+          "name": "VoiceOver for macOS",
+          "settings": "defaultMode_singleQuickKeyNavOn"
+        },
+        "setupScript": {
+          "name": "setFocusAfterButton",
+          "script": "setFocusAfterButton",
+          "source": "// sets focus on a link after the button\ntestPageDocument.querySelector('#afterlink').focus();\n",
+          "jsonpPath": "scripts/setFocusAfterButton.jsonp.js",
+          "modulePath": "scripts/setFocusAfterButton.module.js",
+          "scriptDescription": "sets focus on a link after the button"
+        },
+        "referencePage": "reference/2022-4-8_124112/button.setFocusAfterButton.html"
+      },
+      "commands": [
+        {
+          "id": "ctrl+opt+left",
+          "settings": "defaultMode",
+          "keystroke": "Control+Option+Left Arrow",
+          "keypresses": [
+            {
+              "id": "ctrl+opt+left",
+              "keystroke": "Control+Option+Left Arrow"
+            }
+          ],
+          "presentationNumber": 6,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+tab",
+          "settings": "defaultMode",
+          "keystroke": "Shift+Tab",
+          "keypresses": [
+            { "id": "shift+tab", "keystroke": "Shift+Tab" }
+          ],
+          "presentationNumber": 6.1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "shift+j",
+          "settings": "singleQuickKeyNavOn",
+          "keystroke": "Shift+j",
+          "keypresses": [{ "id": "shift+j", "keystroke": "Shift+j" }],
+          "presentationNumber": 6.2,
+          "assertionExceptions": []
+        }
+      ],
+      "assertions": [
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "roleButton",
+          "assertionPhrase": "convey role 'button'",
+          "assertionStatement": "Role 'button' is conveyed"
+        },
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "namePrintPage",
+          "assertionPhrase": "convey name 'Print Page'",
+          "assertionStatement": "Name 'Print Page' is conveyed"
+        }
+      ],
+      "instructions": {
+        "mode": {
+          "defaultMode": [
+            "Configure VoiceOver with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          ],
+          "singleQuickKeyNavOn": [
+            "Configure VoiceOver with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+            "If VoiceOver said 'single quick key nav off', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "instructions": "Starting at the 'Navigate backwards from here' link, navigate to the 'Print Page' button."
+      }
+    }
+  },
+  {
+    "at": {
+      "key": "jaws",
+      "name": "JAWS",
+      "settings": {
+        "pcCursor": {
+          "screenText": "PC cursor active",
+          "instructions": [
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the virtual cursor is active, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;z&lt;/kbd&gt; to disable the virtual cursor."
+          ]
+        },
+        "virtualCursor": {
+          "screenText": "virtual cursor active",
+          "instructions": [
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the PC cursor is active, press &lt;kbd&gt;Escape&lt;/kbd&gt; to activate the virtual cursor."
+          ]
+        }
+      }
+    },
+    "id": "MGNkZeyIyIjoiNTYzNjgifQDZmZW",
+    "atIds": [1],
+    "title": "Request information about a button",
+    "viewers": [],
+    "rawTestId": "reqInfoAboutButton",
+    "rowNumber": 9,
+    "scenarios": [
+      {
+        "id": "NDJhZeyIzIjoiTUdOa1pleUl5SWpvaU5UWXpOamdpZlFEWm1aVyJ9jA1ND",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["ins+tab"]
+      },
+      {
+        "id": "NzExOeyIzIjoiTUdOa1pleUl5SWpvaU5UWXpOamdpZlFEWm1aVyJ9WY0ZG",
+        "atId": 1,
+        "settings": "virtualCursor",
+        "commandIds": ["ins+up"]
+      },
+      {
+        "id": "ODFlMeyIzIjoiTUdOa1pleUl5SWpvaU5UWXpOamdpZlFEWm1aVyJ9jY4Nj",
+        "atId": 1,
+        "settings": "pcCursor",
+        "commandIds": ["ins+tab"]
+      },
+      {
+        "id": "ZDI5NeyIzIjoiTUdOa1pleUl5SWpvaU5UWXpOamdpZlFEWm1aVyJ9GRlNj",
+        "atId": 1,
+        "settings": "pcCursor",
+        "commandIds": ["ins+up"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "NzA0OeyIzIjoiTUdOa1pleUl5SWpvaU5UWXpOamdpZlFEWm1aVyJ9DEzNW",
+        "priority": "MUST",
+        "assertionPhrase": "convey role 'button'",
+        "assertionStatement": "Role 'button' is conveyed"
+      },
+      {
+        "id": "ZTY4OeyIzIjoiTUdOa1pleUl5SWpvaU5UWXpOamdpZlFEWm1aVyJ9WM2Yz",
+        "priority": "MUST",
+        "assertionPhrase": "convey name 'Print Page'",
+        "assertionStatement": "Name 'Print Page' is conveyed"
+      }
+    ],
+    "renderedUrl": "/aria-at/565a87b4111acebdb883d187b581e82c42a73844/build/tests/command-button/test-09-reqInfoAboutButton-jaws.collected.html",
+    "renderableContent": {
+      "info": {
+        "title": "Request information about a button",
+        "testId": "reqInfoAboutButton",
+        "references": [
+          {
+            "type": "metadata",
+            "refId": "example",
+            "value": "https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/",
+            "linkText": "APG Example: Button"
+          }
+        ],
+        "presentationNumber": 9
+      },
+      "target": {
+        "at": {
+          "key": "jaws",
+          "raw": {
+            "key": "jaws",
+            "name": "JAWS",
+            "settings": {
+              "pcCursor": {
+                "screenText": "PC cursor active",
+                "instructions": [
+                  "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+                  "If the virtual cursor is active, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;z&lt;/kbd&gt; to disable the virtual cursor."
+                ]
+              },
+              "virtualCursor": {
+                "screenText": "virtual cursor active",
+                "instructions": [
+                  "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+                  "If the PC cursor is active, press &lt;kbd&gt;Escape&lt;/kbd&gt; to activate the virtual cursor."
+                ]
+              }
+            },
+            "assertionTokens": {
+              "readingMode": "virtual cursor active",
+              "screenReader": "JAWS",
+              "interactionMode": "PC cursor active"
+            },
+            "defaultConfigurationInstructionsHTML": "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          },
+          "name": "JAWS",
+          "settings": "virtualCursor_pcCursor"
+        },
+        "setupScript": {
+          "name": "setFocusOnButton",
+          "script": "setFocusOnButton",
+          "source": "// sets focus on the button\ntestPageDocument.querySelector('#action').focus();\n",
+          "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+          "modulePath": "scripts/setFocusOnButton.module.js",
+          "scriptDescription": "sets focus on the button"
+        },
+        "referencePage": "reference/2022-4-8_124112/button.setFocusOnButton.html"
+      },
+      "commands": [
+        {
+          "id": "ins+tab",
+          "settings": "virtualCursor",
+          "keystroke": "Insert+Tab",
+          "keypresses": [
+            { "id": "ins+tab", "keystroke": "Insert+Tab" }
+          ],
+          "presentationNumber": 7,
+          "assertionExceptions": []
+        },
+        {
+          "id": "ins+up",
+          "settings": "virtualCursor",
+          "keystroke": "Insert+Up Arrow",
+          "keypresses": [
+            { "id": "ins+up", "keystroke": "Insert+Up Arrow" }
+          ],
+          "presentationNumber": 7.1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "ins+tab",
+          "settings": "pcCursor",
+          "keystroke": "Insert+Tab",
+          "keypresses": [
+            { "id": "ins+tab", "keystroke": "Insert+Tab" }
+          ],
+          "presentationNumber": 8,
+          "assertionExceptions": []
+        },
+        {
+          "id": "ins+up",
+          "settings": "pcCursor",
+          "keystroke": "Insert+Up Arrow",
+          "keypresses": [
+            { "id": "ins+up", "keystroke": "Insert+Up Arrow" }
+          ],
+          "presentationNumber": 8.1,
+          "assertionExceptions": []
+        }
+      ],
+      "assertions": [
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "roleButton",
+          "assertionPhrase": "convey role 'button'",
+          "assertionStatement": "Role 'button' is conveyed"
+        },
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "namePrintPage",
+          "assertionPhrase": "convey name 'Print Page'",
+          "assertionStatement": "Name 'Print Page' is conveyed"
+        }
+      ],
+      "instructions": {
+        "mode": {
+          "pcCursor": [
+            "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the virtual cursor is active, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;z&lt;/kbd&gt; to disable the virtual cursor."
+          ],
+          "virtualCursor": [
+            "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Alt&lt;/kbd&gt;+&lt;kbd&gt;Delete&lt;/kbd&gt; to determine which cursor is active.",
+            "If the PC cursor is active, press &lt;kbd&gt;Escape&lt;/kbd&gt; to activate the virtual cursor."
+          ]
+        },
+        "instructions": "Starting at the 'Print Page' button, read information about the button."
+      }
+    }
+  },
+  {
+    "at": {
+      "key": "nvda",
+      "name": "NVDA",
+      "settings": {
+        "focusMode": {
+          "screenText": "focus mode on",
+          "instructions": [
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+          ]
+        },
+        "browseMode": {
+          "screenText": "browse mode on",
+          "instructions": [
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+          ]
+        }
+      }
+    },
+    "id": "YTk1YeyIyIjoiNTYzNjgifQmI1OT",
+    "atIds": [2],
+    "title": "Request information about a button",
+    "viewers": [],
+    "rawTestId": "reqInfoAboutButton",
+    "rowNumber": 9,
+    "scenarios": [
+      {
+        "id": "YjdmOeyIzIjoiWVRrMVlleUl5SWpvaU5UWXpOamdpZlFtSTFPVCJ9Tk5ZD",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["ins+tab"]
+      },
+      {
+        "id": "ZjFkMeyIzIjoiWVRrMVlleUl5SWpvaU5UWXpOamdpZlFtSTFPVCJ9mY1Ym",
+        "atId": 2,
+        "settings": "browseMode",
+        "commandIds": ["ins+up"]
+      },
+      {
+        "id": "OTMxNeyIzIjoiWVRrMVlleUl5SWpvaU5UWXpOamdpZlFtSTFPVCJ9zMxMz",
+        "atId": 2,
+        "settings": "focusMode",
+        "commandIds": ["ins+tab"]
+      },
+      {
+        "id": "YTNmNeyIzIjoiWVRrMVlleUl5SWpvaU5UWXpOamdpZlFtSTFPVCJ9mYyNT",
+        "atId": 2,
+        "settings": "focusMode",
+        "commandIds": ["ins+up"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "NTU3NeyIzIjoiWVRrMVlleUl5SWpvaU5UWXpOamdpZlFtSTFPVCJ9mJhN2",
+        "priority": "MUST",
+        "assertionPhrase": "convey role 'button'",
+        "assertionStatement": "Role 'button' is conveyed"
+      },
+      {
+        "id": "OWVmNeyIzIjoiWVRrMVlleUl5SWpvaU5UWXpOamdpZlFtSTFPVCJ9GJmMj",
+        "priority": "MUST",
+        "assertionPhrase": "convey name 'Print Page'",
+        "assertionStatement": "Name 'Print Page' is conveyed"
+      }
+    ],
+    "renderedUrl": "/aria-at/565a87b4111acebdb883d187b581e82c42a73844/build/tests/command-button/test-09-reqInfoAboutButton-nvda.collected.html",
+    "renderableContent": {
+      "info": {
+        "title": "Request information about a button",
+        "testId": "reqInfoAboutButton",
+        "references": [
+          {
+            "type": "metadata",
+            "refId": "example",
+            "value": "https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/",
+            "linkText": "APG Example: Button"
+          }
+        ],
+        "presentationNumber": 9
+      },
+      "target": {
+        "at": {
+          "key": "nvda",
+          "raw": {
+            "key": "nvda",
+            "name": "NVDA",
+            "settings": {
+              "focusMode": {
+                "screenText": "focus mode on",
+                "instructions": [
+                  "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+                  "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+                ]
+              },
+              "browseMode": {
+                "screenText": "browse mode on",
+                "instructions": [
+                  "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+                  "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+                ]
+              }
+            },
+            "assertionTokens": {
+              "readingMode": "browse mode",
+              "screenReader": "NVDA",
+              "interactionMode": "focus mode"
+            },
+            "defaultConfigurationInstructionsHTML": "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          },
+          "name": "NVDA",
+          "settings": "browseMode_focusMode"
+        },
+        "setupScript": {
+          "name": "setFocusOnButton",
+          "script": "setFocusOnButton",
+          "source": "// sets focus on the button\ntestPageDocument.querySelector('#action').focus();\n",
+          "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+          "modulePath": "scripts/setFocusOnButton.module.js",
+          "scriptDescription": "sets focus on the button"
+        },
+        "referencePage": "reference/2022-4-8_124112/button.setFocusOnButton.html"
+      },
+      "commands": [
+        {
+          "id": "ins+tab",
+          "settings": "browseMode",
+          "keystroke": "Insert+Tab",
+          "keypresses": [
+            { "id": "ins+tab", "keystroke": "Insert+Tab" }
+          ],
+          "presentationNumber": 7,
+          "assertionExceptions": []
+        },
+        {
+          "id": "ins+up",
+          "settings": "browseMode",
+          "keystroke": "Insert+Up Arrow",
+          "keypresses": [
+            { "id": "ins+up", "keystroke": "Insert+Up Arrow" }
+          ],
+          "presentationNumber": 7.1,
+          "assertionExceptions": []
+        },
+        {
+          "id": "ins+tab",
+          "settings": "focusMode",
+          "keystroke": "Insert+Tab",
+          "keypresses": [
+            { "id": "ins+tab", "keystroke": "Insert+Tab" }
+          ],
+          "presentationNumber": 8,
+          "assertionExceptions": []
+        },
+        {
+          "id": "ins+up",
+          "settings": "focusMode",
+          "keystroke": "Insert+Up Arrow",
+          "keypresses": [
+            { "id": "ins+up", "keystroke": "Insert+Up Arrow" }
+          ],
+          "presentationNumber": 8.1,
+          "assertionExceptions": []
+        }
+      ],
+      "assertions": [
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "roleButton",
+          "assertionPhrase": "convey role 'button'",
+          "assertionStatement": "Role 'button' is conveyed"
+        },
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "namePrintPage",
+          "assertionPhrase": "convey name 'Print Page'",
+          "assertionStatement": "Name 'Print Page' is conveyed"
+        }
+      ],
+      "instructions": {
+        "mode": {
+          "focusMode": [
+            "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+          ],
+          "browseMode": [
+            "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+            "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+            "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+          ]
+        },
+        "instructions": "Starting at the 'Print Page' button, read information about the button."
+      }
+    }
+  },
+  {
+    "at": {
+      "key": "voiceover_macos",
+      "name": "VoiceOver for macOS",
+      "settings": {
+        "quickNavOn": {
+          "screenText": "quick nav on",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'quick nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "quickNavOff": {
+          "screenText": "quick nav off",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'quick nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+          ]
+        },
+        "arrowQuickKeyNavOn": {
+          "screenText": "arrow quick key nav on",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'arrow quick key nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "arrowQuickKeyNavOff": {
+          "screenText": "arrow quick key nav off",
+          "instructions": [
+            "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+            "If VoiceOver said 'arrow quick key nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+          ]
+        },
+        "singleQuickKeyNavOn": {
+          "screenText": "single quick key nav on",
+          "instructions": [
+            "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+            "If VoiceOver said 'single quick key nav off', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back on."
+          ]
+        },
+        "singleQuickKeyNavOff": {
+          "screenText": "single quick key nav off",
+          "instructions": [
+            "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+            "If VoiceOver said 'single quick key nav on', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back off."
+          ]
+        }
+      }
+    },
+    "id": "NTNmMeyIyIjoiNTYzNjgifQWQwNz",
+    "atIds": [3],
+    "title": "Request information about a button",
+    "viewers": [],
+    "rawTestId": "reqInfoAboutButton",
+    "rowNumber": 9,
+    "scenarios": [
+      {
+        "id": "Yzg2MeyIzIjoiTlRObU1leUl5SWpvaU5UWXpOamdpZlFXUXdOeiJ9jE3Nz",
+        "atId": 3,
+        "settings": "defaultMode",
+        "commandIds": ["ctrl+opt+f3"]
+      },
+      {
+        "id": "YjRkNeyIzIjoiTlRObU1leUl5SWpvaU5UWXpOamdpZlFXUXdOeiJ9TUwYz",
+        "atId": 3,
+        "settings": "defaultMode",
+        "commandIds": ["ctrl+opt+f4"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "ZDU4MeyIzIjoiTlRObU1leUl5SWpvaU5UWXpOamdpZlFXUXdOeiJ9mQzNm",
+        "priority": "MUST",
+        "assertionPhrase": "convey role 'button'",
+        "assertionStatement": "Role 'button' is conveyed"
+      },
+      {
+        "id": "YTU4YeyIzIjoiTlRObU1leUl5SWpvaU5UWXpOamdpZlFXUXdOeiJ9WQ5M2",
+        "priority": "MUST",
+        "assertionPhrase": "convey name 'Print Page'",
+        "assertionStatement": "Name 'Print Page' is conveyed"
+      }
+    ],
+    "renderedUrl": "/aria-at/565a87b4111acebdb883d187b581e82c42a73844/build/tests/command-button/test-09-reqInfoAboutButton-voiceover_macos.collected.html",
+    "renderableContent": {
+      "info": {
+        "title": "Request information about a button",
+        "testId": "reqInfoAboutButton",
+        "references": [
+          {
+            "type": "metadata",
+            "refId": "example",
+            "value": "https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/",
+            "linkText": "APG Example: Button"
+          }
+        ],
+        "presentationNumber": 9
+      },
+      "target": {
+        "at": {
+          "key": "voiceover_macos",
+          "raw": {
+            "key": "voiceover_macos",
+            "name": "VoiceOver for macOS",
+            "settings": {
+              "quickNavOn": {
+                "screenText": "quick nav on",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'quick nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+                ]
+              },
+              "quickNavOff": {
+                "screenText": "quick nav off",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'quick nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+                ]
+              },
+              "arrowQuickKeyNavOn": {
+                "screenText": "arrow quick key nav on",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'arrow quick key nav off', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back on."
+                ]
+              },
+              "arrowQuickKeyNavOff": {
+                "screenText": "arrow quick key nav off",
+                "instructions": [
+                  "Simultaneously press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt;.",
+                  "If VoiceOver said 'arrow quick key nav on', press &lt;kbd&gt;Left Arrow&lt;/kbd&gt; and &lt;kbd&gt;Right Arrow&lt;/kbd&gt; again to turn it back off."
+                ]
+              },
+              "singleQuickKeyNavOn": {
+                "screenText": "single quick key nav on",
+                "instructions": [
+                  "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+                  "If VoiceOver said 'single quick key nav off', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back on."
+                ]
+              },
+              "singleQuickKeyNavOff": {
+                "screenText": "single quick key nav off",
+                "instructions": [
+                  "Press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt;.",
+                  "If VoiceOver said 'single quick key nav on', press &lt;kbd&gt;Control&lt;/kbd&gt;+&lt;kbd&gt;Option&lt;/kbd&gt;+&lt;kbd&gt;q&lt;/kbd&gt; again to turn it back off."
+                ]
+              }
+            },
+            "defaultConfigurationInstructionsHTML": "Configure VoiceOver with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          },
+          "name": "VoiceOver for macOS",
+          "settings": "defaultMode"
+        },
+        "setupScript": {
+          "name": "setFocusOnButton",
+          "script": "setFocusOnButton",
+          "source": "// sets focus on the button\ntestPageDocument.querySelector('#action').focus();\n",
+          "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+          "modulePath": "scripts/setFocusOnButton.module.js",
+          "scriptDescription": "sets focus on the button"
+        },
+        "referencePage": "reference/2022-4-8_124112/button.setFocusOnButton.html"
+      },
+      "commands": [
+        {
+          "id": "ctrl+opt+f3",
+          "settings": "defaultMode",
+          "keystroke": "Control+Option+F3",
+          "keypresses": [
+            {
+              "id": "ctrl+opt+f3",
+              "keystroke": "Control+Option+F3"
+            }
+          ],
+          "presentationNumber": 9,
+          "assertionExceptions": []
+        },
+        {
+          "id": "ctrl+opt+f4",
+          "settings": "defaultMode",
+          "keystroke": "Control+Option+F4",
+          "keypresses": [
+            {
+              "id": "ctrl+opt+f4",
+              "keystroke": "Control+Option+F4"
+            }
+          ],
+          "presentationNumber": 9.1,
+          "assertionExceptions": []
+        }
+      ],
+      "assertions": [
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "roleButton",
+          "assertionPhrase": "convey role 'button'",
+          "assertionStatement": "Role 'button' is conveyed"
+        },
+        {
+          "refIds": "",
+          "priority": 1,
+          "assertionId": "namePrintPage",
+          "assertionPhrase": "convey name 'Print Page'",
+          "assertionStatement": "Name 'Print Page' is conveyed"
+        }
+      ],
+      "instructions": {
+        "mode": {
+          "defaultMode": [
+            "Configure VoiceOver with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;."
+          ]
+        },
+        "instructions": "Starting at the 'Print Page' button, read information about the button."
+      }
+    }
+  }
+]
