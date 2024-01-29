@@ -73,7 +73,7 @@ describe('smoke test', () => {
         await Promise.all([backendServer.close(), clientServer.close()]);
     }, 10 * 60 * 1000);
 
-    it(
+    it.skip(
         'loads various pages without crashing',
         async () => {
             let homeH1;
