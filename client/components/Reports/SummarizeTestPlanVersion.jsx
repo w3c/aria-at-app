@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import getMetrics from './getMetrics';
+import { none } from './getMetrics';
+import { getMetrics } from 'shared';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -81,7 +82,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
 
             {testPlanReports.map(testPlanReport => {
                 if (testPlanReport.status === 'DRAFT') return null;
-                const overallMetrics = getMetrics({ testPlanReport });
+                const overallMetrics = getMetrics({ testPlanReport }) ?? none;
 
                 const { at, browser } = testPlanReport;
 
@@ -137,9 +138,10 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                             requiredFormatted,
                                             optionalFormatted,
                                             unexpectedBehaviorsFormatted
-                                        } = getMetrics({
-                                            testResult
-                                        });
+                                        } =
+                                            getMetrics({
+                                                testResult
+                                            }) ?? none;
                                         return (
                                             <tr key={testResult.id}>
                                                 <td>
