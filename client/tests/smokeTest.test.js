@@ -4,22 +4,18 @@ const spawn = require('cross-spawn');
 
 const startServer = async serverOrClient => {
     return new Promise(resolve => {
-        const server = spawn(
-            '/Users/alflennik/.nvm/versions/node/v18.13.0/bin/yarn',
-            ['workspace', serverOrClient, 'dev'],
-            {
-                cwd: path.resolve(__dirname, '../../'),
-                env: {
-                    PATH: process.env.PATH,
-                    PORT: 8033,
-                    CLIENT_PORT: 3033,
-                    AUTOMATION_SCHEDULER_PORT: 8833,
-                    API_SERVER: 'http://localhost:8033',
-                    APP_SERVER: 'http://localhost:3033',
-                    AUTOMATION_SCHEDULER_URL: 'http://localhost:8833'
-                }
+        const server = spawn('yarn', ['workspace', serverOrClient, 'dev'], {
+            cwd: path.resolve(__dirname, '../../'),
+            env: {
+                PATH: process.env.PATH,
+                PORT: 8033,
+                CLIENT_PORT: 3033,
+                AUTOMATION_SCHEDULER_PORT: 8833,
+                API_SERVER: 'http://localhost:8033',
+                APP_SERVER: 'http://localhost:3033',
+                AUTOMATION_SCHEDULER_URL: 'http://localhost:8833'
             }
-        );
+        });
 
         const killServer = async () => {
             server.kill();
@@ -62,7 +58,7 @@ describe('smoke test', () => {
         ]);
         console.log('hi 2');
 
-        browser = await puppeteer.launch({ headless: false });
+        browser = await puppeteer.launch({ headless: 'new' });
         console.log('hi 3');
         const [extraBlankPage] = await browser.pages();
         console.log('hi 4');

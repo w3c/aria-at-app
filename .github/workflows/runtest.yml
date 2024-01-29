@@ -29,9 +29,6 @@ jobs:
         run: |
           yarn --frozen-lockfile
           npx patch-package
-          ls node_modules
-          ls node_modules/puppeteer
-          ls node_modules/puppeteer/.local-chromium
           source config/test.env
           sudo -u postgres createdb ${PGDATABASE}
           echo Created ${PGDATABASE}
