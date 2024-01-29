@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const path = require('path');
 const spawn = require('cross-spawn');
+const treeKill = require('tree-kill');
 
 const startServer = async serverOrClient => {
     return new Promise(resolve => {
@@ -21,10 +22,12 @@ const startServer = async serverOrClient => {
         });
 
         const killServer = async () => {
-            server.kill();
-            // It's currently difficult to know when the server has
-            // terminated, but it takes around 5 seconds
-            await new Promise(resolve => setTimeout(resolve, 5000));
+            await new Promise((resolve, reject) => {
+                treeKill(server.pid, error => {
+                    if (error) return reject(error);
+                    resolve();
+                });
+            });
         };
 
         server.stdout.on('data', data => {
