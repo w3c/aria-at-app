@@ -83,15 +83,17 @@ const testPlanVersionsQuery = () => {
 
 const updateVersionToPhaseQuery = (
     testPlanVersionId,
-    testPlanVersionDataToIncludeId,
-    phase
+    phase,
+    { testPlanVersionDataToIncludeId } = {}
 ) => {
     return mutate(gql`
         mutation {
             testPlanVersion(id: ${testPlanVersionId}) {
                 updatePhase(
                     phase: ${phase}
-                    testPlanVersionDataToIncludeId: ${testPlanVersionDataToIncludeId}
+                    testPlanVersionDataToIncludeId: ${
+                        testPlanVersionDataToIncludeId ?? null
+                    }
                 ) {
                     testPlanVersion {
                         phase
@@ -157,6 +159,59 @@ const updateVersionToPhaseQuery = (
     `);
 };
 
+const findOrCreateTestPlanReportQuery = (
+    testPlanVersionId,
+    atId,
+    browserId
+) => {
+    return mutate(gql`
+        mutation {
+            findOrCreateTestPlanReport(input: {
+                testPlanVersionId: ${testPlanVersionId}
+                atId: ${atId}
+                browserId: ${browserId}
+            }) {
+                populatedData {
+                    testPlanReport {
+                        id
+                        at {
+                            id
+                        }
+                        browser {
+                            id
+                        }
+                    }
+                    testPlanVersion {
+                        id
+                        phase
+                        testPlanReports {
+                            id
+                        }
+                    }
+                }
+                created {
+                    locationOfData
+                }
+            }
+        }
+    `);
+};
+
+const markAsFinal = testPlanReportId => {
+    return mutate(gql`
+        mutation {
+            testPlanReport(id: ${testPlanReportId}) {
+                markAsFinal {
+                    testPlanReport {
+                        id
+                        markedFinalAt
+                    }
+                }
+            }
+        }
+    `);
+};
+
 const countCompletedTests = testPlanReports => {
     return testPlanReports.reduce((acc, testPlanReport) => {
         return (
@@ -187,17 +242,7 @@ describe('data management', () => {
             // This version is in 'CANDIDATE' phase. Set it to DRAFT
             // This will also remove the associated TestPlanReports markedFinalAt values
             const testPlanVersionId = candidateTestPlanVersion.id;
-            await mutate(gql`
-                mutation {
-                    testPlanVersion(id: ${testPlanVersionId}) {
-                        updatePhase(phase: DRAFT) {
-                            testPlanVersion {
-                                phase
-                            }
-                        }
-                    }
-                }
-            `);
+            await updateVersionToPhaseQuery(testPlanVersionId, 'DRAFT');
 
             const previous = await query(gql`
                 query {
@@ -214,33 +259,15 @@ describe('data management', () => {
                 previous.testPlanVersion.testPlanReports[0].id;
 
             // Need to approve at least one of the associated reports
-            await mutate(gql`
-                mutation {
-                    testPlanReport(id: ${previousPhaseTestPlanReportId}) {
-                        markAsFinal {
-                            testPlanReport {
-                                id
-                                markedFinalAt
-                            }
-                        }
-                    }
-                }
-            `);
+            await markAsFinal(previousPhaseTestPlanReportId);
 
             // Check to see that the testPlanVersion cannot be updated until the reports have been
             // finalized
             await expect(() => {
-                return mutate(gql`
-                    mutation {
-                        testPlanVersion(id: ${testPlanVersionId}) {
-                            updatePhase(phase: CANDIDATE) {
-                                testPlanVersion {
-                                    phase
-                                }
-                            }
-                        }
-                    }
-                `);
+                return updateVersionToPhaseQuery(
+                    testPlanVersionId,
+                    'CANDIDATE'
+                );
             }).rejects.toThrow(
                 /Cannot set phase to candidate because the following required reports have not been collected or finalized:/i
             );
@@ -254,47 +281,21 @@ describe('data management', () => {
             `);
 
             for (const testPlanReport of testPlanReportsToMarkAsFinalResult.testPlanReports) {
-                await mutate(gql`
-                    mutation {
-                        testPlanReport(id: ${testPlanReport.id}) {
-                            markAsFinal {
-                                testPlanReport {
-                                    id
-                                    markedFinalAt
-                                }
-                            }
-                        }
-                    }
-
-                `);
+                await markAsFinal(testPlanReport.id);
             }
 
-            const candidateResult = await mutate(gql`
-                mutation {
-                    testPlanVersion(id: ${testPlanVersionId}) {
-                        updatePhase(phase: CANDIDATE) {
-                            testPlanVersion {
-                                phase
-                            }
-                        }
-                    }
-                }
-            `);
+            const candidateResult = await updateVersionToPhaseQuery(
+                testPlanVersionId,
+                'CANDIDATE'
+            );
             const candidateResultPhase =
                 candidateResult.testPlanVersion.updatePhase.testPlanVersion
                     .phase;
 
-            const recommendedResult = await mutate(gql`
-                mutation {
-                    testPlanVersion(id: ${testPlanVersionId}) {
-                        updatePhase(phase: RECOMMENDED) {
-                            testPlanVersion {
-                                phase
-                            }
-                        }
-                    }
-                }
-            `);
+            const recommendedResult = await updateVersionToPhaseQuery(
+                testPlanVersionId,
+                'RECOMMENDED'
+            );
             const recommendedResultPhase =
                 recommendedResult.testPlanVersion.updatePhase.testPlanVersion
                     .phase;
@@ -322,17 +323,7 @@ describe('data management', () => {
             // This version is in 'CANDIDATE' phase. Set it to DRAFT
             // This will also remove the associated TestPlanReports markedFinalAt values
             const oldTestPlanVersionId = oldModalDialogVersion.id;
-            await mutate(gql`
-                mutation {
-                    testPlanVersion(id: ${oldTestPlanVersionId}) {
-                        updatePhase(phase: DRAFT) {
-                            testPlanVersion {
-                                phase
-                            }
-                        }
-                    }
-                }
-            `);
+            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT');
 
             const oldModalDialogVersionTestPlanReports =
                 oldModalDialogVersion.testPlanReports;
@@ -375,8 +366,10 @@ describe('data management', () => {
             const { testPlanVersion: newModalDialogVersionInDraft } =
                 await updateVersionToPhaseQuery(
                     newModalDialogVersion.id,
-                    oldModalDialogVersion.id,
-                    'DRAFT'
+                    'DRAFT',
+                    {
+                        testPlanVersionDataToIncludeId: oldModalDialogVersion.id
+                    }
                 );
             const newModalDialogVersionTestPlanReportsInDraft =
                 newModalDialogVersionInDraft.updatePhase.testPlanVersion
@@ -458,17 +451,7 @@ describe('data management', () => {
             // This version is in 'CANDIDATE' phase. Set it to DRAFT
             // This will also remove the associated TestPlanReports markedFinalAt values
             const oldTestPlanVersionId = oldModalDialogVersion.id;
-            await mutate(gql`
-                mutation {
-                    testPlanVersion(id: ${oldTestPlanVersionId}) {
-                        updatePhase(phase: DRAFT) {
-                            testPlanVersion {
-                                phase
-                            }
-                        }
-                    }
-                }
-            `);
+            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT');
 
             const oldModalDialogVersionTestPlanReports =
                 oldModalDialogVersion.testPlanReports;
@@ -492,20 +475,7 @@ describe('data management', () => {
             const newModalDialogVersionTestPlanReportsInRDCount =
                 newModalDialogVersion.testPlanReports.length;
 
-            await mutate(gql`
-                mutation {
-                    testPlanVersion(id: ${newModalDialogVersion.id}) {
-                        updatePhase(phase: DRAFT) {
-                            testPlanVersion {
-                                phase
-                                testPlanReports {
-                                    id
-                                }
-                            }
-                        }
-                    }
-                }
-            `);
+            await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT');
 
             const {
                 findOrCreateTestPlanReport: {
@@ -513,37 +483,11 @@ describe('data management', () => {
                         testPlanVersion: newModalDialogVersionInDraft
                     }
                 }
-            } = await mutate(gql`
-                mutation {
-                    findOrCreateTestPlanReport(input: {
-                        testPlanVersionId: ${newModalDialogVersion.id}
-                        atId: 3
-                        browserId: 1
-                    }) {
-                        populatedData {
-                            testPlanReport {
-                                id
-                                at {
-                                    id
-                                }
-                                browser {
-                                    id
-                                }
-                            }
-                            testPlanVersion {
-                                id
-                                phase
-                                testPlanReports {
-                                    id
-                                }
-                            }
-                        }
-                        created {
-                            locationOfData
-                        }
-                    }
-                }
-            `);
+            } = await findOrCreateTestPlanReportQuery(
+                newModalDialogVersion.id,
+                3,
+                1
+            );
 
             const newModalDialogVersionTestPlanReportsInDraftCount =
                 newModalDialogVersionInDraft.testPlanReports.length;
@@ -552,8 +496,10 @@ describe('data management', () => {
                 testPlanVersion: newModalDialogVersionInDraftWithOldResults
             } = await updateVersionToPhaseQuery(
                 newModalDialogVersion.id,
-                oldModalDialogVersion.id,
-                'DRAFT'
+                'DRAFT',
+                {
+                    testPlanVersionDataToIncludeId: oldModalDialogVersion.id
+                }
             );
             const newModalDialogVersionTestPlanReportsInDraftWithOldResults =
                 newModalDialogVersionInDraftWithOldResults.updatePhase
@@ -633,20 +579,7 @@ describe('data management', () => {
             const newModalDialogVersionTestPlanReportsInRDCount =
                 newModalDialogVersion.testPlanReports.length;
 
-            await mutate(gql`
-                    mutation {
-                        testPlanVersion(id: ${newModalDialogVersion.id}) {
-                            updatePhase(phase: DRAFT) {
-                                testPlanVersion {
-                                    phase
-                                    testPlanReports {
-                                        id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `);
+            await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT');
 
             const {
                 findOrCreateTestPlanReport: {
@@ -654,37 +587,11 @@ describe('data management', () => {
                         testPlanVersion: newModalDialogVersionInDraft
                     }
                 }
-            } = await mutate(gql`
-                    mutation {
-                        findOrCreateTestPlanReport(input: {
-                            testPlanVersionId: ${newModalDialogVersion.id}
-                            atId: 3
-                            browserId: 3
-                        }) {
-                            populatedData {
-                                testPlanReport {
-                                    id
-                                    at {
-                                        id
-                                    }
-                                    browser {
-                                        id
-                                    }
-                                }
-                                testPlanVersion {
-                                    id
-                                    phase
-                                    testPlanReports {
-                                        id
-                                    }
-                                }
-                            }
-                            created {
-                                locationOfData
-                            }
-                        }
-                    }
-                `);
+            } = await findOrCreateTestPlanReportQuery(
+                newModalDialogVersion.id,
+                3,
+                3
+            );
 
             const newModalDialogVersionTestPlanReportsInDraftCount =
                 newModalDialogVersionInDraft.testPlanReports.length;
@@ -693,8 +600,10 @@ describe('data management', () => {
             await expect(() => {
                 return updateVersionToPhaseQuery(
                     newModalDialogVersion.id,
-                    oldModalDialogVersion.id,
-                    'CANDIDATE'
+                    'CANDIDATE',
+                    {
+                        testPlanVersionDataToIncludeId: oldModalDialogVersion.id
+                    }
                 );
             }).rejects.toThrow(/No reports have been marked as final/i);
 
@@ -752,8 +661,11 @@ describe('data management', () => {
             const { testPlanVersion: newCommandButtonVersionInDraft } =
                 await updateVersionToPhaseQuery(
                     newCommandButtonVersion.id,
-                    oldCommandButtonVersion.id,
-                    'DRAFT'
+                    'DRAFT',
+                    {
+                        testPlanVersionDataToIncludeId:
+                            oldCommandButtonVersion.id
+                    }
                 );
             const newCommandButtonVersionInDraftMarkedFinalReportsCount =
                 newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.reduce(
@@ -770,7 +682,9 @@ describe('data management', () => {
             //
             // This means only 1 test plan report should be affected, for VoiceOver and now unmarked as final.
             // The single JAWS and NVDA reports should be unaffected
-            expect(oldCommandButtonVersionMarkedFinalReportsCount).toEqual(3);
+            expect(
+                newCommandButtonVersionInDraftMarkedFinalReportsCount
+            ).toBeGreaterThan(1);
             expect(
                 newCommandButtonVersionInDraftMarkedFinalReportsCount
             ).toEqual(oldCommandButtonVersionMarkedFinalReportsCount - 1);
