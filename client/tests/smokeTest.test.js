@@ -60,7 +60,7 @@ describe('smoke test', () => {
             startServer('server')
         ]);
 
-        browser = await puppeteer.launch({ headless: 'new' });
+        browser = await puppeteer.launch({ headless: false });
         const [extraBlankPage] = await browser.pages();
         extraBlankPage.close();
     }, 60000);
