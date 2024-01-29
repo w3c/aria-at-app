@@ -41,7 +41,7 @@ jobs:
           yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_3}
           yarn workspace server db-populate-sample-data:test
       - name: test
-        run: yarn workspace client jest client/tests/smokeTest.test.js
+        run: yarn test
       - name: lighthouseci
         run: |
           npm install -g @lhci/cli@0.11.0
