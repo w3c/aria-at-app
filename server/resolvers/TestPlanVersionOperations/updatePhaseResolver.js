@@ -25,6 +25,7 @@ const {
     createScenarioResultId,
     createAssertionResultId
 } = require('../../services/PopulatedData/locationOfDataId');
+const AtLoader = require('../../models/loaders/AtLoader');
 
 const updatePhaseResolver = async (
     { parentContext: { id: testPlanVersionId } },
@@ -264,16 +265,15 @@ const updatePhaseResolver = async (
                         );
                         let updateParams = {};
 
-                        // Mark the report as final if previously was on the TestPlanVersion being
-                        // deprecated
+                        // Mark the report as final if previously was for TestPlanVersion being deprecated; may still be
+                        // nullified if finalized test results aren't equal to the amount known number of possible
+                        // runnable tests, because no tests should be skipped. Would mean it CANNOT be final.
                         if (testPlanReportDataToInclude.markedFinalAt)
                             updateParams = { markedFinalAt: new Date() };
 
                         // Calculate the metrics (happens if updating to DRAFT)
                         const conflicts = await conflictsResolver(
-                            populatedTestPlanReport,
-                            null,
-                            context
+                            populatedTestPlanReport
                         );
 
                         if (conflicts.length > 0) {
@@ -281,6 +281,7 @@ const updatePhaseResolver = async (
                             // marked as final yet
                             updateParams = {
                                 ...updateParams,
+                                markedFinalAt: null,
                                 metrics: {
                                     ...populatedTestPlanReport.metrics,
                                     conflictsCount: conflicts.length
@@ -298,9 +299,9 @@ const updatePhaseResolver = async (
                                 !finalizedTestResults ||
                                 !finalizedTestResults.length
                             ) {
-                                // Just update with current { markedFinalAt } if available
                                 updateParams = {
                                     ...updateParams,
+                                    markedFinalAt: null,
                                     metrics: {
                                         ...populatedTestPlanReport.metrics
                                     }
@@ -316,6 +317,13 @@ const updatePhaseResolver = async (
 
                                 updateParams = {
                                     ...updateParams,
+                                    // means test results have now been 'skipped' during the update process so these
+                                    // cannot be finalized and must be updated in the test queue
+                                    markedFinalAt:
+                                        finalizedTestResults.length <
+                                        runnableTests.length
+                                            ? null
+                                            : updateParams.markedFinalAt,
                                     metrics: {
                                         ...populatedTestPlanReport.metrics,
                                         ...metrics
@@ -393,7 +401,8 @@ const updatePhaseResolver = async (
                 reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
             });
 
-        const ats = await context.atLoader.getAll();
+        const atLoader = AtLoader();
+        const ats = await atLoader.getAll();
 
         const missingAtBrowserCombinations = [];
 
@@ -434,11 +443,7 @@ const updatePhaseResolver = async (
             createdTestPlanReportIdsFromOldResults.includes(testPlanReport.id);
 
         if (phase === 'DRAFT') {
-            const conflicts = await conflictsResolver(
-                testPlanReport,
-                null,
-                context
-            );
+            const conflicts = await conflictsResolver(testPlanReport);
 
             updateParams = {
                 metrics: {
@@ -461,11 +466,7 @@ const updatePhaseResolver = async (
                 : testPlanReport.markedFinalAt;
 
         if (shouldThrowErrorIfFound) {
-            const conflicts = await conflictsResolver(
-                testPlanReport,
-                null,
-                context
-            );
+            const conflicts = await conflictsResolver(testPlanReport);
             if (conflicts.length > 0) {
                 // Throw away newly created test plan reports if exception was hit
                 if (createdTestPlanReportIdsFromOldResults.length)
@@ -571,7 +572,7 @@ const updatePhaseResolver = async (
         });
 
     await updateTestPlanVersion(testPlanVersionId, updateParams);
-    return populateData({ testPlanVersionId }, { context });
+    return populateData({ testPlanVersionId });
 };
 
 module.exports = updatePhaseResolver;

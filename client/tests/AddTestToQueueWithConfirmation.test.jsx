@@ -11,7 +11,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import { TEST_QUEUE_MUTATION_MOCK } from './__mocks__/GraphQLMocks';
 import AddTestToQueueWithConfirmation from '../components/AddTestToQueueWithConfirmation';
 import { BrowserRouter } from 'react-router-dom';
-import { InMemoryCache, useMutation } from '@apollo/client';
+import { InMemoryCache, useMutation, useQuery } from '@apollo/client';
 
 jest.mock('@apollo/client');
 
@@ -23,8 +23,26 @@ let mockTestPlanVersion,
     getByTestId,
     findByRole;
 
+const mockTestPlanReportsQueryResult = {
+    testPlanVersion: {
+        testPlanReports: [
+            {
+                id: 'report1',
+                testPlanRun: {
+                    id: 'testPlanRunId',
+                    isInitiatedByAutomation: false,
+                    markedFinalAt: null
+                }
+            }
+        ]
+    }
+};
+
 const setup = (props, mockMutation) => {
     useMutation.mockReturnValue([mockMutation, {}]);
+    useQuery.mockReturnValue({
+        data: mockTestPlanReportsQueryResult
+    });
     return render(
         <BrowserRouter>
             <MockedProvider

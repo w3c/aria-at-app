@@ -5,6 +5,8 @@ import styled from '@emotion/styled';
 import FocusTrapper from '../FocusTrapper';
 import { uniqueId } from 'lodash';
 
+import './BasicModal.css';
+
 const ModalTitleStyle = styled.h1`
     border: 0;
     padding: 0;
@@ -15,7 +17,6 @@ const BasicModal = ({
     show = false,
     centered = false,
     animation = true,
-    actionButtonClassName = '',
     closeButton = true,
     cancelButton = true,
     headerSep = true,
@@ -24,12 +25,11 @@ const BasicModal = ({
     title = null,
     content = null,
     closeLabel = 'Cancel',
-    actionLabel = 'Continue',
     handleClose = null,
-    handleAction = null,
     handleHide = null,
     staticBackdrop = false,
     useOnHide = false,
+    actions = [],
     initialFocusRef = null
 }) => {
     const headerRef = useRef();
@@ -46,6 +46,27 @@ const BasicModal = ({
     const id = useMemo(() => {
         return uniqueId('modal-');
     }, []);
+
+    const renderAction = (action, index) => {
+        if (action.component) {
+            return React.createElement(
+                action.component,
+                { key: `CustomComponent_${index}`, ...action.props },
+                null
+            );
+        } else {
+            return (
+                <Button
+                    key={`BasicModalAction_${index}`}
+                    variant={action.variant ?? 'primary'}
+                    onClick={action.onClick}
+                    className={action.className ?? ''}
+                >
+                    {action.label ?? 'Continue'}
+                </Button>
+            );
+        }
+    };
 
     return (
         <FocusTrapper
@@ -89,14 +110,8 @@ const BasicModal = ({
                                 {closeLabel}
                             </Button>
                         )}
-                        {handleAction && (
-                            <Button
-                                variant="primary"
-                                onClick={handleAction}
-                                className={actionButtonClassName}
-                            >
-                                {actionLabel}
-                            </Button>
+                        {actions.map((action, index) =>
+                            renderAction(action, index)
                         )}
                     </Modal.Footer>
                 )}
@@ -109,21 +124,28 @@ BasicModal.propTypes = {
     show: PropTypes.bool,
     centered: PropTypes.bool,
     animation: PropTypes.bool,
-    actionButtonClassName: PropTypes.string,
     closeButton: PropTypes.bool,
     cancelButton: PropTypes.bool,
     headerSep: PropTypes.bool,
     showFooter: PropTypes.bool,
     dialogClassName: PropTypes.string,
     title: PropTypes.node.isRequired,
-    content: PropTypes.node.isRequired,
+    content: PropTypes.node,
     closeLabel: PropTypes.string,
-    actionLabel: PropTypes.string,
     handleClose: PropTypes.func,
-    handleAction: PropTypes.func,
     handleHide: PropTypes.func,
     staticBackdrop: PropTypes.bool,
     useOnHide: PropTypes.bool,
+    actions: PropTypes.arrayOf(
+        PropTypes.shape({
+            label: PropTypes.string,
+            onClick: PropTypes.func,
+            variant: PropTypes.string,
+            className: PropTypes.string,
+            component: PropTypes.elementType,
+            props: PropTypes.object
+        })
+    ),
     initialFocusRef: PropTypes.shape({
         current: PropTypes.any
     })

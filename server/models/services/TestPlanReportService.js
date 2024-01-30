@@ -6,7 +6,8 @@ const {
     TEST_PLAN_RUN_ATTRIBUTES,
     AT_ATTRIBUTES,
     BROWSER_ATTRIBUTES,
-    USER_ATTRIBUTES
+    USER_ATTRIBUTES,
+    TEST_PLAN_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport, TestPlanVersion } = require('../');
 
@@ -66,7 +67,8 @@ const testPlanVersionAssociation = testPlanVersionAttributes => ({
     association: 'testPlanVersion',
     attributes: testPlanVersionAttributes?.length
         ? testPlanVersionAttributes.concat([testPlanVersionLiterals])
-        : testPlanVersionAttributes
+        : testPlanVersionAttributes,
+    include: [testPlanAssociation(TEST_PLAN_ATTRIBUTES)]
 });
 
 /**
@@ -94,6 +96,15 @@ const browserAssociation = browserAttributes => ({
 const userAssociation = userAttributes => ({
     association: 'tester',
     attributes: userAttributes
+});
+
+/**
+ * @param {string[]} testPlanAttributes - TestPlanReport attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanAssociation = testPlanAttributes => ({
+    association: 'testPlan',
+    attributes: testPlanAttributes
 });
 
 /**

@@ -10,7 +10,8 @@ import {
     faRedo,
     faCheck,
     faCheckCircle,
-    faExclamationCircle
+    faExclamationCircle,
+    faRobot
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
@@ -27,6 +28,7 @@ import { useDetectUa } from '../../hooks/useDetectUa';
 import DisplayNone from '../../utils/DisplayNone';
 import { navigateTests } from '../../utils/navigateTests';
 import {
+    COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
     DELETE_TEST_RESULT_MUTATION,
     FIND_OR_CREATE_BROWSER_VERSION_MUTATION,
     FIND_OR_CREATE_TEST_RESULT_MUTATION,
@@ -40,6 +42,7 @@ import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
 import { convertDateToString } from '../../utils/formatter';
+import { isBot } from '../../utils/automation';
 
 const TestRun = () => {
     const params = useParams();
@@ -73,6 +76,15 @@ const TestRun = () => {
             variables: { testPlanRunId, testPlanReportId }
         }
     );
+
+    const { data: collectionJobQuery } = useQuery(
+        COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
+        {
+            variables: { testPlanRunId },
+            fetchPolicy: 'cache-and-network'
+        }
+    );
+
     const [createTestResult, { loading: createTestResultLoading }] =
         useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION);
     const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
@@ -135,6 +147,7 @@ const TestRun = () => {
             : null;
     const testerId = openAsUserId || userId;
     const isAdminReviewer = !!(isAdmin && openAsUserId);
+    const openAsUser = users?.find(user => user.id === openAsUserId);
 
     useEffect(() => {
         if (data) setup(data);
@@ -230,6 +243,11 @@ const TestRun = () => {
         setCurrentTestBrowserVersionId(currentTestBrowserVersionId);
         setCurrentAtVersion(currentAtVersion);
         setCurrentBrowserVersion(currentBrowserVersion);
+        // Testers do not need to change AT/Browser versions
+        // while assigning verdicts for previously automated tests
+        if (testPlanRun?.initiatedByAutomation) {
+            setIsShowingAtBrowserModal(false);
+        }
         setPageReady(true);
     };
 
@@ -846,6 +864,57 @@ const TestRun = () => {
         editAtBrowserDetailsButtonRef.current.focus();
     };
 
+    const renderTestsCompletedInfoBox = () => {
+        let isReviewingBot = false;
+        if (openAsUserId) {
+            isReviewingBot = isBot(openAsUser);
+        }
+
+        let content;
+
+        if (isReviewingBot) {
+            content = (
+                <>
+                    <b>{`${testResults.reduce(
+                        (acc, { scenarioResults }) =>
+                            acc +
+                            (scenarioResults &&
+                            scenarioResults.every(({ output }) => !!output)
+                                ? 1
+                                : 0),
+                        0
+                    )} of ${tests.length}`}</b>{' '}
+                    responses collected.
+                </>
+            );
+        } else if (!isSignedIn) {
+            content = <b>{tests.length} tests to view</b>;
+        } else if (hasTestsToRun) {
+            content = (
+                <>
+                    {' '}
+                    <b>{`${testResults.reduce(
+                        (acc, { completedAt }) => acc + (completedAt ? 1 : 0),
+                        0
+                    )} of ${tests.length}`}</b>{' '}
+                    tests completed
+                </>
+            );
+        } else {
+            content = <div>No tests for this AT and Browser combination</div>;
+        }
+        return (
+            <div className="test-info-entity tests-completed">
+                <div className="info-label">
+                    <FontAwesomeIcon
+                        icon={hasTestsToRun ? faCheck : faExclamationCircle}
+                    />
+                    {content}
+                </div>
+            </div>
+        );
+    };
+
     const renderTestContent = (testPlanReport, currentTest, heading) => {
         const { index } = currentTest;
         const isComplete = currentTest.testResult
@@ -937,19 +1006,35 @@ const TestRun = () => {
                             href={issueLink}
                         />
                     </li>
-                    <li>
-                        <OptionButton
-                            text="Start Over"
-                            icon={
-                                <FontAwesomeIcon
-                                    icon={faRedo}
-                                    color="#94979b"
-                                />
-                            }
-                            onClick={handleStartOverButtonClick}
-                            disabled={!isSignedIn}
-                        />
-                    </li>
+                    {isBot(openAsUser) &&
+                    collectionJobQuery?.collectionJobByTestPlanRunId
+                        ?.externalLogsUrl ? (
+                        <li>
+                            <OptionButton
+                                text="View Log"
+                                target="_blank"
+                                href={
+                                    collectionJobQuery?.collectionJob
+                                        ?.externalLogsUrl
+                                }
+                            />
+                        </li>
+                    ) : (
+                        <li>
+                            <OptionButton
+                                text="Start Over"
+                                icon={
+                                    <FontAwesomeIcon
+                                        icon={faRedo}
+                                        color="#94979b"
+                                    />
+                                }
+                                onClick={handleStartOverButtonClick}
+                                disabled={!isSignedIn}
+                            />
+                        </li>
+                    )}
+
                     <li>
                         <OptionButton
                             text={!isSignedIn ? 'Close' : 'Save and Close'}
@@ -1014,6 +1099,7 @@ const TestRun = () => {
                                     submitButtonRef={
                                         testRendererSubmitButtonRef
                                     }
+                                    isReviewingBot={isBot(openAsUser)}
                                     isSubmitted={isTestSubmitClicked}
                                     isEdit={isTestEditClicked}
                                     setIsRendererReady={setIsRendererReady}
@@ -1060,7 +1146,11 @@ const TestRun = () => {
                         animation={false}
                         title="Start Over"
                         content={`Are you sure you want to start over Test #${currentTest.seq}? Your progress (if any), will be lost.`}
-                        handleAction={handleStartOverAction}
+                        actions={[
+                            {
+                                onClick: handleStartOverAction
+                            }
+                        ]}
                         handleClose={() => setShowStartOverModal(false)}
                     />
                 )}
@@ -1106,15 +1196,22 @@ const TestRun = () => {
     let openAsUserHeading = null;
 
     if (openAsUserId) {
-        const openAsUser = users.find(user => user.id === openAsUserId);
-        openAsUserHeading = (
-            <>
+        if (isBot(openAsUser)) {
+            openAsUserHeading = (
+                <div className="test-info-entity reviewing-as bot">
+                    Reviewing tests of{' '}
+                    <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
+                    <b>{`${openAsUser.username}`}.</b>
+                </div>
+            );
+        } else {
+            openAsUserHeading = (
                 <div className="test-info-entity reviewing-as">
                     Reviewing tests of <b>{`${openAsUser.username}`}.</b>
                     <p>{`All changes will be saved as performed by ${openAsUser.username}.`}</p>
                 </div>
-            </>
-        );
+            );
+        }
     }
 
     heading = pageReady && (
@@ -1164,32 +1261,7 @@ const TestRun = () => {
                         </Button>
                     )}
                 </div>
-                <div className="test-info-entity tests-completed">
-                    <div className="info-label">
-                        <FontAwesomeIcon
-                            icon={hasTestsToRun ? faCheck : faExclamationCircle}
-                        />
-                        {!isSignedIn ? (
-                            <>
-                                <b>{tests.length} tests to view</b>
-                            </>
-                        ) : hasTestsToRun ? (
-                            <>
-                                {' '}
-                                <b>{`${testResults.reduce(
-                                    (acc, { completedAt }) =>
-                                        acc + (completedAt ? 1 : 0),
-                                    0
-                                )} of ${tests.length}`}</b>{' '}
-                                tests completed
-                            </>
-                        ) : (
-                            <div>
-                                No tests for this AT and Browser combination
-                            </div>
-                        )}
-                    </div>
-                </div>
+                {renderTestsCompletedInfoBox()}
             </div>
             {openAsUserHeading}
         </>
@@ -1246,6 +1318,7 @@ const TestRun = () => {
                         currentTestIndex={currentTestIndex}
                         toggleShowClick={toggleTestNavigator}
                         handleTestClick={handleTestClick}
+                        testPlanRun={testPlanRun}
                     />
                     <Col
                         className="main-test-area"

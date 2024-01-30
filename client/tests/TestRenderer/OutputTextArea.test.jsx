@@ -6,7 +6,7 @@ import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import OutputTextArea from '../../components/TestRenderer/OutputTextArea';
 import '@testing-library/jest-dom/extend-expect';
-import { noOutputTextAreaValue } from '../../components/TestRenderer/OutputTextArea/constants';
+import { NO_OUTPUT_STRING } from '../../components/TestRenderer/OutputTextArea/constants';
 
 describe('OutputTextArea', () => {
     let atOutputMock;
@@ -66,7 +66,7 @@ describe('OutputTextArea', () => {
         expect(textarea.value).toBe('');
 
         fireEvent.click(checkbox);
-        expect(atOutputMock.value).toBe(noOutputTextAreaValue);
+        expect(atOutputMock.value).toBe(NO_OUTPUT_STRING);
     });
 
     it('should handle textarea change', () => {
@@ -124,7 +124,7 @@ describe('OutputTextArea', () => {
     });
 
     it('should enable checkbox when textarea loads with no output default value', () => {
-        const prefilledMock = { ...atOutputMock, value: noOutputTextAreaValue };
+        const prefilledMock = { ...atOutputMock, value: NO_OUTPUT_STRING };
         render(
             <OutputTextArea
                 commandIndex={0}

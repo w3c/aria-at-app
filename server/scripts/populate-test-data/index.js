@@ -5,7 +5,7 @@ const populateFakeTestResults = require('./populateFakeTestResults');
 
 const populateTestDatabase = async () => {
     const testDataScript = fs.readFileSync(
-        __dirname + '/pg_dump_2021_05_test_data.sql',
+        __dirname + '/pg_dump_test_data.sql',
         'utf-8'
     );
 
@@ -160,6 +160,16 @@ const populateTestDatabase = async () => {
         'completeAndPassing',
         'completeAndPassing'
     ]);
+
+    await populateFakeTestResults(14, new Array(16).fill('completeAndPassing'));
+
+    await populateFakeTestResults(15, new Array(8).fill('completeAndPassing'));
+
+    await populateFakeTestResults(16, new Array(3).fill('completeAndPassing'));
+
+    await populateFakeTestResults(17, new Array(3).fill('completeAndPassing'));
+
+    await populateFakeTestResults(18, new Array(3).fill('completeAndPassing'));
 
     console.info(
         'Successfully populated. Please wait a moment for the process to close.'
