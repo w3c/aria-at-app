@@ -372,9 +372,7 @@ export default (meQuery, testPlanReportStatusDialogQuery) => [
                                 id: '3',
                                 name: 'Safari'
                             }
-                        ],
-                        candidateBrowsers: [{ id: '3' }],
-                        recommendedBrowsers: [{ id: '2' }, { id: '3' }]
+                        ]
                     }
                 ]
             }
