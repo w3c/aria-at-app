@@ -7,18 +7,25 @@ const evaluateAtNameKey = atName => {
     else return atName.toLowerCase();
 };
 
-const testWithNoIds = test => ({
-    ...omit(test, ['id', 'renderedUrls', 'viewers']),
+const testWithOmittedAttributes = test => ({
+    ...omit(test, [
+        'id',
+        'at',
+        'renderedUrls',
+        'renderedUrl',
+        'renderableContent.target.at.raw',
+        'viewers'
+    ]),
     assertions: test.assertions.map(assertion => omit(assertion, ['id'])),
     scenarios: test.scenarios.map(scenario => omit(scenario, ['id']))
 });
 
 // Ideally the hash of tests being imported will never change
-const hashTests = tests => objectHash(tests.map(testWithNoIds));
+const hashTests = tests => objectHash(tests.map(testWithOmittedAttributes));
 
 // Generate the hash of a test.
 const hashTest = test => {
-    return objectHash(testWithNoIds(test));
+    return objectHash(testWithOmittedAttributes(test));
 };
 
 module.exports = {
