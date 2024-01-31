@@ -9,6 +9,7 @@ import {
     TEST_PLAN_REPORT_ASSIGNED_TESTERS_QUERY
 } from './queries';
 import DeleteButton from '../common/DeleteButton';
+import BotRunTestStatusList from '../BotRunTestStatusList';
 import { isBot } from '../../utils/automation';
 
 import './ManageBotRunDialog.css';
@@ -18,6 +19,7 @@ import StopRunningCollectionButton from './StopRunningCollectionButton';
 
 const ManageBotRunDialog = ({
     testPlanReportId,
+    runnableTestsLength,
     testPlanRun,
     testers,
     show,
@@ -120,6 +122,12 @@ const ManageBotRunDialog = ({
             </p>
         </>
     );
+    const content = (
+        <BotRunTestStatusList
+            testPlanReportId={testPlanReportId}
+            runnableTestsLength={runnableTestsLength}
+        />
+    );
 
     return (
         <>
@@ -148,7 +156,7 @@ const ManageBotRunDialog = ({
                 useOnHide={true}
                 title={`Manage ${testPlanRun.tester?.username} Run`}
                 cancelButton={false}
-                content=""
+                content={content}
                 dialogClassName="manage-bot-run-dialog"
                 actions={actions}
             />
@@ -162,6 +170,7 @@ ManageBotRunDialog.propTypes = {
     setShow: PropTypes.func.isRequired,
     testers: PropTypes.array.isRequired,
     testPlanReportId: PropTypes.string.isRequired,
+    runnableTestsLength: PropTypes.number.isRequired,
     onChange: PropTypes.func.isRequired
 };
 
