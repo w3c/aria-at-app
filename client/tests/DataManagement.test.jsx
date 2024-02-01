@@ -188,11 +188,12 @@ describe('useDataManagementTableFiltering hook', () => {
             )
         );
         expect(result.current.filteredTestPlans).toEqual([
-            testPlans[0] // RD
+            testPlans[0], // RD
+            testPlans[3]
         ]);
         expect(
             result.current.filterLabels[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD]
-        ).toEqual(`R&D Complete (1)`);
+        ).toEqual(`R&D Complete (2)`);
     });
 
     it('can filter by DRAFT phase', () => {
@@ -267,31 +268,31 @@ describe('useTestPlanVersionsByPhase hook', () => {
 });
 
 describe('useDerivedTestPlanOverallPhase hook', () => {
-    it('returns an object with the overall phase mapped to each test plan id', () => {
+    it('returns an object with the active phases mapped to each test plan id', () => {
         const { result } = renderHook(() =>
             useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions)
         );
         const {
-            derivedOverallPhaseByTestPlanId: { derivedOverallPhaseByTestPlanId }
+            derivedOverallPhaseByTestPlanId: { activeTestPlanVersionsByPhase }
         } = result.current;
-        expect(derivedOverallPhaseByTestPlanId).toEqual({
-            1: 'RD',
-            2: 'DRAFT',
-            3: 'CANDIDATE',
-            4: 'RECOMMENDED'
+        expect(activeTestPlanVersionsByPhase).toEqual({
+            1: ['RD'],
+            2: ['DRAFT'],
+            3: ['CANDIDATE'],
+            4: ['RECOMMENDED', 'DRAFT', 'RD']
         });
     });
 });
 
 describe('useTestPlansByPhase hook', () => {
-    it('returns an object with test plans grouped by overall phase', () => {
+    it('returns an object with test plans with an array of active Test Plan Versions', () => {
         const { result } = renderHook(() =>
             useTestPlansByPhase(testPlans, testPlanVersions)
         );
         const { testPlansByPhase } = result.current;
         expect(testPlansByPhase).toEqual({
-            RD: [testPlans[0]],
-            DRAFT: [testPlans[1]],
+            RD: [testPlans[0], testPlans[3]],
+            DRAFT: [testPlans[1], testPlans[3]],
             CANDIDATE: [testPlans[2]],
             RECOMMENDED: [testPlans[3]]
         });
