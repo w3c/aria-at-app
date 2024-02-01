@@ -17,7 +17,7 @@ import { act } from 'react-dom/test-utils';
 import {
     useDataManagementTableFiltering,
     useDataManagementTableSorting,
-    useDerivedOverallPhaseByTestPlanId,
+    useDerivedActivePhasesByTestPlanId,
     useTestPlanVersionsByPhase,
     useTestPlansByPhase
 } from '../components/DataManagement/filterSortHooks';
@@ -270,12 +270,10 @@ describe('useTestPlanVersionsByPhase hook', () => {
 describe('useDerivedTestPlanOverallPhase hook', () => {
     it('returns an object with the active phases mapped to each test plan id', () => {
         const { result } = renderHook(() =>
-            useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions)
+            useDerivedActivePhasesByTestPlanId(testPlans, testPlanVersions)
         );
-        const {
-            derivedOverallPhaseByTestPlanId: { activeTestPlanVersionsByPhase }
-        } = result.current;
-        expect(activeTestPlanVersionsByPhase).toEqual({
+        const { derivedActivePhasesByTestPlanId } = result.current;
+        expect(derivedActivePhasesByTestPlanId).toEqual({
             1: ['RD'],
             2: ['DRAFT'],
             3: ['CANDIDATE'],
