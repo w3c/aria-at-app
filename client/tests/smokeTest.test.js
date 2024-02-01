@@ -1,122 +1,78 @@
-const puppeteer = require('puppeteer');
-const path = require('path');
-const spawn = require('cross-spawn');
-const treeKill = require('tree-kill');
-
-// TODO: In a future iteration the server start and close functions should
-// handled in one place by Jest's setup and teardown scripts
-
-const startServer = async serverOrClient => {
-    return new Promise(resolve => {
-        const server = spawn('yarn', ['workspace', serverOrClient, 'dev'], {
-            cwd: path.resolve(__dirname, '../../'),
-            env: {
-                PATH: process.env.PATH,
-                PORT: 8033,
-                CLIENT_PORT: 3033,
-                AUTOMATION_SCHEDULER_PORT: 8833,
-                API_SERVER: 'http://localhost:8033',
-                APP_SERVER: 'http://localhost:3033',
-                AUTOMATION_SCHEDULER_URL: 'http://localhost:8833',
-                PGDATABASE: 'aria_at_report_test',
-                PGPORT: 5432,
-                ENVIRONMENT: 'test'
-            }
-        });
-
-        const killServer = async () => {
-            await new Promise((resolve, reject) => {
-                treeKill(server.pid, error => {
-                    if (error) return reject(error);
-                    resolve();
-                });
-            });
-        };
-
-        server.stdout.on('data', data => {
-            const output = data.toString();
-            console.info(output); // eslint-disable-line no-console
-
-            if (
-                (serverOrClient === 'server' &&
-                    output.includes('Listening on 8033')) ||
-                (serverOrClient === 'client' &&
-                    output.includes('compiled successfully'))
-            ) {
-                resolve({ close: killServer });
-            }
-        });
-
-        server.stderr.on('data', data => {
-            const output = data.toString();
-            console.info(output); // eslint-disable-line no-console
-        });
-    });
-};
+import getPage, { setup, teardown } from './util/getPage';
 
 describe('smoke test', () => {
-    let browser;
-    let backendServer;
-    let clientServer;
-
     beforeAll(async () => {
-        // eslint-disable-next-line no-console
-        console.info(
-            'Starting dev servers. This is required for end-to-end testing'
-        );
-        [clientServer, backendServer] = await Promise.all([
-            startServer('client'),
-            startServer('server')
-        ]);
-
-        browser = await puppeteer.launch({
-            headless: 'new',
-            args: ['--no-sandbox'] // Required for GitHub environment
-        });
-        const [extraBlankPage] = await browser.pages();
-        extraBlankPage.close();
-    }, 60000);
+        // TODO: In a future iteration the server start and close functions should
+        // be handled in one place by Jest's setup and teardown scripts
+        await setup();
+    }, 30000);
 
     afterAll(async () => {
-        await Promise.all([backendServer.close(), clientServer.close()]);
+        await teardown();
+    }, 30000);
 
-        // Browser might not be defined, if it failed to start
-        if (browser) await browser.close();
-    }, 60000);
+    it('can sign in as admin, tester, vendor, or logged out', async () => {
+        await Promise.all([
+            getPage({ role: 'admin', url: '/test-queue' }, async page => {
+                // Only admins can remove rows from the test queue
+                await page.waitForSelector('td.actions ::-p-text(Remove)');
+            }),
+
+            getPage({ role: 'tester', url: '/test-queue' }, async page => {
+                // Testers can assign themselves
+                await page.waitForSelector('table ::-p-text(Assign Yourself)');
+                const adminOnlyRemoveButton = await page.$(
+                    'td.actions ::-p-text(Remove)'
+                );
+                expect(adminOnlyRemoveButton).toBe(null);
+            }),
+
+            getPage(
+                { role: 'vendor', url: '/test-queue' },
+                async (page, { baseUrl }) => {
+                    // Vendors get the same test queue as signed-out users
+                    await page.waitForSelector(
+                        'td.actions ::-p-text(View tests)'
+                    );
+                    // Unlike signed-out users, they will get tables on this page
+                    await page.goto(`${baseUrl}/candidate-review`);
+                    await page.waitForSelector('table');
+                }
+            ),
+
+            getPage({ role: false, url: '/test-queue' }, async page => {
+                // Signed-out users can only view tests, not run them
+                await page.waitForSelector('td.actions ::-p-text(View tests)');
+            })
+        ]);
+    }, 10000);
 
     it('loads various pages without crashing', async () => {
-        let homeH1;
-        let reportsH1;
-        let dataManagementH1;
-
         await Promise.all([
-            (async () => {
-                const page = await browser.newPage();
-                await page.goto('http://localhost:3033/');
+            getPage({ role: false, url: '/' }, async page => {
                 await page.waitForSelector('h1');
                 const h1Handle = await page.waitForSelector('h1');
-                homeH1 = await h1Handle.evaluate(h1 => h1.innerText);
-            })(),
-            (async () => {
-                const page = await browser.newPage();
-                await page.goto('http://localhost:3033/reports');
+                const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+                expect(h1Text).toBe(
+                    'Enabling Interoperability for Assistive Technology Users'
+                );
+            }),
+            getPage({ role: false, url: '/reports' }, async page => {
+                // Wait for an h2 because an h1 will show while the page is
+                // still loading
                 await page.waitForSelector('h2');
                 const h1Handle = await page.waitForSelector('h1');
-                reportsH1 = await h1Handle.evaluate(h1 => h1.innerText);
-            })(),
-            (async () => {
-                const page = await browser.newPage();
-                await page.goto('http://localhost:3033/data-management');
+                const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+                expect(h1Text).toBe(
+                    'Assistive Technology Interoperability Reports'
+                );
+            }),
+            getPage({ role: false, url: '/data-management' }, async page => {
                 await page.waitForSelector('h2');
                 const h1Handle = await page.waitForSelector('h1');
-                dataManagementH1 = await h1Handle.evaluate(h1 => h1.innerText);
-            })()
+                const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+                expect(h1Text).toBe('Data Management');
+            })
         ]);
-
-        expect(homeH1).toBe(
-            'Enabling Interoperability for Assistive Technology Users'
-        );
-        expect(reportsH1).toBe('Assistive Technology Interoperability Reports');
-        expect(dataManagementH1).toBe('Data Management');
-    }, 60000);
+    }, 10000);
 });

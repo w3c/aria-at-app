@@ -62,10 +62,8 @@ const setUpMockGithubServer = async () => {
 
     expressApp.get('/login/oauth/authorize', (req, res) => {
         const code = randomStringGenerator();
-        const { state } = req.query;
         res.status(303).redirect(
-            `${process.env.API_SERVER}/api/auth/authorize` +
-                `?code=${code}&state=${state}`
+            `${process.env.API_SERVER}/api/auth/authorize?code=${code}`
         );
     });
 

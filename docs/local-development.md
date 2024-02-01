@@ -29,12 +29,23 @@ ARIA-AT App determines if you are authorized to sign in as an admin based on whe
 
 Another way to log in as either a tester or admin, useful for quick testing and not requiring editing testers.txt or membership within any GitHub organizations or teams, is described below.
 
-1. Sign out and return to the home page.
-2. Add `?fakeRole=admin` to the URL bar and press enter. Alternatively use `?fakeRole=tester` to log in as a tester only or `?fakeRole=` to preview logging in without a role.
-3. Follow the sign in steps as normal.
-4. After signing in, your selected role will be used for the duration of your session.
+1. With the app running, open the browser DevTools.
+2. Go to the DevTools console.
+3. Paste in the following code:
+    - To become an admin:
+        ```
+          await signMeIn({ username: "imma-admin", roles: [{ name: "ADMIN" }, { name: "TESTER" }] })
+        ```
+    - To become a tester:
+        ```
+          await signMeIn({ username: "imma-tester", roles: [{ name: "TESTER" }] })
+        ```
+    - To become a vendor:
+        ```
+          await signMeIn({ username: "imma-vendor", roles: [{ name: "VENDOR" }] })
+        ```
 
-This functionality is available in development environments where the ALLOW_FAKE_ROLE environment variable is "true".
+This functionality is available in development environments where the ALLOW_FAKE_USER environment variable is "true".
 
 ## Debugging
 

@@ -15,3 +15,18 @@ root.render(
         </BrowserRouter>
     </GraphQLProvider>
 );
+
+window.signMeIn = async user => {
+    const response = await fetch('/api/auth/fake-user', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    });
+
+    const responseText = await response.text();
+    if (!response.ok) throw responseText;
+
+    location.reload();
+};

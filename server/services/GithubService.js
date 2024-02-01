@@ -71,11 +71,10 @@ const getAllIssues = async () => {
 
 module.exports = {
     graphQLEndpoint,
-    getOauthUrl: ({ state = '' }) => {
+    getOauthUrl: () => {
         return (
             `${GITHUB_OAUTH_SERVER}/login/oauth/authorize?scope=` +
-            `${permissionScopesURI}&client_id=${GITHUB_CLIENT_ID}` +
-            `&state=${state}`
+            `${permissionScopesURI}&client_id=${GITHUB_CLIENT_ID}`
         );
     },
     async getGithubAccessToken(code) {
