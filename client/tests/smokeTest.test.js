@@ -54,7 +54,7 @@ describe('smoke test', () => {
     }, 10000);
 
     it('loads various pages without crashing', async () => {
-        console.log('started test 2');
+        console.log('starting test 2');
         await Promise.all([
             getPage({ role: false, url: '/' }, async page => {
                 await page.waitForSelector('h1');

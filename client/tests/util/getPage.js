@@ -132,6 +132,8 @@ const getPage = async (options, callback) => {
             });
         `);
 
+        await page.waitForNavigation();
+
         await page.waitForSelector('::-p-text(Signed in)');
     }
 
