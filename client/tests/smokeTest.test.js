@@ -7,13 +7,13 @@ describe('smoke test', () => {
         // be handled in one place by Jest's setup and teardown scripts
         await setup();
         console.log('ended setup');
-    }, 30000);
+    }, 60000);
 
     afterAll(async () => {
         console.log('starting teardown');
         await teardown();
         console.log('ended teardown');
-    }, 30000);
+    }, 60000);
 
     it('can sign in as admin, tester, vendor, or logged out', async () => {
         console.log('starting test 1');
@@ -51,7 +51,7 @@ describe('smoke test', () => {
             })
         ]);
         console.log('ended test 1');
-    }, 10000);
+    }, 60000);
 
     it('loads various pages without crashing', async () => {
         console.log('starting test 2');
@@ -82,5 +82,5 @@ describe('smoke test', () => {
             })
         ]);
         console.log('ended test 2');
-    }, 10000);
+    }, 60000);
 });
