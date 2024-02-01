@@ -48,7 +48,7 @@ const startServer = async serverOrClient => {
 
             if (
                 (serverOrClient === 'server' &&
-                    output.includes('Listening on 8033')) ||
+                    output.includes(`Listening on ${PORT}`)) ||
                 (serverOrClient === 'client' &&
                     output.includes('compiled successfully'))
             ) {
@@ -112,7 +112,7 @@ const getPage = async (options, callback) => {
         throw new Error('Please provide a URL, even if it it is simply "/"');
     }
 
-    await page.goto(`http://localhost:3033${url}`);
+    await page.goto(`http://localhost:${CLIENT_PORT}${url}`);
 
     if (role) {
         await page.waitForSelector('::-p-text(Sign in with GitHub)');
