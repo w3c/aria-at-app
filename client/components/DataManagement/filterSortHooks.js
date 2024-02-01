@@ -51,7 +51,7 @@ export const useDerivedOverallPhaseByTestPlanId = (
 
     const derivedOverallPhaseByTestPlanId = useMemo(() => {
         const derivedOverallPhaseByTestPlanId = {};
-        const derivedDraftTestPlans = {};
+        const activeTestPlanVersionsByPhase = {};
         const phases = [
             {
                 phase: TEST_PLAN_VERSION_PHASES.RECOMMENDED,
@@ -74,46 +74,21 @@ export const useDerivedOverallPhaseByTestPlanId = (
                     phase,
                     timeKey
                 );
+                // Gather all of the phases for a test plan
+                // The first element in the array is the overall phase
+                // while the subsequent elements in the array are TestPlanVersions
+                // that are in other phases
                 if (derivedPhase) {
                     derivedOverallPhaseByTestPlanId[testPlan.id] = derivedPhase;
-                    if (
-                        testPlanVersionsByPhase[
-                            TEST_PLAN_VERSION_PHASES.DRAFT
-                        ].some(
-                            version =>
-                                version.testPlan.directory ===
-                                testPlan.directory
-                        )
-                    ) {
-                        const latestVersion = testPlanVersions
-                            .filter(
-                                version =>
-                                    version.testPlan.directory ===
-                                    testPlan.directory
-                            )
-                            .sort((a, b) => {
-                                if (!(timeKey in a) || !(timeKey in b)) {
-                                    return -1;
-                                }
-                                return a[timeKey] > b[timeKey];
-                            })[0];
-
-                        if (
-                            latestVersion.phase ===
-                            TEST_PLAN_VERSION_PHASES.DRAFT
-                        ) {
-                            derivedDraftTestPlans[testPlan.id] = {
-                                id: testPlan.id,
-                                directory: testPlan.directory,
-                                title: testPlan.title
-                            };
-                        }
-                    }
-                    break;
+                    let arr = activeTestPlanVersionsByPhase[testPlan.id];
+                    if (!arr) activeTestPlanVersionsByPhase[testPlan.id] = [];
+                    activeTestPlanVersionsByPhase[testPlan.id].push(
+                        derivedPhase
+                    );
                 }
             }
         }
-        return { derivedOverallPhaseByTestPlanId, derivedDraftTestPlans };
+        return { activeTestPlanVersionsByPhase };
     }, [testPlans, testPlanVersions]);
 
     return { derivedOverallPhaseByTestPlanId };
@@ -121,7 +96,7 @@ export const useDerivedOverallPhaseByTestPlanId = (
 
 export const useTestPlansByPhase = (testPlans, testPlanVersions) => {
     const {
-        derivedOverallPhaseByTestPlanId: { derivedOverallPhaseByTestPlanId }
+        derivedOverallPhaseByTestPlanId: { activeTestPlanVersionsByPhase }
     } = useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
 
     const testPlansByPhase = useMemo(() => {
@@ -130,12 +105,12 @@ export const useTestPlansByPhase = (testPlans, testPlanVersions) => {
             testPlansByPhase[TEST_PLAN_VERSION_PHASES[key]] = [];
         }
         for (const testPlan of testPlans) {
-            testPlansByPhase[
-                derivedOverallPhaseByTestPlanId[testPlan.id]
-            ]?.push(testPlan);
+            for (let phase of activeTestPlanVersionsByPhase[testPlan.id]) {
+                testPlansByPhase[phase].push(testPlan);
+            }
         }
         return testPlansByPhase;
-    }, [derivedOverallPhaseByTestPlanId]);
+    }, [activeTestPlanVersionsByPhase]);
 
     return { testPlansByPhase };
 };
@@ -150,22 +125,11 @@ export const useDataManagementTableFiltering = (
         testPlanVersions
     );
 
-    const {
-        derivedOverallPhaseByTestPlanId: { derivedDraftTestPlans }
-    } = useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
-
     const filteredTestPlans = useMemo(() => {
         if (!filter || filter === DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL) {
             return testPlans;
         } else {
-            if (
-                Object.values(derivedDraftTestPlans).length > 0 &&
-                filter == DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
-            ) {
-                return Object.values(derivedDraftTestPlans);
-            } else {
-                return testPlansByPhase[filter];
-            }
+            return testPlansByPhase[filter];
         }
     }, [filter, testPlansByPhase, testPlans]);
 
@@ -181,23 +145,11 @@ export const useDataManagementTableFiltering = (
         })`;
     }
 
-    if (
-        testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length > 0 ||
-        Object.values(derivedDraftTestPlans).length > 0
-    ) {
-        const allDrafts = [
-            ...Object.values(derivedDraftTestPlans),
-            ...testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT]
-        ];
+    if (testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length) {
         filterLabels[
             DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
         ] = `In Draft Review (${
-            allDrafts.filter((draft, index) => {
-                return (
-                    index ===
-                    allDrafts.findIndex(testPlan => draft.id === testPlan.id)
-                );
-            }).length
+            testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length
         })`;
     }
 
@@ -232,7 +184,7 @@ export const useDataManagementTableSorting = (
     });
 
     const {
-        derivedOverallPhaseByTestPlanId: { derivedOverallPhaseByTestPlanId }
+        derivedOverallPhaseByTestPlanId: { activeTestPlanVersionsByPhase }
     } = useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
 
     const sortedTestPlans = useMemo(() => {
@@ -260,9 +212,9 @@ export const useDataManagementTableSorting = (
 
         const sortByPhase = (a, b) => {
             const testPlanVersionOverallA =
-                derivedOverallPhaseByTestPlanId[a.id] ?? 'NOT_STARTED';
+                activeTestPlanVersionsByPhase[a.id][0] ?? 'NOT_STARTED';
             const testPlanVersionOverallB =
-                derivedOverallPhaseByTestPlanId[b.id] ?? 'NOT_STARTED';
+                activeTestPlanVersionsByPhase[b.id][0] ?? 'NOT_STARTED';
             if (testPlanVersionOverallA === testPlanVersionOverallB) {
                 return sortByName(a, b, -1);
             }
