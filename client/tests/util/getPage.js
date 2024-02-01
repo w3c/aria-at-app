@@ -101,12 +101,13 @@ const getPage = async (options, callback) => {
         throw new Error('Please provide a valid role');
     }
 
-    if (!incognitoContexts[role]) {
-        incognitoContexts[role] = await browser.createIncognitoBrowserContext();
-    }
-    const incognitoContext = incognitoContexts[role];
+    // if (!incognitoContexts[role]) {
+    //     incognitoContexts[role] = await browser.createIncognitoBrowserContext();
+    // }
+    // const incognitoContext = incognitoContexts[role];
 
-    const page = await incognitoContext.newPage();
+    // const page = await incognitoContext.newPage();
+    const page = await browser.newPage();
 
     if (!url) {
         throw new Error('Please provide a URL, even if it it is simply "/"');
@@ -115,7 +116,8 @@ const getPage = async (options, callback) => {
     await page.goto(`http://localhost:${CLIENT_PORT}${url}`);
 
     if (role) {
-        await page.waitForSelector('::-p-text(Sign in with GitHub)');
+        await page.waitForSelector('::-p-text(Test Queue)');
+        // await page.waitForSelector('::-p-text(Sign in with GitHub)');
 
         let roles;
         if (role === 'admin') roles = [{ name: 'ADMIN' }, { name: 'TESTER' }];
