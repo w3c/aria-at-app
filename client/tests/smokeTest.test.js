@@ -2,16 +2,21 @@ import getPage, { setup, teardown } from './util/getPage';
 
 describe('smoke test', () => {
     beforeAll(async () => {
+        console.log('starting setup');
         // TODO: In a future iteration the server start and close functions should
         // be handled in one place by Jest's setup and teardown scripts
         await setup();
+        console.log('ended setup');
     }, 30000);
 
     afterAll(async () => {
+        console.log('starting teardown');
         await teardown();
+        console.log('ended teardown');
     }, 30000);
 
     it('can sign in as admin, tester, vendor, or logged out', async () => {
+        console.log('starting test 1');
         await Promise.all([
             getPage({ role: 'admin', url: '/test-queue' }, async page => {
                 // Only admins can remove rows from the test queue
@@ -45,9 +50,11 @@ describe('smoke test', () => {
                 await page.waitForSelector('td.actions ::-p-text(View tests)');
             })
         ]);
+        console.log('ended test 1');
     }, 10000);
 
     it('loads various pages without crashing', async () => {
+        console.log('started test 2');
         await Promise.all([
             getPage({ role: false, url: '/' }, async page => {
                 await page.waitForSelector('h1');
@@ -74,5 +81,6 @@ describe('smoke test', () => {
                 expect(h1Text).toBe('Data Management');
             })
         ]);
+        console.log('ended test 2');
     }, 10000);
 });

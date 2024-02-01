@@ -13,6 +13,7 @@ const AUTOMATION_SCHEDULER_PORT = 8833;
 const baseUrl = 'http://localhost:3033';
 
 const startServer = async serverOrClient => {
+    console.log('starting', serverOrClient);
     return new Promise(resolve => {
         const server = spawn('yarn', ['workspace', serverOrClient, 'dev'], {
             cwd: path.resolve(__dirname, '../../'),
@@ -31,9 +32,11 @@ const startServer = async serverOrClient => {
         });
 
         const killServer = async () => {
+            console.log('ending', serverOrClient);
             await new Promise((resolve, reject) => {
                 treeKill(server.pid, error => {
                     if (error) return reject(error);
+                    console.log('ended', serverOrClient);
                     resolve();
                 });
             });
@@ -49,6 +52,7 @@ const startServer = async serverOrClient => {
                 (serverOrClient === 'client' &&
                     output.includes('compiled successfully'))
             ) {
+                console.log('started', serverOrClient);
                 resolve({ close: killServer });
             }
         });
@@ -70,6 +74,7 @@ const setup = async () => {
         startServer('server')
     ]);
 
+    console.log('started browser');
     browser = await puppeteer.launch({
         headless: 'new',
         args: ['--no-sandbox'] // Required for GitHub environment
@@ -82,7 +87,10 @@ const teardown = async () => {
     await Promise.all([backendServer.close(), clientServer.close()]);
 
     // Browser might not be defined, if it failed to start
-    if (browser) await browser.close();
+    if (browser) {
+        console.log('ended browser');
+        await browser.close();
+    }
 };
 
 let incognitoContexts = {};
