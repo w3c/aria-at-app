@@ -3,8 +3,22 @@ const path = require('path');
 const spawn = require('cross-spawn');
 const treeKill = require('tree-kill');
 
-// TODO: In a future iteration the server start and close functions should
-// handled in one place by Jest's setup and teardown scripts
+/*
+End-to-End Testing TODO:
+- The server start and close functions should be handled in one place by
+Jest's setup and teardown scripts.
+- There needs to be a utility function to enable common tasks like getting a
+fresh end-to-end page.
+- End-to-end testing should support signing in with different roles, A.K.A. as
+an admin, tester or vendor.
+- It should be possible to reset the database to a predictable state after each
+test, ideally in such a way that concurrency remains possible. See the POC
+here: https://github.com/w3c/aria-at-app/pull/895
+*/
+
+const PORT = 8033;
+const CLIENT_PORT = 3033;
+const AUTOMATION_SCHEDULER_PORT = 8833;
 
 const startServer = async serverOrClient => {
     return new Promise(resolve => {
@@ -12,12 +26,12 @@ const startServer = async serverOrClient => {
             cwd: path.resolve(__dirname, '../../'),
             env: {
                 PATH: process.env.PATH,
-                PORT: 8033,
+                PORT,
                 CLIENT_PORT: 3033,
                 AUTOMATION_SCHEDULER_PORT: 8833,
-                API_SERVER: 'http://localhost:8033',
-                APP_SERVER: 'http://localhost:3033',
-                AUTOMATION_SCHEDULER_URL: 'http://localhost:8833',
+                API_SERVER: `http://localhost:${PORT}`,
+                APP_SERVER: `http://localhost:${CLIENT_PORT}`,
+                AUTOMATION_SCHEDULER_URL: `http://localhost:${AUTOMATION_SCHEDULER_PORT}`,
                 PGDATABASE: 'aria_at_report_test',
                 PGPORT: 5432,
                 ENVIRONMENT: 'test'
@@ -39,7 +53,7 @@ const startServer = async serverOrClient => {
 
             if (
                 (serverOrClient === 'server' &&
-                    output.includes('Listening on 8033')) ||
+                    output.includes(`Listening on ${PORT}`)) ||
                 (serverOrClient === 'client' &&
                     output.includes('compiled successfully'))
             ) {
@@ -92,21 +106,27 @@ describe('smoke test', () => {
         await Promise.all([
             (async () => {
                 const page = await browser.newPage();
-                await page.goto('http://localhost:3033/');
+                await page.goto(`http://localhost:${CLIENT_PORT}/`);
                 await page.waitForSelector('h1');
                 const h1Handle = await page.waitForSelector('h1');
                 homeH1 = await h1Handle.evaluate(h1 => h1.innerText);
             })(),
             (async () => {
                 const page = await browser.newPage();
-                await page.goto('http://localhost:3033/reports');
+                await page.goto(`http://localhost:${CLIENT_PORT}/reports`);
+                // Wait for an h2 because an h1 will show while the page is
+                // still loading
                 await page.waitForSelector('h2');
                 const h1Handle = await page.waitForSelector('h1');
                 reportsH1 = await h1Handle.evaluate(h1 => h1.innerText);
             })(),
             (async () => {
                 const page = await browser.newPage();
-                await page.goto('http://localhost:3033/data-management');
+                await page.goto(
+                    `http://localhost:${CLIENT_PORT}/data-management`
+                );
+                // Wait for an h2 because an h1 will show while the page is
+                // still loading
                 await page.waitForSelector('h2');
                 const h1Handle = await page.waitForSelector('h1');
                 dataManagementH1 = await h1Handle.evaluate(h1 => h1.innerText);
