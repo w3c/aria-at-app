@@ -13,7 +13,6 @@ const AUTOMATION_SCHEDULER_PORT = 8833;
 const baseUrl = 'http://localhost:3033';
 
 const startServer = async serverOrClient => {
-    console.log('starting', serverOrClient);
     return new Promise(resolve => {
         const server = spawn('yarn', ['workspace', serverOrClient, 'dev'], {
             cwd: path.resolve(__dirname, '../../'),
@@ -32,11 +31,9 @@ const startServer = async serverOrClient => {
         });
 
         const killServer = async () => {
-            console.log('ending', serverOrClient);
             await new Promise((resolve, reject) => {
                 treeKill(server.pid, error => {
                     if (error) return reject(error);
-                    console.log('ended', serverOrClient);
                     resolve();
                 });
             });
@@ -48,11 +45,10 @@ const startServer = async serverOrClient => {
 
             if (
                 (serverOrClient === 'server' &&
-                    output.includes(`Listening on ${PORT}`)) ||
+                    output.includes('Listening on 8033')) ||
                 (serverOrClient === 'client' &&
                     output.includes('compiled successfully'))
             ) {
-                console.log('started', serverOrClient);
                 resolve({ close: killServer });
             }
         });
@@ -74,23 +70,17 @@ const setup = async () => {
         startServer('server')
     ]);
 
-    console.log('started browser');
     browser = await puppeteer.launch({
         headless: 'new',
-        args: ['--no-sandbox', '--disable-dev-shm-usage'] // Required for GitHub environment
+        args: ['--no-sandbox'] // Required for GitHub environment
     });
-    // const [extraBlankPage] = await browser.pages();
-    // extraBlankPage.close();
 };
 
 const teardown = async () => {
     await Promise.all([backendServer.close(), clientServer.close()]);
 
     // Browser might not be defined, if it failed to start
-    if (browser) {
-        console.log('ended browser');
-        await browser.close();
-    }
+    if (browser) await browser.close();
 };
 
 let incognitoContexts = {};
@@ -101,23 +91,21 @@ const getPage = async (options, callback) => {
         throw new Error('Please provide a valid role');
     }
 
-    // if (!incognitoContexts[role]) {
-    //     incognitoContexts[role] = await browser.createIncognitoBrowserContext();
-    // }
-    // const incognitoContext = incognitoContexts[role];
+    if (!incognitoContexts[role]) {
+        incognitoContexts[role] = await browser.createIncognitoBrowserContext();
+    }
+    const incognitoContext = incognitoContexts[role];
 
-    // const page = await incognitoContext.newPage();
-    const page = await browser.newPage();
+    const page = await incognitoContext.newPage();
 
     if (!url) {
         throw new Error('Please provide a URL, even if it it is simply "/"');
     }
 
-    await page.goto(`http://localhost:${CLIENT_PORT}${url}`);
+    await page.goto(`http://localhost:3033${url}`);
 
     if (role) {
-        await page.waitForSelector('::-p-text(Test Queue)');
-        // await page.waitForSelector('::-p-text(Sign in with GitHub)');
+        await page.waitForSelector('::-p-text(Sign in with GitHub)');
 
         let roles;
         if (role === 'admin') roles = [{ name: 'ADMIN' }, { name: 'TESTER' }];
@@ -133,8 +121,6 @@ const getPage = async (options, callback) => {
                 roles: ${JSON.stringify(roles)}
             });
         `);
-
-        await page.waitForNavigation();
 
         await page.waitForSelector('::-p-text(Signed in)');
     }
