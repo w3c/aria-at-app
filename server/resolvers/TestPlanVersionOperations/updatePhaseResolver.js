@@ -265,8 +265,9 @@ const updatePhaseResolver = async (
                         );
                         let updateParams = {};
 
-                        // Mark the report as final if previously was on the TestPlanVersion being
-                        // deprecated
+                        // Mark the report as final if previously was for TestPlanVersion being deprecated; may still be
+                        // nullified if finalized test results aren't equal to the amount known number of possible
+                        // runnable tests, because no tests should be skipped. Would mean it CANNOT be final.
                         if (testPlanReportDataToInclude.markedFinalAt)
                             updateParams = { markedFinalAt: new Date() };
 
@@ -280,6 +281,7 @@ const updatePhaseResolver = async (
                             // marked as final yet
                             updateParams = {
                                 ...updateParams,
+                                markedFinalAt: null,
                                 metrics: {
                                     ...populatedTestPlanReport.metrics,
                                     conflictsCount: conflicts.length
@@ -297,9 +299,9 @@ const updatePhaseResolver = async (
                                 !finalizedTestResults ||
                                 !finalizedTestResults.length
                             ) {
-                                // Just update with current { markedFinalAt } if available
                                 updateParams = {
                                     ...updateParams,
+                                    markedFinalAt: null,
                                     metrics: {
                                         ...populatedTestPlanReport.metrics
                                     }
@@ -315,6 +317,13 @@ const updatePhaseResolver = async (
 
                                 updateParams = {
                                     ...updateParams,
+                                    // means test results have now been 'skipped' during the update process so these
+                                    // cannot be finalized and must be updated in the test queue
+                                    markedFinalAt:
+                                        finalizedTestResults.length <
+                                        runnableTests.length
+                                            ? null
+                                            : updateParams.markedFinalAt,
                                     metrics: {
                                         ...populatedTestPlanReport.metrics,
                                         ...metrics
