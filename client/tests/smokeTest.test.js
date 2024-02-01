@@ -1,9 +1,16 @@
 import getPage, { setup, teardown } from './util/getPage';
 
+/*
+End-to-End Testing TODO:
+- The server start and close functions should be handled in one place by
+Jest's setup and teardown scripts.
+- It should be possible to reset the database to a predictable state after each
+test, ideally in such a way that concurrency remains possible. See the POC
+here: https://github.com/w3c/aria-at-app/pull/895
+*/
+
 describe('smoke test', () => {
     beforeAll(async () => {
-        // TODO: In a future iteration the server start and close functions should
-        // be handled in one place by Jest's setup and teardown scripts
         await setup();
     }, 30000);
 
@@ -68,6 +75,8 @@ describe('smoke test', () => {
                 );
             }),
             getPage({ role: false, url: '/data-management' }, async page => {
+                // Wait for an h2 because an h1 will show while the page is
+                // still loading
                 await page.waitForSelector('h2');
                 const h1Handle = await page.waitForSelector('h1');
                 const h1Text = await h1Handle.evaluate(h1 => h1.innerText);

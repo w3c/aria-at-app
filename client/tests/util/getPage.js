@@ -10,7 +10,7 @@ let browser;
 const PORT = 8033;
 const CLIENT_PORT = 3033;
 const AUTOMATION_SCHEDULER_PORT = 8833;
-const baseUrl = 'http://localhost:3033';
+const baseUrl = `http://localhost:${CLIENT_PORT}`;
 
 const startServer = async serverOrClient => {
     return new Promise(resolve => {
@@ -20,7 +20,7 @@ const startServer = async serverOrClient => {
                 PATH: process.env.PATH,
                 PORT,
                 CLIENT_PORT,
-                AUTOMATION_SCHEDULER_PORT: 8833,
+                AUTOMATION_SCHEDULER_PORT,
                 API_SERVER: `http://localhost:${PORT}`,
                 APP_SERVER: baseUrl,
                 AUTOMATION_SCHEDULER_URL: `http://localhost:${AUTOMATION_SCHEDULER_PORT}`,
@@ -45,7 +45,7 @@ const startServer = async serverOrClient => {
 
             if (
                 (serverOrClient === 'server' &&
-                    output.includes('Listening on 8033')) ||
+                    output.includes(`Listening on ${PORT}`)) ||
                 (serverOrClient === 'client' &&
                     output.includes('compiled successfully'))
             ) {
@@ -102,7 +102,7 @@ const getPage = async (options, callback) => {
         throw new Error('Please provide a URL, even if it it is simply "/"');
     }
 
-    await page.goto(`http://localhost:3033${url}`);
+    await page.goto(`http://localhost:${CLIENT_PORT}${url}`);
 
     if (role) {
         await page.waitForSelector('::-p-text(Sign in with GitHub)');
