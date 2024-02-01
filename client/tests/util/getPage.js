@@ -77,7 +77,7 @@ const setup = async () => {
     console.log('started browser');
     browser = await puppeteer.launch({
         headless: 'new',
-        args: ['--no-sandbox'] // Required for GitHub environment
+        args: ['--no-sandbox', '--disable-dev-shm-usage'] // Required for GitHub environment
     });
     const [extraBlankPage] = await browser.pages();
     extraBlankPage.close();
