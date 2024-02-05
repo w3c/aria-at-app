@@ -323,6 +323,7 @@ const TestQueueRow = ({
                         <ManageBotRunDialogWithButton
                             testPlanRun={botTestPlanRun}
                             testPlanReportId={testPlanReport.id}
+                            runnableTestsLength={runnableTestsLength}
                             testers={testers}
                             onChange={triggerTestPlanReportUpdate}
                             onDelete={() => {

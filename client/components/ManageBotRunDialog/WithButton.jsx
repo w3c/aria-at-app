@@ -7,6 +7,7 @@ import { useTestPlanRunIsFinished } from '../../hooks/useTestPlanRunIsFinished';
 const ManageBotRunDialogWithButton = ({
     testPlanRun,
     testPlanReportId,
+    runnableTestsLength,
     testers,
     onChange
 }) => {
@@ -33,6 +34,7 @@ const ManageBotRunDialogWithButton = ({
                 setShow={setShowDialog}
                 testers={testers}
                 testPlanReportId={testPlanReportId}
+                runnableTestsLength={runnableTestsLength}
                 onChange={async () => {
                     await onChange();
                     setShowDialog(false);
@@ -45,6 +47,7 @@ const ManageBotRunDialogWithButton = ({
 ManageBotRunDialogWithButton.propTypes = {
     testPlanRun: PropTypes.object.isRequired,
     testPlanReportId: PropTypes.string.isRequired,
+    runnableTestsLength: PropTypes.number.isRequired,
     testers: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired
 };
