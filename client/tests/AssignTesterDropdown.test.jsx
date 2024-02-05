@@ -242,7 +242,6 @@ describe('AssignTesterDropdown', () => {
 
         await waitFor(async () => {
             const items = await screen.queryByText(/NVDA Bot/);
-            // expect(items).not.toBeInTheDocument();
             expect(items).toBeNull();
         });
     });
