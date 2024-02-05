@@ -166,7 +166,7 @@ const AssignTesterDropdown = ({
                                 >
                                     {icon && <FontAwesomeIcon icon={icon} />}
                                     <span className="sr-only">{`${username} ${
-                                        isTesterAssigned
+                                        testerIsAssigned
                                             ? 'checked'
                                             : 'unchecked'
                                     }`}</span>
