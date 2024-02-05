@@ -7,6 +7,7 @@ Jest's setup and teardown scripts.
 - It should be possible to reset the database to a predictable state after each
 test, ideally in such a way that concurrency remains possible. See the POC
 here: https://github.com/w3c/aria-at-app/pull/895
+- Add section to docs for end-to-end testing
 */
 
 describe('smoke test', () => {
