@@ -5,7 +5,9 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). To r
 ## Setting up a local database for development
 
 0. Install PostgreSQL
+
     - Mac
+
     ```
     brew install postgresql@14
     brew services start postgresql@14
@@ -94,6 +96,8 @@ yarn sequelize:test db:migrate;
 yarn sequelize:test db:seed:all;
 yarn workspace server db-import-tests:test -c 5fe7afd82fe51c185b8661276105190a59d47322;
 yarn workspace server db-import-tests:test -c 1aa3b74d24d340362e9f511eae33788d55487d12;
+yarn workspace server db-import-tests:test -c ab77d47ab19db71c635c9bb459ba5c34182e1400;
+yarn workspace server db-import-tests:test -c d34eddbb8e751f07bd28d952de15fa7fe5f07353;
 yarn workspace server db-import-tests:test;
 yarn workspace server db-populate-sample-data:test;
 ```
