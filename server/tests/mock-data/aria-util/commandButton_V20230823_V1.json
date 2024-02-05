@@ -1,0 +1,1411 @@
+[
+  {
+    "id": "NTNmYeyIyIjoiNTU1OTgifQTYwYz",
+    "atIds": [1, 2],
+    "title": "Navigate forwards to a button in reading mode",
+    "atMode": "READING",
+    "viewers": [],
+    "rowNumber": "1",
+    "scenarios": [
+      {
+        "id": "NzZjZeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ9mNlYz",
+        "atId": 1,
+        "commandIds": ["DOWN"]
+      },
+      {
+        "id": "YTlhMeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ92M1Nm",
+        "atId": 1,
+        "commandIds": ["B"]
+      },
+      {
+        "id": "ZmYyZeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ9DU2ZT",
+        "atId": 1,
+        "commandIds": ["F"]
+      },
+      {
+        "id": "OGJhNeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ9jdmMz",
+        "atId": 1,
+        "commandIds": ["TAB"]
+      },
+      {
+        "id": "MzQ3MeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ92FhNT",
+        "atId": 2,
+        "commandIds": ["DOWN"]
+      },
+      {
+        "id": "MmI5ZeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ9DViNj",
+        "atId": 2,
+        "commandIds": ["B"]
+      },
+      {
+        "id": "Y2EwMeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ9mIwYW",
+        "atId": 2,
+        "commandIds": ["F"]
+      },
+      {
+        "id": "OWVkYeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ9jcxZj",
+        "atId": 2,
+        "commandIds": ["TAB"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "M2ZkZeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ9GM0MT",
+        "text": "Role 'button' is conveyed",
+        "priority": "MUST"
+      },
+      {
+        "id": "OWE5YeyIzIjoiTlRObVlleUl5SWpvaU5UVTFPVGdpZlFUWXdZeiJ92U0Mj",
+        "text": "Name 'Print Page' is conveyed",
+        "priority": "MUST"
+      }
+    ],
+    "renderedUrls": {
+      "1": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-01-navigate-forwards-to-button-reading-jaws.collected.html",
+      "2": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-01-navigate-forwards-to-button-reading-nvda.collected.html"
+    },
+    "renderableContent": {
+      "1": {
+        "info": {
+          "task": "navigate forwards to button",
+          "title": "Navigate forwards to a button in reading mode",
+          "testId": 1,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "jaws", "raw": "JAWS", "name": "JAWS" },
+          "mode": "reading",
+          "setupScript": {
+            "name": "setFocusBeforeButton",
+            "source": "// sets focus on a link before the button\ntestPageDocument.querySelector('#beforelink').focus();\n",
+            "jsonpPath": "scripts/setFocusBeforeButton.jsonp.js",
+            "modulePath": "scripts/setFocusBeforeButton.module.js",
+            "description": "sets focus on a link before the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusBeforeButton.html"
+        },
+        "commands": [
+          {
+            "id": "DOWN",
+            "keystroke": "Down Arrow",
+            "keypresses": [
+              { "id": "DOWN", "keystroke": "Down Arrow" }
+            ]
+          },
+          {
+            "id": "B",
+            "keystroke": "B",
+            "keypresses": [{ "id": "B", "keystroke": "B" }]
+          },
+          {
+            "id": "F",
+            "keystroke": "F",
+            "keypresses": [{ "id": "F", "keystroke": "F" }]
+          },
+          {
+            "id": "TAB",
+            "keystroke": "Tab",
+            "keypresses": [{ "id": "TAB", "keystroke": "Tab" }]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With the reading cursor on the 'Navigate forwards from here' link, navigate to the 'Print Page' button",
+          "mode": "Verify the Virtual Cursor is active by pressing Alt+Delete. If it is not, exit Forms Mode to activate the Virtual Cursor by pressing Escape.",
+          "user": [
+            "With the reading cursor on the 'Navigate forwards from here' link, navigate to the 'Print Page' button"
+          ]
+        }
+      },
+      "2": {
+        "info": {
+          "task": "navigate forwards to button",
+          "title": "Navigate forwards to a button in reading mode",
+          "testId": 1,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "nvda", "raw": "NVDA", "name": "NVDA" },
+          "mode": "reading",
+          "setupScript": {
+            "name": "setFocusBeforeButton",
+            "source": "// sets focus on a link before the button\ntestPageDocument.querySelector('#beforelink').focus();\n",
+            "jsonpPath": "scripts/setFocusBeforeButton.jsonp.js",
+            "modulePath": "scripts/setFocusBeforeButton.module.js",
+            "description": "sets focus on a link before the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusBeforeButton.html"
+        },
+        "commands": [
+          {
+            "id": "DOWN",
+            "keystroke": "Down Arrow",
+            "keypresses": [
+              { "id": "DOWN", "keystroke": "Down Arrow" }
+            ]
+          },
+          {
+            "id": "B",
+            "keystroke": "B",
+            "keypresses": [{ "id": "B", "keystroke": "B" }]
+          },
+          {
+            "id": "F",
+            "keystroke": "F",
+            "keypresses": [{ "id": "F", "keystroke": "F" }]
+          },
+          {
+            "id": "TAB",
+            "keystroke": "Tab",
+            "keypresses": [{ "id": "TAB", "keystroke": "Tab" }]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With the reading cursor on the 'Navigate forwards from here' link, navigate to the 'Print Page' button",
+          "mode": "Ensure NVDA is in browse mode by pressing Escape. Note: This command has no effect if NVDA is already in browse mode.",
+          "user": [
+            "With the reading cursor on the 'Navigate forwards from here' link, navigate to the 'Print Page' button"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "MTY0MeyIyIjoiNTU1OTgifQmIzNG",
+    "atIds": [1, 2],
+    "title": "Navigate backwards to a button in reading mode",
+    "atMode": "READING",
+    "viewers": [],
+    "rowNumber": "2",
+    "scenarios": [
+      {
+        "id": "MTAyMeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ92M2MD",
+        "atId": 1,
+        "commandIds": ["UP"]
+      },
+      {
+        "id": "MTJkMeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ9GI3YT",
+        "atId": 1,
+        "commandIds": ["SHIFT_B"]
+      },
+      {
+        "id": "YWYxYeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ9zRkYm",
+        "atId": 1,
+        "commandIds": ["SHIFT_F"]
+      },
+      {
+        "id": "YjE5ZeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ9jUzMj",
+        "atId": 1,
+        "commandIds": ["SHIFT_TAB"]
+      },
+      {
+        "id": "Y2YxMeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ9mEzY2",
+        "atId": 2,
+        "commandIds": ["UP"]
+      },
+      {
+        "id": "YWVlZeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ9mM0N2",
+        "atId": 2,
+        "commandIds": ["SHIFT_B"]
+      },
+      {
+        "id": "OWNkYeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ9zc4Ym",
+        "atId": 2,
+        "commandIds": ["SHIFT_F"]
+      },
+      {
+        "id": "N2JiZeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ9mU1ND",
+        "atId": 2,
+        "commandIds": ["SHIFT_TAB"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "NjRjZeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ9mMyYj",
+        "text": "Role 'button' is conveyed",
+        "priority": "MUST"
+      },
+      {
+        "id": "YzkyYeyIzIjoiTVRZME1leUl5SWpvaU5UVTFPVGdpZlFtSXpORyJ9WM3ND",
+        "text": "Name 'Print Page' is conveyed",
+        "priority": "MUST"
+      }
+    ],
+    "renderedUrls": {
+      "1": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-02-navigate-backwards-to-button-reading-jaws.collected.html",
+      "2": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-02-navigate-backwards-to-button-reading-nvda.collected.html"
+    },
+    "renderableContent": {
+      "1": {
+        "info": {
+          "task": "navigate backwards to button",
+          "title": "Navigate backwards to a button in reading mode",
+          "testId": 2,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "jaws", "raw": "JAWS", "name": "JAWS" },
+          "mode": "reading",
+          "setupScript": {
+            "name": "setFocusAfterButton",
+            "source": "// sets focus on a link after the button\ntestPageDocument.querySelector('#afterlink').focus();\n",
+            "jsonpPath": "scripts/setFocusAfterButton.jsonp.js",
+            "modulePath": "scripts/setFocusAfterButton.module.js",
+            "description": "sets focus on a link after the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusAfterButton.html"
+        },
+        "commands": [
+          {
+            "id": "UP",
+            "keystroke": "Up Arrow",
+            "keypresses": [{ "id": "UP", "keystroke": "Up Arrow" }]
+          },
+          {
+            "id": "SHIFT_B",
+            "keystroke": "Shift+B",
+            "keypresses": [
+              { "id": "SHIFT_B", "keystroke": "Shift+B" }
+            ]
+          },
+          {
+            "id": "SHIFT_F",
+            "keystroke": "Shift+F",
+            "keypresses": [
+              { "id": "SHIFT_F", "keystroke": "Shift+F" }
+            ]
+          },
+          {
+            "id": "SHIFT_TAB",
+            "keystroke": "Shift+Tab",
+            "keypresses": [
+              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With the reading cursor on the 'Navigate backwards from here' link, navigate to the 'Print Page' button",
+          "mode": "Verify the Virtual Cursor is active by pressing Alt+Delete. If it is not, exit Forms Mode to activate the Virtual Cursor by pressing Escape.",
+          "user": [
+            "With the reading cursor on the 'Navigate backwards from here' link, navigate to the 'Print Page' button"
+          ]
+        }
+      },
+      "2": {
+        "info": {
+          "task": "navigate backwards to button",
+          "title": "Navigate backwards to a button in reading mode",
+          "testId": 2,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "nvda", "raw": "NVDA", "name": "NVDA" },
+          "mode": "reading",
+          "setupScript": {
+            "name": "setFocusAfterButton",
+            "source": "// sets focus on a link after the button\ntestPageDocument.querySelector('#afterlink').focus();\n",
+            "jsonpPath": "scripts/setFocusAfterButton.jsonp.js",
+            "modulePath": "scripts/setFocusAfterButton.module.js",
+            "description": "sets focus on a link after the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusAfterButton.html"
+        },
+        "commands": [
+          {
+            "id": "UP",
+            "keystroke": "Up Arrow",
+            "keypresses": [{ "id": "UP", "keystroke": "Up Arrow" }]
+          },
+          {
+            "id": "SHIFT_B",
+            "keystroke": "Shift+B",
+            "keypresses": [
+              { "id": "SHIFT_B", "keystroke": "Shift+B" }
+            ]
+          },
+          {
+            "id": "SHIFT_F",
+            "keystroke": "Shift+F",
+            "keypresses": [
+              { "id": "SHIFT_F", "keystroke": "Shift+F" }
+            ]
+          },
+          {
+            "id": "SHIFT_TAB",
+            "keystroke": "Shift+Tab",
+            "keypresses": [
+              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With the reading cursor on the 'Navigate backwards from here' link, navigate to the 'Print Page' button",
+          "mode": "Ensure NVDA is in browse mode by pressing Escape. Note: This command has no effect if NVDA is already in browse mode.",
+          "user": [
+            "With the reading cursor on the 'Navigate backwards from here' link, navigate to the 'Print Page' button"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "MDUxNeyIyIjoiNTU1OTgifQWNiZT",
+    "atIds": [1, 2],
+    "title": "Navigate forwards to a button in interaction mode",
+    "atMode": "INTERACTION",
+    "viewers": [],
+    "rowNumber": "3",
+    "scenarios": [
+      {
+        "id": "MDM2MeyIzIjoiTURVeE5leUl5SWpvaU5UVTFPVGdpZlFXTmlaVCJ9DhjNW",
+        "atId": 1,
+        "commandIds": ["TAB"]
+      },
+      {
+        "id": "ZTc4YeyIzIjoiTURVeE5leUl5SWpvaU5UVTFPVGdpZlFXTmlaVCJ92RhYz",
+        "atId": 2,
+        "commandIds": ["TAB"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "YmY1MeyIzIjoiTURVeE5leUl5SWpvaU5UVTFPVGdpZlFXTmlaVCJ9zg2Yj",
+        "text": "Role 'button' is conveyed",
+        "priority": "MUST"
+      },
+      {
+        "id": "ZWMyZeyIzIjoiTURVeE5leUl5SWpvaU5UVTFPVGdpZlFXTmlaVCJ9DcxYT",
+        "text": "Name 'Print Page' is conveyed",
+        "priority": "MUST"
+      }
+    ],
+    "renderedUrls": {
+      "1": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-03-navigate-forwards-to-button-interaction-jaws.collected.html",
+      "2": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-03-navigate-forwards-to-button-interaction-nvda.collected.html"
+    },
+    "renderableContent": {
+      "1": {
+        "info": {
+          "task": "navigate forwards to button",
+          "title": "Navigate forwards to a button in interaction mode",
+          "testId": 3,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "jaws", "raw": "JAWS", "name": "JAWS" },
+          "mode": "interaction",
+          "setupScript": {
+            "name": "setFocusBeforeButton",
+            "source": "// sets focus on a link before the button\ntestPageDocument.querySelector('#beforelink').focus();\n",
+            "jsonpPath": "scripts/setFocusBeforeButton.jsonp.js",
+            "modulePath": "scripts/setFocusBeforeButton.module.js",
+            "description": "sets focus on a link before the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusBeforeButton.html"
+        },
+        "commands": [
+          {
+            "id": "TAB",
+            "keystroke": "Tab",
+            "keypresses": [{ "id": "TAB", "keystroke": "Tab" }]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With focus on the 'navigate forwards from here' link, navigate to the 'Print Page' button.",
+          "mode": "Verify the PC Cursor is active by pressing Alt+Delete. If it is not, turn off the Virtual Cursor by pressing Insert+Z.",
+          "user": [
+            "With focus on the 'navigate forwards from here' link, navigate to the 'Print Page' button."
+          ]
+        }
+      },
+      "2": {
+        "info": {
+          "task": "navigate forwards to button",
+          "title": "Navigate forwards to a button in interaction mode",
+          "testId": 3,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "nvda", "raw": "NVDA", "name": "NVDA" },
+          "mode": "interaction",
+          "setupScript": {
+            "name": "setFocusBeforeButton",
+            "source": "// sets focus on a link before the button\ntestPageDocument.querySelector('#beforelink').focus();\n",
+            "jsonpPath": "scripts/setFocusBeforeButton.jsonp.js",
+            "modulePath": "scripts/setFocusBeforeButton.module.js",
+            "description": "sets focus on a link before the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusBeforeButton.html"
+        },
+        "commands": [
+          {
+            "id": "TAB",
+            "keystroke": "Tab",
+            "keypresses": [{ "id": "TAB", "keystroke": "Tab" }]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With focus on the 'navigate forwards from here' link, navigate to the 'Print Page' button.",
+          "mode": "If NVDA did not make the focus mode sound when the test page loaded, press Insert+Space to turn focus mode on.",
+          "user": [
+            "With focus on the 'navigate forwards from here' link, navigate to the 'Print Page' button."
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "NjI2MeyIyIjoiNTU1OTgifQ2UzND",
+    "atIds": [1, 2],
+    "title": "Navigate backwards to a button in interaction mode",
+    "atMode": "INTERACTION",
+    "viewers": [],
+    "rowNumber": "4",
+    "scenarios": [
+      {
+        "id": "MjQ3ZeyIzIjoiTmpJMk1leUl5SWpvaU5UVTFPVGdpZlEyVXpORCJ9GVkZj",
+        "atId": 1,
+        "commandIds": ["SHIFT_TAB"]
+      },
+      {
+        "id": "MjBmNeyIzIjoiTmpJMk1leUl5SWpvaU5UVTFPVGdpZlEyVXpORCJ9GIzYT",
+        "atId": 2,
+        "commandIds": ["SHIFT_TAB"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "Zjk4YeyIzIjoiTmpJMk1leUl5SWpvaU5UVTFPVGdpZlEyVXpORCJ9zU2Mj",
+        "text": "Role 'button' is conveyed",
+        "priority": "MUST"
+      },
+      {
+        "id": "YmVmZeyIzIjoiTmpJMk1leUl5SWpvaU5UVTFPVGdpZlEyVXpORCJ9TYwMD",
+        "text": "Name 'Print Page' is conveyed",
+        "priority": "MUST"
+      }
+    ],
+    "renderedUrls": {
+      "1": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-04-navigate-backwards-to-button-interaction-jaws.collected.html",
+      "2": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-04-navigate-backwards-to-button-interaction-nvda.collected.html"
+    },
+    "renderableContent": {
+      "1": {
+        "info": {
+          "task": "navigate backwards to button",
+          "title": "Navigate backwards to a button in interaction mode",
+          "testId": 4,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "jaws", "raw": "JAWS", "name": "JAWS" },
+          "mode": "interaction",
+          "setupScript": {
+            "name": "setFocusAfterButton",
+            "source": "// sets focus on a link after the button\ntestPageDocument.querySelector('#afterlink').focus();\n",
+            "jsonpPath": "scripts/setFocusAfterButton.jsonp.js",
+            "modulePath": "scripts/setFocusAfterButton.module.js",
+            "description": "sets focus on a link after the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusAfterButton.html"
+        },
+        "commands": [
+          {
+            "id": "SHIFT_TAB",
+            "keystroke": "Shift+Tab",
+            "keypresses": [
+              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With focus on the 'Navigate backwards from here' link, navigate to the 'Print Page' button.",
+          "mode": "Verify the PC Cursor is active by pressing Alt+Delete. If it is not, turn off the Virtual Cursor by pressing Insert+Z.",
+          "user": [
+            "With focus on the 'Navigate backwards from here' link, navigate to the 'Print Page' button."
+          ]
+        }
+      },
+      "2": {
+        "info": {
+          "task": "navigate backwards to button",
+          "title": "Navigate backwards to a button in interaction mode",
+          "testId": 4,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "nvda", "raw": "NVDA", "name": "NVDA" },
+          "mode": "interaction",
+          "setupScript": {
+            "name": "setFocusAfterButton",
+            "source": "// sets focus on a link after the button\ntestPageDocument.querySelector('#afterlink').focus();\n",
+            "jsonpPath": "scripts/setFocusAfterButton.jsonp.js",
+            "modulePath": "scripts/setFocusAfterButton.module.js",
+            "description": "sets focus on a link after the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusAfterButton.html"
+        },
+        "commands": [
+          {
+            "id": "SHIFT_TAB",
+            "keystroke": "Shift+Tab",
+            "keypresses": [
+              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With focus on the 'Navigate backwards from here' link, navigate to the 'Print Page' button.",
+          "mode": "If NVDA did not make the focus mode sound when the test page loaded, press Insert+Space to turn focus mode on.",
+          "user": [
+            "With focus on the 'Navigate backwards from here' link, navigate to the 'Print Page' button."
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "ODlmMeyIyIjoiNTU1OTgifQjZlOW",
+    "atIds": [3],
+    "title": "Navigate forwards to a button",
+    "atMode": "INTERACTION",
+    "viewers": [],
+    "rowNumber": "5",
+    "scenarios": [
+      {
+        "id": "NmZhOeyIzIjoiT0RsbU1leUl5SWpvaU5UVTFPVGdpZlFqWmxPVyJ9Dc2N2",
+        "atId": 3,
+        "commandIds": ["CTRL_OPT_RIGHT"]
+      },
+      {
+        "id": "MmQ3NeyIzIjoiT0RsbU1leUl5SWpvaU5UVTFPVGdpZlFqWmxPVyJ9DBlMz",
+        "atId": 3,
+        "commandIds": ["TAB"]
+      },
+      {
+        "id": "YWFkOeyIzIjoiT0RsbU1leUl5SWpvaU5UVTFPVGdpZlFqWmxPVyJ9WU5MD",
+        "atId": 3,
+        "commandIds": ["CTRL_OPT_CMD_J"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "YjU4YeyIzIjoiT0RsbU1leUl5SWpvaU5UVTFPVGdpZlFqWmxPVyJ9zQxN2",
+        "text": "Role 'button' is conveyed",
+        "priority": "MUST"
+      },
+      {
+        "id": "MzA2ZeyIzIjoiT0RsbU1leUl5SWpvaU5UVTFPVGdpZlFqWmxPVyJ9mY2NT",
+        "text": "Name 'Print Page' is conveyed",
+        "priority": "MUST"
+      }
+    ],
+    "renderedUrls": {
+      "3": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-05-navigate-forwards-to-button-interaction-voiceover_macos.collected.html"
+    },
+    "renderableContent": {
+      "3": {
+        "info": {
+          "task": "navigate forwards to button",
+          "title": "Navigate forwards to a button",
+          "testId": 5,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": {
+            "key": "voiceover_macos",
+            "raw": "voiceover_macos",
+            "name": "VoiceOver for macOS"
+          },
+          "mode": "interaction",
+          "setupScript": {
+            "name": "setFocusBeforeButton",
+            "source": "// sets focus on a link before the button\ntestPageDocument.querySelector('#beforelink').focus();\n",
+            "jsonpPath": "scripts/setFocusBeforeButton.jsonp.js",
+            "modulePath": "scripts/setFocusBeforeButton.module.js",
+            "description": "sets focus on a link before the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusBeforeButton.html"
+        },
+        "commands": [
+          {
+            "id": "CTRL_OPT_RIGHT",
+            "keystroke": "Control+Option+Right",
+            "keypresses": [
+              {
+                "id": "CTRL_OPT_RIGHT",
+                "keystroke": "Control+Option+Right"
+              }
+            ]
+          },
+          {
+            "id": "TAB",
+            "keystroke": "Tab",
+            "keypresses": [{ "id": "TAB", "keystroke": "Tab" }]
+          },
+          {
+            "id": "CTRL_OPT_CMD_J",
+            "keystroke": "Control+Option+Command+J",
+            "keypresses": [
+              {
+                "id": "CTRL_OPT_CMD_J",
+                "keystroke": "Control+Option+Command+J"
+              }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With focus on the 'Navigate forwards from here' link, navigate to the 'Print Page' button.",
+          "mode": "Toggle Quick Nav OFF by pressing the Left Arrow and Right Arrow keys at the same time.",
+          "user": [
+            "With focus on the 'Navigate forwards from here' link, navigate to the 'Print Page' button."
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "YTE1NeyIyIjoiNTU1OTgifQGQ5Nj",
+    "atIds": [3],
+    "title": "Navigate backwards to a button",
+    "atMode": "INTERACTION",
+    "viewers": [],
+    "rowNumber": "6",
+    "scenarios": [
+      {
+        "id": "NmYxMeyIzIjoiWVRFMU5leUl5SWpvaU5UVTFPVGdpZlFHUTVOaiJ9Tk5MT",
+        "atId": 3,
+        "commandIds": ["CTRL_OPT_LEFT"]
+      },
+      {
+        "id": "YTg0MeyIzIjoiWVRFMU5leUl5SWpvaU5UVTFPVGdpZlFHUTVOaiJ9zVmOD",
+        "atId": 3,
+        "commandIds": ["SHIFT_TAB"]
+      },
+      {
+        "id": "OGJkYeyIzIjoiWVRFMU5leUl5SWpvaU5UVTFPVGdpZlFHUTVOaiJ9mZiZj",
+        "atId": 3,
+        "commandIds": ["SHIFT_CTRL_OPT_CMD_J"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "YzBhZeyIzIjoiWVRFMU5leUl5SWpvaU5UVTFPVGdpZlFHUTVOaiJ9TEyMz",
+        "text": "Role 'button' is conveyed",
+        "priority": "MUST"
+      },
+      {
+        "id": "NGE1NeyIzIjoiWVRFMU5leUl5SWpvaU5UVTFPVGdpZlFHUTVOaiJ92Y2Nm",
+        "text": "Name 'Print Page' is conveyed",
+        "priority": "MUST"
+      }
+    ],
+    "renderedUrls": {
+      "3": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-06-navigate-backwards-to-button-interaction-voiceover_macos.collected.html"
+    },
+    "renderableContent": {
+      "3": {
+        "info": {
+          "task": "navigate backwards to button",
+          "title": "Navigate backwards to a button",
+          "testId": 6,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": {
+            "key": "voiceover_macos",
+            "raw": "voiceover_macos",
+            "name": "VoiceOver for macOS"
+          },
+          "mode": "interaction",
+          "setupScript": {
+            "name": "setFocusAfterButton",
+            "source": "// sets focus on a link after the button\ntestPageDocument.querySelector('#afterlink').focus();\n",
+            "jsonpPath": "scripts/setFocusAfterButton.jsonp.js",
+            "modulePath": "scripts/setFocusAfterButton.module.js",
+            "description": "sets focus on a link after the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusAfterButton.html"
+        },
+        "commands": [
+          {
+            "id": "CTRL_OPT_LEFT",
+            "keystroke": "Ctrl+Option+Left",
+            "keypresses": [
+              {
+                "id": "CTRL_OPT_LEFT",
+                "keystroke": "Ctrl+Option+Left"
+              }
+            ]
+          },
+          {
+            "id": "SHIFT_TAB",
+            "keystroke": "Shift+Tab",
+            "keypresses": [
+              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
+            ]
+          },
+          {
+            "id": "SHIFT_CTRL_OPT_CMD_J",
+            "keystroke": "Shift+Control+Option+Command+J",
+            "keypresses": [
+              {
+                "id": "SHIFT_CTRL_OPT_CMD_J",
+                "keystroke": "Shift+Control+Option+Command+J"
+              }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With focus on the 'Navigate backwards from here' link, navigate to the 'Print Page' button.",
+          "mode": "Toggle Quick Nav OFF by pressing the Left Arrow and Right Arrow keys at the same time.",
+          "user": [
+            "With focus on the 'Navigate backwards from here' link, navigate to the 'Print Page' button."
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "MzdhYeyIyIjoiNTU1OTgifQTE1ZD",
+    "atIds": [1, 2],
+    "title": "Read information about a button in reading mode",
+    "atMode": "READING",
+    "viewers": [],
+    "rowNumber": "7",
+    "scenarios": [
+      {
+        "id": "ZmE5MeyIzIjoiTXpkaFlleUl5SWpvaU5UVTFPVGdpZlFURTFaRCJ92Q4OD",
+        "atId": 1,
+        "commandIds": ["INS_TAB"]
+      },
+      {
+        "id": "ZmViZeyIzIjoiTXpkaFlleUl5SWpvaU5UVTFPVGdpZlFURTFaRCJ9DRjMj",
+        "atId": 1,
+        "commandIds": ["INS_UP"]
+      },
+      {
+        "id": "NGY0YeyIzIjoiTXpkaFlleUl5SWpvaU5UVTFPVGdpZlFURTFaRCJ9zEyYT",
+        "atId": 2,
+        "commandIds": ["INS_TAB"]
+      },
+      {
+        "id": "YzQyMeyIzIjoiTXpkaFlleUl5SWpvaU5UVTFPVGdpZlFURTFaRCJ92M2Mj",
+        "atId": 2,
+        "commandIds": ["INS_UP"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "NzM3OeyIzIjoiTXpkaFlleUl5SWpvaU5UVTFPVGdpZlFURTFaRCJ9TlhZW",
+        "text": "Role 'button' is conveyed",
+        "priority": "MUST"
+      },
+      {
+        "id": "OGNiMeyIzIjoiTXpkaFlleUl5SWpvaU5UVTFPVGdpZlFURTFaRCJ9zg0Nz",
+        "text": "Name 'Print Page' is conveyed",
+        "priority": "MUST"
+      }
+    ],
+    "renderedUrls": {
+      "1": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-07-read-information-about-button-reading-jaws.collected.html",
+      "2": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-07-read-information-about-button-reading-nvda.collected.html"
+    },
+    "renderableContent": {
+      "1": {
+        "info": {
+          "task": "read information about button",
+          "title": "Read information about a button in reading mode",
+          "testId": 7,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "jaws", "raw": "JAWS", "name": "JAWS" },
+          "mode": "reading",
+          "setupScript": {
+            "name": "setFocusOnButton",
+            "source": "// sets focus on the button\ntestPageDocument.querySelector('#action').focus();\n",
+            "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+            "modulePath": "scripts/setFocusOnButton.module.js",
+            "description": "sets focus on the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusOnButton.html"
+        },
+        "commands": [
+          {
+            "id": "INS_TAB",
+            "keystroke": "Insert+Tab",
+            "keypresses": [
+              { "id": "INS_TAB", "keystroke": "Insert+Tab" }
+            ]
+          },
+          {
+            "id": "INS_UP",
+            "keystroke": "Insert+Up",
+            "keypresses": [
+              { "id": "INS_UP", "keystroke": "Insert+Up" }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With the reading cursor on the 'Print Page' button, read information about the button.",
+          "mode": "Verify the Virtual Cursor is active by pressing Alt+Delete. If it is not, exit Forms Mode to activate the Virtual Cursor by pressing Escape.",
+          "user": [
+            "With the reading cursor on the 'Print Page' button, read information about the button."
+          ]
+        }
+      },
+      "2": {
+        "info": {
+          "task": "read information about button",
+          "title": "Read information about a button in reading mode",
+          "testId": 7,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "nvda", "raw": "NVDA", "name": "NVDA" },
+          "mode": "reading",
+          "setupScript": {
+            "name": "setFocusOnButton",
+            "source": "// sets focus on the button\ntestPageDocument.querySelector('#action').focus();\n",
+            "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+            "modulePath": "scripts/setFocusOnButton.module.js",
+            "description": "sets focus on the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusOnButton.html"
+        },
+        "commands": [
+          {
+            "id": "INS_TAB",
+            "keystroke": "Insert+Tab",
+            "keypresses": [
+              { "id": "INS_TAB", "keystroke": "Insert+Tab" }
+            ]
+          },
+          {
+            "id": "INS_UP",
+            "keystroke": "Insert+Up",
+            "keypresses": [
+              { "id": "INS_UP", "keystroke": "Insert+Up" }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With the reading cursor on the 'Print Page' button, read information about the button.",
+          "mode": "Ensure NVDA is in browse mode by pressing Escape. Note: This command has no effect if NVDA is already in browse mode.",
+          "user": [
+            "With the reading cursor on the 'Print Page' button, read information about the button."
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "YjI3MeyIyIjoiNTU1OTgifQGM1M2",
+    "atIds": [1, 2],
+    "title": "Read information about a button in interaction mode",
+    "atMode": "INTERACTION",
+    "viewers": [],
+    "rowNumber": "8",
+    "scenarios": [
+      {
+        "id": "MDlhNeyIzIjoiWWpJM01leUl5SWpvaU5UVTFPVGdpZlFHTTFNMiJ9mZlYz",
+        "atId": 1,
+        "commandIds": ["INS_TAB"]
+      },
+      {
+        "id": "YTcyZeyIzIjoiWWpJM01leUl5SWpvaU5UVTFPVGdpZlFHTTFNMiJ9DhlZD",
+        "atId": 1,
+        "commandIds": ["INS_UP"]
+      },
+      {
+        "id": "MzFhOeyIzIjoiWWpJM01leUl5SWpvaU5UVTFPVGdpZlFHTTFNMiJ9WU3Nz",
+        "atId": 2,
+        "commandIds": ["INS_TAB"]
+      },
+      {
+        "id": "NDE3YeyIzIjoiWWpJM01leUl5SWpvaU5UVTFPVGdpZlFHTTFNMiJ9jc2ND",
+        "atId": 2,
+        "commandIds": ["INS_UP"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "YmM1ZeyIzIjoiWWpJM01leUl5SWpvaU5UVTFPVGdpZlFHTTFNMiJ9DgzZj",
+        "text": "Role 'button' is conveyed",
+        "priority": "MUST"
+      },
+      {
+        "id": "NWMyNeyIzIjoiWWpJM01leUl5SWpvaU5UVTFPVGdpZlFHTTFNMiJ9mEwZG",
+        "text": "Name 'Print Page' is conveyed",
+        "priority": "MUST"
+      }
+    ],
+    "renderedUrls": {
+      "1": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-08-read-information-about-button-interaction-jaws.collected.html",
+      "2": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-08-read-information-about-button-interaction-nvda.collected.html"
+    },
+    "renderableContent": {
+      "1": {
+        "info": {
+          "task": "read information about button",
+          "title": "Read information about a button in interaction mode",
+          "testId": 8,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "jaws", "raw": "JAWS", "name": "JAWS" },
+          "mode": "interaction",
+          "setupScript": {
+            "name": "setFocusOnButton",
+            "source": "// sets focus on the button\ntestPageDocument.querySelector('#action').focus();\n",
+            "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+            "modulePath": "scripts/setFocusOnButton.module.js",
+            "description": "sets focus on the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusOnButton.html"
+        },
+        "commands": [
+          {
+            "id": "INS_TAB",
+            "keystroke": "Insert+Tab",
+            "keypresses": [
+              { "id": "INS_TAB", "keystroke": "Insert+Tab" }
+            ]
+          },
+          {
+            "id": "INS_UP",
+            "keystroke": "Insert+Up",
+            "keypresses": [
+              { "id": "INS_UP", "keystroke": "Insert+Up" }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With focus on the 'Print Page' button, read information about the button.",
+          "mode": "Verify the PC Cursor is active by pressing Alt+Delete. If it is not, turn off the Virtual Cursor by pressing Insert+Z.",
+          "user": [
+            "With focus on the 'Print Page' button, read information about the button."
+          ]
+        }
+      },
+      "2": {
+        "info": {
+          "task": "read information about button",
+          "title": "Read information about a button in interaction mode",
+          "testId": 8,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": { "key": "nvda", "raw": "NVDA", "name": "NVDA" },
+          "mode": "interaction",
+          "setupScript": {
+            "name": "setFocusOnButton",
+            "source": "// sets focus on the button\ntestPageDocument.querySelector('#action').focus();\n",
+            "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+            "modulePath": "scripts/setFocusOnButton.module.js",
+            "description": "sets focus on the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusOnButton.html"
+        },
+        "commands": [
+          {
+            "id": "INS_TAB",
+            "keystroke": "Insert+Tab",
+            "keypresses": [
+              { "id": "INS_TAB", "keystroke": "Insert+Tab" }
+            ]
+          },
+          {
+            "id": "INS_UP",
+            "keystroke": "Insert+Up",
+            "keypresses": [
+              { "id": "INS_UP", "keystroke": "Insert+Up" }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With focus on the 'Print Page' button, read information about the button.",
+          "mode": "If NVDA did not make the focus mode sound when the test page loaded, press Insert+Space to turn focus mode on.",
+          "user": [
+            "With focus on the 'Print Page' button, read information about the button."
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "Y2E5NeyIyIjoiNTU1OTgifQTg5ZG",
+    "atIds": [3],
+    "title": "Read information about a button",
+    "atMode": "INTERACTION",
+    "viewers": [],
+    "rowNumber": "9",
+    "scenarios": [
+      {
+        "id": "NjU5NeyIzIjoiWTJFNU5leUl5SWpvaU5UVTFPVGdpZlFUZzVaRyJ9TVhOT",
+        "atId": 3,
+        "commandIds": ["CTRL_OPT_F3"]
+      },
+      {
+        "id": "ZTY2NeyIzIjoiWTJFNU5leUl5SWpvaU5UVTFPVGdpZlFUZzVaRyJ9GM4Nm",
+        "atId": 3,
+        "commandIds": ["CTRL_OPT_F4"]
+      }
+    ],
+    "assertions": [
+      {
+        "id": "MzMzMeyIzIjoiWTJFNU5leUl5SWpvaU5UVTFPVGdpZlFUZzVaRyJ92I5Nj",
+        "text": "Role 'button' is conveyed",
+        "priority": "MUST"
+      },
+      {
+        "id": "MTMyZeyIzIjoiWTJFNU5leUl5SWpvaU5UVTFPVGdpZlFUZzVaRyJ9TE3YT",
+        "text": "Name 'Print Page' is conveyed",
+        "priority": "MUST"
+      }
+    ],
+    "renderedUrls": {
+      "3": "/aria-at/836fb2a997f5b2844035b8c934f8fda9833cd5b2/build/tests/command-button/test-09-read-information-about-button-interaction-voiceover_macos.collected.html"
+    },
+    "renderableContent": {
+      "3": {
+        "info": {
+          "task": "read information about button",
+          "title": "Read information about a button",
+          "testId": 9,
+          "references": [
+            {
+              "refId": "example",
+              "value": "https://w3c.github.io/aria-practices/examples/button/button.html"
+            },
+            {
+              "refId": "button",
+              "value": "https://w3c.github.io/aria/#button"
+            }
+          ]
+        },
+        "target": {
+          "at": {
+            "key": "voiceover_macos",
+            "raw": "voiceover_macos",
+            "name": "VoiceOver for macOS"
+          },
+          "mode": "interaction",
+          "setupScript": {
+            "name": "setFocusOnButton",
+            "source": "// sets focus on the button\ntestPageDocument.querySelector('#action').focus();\n",
+            "jsonpPath": "scripts/setFocusOnButton.jsonp.js",
+            "modulePath": "scripts/setFocusOnButton.module.js",
+            "description": "sets focus on the button"
+          },
+          "referencePage": "reference/2022-4-8_124112/button.setFocusOnButton.html"
+        },
+        "commands": [
+          {
+            "id": "CTRL_OPT_F3",
+            "keystroke": "Control+Option+F3",
+            "keypresses": [
+              {
+                "id": "CTRL_OPT_F3",
+                "keystroke": "Control+Option+F3"
+              }
+            ]
+          },
+          {
+            "id": "CTRL_OPT_F4",
+            "keystroke": "Control+Option+F4",
+            "keypresses": [
+              {
+                "id": "CTRL_OPT_F4",
+                "keystroke": "Control+Option+F4"
+              }
+            ]
+          }
+        ],
+        "assertions": [
+          {
+            "priority": 1,
+            "expectation": "Role 'button' is conveyed"
+          },
+          {
+            "priority": 1,
+            "expectation": "Name 'Print Page' is conveyed"
+          }
+        ],
+        "instructions": {
+          "raw": "With focus on the 'Print Page' button, read information about the button.",
+          "mode": "Toggle Quick Nav OFF by pressing the Left Arrow and Right Arrow keys at the same time.",
+          "user": [
+            "With focus on the 'Print Page' button, read information about the button."
+          ]
+        }
+      }
+    }
+  }
+]
