@@ -177,7 +177,6 @@ const InstructionsRenderer = ({
     return (
         <>
             <NumberedList>{allInstructionsContent}</NumberedList>
-
             <Heading>{pageContent.instructions.assertions.header}</Heading>
             {pageContent.instructions.assertions.description}
             <NumberedList>{assertionsContent}</NumberedList>

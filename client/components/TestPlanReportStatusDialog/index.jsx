@@ -1,17 +1,14 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { getRequiredReports } from './isRequired';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import getMetrics from '../Reports/getMetrics';
 import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
 import { convertDateToString } from '../../utils/formatter';
 import { ThemeTable } from '../common/ThemeTable';
 import BasicModal from '../common/BasicModal';
-
 import './TestPlanReportStatusDialog.css';
 
 const IncompleteStatusReport = styled.span`
@@ -22,6 +19,7 @@ const IncompleteStatusReport = styled.span`
 const TestPlanReportStatusDialog = ({
     testPlanVersion,
     show,
+    ats,
     handleHide = () => {},
     triggerUpdate = () => {}
 }) => {
@@ -33,62 +31,6 @@ const TestPlanReportStatusDialog = ({
 
     const auth = evaluateAuth(me ?? {});
     const { isSignedIn, isAdmin } = auth;
-
-    const requiredReports = useMemo(
-        () => getRequiredReports(testPlanVersion?.phase),
-        [testPlanVersion]
-    );
-
-    const [matchedReports, unmatchedTestPlanReports, unmatchedRequiredReports] =
-        useMemo(() => {
-            const matched = [];
-            const unmatchedTestPlan = [...testPlanReports];
-            const unmatchedRequired = [...requiredReports];
-
-            for (let i = 0; i < requiredReports.length; i++) {
-                for (let j = 0; j < testPlanReports.length; j++) {
-                    if (
-                        requiredReports[i].at.name ===
-                            testPlanReports[j].at.name &&
-                        requiredReports[i].browser.name ===
-                            testPlanReports[j].browser.name
-                    ) {
-                        if (testPlanReports[j].status === 'DRAFT') {
-                            matched.push({
-                                ...testPlanReports[j],
-                                metrics: getMetrics(testPlanReports[j])
-                            });
-                        } else {
-                            matched.push(testPlanReports[j]);
-                        }
-
-                        unmatchedTestPlan.splice(
-                            unmatchedTestPlan.indexOf(testPlanReports[j]),
-                            1
-                        );
-                        unmatchedRequired.splice(
-                            unmatchedRequired.indexOf(requiredReports[i]),
-                            1
-                        );
-                        break;
-                    }
-                }
-            }
-            return [matched, unmatchedTestPlan, unmatchedRequired];
-        }, [testPlanReports, requiredReports]);
-
-    const renderTableRow = (testPlanReport, required = 'Yes') => {
-        return (
-            <tr
-                key={`${testPlanReport.at.name}-${testPlanReport.browser.name}`}
-            >
-                <td>{required}</td>
-                <td>{testPlanReport.at.name}</td>
-                <td>{testPlanReport.browser.name}</td>
-                <td>{renderReportStatus(testPlanReport)}</td>
-            </tr>
-        );
-    };
 
     const renderCompleteReportStatus = testPlanReport => {
         const formattedDate = convertDateToString(
@@ -135,30 +77,84 @@ const TestPlanReportStatusDialog = ({
         }
     };
 
-    const renderReportStatus = testPlanReport => {
-        const { metrics, at, browser, isFinal } = testPlanReport;
-        if (metrics) {
-            if (isFinal) {
-                return renderCompleteReportStatus(testPlanReport);
+    const renderReportStatus = ({ report, at, browser }) => {
+        if (report) {
+            const { markedFinalAt } = report;
+            const { phase } = testPlanVersion;
+            if (
+                markedFinalAt &&
+                (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
+            ) {
+                return renderCompleteReportStatus(report);
             } else {
-                return renderPartialCompleteReportStatus(testPlanReport);
+                return renderPartialCompleteReportStatus(report);
             }
-        } else {
-            return (
-                <>
-                    <IncompleteStatusReport>Missing</IncompleteStatusReport>
-                    {isSignedIn && isAdmin ? (
-                        <AddTestToQueueWithConfirmation
-                            at={at}
-                            browser={browser}
-                            testPlanVersion={testPlanVersion}
-                            triggerUpdate={triggerUpdate}
-                        />
-                    ) : null}
-                </>
-            );
         }
+        return (
+            <>
+                <IncompleteStatusReport>Missing</IncompleteStatusReport>
+                {isSignedIn && isAdmin ? (
+                    <AddTestToQueueWithConfirmation
+                        at={at}
+                        browser={browser}
+                        testPlanVersion={testPlanVersion}
+                        triggerUpdate={triggerUpdate}
+                    />
+                ) : null}
+            </>
+        );
     };
+
+    let requiredReports = 0;
+    const rowData = [];
+
+    ats.forEach(at => {
+        if (testPlanVersion.phase === 'CANDIDATE') {
+            requiredReports += at.candidateBrowsers.length;
+        }
+        if (testPlanVersion.phase === 'RECOMMENDED') {
+            requiredReports += at.recommendedBrowsers.length;
+        }
+
+        at.browsers.forEach(browser => {
+            const report = testPlanReports.find(eachReport => {
+                return (
+                    eachReport.at.id === at.id &&
+                    eachReport.browser.id === browser.id
+                );
+            });
+            let isRequired;
+            if (testPlanVersion.phase === 'CANDIDATE') {
+                isRequired = at.candidateBrowsers.some(candidateBrowser => {
+                    return candidateBrowser.id === browser.id;
+                });
+            } else if (testPlanVersion.phase === 'RECOMMENDED') {
+                isRequired = at.recommendedBrowsers.some(recommendedBrowser => {
+                    return recommendedBrowser.id === browser.id;
+                });
+            } else {
+                isRequired = false;
+            }
+            rowData.push({ report, at, browser, isRequired });
+        });
+    });
+
+    // Sort by required then AT then browser
+    rowData.sort((a, b) => {
+        if (a.isRequired !== b.isRequired) return a.isRequired ? -1 : 1;
+        if (a.at.name !== b.at.name) return a.at.name.localeCompare(b.at.name);
+        return a.browser.name.localeCompare(b.browser.name);
+    });
+    const tableRows = rowData.map(({ report, at, browser, isRequired }) => {
+        return (
+            <tr key={`${at.name}-${browser.name}`}>
+                <td>{isRequired ? 'Yes' : 'No'}</td>
+                <td>{at.name}</td>
+                <td>{browser.name}</td>
+                <td>{renderReportStatus({ report, at, browser })}</td>
+            </tr>
+        );
+    });
 
     const getContent = () => (
         <>
@@ -177,7 +173,7 @@ const TestPlanReportStatusDialog = ({
                             testPlanVersion.phase.slice(1).toLowerCase()}
                     </span>
                     &nbsp;Review phase.&nbsp;
-                    <strong>{requiredReports.length} AT/browser&nbsp;</strong>
+                    <strong>{requiredReports} AT/browser&nbsp;</strong>
                     pairs require reports in this phase.
                 </p>
             )}
@@ -191,15 +187,7 @@ const TestPlanReportStatusDialog = ({
                         <th>Report Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    {matchedReports.map(report => renderTableRow(report))}
-                    {unmatchedRequiredReports.map(report =>
-                        renderTableRow(report)
-                    )}
-                    {unmatchedTestPlanReports.map(report =>
-                        renderTableRow(report, 'No')
-                    )}
-                </tbody>
+                <tbody>{tableRows}</tbody>
             </ThemeTable>
         </>
     );
@@ -250,7 +238,26 @@ TestPlanReportStatusDialog.propTypes = {
     }).isRequired,
     handleHide: PropTypes.func.isRequired,
     triggerUpdate: PropTypes.func,
-    show: PropTypes.bool.isRequired
+    show: PropTypes.bool.isRequired,
+    ats: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            browsers: PropTypes.arrayOf(
+                PropTypes.shape({ id: PropTypes.string.isRequired }).isRequired
+            ).isRequired,
+            candidateBrowsers: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired
+                }).isRequired
+            ).isRequired,
+            recommendedBrowsers: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired
+                }).isRequired
+            ).isRequired
+        }).isRequired
+    ).isRequired
 };
 
 export default TestPlanReportStatusDialog;
