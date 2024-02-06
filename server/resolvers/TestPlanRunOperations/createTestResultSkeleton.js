@@ -4,6 +4,25 @@ const {
     createAssertionResultId
 } = require('../../services/PopulatedData/locationOfDataId');
 
+/**
+ * Determine whether a given assertion belongs to a given scenario and includes
+ * at least one exception with a given priority.
+ *
+ * @param {Assertion} assertion
+ * @param {Scenario} scenario
+ * @param {string} priority
+ */
+const hasExceptionWithPriority = (assertion, scenario, priority) => {
+    return assertion.assertionExceptions?.some(
+        exception =>
+            scenario.commands.find(
+                command =>
+                    command.id === exception.commandId &&
+                    command.atOperatingMode === exception.settings
+            ) && exception.priority === priority
+    );
+};
+
 const createTestResultSkeleton = ({
     test,
     testPlanRun,
@@ -31,17 +50,16 @@ const createTestResultSkeleton = ({
                     scenarioId: scenario.id,
                     output: null,
                     assertionResults: test.assertions
-                        // Filter out assertionResults which were marked with a 0-priority exception
-                        .filter(assertion => {
-                            return !assertion.assertionExceptions?.some(
-                                e =>
-                                    scenario.commands.find(
-                                        c =>
-                                            c.id === e.commandId &&
-                                            c.atOperatingMode === e.settings
-                                    ) && e.priority === 'EXCLUDE'
-                            );
-                        })
+                        // Filter out assertionResults for the current scenario which were marked
+                        // with a 0-priority exception
+                        .filter(
+                            assertion =>
+                                !hasExceptionWithPriority(
+                                    assertion,
+                                    scenario,
+                                    'EXCLUDE'
+                                )
+                        )
                         .map(assertion => ({
                             id: createAssertionResultId(
                                 scenarioResultId,
