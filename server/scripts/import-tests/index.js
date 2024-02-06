@@ -54,8 +54,7 @@ Default use:
 const client = new Client();
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-// const ariaAtDefaultBranch = 'master';
-const ariaAtDefaultBranch = 'collection-0-priority-support-test'; // TODO: Remove before merging
+const ariaAtDefaultBranch = 'master';
 const gitCloneDirectory = path.resolve(__dirname, 'tmp');
 const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
