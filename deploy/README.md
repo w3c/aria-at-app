@@ -69,6 +69,7 @@ To deploy this project to  server:
 3. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the directory which contains this document.
 4. Install [Ansible](https://www.ansible.com/) version 2.11. Instructions for macOS are as follows:
   - Install Ansible at the specific 2.11 version: `python3 -m pip install --user ansible-core==2.11.1`
+  - Install `ansible.posix` to make use of the [ansible.posix.synchronize](https://docs.ansible.com/ansible/latest/collections/ansible/posix/synchronize_module.html#ansible-posix-synchronize-module-a-wrapper-around-rsync-to-make-common-tasks-in-your-playbooks-quick-and-easy) module: `ansible-galaxy collection install ansible.posix`
   - Add the following line to your `~/.zshrc` file, changing the path below to match where Python installs Ansible for you:
     ```
     export PATH=$PATH:/Users/Luigi/Library/Python/3.9/bin
