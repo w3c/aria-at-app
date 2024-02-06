@@ -1,4 +1,4 @@
-const convertAssertionPriority = require('../helpers/convertAssertionPriority');
+const convertAssertionPriority = require('../../util/convertAssertionPriority');
 
 const assertionResultsResolver = (scenarioResult, { priority }) => {
     if (!priority) return scenarioResult.assertionResults;

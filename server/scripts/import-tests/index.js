@@ -27,6 +27,7 @@ const {
 const deepPickEqual = require('../../util/deepPickEqual');
 const { hashTests } = require('../../util/aria');
 const convertDateToString = require('../../util/convertDateToString');
+const convertAssertionPriority = require('../../util/convertAssertionPriority');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -475,15 +476,10 @@ const getTests = ({
                                         assertion.assertionId
                                 )
                                 .map(({ priority: assertionPriority }) => {
-                                    let priority = '';
-                                    if (assertionPriority === 0)
-                                        priority = 'EXCLUDE';
-                                    if (assertionPriority === 1)
-                                        priority = 'MUST';
-                                    if (assertionPriority === 2)
-                                        priority = 'SHOULD';
-                                    if (assertionPriority === 3)
-                                        priority = 'MAY';
+                                    let priority =
+                                        convertAssertionPriority(
+                                            assertionPriority
+                                        );
 
                                     return {
                                         priority,
