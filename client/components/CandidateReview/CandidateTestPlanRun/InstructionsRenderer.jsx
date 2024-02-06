@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { Button } from 'react-bootstrap';
 import { unescape } from 'lodash';
-import { parseListContent } from '../../TestRenderer/utils';
+import {
+    parseListContent,
+    parseSettingsContent
+} from '../../TestRenderer/utils';
 import {
     userCloseWindow,
     userOpenWindow
@@ -120,8 +123,10 @@ const InstructionsRenderer = ({
 
     let allInstructions;
     const isV2 = testFormatVersion === 2;
+    let settingsContent = [];
 
     if (isV2) {
+        // There is at least one defined 'setting' for the list of AT commands
         const commandSettingSpecified = renderableContent.commands.some(
             ({ settings }) => settings && settings !== 'defaultMode'
         );
@@ -144,6 +149,10 @@ const InstructionsRenderer = ({
             setupScriptDescription + '.',
             testInstructions + ' ' + settingsInstructions
         ].map(e => unescape(e));
+        settingsContent = parseSettingsContent(
+            renderableContent.instructions.mode,
+            renderableContent.target.at.raw.settings
+        );
     } else {
         allInstructions = [
             ...pageContent.instructions.instructions.instructions,
@@ -168,12 +177,11 @@ const InstructionsRenderer = ({
     return (
         <>
             <NumberedList>{allInstructionsContent}</NumberedList>
-            {/* TODO: Remove 3 following lines to remove the Success Criteria once #863 is merged. Will need that
-                  functionality to show the commands and assertions specification table and if there are any
-                  exceptions, especially 0-level assertions */}
             <Heading>{pageContent.instructions.assertions.header}</Heading>
             {pageContent.instructions.assertions.description}
             <NumberedList>{assertionsContent}</NumberedList>
+            {settingsContent.length ? settingsContent : null}
+
             <Button
                 disabled={!pageContent.instructions.openTestPage.enabled}
                 onClick={pageContent.instructions.openTestPage.click}
