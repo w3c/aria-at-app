@@ -660,8 +660,12 @@ const TestRun = () => {
                 output: output,
                 unexpectedBehaviors: unexpectedBehaviors,
                 assertionResults: assertionResults
-                    // All assertions are always being passed from the TestRenderer results, but in the instance where
-                    // there is a 0-priority exception, and id won't be provided and that cannot be saved
+                    // All assertions are always being passed from the TestRenderer results, but
+                    // when there is a 0-priority assertion exception, an id won't be provided,
+                    // so do not include that result.
+                    // This is due to the TestRenderer still requiring the position of the
+                    // excluded assertion, but it can be removed at this point before being passed
+                    // to the server
                     .filter(el => !!el.id)
                     .map(({ id, passed }) => ({
                         id,
