@@ -47,7 +47,7 @@ Otherwise, use the squash and merge method, and a type (and scope, if applicable
 
 Commits to `releases` MUST be merged with `Create a merge commit`, so that individual PRs or commits which have already been scoped at that point can be properly included in the CHANGELOG.md update.
 
-**NOTE:** The [version-changelog-update](https://github.com/w3c/version-changelog-update/blob/development/.github/workflows/tripps_bump_version.yml) will automatically merge any new changes found in `releases` back into `development`, including the CHANGELOG.md update, along with any last minute changes related to the release.
+**NOTE:** The [version-changelog-update](https://github.com/w3c/aria-at-app/blob/development/.github/workflows/version-changelog-update.yml) workflow will automatically merge any new changes found in `releases` back into `development`, including the CHANGELOG.md update and any last minute changes before the release.
 
 ## Releasing to production
 
