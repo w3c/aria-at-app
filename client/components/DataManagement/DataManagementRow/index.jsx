@@ -718,6 +718,7 @@ const DataManagementRow = ({
                                 )}
                             <span role="listitem">
                                 <TestPlanReportStatusDialogWithButton
+                                    ats={ats}
                                     testPlanVersionId={latestVersion.id}
                                 />
                             </span>
@@ -921,6 +922,7 @@ const DataManagementRow = ({
                             )}
                             <span role="listitem">
                                 <TestPlanReportStatusDialogWithButton
+                                    ats={ats}
                                     testPlanVersionId={latestVersion.id}
                                 />
                             </span>
@@ -1009,6 +1011,7 @@ const DataManagementRow = ({
                         </VersionString>
                         <span role="listitem">
                             <TestPlanReportStatusDialogWithButton
+                                ats={ats}
                                 testPlanVersionId={latestVersion.id}
                             />
                         </span>
