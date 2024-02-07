@@ -63,9 +63,17 @@ const conflictsResolver = async testPlanReport => {
         for (let i = 0; i < testResults[0].scenarioResults.length; i += 1) {
             const scenarioResultComparisons = testResults.map(testResult => {
                 // Note that output is not considered
-                return pick(testResult.scenarioResults[i], [
+                let picked = pick(testResult.scenarioResults[i], [
                     'unexpectedBehaviors'
                 ]);
+
+                // Ignore unexpectedBehavior details text during comparison of conflicts
+                picked.unexpectedBehaviors = picked.unexpectedBehaviors.map(
+                    // eslint-disable-next-line no-unused-vars
+                    ({ details, ...rest }) => rest
+                );
+
+                return picked;
             });
             if (!allEqual(scenarioResultComparisons)) {
                 conflictDetected({ i });
