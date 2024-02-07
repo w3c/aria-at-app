@@ -43,25 +43,26 @@ const oauthRedirectFromGithubController = async (req, res) => {
 
     if (!githubUsername) return loginFailedDueToGitHub();
 
-    const isAdmin = await GithubService.isMemberOfAdminTeam({
-        githubAccessToken,
-        githubUsername
-    });
-    if (isAdmin == null) return loginFailedDueToGitHub();
+    // const isAdmin = await GithubService.isMemberOfAdminTeam({
+    //     githubAccessToken,
+    //     githubUsername
+    // });
+    // if (isAdmin == null) return loginFailedDueToGitHub();
 
-    const testers = await getUsersFromFile('../../testers.txt');
-    const vendors = await getUsersFromFile('../../vendors.txt');
+    const admins = await getUsersFromFile('admins.txt');
+    const testers = await getUsersFromFile('testers.txt');
+    const vendors = await getUsersFromFile('vendors.txt');
 
     const roles = [];
-    if (isAdmin) {
+    if (admins.includes(githubUsername)) {
         roles.push({ name: User.ADMIN });
     }
-    if (isAdmin || testers.includes(githubUsername)) {
+    if (admins.includes(githubUsername) || testers.includes(githubUsername)) {
         roles.push({ name: User.TESTER }); // Admins are always testers
     }
 
     if (
-        isAdmin ||
+        admins.includes(githubUsername) ||
         vendors.findIndex(vendor => vendor.includes(githubUsername)) > -1
     ) {
         roles.push({ name: User.VENDOR });
