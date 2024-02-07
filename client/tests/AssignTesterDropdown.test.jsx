@@ -44,6 +44,7 @@ const mockProps = {
 };
 
 import { useMutation } from '@apollo/client';
+import { act } from 'react-dom/test-utils';
 
 // Mock useMutation hook
 useMutation.mockImplementation(mutation => {
@@ -218,22 +219,31 @@ describe('AssignTesterDropdown', () => {
     });
 
     it('does not list bot when run does not support automation', async () => {
-        const jawsMock = [...mocks];
-        jawsMock[3].result.data.testPlanReport.at.name = 'JAWS';
+        await act(async () => {
+            const jawsMock = [...mocks];
+            jawsMock[3].result.data.testPlanReport.at.name = 'JAWS';
 
-        render(
-            <MockedProvider mocks={jawsMock} addTypename={false}>
-                <AssignTesterDropdown {...mockProps} />
-            </MockedProvider>
-        );
-
-        const button = await screen.getByRole('button', {
-            name: /assign testers/i
+            render(
+                <MockedProvider mocks={jawsMock} addTypename={false}>
+                    <AssignTesterDropdown {...mockProps} />
+                </MockedProvider>
+            );
         });
-        fireEvent.click(button);
+        let button;
+        await waitFor(async () => {
+            button = await screen.getByRole('button', {
+                name: /assign testers/i
+            });
+        });
 
-        const items = await screen.queryByText(/NVDA Bot/);
-        expect(items).not.toBeInTheDocument();
+        await act(async () => {
+            fireEvent.click(button);
+        });
+
+        await waitFor(async () => {
+            const items = await screen.queryByText(/NVDA Bot/);
+            expect(items).toBeNull();
+        });
     });
 
     it('removes tester correctly and calls removeTester mutation', async () => {
@@ -256,6 +266,7 @@ describe('AssignTesterDropdown', () => {
         const button = await screen.getByRole('button', {
             name: /assign testers/i
         });
+
         fireEvent.click(button);
 
         const items = await screen.findAllByText(/bee/);

@@ -279,7 +279,11 @@ export const mockedTestPlanVersion = {
     ]
 };
 
-export default (meQuery, testPlanReportStatusDialogQuery) => [
+export default (
+    meQuery,
+    testPlanReportStatusDialogQuery,
+    initiatedByAutomationQuery
+) => [
     {
         request: {
             query: meQuery
@@ -375,6 +379,30 @@ export default (meQuery, testPlanReportStatusDialogQuery) => [
                         ]
                     }
                 ]
+            }
+        }
+    },
+    {
+        request: {
+            query: initiatedByAutomationQuery,
+            variables: {
+                testPlanVersionId: '7'
+            }
+        },
+        result: {
+            data: {
+                testPlanVersion: {
+                    id: '7',
+                    testPlanReports: [
+                        {
+                            id: '1',
+                            markedFinalAt: '2021-01-01T00:00:00.000Z',
+                            draftTestPlanRuns: {
+                                initiatedByAutomation: true
+                            }
+                        }
+                    ]
+                }
             }
         }
     }
