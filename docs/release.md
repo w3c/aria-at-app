@@ -3,7 +3,7 @@
 ## Branching strategy
 
 - Checkout the `development` branch after cloning (or forking) the repository
-- Create an appropriately named 'feature', 'hotfix', 'patch', etc branch
+- Create an appropriately named branch
 
 ## Commits
 
