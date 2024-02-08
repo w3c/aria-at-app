@@ -16,16 +16,18 @@ import {
     TEST_QUEUE_PAGE_ADMIN_NOT_POPULATED_MOCK_DATA,
     TEST_QUEUE_PAGE_TESTER_NOT_POPULATED_MOCK_DATA,
     TEST_QUEUE_PAGE_ADMIN_POPULATED_MOCK_DATA,
-    TEST_QUEUE_PAGE_TESTER_POPULATED_MOCK_DATA
+    TEST_QUEUE_PAGE_TESTER_POPULATED_MOCK_DATA,
+    TEST_QUEUE_PAGE_BASE_MOCK_DATA
 } from './__mocks__/GraphQLMocks';
 import { AriaLiveRegionProvider } from '../components/providers/AriaLiveRegionProvider';
 
 const setup = (mocks = []) => {
+    const mergedMocks = [...TEST_QUEUE_PAGE_BASE_MOCK_DATA, ...mocks];
     return render(
         <BrowserRouter>
             <AriaLiveRegionProvider>
                 <MockedProvider
-                    mocks={mocks}
+                    mocks={mergedMocks}
                     cache={new InMemoryCache({ addTypename: false })}
                 >
                     <TestQueue />
