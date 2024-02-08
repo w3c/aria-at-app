@@ -92,9 +92,9 @@ describe('smoke test', () => {
     }, 60000);
 
     afterAll(async () => {
-        console.log('closing dev servers');
+        console.log('closing dev servers'); // eslint-disable-line
         await Promise.all([backendServer.close(), clientServer.close()]);
-        console.log('closing browser');
+        console.log('closing browser'); // eslint-disable-line
 
         // Browser might not be defined, if it failed to start
         if (browser) await browser.close();
