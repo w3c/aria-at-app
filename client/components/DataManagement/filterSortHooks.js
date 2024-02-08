@@ -78,8 +78,9 @@ export const useDerivedActivePhasesByTestPlanId = (
                 // while the subsequent elements in the array are TestPlanVersions
                 // that are in other phases
                 if (derivedPhase) {
-                    let arr = activeTestPlanVersionsByPhase[testPlan.id];
-                    if (!arr) activeTestPlanVersionsByPhase[testPlan.id] = [];
+                    // Ensure the array exists or initialize it directly before pushing the new phase
+                    activeTestPlanVersionsByPhase[testPlan.id] =
+                        activeTestPlanVersionsByPhase[testPlan.id] ?? [];
                     activeTestPlanVersionsByPhase[testPlan.id].push(
                         derivedPhase
                     );
