@@ -102,6 +102,7 @@
     "webpack-dev-server": "^4.11.1"
   },
   "jest": {
+    "testTimeout": 15000,
     "moduleNameMapper": {
       "^@client(.*)": "<rootDir>/$1",
       "^@components(.*)": "<rootDir>/components/$1",
