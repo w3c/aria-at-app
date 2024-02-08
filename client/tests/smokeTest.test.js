@@ -92,7 +92,9 @@ describe('smoke test', () => {
     }, 60000);
 
     afterAll(async () => {
+        console.log('closing dev servers');
         await Promise.all([backendServer.close(), clientServer.close()]);
+        console.log('closing browser');
 
         // Browser might not be defined, if it failed to start
         if (browser) await browser.close();
