@@ -24,7 +24,20 @@ const getUsersFromFile = async file => {
     3) Add "admins.txt" file. Account for the fact that everyone is not an admin
      in production -- developers.
 
-    4) Remove all code related to github teams 
+    4) Test that admins is working by adding my name to the list
+
+    5) Remove all code related to github teams
+        -- Look at stuff like this:
+                The isMemberOfAdminTeam and all the functions it uses
+                that is not being used anywhere else in the codebase
+                and githubAccessToken
+
+                //const isAdmin = await GithubService.isMemberOfAdminTeam({
+                //     githubAccessToken,
+                //     githubUsername
+                // });
+
+                Check to see if they are needed anywhere else to make the app work
 */
 getUsersFromFile('vendors').then(console.log);
 module.exports = getUsersFromFile;
