@@ -17,7 +17,7 @@ import { act } from 'react-dom/test-utils';
 import {
     useDataManagementTableFiltering,
     useDataManagementTableSorting,
-    useDerivedOverallPhaseByTestPlanId,
+    useDerivedActivePhasesByTestPlanId,
     useTestPlanVersionsByPhase,
     useTestPlansByPhase
 } from '../components/DataManagement/filterSortHooks';
@@ -119,6 +119,12 @@ const testPlanVersions = [
         id: '105',
         testPlan: { directory: 'dirD' },
         recommendedPhaseReachedAt: '2022-05-18T20:51:40.000Z'
+    },
+    {
+        phase: 'DRAFT',
+        id: '106',
+        testPlan: { directory: 'dirD' },
+        draftStatusReachedAt: '2024-01-08T20:51:40.000Z'
     }
 ];
 
@@ -182,11 +188,12 @@ describe('useDataManagementTableFiltering hook', () => {
             )
         );
         expect(result.current.filteredTestPlans).toEqual([
-            testPlans[0] // RD
+            testPlans[0], // RD
+            testPlans[3]
         ]);
         expect(
             result.current.filterLabels[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RD]
-        ).toEqual(`R&D Complete (1)`);
+        ).toEqual(`R&D Complete (2)`);
     });
 
     it('can filter by DRAFT phase', () => {
@@ -198,13 +205,14 @@ describe('useDataManagementTableFiltering hook', () => {
             )
         );
         expect(result.current.filteredTestPlans).toEqual([
-            testPlans[1] // DRAFT
+            testPlans[1], // DRAFT
+            testPlans[3] // DRAFT
         ]);
         expect(
             result.current.filterLabels[
                 DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
             ]
-        ).toEqual(`In Draft Review (1)`);
+        ).toEqual(`In Draft Review (2)`); // Test plan 106 is in DRAFT while the overall plan is RECOMMENDED
     });
 
     it('can filter by CANDIDATE phase', () => {
@@ -252,7 +260,7 @@ describe('useTestPlanVersionsByPhase hook', () => {
         const { testPlanVersionsByPhase } = result.current;
         expect(testPlanVersionsByPhase).toEqual({
             RD: [testPlanVersions[0], testPlanVersions[3]],
-            DRAFT: [testPlanVersions[1]],
+            DRAFT: [testPlanVersions[1], testPlanVersions[5]],
             CANDIDATE: [testPlanVersions[2]],
             RECOMMENDED: [testPlanVersions[4]]
         });
@@ -260,29 +268,29 @@ describe('useTestPlanVersionsByPhase hook', () => {
 });
 
 describe('useDerivedTestPlanOverallPhase hook', () => {
-    it('returns an object with the overall phase mapped to each test plan id', () => {
+    it('returns an object with the active phases mapped to each test plan id', () => {
         const { result } = renderHook(() =>
-            useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions)
+            useDerivedActivePhasesByTestPlanId(testPlans, testPlanVersions)
         );
-        const { derivedOverallPhaseByTestPlanId } = result.current;
-        expect(derivedOverallPhaseByTestPlanId).toEqual({
-            1: 'RD',
-            2: 'DRAFT',
-            3: 'CANDIDATE',
-            4: 'RECOMMENDED'
+        const { derivedActivePhasesByTestPlanId } = result.current;
+        expect(derivedActivePhasesByTestPlanId).toEqual({
+            1: ['RD'],
+            2: ['DRAFT'],
+            3: ['CANDIDATE'],
+            4: ['RECOMMENDED', 'DRAFT', 'RD']
         });
     });
 });
 
 describe('useTestPlansByPhase hook', () => {
-    it('returns an object with test plans grouped by overall phase', () => {
+    it('returns an object with test plans with an array of active Test Plan Versions', () => {
         const { result } = renderHook(() =>
             useTestPlansByPhase(testPlans, testPlanVersions)
         );
         const { testPlansByPhase } = result.current;
         expect(testPlansByPhase).toEqual({
-            RD: [testPlans[0]],
-            DRAFT: [testPlans[1]],
+            RD: [testPlans[0], testPlans[3]],
+            DRAFT: [testPlans[1], testPlans[3]],
             CANDIDATE: [testPlans[2]],
             RECOMMENDED: [testPlans[3]]
         });

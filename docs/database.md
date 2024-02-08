@@ -5,7 +5,9 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). To r
 ## Setting up a local database for development
 
 0. Install PostgreSQL
+
     - Mac
+
     ```
     brew install postgresql@14
     brew services start postgresql@14
