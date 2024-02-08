@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { none } from './getMetrics';
+import { none } from './None';
 import { getMetrics } from 'shared';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
@@ -82,7 +82,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
 
             {testPlanReports.map(testPlanReport => {
                 if (testPlanReport.status === 'DRAFT') return null;
-                const overallMetrics = getMetrics({ testPlanReport }) ?? none;
+                const overallMetrics = getMetrics({ testPlanReport });
 
                 const { at, browser } = testPlanReport;
 
@@ -138,10 +138,9 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                             requiredFormatted,
                                             optionalFormatted,
                                             unexpectedBehaviorsFormatted
-                                        } =
-                                            getMetrics({
-                                                testResult
-                                            }) ?? none;
+                                        } = getMetrics({
+                                            testResult
+                                        });
                                         return (
                                             <tr key={testResult.id}>
                                                 <td>
@@ -155,12 +154,15 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                                         {testResult.test.title}
                                                     </Link>
                                                 </td>
-                                                <td>{requiredFormatted}</td>
-                                                <td>{optionalFormatted}</td>
                                                 <td>
-                                                    {
-                                                        unexpectedBehaviorsFormatted
-                                                    }
+                                                    {requiredFormatted || none}
+                                                </td>
+                                                <td>
+                                                    {optionalFormatted || none}
+                                                </td>
+                                                <td>
+                                                    {unexpectedBehaviorsFormatted ||
+                                                        none}
                                                 </td>
                                             </tr>
                                         );
@@ -168,12 +170,17 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                 )}
                                 <tr>
                                     <td>All Tests</td>
-                                    <td>{overallMetrics.requiredFormatted}</td>
-                                    <td>{overallMetrics.optionalFormatted}</td>
                                     <td>
-                                        {
-                                            overallMetrics.unexpectedBehaviorsFormatted
-                                        }
+                                        {overallMetrics.requiredFormatted ||
+                                            none}
+                                    </td>
+                                    <td>
+                                        {overallMetrics.optionalFormatted ||
+                                            none}
+                                    </td>
+                                    <td>
+                                        {overallMetrics.unexpectedBehaviorsFormatted ||
+                                            none}
                                     </td>
                                 </tr>
                             </tbody>
