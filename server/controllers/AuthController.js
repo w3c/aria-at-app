@@ -43,12 +43,6 @@ const oauthRedirectFromGithubController = async (req, res) => {
 
     if (!githubUsername) return loginFailedDueToGitHub();
 
-    //const isAdmin = await GithubService.isMemberOfAdminTeam({
-    //     githubAccessToken,
-    //     githubUsername
-    // });
-    // if (isAdmin == null) return loginFailedDueToGitHub();
-
     const admins = await getUsersFromFile('admins.txt');
     const testers = await getUsersFromFile('testers.txt');
     const vendors = await getUsersFromFile('vendors.txt');

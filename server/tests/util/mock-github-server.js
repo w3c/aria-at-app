@@ -3,11 +3,11 @@ const randomStringGenerator = require('./random-character-generator');
 const { ApolloServer, gql } = require('apollo-server-express');
 const { GracefulShutdownManager } = require('@moebius/http-graceful-shutdown');
 
-const { GITHUB_TEAM_ADMIN } = process.env;
+// const { GITHUB_TEAM_ADMIN } = process.env;
 
 const setUpMockGithubServer = async () => {
     let nextGithubUsername;
-    let nextIsOnAdminTeam;
+    // let nextIsOnAdminTeam;
 
     const typeDefs = gql`
         type Node {
@@ -44,13 +44,13 @@ const setUpMockGithubServer = async () => {
             organization: () => {
                 return {};
             }
-        },
-        Organization: {
-            teams: () => {
-                const teamName = nextIsOnAdminTeam ? GITHUB_TEAM_ADMIN : null;
-                return { edges: [{ node: { name: teamName } }] };
-            }
         }
+        // Organization: {
+        //     teams: () => {
+        //         const teamName = nextIsOnAdminTeam ? GITHUB_TEAM_ADMIN : null;
+        //         return { edges: [{ node: { name: teamName } }] };
+        //     }
+        // }
     };
 
     const apolloServer = new ApolloServer({ typeDefs, resolvers });
@@ -82,9 +82,12 @@ const setUpMockGithubServer = async () => {
         shutdownManager = new GracefulShutdownManager(listener);
     });
 
-    const nextLogin = ({ githubUsername, isOnAdminTeam }) => {
+    // const nextLogin = ({ githubUsername, isOnAdminTeam }) => {
+    //     nextGithubUsername = githubUsername;
+    //     nextIsOnAdminTeam = isOnAdminTeam;
+    // };
+    const nextLogin = ({ githubUsername }) => {
         nextGithubUsername = githubUsername;
-        nextIsOnAdminTeam = isOnAdminTeam;
     };
 
     const tearDown = async () => {

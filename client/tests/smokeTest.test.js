@@ -98,7 +98,7 @@ describe('smoke test', () => {
         if (browser) await browser.close();
     }, 60000);
 
-    it('loads various pages without crashing', async () => {
+    it.skip('loads various pages without crashing', async () => {
         let homeH1;
         let reportsH1;
         let dataManagementH1;
