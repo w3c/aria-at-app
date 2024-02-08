@@ -109,7 +109,11 @@ const TestPlanReportStatusDialog = ({
     const rowData = [];
 
     ats.forEach(at => {
-        if (testPlanVersion.phase === 'CANDIDATE') {
+        // DRAFT as well because those reports are required to be promoted to CANDIDATE
+        if (
+            testPlanVersion.phase === 'DRAFT' ||
+            testPlanVersion.phase === 'CANDIDATE'
+        ) {
             requiredReports += at.candidateBrowsers.length;
         }
         if (testPlanVersion.phase === 'RECOMMENDED') {
@@ -123,8 +127,12 @@ const TestPlanReportStatusDialog = ({
                     eachReport.browser.id === browser.id
                 );
             });
-            let isRequired;
-            if (testPlanVersion.phase === 'CANDIDATE') {
+
+            let isRequired = false;
+            if (
+                testPlanVersion.phase === 'DRAFT' ||
+                testPlanVersion.phase === 'CANDIDATE'
+            ) {
                 isRequired = at.candidateBrowsers.some(candidateBrowser => {
                     return candidateBrowser.id === browser.id;
                 });
@@ -132,8 +140,6 @@ const TestPlanReportStatusDialog = ({
                 isRequired = at.recommendedBrowsers.some(recommendedBrowser => {
                     return recommendedBrowser.id === browser.id;
                 });
-            } else {
-                isRequired = false;
             }
             rowData.push({ report, at, browser, isRequired });
         });
@@ -156,41 +162,57 @@ const TestPlanReportStatusDialog = ({
         );
     });
 
-    const getContent = () => (
-        <>
-            {testPlanVersion.phase && (
-                <p>
-                    This plan is in the&nbsp;
-                    <span
-                        className={`status-label d-inline ${
-                            testPlanVersion.phase === 'DRAFT'
-                                ? 'not-started'
-                                : 'complete'
-                        }`}
-                    >
-                        {/* text-transform: capitalize will not work on all-caps string */}
-                        {testPlanVersion.phase[0] +
-                            testPlanVersion.phase.slice(1).toLowerCase()}
-                    </span>
-                    &nbsp;Review phase.&nbsp;
-                    <strong>{requiredReports} AT/browser&nbsp;</strong>
-                    pairs require reports in this phase.
-                </p>
-            )}
+    const getContent = () => {
+        const phase = testPlanVersion.phase;
 
-            <ThemeTable bordered responsive>
-                <thead>
-                    <tr>
-                        <th>Required</th>
-                        <th>AT</th>
-                        <th>Browser</th>
-                        <th>Report Status</th>
-                    </tr>
-                </thead>
-                <tbody>{tableRows}</tbody>
-            </ThemeTable>
-        </>
-    );
+        const getDescriptions = phase => {
+            if (phase === 'DRAFT')
+                return [
+                    'Review phase',
+                    'required to be promoted to the next phase'
+                ];
+            if (phase === 'CANDIDATE')
+                return ['Review phase', 'require reports in this phase'];
+            if (phase === 'RECOMMENDED')
+                return ['phase', 'require reports in this phase'];
+        };
+
+        const [reviewDescription, requirementNeedsDescription] =
+            getDescriptions(phase);
+
+        return (
+            <>
+                {phase && (
+                    <p>
+                        This plan is in the&nbsp;
+                        <span
+                            className={`status-label d-inline ${
+                                phase === 'DRAFT' ? 'not-started' : 'complete'
+                            }`}
+                        >
+                            {/* text-transform: capitalize will not work on all-caps string */}
+                            {phase[0] + phase.slice(1).toLowerCase()}
+                        </span>
+                        &nbsp;{reviewDescription}.&nbsp;
+                        <strong>{requiredReports} AT/browser&nbsp;</strong>
+                        pairs {requirementNeedsDescription}.
+                    </p>
+                )}
+
+                <ThemeTable bordered responsive>
+                    <thead>
+                        <tr>
+                            <th>Required</th>
+                            <th>AT</th>
+                            <th>Browser</th>
+                            <th>Report Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>{tableRows}</tbody>
+                </ThemeTable>
+            </>
+        );
+    };
 
     const getTitle = () => (
         <>
