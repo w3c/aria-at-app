@@ -131,7 +131,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
         status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/update`,
         callback_header: `x-automation-secret:${process.env.AUTOMATION_SCHEDULER_SECRET}`,
         work_dir: `tests/${directory}`,
-        test_pattern: 'reference/**,test-*-nvda.*',
+        test_pattern: '{reference/**,test-*-nvda.*}',
         aria_at_ref: gitSha
     };
     const axiosConfig = {
