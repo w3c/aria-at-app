@@ -157,7 +157,7 @@ const AssignTesterDropdown = ({
                                             `${username} ${
                                                 updatedIsAssigned
                                                     ? 'now checked'
-                                                    : 'now unchecked'
+                                                    : `now unchecked. ${tester.username}'s test plan run has been deleted.`
                                             }`
                                         );
                                         await toggleTesterAssign(username);
