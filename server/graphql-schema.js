@@ -532,6 +532,14 @@ const graphqlSchema = gql`
         A human-readable version of the command, such as "Control+Alt+Down"
         """
         text: String!
+        """
+        The AT mode this command may be getting ran in, such as quickNavOn,
+        browseMode, etc.
+        The same command can be ran during the same test, but in a different
+        mode.
+        """
+        # TODO: Add link to list of known AT modes
+        atOperatingMode: String
     }
 
     """

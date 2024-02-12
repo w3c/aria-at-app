@@ -26,7 +26,7 @@ export const useTestPlanVersionsByPhase = testPlanVersions => {
     return { testPlanVersionsByPhase };
 };
 
-export const useDerivedOverallPhaseByTestPlanId = (
+export const useDerivedActivePhasesByTestPlanId = (
     testPlans,
     testPlanVersions
 ) => {
@@ -49,8 +49,8 @@ export const useDerivedOverallPhaseByTestPlanId = (
         return undefined;
     };
 
-    const derivedOverallPhaseByTestPlanId = useMemo(() => {
-        const derivedOverallPhaseByTestPlanId = {};
+    const derivedActivePhasesByTestPlanId = useMemo(() => {
+        const activeTestPlanVersionsByPhase = {};
         const phases = [
             {
                 phase: TEST_PLAN_VERSION_PHASES.RECOMMENDED,
@@ -73,21 +73,29 @@ export const useDerivedOverallPhaseByTestPlanId = (
                     phase,
                     timeKey
                 );
+                // Gather all of the phases for a test plan
+                // The first element in the array is the overall phase
+                // while the subsequent elements in the array are TestPlanVersions
+                // that are in other phases
                 if (derivedPhase) {
-                    derivedOverallPhaseByTestPlanId[testPlan.id] = derivedPhase;
-                    break;
+                    // Ensure the array exists or initialize it directly before pushing the new phase
+                    activeTestPlanVersionsByPhase[testPlan.id] =
+                        activeTestPlanVersionsByPhase[testPlan.id] ?? [];
+                    activeTestPlanVersionsByPhase[testPlan.id].push(
+                        derivedPhase
+                    );
                 }
             }
         }
-        return derivedOverallPhaseByTestPlanId;
+        return activeTestPlanVersionsByPhase;
     }, [testPlans, testPlanVersions]);
 
-    return { derivedOverallPhaseByTestPlanId };
+    return { derivedActivePhasesByTestPlanId };
 };
 
 export const useTestPlansByPhase = (testPlans, testPlanVersions) => {
-    const { derivedOverallPhaseByTestPlanId } =
-        useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
+    const { derivedActivePhasesByTestPlanId } =
+        useDerivedActivePhasesByTestPlanId(testPlans, testPlanVersions);
 
     const testPlansByPhase = useMemo(() => {
         const testPlansByPhase = {};
@@ -95,12 +103,12 @@ export const useTestPlansByPhase = (testPlans, testPlanVersions) => {
             testPlansByPhase[TEST_PLAN_VERSION_PHASES[key]] = [];
         }
         for (const testPlan of testPlans) {
-            testPlansByPhase[
-                derivedOverallPhaseByTestPlanId[testPlan.id]
-            ]?.push(testPlan);
+            for (let phase of derivedActivePhasesByTestPlanId[testPlan.id]) {
+                testPlansByPhase[phase].push(testPlan);
+            }
         }
         return testPlansByPhase;
-    }, [derivedOverallPhaseByTestPlanId]);
+    }, [derivedActivePhasesByTestPlanId]);
 
     return { testPlansByPhase };
 };
@@ -135,7 +143,7 @@ export const useDataManagementTableFiltering = (
         })`;
     }
 
-    if (testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length > 0) {
+    if (testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length) {
         filterLabels[
             DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
         ] = `In Draft Review (${
@@ -173,8 +181,8 @@ export const useDataManagementTableSorting = (
         direction: initialSortDirection
     });
 
-    const { derivedOverallPhaseByTestPlanId } =
-        useDerivedOverallPhaseByTestPlanId(testPlans, testPlanVersions);
+    const { derivedActivePhasesByTestPlanId } =
+        useDerivedActivePhasesByTestPlanId(testPlans, testPlanVersions);
 
     const sortedTestPlans = useMemo(() => {
         // Ascending and descending interpreted differently for statuses
@@ -201,9 +209,9 @@ export const useDataManagementTableSorting = (
 
         const sortByPhase = (a, b) => {
             const testPlanVersionOverallA =
-                derivedOverallPhaseByTestPlanId[a.id] ?? 'NOT_STARTED';
+                derivedActivePhasesByTestPlanId[a.id][0] ?? 'NOT_STARTED';
             const testPlanVersionOverallB =
-                derivedOverallPhaseByTestPlanId[b.id] ?? 'NOT_STARTED';
+                derivedActivePhasesByTestPlanId[b.id][0] ?? 'NOT_STARTED';
             if (testPlanVersionOverallA === testPlanVersionOverallB) {
                 return sortByName(a, b, -1);
             }

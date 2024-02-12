@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 
@@ -18,39 +18,26 @@ const VisuallyHiddenAriaLiveRegion = styled.span`
 export const useAriaLiveRegion = () => {
     const context = useContext(AriaLiveRegionContext);
     if (!context) {
-        console.warn(
+        throw new Error(
             'useAriaLiveRegion must be used within an AriaLiveRegionProvider'
         );
     }
     return context;
 };
 
-export const AriaLiveRegionProvider = ({ baseMessage = '', children }) => {
-    const [message, setMessage] = useState(baseMessage);
-
-    useEffect(() => {
-        return () => {
-            setMessage('');
-        };
-    }, []);
-
-    const updateMessage = newMessage => {
-        setMessage(baseMessage + newMessage);
-    };
+export const AriaLiveRegionProvider = ({ children }) => {
+    const [alertMessage, setAlertMessage] = useState('');
 
     return (
-        <AriaLiveRegionContext.Provider
-            value={{ message, setMessage: updateMessage }}
-        >
+        <AriaLiveRegionContext.Provider value={setAlertMessage}>
             {children}
-            <VisuallyHiddenAriaLiveRegion aria-live="polite">
-                {message}
+            <VisuallyHiddenAriaLiveRegion aria-live="polite" aria-atomic="true">
+                {alertMessage}
             </VisuallyHiddenAriaLiveRegion>
         </AriaLiveRegionContext.Provider>
     );
 };
 
 AriaLiveRegionProvider.propTypes = {
-    baseMessage: PropTypes.string,
     children: PropTypes.node.isRequired
 };
