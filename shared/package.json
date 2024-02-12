@@ -5,7 +5,10 @@
     "description": "Common code across the application",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "jest": "jest --passWithNoTests",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "lint": "eslint --ext js,jsx .",
+        "prettier": "prettier --write \"**/*.{js,jsx,css}\""
     },
     "keywords": [],
     "author": "",

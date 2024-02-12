@@ -1,1 +1,2 @@
-export * as getMetrics from './getMetrics';
+const getMetrics = require('./getMetrics');
+module.exports = { getMetrics };
