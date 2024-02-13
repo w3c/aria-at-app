@@ -1,4 +1,6 @@
-const { getOrCreateUser } = require('../models/services/UserService');
+const {
+    getOrCreateUser
+} = require('../models/services.deprecated/UserService');
 
 const ALLOW_FAKE_USER = process.env.ALLOW_FAKE_USER === 'true';
 

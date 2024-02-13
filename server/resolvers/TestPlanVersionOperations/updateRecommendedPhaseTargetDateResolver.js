@@ -2,7 +2,7 @@ const { AuthenticationError } = require('apollo-server');
 const populateData = require('../../services/PopulatedData/populateData');
 const {
     updateTestPlanVersion
-} = require('../../models/services/TestPlanVersionService');
+} = require('../../models/services.deprecated/TestPlanVersionService');
 
 const updateRecommendedPhaseTargetDateResolver = async (
     { parentContext: { id: testPlanVersionId } },

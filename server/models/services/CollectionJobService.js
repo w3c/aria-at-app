@@ -1,22 +1,20 @@
 const ModelService = require('./ModelService');
+const { CollectionJob, sequelize } = require('../');
 const {
-    CollectionJob,
-    User,
-    TestPlanRun,
-    TestPlanReport,
-    TestPlanVersion,
-    At,
-    Browser,
-    AtVersion,
-    BrowserVersion,
-    sequelize
-} = require('../');
-const { COLLECTION_JOB_ATTRIBUTES } = require('./helpers');
+    COLLECTION_JOB_ATTRIBUTES,
+    TEST_PLAN_ATTRIBUTES,
+    TEST_PLAN_REPORT_ATTRIBUTES,
+    TEST_PLAN_RUN_ATTRIBUTES,
+    TEST_PLAN_VERSION_ATTRIBUTES,
+    AT_ATTRIBUTES,
+    BROWSER_ATTRIBUTES,
+    USER_ATTRIBUTES
+} = require('./helpers');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const { Op } = require('sequelize');
 const {
     createTestPlanRun,
-    removeTestPlanRun
+    removeTestPlanRunById
 } = require('./TestPlanRunService');
 const responseCollectionUser = require('../../util/responseCollectionUser');
 const { getTestPlanReportById } = require('./TestPlanReportService');
@@ -28,50 +26,6 @@ const {
     isEnabled: isGithubWorkflowEnabled
 } = require('../../services/GithubWorkflowService');
 
-const includeBrowserVersion = {
-    model: BrowserVersion,
-    as: 'browserVersions'
-};
-
-const includeBrowser = {
-    model: Browser,
-    as: 'browser',
-    include: [includeBrowserVersion]
-};
-
-const includeAtVersion = {
-    model: AtVersion,
-    as: 'atVersions'
-};
-
-const includeAt = {
-    model: At,
-    as: 'at',
-    include: [includeAtVersion]
-};
-
-const includeTestPlanVersion = {
-    model: TestPlanVersion,
-    as: 'testPlanVersion'
-};
-
-const includeTestPlanReport = {
-    model: TestPlanReport,
-    as: 'testPlanReport',
-    include: [includeTestPlanVersion, includeAt, includeBrowser]
-};
-
-const includeTester = {
-    model: User,
-    as: 'tester'
-};
-
-const includeTestPlanRun = {
-    model: TestPlanRun,
-    as: 'testPlanRun',
-    include: [includeTester, includeTestPlanReport]
-};
-
 const axiosConfig = {
     headers: {
         'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
@@ -79,115 +33,321 @@ const axiosConfig = {
     timeout: 1000
 };
 
+// association helpers to be included with Models' results
+
 /**
- * @param {object} collectionJob - CollectionJob to be created
- * @param {string} collectionJob.id - id for the CollectionJob
- * @param {string} collectionJob.status - status for the CollectionJob
- * @param {TestPlanRun} collectionJob.testPlanRun - TestPlanRun for the CollectionJob
- * @param {string} collectionJob.testPlanReportId - testPlanReportId for the CollectionJob
- * @param {string[]} attributes - attributes to include in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} atAttributes - At attributes to be returned in the result
+ * @param {string[]} browserAttributes - Browser attributes to be returned in the result
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanRunAssociation = (
+    testPlanRunAttributes,
+    userAttributes,
+    testPlanReportAttributes,
+    testPlanVersionAttributes,
+    testPlanAttributes,
+    atAttributes,
+    browserAttributes
+) => ({
+    association: 'testPlanRun',
+    attributes: testPlanRunAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        userAssociation(userAttributes),
+        testPlanReportAssociation(
+            testPlanReportAttributes,
+            testPlanRunAttributes,
+            testPlanVersionAttributes,
+            testPlanAttributes,
+            atAttributes,
+            browserAttributes,
+            userAttributes
+        )
+    ]
+});
+
+/**
+ * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} atAttributes - AT attributes to be returned in the result
+ * @param {string[]} browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanReportAssociation = (
+    testPlanReportAttributes,
+    testPlanRunAttributes,
+    testPlanVersionAttributes,
+    testPlanAttributes,
+    atAttributes,
+    browserAttributes,
+    userAttributes
+) => ({
+    association: 'testPlanReport',
+    attributes: testPlanReportAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        nestedTestPlanRunAssociation(testPlanRunAttributes, userAttributes),
+        // eslint-disable-next-line no-use-before-define
+        testPlanVersionAssociation(
+            testPlanVersionAttributes,
+            testPlanAttributes
+        ),
+        // eslint-disable-next-line no-use-before-define
+        atAssociation(atAttributes),
+        // eslint-disable-next-line no-use-before-define
+        browserAssociation(browserAttributes)
+    ]
+});
+
+/**
+ * Make sure nested TestPlanRuns do not include TestPlanReports which would produce an infinite loop
+ * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @returns {{association: string, attributes: string[]}}
+ */
+const nestedTestPlanRunAssociation = (
+    testPlanRunAttributes,
+    userAttributes
+) => ({
+    association: 'testPlanRuns',
+    attributes: testPlanRunAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        userAssociation(userAttributes)
+    ]
+});
+
+/**
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanVersionAssociation = (
+    testPlanVersionAttributes,
+    testPlanAttributes
+) => ({
+    association: 'testPlanVersion',
+    attributes: testPlanVersionAttributes,
+    include: [testPlanAssociation(testPlanAttributes)]
+});
+
+/**
+ * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanAssociation = testPlanAttributes => ({
+    association: 'testPlan',
+    attributes: testPlanAttributes
+});
+
+/**
+ * @param browserAttributes - Browser attributes to be returned in the result
+ * @returns {{association: string, attributes: string[]}}
+ */
+const browserAssociation = browserAttributes => ({
+    association: 'browser',
+    attributes: browserAttributes
+});
+
+/**
+ * @param atAttributes - At attributes to be returned in the result
+ * @returns {{association: string, attributes: string[]}}
+ */
+const atAssociation = atAttributes => ({
+    association: 'at',
+    attributes: atAttributes
+});
+
+/**
+ * @param {string[]} userAttributes - User attributes to be returned in the result
+ * @returns {{association: string, attributes: string[]}}
+ */
+const userAssociation = userAttributes => ({
+    association: 'tester',
+    attributes: userAttributes
+});
+
+/**
+ * @param {object} options
+ * @param {object} options.values - CollectionJob to be created
+ * @param {string[]} options.collectionJobAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes - AT attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const createCollectionJob = async (
-    {
+const createCollectionJob = async ({
+    values: {
         id,
         status = COLLECTION_JOB_STATUS.QUEUED,
         testPlanRun,
         testPlanReportId
     },
-    attributes = COLLECTION_JOB_ATTRIBUTES,
-    options
-) => {
+    collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
+    userAttributes = USER_ATTRIBUTES,
+    t
+}) => {
     if (!testPlanRun) {
         testPlanRun = await createTestPlanRun({
-            testerUserId: responseCollectionUser.id,
-            testPlanReportId: testPlanReportId,
-            isAutomated: true
+            values: {
+                testerUserId: responseCollectionUser.id,
+                testPlanReportId: testPlanReportId,
+                isAutomated: true
+            },
+            t
         });
     }
 
     const { id: testPlanRunId } = testPlanRun.get({ plain: true });
-    await ModelService.create(
-        CollectionJob,
-        { id, status, testPlanRunId },
-        options
-    );
 
-    return ModelService.getById(
-        CollectionJob,
+    await ModelService.create(CollectionJob, {
+        values: { id, status, testPlanRunId },
+        t
+    });
+
+    return ModelService.getById(CollectionJob, {
         id,
-        attributes,
-        [includeTestPlanRun],
-        options
-    );
+        attributes: collectionJobAttributes,
+        include: [
+            testPlanRunAssociation(
+                testPlanRunAttributes,
+                userAttributes,
+                testPlanReportAttributes,
+                testPlanVersionAttributes,
+                testPlanAttributes,
+                atAttributes,
+                browserAttributes
+            )
+        ],
+        t
+    });
 };
 
 /**
- * @param {string} id - id for the CollectionJob
- * @param {string[]} attributes - attributes to include in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {string} options.id - id for the CollectionJob
+ * @param {string[]} options.collectionJobAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes - AT attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getCollectionJobById = async (
+const getCollectionJobById = async ({
     id,
-    attributes = COLLECTION_JOB_ATTRIBUTES,
-    options
-) => {
-    return ModelService.getById(
-        CollectionJob,
+    collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
+    userAttributes = USER_ATTRIBUTES,
+    t
+}) => {
+    return ModelService.getById(CollectionJob, {
         id,
-        attributes,
-        [includeTestPlanRun],
-        options
-    );
+        attributes: collectionJobAttributes,
+        include: [
+            testPlanRunAssociation(
+                testPlanRunAttributes,
+                userAttributes,
+                testPlanReportAttributes,
+                testPlanVersionAttributes,
+                testPlanAttributes,
+                atAttributes,
+                browserAttributes
+            )
+        ],
+        t
+    });
 };
 
 /**
- * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
- * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} collectionJobAttributes  - Browser attributes to be returned in the result
- * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {string|any} options.search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} options.collectionJobAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes - AT attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {object} options.pagination - pagination options for query
+ * @param {number} options.pagination.page - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getCollectionJobs = async (
+const getCollectionJobs = async ({
     search,
-    filter = {},
+    where = {},
     collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
+    userAttributes = USER_ATTRIBUTES,
     pagination = {},
-    options = {}
-) => {
+    t
+}) => {
     // search and filtering options
-    let where = { ...filter };
     const searchQuery = search ? `%${search}%` : '';
     if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
-    return ModelService.get(
-        CollectionJob,
+    return ModelService.get(CollectionJob, {
         where,
-        collectionJobAttributes,
-        [includeTestPlanRun],
+        attributes: collectionJobAttributes,
+        include: [
+            testPlanRunAssociation(
+                testPlanRunAttributes,
+                userAttributes,
+                testPlanReportAttributes,
+                testPlanVersionAttributes,
+                testPlanAttributes,
+                atAttributes,
+                browserAttributes
+            )
+        ],
         pagination,
-        options
-    );
+        t
+    });
 };
 
 /**
  * Trigger a workflow, set job status to ERROR if workflow creation fails.
  * @param {object} job - CollectionJob to trigger workflow for.
  * @param {number[]} testIds - Array of testIds
- * @param {object} options - Generic Options for sequelize
+ * @param {object} options
+ * @param {*} options.t - Sequelize transaction
  * @returns Promise<CollectionJob>
  */
-const triggerWorkflow = async (job, testIds, options) => {
+const triggerWorkflow = async (job, testIds, { t }) => {
     const { testPlanVersion } = job.testPlanRun.testPlanReport;
     const { gitSha, directory } = testPlanVersion;
     try {
@@ -208,55 +368,71 @@ const triggerWorkflow = async (job, testIds, options) => {
         }
     } catch (error) {
         // TODO: What to do with the actual error (could be nice to have an additional "string" status field?)
-        return await updateCollectionJob(
-            job.id,
-            { status: COLLECTION_JOB_STATUS.ERROR },
-            COLLECTION_JOB_ATTRIBUTES,
-            options
-        );
+        return updateCollectionJobById({
+            id: job.id,
+            values: { status: COLLECTION_JOB_STATUS.ERROR },
+            t
+        });
     }
     return job;
 };
 
 /**
- * @param {string} id - id of the CollectionJob to be updated
- * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
- * @param {string[]} collectionJobAttributes - CollectionJob attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {string} options.id - id of the CollectionJob to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced for {@param id}
+ * @param {string[]} options.collectionJobAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes - AT attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const updateCollectionJob = async (
+const updateCollectionJobById = async ({
     id,
-    updateParams = {},
+    values = {},
     collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
-    options
-) => {
-    await ModelService.update(CollectionJob, { id }, updateParams, options);
+    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
+    userAttributes = USER_ATTRIBUTES,
+    t
+}) => {
+    await ModelService.update(CollectionJob, { where: { id }, values, t });
 
-    return ModelService.getById(
-        CollectionJob,
+    return ModelService.getById(CollectionJob, {
         id,
-        collectionJobAttributes,
-        [includeTestPlanRun],
-        options
-    );
+        attributes: collectionJobAttributes,
+        include: [
+            testPlanRunAssociation(
+                testPlanRunAttributes,
+                userAttributes,
+                testPlanReportAttributes,
+                testPlanVersionAttributes,
+                testPlanAttributes,
+                atAttributes,
+                browserAttributes
+            )
+        ],
+        t
+    });
 };
 
 /**
  * Retry cancelled tests from a collection job
  * @param {object} input Input object for request to retry cancelled tests
  * @param {object} input.collectionJob CollectionJob to retry cancelled tests from
- * @param {string[]} collectionJobAttributes - CollectionJob attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const retryCanceledCollections = async (
-    { collectionJob },
-    collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
-    options
-) => {
+const retryCanceledCollections = async ({ collectionJob }, { t }) => {
     if (!collectionJob) {
         throw new Error('collectionJob is required to retry cancelled tests');
     }
@@ -271,15 +447,12 @@ const retryCanceledCollections = async (
 
     const testIds = cancelledTests.map(test => test.id);
 
-    const job = await ModelService.getById(
-        CollectionJob,
-        collectionJob.id,
-        collectionJobAttributes,
-        [includeTestPlanRun],
-        options
-    );
+    const job = await getCollectionJobById({
+        id: collectionJob.id,
+        t
+    });
 
-    return await triggerWorkflow(job, testIds, options);
+    return triggerWorkflow(job, testIds, { t });
 };
 
 /**
@@ -287,13 +460,13 @@ const retryCanceledCollections = async (
  * @param {object} input object for request to schedule job
  * @param {string} input.testPlanReportId id of test plan report to use for scheduling
  * @param {Array<string>} input.testIds optional: ids of tests to run
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
 const scheduleCollectionJob = async (
     { testPlanReportId, testIds = null },
-    options
+    { t }
 ) => {
     const report = await getTestPlanReportById(testPlanReportId);
 
@@ -339,31 +512,30 @@ const scheduleCollectionJob = async (
         jobId = '1';
     }
 
-    const job = await createCollectionJob(
-        {
+    const job = await createCollectionJob({
+        values: {
             id: jobId,
             status: COLLECTION_JOB_STATUS.QUEUED,
             testPlanReportId
         },
-        COLLECTION_JOB_ATTRIBUTES,
-        options
-    );
+        t
+    });
 
-    return await triggerWorkflow(job, testIds ?? tests.map(t => t.id), options);
+    return triggerWorkflow(job, testIds ?? tests.map(t => t.id), { t });
 };
 
 /**
  * Gets one CollectionJob and optionally updates it, or creates it if it doesn't exist.
- * @param {*} nestedGetOrCreateValues - These values will be used to find a matching record, or they will be used to create one
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {*} options.values - These values will be used to find a matching record, or they will be used to create one
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<[*, [*]]>}
  */
-const getOrCreateCollectionJob = async (
-    { id, status, testPlanRun, testPlanReportId },
-    options
-) => {
-    const existingJob = await getCollectionJobById(id);
+const getOrCreateCollectionJob = async ({
+    values: { id, status, testPlanRun, testPlanReportId },
+    t
+}) => {
+    const existingJob = await getCollectionJobById({ id, t });
 
     if (existingJob) {
         return existingJob;
@@ -374,16 +546,10 @@ const getOrCreateCollectionJob = async (
             );
         }
 
-        return createCollectionJob(
-            {
-                id,
-                status,
-                testPlanRun,
-                testPlanReportId
-            },
-            COLLECTION_JOB_ATTRIBUTES,
-            options
-        );
+        return createCollectionJob({
+            values: { id, status, testPlanRun, testPlanReportId },
+            t
+        });
     }
 };
 
@@ -391,58 +557,65 @@ const getOrCreateCollectionJob = async (
  * Cancels a collection job by id through the Response Scheduler
  * @param {object} input Input object for request to cancel job
  * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<[*, [*]]>}
  */
-const cancelCollectionJob = async ({ id }, options) => {
-    return updateCollectionJob(
+const cancelCollectionJob = async ({ id }, { t }) => {
+    return updateCollectionJobById({
         id,
-        {
+        values: {
             status: 'CANCELLED'
         },
-        COLLECTION_JOB_ATTRIBUTES,
-        options
-    );
+        t
+    });
 };
 
 /**
- * @param {string} id - id of the CollectionJob to be deleted
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {string} options.id - id of the CollectionJob to be deleted
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const deleteCollectionJob = async (id, options) => {
+const removeCollectionJobById = async ({ id, truncate = false, t }) => {
     // Remove test plan run, may want to allow test plan run to
     // continue existing independent of collection job
-    const collectionJob = await getCollectionJobById(id);
-    const res = await ModelService.removeById(CollectionJob, id, options);
-    await removeTestPlanRun(collectionJob.testPlanRun?.id);
-    return res;
+    const collectionJob = await getCollectionJobById({ id, t });
+    const result = await ModelService.removeById(CollectionJob, {
+        id,
+        truncate,
+        t
+    });
+    await removeTestPlanRunById({
+        id: collectionJob.testPlanRun?.id,
+        truncate,
+        t
+    });
+    return result;
 };
 
 /**
  * Restarts a collection job by id
  * @param {Object} input Input object for request to restart job
  * @param {string} input.collectionJobId id of collection job to restart
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {*} options.t - Sequelize transaction
  * @returns
  */
-const restartCollectionJob = async ({ id }, options) => {
-    const job = await updateCollectionJob(
+const restartCollectionJob = async ({ id }, { t }) => {
+    const job = await updateCollectionJobById({
         id,
-        {
+        values: {
             status: 'QUEUED'
         },
-        COLLECTION_JOB_ATTRIBUTES,
-        options
-    );
+        t
+    });
 
     if (!job) {
         return null;
     }
 
-    return await triggerWorkflow(job, [], options);
+    return triggerWorkflow(job, [], { t });
 };
 
 module.exports = {
@@ -450,8 +623,8 @@ module.exports = {
     createCollectionJob,
     getCollectionJobById,
     getCollectionJobs,
-    updateCollectionJob,
-    deleteCollectionJob,
+    updateCollectionJobById,
+    removeCollectionJobById,
     // Nested CRUD
     getOrCreateCollectionJob,
     // Custom for Response Scheduler

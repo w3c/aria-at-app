@@ -5,7 +5,8 @@ const {
     USER_ATTRIBUTES,
     TEST_PLAN_VERSION_ATTRIBUTES,
     AT_ATTRIBUTES,
-    BROWSER_ATTRIBUTES
+    BROWSER_ATTRIBUTES,
+    TEST_PLAN_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanRun, sequelize } = require('../');
 
@@ -24,6 +25,7 @@ const testPlanReportAssociation = (
     testPlanReportAttributes,
     testPlanRunAttributes,
     testPlanVersionAttributes,
+    testPlanAttributes,
     atAttributes,
     browserAttributes,
     userAttributes
@@ -34,7 +36,10 @@ const testPlanReportAssociation = (
         // eslint-disable-next-line no-use-before-define
         testPlanRunAssociation(testPlanRunAttributes, userAttributes),
         // eslint-disable-next-line no-use-before-define
-        testPlanVersionAssociation(testPlanVersionAttributes),
+        testPlanVersionAssociation(
+            testPlanVersionAttributes,
+            testPlanAttributes
+        ),
         // eslint-disable-next-line no-use-before-define
         atAssociation(atAttributes),
         // eslint-disable-next-line no-use-before-define
@@ -63,9 +68,25 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes
  * @returns {{association: string, attributes: string[]}}
  */
-const testPlanVersionAssociation = testPlanVersionAttributes => ({
+const testPlanVersionAssociation = (
+    testPlanVersionAttributes,
+    testPlanAttributes
+) => ({
     association: 'testPlanVersion',
-    attributes: testPlanVersionAttributes
+    attributes: testPlanVersionAttributes,
+    include: [
+        // eslint-disable-next-line no-use-before-define
+        testPlanAssociation(testPlanAttributes)
+    ]
+});
+
+/**
+ * @param {string[]} testPlanAttributes - TestPlan attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanAssociation = testPlanAttributes => ({
+    association: 'testPlan',
+    attributes: testPlanAttributes
 });
 
 /**
@@ -98,92 +119,93 @@ const userAssociation = userAttributes => ({
 // TestPlanRun
 
 /**
- * @param {number} id - id of TestPlanRun to be retrieved
- * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {string[]} nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
- * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} atAttributes - AT attributes to be returned in the result
- * @param {string[]} browserAttributes - Browser attributes to be returned in the result
- * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {number} options.id - id of TestPlanRun to be retrieved
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} options.atAttributes - AT attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getTestPlanRunById = async (
+const getTestPlanRunById = async ({
     id,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    options = {}
-) => {
-    return ModelService.getById(
-        TestPlanRun,
+    t
+}) => {
+    return ModelService.getById(TestPlanRun, {
         id,
-        testPlanRunAttributes,
-        [
+        attributes: testPlanRunAttributes,
+        include: [
             testPlanReportAssociation(
                 testPlanReportAttributes,
                 nestedTestPlanRunAttributes,
                 testPlanVersionAttributes,
+                testPlanAttributes,
                 atAttributes,
                 browserAttributes,
                 userAttributes
             ),
             userAssociation(userAttributes)
         ],
-        options
-    );
+        t
+    });
 };
 
 /**
- * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
- * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {string[]} nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
- * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} atAttributes - AT attributes to be returned in the result
- * @param {string[]} browserAttributes - Browser attributes to be returned in the result
- * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} options.atAttributes - AT attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {object} options.pagination - pagination options for query
+ * @param {number} options.pagination.page - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getTestPlanRuns = async (
-    search,
-    filter = {},
+const getTestPlanRuns = async ({
+    // search, // Nothing to search
+    where = {},
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
-    options = {}
-) => {
+    t
+}) => {
     // search and filtering options
-    let where = { ...filter };
-
-    return ModelService.get(
-        TestPlanRun,
+    return ModelService.get(TestPlanRun, {
         where,
-        testPlanRunAttributes,
-        [
+        attributes: testPlanRunAttributes,
+        include: [
             testPlanReportAssociation(
                 testPlanReportAttributes,
                 nestedTestPlanRunAttributes,
                 testPlanVersionAttributes,
+                testPlanAttributes,
                 atAttributes,
                 browserAttributes,
                 userAttributes
@@ -191,39 +213,45 @@ const getTestPlanRuns = async (
             userAssociation(userAttributes)
         ],
         pagination,
-        options
-    );
+        t
+    });
 };
 
 /**
- * @param {object} createParams - values to be used to create the TestPlanRun
- * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {string[]} nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
- * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} atAttributes - AT attributes to be returned in the result
- * @param {string[]} browserAttributes - Browser attributes to be returned in the result
- * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {object} options.values - values to be used to create the TestPlanRun
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} options.atAttributes - AT attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const createTestPlanRun = async (
-    { testerUserId, testPlanReportId, testResults = [], isAutomated = false },
+const createTestPlanRun = async ({
+    values: {
+        testerUserId,
+        testPlanReportId,
+        testResults = [],
+        isAutomated = false
+    },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    options = {}
-) => {
+    t
+}) => {
     // shouldn't have duplicate entries for a tester unless it's automated
     if (!isAutomated) {
-        const existingTestPlanRuns = await getTestPlanRuns(
-            '',
-            {
+        const existingTestPlanRuns = await getTestPlanRuns({
+            where: {
                 testerUserId,
                 testPlanReportId
             },
@@ -231,146 +259,156 @@ const createTestPlanRun = async (
             nestedTestPlanRunAttributes,
             testPlanReportAttributes,
             testPlanVersionAttributes,
+            testPlanAttributes,
             atAttributes,
             browserAttributes,
             userAttributes,
-            options
-        );
+            t
+        });
         if (existingTestPlanRuns.length) return existingTestPlanRuns[0];
     }
 
-    const testPlanRunResult = await ModelService.create(
-        TestPlanRun,
-        {
+    const testPlanRunResult = await ModelService.create(TestPlanRun, {
+        values: {
             testerUserId,
             testPlanReportId,
             testResults,
             initiatedByAutomation: isAutomated
         },
-        options
-    );
+        t
+    });
     const { id } = testPlanRunResult;
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await ModelService.getById(
-        TestPlanRun,
+    return ModelService.getById(TestPlanRun, {
         id,
-        testPlanRunAttributes,
-        [
+        attributes: testPlanRunAttributes,
+        include: [
             testPlanReportAssociation(
                 testPlanReportAttributes,
                 nestedTestPlanRunAttributes,
                 testPlanVersionAttributes,
+                testPlanAttributes,
                 atAttributes,
                 browserAttributes,
                 userAttributes
             ),
             userAssociation(userAttributes)
         ],
-        options
-    );
+        t
+    });
 };
 
 /**
- * @param {number} id - id of the TestPlanRun record to be updated
- * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
- * @param {string[]} testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {string[]} nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
- * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} atAttributes - AT attributes to be returned in the result
- * @param {string[]} browserAttributes - Browser attributes to be returned in the result
- * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
+ * @param {object} options
+ * @param {number} options.id - id of the TestPlanRun record to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced for {@param id}
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} options.atAttributes - AT attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
-const updateTestPlanRun = async (
+const updateTestPlanRunById = async ({
     id,
-    { testerUserId, testResults },
+    values: { testerUserId, testResults },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.update(
-        TestPlanRun,
-        { id },
-        { testResults, testerUserId }
-    );
-    return await ModelService.getById(
-        TestPlanRun,
+    t
+}) => {
+    await ModelService.update(TestPlanRun, {
+        where: { id },
+        values: { testResults, testerUserId },
+        t
+    });
+    return ModelService.getById(TestPlanRun, {
         id,
-        testPlanRunAttributes,
-        [
+        attributes: testPlanRunAttributes,
+        include: [
             testPlanReportAssociation(
                 testPlanReportAttributes,
                 nestedTestPlanRunAttributes,
                 testPlanVersionAttributes,
+                testPlanAttributes,
                 atAttributes,
                 browserAttributes,
                 userAttributes
             ),
             userAssociation(userAttributes)
         ],
-        options
-    );
+        t
+    });
 };
 
 /**
- * @param {number} id - id of the TestPlanRun record to be removed
- * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @param {object} options
+ * @param {number} options.id - id of the TestPlanRun record to be removed
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeTestPlanRun = async (id, deleteOptions = { truncate: false }) => {
-    return await ModelService.removeById(TestPlanRun, id, deleteOptions);
+const removeTestPlanRunById = async ({ id, truncate = false, t }) => {
+    return ModelService.removeById(TestPlanRun, { id, truncate, t });
 };
 
 /**
- * @param {number} queryParams - conditions to be passed to Sequelize's where clause
- * @param {object} deleteOptions - Sequelize-specific deletion options
+ * @param {number} where - conditions to be passed to Sequelize's where clause
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeTestPlanRunByQuery = async (
-    { testerUserId, testPlanReportId },
-    deleteOptions = { truncate: false }
-) => {
+const removeTestPlanRunByQuery = async ({
+    where: { testerUserId, testPlanReportId },
+    truncate = false,
+    t
+}) => {
     const deleteWhere =
         testerUserId === undefined
             ? { testPlanReportId }
             : { testPlanReportId, testerUserId };
-    return await ModelService.removeByQuery(
-        TestPlanRun,
-        deleteWhere,
-        deleteOptions
-    );
+    return ModelService.removeByQuery(TestPlanRun, {
+        where: deleteWhere,
+        truncate,
+        t
+    });
 };
 
 /**
- * @param {number} queryParams - conditions to be passed to Sequelize's where clause
+ * @param {object} options
+ * @param {number} options.where - conditions to be passed to Sequelize's where clause
+ * @param {*} options.t - Sequelize transaction
  * @returns {Promise<boolean>}
  */
 const removeTestPlanRunResultsByQuery = async ({
-    testerUserId,
-    testPlanReportId
+    where: { testerUserId, testPlanReportId },
+    t
 }) => {
-    return await ModelService.update(
-        TestPlanRun,
-        { testerUserId, testPlanReportId },
-        { testResults: [] }
-    );
+    return ModelService.update(TestPlanRun, {
+        where: { testerUserId, testPlanReportId },
+        values: { testResults: [] },
+        t
+    });
 };
 
 /**
  * Allows you to check if a given AtVersion is in use by any test results.
  * @param {number} atVersionId - An AT version ID
+ * @param {object} options
+ * @param {*} options.t - Sequelize transaction
  * @returns
  */
-const getTestResultsUsingAtVersion = async atVersionId => {
+const getTestResultsUsingAtVersion = async (atVersionId, { t }) => {
     const [results] = await sequelize.query(
         `
             WITH "testPlanRunTestResult" AS (
@@ -385,7 +423,7 @@ const getTestResultsUsingAtVersion = async atVersionId => {
             FROM "testPlanRunTestResult"
             WHERE "testResult" ->> 'atVersionId' = ?
         `,
-        { replacements: [atVersionId] }
+        { replacements: [atVersionId], transaction: t }
     );
 
     return results;
@@ -396,8 +434,8 @@ module.exports = {
     getTestPlanRunById,
     getTestPlanRuns,
     createTestPlanRun,
-    updateTestPlanRun,
-    removeTestPlanRun,
+    updateTestPlanRunById,
+    removeTestPlanRunById,
     removeTestPlanRunByQuery,
     removeTestPlanRunResultsByQuery,
 
