@@ -20,7 +20,6 @@ import {
     DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
     DATA_MANAGEMENT_TABLE_SORT_OPTIONS
 } from './utils';
-import { AriaLiveRegionProvider } from '../providers/AriaLiveRegionProvider';
 
 const DataManagement = () => {
     const { loading, data, error, refetch } = useQuery(
@@ -150,84 +149,81 @@ const DataManagement = () => {
                 activeFilter={filter}
                 onFilterChange={setFilter}
             />
-            <AriaLiveRegionProvider baseMessage="Test Plans Status Summary Table,">
-                <Table
-                    className="data-management"
-                    aria-label="Test Plans Status Summary Table"
-                    bordered
-                    hover
-                    aria-rowcount={sortedTestPlans.length}
-                >
-                    <thead>
-                        <tr>
-                            <SortableTableHeader
-                                title="Test Plan"
-                                active={
-                                    activeSort.key ===
-                                    DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME
-                                }
-                                onSort={direction =>
-                                    updateSort({
-                                        key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME,
-                                        direction
-                                    })
-                                }
+            <Table
+                className="data-management"
+                aria-label="Test Plans Status Summary Table"
+                bordered
+                hover
+                aria-rowcount={sortedTestPlans.length}
+            >
+                <thead>
+                    <tr>
+                        <SortableTableHeader
+                            title="Test Plan"
+                            active={
+                                activeSort.key ===
+                                DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME
+                            }
+                            onSort={direction =>
+                                updateSort({
+                                    key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME,
+                                    direction
+                                })
+                            }
+                        />
+                        <SortableTableHeader
+                            title="Covered AT"
+                            active={
+                                activeSort.key ===
+                                DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS
+                            }
+                            onSort={direction =>
+                                updateSort({
+                                    key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS,
+                                    direction
+                                })
+                            }
+                        />
+                        <SortableTableHeader
+                            title="Overall Status"
+                            active={
+                                activeSort.key ===
+                                DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE
+                            }
+                            onSort={direction =>
+                                updateSort({
+                                    key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
+                                    direction
+                                })
+                            }
+                            initialSortDirection={TABLE_SORT_ORDERS.DESC}
+                        />
+                        <th>R&D Version</th>
+                        <th>Draft Review</th>
+                        <th>Candidate Review</th>
+                        <th>Recommended Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {sortedTestPlans.map((testPlan, index) => {
+                        return (
+                            <DataManagementRow
+                                key={testPlan.id}
+                                isAdmin={isAdmin}
+                                ats={ats}
+                                testPlan={testPlan}
+                                testPlanVersions={testPlanVersions.filter(
+                                    testPlanVersion =>
+                                        testPlanVersion.testPlan.directory ===
+                                        testPlan.directory
+                                )}
+                                tableRowIndex={index}
+                                setTestPlanVersions={setTestPlanVersions}
                             />
-                            <SortableTableHeader
-                                title="Covered AT"
-                                active={
-                                    activeSort.key ===
-                                    DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS
-                                }
-                                onSort={direction =>
-                                    updateSort({
-                                        key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS,
-                                        direction
-                                    })
-                                }
-                            />
-                            <SortableTableHeader
-                                title="Overall Status"
-                                active={
-                                    activeSort.key ===
-                                    DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE
-                                }
-                                onSort={direction =>
-                                    updateSort({
-                                        key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
-                                        direction
-                                    })
-                                }
-                                initialSortDirection={TABLE_SORT_ORDERS.DESC}
-                            />
-                            <th>R&D Version</th>
-                            <th>Draft Review</th>
-                            <th>Candidate Review</th>
-                            <th>Recommended Version</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sortedTestPlans.map((testPlan, index) => {
-                            return (
-                                <DataManagementRow
-                                    key={testPlan.id}
-                                    isAdmin={isAdmin}
-                                    ats={ats}
-                                    testPlan={testPlan}
-                                    testPlanVersions={testPlanVersions.filter(
-                                        testPlanVersion =>
-                                            testPlanVersion.testPlan
-                                                .directory ===
-                                            testPlan.directory
-                                    )}
-                                    tableRowIndex={index}
-                                    setTestPlanVersions={setTestPlanVersions}
-                                />
-                            );
-                        })}
-                    </tbody>
-                </Table>
-            </AriaLiveRegionProvider>
+                        );
+                    })}
+                </tbody>
+            </Table>
         </Container>
     );
 };

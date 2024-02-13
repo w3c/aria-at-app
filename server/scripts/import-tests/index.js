@@ -27,6 +27,7 @@ const {
 const deepPickEqual = require('../../util/deepPickEqual');
 const { hashTests } = require('../../util/aria');
 const convertDateToString = require('../../util/convertDateToString');
+const convertAssertionPriority = require('../../util/convertAssertionPriority');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -465,6 +466,28 @@ const getTests = ({
                         tokenizedAssertionStatement ||
                         assertion.assertionStatement;
                     result.assertionPhrase = assertion.assertionPhrase;
+                    result.assertionExceptions = data.commands.flatMap(
+                        command => {
+                            return command.assertionExceptions
+                                .filter(
+                                    exception =>
+                                        exception.assertionId ===
+                                        assertion.assertionId
+                                )
+                                .map(({ priority: assertionPriority }) => {
+                                    let priority =
+                                        convertAssertionPriority(
+                                            assertionPriority
+                                        );
+
+                                    return {
+                                        priority,
+                                        commandId: command.id,
+                                        settings: command.settings
+                                    };
+                                });
+                        }
+                    );
                 }
 
                 return result;
