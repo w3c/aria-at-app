@@ -26,7 +26,7 @@ const TestPlanReportStatusDialogButton = styled(Button)`
     margin-top: auto;
 `;
 
-const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
+const TestPlanReportStatusDialogWithButton = ({ ats, testPlanVersionId }) => {
     const {
         data: { testPlanVersion } = {},
         refetch,
@@ -149,12 +149,32 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
                     buttonRef.current.focus();
                 }}
                 triggerUpdate={refetch}
+                ats={ats}
             />
         </>
     );
 };
 
 TestPlanReportStatusDialogWithButton.propTypes = {
+    ats: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            browsers: PropTypes.arrayOf(
+                PropTypes.shape({ id: PropTypes.string.isRequired }).isRequired
+            ).isRequired,
+            candidateBrowsers: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired
+                }).isRequired
+            ).isRequired,
+            recommendedBrowsers: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired
+                }).isRequired
+            ).isRequired
+        }).isRequired
+    ).isRequired,
     testPlanVersionId: PropTypes.string.isRequired
 };
 
