@@ -3,11 +3,13 @@
 const {
     getTestPlanRuns,
     updateTestPlanRun
-} = require('../models/services/TestPlanRunService');
-const { getAtVersionByQuery } = require('../models/services/AtService');
+} = require('../models/services.deprecated/TestPlanRunService');
+const {
+    getAtVersionByQuery
+} = require('../models/services.deprecated/AtService');
 const {
     getBrowserVersionByQuery
-} = require('../models/services/BrowserService');
+} = require('../models/services.deprecated/BrowserService');
 const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 
 module.exports = {

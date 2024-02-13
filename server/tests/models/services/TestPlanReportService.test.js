@@ -11,7 +11,10 @@ describe('TestPlanReportModel Data Checks', () => {
         const _id = 1;
 
         const testPlanReport =
-            await TestPlanReportService.getTestPlanReportById(_id);
+            await TestPlanReportService.getTestPlanReportById({
+                id: _id,
+                t: false
+            });
         const { id, testPlanVersionId, createdAt } = testPlanReport;
 
         expect(id).toEqual(_id);
@@ -27,15 +30,17 @@ describe('TestPlanReportModel Data Checks', () => {
         const _id = 1;
 
         const testPlanReport =
-            await TestPlanReportService.getTestPlanReportById(
-                _id,
-                null,
-                [],
-                [],
-                [],
-                [],
-                []
-            );
+            await TestPlanReportService.getTestPlanReportById({
+                id: _id,
+                testPlanRunAttributes: [],
+                testPlanVersionAttributes: [],
+                testPlanAttributes: [],
+                atAttributes: [],
+                browserAttributes: [],
+                userAttributes: [],
+                t: false
+            });
+
         const { id, testPlanVersionId, createdAt, atId, browserId } =
             testPlanReport;
 
@@ -54,28 +59,32 @@ describe('TestPlanReportModel Data Checks', () => {
         const _id = 53935;
 
         const testPlanReport =
-            await TestPlanReportService.getTestPlanReportById(_id);
+            await TestPlanReportService.getTestPlanReportById({
+                id: _id,
+                t: false
+            });
 
         expect(testPlanReport).toBeNull();
     });
 
     it('should return collection of testPlanReports', async () => {
-        const result = await TestPlanReportService.getTestPlanReports('');
+        const result = await TestPlanReportService.getTestPlanReports({
+            t: false
+        });
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should return collection of testPlanReports with paginated structure', async () => {
-        const result = await TestPlanReportService.getTestPlanReports(
-            '',
-            {},
-            ['id'],
-            [],
-            [],
-            [],
-            [],
-            [],
-            { enablePagination: true }
-        );
+        const result = await TestPlanReportService.getTestPlanReports({
+            testPlanRunAttributes: [],
+            testPlanVersionAttributes: [],
+            testPlanAttributes: [],
+            atAttributes: [],
+            browserAttributes: [],
+            userAttributes: [],
+            pagination: { enablePagination: true },
+            t: false
+        });
 
         expect(result.data.length).toBeGreaterThanOrEqual(1);
         expect(result).toEqual(
@@ -95,16 +104,19 @@ describe('TestPlanReportModel Data Checks', () => {
     });
 
     it('should create TestPlanReport', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async t => {
             const _atId = 1;
             const _browserId = 1;
             const _testPlanVersionId = 3;
 
             const testPlanReport =
                 await TestPlanReportService.createTestPlanReport({
-                    testPlanVersionId: _testPlanVersionId,
-                    atId: _atId,
-                    browserId: _browserId
+                    values: {
+                        testPlanVersionId: _testPlanVersionId,
+                        atId: _atId,
+                        browserId: _browserId
+                    },
+                    t
                 });
 
             expect(testPlanReport).toEqual(
@@ -125,7 +137,7 @@ describe('TestPlanReportModel Data Checks', () => {
     });
 
     it('should getOrCreate TestPlanReport', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async t => {
             // A1
             const _testPlanVersionId = 2;
             const _atId = 2;
@@ -134,9 +146,12 @@ describe('TestPlanReportModel Data Checks', () => {
             // A2
             const [testPlanReport, created] =
                 await TestPlanReportService.getOrCreateTestPlanReport({
-                    testPlanVersionId: _testPlanVersionId,
-                    atId: _atId,
-                    browserId: _browserId
+                    values: {
+                        testPlanVersionId: _testPlanVersionId,
+                        atId: _atId,
+                        browserId: _browserId
+                    },
+                    t
                 });
 
             // A3

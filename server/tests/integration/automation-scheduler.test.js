@@ -4,11 +4,11 @@ const setupMockAutomationSchedulerServer = require('../util/mock-automation-sche
 const db = require('../../models/index');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const { markAsFinal } = require('../../resolvers/TestPlanReportOperations');
-const dbCleaner = require('../util/db-cleaner');
+const dbCleaner = require('../util/db-cleaner.deprecated');
 const { default: axios } = require('axios');
 const {
     getCollectionJobById
-} = require('../../models/services/CollectionJobService');
+} = require('../../models/services.deprecated/CollectionJobService');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -181,7 +181,7 @@ const cancelCollectionJobByMutation = async () =>
 const deleteCollectionJobByMutation = async () =>
     await mutate(`
         mutation {
-            deleteCollectionJob(id: "${jobId}") 
+            deleteCollectionJob(id: "${jobId}")
         }
     `);
 

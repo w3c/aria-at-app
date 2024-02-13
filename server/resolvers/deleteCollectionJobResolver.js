@@ -1,7 +1,7 @@
 const { AuthenticationError } = require('apollo-server-core');
 const {
     deleteCollectionJob
-} = require('../models/services/CollectionJobService');
+} = require('../models/services.deprecated/CollectionJobService');
 
 const deleteCollectionJobResolver = async (_, { id }, context) => {
     const { user } = context;

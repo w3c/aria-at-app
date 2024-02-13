@@ -5,16 +5,16 @@ const {
     getTestPlanReportById,
     getOrCreateTestPlanReport,
     updateTestPlanReport
-} = require('../../models/services/TestPlanReportService');
+} = require('../../models/services.deprecated/TestPlanReportService');
 const {
     getTestPlanVersionById
-} = require('../../models/services/TestPlanVersionService');
+} = require('../../models/services.deprecated/TestPlanVersionService');
 const { testResults } = require('../TestPlanRun');
 const populateData = require('../../services/PopulatedData/populateData');
 const scenariosResolver = require('../Test/scenariosResolver');
 const {
     createTestPlanRun
-} = require('../../models/services/TestPlanRunService');
+} = require('../../models/services.deprecated/TestPlanRunService');
 const { findOrCreateTestResult } = require('../TestPlanRunOperations');
 const { submitTestResult, saveTestResult } = require('../TestResultOperations');
 

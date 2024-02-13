@@ -2,7 +2,7 @@ const { AuthenticationError } = require('apollo-server-errors');
 const {
     getTestPlanVersionById,
     updateTestPlanVersion
-} = require('../models/services/TestPlanVersionService');
+} = require('../models/services.deprecated/TestPlanVersionService');
 
 const addViewerResolver = async (
     _,

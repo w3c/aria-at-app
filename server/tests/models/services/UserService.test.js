@@ -12,7 +12,7 @@ describe('UserModel Data Checks', () => {
     it('should return valid user for id query with all associations', async () => {
         const _id = 1;
 
-        const user = await UserService.getUserById(_id);
+        const user = await UserService.getUserById({ id: _id, t: false });
         const { id, username, createdAt, updatedAt } = user;
 
         expect(id).toEqual(_id);
@@ -26,7 +26,13 @@ describe('UserModel Data Checks', () => {
     it('should return valid user for id query with no associations', async () => {
         const _id = 1;
 
-        const user = await UserService.getUserById(_id, null, [], [], []);
+        const user = await UserService.getUserById({
+            id: _id,
+            roleAttributes: [],
+            atAttributes: [],
+            testPlanRunAttributes: [],
+            t: false
+        });
         const { id, username, createdAt, updatedAt } = user;
 
         expect(id).toEqual(_id);
@@ -41,7 +47,10 @@ describe('UserModel Data Checks', () => {
         const _id = 1;
         const _username = 'esmeralda-baggins';
 
-        const user = await UserService.getUserByUsername(_username);
+        const user = await UserService.getUserByUsername({
+            username: _username,
+            t: false
+        });
         const { id, username, createdAt, updatedAt } = user;
 
         expect(id).toEqual(_id);
@@ -53,14 +62,14 @@ describe('UserModel Data Checks', () => {
     it('should not be valid user query', async () => {
         const _id = 53935;
 
-        const user = await UserService.getUserById(_id);
+        const user = await UserService.getUserById({ id: _id, t: false });
         expect(user).toBeNull();
     });
 
     it('should contain valid user with roles array', async () => {
         const _id = 1;
 
-        const user = await UserService.getUserById(_id);
+        const user = await UserService.getUserById({ id: _id, t: false });
         const { roles } = user;
 
         expect(user).toHaveProperty('roles');
@@ -77,7 +86,7 @@ describe('UserModel Data Checks', () => {
     it('should contain valid user with testPlanRuns array', async () => {
         const _id = 1;
 
-        const user = await UserService.getUserById(_id);
+        const user = await UserService.getUserById({ id: _id, t: false });
 
         const { testPlanRuns } = user;
 
@@ -87,28 +96,30 @@ describe('UserModel Data Checks', () => {
     });
 
     it('should create, add role to, remove role from and remove a new user', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async t => {
             // A1
             const _username = randomStringGenerator();
             const _role1 = 'ADMIN';
             const _role2 = 'TESTER';
 
             // A2
-            const [newUser, isNew1] = await UserService.getOrCreateUser(
-                { username: _username },
-                { roles: [{ name: _role1 }] }
-            );
+            const [newUser, isNew1] = await UserService.getOrCreateUser({
+                where: { username: _username },
+                values: { roles: [{ name: _role1 }] },
+                t
+            });
             const { id, username, createdAt, updatedAt, roles } = newUser;
 
             // A2
-            const [updatedUser, isNew2] = await UserService.getOrCreateUser(
-                { username: _username },
-                { roles: [{ name: _role2 }] }
-            );
+            const [updatedUser, isNew2] = await UserService.getOrCreateUser({
+                where: { username: _username },
+                values: { roles: [{ name: _role2 }] },
+                t
+            });
 
             // A2
-            await UserService.removeUser(id);
-            const deletedUser = await UserService.getUserById(id);
+            await UserService.removeUserById({ id, t });
+            const deletedUser = await UserService.getUserById({ id, t });
 
             // after user created and role added
             expect(isNew1).toBe(true);
@@ -129,18 +140,23 @@ describe('UserModel Data Checks', () => {
     });
 
     it('should create and update a new user', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async t => {
             // A1
             const _username = randomStringGenerator();
             const _updatedUsername = randomStringGenerator();
 
             // A2
-            const user = await UserService.createUser({ username: _username });
+            const user = await UserService.createUser({
+                values: { username: _username },
+                t
+            });
             const { id, username, createdAt, updatedAt } = user;
 
             // A2
-            const updatedUser = await UserService.updateUser(id, {
-                username: _updatedUsername
+            const updatedUser = await UserService.updateUserById({
+                id,
+                values: { username: _updatedUsername },
+                t
             });
             const updatedUsername = updatedUser.get('username');
 
@@ -158,14 +174,14 @@ describe('UserModel Data Checks', () => {
     });
 
     it('should return collection of users', async () => {
-        const result = await UserService.getUsers('');
+        const result = await UserService.getUsers({ t: false });
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should return collection of users for username query', async () => {
         const search = 't';
 
-        const result = await UserService.getUsers(search, {});
+        const result = await UserService.getUsers({ search, t: false });
 
         expect(result).toBeInstanceOf(Array);
         expect(result.length).toBeGreaterThanOrEqual(1);
@@ -180,17 +196,19 @@ describe('UserModel Data Checks', () => {
     });
 
     it('should return collection of users with paginated structure', async () => {
-        const result = await UserService.getUsers('', {}, ['id'], [], [], [], {
-            page: -1,
-            limit: -1,
-            enablePagination: true
+        const result = await UserService.getUsers({
+            roleAttributes: [],
+            atAttributes: [],
+            testPlanRunAttributes: [],
+            pagination: { enablePagination: true },
+            t: false
         });
 
         expect(result.data.length).toBeGreaterThanOrEqual(1);
         expect(result).toEqual(
             expect.objectContaining({
                 page: 1,
-                pageSize: null,
+                pageSize: expect.any(Number),
                 resultsCount: expect.any(Number),
                 totalResultsCount: expect.any(Number),
                 pagesCount: expect.any(Number),
@@ -204,24 +222,26 @@ describe('UserModel Data Checks', () => {
     });
 
     it('should bulkGetOrReplace UserRoles', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async t => {
             // A1
             const adminUserId = 1;
 
             // A2
             const [originalUserRoles, isUpdated1] =
-                await UserService.bulkGetOrReplaceUserRoles(
-                    { userId: adminUserId },
-                    [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
-                    ['roleName']
-                );
+                await UserService.bulkGetOrReplaceUserRoles({
+                    where: { userId: adminUserId },
+                    valuesList: [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
+                    userRolesAttributes: ['roleName'],
+                    t
+                });
 
             const [updatedUserRoles, isUpdated2] =
-                await UserService.bulkGetOrReplaceUserRoles(
-                    { userId: adminUserId },
-                    [{ roleName: 'TESTER' }],
-                    ['roleName']
-                );
+                await UserService.bulkGetOrReplaceUserRoles({
+                    where: { userId: adminUserId },
+                    valuesList: [{ roleName: 'TESTER' }],
+                    userRolesAttributes: ['roleName'],
+                    t
+                });
 
             // A3
             expect(isUpdated1).toBe(false);

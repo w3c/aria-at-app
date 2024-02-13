@@ -1,6 +1,6 @@
 const {
     getCollectionJobs
-} = require('../models/services/CollectionJobService');
+} = require('../models/services.deprecated/CollectionJobService');
 
 const collectionJobByTestPlanRunIdResolver = async (_, { testPlanRunId }) => {
     const collectionJobs = await getCollectionJobs(_, { testPlanRunId });

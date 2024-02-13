@@ -2,7 +2,7 @@ const { AuthenticationError } = require('apollo-server');
 const {
     createTestPlanRun,
     updateTestPlanRun
-} = require('../../models/services/TestPlanRunService');
+} = require('../../models/services.deprecated/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const assignTesterResolver = async (

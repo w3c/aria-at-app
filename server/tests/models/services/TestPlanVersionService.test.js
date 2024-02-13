@@ -12,7 +12,10 @@ describe('TestPlanReportModel Data Checks', () => {
         const _id = 1;
 
         const testPlanVersion =
-            await TestPlanVersionService.getTestPlanVersionById(_id);
+            await TestPlanVersionService.getTestPlanVersionById({
+                id: _id,
+                t: false
+            });
         const {
             id,
             title,
@@ -45,15 +48,15 @@ describe('TestPlanReportModel Data Checks', () => {
         const _id = 1;
 
         const testPlanVersion =
-            await TestPlanVersionService.getTestPlanVersionById(
-                _id,
-                null,
-                [],
-                [],
-                [],
-                [],
-                []
-            );
+            await TestPlanVersionService.getTestPlanVersionById({
+                id: _id,
+                testPlanReportAttributes: [],
+                atAttributes: [],
+                browserAttributes: [],
+                testPlanRunAttributes: [],
+                userAttributes: [],
+                t: false
+            });
         const {
             id,
             title,
@@ -84,13 +87,16 @@ describe('TestPlanReportModel Data Checks', () => {
         const _id = 90210;
 
         const testPlanVersion =
-            await TestPlanVersionService.getTestPlanVersionById(_id);
+            await TestPlanVersionService.getTestPlanVersionById({
+                id: _id,
+                t: false
+            });
 
         expect(testPlanVersion).toBeNull();
     });
 
     it('should create and update testPlanVersion', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async t => {
             // A1
             const _id = 99;
             const _title = randomStringGenerator();
@@ -110,17 +116,20 @@ describe('TestPlanReportModel Data Checks', () => {
             // A2
             const testPlanVersion =
                 await TestPlanVersionService.createTestPlanVersion({
-                    id: _id,
-                    title: _title,
-                    directory: _directory,
-                    gitSha: _gitSha,
-                    gitMessage: _gitMessage,
-                    testPageUrl: _testPageUrl,
-                    hashedTests: _hashedTests,
-                    updatedAt: _updatedAt,
-                    versionString: _versionString,
-                    metadata: _metadata,
-                    tests: _tests
+                    values: {
+                        id: _id,
+                        title: _title,
+                        directory: _directory,
+                        gitSha: _gitSha,
+                        gitMessage: _gitMessage,
+                        testPageUrl: _testPageUrl,
+                        hashedTests: _hashedTests,
+                        updatedAt: _updatedAt,
+                        versionString: _versionString,
+                        metadata: _metadata,
+                        tests: _tests
+                    },
+                    t
                 });
             const {
                 id: createdId,
@@ -139,8 +148,10 @@ describe('TestPlanReportModel Data Checks', () => {
 
             // A2
             const updatedTestPlanVersion =
-                await TestPlanVersionService.updateTestPlanVersion(createdId, {
-                    title: _updatedTitle
+                await TestPlanVersionService.updateTestPlanVersionById({
+                    id: createdId,
+                    values: { title: _updatedTitle },
+                    t
                 });
             const { title: updatedTitle, updatedAt: updatedUpdatedAt } =
                 updatedTestPlanVersion;
@@ -170,17 +181,19 @@ describe('TestPlanReportModel Data Checks', () => {
     });
 
     it('should return collection of testPlanVersions', async () => {
-        const result = await TestPlanVersionService.getTestPlanVersions('');
+        const result = await TestPlanVersionService.getTestPlanVersions({
+            t: false
+        });
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should return collection of testPlanVersions for title query', async () => {
         const search = 'checkbo';
 
-        const result = await TestPlanVersionService.getTestPlanVersions(
+        const result = await TestPlanVersionService.getTestPlanVersions({
             search,
-            {}
-        );
+            t: false
+        });
 
         expect(result).toBeInstanceOf(Array);
         expect(result.length).toBeGreaterThanOrEqual(1);
@@ -195,19 +208,15 @@ describe('TestPlanReportModel Data Checks', () => {
     });
 
     it('should return collection of testPlanVersions with paginated structure', async () => {
-        const result = await TestPlanVersionService.getTestPlanVersions(
-            '',
-            {},
-            ['id'],
-            [],
-            [],
-            [],
-            [],
-            [],
-            {
-                enablePagination: true
-            }
-        );
+        const result = await TestPlanVersionService.getTestPlanVersions({
+            testPlanReportAttributes: [],
+            atAttributes: [],
+            browserAttributes: [],
+            testPlanRunAttributes: [],
+            userAttributes: [],
+            pagination: { enablePagination: true },
+            t: false
+        });
 
         expect(result.data.length).toBeGreaterThanOrEqual(1);
         expect(result).toEqual(

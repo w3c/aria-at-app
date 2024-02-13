@@ -1,6 +1,6 @@
 const {
     getTestPlanById
-} = require('../../models/services/TestPlanVersionService');
+} = require('../../models/services.deprecated/TestPlanVersionService');
 
 const testPlanResolver = async (testPlanVersion, args, context, info) => {
     const requestedFields =

@@ -1,7 +1,7 @@
 const { AuthenticationError } = require('apollo-server-errors');
 const {
     getOrCreateTestPlanReport
-} = require('../models/services/TestPlanReportService');
+} = require('../models/services.deprecated/TestPlanReportService');
 const populateData = require('../services/PopulatedData/populateData');
 
 const findOrCreateTestPlanReportResolver = async (_, { input }, context) => {
