@@ -122,7 +122,7 @@ function AddTestToQueueWithConfirmation({
         }
         return (
             <BasicModal
-                dialogClassName={'add-test-to-queue-confirmation'}
+                dialogClassName="add-test-to-queue-confirmation"
                 show={showConfirmation}
                 title={feedbackModalTitle}
                 content={feedbackModalContent}
