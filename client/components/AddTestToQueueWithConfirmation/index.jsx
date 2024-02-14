@@ -41,6 +41,14 @@ function AddTestToQueueWithConfirmation({
     const existingTestPlanReports =
         existingTestPlanReportsData?.testPlanVersion.testPlanReports;
 
+    const conflictingReportExists = existingTestPlanReports?.some(report => {
+        return (
+            report.at.id === at.id &&
+            report.browser.id === browser.id &&
+            report.isFinal
+        );
+    });
+
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const buttonRef = useRef();
 
@@ -137,9 +145,12 @@ function AddTestToQueueWithConfirmation({
         return (
             <BasicModal
                 show={errorMessage}
-                title={'Conflicting Report Found'}
+                title="Conflicting Report Found"
                 content={
-                    'The report could not be created because an existing report was found on the reports page with the same AT, browser and test plan version. Would you like to return the existing report back to the test queue?'
+                    'The report could not be created because an existing ' +
+                    'report was found on the reports page with the same AT, ' +
+                    'browser and test plan version. Would you like to return ' +
+                    'the existing report back to the test queue?'
                 }
                 closeLabel={'Cancel'}
                 staticBackdrop={true}
@@ -201,14 +212,6 @@ function AddTestToQueueWithConfirmation({
                 disabled={disabled}
                 variant="secondary"
                 onClick={async () => {
-                    const conflictingReportExists =
-                        existingTestPlanReports.some(report => {
-                            return (
-                                report.at.id === at.id &&
-                                report.browser.id === browser.id &&
-                                report.isFinal
-                            );
-                        });
                     if (conflictingReportExists) {
                         setErrorMessage(true);
                     } else {
