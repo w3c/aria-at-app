@@ -427,10 +427,7 @@ const graphqlSchema = gql`
         ats: [At]!
         # TODO: consider moving to the Scenario type if we support a single test
         # applying to multiple AT modes.
-        """
-        The AT mode the test was written to expect.
-        """
-        atMode: AtMode
+
         """
         Raw execution-specific data for the Test Renderer such as inputs needed
         to generate the manual test instructions or links to the setup scripts
