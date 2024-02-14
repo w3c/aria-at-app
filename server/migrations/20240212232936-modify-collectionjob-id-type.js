@@ -22,16 +22,16 @@ module.exports = {
             `ALTER TABLE "CollectionJob" ALTER COLUMN "id" SET DEFAULT nextval('collectionjob_id_seq');`
         );
 
+        // Set the sequence as the owner of the 'id' column
+        await queryInterface.sequelize.query(
+            `ALTER SEQUENCE collectionjob_id_seq OWNED BY "CollectionJob"."id";`
+        );
+
         // Ensure that the sequence starts from the next value of the current maximum 'id'
         await queryInterface.sequelize.query(`
             SELECT setval(pg_get_serial_sequence('"CollectionJob"', 'id'), 
             COALESCE((SELECT MAX("id") FROM "CollectionJob"), 0) + 1);
         `);
-
-        // Set the sequence as the owner of the 'id' column
-        await queryInterface.sequelize.query(
-            `ALTER SEQUENCE collectionjob_id_seq OWNED BY "CollectionJob"."id";`
-        );
 
         // Add the primary key constraint back
         await queryInterface.sequelize.query(
