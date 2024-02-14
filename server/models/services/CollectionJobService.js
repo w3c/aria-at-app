@@ -8,8 +8,7 @@ const {
     At,
     Browser,
     AtVersion,
-    BrowserVersion,
-    sequelize
+    BrowserVersion
 } = require('../');
 const { COLLECTION_JOB_ATTRIBUTES } = require('./helpers');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
@@ -91,12 +90,7 @@ const axiosConfig = {
  * @returns {Promise<*>}
  */
 const createCollectionJob = async (
-    {
-        id,
-        status = COLLECTION_JOB_STATUS.QUEUED,
-        testPlanRun,
-        testPlanReportId
-    },
+    { status = COLLECTION_JOB_STATUS.QUEUED, testPlanRun, testPlanReportId },
     attributes = COLLECTION_JOB_ATTRIBUTES,
     options
 ) => {
@@ -109,15 +103,16 @@ const createCollectionJob = async (
     }
 
     const { id: testPlanRunId } = testPlanRun.get({ plain: true });
-    await ModelService.create(
+
+    const collectionJobResult = await ModelService.create(
         CollectionJob,
-        { id, status, testPlanRunId },
+        { status, testPlanRunId },
         options
     );
 
     return ModelService.getById(
         CollectionJob,
-        id,
+        collectionJobResult.id,
         attributes,
         [includeTestPlanRun],
         options
@@ -327,21 +322,8 @@ const scheduleCollectionJob = async (
         );
     }
 
-    // TODO: Replace by allowing CollectionJob id to auto-increment
-    const lastRecord = await sequelize.query(
-        `SELECT * FROM "CollectionJob" ORDER BY CAST(id AS INTEGER) DESC LIMIT 1`,
-        { model: CollectionJob, mapToModel: true }
-    );
-    let jobId;
-    if (lastRecord.length > 0) {
-        jobId = (Number(lastRecord[0].id) + 1).toString();
-    } else {
-        jobId = '1';
-    }
-
     const job = await createCollectionJob(
         {
-            id: jobId,
             status: COLLECTION_JOB_STATUS.QUEUED,
             testPlanReportId
         },
