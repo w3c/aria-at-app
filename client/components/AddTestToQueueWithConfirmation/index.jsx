@@ -152,7 +152,7 @@ function AddTestToQueueWithConfirmation({
                     'browser and test plan version. Would you like to return ' +
                     'the existing report back to the test queue?'
                 }
-                closeLabel={'Cancel'}
+                closeLabel="Cancel"
                 staticBackdrop={true}
                 actions={[
                     {
