@@ -42,7 +42,6 @@ const testPlanVersionsQuery = () => {
                                     id
                                     name
                                 }
-                                atMode
                                 scenarios {
                                     id
                                     commands {
@@ -118,7 +117,6 @@ const updateVersionToPhaseQuery = (
                                             id
                                             name
                                         }
-                                        atMode
                                         scenarios {
                                             id
                                             commands {

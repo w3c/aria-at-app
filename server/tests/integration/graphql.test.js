@@ -295,7 +295,6 @@ describe('graphql', () => {
                                 ats {
                                     id
                                 }
-                                atMode
                                 scenarios {
                                     __typename
                                     id
