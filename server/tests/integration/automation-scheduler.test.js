@@ -361,7 +361,7 @@ describe('Automation controller', () => {
                 );
             const { body } = response;
             expect(response.statusCode).toBe(200);
-            expect(body.id).toEqual(parseInt(job.id)); // TODO SOME KIND OF STRING TRANSFORM HAPPENING WHEN POSTED
+            expect(body.id).toEqual(parseInt(job.id));
             expect(body.status).toEqual('RUNNING');
             expect(body).toHaveProperty('testPlanRunId');
             expect(body.testPlanRun.testPlanReportId).toEqual(
@@ -395,7 +395,7 @@ describe('Automation controller', () => {
                 );
             const { body } = response;
             expect(response.statusCode).toBe(200);
-            expect(body.id).toEqual(parseInt(job.id)); // TODO SOME KIND OF STRING TRANSFORM HAPPENING WHEN POSTED
+            expect(body.id).toEqual(parseInt(job.id));
             expect(body.status).toEqual('CANCELLED');
             expect(body).toHaveProperty('testPlanRunId');
             expect(body.testPlanRun.testPlanReportId).toEqual(
