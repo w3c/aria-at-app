@@ -40,14 +40,14 @@ function AddTestToQueueWithConfirmation({
 
     const existingTestPlanReports =
         existingTestPlanReportsData?.testPlanVersion.testPlanReports;
-
-    const conflictingReportExists = existingTestPlanReports?.some(report => {
-        return (
-            report.at.id === at.id &&
-            report.browser.id === browser.id &&
-            report.isFinal
-        );
-    });
+    // console.log(at);
+    // const conflictingReportExists = existingTestPlanReports?.some(report => {
+    //     return (
+    //         report.at.id === at.id &&
+    //         report.browser.id === browser.id &&
+    //         report.isFinal
+    //     );
+    // });
 
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const buttonRef = useRef();
@@ -212,6 +212,14 @@ function AddTestToQueueWithConfirmation({
                 disabled={disabled}
                 variant="secondary"
                 onClick={async () => {
+                    const conflictingReportExists =
+                        existingTestPlanReports?.some(report => {
+                            return (
+                                report.at.id === at.id &&
+                                report.browser.id === browser.id &&
+                                report.isFinal
+                            );
+                        });
                     if (conflictingReportExists) {
                         setErrorMessage(true);
                     } else {
