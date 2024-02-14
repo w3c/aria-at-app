@@ -746,16 +746,6 @@ describe('graphql', () => {
                         ) {
                             username
                         }
-                        findOrCreateCollectionJob(
-                            id: 333
-                            testPlanReportId: 4
-                        ) {
-                            id
-                            status
-                            testPlanRun {
-                                id
-                            }
-                        }
                         collectionJob(id: 1) {
                             __typename
                             cancelCollectionJob {

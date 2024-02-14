@@ -335,41 +335,6 @@ const scheduleCollectionJob = async (
 };
 
 /**
- * Gets one CollectionJob and optionally updates it, or creates it if it doesn't exist.
- * @param {*} nestedGetOrCreateValues - These values will be used to find a matching record, or they will be used to create one
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<[*, [*]]>}
- */
-const getOrCreateCollectionJob = async (
-    { id, status, testPlanRun, testPlanReportId },
-    options
-) => {
-    const existingJob = await getCollectionJobById(id);
-
-    if (existingJob) {
-        return existingJob;
-    } else {
-        if (!testPlanReportId) {
-            throw new Error(
-                'testPlanReportId is required to create a new CollectionJob'
-            );
-        }
-
-        return createCollectionJob(
-            {
-                id,
-                status,
-                testPlanRun,
-                testPlanReportId
-            },
-            COLLECTION_JOB_ATTRIBUTES,
-            options
-        );
-    }
-};
-
-/**
  * Cancels a collection job by id through the Response Scheduler
  * @param {object} input Input object for request to cancel job
  * @param {object} options - Generic options for Sequelize
@@ -434,8 +399,6 @@ module.exports = {
     getCollectionJobs,
     updateCollectionJob,
     deleteCollectionJob,
-    // Nested CRUD
-    getOrCreateCollectionJob,
     // Custom for Response Scheduler
     scheduleCollectionJob,
     restartCollectionJob,
