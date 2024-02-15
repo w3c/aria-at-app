@@ -161,7 +161,7 @@ describe('graphql', () => {
             // These interact with Response Scheduler API
             // which is mocked in other tests.
             ['Mutation', 'scheduleCollectionJob'],
-            ['Mutation', 'restartCollectionJob'],
+            ['CollectionJobOperations', 'restartCollectionJob'],
             ['CollectionJobOperations', 'retryCanceledCollections']
         ];
         ({

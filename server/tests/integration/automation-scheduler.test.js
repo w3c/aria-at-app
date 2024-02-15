@@ -159,9 +159,11 @@ const scheduleCollectionJobByMutation = async () =>
 const restartCollectionJobByMutation = async () =>
     await mutate(`
         mutation {
-            restartCollectionJob(id: "${jobId}") {
-                id
-                status
+            collectionJob(id: "${jobId}") {
+                restartCollectionJob {
+                    id
+                    status
+                }
             }
         }
     `);
@@ -290,12 +292,13 @@ describe('Automation controller', () => {
     it('should restart a job', async () => {
         await dbCleaner(async () => {
             await scheduleCollectionJobByMutation();
-            const { restartCollectionJob: collectionJob } =
-                await restartCollectionJobByMutation();
+            const { collectionJob } = await restartCollectionJobByMutation();
             expect(collectionJob).not.toBe(undefined);
             expect(collectionJob).toEqual({
-                id: jobId,
-                status: 'QUEUED'
+                restartCollectionJob: {
+                    id: jobId,
+                    status: 'QUEUED'
+                }
             });
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob();
@@ -305,9 +308,10 @@ describe('Automation controller', () => {
     });
 
     it('should gracefully reject restarting a job that does not exist', async () => {
-        const { restartCollectionJob: res } =
-            await restartCollectionJobByMutation();
-        expect(res).toEqual(null);
+        const { collectionJob } = await restartCollectionJobByMutation();
+        expect(collectionJob).toEqual({
+            restartCollectionJob: null
+        });
     });
 
     it('should not update a job status without verification', async () => {

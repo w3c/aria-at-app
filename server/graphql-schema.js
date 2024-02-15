@@ -1342,6 +1342,10 @@ const graphqlSchema = gql`
         """
         retryCanceledCollections: CollectionJob!
         """
+        Restart a CollectionJob by way of the Response Scheduler
+        """
+        restartCollectionJob: CollectionJob
+        """
         Delete a CollectionJob
         """
         deleteCollectionJob: NoResponse!
@@ -1461,15 +1465,6 @@ const graphqlSchema = gql`
             The external logs url of the CollectionJob.
             """
             externalLogsUrl: String
-        ): CollectionJob
-        """
-        Restart a CollectionJob by way of the Response Scheduler
-        """
-        restartCollectionJob(
-            """
-            The CollectionJob to restart.
-            """
-            id: ID!
         ): CollectionJob
     }
 `;
