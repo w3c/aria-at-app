@@ -451,7 +451,6 @@ describe('graphql', () => {
                                         text
                                         impact
                                         details
-                                        otherUnexpectedBehaviorText
                                     }
                                 }
                             }
@@ -895,7 +894,7 @@ const getMutationInputs = async () => {
                 }
                 unexpectedBehaviors {
                     id
-                    otherUnexpectedBehaviorText
+                    details
                 }
             }
         }

@@ -251,8 +251,7 @@ const getFake = async ({
             testResult.scenarioResults[0].unexpectedBehaviors.push({
                 id: 'OTHER',
                 impact: 'MODERATE',
-                details: 'Seeded other unexpected behavior',
-                otherUnexpectedBehaviorText: 'Seeded other unexpected behavior'
+                details: 'Seeded other unexpected behavior'
             });
             break;
         case 'failingDueToMultiple':
@@ -267,8 +266,7 @@ const getFake = async ({
             testResult.scenarioResults[0].unexpectedBehaviors.push({
                 id: 'OTHER',
                 impact: 'HIGH',
-                details: 'Seeded other unexpected behavior',
-                otherUnexpectedBehaviorText: 'Seeded other unexpected behavior'
+                details: 'Seeded other unexpected behavior'
             });
             break;
         default:

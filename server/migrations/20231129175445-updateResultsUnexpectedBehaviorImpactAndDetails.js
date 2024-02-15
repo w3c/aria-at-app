@@ -33,6 +33,8 @@ module.exports = {
                                 // Default the text to N/A. Text content is required
                                 if (!unexpectedBehavior.details)
                                     unexpectedBehavior.details = 'N/A';
+
+                                delete unexpectedBehavior.otherUnexpectedBehaviorText;
                             }
                             needsUpdate = true;
                         }

@@ -792,13 +792,6 @@ const graphqlSchema = gql`
         """
         text: String!
         """
-        NOTE: This has been deprecated in favor of 'details'.
-        One of the unexpected behaviors is "other", which means the user must
-        provide text explaining what occurred. For all other unexpected
-        behaviors this field can be ignored.
-        """
-        otherUnexpectedBehaviorText: String
-        """
         The user must provide text explaining what occurred.
         """
         details: String!
@@ -816,10 +809,6 @@ const graphqlSchema = gql`
         See UnexpectedBehavior for more information.
         """
         id: UnexpectedBehaviorId!
-        """
-        See UnexpectedBehavior for more information.
-        """
-        otherUnexpectedBehaviorText: String
         """
         See UnexpectedBehavior for more information.
         """

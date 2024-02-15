@@ -59,7 +59,7 @@ const getTestPlanReport = async id =>
                         }
                         unexpectedBehaviors {
                             id
-                            otherUnexpectedBehaviorText
+                            details
                         }
                     }
                 }
@@ -96,7 +96,7 @@ const getTestPlanRun = async id =>
                         }
                         unexpectedBehaviors {
                             id
-                            otherUnexpectedBehaviorText
+                            details
                         }
                     }
 
@@ -181,7 +181,7 @@ const cancelCollectionJobByMutation = async () =>
 const deleteCollectionJobByMutation = async () =>
     await mutate(`
         mutation {
-            deleteCollectionJob(id: "${jobId}") 
+            deleteCollectionJob(id: "${jobId}")
         }
     `);
 
@@ -484,9 +484,7 @@ describe('Automation controller', () => {
                     scenarioResult.unexpectedBehaviors?.forEach(
                         unexpectedBehavior => {
                             expect(unexpectedBehavior.id).toEqual('OTHER');
-                            expect(
-                                unexpectedBehavior.otherUnexpectedBehaviorText
-                            ).toEqual(null);
+                            expect(unexpectedBehavior.details).toEqual(null);
                         }
                     );
                 });
@@ -593,12 +591,10 @@ describe('Automation controller', () => {
                                     index
                                 ].id
                             );
-                            expect(
-                                unexpectedBehavior.otherUnexpectedBehaviorText
-                            ).toEqual(
+                            expect(unexpectedBehavior.details).toEqual(
                                 historicalScenarioResult.unexpectedBehaviors[
                                     index
-                                ].otherUnexpectedBehaviorText
+                                ].details
                             );
                         }
                     );
