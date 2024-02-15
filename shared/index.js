@@ -1,2 +1,3 @@
+const convertAssertionPriority = require('./convertAssertionPriority');
 const getMetrics = require('./getMetrics');
-module.exports = { getMetrics };
+module.exports = { convertAssertionPriority, getMetrics };
