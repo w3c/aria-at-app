@@ -1,4 +1,4 @@
-const { pick } = require('lodash');
+const { pick, omit } = require('lodash');
 const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
@@ -69,8 +69,7 @@ const conflictsResolver = async testPlanReport => {
 
                 // Ignore unexpectedBehavior details text during comparison of conflicts
                 picked.unexpectedBehaviors = picked.unexpectedBehaviors.map(
-                    // eslint-disable-next-line no-unused-vars
-                    ({ details, ...rest }) => rest
+                    unexpectedBehavior => omit(unexpectedBehavior, ['details'])
                 );
 
                 return picked;
