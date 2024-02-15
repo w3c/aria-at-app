@@ -803,7 +803,7 @@ const graphqlSchema = gql`
         """
         details: String!
         """
-        The user must indicate how severe is impact of the behavior.
+        The user must indicate the severity of the behavior.
         """
         impact: UnexpectedBehaviorImpact!
     }
