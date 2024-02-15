@@ -629,7 +629,7 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        deleteReport: testPlanReport(id: 3) {
+                        deleteReport: testPlanReport(id: 13) {
                             __typename
                             deleteTestPlanReport
                         }
