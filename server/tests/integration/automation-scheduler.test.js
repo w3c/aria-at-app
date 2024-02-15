@@ -298,7 +298,7 @@ describe('Automation controller', () => {
 
     it('should gracefully reject restarting a job that does not exist', async () => {
         const { restartCollectionJob: res } =
-            await restartCollectionJobByMutation('2');
+            await restartCollectionJobByMutation(2);
         expect(res).toEqual(null);
     });
 
