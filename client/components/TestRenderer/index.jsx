@@ -360,7 +360,7 @@ const TestRenderer = ({
         return () => {
             setSubmitCalled(false);
 
-            // Use to validate whether errors exist on page. Error
+            // Use to validate whether errors exist on the page. Error
             // feedback may be erased on submit otherwise
             if (
                 !checkStateForErrors(testRunStateRef.current) &&
