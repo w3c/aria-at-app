@@ -1341,6 +1341,10 @@ const graphqlSchema = gql`
         Retry the 'cancelled' tests of a CollectionJob.
         """
         retryCanceledCollections: CollectionJob!
+        """
+        Delete a CollectionJob
+        """
+        deleteCollectionJob: NoResponse!
     }
 
     """
@@ -1467,10 +1471,6 @@ const graphqlSchema = gql`
             """
             id: ID!
         ): CollectionJob
-        """
-        Delete a CollectionJob
-        """
-        deleteCollectionJob(id: ID!): NoResponse!
     }
 `;
 

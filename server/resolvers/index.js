@@ -26,7 +26,6 @@ const collectionJob = require('./collectionJobResolver');
 const collectionJobs = require('./collectionJobsResolver');
 const findOrCreateCollectionJob = require('./findOrCreateCollectionJobResolver');
 const updateCollectionJob = require('./updateCollectionJobResolver');
-const deleteCollectionJob = require('./deleteCollectionJobResolver');
 const scheduleCollectionJob = require('./scheduleCollectionJobResolver');
 const restartCollectionJob = require('./restartCollectionJobResolver');
 const collectionJobByTestPlanRunId = require('./collectionJobByTestPlanRunIdResolver');
@@ -79,7 +78,6 @@ const resolvers = {
         addViewer,
         findOrCreateCollectionJob,
         updateCollectionJob,
-        deleteCollectionJob,
         scheduleCollectionJob,
         restartCollectionJob
     },

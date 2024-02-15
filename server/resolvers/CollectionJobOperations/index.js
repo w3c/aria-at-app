@@ -1,3 +1,8 @@
 const cancelCollectionJob = require('./cancelCollectionJobResolver');
 const retryCanceledCollections = require('./retryCanceledCollectionsResolver');
-module.exports = { cancelCollectionJob, retryCanceledCollections };
+const deleteCollectionJob = require('./deleteCollectionJobResolver');
+module.exports = {
+    cancelCollectionJob,
+    retryCanceledCollections,
+    deleteCollectionJob
+};

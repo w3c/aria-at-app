@@ -181,7 +181,9 @@ const cancelCollectionJobByMutation = async () =>
 const deleteCollectionJobByMutation = async () =>
     await mutate(`
         mutation {
-            deleteCollectionJob(id: "${jobId}") 
+            collectionJob(id: "${jobId}") {
+                deleteCollectionJob
+            }
         }
     `);
 
@@ -616,7 +618,9 @@ describe('Automation controller', () => {
 
             const res = await deleteCollectionJobByMutation();
             expect(res).toEqual({
-                deleteCollectionJob: true
+                collectionJob: {
+                    deleteCollectionJob: true
+                }
             });
 
             const { collectionJob: deletedCollectionJob } =

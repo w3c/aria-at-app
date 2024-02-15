@@ -756,13 +756,6 @@ describe('graphql', () => {
                                 id
                             }
                         }
-                        collectionJob(id: 333) {
-                            __typename
-                            cancelCollectionJob {
-                                id
-                                status
-                            }
-                        }
                         updateCollectionJob(id: 333, status: COMPLETED) {
                             id
                             status
@@ -770,7 +763,14 @@ describe('graphql', () => {
                                 id
                             }
                         }
-                        deleteCollectionJob(id: 333)
+                        collectionJob(id: 333) {
+                            __typename
+                            cancelCollectionJob {
+                                id
+                                status
+                            }
+                            deleteCollectionJob
+                        }
                     }
                 `,
                 {
