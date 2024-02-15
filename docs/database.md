@@ -1,6 +1,8 @@
 # Local Database
 
-The database migrations are managed by [Sequelize](https://sequelize.org/). To read and understand the schema, see the Sequelize models that represent the data in `server/models`. Each model represents a table in the database.
+To understand the current schema, you can navigate to [ARIA AT App Database Implementation](https://github.com/w3c/aria-at-app/wiki/ARIA-AT-App-Database-Implementation).
+
+The database migrations are managed by [Sequelize](https://sequelize.org/). The Sequelize models that represent the data are in `server/models`. Each model represents a table in the database.
 
 ## Setting up a local database for development
 
