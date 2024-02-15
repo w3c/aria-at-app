@@ -179,7 +179,7 @@ describe('AssignTesterDropdown', () => {
         fireEvent.click(button);
 
         const items = await screen.findAllByText(/bee/);
-        expect(items.length).toBe(1);
+        expect(items.length).toBe(2); // One for display, one for sr-only
         fireEvent.click(items[0]);
 
         await waitFor(async () => {
@@ -187,9 +187,7 @@ describe('AssignTesterDropdown', () => {
             expect(mockProps.onChange).toHaveBeenCalledTimes(1);
             expect(mockProps.setAlertMessage).toHaveBeenCalledTimes(1);
             expect(mockProps.setAlertMessage).toHaveBeenCalledWith(
-                expect.stringContaining(
-                    'bee has been assigned to this test run'
-                )
+                expect.stringContaining('bee now checked')
             );
         });
     });
@@ -207,7 +205,7 @@ describe('AssignTesterDropdown', () => {
         fireEvent.click(button);
 
         const items = await screen.findAllByText(/NVDA Bot/);
-        expect(items.length).toBe(1);
+        expect(items.length).toBe(2); // One for display, one for sr-only
         fireEvent.click(items[0]);
 
         await waitFor(() => {
@@ -275,9 +273,7 @@ describe('AssignTesterDropdown', () => {
         await waitFor(() => {
             expect(useMutation).toHaveBeenCalledWith(REMOVE_TESTER_MUTATION);
             expect(mockProps.setAlertMessage).toHaveBeenCalledWith(
-                expect.stringContaining(
-                    'bee has been removed from this test run'
-                )
+                expect.stringContaining('bee now unchecked')
             );
         });
     });

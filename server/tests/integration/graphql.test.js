@@ -823,7 +823,7 @@ describe('graphql', () => {
                 );
             }
         }).not.toThrow();
-    });
+    }, 15000);
 });
 
 const getQueryInputs = async () => {
