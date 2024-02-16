@@ -756,19 +756,22 @@ describe('graphql', () => {
                                 id
                             }
                         }
-                        updateCollectionJob(id: 333, status: COMPLETED) {
-                            id
-                            status
-                            testPlanRun {
-                                id
-                            }
-                        }
-                        collectionJob(id: 333) {
+                        cancelCollectionJob: collectionJob(id: 333) {
                             __typename
                             cancelCollectionJob {
                                 id
                                 status
                             }
+                        }
+                        updateCollectionJob: collectionJob(id: 333) {
+                            __typename
+                            updateCollectionJob(status: QUEUED) {
+                                id
+                                status
+                            }
+                        }
+                        collectionJob(id: 333) {
+                            __typename
                             deleteCollectionJob
                         }
                     }

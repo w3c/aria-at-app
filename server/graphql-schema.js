@@ -1349,6 +1349,19 @@ const graphqlSchema = gql`
         Delete a CollectionJob
         """
         deleteCollectionJob: NoResponse!
+        """
+        Update a CollectionJob
+        """
+        updateCollectionJob(
+            """
+            The status of the CollectionJob.
+            """
+            status: CollectionJobStatus
+            """
+            The external logs url of the CollectionJob.
+            """
+            externalLogsUrl: String
+        ): CollectionJob
     }
 
     """
@@ -1449,23 +1462,6 @@ const graphqlSchema = gql`
             """
             testPlanReportId: ID
         ): CollectionJob!
-        """
-        Update a CollectionJob
-        """
-        updateCollectionJob(
-            """
-            The CollectionJob to update.
-            """
-            id: ID!
-            """
-            The status of the CollectionJob.
-            """
-            status: CollectionJobStatus
-            """
-            The external logs url of the CollectionJob.
-            """
-            externalLogsUrl: String
-        ): CollectionJob
     }
 `;
 

@@ -189,6 +189,19 @@ const deleteCollectionJobByMutation = async () =>
         }
     `);
 
+const updateCollectionJobByMutation = async (status, externalLogsUrl) =>
+    await mutate(`
+        mutation {
+            collectionJob(id: "${jobId}") {
+                updateCollectionJob(status: ${status}, externalLogsUrl: ${externalLogsUrl}) {
+                    id
+                    status
+                    externalLogsUrl
+                }
+            }
+        }
+    `);
+
 describe('Automation controller', () => {
     it('should schedule a new job', async () => {
         await dbCleaner(async () => {
@@ -324,6 +337,18 @@ describe('Automation controller', () => {
             expect(response.body).toEqual({
                 error: 'Unauthorized'
             });
+        });
+    });
+
+    it('should successfully update a job through graphql', async () => {
+        await dbCleaner(async () => {
+            await scheduleCollectionJobByMutation();
+            const {
+                collectionJob: { updateCollectionJob }
+            } = await updateCollectionJobByMutation('RUNNING', null);
+            expect(updateCollectionJob.id).toEqual(jobId);
+            expect(updateCollectionJob.status).toEqual('RUNNING');
+            expect(updateCollectionJob.externalLogsUrl).toEqual(null);
         });
     });
 
