@@ -1,3 +1,17 @@
+// For each command, high and moderate negative behaviors is tracked, so 2
+const NUMBER_NEGATIVE_IMPACTS = 2;
+
+const getImpactFailedAssertionCount = (scenarioResults, impact) => {
+    return scenarioResults.reduce(
+        (acc, scenarioResult) =>
+            acc +
+            (scenarioResult.unexpectedBehaviors.some(e => e.impact === impact)
+                ? 1
+                : 0),
+        0
+    );
+};
+
 export const calculateAssertionsCount = testResult => {
     let passedAssertionsCount = testResult.scenarioResults.reduce(
         (acc, scenarioResult) =>
@@ -11,26 +25,29 @@ export const calculateAssertionsCount = testResult => {
         0
     );
 
-    // For each command, a check for high negative and moderate negative impacts, so 2
     const maxUnexpectedBehaviorsPassCount =
-        testResult.scenarioResults.length * 2;
+        testResult.scenarioResults.length * NUMBER_NEGATIVE_IMPACTS;
 
-    // These are equivalent to failures
-    const unexpectedBehaviorCount = testResult.scenarioResults.reduce(
-        (acc, scenarioResult) =>
-            acc +
-            (scenarioResult.unexpectedBehaviors.some(
-                e => e.impact === 'HIGH' || e.impact === 'MODERATE'
-            )
-                ? 1
-                : 0),
-        0
+    // Any high impact negative behavior is a failure
+    const highImpactFailedAssertionCount = getImpactFailedAssertionCount(
+        testResult.scenarioResults,
+        'HIGH'
     );
 
-    const additionalPassedAssertions =
-        maxUnexpectedBehaviorsPassCount - unexpectedBehaviorCount;
-    passedAssertionsCount = passedAssertionsCount + additionalPassedAssertions;
-    failedAssertionsCount = failedAssertionsCount + unexpectedBehaviorCount;
+    // Any moderate impact negative behavior is a failure
+    const moderateImpactFailedAssertionCount = getImpactFailedAssertionCount(
+        testResult.scenarioResults,
+        'MODERATE'
+    );
+
+    const weightedImpactFailedAssertionsCount =
+        highImpactFailedAssertionCount + moderateImpactFailedAssertionCount;
+
+    const weightedImpactPassedAssertionsCount =
+        maxUnexpectedBehaviorsPassCount - weightedImpactFailedAssertionsCount;
+
+    passedAssertionsCount += weightedImpactPassedAssertionsCount;
+    failedAssertionsCount += weightedImpactFailedAssertionsCount;
 
     return { passedAssertionsCount, failedAssertionsCount };
 };

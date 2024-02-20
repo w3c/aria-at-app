@@ -10,6 +10,9 @@ const none = <StyledNone>None</StyledNone>;
 
 const sum = arr => arr?.reduce((total, item) => total + item, 0) || 0;
 
+// 2 for high AND moderate impact behaviors
+const NUMBER_NEGATIVE_IMPACTS = 2;
+
 const countTests = ({
     testPlanReport, // Choose one to provide
     testResult, // Choose one to provide
@@ -158,21 +161,25 @@ const getMetrics = ({
 }) => {
     const result = { scenarioResult, testResult, testPlanReport };
 
-    // Each of MUST command will get an additional 'Other behaviors that create high negative impact' assertion
-    // Each of SHOULD command will get an additional 'Other behaviors that create moderate negative impact' assertion
+    // Each command has 2 additional assertions:
+    // * Other behaviors that create high negative impact
+    // * Other behaviors that create moderate negative impact
     const commandsCount = countCommands({ ...result });
-    const highUnexpectedFailedCount = countUnexpectedBehaviorsImpact(
+    const additionalImpactAssertions = commandsCount * NUMBER_NEGATIVE_IMPACTS;
+
+    const highImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
         { ...result },
         'HIGH'
     );
-    const moderateUnexpectedFailedCount = countUnexpectedBehaviorsImpact(
+    const moderateImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
         { ...result },
         'MODERATE'
     );
 
-    const highUnexpectedPassedCount = commandsCount - highUnexpectedFailedCount;
-    const moderateUnexpectedPassedCount =
-        commandsCount - moderateUnexpectedFailedCount;
+    const highImpactPassedAssertionCount =
+        commandsCount - highImpactFailedAssertionCount;
+    const moderateImpactPassedAssertionCount =
+        commandsCount - moderateImpactFailedAssertionCount;
 
     let {
         assertionsCount: requiredAssertionsCount,
@@ -180,8 +187,8 @@ const getMetrics = ({
         assertionsFailedCount: requiredAssertionsFailedCount
     } = calculateAssertionPriorityCounts(result, 'REQUIRED');
     requiredAssertionsCount += commandsCount;
-    requiredAssertionsPassedCount += highUnexpectedPassedCount;
-    requiredAssertionsFailedCount += highUnexpectedFailedCount;
+    requiredAssertionsPassedCount += highImpactPassedAssertionCount;
+    requiredAssertionsFailedCount += highImpactFailedAssertionCount;
 
     let {
         assertionsCount: optionalAssertionsCount,
@@ -189,8 +196,8 @@ const getMetrics = ({
         assertionsFailedCount: optionalAssertionsFailedCount
     } = calculateAssertionPriorityCounts(result, 'OPTIONAL');
     optionalAssertionsCount += commandsCount;
-    optionalAssertionsPassedCount += moderateUnexpectedPassedCount;
-    optionalAssertionsFailedCount += moderateUnexpectedFailedCount;
+    optionalAssertionsPassedCount += moderateImpactPassedAssertionCount;
+    optionalAssertionsFailedCount += moderateImpactFailedAssertionCount;
 
     const {
         assertionsCount: mayAssertionsCount,
@@ -204,7 +211,7 @@ const getMetrics = ({
     });
     const testsCount =
         (testPlanReport?.runnableTests?.length || countTests({ ...result })) +
-        commandsCount * 2; // 2 to account for high AND moderate impact changes
+        additionalImpactAssertions;
     const testsFailedCount = testsCount - testsPassedCount;
 
     const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;
@@ -250,10 +257,10 @@ const getMetrics = ({
         testsCount,
         testsFailedCount,
         unexpectedBehaviorCount,
-        highUnexpectedPassedCount,
-        highUnexpectedFailedCount,
-        moderateUnexpectedPassedCount,
-        moderateUnexpectedFailedCount,
+        highImpactPassedAssertionCount,
+        highImpactFailedAssertionCount,
+        moderateImpactPassedAssertionCount,
+        moderateImpactFailedAssertionCount,
         commandsCount,
         requiredFormatted,
         optionalFormatted,
