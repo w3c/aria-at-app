@@ -10,9 +10,6 @@ const none = <StyledNone>None</StyledNone>;
 
 const sum = arr => arr?.reduce((total, item) => total + item, 0) || 0;
 
-// 2 for high AND moderate impact behaviors
-const NUMBER_NEGATIVE_IMPACTS = 2;
-
 const countTests = ({
     testPlanReport, // Choose one to provide
     testResult, // Choose one to provide
@@ -165,7 +162,6 @@ const getMetrics = ({
     // * Other behaviors that create high negative impact
     // * Other behaviors that create moderate negative impact
     const commandsCount = countCommands({ ...result });
-    const additionalImpactAssertions = commandsCount * NUMBER_NEGATIVE_IMPACTS;
 
     const highImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
         { ...result },
@@ -210,8 +206,7 @@ const getMetrics = ({
         passedOnly: true
     });
     const testsCount =
-        (testPlanReport?.runnableTests?.length || countTests({ ...result })) +
-        additionalImpactAssertions;
+        testPlanReport?.runnableTests?.length || countTests({ ...result });
     const testsFailedCount = testsCount - testsPassedCount;
 
     const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;
