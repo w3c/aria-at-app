@@ -19,6 +19,7 @@ export const TEST_PLAN_REPORT_STATUS_DIALOG_QUERY = gql`
             testPlanReports {
                 id
                 metrics
+                isFinal
                 markedFinalAt
                 at {
                     id

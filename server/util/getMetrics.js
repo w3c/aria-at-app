@@ -1,4 +1,4 @@
-const convertAssertionPriority = require('../resolvers/helpers/convertAssertionPriority');
+const convertAssertionPriority = require('./convertAssertionPriority');
 
 const sum = arr => arr.reduce((total, item) => total + item, 0);
 

@@ -6,7 +6,6 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import ATAlert from '../ATAlert';
 import {
     TEST_PLAN_REPORT_QUERY,
     ASSIGN_TESTER_MUTATION,
@@ -18,6 +17,7 @@ import {
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
+import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListItem';
 import { isBot } from '../../utils/automation';
 import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
@@ -43,7 +43,7 @@ const TestQueueRow = ({
     const deleteTestPlanButtonRef = useRef();
     const updateTestPlanStatusButtonRef = useRef();
 
-    const [alertMessage, setAlertMessage] = useState('');
+    const setAlertMessage = useAriaLiveRegion();
 
     const [showThemedModal, setShowThemedModal] = useState(false);
     const [themedModalType, setThemedModalType] = useState('warning');
@@ -119,7 +119,7 @@ const TestQueueRow = ({
                     }
                 });
                 await triggerTestPlanReportUpdate();
-            }, 'Updating Test Plan Assignees');
+            }, `Updating Test Plan Assignees. Deleting Test Plan Run for ${tester.username}`);
         } else {
             await triggerLoad(async () => {
                 await assignTester({
@@ -323,6 +323,7 @@ const TestQueueRow = ({
                         <ManageBotRunDialogWithButton
                             testPlanRun={botTestPlanRun}
                             testPlanReportId={testPlanReport.id}
+                            runnableTestsLength={runnableTestsLength}
                             testers={testers}
                             onChange={triggerTestPlanReportUpdate}
                             onDelete={() => {
@@ -452,7 +453,7 @@ const TestQueueRow = ({
                                 >
                                     {!currentUserAssigned
                                         ? 'Assign Yourself'
-                                        : 'Unassign Yourself'}
+                                        : 'Delete your test plan run'}
                                 </Button>
                             </div>
                         </div>
@@ -577,13 +578,6 @@ const TestQueueRow = ({
                                     </Button>
                                 )) ||
                                 null}
-
-                            {alertMessage && (
-                                <ATAlert
-                                    key={`${testPlanVersion.id}-${testPlanVersion.gitSha}-${testPlanVersion.directory}`}
-                                    message={alertMessage}
-                                />
-                            )}
                         </div>
                     )}
                 </td>

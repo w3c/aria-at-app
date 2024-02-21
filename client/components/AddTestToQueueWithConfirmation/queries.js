@@ -9,15 +9,22 @@ export const SCHEDULE_COLLECTION_JOB_MUTATION = gql`
     }
 `;
 
-export const TEST_PLAN_RUN_REPORTS_INITIATED_BY_AUTOMATION = gql`
-    query DraftTestPlanRunsTestPlanReports($testPlanVersionId: ID!) {
+export const EXISTING_TEST_PLAN_REPORTS = gql`
+    query ExistingTestPlanReports($testPlanVersionId: ID!) {
         testPlanVersion(id: $testPlanVersionId) {
             id
             testPlanReports {
                 id
                 markedFinalAt
+                isFinal
                 draftTestPlanRuns {
                     initiatedByAutomation
+                }
+                at {
+                    id
+                }
+                browser {
+                    id
                 }
             }
         }
