@@ -19,17 +19,21 @@ const BotRunTestStatusUnorderedList = styled.ul`
 `;
 
 /**
- * Generate a string describing some number of "Tests" where the word "Test" is
- * pluralized appropriately (and without interstitial space characters which
- * produces unnatural speech in some screen readers [1]).
+ * Generate a string describing the status of some number of "Tests" where the
+ * word "Test" is pluralized appropriately and qualified with the provided
+ * status. As a single primitive string value, the output of this utility
+ * function can be rendered into the document without interstitial space
+ * characters which produces unnatural speech in some screen readers:
  *
- * [1]: https://github.com/w3c/aria-at-app/issues/872
+ * https://github.com/w3c/aria-at-app/issues/872
  *
  * @param {number} count the integer number of tests being described
+ * @param {string} status the status of the tests being described
  *
  * @returns {string} the pluralized text
  */
-const testCountString = (count) => `${count} Test${count === 1 ? '' : 's'}`;
+const testCountString = (count, status) =>
+    `${count} Test${count === 1 ? '' : 's'} ${status}`;
 
 const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
     const {
@@ -129,15 +133,15 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
         <BotRunTestStatusUnorderedList className="text-secondary fs-6">
             <li className="m-2">
                 <ReportStatusDot className="tests-complete" />
-                {testCountString(numTestsCompleted)} Completed
+                {testCountString(numTestsCompleted, 'Completed')}
             </li>
             <li className="m-2">
                 <ReportStatusDot className="tests-queued" />
-                {testCountString(numTestsQueued)} Queued
+                {testCountString(numTestsQueued, 'Queued')}
             </li>
             <li className="m-2">
                 <ReportStatusDot className="tests-cancelled" />
-                {testCountString(numTestsCancelled)} Cancelled
+                {testCountString(numTestsCancelled, 'Cancelled')}
             </li>
         </BotRunTestStatusUnorderedList>
     );
