@@ -50,7 +50,7 @@ const TestRun = () => {
     const routerQuery = useRouterQuery();
 
     // Detect UA information
-    const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
+    const { uaBrowser, uaMajor } = useDetectUa();
 
     const titleRef = useRef();
     // To prevent default AT/Browser versions being set before initial
@@ -223,12 +223,18 @@ const TestRun = () => {
             ) ||
             'N/A';
 
-        const currentBrowserVersion =
+        let currentBrowserVersion =
             currentTest.testResult?.browserVersion ||
             testPlanReport.browser.browserVersions.find(
                 item => item.id === currentTestBrowserVersionId
             ) ||
             'N/A';
+
+        // Only show major version of browser
+        currentBrowserVersion = {
+            id: currentAtVersion.id,
+            name: currentBrowserVersion.name.split('.')[0]
+        };
 
         // Auto batch the states
         setUsers(users);
@@ -709,7 +715,7 @@ const TestRun = () => {
                     <>
                         You are currently using{' '}
                         <b>
-                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                            {uaBrowser} {uaMajor}
                         </b>
                         , but are trying to edit a test result that was
                         submitted with{' '}
@@ -772,7 +778,7 @@ const TestRun = () => {
 
             if (
                 !adminReviewerOriginalTestRef.current.testResult?.browserVersion?.name.includes(
-                    `${uaMajor}.${uaMinor}.${uaPatch}`
+                    `${uaMajor}`
                 )
             ) {
                 setThemedModalTitle(
@@ -782,7 +788,7 @@ const TestRun = () => {
                     <>
                         You are currently using{' '}
                         <b>
-                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                            {uaBrowser} {uaMajor}
                         </b>
                         , but are trying to edit a test result that was
                         submitted with{' '}
