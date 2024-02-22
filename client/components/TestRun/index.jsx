@@ -846,6 +846,12 @@ const TestRun = () => {
                     ?.findOrCreateBrowserVersion;
         }
 
+        // Only show major browser version
+        browserVersion = {
+            id: browserVersion.id,
+            name: browserVersion.name.split('.')[0]
+        };
+
         const updateMessageComponent = updateMessage ? (
             <>
                 <FontAwesomeIcon icon={faCheckCircle} />
