@@ -75,7 +75,7 @@ const AssignTesterDropdown = ({
                         testerId: tester.id
                     }
                 });
-            }, 'Updating Test Plan Assignees');
+            }, `Updating Test Plan Assignees. Deleting Test Plan Run for ${tester.username}`);
         } else {
             if (isBot(tester)) {
                 await triggerLoad(async () => {
@@ -157,7 +157,7 @@ const AssignTesterDropdown = ({
                                             `${username} ${
                                                 updatedIsAssigned
                                                     ? 'now checked'
-                                                    : 'now unchecked'
+                                                    : `now unchecked. ${tester.username}'s test plan run has been deleted.`
                                             }`
                                         );
                                         await toggleTesterAssign(username);

@@ -119,7 +119,7 @@ const TestQueueRow = ({
                     }
                 });
                 await triggerTestPlanReportUpdate();
-            }, 'Updating Test Plan Assignees');
+            }, `Updating Test Plan Assignees. Deleting Test Plan Run for ${tester.username}`);
         } else {
             await triggerLoad(async () => {
                 await assignTester({
@@ -453,7 +453,7 @@ const TestQueueRow = ({
                                 >
                                     {!currentUserAssigned
                                         ? 'Assign Yourself'
-                                        : 'Unassign Yourself'}
+                                        : 'Delete your test plan run'}
                                 </Button>
                             </div>
                         </div>
