@@ -194,13 +194,23 @@ const AtAndBrowserDetailsModal = ({
                 );
         }
 
-        // Save full version even though we don't display it
-        // This will only take effect if the updatedBrowserVersion
-        // matches the found major version
-        let fullVersion = updatedBrowserVersion;
+        // Save full version even though we don't display it.
+        // Discard trailing zeros in found minor and patches.
+        // This also accounts for trailing numbers after the patch.
+        let fullVersion = '';
+        let [majorVersion, minorVersion, patch, ...rest] =
+            updatedBrowserVersion.split('.');
 
-        if (!fullVersion.includes('.') && fullVersion == uaMajor) {
-            fullVersion = `${uaMajor}.${uaMinor}.${uaPatch}`;
+        if (minorVersion === '0' && (patch === '0' || patch === undefined)) {
+            fullVersion = `${majorVersion}`;
+        } else if (patch === '0' || patch === undefined) {
+            fullVersion = `${majorVersion}.${minorVersion}`;
+        } else if (rest === undefined) {
+            fullVersion = `${majorVersion}.${minorVersion}.${patch}`;
+        } else {
+            fullVersion = `${majorVersion}.${minorVersion}.${patch}.${rest.join(
+                '.'
+            )}`;
         }
 
         handleAction(updatedAtVersion, fullVersion, updateMessage);
