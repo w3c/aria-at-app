@@ -19,12 +19,12 @@ root.render(
     </GraphQLProvider>
 );
 
-window.signMeIn = async user => {
+const signMeInCommon = async user => {
+    if (!user.username) throw new Error('Please provide a username');
+
     const response = await fetch('/api/auth/fake-user', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user)
     });
 
@@ -32,4 +32,19 @@ window.signMeIn = async user => {
     if (!response.ok) throw responseText;
 
     location.reload();
+};
+
+window.signMeInAsAdmin = username => {
+    return signMeInCommon({
+        username,
+        roles: [{ name: 'ADMIN' }, { name: 'TESTER' }, { name: 'VENDOR' }]
+    });
+};
+
+window.signMeInAsTester = username => {
+    return signMeInCommon({ username, roles: [{ name: 'TESTER' }] });
+};
+
+window.signMeInAsVendor = username => {
+    return signMeInCommon({ username, roles: [{ name: 'VENDOR' }] });
 };

@@ -85,6 +85,17 @@ const teardown = async () => {
 
 let incognitoContexts = {};
 
+/**
+ * Load a page for end-to-end testing.
+ * @param {*} options
+ * @param {'admin'|'tester'|'vendor'|false} options.role - The login state
+ * of the user.
+ * @param {string} options.url - The URL to start on.
+ * @param {function} callback - the first argument of the callback function is
+ * the page object as documented in Puppeteer. The second argument is an object
+ * with the current baseUrl including the localhost port being used - which is
+ * needed for navigation.
+ */
 const getPage = async (options, callback) => {
     const { role, url } = options;
     if (role == null || !['admin', 'tester', 'vendor', false].includes(role)) {
@@ -107,20 +118,17 @@ const getPage = async (options, callback) => {
     if (role) {
         await page.waitForSelector('::-p-text(Sign in with GitHub)');
 
-        let roles;
-        if (role === 'admin') roles = [{ name: 'ADMIN' }, { name: 'TESTER' }];
-        if (role === 'tester') roles = [{ name: 'TESTER' }];
-        if (role === 'vendor') roles = [{ name: 'VENDOR' }];
-        if (role === 'none') roles = [];
+        const username = `joe-the-${role}`;
 
-        const username = `pippy-${role}`;
-
-        await page.evaluate(`
-            signMeIn({
-                username: '${username}',
-                roles: ${JSON.stringify(roles)}
-            });
-        `);
+        if (role === 'admin') {
+            await page.evaluate(`signMeInAsAdmin("${username}")`);
+        }
+        if (role === 'tester') {
+            await page.evaluate(`signMeInAsTester("${username}")`);
+        }
+        if (role === 'vendor') {
+            await page.evaluate(`signMeInAsVendor("${username}")`);
+        }
 
         await page.waitForSelector('::-p-text(Signed in)');
     }

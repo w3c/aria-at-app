@@ -34,16 +34,18 @@ Another way to log in as either a tester or admin, useful for quick testing and 
 3. Paste in the following code:
     - To become an admin:
         ```
-          await signMeIn({ username: "imma-admin", roles: [{ name: "ADMIN" }, { name: "TESTER" }] })
+          signMeInAsAdmin("joe-the-admin")
         ```
     - To become a tester:
         ```
-          await signMeIn({ username: "imma-tester", roles: [{ name: "TESTER" }] })
+          signMeInAsTester("joe-the-tester")
         ```
     - To become a vendor:
         ```
-          await signMeIn({ username: "imma-vendor", roles: [{ name: "VENDOR" }] })
+          signMeInAsVendor("joe-the-vendor")
         ```
+
+The part in quotes is the username, feel free to change the username to whatever you prefer.
 
 This functionality is available in development environments where the ALLOW_FAKE_USER environment variable is "true".
 
