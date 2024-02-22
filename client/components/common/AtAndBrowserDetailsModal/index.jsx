@@ -95,13 +95,13 @@ const AtAndBrowserDetailsModal = ({
         }
 
         const foundBrowserVersion =
-            uaBrowser === browserName && uaMajor !== '0' && `${uaMajor}`;
+            uaBrowser === browserName && uaMajor !== '0' && uaMajor;
 
         if (
             // don't force browserVersion update with admin (unless first run)
             (!isAdmin || (isAdmin && firstLoad)) &&
             // check that saved browserVersion is the same as detected
-            !browserVersion.includes(`${uaMajor}`) &&
+            !browserVersion.includes(uaMajor) &&
             uaBrowser === browserName &&
             foundBrowserVersion
         ) {
