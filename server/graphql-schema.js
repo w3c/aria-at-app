@@ -1341,6 +1341,27 @@ const graphqlSchema = gql`
         Retry the 'cancelled' tests of a CollectionJob.
         """
         retryCanceledCollections: CollectionJob!
+        """
+        Restart a CollectionJob by way of the Response Scheduler
+        """
+        restartCollectionJob: CollectionJob
+        """
+        Delete a CollectionJob
+        """
+        deleteCollectionJob: NoResponse!
+        """
+        Update a CollectionJob
+        """
+        updateCollectionJob(
+            """
+            The status of the CollectionJob.
+            """
+            status: CollectionJobStatus
+            """
+            The external logs url of the CollectionJob.
+            """
+            externalLogsUrl: String
+        ): CollectionJob
     }
 
     """
@@ -1441,36 +1462,6 @@ const graphqlSchema = gql`
             """
             testPlanReportId: ID
         ): CollectionJob!
-        """
-        Update a CollectionJob
-        """
-        updateCollectionJob(
-            """
-            The CollectionJob to update.
-            """
-            id: ID!
-            """
-            The status of the CollectionJob.
-            """
-            status: CollectionJobStatus
-            """
-            The external logs url of the CollectionJob.
-            """
-            externalLogsUrl: String
-        ): CollectionJob
-        """
-        Restart a CollectionJob by way of the Response Scheduler
-        """
-        restartCollectionJob(
-            """
-            The CollectionJob to restart.
-            """
-            id: ID!
-        ): CollectionJob
-        """
-        Delete a CollectionJob
-        """
-        deleteCollectionJob(id: ID!): NoResponse!
     }
 `;
 

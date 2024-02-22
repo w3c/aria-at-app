@@ -161,7 +161,7 @@ describe('graphql', () => {
             // These interact with Response Scheduler API
             // which is mocked in other tests.
             ['Mutation', 'scheduleCollectionJob'],
-            ['Mutation', 'restartCollectionJob'],
+            ['CollectionJobOperations', 'restartCollectionJob'],
             ['CollectionJobOperations', 'retryCanceledCollections']
         ];
         ({
@@ -756,21 +756,24 @@ describe('graphql', () => {
                                 id
                             }
                         }
-                        collectionJob(id: 333) {
+                        cancelCollectionJob: collectionJob(id: 333) {
                             __typename
                             cancelCollectionJob {
                                 id
                                 status
                             }
                         }
-                        updateCollectionJob(id: 333, status: COMPLETED) {
-                            id
-                            status
-                            testPlanRun {
+                        updateCollectionJob: collectionJob(id: 333) {
+                            __typename
+                            updateCollectionJob(status: QUEUED) {
                                 id
+                                status
                             }
                         }
-                        deleteCollectionJob(id: 333)
+                        collectionJob(id: 333) {
+                            __typename
+                            deleteCollectionJob
+                        }
                     }
                 `,
                 {

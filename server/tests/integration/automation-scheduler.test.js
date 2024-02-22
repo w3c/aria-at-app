@@ -159,9 +159,11 @@ const scheduleCollectionJobByMutation = async () =>
 const restartCollectionJobByMutation = async () =>
     await mutate(`
         mutation {
-            restartCollectionJob(id: "${jobId}") {
-                id
-                status
+            collectionJob(id: "${jobId}") {
+                restartCollectionJob {
+                    id
+                    status
+                }
             }
         }
     `);
@@ -181,7 +183,22 @@ const cancelCollectionJobByMutation = async () =>
 const deleteCollectionJobByMutation = async () =>
     await mutate(`
         mutation {
-            deleteCollectionJob(id: "${jobId}") 
+            collectionJob(id: "${jobId}") {
+                deleteCollectionJob
+            }
+        }
+    `);
+
+const updateCollectionJobByMutation = async (status, externalLogsUrl) =>
+    await mutate(`
+        mutation {
+            collectionJob(id: "${jobId}") {
+                updateCollectionJob(status: ${status}, externalLogsUrl: ${externalLogsUrl}) {
+                    id
+                    status
+                    externalLogsUrl
+                }
+            }
         }
     `);
 
@@ -288,12 +305,13 @@ describe('Automation controller', () => {
     it('should restart a job', async () => {
         await dbCleaner(async () => {
             await scheduleCollectionJobByMutation();
-            const { restartCollectionJob: collectionJob } =
-                await restartCollectionJobByMutation();
+            const { collectionJob } = await restartCollectionJobByMutation();
             expect(collectionJob).not.toBe(undefined);
             expect(collectionJob).toEqual({
-                id: jobId,
-                status: 'QUEUED'
+                restartCollectionJob: {
+                    id: jobId,
+                    status: 'QUEUED'
+                }
             });
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob();
@@ -303,9 +321,10 @@ describe('Automation controller', () => {
     });
 
     it('should gracefully reject restarting a job that does not exist', async () => {
-        const { restartCollectionJob: res } =
-            await restartCollectionJobByMutation();
-        expect(res).toEqual(null);
+        const { collectionJob } = await restartCollectionJobByMutation();
+        expect(collectionJob).toEqual({
+            restartCollectionJob: null
+        });
     });
 
     it('should not update a job status without verification', async () => {
@@ -318,6 +337,18 @@ describe('Automation controller', () => {
             expect(response.body).toEqual({
                 error: 'Unauthorized'
             });
+        });
+    });
+
+    it('should successfully update a job through graphql', async () => {
+        await dbCleaner(async () => {
+            await scheduleCollectionJobByMutation();
+            const {
+                collectionJob: { updateCollectionJob }
+            } = await updateCollectionJobByMutation('RUNNING', null);
+            expect(updateCollectionJob.id).toEqual(jobId);
+            expect(updateCollectionJob.status).toEqual('RUNNING');
+            expect(updateCollectionJob.externalLogsUrl).toEqual(null);
         });
     });
 
@@ -616,7 +647,9 @@ describe('Automation controller', () => {
 
             const res = await deleteCollectionJobByMutation();
             expect(res).toEqual({
-                deleteCollectionJob: true
+                collectionJob: {
+                    deleteCollectionJob: true
+                }
             });
 
             const { collectionJob: deletedCollectionJob } =
