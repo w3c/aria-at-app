@@ -23,13 +23,8 @@ const setUpMockGithubServer = async () => {
             login: String
         }
 
-        type Organization {
-            teams(userLogins: String, query: String, first: Int): Connection
-        }
-
         type Query {
             viewer: Viewer
-            organization(login: String): Organization
         }
     `;
 
@@ -37,9 +32,6 @@ const setUpMockGithubServer = async () => {
         Query: {
             viewer: () => {
                 return { login: nextGithubUsername };
-            },
-            organization: () => {
-                return {};
             }
         }
     };

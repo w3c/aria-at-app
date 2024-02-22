@@ -64,8 +64,7 @@ describe('authentication', () => {
         await dbCleaner(async () => {
             // A1
             mockGithubServer.nextLogin({
-                githubUsername: knownAdmin,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2
@@ -101,8 +100,7 @@ describe('authentication', () => {
             // A1
             const _testerUsername = 'a11ydoer'; // From testers.txt
             mockGithubServer.nextLogin({
-                githubUsername: _testerUsername,
-                isOnAdminTeam: false
+                githubUsername: _testerUsername
             });
 
             // A2
@@ -136,8 +134,7 @@ describe('authentication', () => {
             // A1
             const _unknownUsername = 'aurelia-proudfeet';
             mockGithubServer.nextLogin({
-                githubUsername: _unknownUsername,
-                isOnAdminTeam: false
+                githubUsername: _unknownUsername
             });
 
             // A2
@@ -169,8 +166,7 @@ describe('authentication', () => {
         await dbCleaner(async () => {
             // A1
             mockGithubServer.nextLogin({
-                githubUsername: knownAdmin,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2
@@ -216,8 +212,7 @@ describe('authentication', () => {
             // A1
             const _dataFromFrontend = 'fakeRole-tester';
             mockGithubServer.nextLogin({
-                githubUsername: knownAdmin,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2
@@ -266,8 +261,7 @@ describe('authentication', () => {
             // A1
             const _dataFromFrontend = 'fakeRole-';
             mockGithubServer.nextLogin({
-                githubUsername: knownAdmin,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2
@@ -288,8 +282,7 @@ describe('authentication', () => {
             // A1
             const _dataFromFrontend = 'fakeRole-vendor';
             mockGithubServer.nextLogin({
-                githubUsername: knownAdmin,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2
