@@ -1,12 +1,10 @@
 const { AuthenticationError } = require('apollo-server');
 const { uniq: unique } = require('lodash');
-const {
-    removeAtVersionById
-} = require('../../models/services.deprecated/AtService');
+const { removeAtVersionById } = require('../../models/services/AtService');
 const {
     getTestResultsUsingAtVersion,
     getTestPlanRunById
-} = require('../../models/services.deprecated/TestPlanRunService');
+} = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const deleteAtVersionResolver = async (
@@ -14,15 +12,16 @@ const deleteAtVersionResolver = async (
     _,
     context
 ) => {
-    const { user } = context;
+    const { user, t } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    const resultIds = await getTestResultsUsingAtVersion(atVersionId);
+    const resultIds = await getTestResultsUsingAtVersion(atVersionId, { t });
 
     if (!resultIds.length) {
-        await removeAtVersionById(atVersionId);
+        await removeAtVersionById({ id: atVersionId, t });
         return { isDeleted: true };
     }
 
@@ -34,7 +33,9 @@ const deleteAtVersionResolver = async (
     };
 };
 
-const populateTestResults = async resultIds => {
+const populateTestResults = async (resultIds, context) => {
+    const { t } = context;
+
     // Limits the number of queries that will be made for this endpoint
     const queryLimit = 10;
 
@@ -45,7 +46,7 @@ const populateTestResults = async resultIds => {
     const preloadedTestPlanRunsById = {};
     await Promise.all(
         testPlanRunIds.map(async testPlanRunId => {
-            const data = await getTestPlanRunById(testPlanRunId);
+            const data = await getTestPlanRunById({ id: testPlanRunId, t });
             preloadedTestPlanRunsById[testPlanRunId] = data;
         })
     );

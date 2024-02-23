@@ -1,12 +1,12 @@
 const {
     getTestPlanVersions
-} = require('../models/services.deprecated/TestPlanVersionService');
+} = require('../models/services/TestPlanVersionService');
 const retrieveAttributes = require('./helpers/retrieveAttributes');
-const {
-    TEST_PLAN_VERSION_ATTRIBUTES
-} = require('../models/services.deprecated/helpers');
+const { TEST_PLAN_VERSION_ATTRIBUTES } = require('../models/services/helpers');
 
 const testPlanVersionsResolver = async (_, { phases }, context, info) => {
+    const { t } = context;
+
     const where = {};
     if (phases) where.phase = phases;
 
@@ -16,24 +16,24 @@ const testPlanVersionsResolver = async (_, { phases }, context, info) => {
         info
     );
 
-    return getTestPlanVersions(
-        null,
+    return getTestPlanVersions({
         where,
         testPlanVersionAttributes,
-        [],
-        [],
-        [],
-        [],
-        [],
-        {
+        testPlanReportAttributes: [],
+        atAttributes: [],
+        browserAttributes: [],
+        testPlanRunAttributes: [],
+        userAttribute: [],
+        pagination: {
             order: [
                 ['candidatePhaseReachedAt', 'desc'],
                 ['updatedAt', 'desc'],
                 ['title', 'asc'],
                 ['directory', 'asc']
             ]
-        }
-    );
+        },
+        t
+    });
 };
 
 module.exports = testPlanVersionsResolver;

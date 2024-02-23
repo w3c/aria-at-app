@@ -1,8 +1,8 @@
 const { AuthenticationError } = require('apollo-server');
 const {
     getTestPlanReportById,
-    updateTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
@@ -12,13 +12,16 @@ const markAsFinalResolver = async (
     _,
     context
 ) => {
-    const { user } = context;
+    const { user, t } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    const testPlanReport = await getTestPlanReportById(testPlanReportId);
+    const testPlanReport = await getTestPlanReportById({
+        id: testPlanReportId,
+        t
+    });
 
     const conflicts = await conflictsResolver(testPlanReport);
     if (conflicts.length > 0) {
@@ -41,7 +44,11 @@ const markAsFinalResolver = async (
         );
     }
 
-    await updateTestPlanReport(testPlanReportId, { markedFinalAt: new Date() });
+    await updateTestPlanReportById({
+        id: testPlanReportId,
+        values: { markedFinalAt: new Date() },
+        t
+    });
 
     return populateData({ testPlanReportId });
 };

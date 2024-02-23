@@ -1,21 +1,24 @@
 const { AuthenticationError } = require('apollo-server');
 const populateData = require('../../services/PopulatedData/populateData');
 const {
-    updateTestPlanVersion
-} = require('../../models/services.deprecated/TestPlanVersionService');
+    updateTestPlanVersionById
+} = require('../../models/services/TestPlanVersionService');
 
 const updateRecommendedPhaseTargetDateResolver = async (
     { parentContext: { id: testPlanVersionId } },
     { recommendedPhaseTargetDate },
     context
 ) => {
-    const { user } = context;
+    const { user, t } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    await updateTestPlanVersion(testPlanVersionId, {
-        recommendedPhaseTargetDate
+    await updateTestPlanVersionById({
+        id: testPlanVersionId,
+        values: { recommendedPhaseTargetDate },
+        t
     });
 
     return populateData({ testPlanVersionId });

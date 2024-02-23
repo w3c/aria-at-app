@@ -1,14 +1,15 @@
 const { AuthenticationError } = require('apollo-server-core');
 const {
-    deleteCollectionJob
-} = require('../models/services.deprecated/CollectionJobService');
+    removeCollectionJobById
+} = require('../models/services/CollectionJobService');
 
 const deleteCollectionJobResolver = async (_, { id }, context) => {
-    const { user } = context;
+    const { user, t } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
-    return deleteCollectionJob(id);
+    return removeCollectionJobById({ id, t });
 };
 
 module.exports = deleteCollectionJobResolver;

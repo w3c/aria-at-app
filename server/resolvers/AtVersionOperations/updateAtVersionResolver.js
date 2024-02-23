@@ -1,18 +1,18 @@
 const { AuthenticationError } = require('apollo-server');
-const {
-    updateAtVersionById
-} = require('../../models/services.deprecated/AtService');
+const { updateAtVersionById } = require('../../models/services/AtService');
 
 const updateAtVersionResolver = async (
     { parentContext: { id } },
     { input },
-    { user }
+    context
 ) => {
+    const { user, t } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    return await updateAtVersionById(id, input);
+    return await updateAtVersionById({ id, values: input, t });
 };
 
 module.exports = updateAtVersionResolver;

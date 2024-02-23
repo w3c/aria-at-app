@@ -1,4 +1,4 @@
-const { getBrowsers } = require('../services.deprecated/BrowserService');
+const { getBrowsers } = require('../services/BrowserService');
 
 let singletonInstance = null;
 
@@ -11,7 +11,7 @@ const BrowserLoader = () => {
     let activePromise;
 
     singletonInstance = {
-        getAll: async () => {
+        getAll: async ({ t }) => {
             if (browsers) {
                 return browsers;
             }
@@ -20,7 +20,7 @@ const BrowserLoader = () => {
                 return activePromise;
             }
 
-            activePromise = getBrowsers();
+            activePromise = getBrowsers({ t });
 
             browsers = await activePromise;
 

@@ -3,15 +3,17 @@ const { AuthenticationError } = require('apollo-server');
 const {
     getCollectionJobById,
     retryCanceledCollections
-} = require('../../models/services.deprecated/CollectionJobService');
+} = require('../../models/services/CollectionJobService');
 
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 
 const retryCanceledCollectionsResolver = async (
     { parentContext: { id: collectionJobId } },
     _,
-    { user }
+    context
 ) => {
+    const { user, t } = context;
+
     if (
         !user?.roles.find(
             role => role.name === 'ADMIN' || role.name === 'TESTER'
@@ -20,7 +22,10 @@ const retryCanceledCollectionsResolver = async (
         throw new AuthenticationError();
     }
 
-    const collectionJob = await getCollectionJobById(collectionJobId);
+    const collectionJob = await getCollectionJobById({
+        id: collectionJobId,
+        t
+    });
 
     if (!collectionJob) {
         throw new Error(
@@ -34,7 +39,7 @@ const retryCanceledCollectionsResolver = async (
         );
     }
 
-    return retryCanceledCollections({ collectionJob });
+    return retryCanceledCollections({ collectionJob }, { t });
 };
 
 module.exports = retryCanceledCollectionsResolver;

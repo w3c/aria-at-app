@@ -1,14 +1,12 @@
 const { AuthenticationError } = require('apollo-server-errors');
 const {
     getTestPlanVersionById,
-    updateTestPlanVersion
-} = require('../models/services.deprecated/TestPlanVersionService');
+    updateTestPlanVersionById
+} = require('../models/services/TestPlanVersionService');
 
-const addViewerResolver = async (
-    _,
-    { testPlanVersionId, testId },
-    { user }
-) => {
+const addViewerResolver = async (_, { testPlanVersionId, testId }, context) => {
+    const { user, t } = context;
+
     if (
         !(
             user?.roles.find(role => role.name === 'ADMIN') ||
@@ -18,7 +16,10 @@ const addViewerResolver = async (
         throw new AuthenticationError();
     }
 
-    const testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
+    const testPlanVersion = await getTestPlanVersionById({
+        id: testPlanVersionId,
+        t
+    });
     const currentTest = testPlanVersion.tests.find(each => each.id === testId);
     if (!currentTest.viewers) currentTest.viewers = [user];
     else {
@@ -26,8 +27,10 @@ const addViewerResolver = async (
         if (!viewer) currentTest.viewers.push(user);
     }
 
-    await updateTestPlanVersion(testPlanVersionId, {
-        tests: testPlanVersion.tests
+    await updateTestPlanVersionById({
+        id: testPlanVersionId,
+        values: { tests: testPlanVersion.tests },
+        t
     });
 
     return user;

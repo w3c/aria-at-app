@@ -10,7 +10,7 @@ const {
     createTestPlanVersion,
     getTestPlanVersions,
     updateTestPlanVersion
-} = require('../../models/services.deprecated/TestPlanVersionService');
+} = require('../../models/services/TestPlanVersionService');
 const {
     getTestPlans,
     createTestPlan
@@ -193,27 +193,30 @@ const importTestPlanVersions = async () => {
         const versionString = await getVersionString({ updatedAt, directory });
 
         await createTestPlanVersion({
-            id: testPlanVersionId,
-            title,
-            directory,
-            testPageUrl: getAppUrl(testPageUrl, {
+            values: {
+                id: testPlanVersionId,
+                title,
+                directory,
+                testPageUrl: getAppUrl(testPageUrl, {
+                    gitSha,
+                    directoryPath: useBuildInAppAppUrlPath
+                        ? builtDirectoryPath
+                        : sourceDirectoryPath
+                }),
                 gitSha,
-                directoryPath: useBuildInAppAppUrlPath
-                    ? builtDirectoryPath
-                    : sourceDirectoryPath
-            }),
-            gitSha,
-            gitMessage,
-            hashedTests,
-            updatedAt,
-            versionString,
-            metadata: {
-                designPatternUrl,
-                exampleUrl,
-                testFormatVersion: isV2 ? 2 : 1
+                gitMessage,
+                hashedTests,
+                updatedAt,
+                versionString,
+                metadata: {
+                    designPatternUrl,
+                    exampleUrl,
+                    testFormatVersion: isV2 ? 2 : 1
+                },
+                tests,
+                testPlanId
             },
-            tests,
-            testPlanId
+            t
         });
     }
 };

@@ -1,20 +1,20 @@
 const { AuthenticationError } = require('apollo-server-express');
-const {
-    bulkGetOrReplaceUserAts
-} = require('../models/services.deprecated/UserService');
+const { bulkGetOrReplaceUserAts } = require('../models/services/UserService');
 
 const updateMeResolver = async (_, { input: { atIds } }, context) => {
-    if (!context.user) {
+    const { user, t } = context;
+
+    if (!user) {
         throw new AuthenticationError();
     }
 
-    await bulkGetOrReplaceUserAts(
-        { userId: context.user.id },
-        atIds.map(atId => ({ atId })),
-        { comparisonKeys: ['atId'] }
-    );
+    await bulkGetOrReplaceUserAts({
+        where: { userId: user.id },
+        valuesList: atIds.map(atId => ({ atId })),
+        t
+    });
 
-    return context.user;
+    return user;
 };
 
 module.exports = updateMeResolver;

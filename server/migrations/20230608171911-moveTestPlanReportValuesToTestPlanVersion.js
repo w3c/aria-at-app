@@ -3,19 +3,19 @@
 const {
     TEST_PLAN_REPORT_ATTRIBUTES,
     TEST_PLAN_VERSION_ATTRIBUTES
-} = require('../models/services.deprecated/helpers');
+} = require('../models/services/helpers');
 const scenariosResolver = require('../resolvers/Test/scenariosResolver');
 const {
     getTestPlanReportById,
     getOrCreateTestPlanReport,
-    updateTestPlanReport
-} = require('../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../models/services/TestPlanReportService');
 const populateData = require('../services/PopulatedData/populateData');
 const { testResults } = require('../resolvers/TestPlanRun');
 const {
     createTestPlanRun,
     getTestPlanRunById
-} = require('../models/services.deprecated/TestPlanRunService');
+} = require('../models/services/TestPlanRunService');
 const {
     findOrCreateTestResult
 } = require('../resolvers/TestPlanRunOperations');
@@ -306,12 +306,12 @@ module.exports = {
                     )
                 };
 
-                const currentTestPlanReport = await getTestPlanReportById(
-                    testPlanReportId,
+                const currentTestPlanReport = await getTestPlanReportById({
+                    id: testPlanReportId,
                     testPlanReportAttributes,
-                    undefined,
-                    testPlanVersionAttributes
-                );
+                    testPlanVersionAttributes,
+                    t: false
+                });
 
                 for (
                     let i = 0;
@@ -320,13 +320,12 @@ module.exports = {
                 ) {
                     const testPlanRunId =
                         currentTestPlanReport.testPlanRuns[i].id;
-                    const testPlanRun = await getTestPlanRunById(
-                        testPlanRunId,
-                        null,
-                        null,
+                    const testPlanRun = await getTestPlanRunById({
+                        id: testPlanRunId,
                         testPlanReportAttributes,
-                        testPlanVersionAttributes
-                    );
+                        testPlanVersionAttributes,
+                        t: false
+                    });
                     // testPlanReport = testPlanRun?.testPlanReport;
 
                     testPlanRun.testResults = await testResults(
@@ -458,16 +457,16 @@ module.exports = {
 
                 // TODO: If no input.testPlanVersionId, infer it by whatever the latest is for this directory
                 const [foundOrCreatedTestPlanReport, createdLocationsOfData] =
-                    await getOrCreateTestPlanReport(
-                        {
+                    await getOrCreateTestPlanReport({
+                        where: {
                             testPlanVersionId: newTestPlanVersionId,
                             atId,
                             browserId
                         },
                         testPlanReportAttributes,
-                        undefined,
-                        testPlanVersionAttributes
-                    );
+                        testPlanVersionAttributes,
+                        t: false
+                    });
 
                 const candidatePhaseReachedAt =
                     currentTestPlanReport.candidatePhaseReachedAt;
@@ -478,18 +477,18 @@ module.exports = {
                 const vendorReviewStatus =
                     currentTestPlanReport.vendorReviewStatus;
 
-                await updateTestPlanReport(
-                    foundOrCreatedTestPlanReport.id,
-                    {
+                await updateTestPlanReportById({
+                    id: foundOrCreatedTestPlanReport.id,
+                    values: {
                         candidatePhaseReachedAt,
                         recommendedPhaseReachedAt,
                         recommendedPhaseTargetDate,
                         vendorReviewStatus
                     },
                     testPlanReportAttributes,
-                    undefined,
-                    testPlanVersionAttributes
-                );
+                    testPlanVersionAttributes,
+                    t: false
+                });
 
                 // const locationOfData = {
                 //     testPlanReportId: foundOrCreatedTestPlanReport.id
@@ -516,16 +515,15 @@ module.exports = {
 
                 for (const testPlanRun of runsWithResults) {
                     // Create new TestPlanRuns
-                    const { id: testPlanRunId } = await createTestPlanRun(
-                        {
+                    const { id: testPlanRunId } = await createTestPlanRun({
+                        values: {
                             testPlanReportId: foundOrCreatedTestPlanReport.id,
                             testerUserId: testPlanRun.tester.id
                         },
-                        null,
-                        null,
                         testPlanReportAttributes,
-                        testPlanVersionAttributes
-                    );
+                        testPlanVersionAttributes,
+                        t: false
+                    });
 
                     for (const testResult of testPlanRun.testResults) {
                         const testId =

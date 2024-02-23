@@ -1,13 +1,10 @@
-const {
-    getTestPlans
-} = require('../models/services.deprecated/TestPlanService');
+const { getTestPlans } = require('../models/services/TestPlanService');
 const retrieveAttributes = require('./helpers/retrieveAttributes');
-const {
-    TEST_PLAN_VERSION_ATTRIBUTES,
-    TEST_PLAN_ATTRIBUTES
-} = require('../models/services.deprecated/helpers');
+const { TEST_PLAN_VERSION_ATTRIBUTES } = require('../models/services/helpers');
 
-const testPlans = async (_, __, ___, info) => {
+const testPlans = async (_, __, context, info) => {
+    const { t } = context;
+
     const requestedFields =
         info.fieldNodes[0] &&
         info.fieldNodes[0].selectionSet.selections.map(
@@ -31,20 +28,17 @@ const testPlans = async (_, __, ___, info) => {
         true
     );
 
-    const plans = await getTestPlans(
-        {},
+    const plans = await getTestPlans({
         includeLatestTestPlanVersion,
-        TEST_PLAN_ATTRIBUTES,
-        [
+        testPlanVersionAttributes: [
             ...new Set([
                 ...latestTestPlanVersionAttributes,
                 ...testPlanVersionsAttributes
             ])
         ],
-        {
-            order: [['testPlanVersions', 'updatedAt', 'DESC']]
-        }
-    );
+        pagination: { order: [['testPlanVersions', 'updatedAt', 'DESC']] },
+        t
+    });
     return plans.map(p => {
         return { ...p.dataValues };
     });

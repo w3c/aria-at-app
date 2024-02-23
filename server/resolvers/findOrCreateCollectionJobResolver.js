@@ -1,25 +1,24 @@
 const { AuthenticationError } = require('apollo-server-core');
 const {
     getOrCreateCollectionJob
-} = require('../models/services.deprecated/CollectionJobService');
+} = require('../models/services/CollectionJobService');
 
 const findOrCreateCollectionJobResolver = async (
     _,
     { id, status, testPlanReportId },
     context
 ) => {
-    const { user } = context;
+    const { user, t } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    const collectionJob = await getOrCreateCollectionJob({
-        id,
-        status,
-        testPlanReportId
+    return getOrCreateCollectionJob({
+        where: { id },
+        values: { status, testPlanReportId },
+        t
     });
-
-    return collectionJob;
 };
 
 module.exports = findOrCreateCollectionJobResolver;

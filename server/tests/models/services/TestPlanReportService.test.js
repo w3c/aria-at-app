@@ -146,7 +146,7 @@ describe('TestPlanReportModel Data Checks', () => {
             // A2
             const [testPlanReport, created] =
                 await TestPlanReportService.getOrCreateTestPlanReport({
-                    values: {
+                    where: {
                         testPlanVersionId: _testPlanVersionId,
                         atId: _atId,
                         browserId: _browserId

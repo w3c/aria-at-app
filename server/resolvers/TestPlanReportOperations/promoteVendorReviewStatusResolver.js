@@ -1,26 +1,26 @@
 const {
-    updateTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const promoteVendorReviewStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
     { vendorReviewStatus }
 ) => {
-    let updateParams = { vendorReviewStatus };
+    let values = { vendorReviewStatus };
 
     if (vendorReviewStatus === 'READY') {
-        updateParams = {
+        values = {
             vendorReviewStatus: 'IN_PROGRESS'
         };
     } else if (vendorReviewStatus === 'IN_PROGRESS') {
-        updateParams = {
+        values = {
             vendorReviewStatus: 'APPROVED'
         };
     }
 
     if (vendorReviewStatus !== 'APPROVED') {
-        await updateTestPlanReport(testPlanReportId, updateParams);
+        await updateTestPlanReportById({ id: testPlanReportId, values });
     }
 
     return populateData({ testPlanReportId });

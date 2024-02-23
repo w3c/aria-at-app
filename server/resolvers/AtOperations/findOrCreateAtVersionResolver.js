@@ -1,18 +1,18 @@
 const { AuthenticationError } = require('apollo-server');
-const {
-    findOrCreateAtVersion
-} = require('../../models/services.deprecated/AtService');
+const { findOrCreateAtVersion } = require('../../models/services/AtService');
 
 const findOrCreateAtVersionResolver = async (
     { parentContext: { id: atId } },
     { input: { name, releasedAt } },
-    { user }
+    context
 ) => {
+    const { user, t } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    return findOrCreateAtVersion({ atId, name, releasedAt });
+    return findOrCreateAtVersion({ where: { atId, name, releasedAt }, t });
 };
 
 module.exports = findOrCreateAtVersionResolver;

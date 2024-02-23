@@ -342,20 +342,20 @@ const bulkGetOrReplaceUserRoles = async ({
  *
  * @param {object} options
  * @param {object} options.where - values to be used to search Sequelize Model. Only supports exact values.
- * @param {object} options.values - array of objects containing an "atId"
+ * @param {object} options.valuesList - array of objects containing an "atId"
  * @param {string[]} options.userAtsAttributes - UserAts attributes to be returned in the result
  * @param {*} options.t - Sequelize transaction
  * @returns {Promise<*>}
  */
 const bulkGetOrReplaceUserAts = async ({
     where: { userId },
-    values,
+    valuesList,
     userAtsAttributes,
     t
 }) => {
     const isUpdated = await ModelService.bulkGetOrReplace(UserAts, {
         where: { userId },
-        values,
+        valuesList,
         t
     });
 

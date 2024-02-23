@@ -1,17 +1,18 @@
 const populateData = require('../../services/PopulatedData/populateData');
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 const getMetrics = require('../../util/getMetrics');
-const { updateTestPlanReport } = require('./TestPlanReportService');
+const { updateTestPlanReportById } = require('./TestPlanReportService');
 const createTestResultSkeleton = require('../../resolvers/TestPlanRunOperations/createTestResultSkeleton');
 const sortArrayLikeArray = require('../../util/sortArrayLikeArray');
-const { updateTestPlanRun } = require('./TestPlanRunService');
+const { updateTestPlanRunById } = require('./TestPlanRunService');
 const { getFinalizedTestResults } = require('./TestResultReadService');
 
 const findOrCreateTestResult = async ({
     testId,
     testPlanRunId,
     atVersionId,
-    browserVersionId
+    browserVersionId,
+    t
 }) => {
     const { testPlanRun, testPlanReport } = await populateData({
         testPlanRunId
@@ -32,8 +33,10 @@ const findOrCreateTestResult = async ({
                 runnableTests
             }
         });
-        await updateTestPlanReport(testPlanReport.id, {
-            metrics: { ...testPlanReport.metrics, ...metrics }
+        await updateTestPlanReportById({
+            id: testPlanReport.id,
+            values: { metrics: { ...testPlanReport.metrics, ...metrics } },
+            t
         });
     };
 
@@ -63,8 +66,10 @@ const findOrCreateTestResult = async ({
             }
         );
 
-        await updateTestPlanRun(testPlanRun.id, {
-            testResults: newTestResults
+        await updateTestPlanRunById({
+            id: testPlanRun.id,
+            values: { testResults: newTestResults },
+            t
         });
         await fixTestPlanReportMetrics(testPlanReport);
     } else {
@@ -77,8 +82,10 @@ const findOrCreateTestResult = async ({
         newTestResults[testResultIndex].atVersionId = atVersionId;
         newTestResults[testResultIndex].browserVersionId = browserVersionId;
 
-        await updateTestPlanRun(testPlanRun.id, {
-            testResults: newTestResults
+        await updateTestPlanRunById({
+            id: testPlanRun.id,
+            values: { testResults: newTestResults },
+            t
         });
         await fixTestPlanReportMetrics(testPlanReport);
     }

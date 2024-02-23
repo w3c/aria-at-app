@@ -4,17 +4,17 @@ const { AuthenticationError } = require('apollo-server-express');
 const {
     getTestPlanReportById,
     getOrCreateTestPlanReport,
-    updateTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 const {
     getTestPlanVersionById
-} = require('../../models/services.deprecated/TestPlanVersionService');
+} = require('../../models/services/TestPlanVersionService');
 const { testResults } = require('../TestPlanRun');
 const populateData = require('../../services/PopulatedData/populateData');
 const scenariosResolver = require('../Test/scenariosResolver');
 const {
     createTestPlanRun
-} = require('../../models/services.deprecated/TestPlanRunService');
+} = require('../../models/services/TestPlanRunService');
 const { findOrCreateTestResult } = require('../TestPlanRunOperations');
 const { submitTestResult, saveTestResult } = require('../TestResultOperations');
 
@@ -77,7 +77,8 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     { input }, // { testPlanVersionId, atId, browserId }
     context
 ) => {
-    const { user } = context;
+    const { user, t } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
@@ -86,7 +87,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     // [SECTION START]: Preparing data to be worked with in a similar way to TestPlanUpdaterModal
     const newTestPlanVersionData = (
-        await getTestPlanVersionById(newTestPlanVersionId)
+        await getTestPlanVersionById({ id: newTestPlanVersionId, t })
     ).toJSON();
     const newTestPlanVersion = {
         id: newTestPlanVersionData.id,
@@ -118,7 +119,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     };
 
     const currentTestPlanReport = (
-        await getTestPlanReportById(testPlanReportId)
+        await getTestPlanReportById({ id: testPlanReportId, t })
     ).toJSON();
 
     for (let i = 0; i < currentTestPlanReport.testPlanRuns.length; i++) {
@@ -241,7 +242,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     // TODO: If no input.testPlanVersionId, infer it by whatever the latest is for this directory
     const [foundOrCreatedTestPlanReport, createdLocationsOfData] =
-        await getOrCreateTestPlanReport(input);
+        await getOrCreateTestPlanReport({ where: input, t });
 
     const candidatePhaseReachedAt =
         currentTestPlanReport.candidatePhaseReachedAt;
@@ -251,11 +252,15 @@ const updateTestPlanReportTestPlanVersionResolver = async (
         currentTestPlanReport.recommendedPhaseTargetDate;
     const vendorReviewStatus = currentTestPlanReport.vendorReviewStatus;
 
-    await updateTestPlanReport(foundOrCreatedTestPlanReport.id, {
-        candidatePhaseReachedAt,
-        recommendedPhaseReachedAt,
-        recommendedPhaseTargetDate,
-        vendorReviewStatus
+    await updateTestPlanReportById({
+        id: foundOrCreatedTestPlanReport.id,
+        values: {
+            candidatePhaseReachedAt,
+            recommendedPhaseReachedAt,
+            recommendedPhaseTargetDate,
+            vendorReviewStatus
+        },
+        t
     });
 
     const locationOfData = {
@@ -278,8 +283,11 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     for (const testPlanRun of runsWithResults) {
         // Create new TestPlanRuns
         const { id: testPlanRunId } = await createTestPlanRun({
-            testPlanReportId: foundOrCreatedTestPlanReport.id,
-            testerUserId: testPlanRun.tester.id
+            values: {
+                testPlanReportId: foundOrCreatedTestPlanReport.id,
+                testerUserId: testPlanRun.tester.id
+            },
+            t
         });
 
         for (const testResult of testPlanRun.testResults) {

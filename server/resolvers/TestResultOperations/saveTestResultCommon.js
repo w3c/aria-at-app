@@ -1,7 +1,7 @@
 const { UserInputError } = require('apollo-server');
 const {
-    updateTestPlanRun
-} = require('../../models/services.deprecated/TestPlanRunService');
+    updateTestPlanRunById
+} = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 const deepPickEqual = require('../../util/deepPickEqual');
@@ -12,8 +12,8 @@ const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver')
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 const getMetrics = require('../../util/getMetrics');
 const {
-    updateTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 
 const saveTestResultCommon = async ({
     testResultId,
@@ -21,6 +21,8 @@ const saveTestResultCommon = async ({
     isSubmit,
     context
 }) => {
+    const { t } = context;
+
     const {
         testPlanRun,
         testPlanReport,
@@ -85,7 +87,11 @@ const saveTestResultCommon = async ({
         ...oldTestResults.slice(index + 1)
     ];
 
-    await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
+    await updateTestPlanRunById({
+        id: testPlanRun.id,
+        values: { testResults: newTestResults },
+        t
+    });
 
     if (isSubmit) {
         // Update metrics when result is saved
@@ -106,12 +112,16 @@ const saveTestResultCommon = async ({
                 runnableTests
             }
         });
-        await updateTestPlanReport(testPlanReportPopulated.id, {
-            metrics: { ...testPlanReportPopulated.metrics, ...metrics }
+        await updateTestPlanReportById({
+            id: testPlanReportPopulated.id,
+            values: {
+                metrics: { ...testPlanReportPopulated.metrics, ...metrics }
+            },
+            t
         });
     }
 
-    await persistConflictsCount(testPlanRun, context);
+    await persistConflictsCount(testPlanRun, { t });
     return populateData({ testResultId }, { context });
 };
 

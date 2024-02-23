@@ -1,9 +1,11 @@
 const {
     getCollectionJobById
-} = require('../models/services.deprecated/CollectionJobService');
+} = require('../models/services/CollectionJobService');
 
-const collectionJobResolver = async (_, { id }) => {
-    const collectionJob = await getCollectionJobById(id);
+const collectionJobResolver = async (_, { id }, context) => {
+    const { t } = context;
+
+    const collectionJob = await getCollectionJobById({ id, t });
 
     return collectionJob;
 };

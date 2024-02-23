@@ -7,7 +7,12 @@ const typeDefs = require('../../graphql-schema');
 const getGraphQLContext = require('../../graphql-context');
 const resolvers = require('../../resolvers');
 
-const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
+const startSupertestServer = async ({
+    graphql = false,
+    applyMiddleware,
+    applyErrorware,
+    pathToRoutes = []
+}) => {
     const expressApp = express();
 
     expressApp.use(bodyParser.json());
@@ -16,9 +21,10 @@ const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
             secret: 'test environment',
             resave: false,
             saveUninitialized: true,
-            cookie: { maxAge: 30000 } // Required
+            cookie: { maxAge: 500000 } // Required
         })
     );
+    if (applyMiddleware) applyMiddleware(expressApp);
 
     let apolloServer;
     if (graphql) {
@@ -35,6 +41,8 @@ const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
     pathToRoutes.forEach(([path, routes]) => {
         expressApp.use(path, routes);
     });
+
+    if (applyErrorware) applyErrorware(expressApp);
 
     // Error handling must be the last middleware
     expressApp.use((error, req, res, next) => {

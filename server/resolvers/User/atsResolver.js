@@ -1,7 +1,10 @@
-const { getUserById } = require('../../models/services.deprecated/UserService');
+const { getUserById } = require('../../models/services/UserService');
 
-const atsResolver = async (_, __, { user }) => {
-    const { ats } = await getUserById(user.id);
+const atsResolver = async (_, __, context) => {
+    const { user, t } = context;
+
+    const { ats } = await getUserById({ id: user.id, t });
+
     return ats;
 };
 

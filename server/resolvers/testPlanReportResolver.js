@@ -1,9 +1,11 @@
 const {
     getTestPlanReportById
-} = require('../models/services.deprecated/TestPlanReportService');
+} = require('../models/services/TestPlanReportService');
 
-const testPlanReportResolver = (_, { id }) => {
-    return getTestPlanReportById(id);
+const testPlanReportResolver = (_, { id }, context) => {
+    const { t } = context;
+
+    return getTestPlanReportById({ id, t });
 };
 
 module.exports = testPlanReportResolver;

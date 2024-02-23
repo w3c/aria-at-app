@@ -1,4 +1,4 @@
-const { getAts } = require('../services.deprecated/AtService');
+const { getAts } = require('../services/AtService');
 
 let singletonInstance = null;
 
@@ -11,7 +11,7 @@ const AtLoader = () => {
     let activePromise;
 
     singletonInstance = {
-        getAll: async () => {
+        getAll: async ({ t }) => {
             if (ats) {
                 return ats;
             }
@@ -20,7 +20,7 @@ const AtLoader = () => {
                 return activePromise;
             }
 
-            activePromise = getAts();
+            activePromise = getAts({ t });
             ats = await activePromise;
 
             // Sort date of atVersions subarray in desc order by releasedAt date

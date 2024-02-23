@@ -225,7 +225,8 @@ describe('CollectionJob Service Tests', () => {
             expect(initialJob).toBeNull();
             const collectionJob =
                 await CollectionJobService.getOrCreateCollectionJob({
-                    values: { id, status, testPlanReportId: 2 },
+                    where: { id },
+                    values: { status, testPlanReportId: 2 },
                     t
                 });
 
@@ -246,7 +247,7 @@ describe('CollectionJob Service Tests', () => {
             expect(initialJob.status).toEqual(status);
             const collectionJob =
                 await CollectionJobService.getOrCreateCollectionJob({
-                    values: { id },
+                    where: { id },
                     t
                 });
 

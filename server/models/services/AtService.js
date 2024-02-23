@@ -569,14 +569,14 @@ const getUniqueAtVersionsForReport = async (testPlanReportId, { t }) => {
 
 /**
  * @param {object} options
- * @param {object} options.values - values to be used to create or find the AtVersion record
+ * @param {object} options.where - values to be used to create or find the AtVersion record
  * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.t - Sequelize transaction
  * @returns {BrowserVersion}
  */
 const findOrCreateAtVersion = async ({
-    values: { atId, name, releasedAt },
+    where: { atId, name, releasedAt },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     t

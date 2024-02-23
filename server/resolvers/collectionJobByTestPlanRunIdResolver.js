@@ -1,9 +1,18 @@
 const {
     getCollectionJobs
-} = require('../models/services.deprecated/CollectionJobService');
+} = require('../models/services/CollectionJobService');
 
-const collectionJobByTestPlanRunIdResolver = async (_, { testPlanRunId }) => {
-    const collectionJobs = await getCollectionJobs(_, { testPlanRunId });
+const collectionJobByTestPlanRunIdResolver = async (
+    _,
+    { testPlanRunId },
+    context
+) => {
+    const { t } = context;
+
+    const collectionJobs = await getCollectionJobs({
+        where: { testPlanRunId },
+        t
+    });
     if (!collectionJobs || collectionJobs.length === 0) {
         return null;
     } else if (collectionJobs.length > 1) {

@@ -6,8 +6,8 @@ const finalizedTestResultsResolver = require('../resolvers/TestPlanReport/finali
 const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
 const getMetrics = require('../util/getMetrics');
 const {
-    updateTestPlanReport
-} = require('../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../models/services/TestPlanReportService');
 
 module.exports = {
     up: queryInterface => {
@@ -62,7 +62,11 @@ module.exports = {
                     }
                 }
 
-                await updateTestPlanReport(testPlanReport.id, updateParams);
+                await updateTestPlanReportById({
+                    id: testPlanReport.id,
+                    values: updateParams,
+                    t: false
+                });
             }
         });
     },

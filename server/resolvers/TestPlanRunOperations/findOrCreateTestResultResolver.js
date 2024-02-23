@@ -1,16 +1,15 @@
 const { AuthenticationError, UserInputError } = require('apollo-server');
 const populateData = require('../../services/PopulatedData/populateData');
-
 const {
     findOrCreateTestResult
-} = require('../../models/services.deprecated/TestResultWriteService');
+} = require('../../models/services/TestResultWriteService');
 
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
     { testId, atVersionId, browserVersionId },
     context
 ) => {
-    const { user } = context;
+    const { user, t } = context;
 
     const {
         testPlanRun,
@@ -41,11 +40,12 @@ const findOrCreateTestResultResolver = async (
         );
     }
 
-    return await findOrCreateTestResult({
+    return findOrCreateTestResult({
         testId,
         testPlanRunId,
         atVersionId,
-        browserVersionId
+        browserVersionId,
+        t
     });
 };
 

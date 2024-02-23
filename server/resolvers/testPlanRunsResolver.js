@@ -1,11 +1,11 @@
-const {
-    getTestPlanRuns
-} = require('../models/services.deprecated/TestPlanRunService');
+const { getTestPlanRuns } = require('../models/services/TestPlanRunService');
 
-const testPlanRunsResolver = async (_, { testPlanReportId }) => {
+const testPlanRunsResolver = async (_, { testPlanReportId }, context) => {
+    const { t } = context;
+
     const where = {};
     if (testPlanReportId) where.testPlanReportId = testPlanReportId;
-    return getTestPlanRuns(null, where);
+    return getTestPlanRuns({ where, t });
 };
 
 module.exports = testPlanRunsResolver;

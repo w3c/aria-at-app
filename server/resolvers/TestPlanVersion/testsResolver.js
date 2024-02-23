@@ -1,4 +1,4 @@
-const getTests = require('../../models/services.deprecated/TestsService');
+const getTests = require('../../models/services/TestsService');
 
 /**
  * Resolves the Tests from their reduced form in the database to a fully-

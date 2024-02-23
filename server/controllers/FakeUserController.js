@@ -1,6 +1,4 @@
-const {
-    getOrCreateUser
-} = require('../models/services.deprecated/UserService');
+const { getOrCreateUser } = require('../models/services/UserService');
 
 const ALLOW_FAKE_USER = process.env.ALLOW_FAKE_USER === 'true';
 
@@ -23,10 +21,11 @@ const setFakeUserController = async (req, res) => {
         return res.status(400).send('Invalid user');
     }
 
-    let [user] = await getOrCreateUser(
-        { username: userToCreate.username },
-        { roles: userToCreate.roles }
-    );
+    let [user] = await getOrCreateUser({
+        where: { username: userToCreate.username },
+        values: { roles: userToCreate.roles },
+        t: req.t
+    });
 
     req.session.user = user;
 
