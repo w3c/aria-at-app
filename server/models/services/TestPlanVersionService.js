@@ -5,12 +5,22 @@ const {
     TEST_PLAN_RUN_ATTRIBUTES,
     USER_ATTRIBUTES,
     AT_ATTRIBUTES,
-    BROWSER_ATTRIBUTES
+    BROWSER_ATTRIBUTES,
+    TEST_PLAN_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, TestPlanVersion } = require('../');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
+
+/**
+ * @param {string[]} testPlanAttributes - TestPlan attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const testPlanAssociation = testPlanAttributes => ({
+    association: 'testPlan',
+    attributes: testPlanAttributes
+});
 
 /**
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes
@@ -123,11 +133,12 @@ const getTestPlanVersionById = async ({
  * @param {object} options
  * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
  * @param {object} options.where - use this to define conditions to be passed to Sequelize's where clause
- * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
  * @param {object} options.pagination - pagination options for query
  * @param {number} options.pagination.page - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
@@ -141,6 +152,7 @@ const getTestPlanVersions = async ({
     search,
     where = {},
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
@@ -157,6 +169,7 @@ const getTestPlanVersions = async ({
         where,
         attributes: testPlanVersionAttributes,
         include: [
+            testPlanAssociation(testPlanAttributes),
             testPlanReportAssociation(
                 testPlanReportAttributes,
                 atAttributes,

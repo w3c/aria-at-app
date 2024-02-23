@@ -327,9 +327,9 @@ const removeTestPlanReportById = async ({
 };
 
 /**
- * Gets one TestPlanReport, or creates it if it doesn't exist, and then optionally updates it. Supports nested / associated values.
+ * Gets one TestPlanReport, or creates it if it doesn'transaction exist, and then optionally updates it. Supports nested / associated values.
  * @param {object} options
- * @param {*} options.values - These values will be used to find a matching record, or they will be used to create one
+ * @param {*} options.where - These values will be used to find a matching record, or they will be used to create one
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
@@ -341,7 +341,7 @@ const removeTestPlanReportById = async ({
  * @returns {Promise<[*, [*]]>}
  */
 const getOrCreateTestPlanReport = async ({
-    values: { testPlanVersionId, atId, browserId },
+    where: { testPlanVersionId, atId, browserId },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,

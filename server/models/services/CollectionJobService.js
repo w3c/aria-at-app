@@ -533,12 +533,14 @@ const scheduleCollectionJob = async (
 /**
  * Gets one CollectionJob and optionally updates it, or creates it if it doesn'transaction exist.
  * @param {object} options
- * @param {*} options.values - These values will be used to find a matching record, or they will be used to create one
+ * @param {*} options.where - These values will be used to find a matching record, or they will be used to create one
+ * @param {*} options.values - Additional values to be used when creating but not while finding
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[*, [*]]>}
  */
 const getOrCreateCollectionJob = async ({
-    values: { id, status, testPlanRun, testPlanReportId },
+    where: { id },
+    values: { status, testPlanRun, testPlanReportId } = {},
     transaction
 }) => {
     const existingJob = await getCollectionJobById({ id, transaction });

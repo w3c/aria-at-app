@@ -378,7 +378,7 @@ describe('BrowserVersionModel Data Checks', () => {
             // A2
             const browserVersionInstance =
                 await BrowserService.findOrCreateBrowserVersion({
-                    values: { browserId: _browserId, name: _name },
+                    where: { browserId: _browserId, name: _name },
                     transaction
                 });
             const { id, browserId, name, browser } = browserVersionInstance;

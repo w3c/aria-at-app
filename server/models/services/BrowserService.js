@@ -388,14 +388,14 @@ const removeBrowserVersionById = async ({
 
 /**
  * @param {object} options
- * @param {object} options.values - values to be used to create or find the BrowserVersion record
+ * @param {object} options.where - values to be used to create or find the BrowserVersion record
  * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
  * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {BrowserVersion}
  */
 const findOrCreateBrowserVersion = async ({
-    values: { browserId, name },
+    where: { browserId, name },
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     transaction
