@@ -15,7 +15,7 @@ describe('BrowserModel Data Checks', () => {
         // A2
         const browser = await BrowserService.getBrowserById({
             id: _id,
-            t: false
+            transaction: false
         });
         const { id, name } = browser;
 
@@ -40,7 +40,7 @@ describe('BrowserModel Data Checks', () => {
             id: _id,
             browserVersionAttributes: [],
             atAttributes: [],
-            t: false
+            transaction: false
         });
         const { id, name } = browser;
 
@@ -63,7 +63,7 @@ describe('BrowserModel Data Checks', () => {
         // A2
         const browser = await BrowserService.getBrowserById({
             id: _id,
-            t: false
+            transaction: false
         });
 
         // A3
@@ -77,7 +77,7 @@ describe('BrowserModel Data Checks', () => {
         // A2
         const browser = await BrowserService.getBrowserById({
             id: _id,
-            t: false
+            transaction: false
         });
         const { browserVersions } = browser;
 
@@ -93,7 +93,7 @@ describe('BrowserModel Data Checks', () => {
         // A2
         const browser = await BrowserService.getBrowserById({
             id: _id,
-            t: false
+            transaction: false
         });
         const { ats } = browser;
 
@@ -103,22 +103,22 @@ describe('BrowserModel Data Checks', () => {
     });
 
     it('should create and remove a new browser', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _name = randomStringGenerator();
 
             // A2
             const browser = await BrowserService.createBrowser({
                 values: { name: _name },
-                t
+                transaction
             });
             const { id, name } = browser;
 
             // A2
-            await BrowserService.removeBrowserById({ id, t });
+            await BrowserService.removeBrowserById({ id, transaction });
             const deletedBrowser = await BrowserService.getBrowserById({
                 id,
-                t
+                transaction
             });
 
             // after browser created
@@ -131,7 +131,7 @@ describe('BrowserModel Data Checks', () => {
     });
 
     it('should create and update a new browser', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _name = randomStringGenerator();
             const _updatedName = randomStringGenerator();
@@ -139,7 +139,7 @@ describe('BrowserModel Data Checks', () => {
             // A2
             const browser = await BrowserService.createBrowser({
                 values: { name: _name },
-                t
+                transaction
             });
             const { id, name } = browser;
 
@@ -147,7 +147,7 @@ describe('BrowserModel Data Checks', () => {
             const updatedBrowser = await BrowserService.updateBrowserById({
                 id,
                 values: { name: _updatedName },
-                t
+                transaction
             });
             const { name: updatedName } = updatedBrowser;
 
@@ -163,19 +163,19 @@ describe('BrowserModel Data Checks', () => {
     });
 
     it('should return same browser if no update params passed', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _id = 1;
 
             // A2
             const originalBrowser = await BrowserService.getBrowserById({
                 id: _id,
-                t
+                transaction
             });
             const updatedBrowser = await BrowserService.updateBrowserById({
                 id: _id,
                 values: {},
-                t
+                transaction
             });
 
             // A3
@@ -185,7 +185,7 @@ describe('BrowserModel Data Checks', () => {
 
     it('should return collection of browsers', async () => {
         // A1
-        const result = await BrowserService.getBrowsers({ t: false });
+        const result = await BrowserService.getBrowsers({ transaction: false });
 
         // A3
         expect(result.length).toBeGreaterThanOrEqual(1);
@@ -209,7 +209,7 @@ describe('BrowserModel Data Checks', () => {
             // A2
             const result = await BrowserService.getBrowsers({
                 search,
-                t: false
+                transaction: false
             });
 
             // A3
@@ -235,7 +235,7 @@ describe('BrowserModel Data Checks', () => {
             browserVersionAttributes: [],
             atAttributes: [],
             pagination: { enablePagination: true },
-            t: false
+            transaction: false
         });
 
         // A3
@@ -267,7 +267,7 @@ describe('BrowserVersionModel Data Checks', () => {
         const browserVersionInstance =
             await BrowserService.getBrowserVersionByQuery({
                 where: { browserId: _browserId, name: _name },
-                t: false
+                transaction: false
             });
         const { id, browserId, name, browser } = browserVersionInstance;
 
@@ -300,7 +300,7 @@ describe('BrowserVersionModel Data Checks', () => {
             await BrowserService.getBrowserVersionByQuery({
                 where: { browserId: _browserId, name: _name },
                 browserAttributes: [],
-                t: false
+                transaction: false
             });
         const { id, browserId, name } = browserVersionInstance;
 
@@ -327,7 +327,7 @@ describe('BrowserVersionModel Data Checks', () => {
         const browserVersionInstance =
             await BrowserService.getBrowserVersionByQuery({
                 where: { browserId: _browserId, name: _name },
-                t: false
+                transaction: false
             });
 
         // A3
@@ -335,7 +335,7 @@ describe('BrowserVersionModel Data Checks', () => {
     });
 
     it('should create and remove a new browserVersion', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _browserId = 1;
             const _name = randomStringGenerator();
@@ -344,17 +344,17 @@ describe('BrowserVersionModel Data Checks', () => {
             const browserVersionInstance =
                 await BrowserService.createBrowserVersion({
                     values: { browserId: _browserId, name: _name },
-                    t
+                    transaction
                 });
             const { id, browserId, name, browser } = browserVersionInstance;
 
             // A2
-            await BrowserService.removeBrowserVersionById({ id, t });
+            await BrowserService.removeBrowserVersionById({ id, transaction });
 
             const deletedBrowserVersion =
                 await BrowserService.getBrowserVersionByQuery({
                     where: { browserId, name },
-                    t
+                    transaction
                 });
 
             // after BrowserVersion created
@@ -370,7 +370,7 @@ describe('BrowserVersionModel Data Checks', () => {
     });
 
     it('should create and update a new browserVersion', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _browserId = 1;
             const _name = randomStringGenerator();
@@ -383,7 +383,7 @@ describe('BrowserVersionModel Data Checks', () => {
                         browserId: _browserId,
                         name: _name
                     },
-                    t
+                    transaction
                 });
             const { id, browserId, name, browser } = browserVersionInstance;
 
@@ -392,7 +392,7 @@ describe('BrowserVersionModel Data Checks', () => {
                 await BrowserService.updateBrowserVersionById({
                     id,
                     values: { name: _updatedName },
-                    t
+                    transaction
                 });
 
             const { name: updatedName } = updatedBrowserVersion;
@@ -412,7 +412,7 @@ describe('BrowserVersionModel Data Checks', () => {
     });
 
     it('should return same browserVersion if no update params passed', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _browserId = 1;
             const _name = '99.0.1';
@@ -424,12 +424,12 @@ describe('BrowserVersionModel Data Checks', () => {
                         browserId: _browserId,
                         name: _name
                     },
-                    t
+                    transaction
                 });
             const updatedBrowserVersion =
                 await BrowserService.updateBrowserVersionByQuery({
                     where: { browserId: _browserId, name: _name },
-                    t
+                    transaction
                 });
 
             // A3
@@ -439,7 +439,9 @@ describe('BrowserVersionModel Data Checks', () => {
 
     it('should return collection of browserVersions', async () => {
         // A1
-        const result = await BrowserService.getBrowserVersions({ t: false });
+        const result = await BrowserService.getBrowserVersions({
+            transaction: false
+        });
 
         // A3
         expect(result.length).toBeGreaterThanOrEqual(1);
@@ -465,7 +467,7 @@ describe('BrowserVersionModel Data Checks', () => {
         // A2
         const result = await BrowserService.getBrowserVersions({
             search,
-            t: false
+            transaction: false
         });
 
         // A3
@@ -491,7 +493,7 @@ describe('BrowserVersionModel Data Checks', () => {
             browserVersionAttributes: ['id', 'name'],
             browserAttributes: [],
             pagination: { enablePagination: true },
-            t: false
+            transaction: false
         });
 
         // A3

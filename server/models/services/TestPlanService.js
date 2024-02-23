@@ -123,7 +123,7 @@ const userAssociation = userAttributes => ({
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlanById = async ({
@@ -135,7 +135,7 @@ const getTestPlanById = async ({
     browserAttributes = BROWSER_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
     return ModelService.getById(TestPlan, {
         id,
@@ -150,7 +150,7 @@ const getTestPlanById = async ({
                 userAttributes
             )
         ],
-        t
+        transaction
     });
 };
 
@@ -172,7 +172,7 @@ const getTestPlanById = async ({
  * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlans = async ({
@@ -187,7 +187,7 @@ const getTestPlans = async ({
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
-    t
+    transaction
 }) => {
     // search and filtering options
     const searchQuery = search ? `%${search}%` : '';
@@ -207,7 +207,7 @@ const getTestPlans = async ({
             )
         ],
         pagination,
-        t
+        transaction
     });
 
     if (includeLatestTestPlanVersion) {
@@ -236,7 +236,7 @@ const getTestPlans = async ({
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createTestPlan = async ({
@@ -248,14 +248,14 @@ const createTestPlan = async ({
     browserAttributes,
     testPlanRunAttributes,
     userAttributes,
-    t
+    transaction
 }) => {
     const testPlan = await ModelService.create(TestPlan, {
         values: {
             title,
             directory
         },
-        t
+        transaction
     });
 
     return getTestPlanById({
@@ -267,7 +267,7 @@ const createTestPlan = async ({
         browserAttributes,
         testPlanRunAttributes,
         userAttributes,
-        t
+        transaction
     });
 };
 
@@ -282,7 +282,7 @@ const createTestPlan = async ({
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const updateTestPlanById = async ({
@@ -295,12 +295,12 @@ const updateTestPlanById = async ({
     browserAttributes,
     testPlanRunAttributes,
     userAttributes,
-    t
+    transaction
 }) => {
     await ModelService.update(TestPlan, {
         where: { id },
         values: { title },
-        t
+        transaction
     });
 
     return getTestPlanById({
@@ -312,7 +312,7 @@ const updateTestPlanById = async ({
         browserAttributes,
         testPlanRunAttributes,
         userAttributes,
-        t
+        transaction
     });
 };
 
@@ -320,11 +320,11 @@ const updateTestPlanById = async ({
  * @param {object} options
  * @param {number} options.id - id of the TestPlan record to be removed
  * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeTestPlanById = async ({ id, truncate = false, t }) => {
-    return ModelService.removeById(TestPlan, { id, truncate, t });
+const removeTestPlanById = async ({ id, truncate = false, transaction }) => {
+    return ModelService.removeById(TestPlan, { id, truncate, transaction });
 };
 
 module.exports = {

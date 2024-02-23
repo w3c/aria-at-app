@@ -121,7 +121,7 @@ const testPlanAssociation = testPlanAttributes => ({
  * @param {string[]} options.atAttributes - At attributes to be returned in the result
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlanReportById = async ({
@@ -133,7 +133,7 @@ const getTestPlanReportById = async ({
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
     return ModelService.getById(TestPlanReport, {
         id,
@@ -147,7 +147,7 @@ const getTestPlanReportById = async ({
             atAssociation(atAttributes),
             browserAssociation(browserAttributes)
         ],
-        t
+        transaction
     });
 };
 
@@ -167,7 +167,7 @@ const getTestPlanReportById = async ({
  * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getTestPlanReports = async ({
@@ -181,7 +181,7 @@ const getTestPlanReports = async ({
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
-    t
+    transaction
 }) => {
     // search and filtering options
     return ModelService.get(TestPlanReport, {
@@ -197,7 +197,7 @@ const getTestPlanReports = async ({
             browserAssociation(browserAttributes)
         ],
         pagination,
-        t
+        transaction
     });
 };
 
@@ -211,7 +211,7 @@ const getTestPlanReports = async ({
  * @param {string[]} atAttributes - At attributes to be returned in the result
  * @param {string[]} browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createTestPlanReport = async ({
@@ -223,11 +223,11 @@ const createTestPlanReport = async ({
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
     const testPlanVersion = await TestPlanVersion.findOne({
         where: { id: testPlanVersionId },
-        transaction: t
+        transaction
     });
     const testPlanReportResult = await ModelService.create(TestPlanReport, {
         values: {
@@ -236,7 +236,7 @@ const createTestPlanReport = async ({
             browserId,
             testPlanId: testPlanVersion.testPlanId
         },
-        t
+        transaction
     });
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
@@ -252,7 +252,7 @@ const createTestPlanReport = async ({
             atAssociation(atAttributes),
             browserAssociation(browserAttributes)
         ],
-        t
+        transaction
     });
 };
 
@@ -267,7 +267,7 @@ const createTestPlanReport = async ({
  * @param {string[]} options.atAttributes - At attributes to be returned in the result
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const updateTestPlanReportById = async ({
@@ -286,7 +286,7 @@ const updateTestPlanReportById = async ({
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
     await ModelService.update(TestPlanReport, {
         where: { id },
@@ -297,7 +297,7 @@ const updateTestPlanReportById = async ({
             vendorReviewStatus,
             markedFinalAt
         },
-        t
+        transaction
     });
 
     // call custom this.getById if custom attributes are being accounted for
@@ -317,11 +317,19 @@ const updateTestPlanReportById = async ({
  * @param {object} options
  * @param {string} options.id - id of the TestPlanReport record to be removed
  * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeTestPlanReportById = async ({ id, truncate = false, t }) => {
-    return ModelService.removeById(TestPlanReport, { id, truncate, t });
+const removeTestPlanReportById = async ({
+    id,
+    truncate = false,
+    transaction
+}) => {
+    return ModelService.removeById(TestPlanReport, {
+        id,
+        truncate,
+        transaction
+    });
 };
 
 /**
@@ -335,7 +343,7 @@ const removeTestPlanReportById = async ({ id, truncate = false, t }) => {
  * @param {string[]} options.atAttributes - At attributes to be returned in the result
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[*, [*]]>}
  */
 const getOrCreateTestPlanReport = async ({
@@ -347,7 +355,7 @@ const getOrCreateTestPlanReport = async ({
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
     const accumulatedResults = await ModelService.nestedGetOrCreate({
         operations: [
@@ -366,7 +374,7 @@ const getOrCreateTestPlanReport = async ({
                 }
             }
         ],
-        t
+        transaction
     });
 
     const [[{ id: testPlanReportId }, isNewTestPlanReport]] =
@@ -381,7 +389,7 @@ const getOrCreateTestPlanReport = async ({
         atAttributes,
         browserAttributes,
         userAttributes,
-        t
+        transaction
     });
 
     // If a TestPlanReport is being intentionally created that was previously marked as final,
@@ -397,7 +405,7 @@ const getOrCreateTestPlanReport = async ({
             atAttributes,
             browserAttributes,
             userAttributes,
-            t
+            transaction
         });
     }
 

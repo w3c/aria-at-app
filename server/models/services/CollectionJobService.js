@@ -184,7 +184,7 @@ const userAssociation = userAttributes => ({
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createCollectionJob = async ({
@@ -202,7 +202,7 @@ const createCollectionJob = async ({
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
     if (!testPlanRun) {
         testPlanRun = await createTestPlanRun({
@@ -211,7 +211,7 @@ const createCollectionJob = async ({
                 testPlanReportId: testPlanReportId,
                 isAutomated: true
             },
-            t
+            transaction
         });
     }
 
@@ -219,7 +219,7 @@ const createCollectionJob = async ({
 
     await ModelService.create(CollectionJob, {
         values: { id, status, testPlanRunId },
-        t
+        transaction
     });
 
     return ModelService.getById(CollectionJob, {
@@ -236,7 +236,7 @@ const createCollectionJob = async ({
                 browserAttributes
             )
         ],
-        t
+        transaction
     });
 };
 
@@ -250,7 +250,7 @@ const createCollectionJob = async ({
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getCollectionJobById = async ({
@@ -263,7 +263,7 @@ const getCollectionJobById = async ({
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
     return ModelService.getById(CollectionJob, {
         id,
@@ -279,7 +279,7 @@ const getCollectionJobById = async ({
                 browserAttributes
             )
         ],
-        t
+        transaction
     });
 };
 
@@ -299,7 +299,7 @@ const getCollectionJobById = async ({
  * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getCollectionJobs = async ({
@@ -314,7 +314,7 @@ const getCollectionJobs = async ({
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
-    t
+    transaction
 }) => {
     // search and filtering options
     const searchQuery = search ? `%${search}%` : '';
@@ -335,7 +335,7 @@ const getCollectionJobs = async ({
             )
         ],
         pagination,
-        t
+        transaction
     });
 };
 
@@ -344,10 +344,10 @@ const getCollectionJobs = async ({
  * @param {object} job - CollectionJob to trigger workflow for.
  * @param {number[]} testIds - Array of testIds
  * @param {object} options
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns Promise<CollectionJob>
  */
-const triggerWorkflow = async (job, testIds, { t }) => {
+const triggerWorkflow = async (job, testIds, { transaction }) => {
     const { testPlanVersion } = job.testPlanRun.testPlanReport;
     const { gitSha, directory } = testPlanVersion;
     try {
@@ -371,7 +371,7 @@ const triggerWorkflow = async (job, testIds, { t }) => {
         return updateCollectionJobById({
             id: job.id,
             values: { status: COLLECTION_JOB_STATUS.ERROR },
-            t
+            transaction
         });
     }
     return job;
@@ -388,7 +388,7 @@ const triggerWorkflow = async (job, testIds, { t }) => {
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const updateCollectionJobById = async ({
@@ -402,9 +402,13 @@ const updateCollectionJobById = async ({
     atAttributes = AT_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
-    await ModelService.update(CollectionJob, { where: { id }, values, t });
+    await ModelService.update(CollectionJob, {
+        where: { id },
+        values,
+        transaction
+    });
 
     return ModelService.getById(CollectionJob, {
         id,
@@ -420,7 +424,7 @@ const updateCollectionJobById = async ({
                 browserAttributes
             )
         ],
-        t
+        transaction
     });
 };
 
@@ -429,10 +433,10 @@ const updateCollectionJobById = async ({
  * @param {object} input Input object for request to retry cancelled tests
  * @param {object} input.collectionJob CollectionJob to retry cancelled tests from
  * @param {object} options
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const retryCanceledCollections = async ({ collectionJob }, { t }) => {
+const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
     if (!collectionJob) {
         throw new Error('collectionJob is required to retry cancelled tests');
     }
@@ -449,10 +453,10 @@ const retryCanceledCollections = async ({ collectionJob }, { t }) => {
 
     const job = await getCollectionJobById({
         id: collectionJob.id,
-        t
+        transaction
     });
 
-    return triggerWorkflow(job, testIds, { t });
+    return triggerWorkflow(job, testIds, { transaction });
 };
 
 /**
@@ -461,12 +465,12 @@ const retryCanceledCollections = async ({ collectionJob }, { t }) => {
  * @param {string} input.testPlanReportId id of test plan report to use for scheduling
  * @param {Array<string>} input.testIds optional: ids of tests to run
  * @param {object} options
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const scheduleCollectionJob = async (
     { testPlanReportId, testIds = null },
-    { t }
+    { transaction }
 ) => {
     const report = await getTestPlanReportById(testPlanReportId);
 
@@ -518,24 +522,26 @@ const scheduleCollectionJob = async (
             status: COLLECTION_JOB_STATUS.QUEUED,
             testPlanReportId
         },
-        t
+        transaction
     });
 
-    return triggerWorkflow(job, testIds ?? tests.map(t => t.id), { t });
+    return triggerWorkflow(job, testIds ?? tests.map(test => test.id), {
+        transaction
+    });
 };
 
 /**
- * Gets one CollectionJob and optionally updates it, or creates it if it doesn't exist.
+ * Gets one CollectionJob and optionally updates it, or creates it if it doesn'transaction exist.
  * @param {object} options
  * @param {*} options.values - These values will be used to find a matching record, or they will be used to create one
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[*, [*]]>}
  */
 const getOrCreateCollectionJob = async ({
     values: { id, status, testPlanRun, testPlanReportId },
-    t
+    transaction
 }) => {
-    const existingJob = await getCollectionJobById({ id, t });
+    const existingJob = await getCollectionJobById({ id, transaction });
 
     if (existingJob) {
         return existingJob;
@@ -548,7 +554,7 @@ const getOrCreateCollectionJob = async ({
 
         return createCollectionJob({
             values: { id, status, testPlanRun, testPlanReportId },
-            t
+            transaction
         });
     }
 };
@@ -557,16 +563,16 @@ const getOrCreateCollectionJob = async ({
  * Cancels a collection job by id through the Response Scheduler
  * @param {object} input Input object for request to cancel job
  * @param {object} options - Generic options for Sequelize
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[*, [*]]>}
  */
-const cancelCollectionJob = async ({ id }, { t }) => {
+const cancelCollectionJob = async ({ id }, { transaction }) => {
     return updateCollectionJobById({
         id,
         values: {
             status: 'CANCELLED'
         },
-        t
+        transaction
     });
 };
 
@@ -574,22 +580,26 @@ const cancelCollectionJob = async ({ id }, { t }) => {
  * @param {object} options
  * @param {string} options.id - id of the CollectionJob to be deleted
  * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const removeCollectionJobById = async ({ id, truncate = false, t }) => {
+const removeCollectionJobById = async ({
+    id,
+    truncate = false,
+    transaction
+}) => {
     // Remove test plan run, may want to allow test plan run to
     // continue existing independent of collection job
-    const collectionJob = await getCollectionJobById({ id, t });
+    const collectionJob = await getCollectionJobById({ id, transaction });
     const result = await ModelService.removeById(CollectionJob, {
         id,
         truncate,
-        t
+        transaction
     });
     await removeTestPlanRunById({
         id: collectionJob.testPlanRun?.id,
         truncate,
-        t
+        transaction
     });
     return result;
 };
@@ -599,23 +609,23 @@ const removeCollectionJobById = async ({ id, truncate = false, t }) => {
  * @param {Object} input Input object for request to restart job
  * @param {string} input.collectionJobId id of collection job to restart
  * @param {object} options
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns
  */
-const restartCollectionJob = async ({ id }, { t }) => {
+const restartCollectionJob = async ({ id }, { transaction }) => {
     const job = await updateCollectionJobById({
         id,
         values: {
             status: 'QUEUED'
         },
-        t
+        transaction
     });
 
     if (!job) {
         return null;
     }
 
-    return triggerWorkflow(job, [], { t });
+    return triggerWorkflow(job, [], { transaction });
 };
 
 module.exports = {

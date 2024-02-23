@@ -12,7 +12,10 @@ describe('RoleModel Data Checks', () => {
     it('should have valid role named `ADMIN`', async () => {
         const _name = 'ADMIN';
 
-        const role = await RoleService.getRoleByName({ name: _name, t: false });
+        const role = await RoleService.getRoleByName({
+            name: _name,
+            transaction: false
+        });
         const { name } = role;
 
         expect(name).toEqual(_name);
@@ -21,7 +24,10 @@ describe('RoleModel Data Checks', () => {
     it('should contain valid role with users array', async () => {
         const _name = 'ADMIN';
 
-        const role = await RoleService.getRoleByName({ name: _name, t: false });
+        const role = await RoleService.getRoleByName({
+            name: _name,
+            transaction: false
+        });
         const { name } = role;
 
         expect(name).toEqual(_name);
@@ -43,7 +49,7 @@ describe('RoleModel Data Checks', () => {
             name: _name,
             roleAttributes: null,
             userAttributes: [],
-            t: false
+            transaction: false
         });
         const { name } = role;
 
@@ -54,14 +60,17 @@ describe('RoleModel Data Checks', () => {
     it('should have valid role named `TESTER`', async () => {
         const _name = 'TESTER';
 
-        const role = await RoleService.getRoleByName({ name: _name, t: false });
+        const role = await RoleService.getRoleByName({
+            name: _name,
+            transaction: false
+        });
         const { name } = role;
 
         expect(name).toEqual(_name);
     });
 
     it('should only have 3 named roles (ADMIN, TESTER, and VENDOR)', async () => {
-        const roles = await RoleService.getRoles({ t: false });
+        const roles = await RoleService.getRoles({ transaction: false });
 
         expect(roles.length).toEqual(3);
         expect(roles).toContainEqual(
@@ -78,35 +87,40 @@ describe('RoleModel Data Checks', () => {
     it('should not return role for unknown role name', async () => {
         const _name = 'guest';
 
-        const role = await RoleService.getRoleByName({ name: _name, t: false });
+        const role = await RoleService.getRoleByName({
+            name: _name,
+            transaction: false
+        });
 
         expect(role).toBeNull();
     });
 
     it('should create, update and add a user to a new role', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             const _name = randomStringGenerator();
             const _updatedName = randomStringGenerator();
             const _user = 2;
 
             const role = await RoleService.createRole({
                 values: { name: _name },
-                t
+                transaction
             });
             const { name, users } = role;
 
             const updatedRole = await RoleService.updateRoleByName({
                 name: _name,
                 values: { name: _updatedName },
-                t
+                transaction
             });
             const { name: updatedName, users: updatedUsers } = updatedRole;
 
-            await UserService.addUserToRole(_user, updatedName, { t });
+            await UserService.addUserToRole(_user, updatedName, {
+                transaction
+            });
 
             const addedUserRole = await RoleService.getRoleByName({
                 name: updatedName,
-                t
+                transaction
             });
             const { name: addedUserRoleName, users: addedUserRoleUsers } =
                 addedUserRole;
@@ -134,20 +148,29 @@ describe('RoleModel Data Checks', () => {
     });
 
     it('should create and remove new a role', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             const _name = randomStringGenerator();
 
-            const rolesBeforeCreated = await RoleService.getRoles({ t });
+            const rolesBeforeCreated = await RoleService.getRoles({
+                transaction
+            });
             const rolesBeforeCreatedLength = rolesBeforeCreated.length;
 
-            await RoleService.createRole({ values: { name: _name }, t });
+            await RoleService.createRole({
+                values: { name: _name },
+                transaction
+            });
 
-            const rolesAfterCreated = await RoleService.getRoles({ t });
+            const rolesAfterCreated = await RoleService.getRoles({
+                transaction
+            });
             const rolesAfterCreatedLength = rolesAfterCreated.length;
 
-            await RoleService.removeRoleByName({ name: _name, t });
+            await RoleService.removeRoleByName({ name: _name, transaction });
 
-            const rolesAfterDeleted = await RoleService.getRoles({ t });
+            const rolesAfterDeleted = await RoleService.getRoles({
+                transaction
+            });
             const rolesAfterDeletedLength = rolesAfterDeleted.length;
 
             // after role created
@@ -161,17 +184,17 @@ describe('RoleModel Data Checks', () => {
     });
 
     it('should return same role if no update params passed', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             const _name = 'ADMIN';
 
             const originalRole = await RoleService.getRoleByName({
                 name: _name,
-                t
+                transaction
             });
             const updatedRole = await RoleService.updateRoleByName({
                 name: _name,
                 values: {},
-                t
+                transaction
             });
 
             expect(originalRole).toHaveProperty('name');
@@ -181,14 +204,17 @@ describe('RoleModel Data Checks', () => {
     });
 
     it('should return collection of roles', async () => {
-        const result = await RoleService.getRoles({ t: false });
+        const result = await RoleService.getRoles({ transaction: false });
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should return collection of roles for name query', async () => {
         const search = 'tes';
 
-        const result = await RoleService.getRoles({ search, t: false });
+        const result = await RoleService.getRoles({
+            search,
+            transaction: false
+        });
 
         expect(result).toBeInstanceOf(Array);
         expect(result.length).toBeGreaterThanOrEqual(1);
@@ -206,7 +232,7 @@ describe('RoleModel Data Checks', () => {
             roleAttributes: ['name'],
             userAttributes: [],
             pagination: { enablePagination: true },
-            t: false
+            transaction: false
         });
 
         expect(result.data.length).toBeGreaterThanOrEqual(1);
