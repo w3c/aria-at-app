@@ -1,4 +1,4 @@
-const { pick } = require('lodash');
+const { pick, omit } = require('lodash');
 const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
@@ -63,9 +63,16 @@ const conflictsResolver = async testPlanReport => {
         for (let i = 0; i < testResults[0].scenarioResults.length; i += 1) {
             const scenarioResultComparisons = testResults.map(testResult => {
                 // Note that output is not considered
-                return pick(testResult.scenarioResults[i], [
+                let picked = pick(testResult.scenarioResults[i], [
                     'unexpectedBehaviors'
                 ]);
+
+                // Ignore unexpectedBehavior details text during comparison of conflicts
+                picked.unexpectedBehaviors = picked.unexpectedBehaviors.map(
+                    unexpectedBehavior => omit(unexpectedBehavior, ['details'])
+                );
+
+                return picked;
             });
             if (!allEqual(scenarioResultComparisons)) {
                 conflictDetected({ i });

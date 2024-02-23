@@ -264,10 +264,10 @@ const TestRun = () => {
         if (titleRef.current) titleRef.current.focus();
     };
 
-    const updateLocalState = (testPlanRun, testPlanReport) => {
-        const { conflicts, runnableTests } = testPlanReport;
+    const updateLocalState = (updatedTestPlanRun, updatedTestPlanReport) => {
+        const { conflicts, runnableTests } = updatedTestPlanReport;
 
-        const testResults = testPlanRun.testResults;
+        const testResults = updatedTestPlanRun.testResults;
         const tests = runnableTests.map((test, index) => ({
             ...test,
             index,
@@ -279,6 +279,7 @@ const TestRun = () => {
         setTests(tests);
         setTestResults(testResults);
         setCurrentTest(tests[currentTestIndex]);
+        setTestPlanReport({ ...testPlanReport, conflicts });
     };
 
     if (error) {
@@ -392,6 +393,15 @@ const TestRun = () => {
             );
         }
 
+        const UnexpectedBehaviorsArray = [
+            'EXCESSIVELY_VERBOSE',
+            'UNEXPECTED_CURSOR_POSITION',
+            'SLUGGISH',
+            'AT_CRASHED',
+            'BROWSER_CRASHED',
+            'OTHER'
+        ];
+
         for (let i = 0; i < commands.length; i++) {
             let scenarioResult = { ...scenarioResults[i] };
             let assertionResults = [];
@@ -432,35 +442,14 @@ const TestRun = () => {
                 for (let i = 0; i < behaviors.length; i++) {
                     const behavior = behaviors[i];
                     if (behavior.checked) {
-                        if (i === 0)
-                            unexpectedBehaviors.push({
-                                id: 'EXCESSIVELY_VERBOSE'
-                            });
-                        if (i === 1)
-                            unexpectedBehaviors.push({
-                                id: 'UNEXPECTED_CURSOR_POSITION'
-                            });
-                        if (i === 2)
-                            unexpectedBehaviors.push({ id: 'SLUGGISH' });
-                        if (i === 3)
-                            unexpectedBehaviors.push({ id: 'AT_CRASHED' });
-                        if (i === 4)
-                            unexpectedBehaviors.push({ id: 'BROWSER_CRASHED' });
-                        if (i === 5) {
-                            const moreResult = {
-                                id: 'OTHER',
-                                otherUnexpectedBehaviorText: behavior.more.value
-                            };
-                            unexpectedBehaviors.push(
-                                captureHighlightRequired
-                                    ? {
-                                          ...moreResult,
-                                          highlightRequired:
-                                              behavior.more.highlightRequired
-                                      }
-                                    : moreResult
-                            );
-                        }
+                        unexpectedBehaviors.push({
+                            id: UnexpectedBehaviorsArray[i],
+                            details: behavior.more.value,
+                            impact: behavior.impact.toUpperCase(),
+                            highlightRequired: captureHighlightRequired
+                                ? behavior.more.highlightRequired
+                                : false
+                        });
                     }
                 }
             } else if (hasUnexpected === 'doesNotHaveUnexpected')
@@ -651,14 +640,27 @@ const TestRun = () => {
          * ....},
          * ....other assertionResults,
          * ..],
-         * ..unexpectedBehaviors: []
+         * ..unexpectedBehaviors: [
+         * ....{
+         * ......id
+         * ......impact
+         * ......details
+         * ....},
+         * ....other unexpectedBehaviors,
+         * ..]
          * }
          * */
         const formattedScenarioResults = scenarioResults.map(
             ({ assertionResults, id, output, unexpectedBehaviors }) => ({
                 id,
                 output: output,
-                unexpectedBehaviors: unexpectedBehaviors,
+                unexpectedBehaviors: unexpectedBehaviors.map(
+                    ({ id, impact, details }) => ({
+                        id,
+                        impact,
+                        details
+                    })
+                ),
                 assertionResults: assertionResults
                     // All assertions are always being passed from the TestRenderer results, but
                     // when there is a 0-priority assertion exception, an id won't be provided,

@@ -42,20 +42,6 @@ const saveTestResultCommon = async ({
         removeArrayItems: true
     });
 
-    // Some clients might send an otherUnexpectedBehaviorText for unexpectedBehaviors
-    // that are not "OTHER". As long as the otherUnexpectedBehaviorText is null or undefined,
-    // the best course of action is probably to allow it, but not save it to the database.
-    newTestResult.scenarioResults?.forEach(scenarioResult => {
-        scenarioResult.unexpectedBehaviors?.forEach(unexpectedBehavior => {
-            if (
-                unexpectedBehavior.id !== 'OTHER' &&
-                unexpectedBehavior.otherUnexpectedBehaviorText == null
-            ) {
-                delete unexpectedBehavior.otherUnexpectedBehaviorText;
-            }
-        });
-    });
-
     const isCorrupted = !deepPickEqual(
         [
             createTestResultSkeleton({ test, testPlanRun, testPlanReport }),
@@ -138,14 +124,8 @@ const assertTestResultIsValid = newTestResult => {
     };
 
     const checkUnexpectedBehavior = unexpectedBehavior => {
-        if (
-            (!!unexpectedBehavior.otherUnexpectedBehaviorText &&
-                unexpectedBehavior.id !== 'OTHER') ||
-            (!unexpectedBehavior.otherUnexpectedBehaviorText &&
-                unexpectedBehavior.id === 'OTHER')
-        ) {
-            failed = true;
-        }
+        const { impact, details } = unexpectedBehavior;
+        if (!impact || !details) failed = true;
     };
 
     const checkScenarioResult = scenarioResult => {

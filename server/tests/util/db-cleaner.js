@@ -6,12 +6,12 @@ const db = require('../../models/index');
  * @returns {*}
  */
 const dbCleaner = async callback => {
-    const t = await db.sequelize.transaction();
+    const transaction = await db.sequelize.transaction();
     try {
-        await callback(t);
-        await t.rollback();
+        await callback(transaction);
+        await transaction.rollback();
     } catch (error) {
-        await t.rollback();
+        await transaction.rollback();
         throw error;
     }
 };

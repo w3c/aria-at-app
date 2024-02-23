@@ -14,7 +14,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const testPlanVersion =
             await TestPlanVersionService.getTestPlanVersionById({
                 id: _id,
-                t: false
+                transaction: false
             });
         const {
             id,
@@ -55,7 +55,7 @@ describe('TestPlanReportModel Data Checks', () => {
                 browserAttributes: [],
                 testPlanRunAttributes: [],
                 userAttributes: [],
-                t: false
+                transaction: false
             });
         const {
             id,
@@ -89,14 +89,14 @@ describe('TestPlanReportModel Data Checks', () => {
         const testPlanVersion =
             await TestPlanVersionService.getTestPlanVersionById({
                 id: _id,
-                t: false
+                transaction: false
             });
 
         expect(testPlanVersion).toBeNull();
     });
 
     it('should create and update testPlanVersion', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _id = 99;
             const _title = randomStringGenerator();
@@ -129,7 +129,7 @@ describe('TestPlanReportModel Data Checks', () => {
                         metadata: _metadata,
                         tests: _tests
                     },
-                    t
+                    transaction
                 });
             const {
                 id: createdId,
@@ -151,7 +151,7 @@ describe('TestPlanReportModel Data Checks', () => {
                 await TestPlanVersionService.updateTestPlanVersionById({
                     id: createdId,
                     values: { title: _updatedTitle },
-                    t
+                    transaction
                 });
             const { title: updatedTitle, updatedAt: updatedUpdatedAt } =
                 updatedTestPlanVersion;
@@ -182,7 +182,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
     it('should return collection of testPlanVersions', async () => {
         const result = await TestPlanVersionService.getTestPlanVersions({
-            t: false
+            transaction: false
         });
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
@@ -192,7 +192,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
         const result = await TestPlanVersionService.getTestPlanVersions({
             search,
-            t: false
+            transaction: false
         });
 
         expect(result).toBeInstanceOf(Array);
@@ -215,7 +215,7 @@ describe('TestPlanReportModel Data Checks', () => {
             testPlanRunAttributes: [],
             userAttributes: [],
             pagination: { enablePagination: true },
-            t: false
+            transaction: false
         });
 
         expect(result.data.length).toBeGreaterThanOrEqual(1);

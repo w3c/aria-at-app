@@ -12,7 +12,7 @@ import {
 import './AddTestToQueueWithConfirmation.css';
 import {
     SCHEDULE_COLLECTION_JOB_MUTATION,
-    TEST_PLAN_RUN_REPORTS_INITIATED_BY_AUTOMATION
+    EXISTING_TEST_PLAN_REPORTS
 } from './queries';
 
 function AddTestToQueueWithConfirmation({
@@ -23,11 +23,12 @@ function AddTestToQueueWithConfirmation({
     buttonText = 'Add to Test Queue',
     triggerUpdate = () => {}
 }) {
+    const [errorMessage, setErrorMessage] = useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
     const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION);
-    const { data: testPlanReportsInitiatedByAutomation } = useQuery(
-        TEST_PLAN_RUN_REPORTS_INITIATED_BY_AUTOMATION,
+    const { data: existingTestPlanReportsData } = useQuery(
+        EXISTING_TEST_PLAN_REPORTS,
         {
             variables: {
                 testPlanVersionId: testPlanVersion?.id
@@ -36,6 +37,17 @@ function AddTestToQueueWithConfirmation({
             skip: !testPlanVersion?.id
         }
     );
+
+    const existingTestPlanReports =
+        existingTestPlanReportsData?.testPlanVersion.testPlanReports;
+
+    const conflictingReportExists = existingTestPlanReports?.some(report => {
+        return (
+            report.at.id === at?.id &&
+            report.browser.id === browser?.id &&
+            report.isFinal
+        );
+    });
 
     const { triggerLoad, loadingMessage } = useTriggerLoad();
     const buttonRef = useRef();
@@ -47,12 +59,12 @@ function AddTestToQueueWithConfirmation({
 
     const alreadyHasBotInTestPlanReport = useMemo(
         () =>
-            testPlanReportsInitiatedByAutomation?.testPlanVersion.testPlanReports.some(
+            existingTestPlanReports?.some(
                 tpr =>
                     tpr.markedFinalAt === null &&
                     tpr.draftTestPlanRuns.some(run => run.initiatedByAutomation)
             ),
-        [testPlanReportsInitiatedByAutomation?.testPlanVersion.testPlanReports]
+        [existingTestPlanReports]
     );
 
     const feedbackModalTitle =
@@ -110,7 +122,7 @@ function AddTestToQueueWithConfirmation({
         }
         return (
             <BasicModal
-                dialogClassName={'add-test-to-queue-confirmation'}
+                dialogClassName="add-test-to-queue-confirmation"
                 show={showConfirmation}
                 title={feedbackModalTitle}
                 content={feedbackModalContent}
@@ -124,6 +136,40 @@ function AddTestToQueueWithConfirmation({
                     } else {
                         await closeWithUpdate();
                     }
+                }}
+            />
+        );
+    };
+
+    const renderErrorDialog = () => {
+        return (
+            <BasicModal
+                show={errorMessage}
+                title="Conflicting Report Found"
+                content={
+                    'The report could not be created because an existing ' +
+                    'report was found on the reports page with the same AT, ' +
+                    'browser and test plan version. Would you like to return ' +
+                    'the existing report back to the test queue?'
+                }
+                closeLabel="Cancel"
+                staticBackdrop={true}
+                actions={[
+                    {
+                        label: 'Proceed',
+                        onClick: async () => {
+                            setErrorMessage(false);
+                            if (hasAutomationSupport) {
+                                setShowConfirmation(true);
+                            } else {
+                                await addTestToQueue();
+                            }
+                        }
+                    }
+                ]}
+                useOnHide
+                handleClose={async () => {
+                    setErrorMessage(false);
                 }}
             />
         );
@@ -166,10 +212,14 @@ function AddTestToQueueWithConfirmation({
                 disabled={disabled}
                 variant="secondary"
                 onClick={async () => {
-                    if (hasAutomationSupport) {
-                        setShowConfirmation(true);
+                    if (conflictingReportExists) {
+                        setErrorMessage(true);
                     } else {
-                        await addTestToQueue();
+                        if (hasAutomationSupport) {
+                            setShowConfirmation(true);
+                        } else {
+                            await addTestToQueue();
+                        }
                     }
                 }}
                 className="w-auto"
@@ -177,6 +227,7 @@ function AddTestToQueueWithConfirmation({
             >
                 {buttonText}
             </Button>
+            {renderErrorDialog()}
             {renderConfirmation()}
         </LoadingStatus>
     );

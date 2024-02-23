@@ -34,16 +34,20 @@ const { sequelize } = require('..');
  * @param {number | string} options.id - ID of the Sequelize Model to query for
  * @param {any[]} options.attributes - attributes of the Sequelize Model to be returned
  * @param {any[]} options.include - information on Sequelize Model relationships
- * @param {*} options.t - Current transaction
+ * @param {*} options.transaction - Current transaction
  * @returns {Promise<Model>} - Sequelize Model
  */
-const getById = async (model, { id, attributes = [], include = [], t }) => {
+const getById = async (
+    model,
+    { id, attributes = [], include = [], transaction }
+) => {
     if (!model) throw new Error('Model not defined');
 
-    if (!t && t !== false) {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
 
@@ -52,7 +56,7 @@ const getById = async (model, { id, attributes = [], include = [], t }) => {
         where: { id },
         attributes,
         include,
-        transaction: t
+        transaction
     });
 };
 
@@ -62,19 +66,20 @@ const getById = async (model, { id, attributes = [], include = [], t }) => {
  * @param {object} options.where - values to be used to query Sequelize Model
  * @param {any[]} options.attributes - attributes of the Sequelize Model to be returned
  * @param {any[]} options.include - information on Sequelize Model relationships
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<Model>} - Sequelize Model
  */
 const getByQuery = async (
     model,
-    { where, attributes = [], include = [], t }
+    { where, attributes = [], include = [], transaction }
 ) => {
     if (!model) throw new Error('Model not defined');
 
-    if (!t && t !== false) {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
 
@@ -82,7 +87,7 @@ const getByQuery = async (
         where: { ...where },
         attributes,
         include,
-        transaction: t
+        transaction
     });
 };
 
@@ -98,7 +103,7 @@ const getByQuery = async (
  * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} options.pagination.order - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - collection of queried Sequelize Models or paginated structure if pagination flag is enabled
  */
 const get = async (
@@ -108,15 +113,16 @@ const get = async (
         attributes = [],
         include = [],
         pagination = {},
-        t
+        transaction
     }
 ) => {
     if (!model) throw new Error('Model not defined');
 
-    if (!t && t !== false) {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
 
@@ -137,7 +143,7 @@ const get = async (
         order,
         attributes,
         include, // included fields being marked as 'required' will affect overall count for pagination
-        transaction: t
+        transaction
     };
 
     // enablePagination paginated result structure and related values
@@ -169,38 +175,40 @@ const get = async (
  * @param {Model} model - Sequelize Model instance to query for
  * @param {object} options
  * @param {object} options.params - properties to be used to create the {@param model} Sequelize Model that is being used
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.create function
  */
-const create = async (model, { values, t }) => {
+const create = async (model, { values, transaction }) => {
     if (!model) throw new Error('Model not defined');
 
-    if (!t && t !== false) {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
-    return model.create(values, { transaction: t });
+    return model.create(values, { transaction });
 };
 
 /**
  * @param {Model} model - Sequelize Model instance to query for
  * @param {object} options
  * @param {object} options.valuesList - array of properties to be used to create the {@param model} Sequelize Model that is being used
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.create function
  */
-const bulkCreate = async (model, { valuesList, t }) => {
+const bulkCreate = async (model, { valuesList, transaction }) => {
     if (!model) throw new Error('Model not defined');
 
-    if (!t && t !== false) {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
-    return model.bulkCreate(valuesList, { transaction: t });
+    return model.bulkCreate(valuesList, { transaction });
 };
 
 /**
@@ -211,17 +219,18 @@ const bulkCreate = async (model, { valuesList, t }) => {
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>} - result of the sequelize.update function
  */
-const update = async (model, { values, where, t }) => {
+const update = async (model, { values, where, transaction }) => {
     if (!model) throw new Error('Model not defined');
 
-    if (!t && t !== false) {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
 
-    return model.update(values, { where, transaction: t });
+    return model.update(values, { where, transaction });
 };
 
 /**
@@ -277,7 +286,7 @@ const update = async (model, { values, where, t }) => {
  *             };
  *         }
  *     ],
- *     t
+ *     transaction
  * });
  *
  * const [
@@ -289,14 +298,15 @@ const update = async (model, { values, where, t }) => {
  *
  * @param {object} options - Generic options for Sequelize
  * @param {[object|function]} options.operations
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[[*,Boolean]]>}
  */
-const nestedGetOrCreate = async ({ operations, t }) => {
-    if (!t && t !== false) {
+const nestedGetOrCreate = async ({ operations, transaction }) => {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
 
@@ -328,13 +338,17 @@ const nestedGetOrCreate = async ({ operations, t }) => {
                 where: bulkGetOrReplaceWhere,
                 valuesList,
                 ...returnAttributes,
-                t
+                transaction
             });
             accumulatedResults.push([records, isUpdated]);
             continue;
         }
 
-        const found = await get({ where: values, ...returnAttributes, t });
+        const found = await get({
+            where: values,
+            ...returnAttributes,
+            transaction
+        });
 
         if (found.length) {
             if (updateValues) {
@@ -342,7 +356,7 @@ const nestedGetOrCreate = async ({ operations, t }) => {
                     id: found[0].id,
                     values: updateValues,
                     ...returnAttributes,
-                    t
+                    transaction
                 });
             }
             accumulatedResults.push([found[0], false]);
@@ -352,7 +366,7 @@ const nestedGetOrCreate = async ({ operations, t }) => {
         const created = await create({
             values: { ...values, ...updateValues },
             ...returnAttributes,
-            t
+            transaction
         });
 
         accumulatedResults.push([created, true]);
@@ -367,21 +381,22 @@ const nestedGetOrCreate = async ({ operations, t }) => {
  * await bulkGetOrReplace(UserRoles, {
  *   where: { userId: 1 },
  *   valuesList: [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
- *   t,
+ *   transaction,
  * });
  *
  * @param {Model} model - Sequelize Model instance to query for
  * @param {object} where - values to be used to search Sequelize Model. Only supports exact values.
  * @param {object} valuesList - values to be replaced. Note the "where" values will be merged in so they do not need to be duplicated here.
  * @param {object} options - Generic options for Sequelize
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>} - True / false if the records were replaced
  */
-const bulkGetOrReplace = async (Model, { where, valuesList, t }) => {
-    if (!t && t !== false) {
+const bulkGetOrReplace = async (Model, { where, valuesList, transaction }) => {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
 
@@ -393,7 +408,7 @@ const bulkGetOrReplace = async (Model, { where, valuesList, t }) => {
     const persistedValues = await get(Model, {
         where,
         attributes: [...whereKeys, ...comparisonKeys],
-        t
+        transaction
     });
 
     const isUpdated =
@@ -417,7 +432,7 @@ const bulkGetOrReplace = async (Model, { where, valuesList, t }) => {
 
     if (isUpdated) {
         // eslint-disable-next-line no-use-before-define
-        await removeByQuery(Model, { where, t });
+        await removeByQuery(Model, { where, transaction });
 
         if (valuesList.length !== 0) {
             const fullRecordValues = valuesList.map(expectedValue => ({
@@ -425,7 +440,10 @@ const bulkGetOrReplace = async (Model, { where, valuesList, t }) => {
                 ...expectedValue
             }));
 
-            await bulkCreate(Model, { valuesList: fullRecordValues, t });
+            await bulkCreate(Model, {
+                valuesList: fullRecordValues,
+                transaction
+            });
         }
     }
 
@@ -438,23 +456,24 @@ const bulkGetOrReplace = async (Model, { where, valuesList, t }) => {
  * @param {object} options
  * @param {number | string} options.id - ID of the Sequelize Model to be removed
  * @param {boolean} options.truncate - enables the truncate option to be used when running a deletion
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>} - returns true if record was deleted
  */
-const removeById = async (model, { id, truncate = false, t }) => {
+const removeById = async (model, { id, truncate = false, transaction }) => {
     if (!model) throw new Error('Model not defined');
 
-    if (!t && t !== false) {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
 
     await model.destroy({
         where: { id },
         truncate,
-        transaction: t
+        transaction
     });
 
     return true;
@@ -465,20 +484,24 @@ const removeById = async (model, { id, truncate = false, t }) => {
  * @param {object} options
  * @param options.where - query params to be used to find the Sequelize Models to be removed
  * @param {boolean} options.truncate - enables the truncate option to be used when running a deletion
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>} - returns true if record was deleted
  */
-const removeByQuery = async (model, { where, truncate = false, t }) => {
+const removeByQuery = async (
+    model,
+    { where, truncate = false, transaction }
+) => {
     if (!model) throw new Error('Model not defined');
 
-    if (!t && t !== false) {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
 
-    await model.destroy({ where, truncate, transaction: t });
+    await model.destroy({ where, truncate, transaction });
 
     return true;
 };
@@ -488,16 +511,17 @@ const removeByQuery = async (model, { where, truncate = false, t }) => {
  * @param {string} query - raw SQL query string to be executed
  * @returns {Promise<*>} - results of the raw SQL query after being ran
  */
-const rawQuery = async (query, { t }) => {
-    if (!t && t !== false) {
+const rawQuery = async (query, { transaction }) => {
+    if (!transaction && transaction !== false) {
         throw new Error(
-            'Please provide a transaction via the "t" field or pass a value ' +
-                'of false to specify that a transaction is not needed'
+            'Please provide a transaction via the "transaction" field or ' +
+                'pass a value of false to specify that a transaction is not ' +
+                'needed'
         );
     }
 
     const [results /*, metadata*/] = await sequelize.query(query, {
-        transaction: t
+        transaction
     });
 
     return results;

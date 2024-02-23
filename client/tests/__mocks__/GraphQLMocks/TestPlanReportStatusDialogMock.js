@@ -399,8 +399,15 @@ export default (
                         {
                             id: '1',
                             markedFinalAt: '2021-01-01T00:00:00.000Z',
+                            isFinal: true,
                             draftTestPlanRuns: {
                                 initiatedByAutomation: true
+                            },
+                            at: {
+                                id: '1'
+                            },
+                            browser: {
+                                id: '2'
                             }
                         }
                     ]

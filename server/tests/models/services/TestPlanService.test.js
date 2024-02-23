@@ -13,7 +13,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
         const testPlan = await TestPlanService.getTestPlanById({
             id: _id,
-            t: false
+            transaction: false
         });
         const { id, title, directory } = testPlan;
 
@@ -35,7 +35,7 @@ describe('TestPlanReportModel Data Checks', () => {
             browserAttributes: [],
             testPlanRunAttributes: [],
             userAttributes: [],
-            t: false
+            transaction: false
         });
         const { id, title, directory } = testPlan;
 
@@ -50,14 +50,14 @@ describe('TestPlanReportModel Data Checks', () => {
 
         const testPlan = await TestPlanService.getTestPlanById({
             id: _id,
-            t: false
+            transaction: false
         });
 
         expect(testPlan).toBeNull();
     });
 
-    it('should create and update testPlan', async () => {
-        await dbCleaner(async t => {
+    it('should create, update and remove testPlan', async () => {
+        await dbCleaner(async transaction => {
             // A1
             const _title = randomStringGenerator();
             const _directory = 'checkbox';
@@ -67,7 +67,7 @@ describe('TestPlanReportModel Data Checks', () => {
             // A2
             const testPlan = await TestPlanService.createTestPlan({
                 values: { title: _title, directory: _directory },
-                t
+                transaction
             });
             const {
                 id: createdId,
@@ -80,13 +80,23 @@ describe('TestPlanReportModel Data Checks', () => {
             const updatedTestPlan = await TestPlanService.updateTestPlanById({
                 id: createdId,
                 values: { title: _updatedTitle },
-                t
+                transaction
             });
             const {
                 id: updatedId,
                 title: updatedTitle,
                 updatedAt: updatedUpdatedAt
             } = updatedTestPlan;
+
+            await TestPlanService.removeTestPlanById({
+                id: createdId,
+                transaction
+            });
+
+            const deletedTestPlan = await TestPlanService.getTestPlanById({
+                id: createdId,
+                transaction
+            });
 
             // A3
             // After testPlan created
@@ -97,6 +107,9 @@ describe('TestPlanReportModel Data Checks', () => {
             // After update
             expect(updatedTitle).toBe(_updatedTitle);
 
+            // After delete
+            expect(deletedTestPlan).toBeNull();
+
             // Confirm that updates are not automatically managed - this
             // updatedAt refers to the source code.
             expect(updatedUpdatedAt).toEqual(createdUpdatedAt);
@@ -105,7 +118,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
     it('should return collection of testPlans', async () => {
         const result = await TestPlanService.getTestPlans({
-            t: false
+            transaction: false
         });
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
@@ -115,7 +128,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
         const result = await TestPlanService.getTestPlans({
             search,
-            t: false
+            transaction: false
         });
 
         expect(result).toBeInstanceOf(Array);
@@ -139,7 +152,7 @@ describe('TestPlanReportModel Data Checks', () => {
             testPlanRunAttributes: [],
             userAttributes: [],
             pagination: { enablePagination: true },
-            t: false
+            transaction: false
         });
 
         expect(result.data.length).toBeGreaterThanOrEqual(1);

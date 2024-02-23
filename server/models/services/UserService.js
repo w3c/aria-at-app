@@ -49,7 +49,7 @@ const testPlanRunAssociation = testPlanRunAttributes => ({
  * @param {string[]} options.roleAttributes - Role attributes to be returned in the result
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getUserById = async ({
@@ -58,7 +58,7 @@ const getUserById = async ({
     roleAttributes = ROLE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    t
+    transaction
 }) => {
     return ModelService.getById(User, {
         id,
@@ -68,7 +68,7 @@ const getUserById = async ({
             atAssociation(atAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
-        t
+        transaction
     });
 };
 
@@ -80,7 +80,7 @@ const getUserById = async ({
  * @param {string[]} options.roleAttributes - Role attributes to be returned in the result
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getUserByUsername = async ({
@@ -89,7 +89,7 @@ const getUserByUsername = async ({
     roleAttributes = ROLE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    t
+    transaction
 }) => {
     return ModelService.getByQuery(User, {
         where: { username },
@@ -99,7 +99,7 @@ const getUserByUsername = async ({
             atAssociation(atAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
-        t
+        transaction
     });
 };
 
@@ -116,7 +116,7 @@ const getUserByUsername = async ({
  * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} options.pagination.order expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getUsers = async ({
@@ -127,7 +127,7 @@ const getUsers = async ({
     atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     pagination = {},
-    t
+    transaction
 }) => {
     // search and filtering options
     const searchQuery = search ? `%${search}%` : '';
@@ -144,7 +144,7 @@ const getUsers = async ({
             testPlanRunAssociation(testPlanRunAttributes)
         ],
         pagination,
-        t
+        transaction
     });
 };
 
@@ -158,7 +158,7 @@ const getUsers = async ({
  * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results
  * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getUserRoles = async ({
@@ -166,7 +166,7 @@ const getUserRoles = async ({
     where = {},
     userRolesAttributes = USER_ROLES_ATTRIBUTES,
     pagination = {},
-    t
+    transaction
 }) => {
     if (search) throw new Error('Not implemented');
 
@@ -175,7 +175,7 @@ const getUserRoles = async ({
         attributes: userRolesAttributes,
         include: [],
         pagination,
-        t
+        transaction
     });
 };
 
@@ -189,7 +189,7 @@ const getUserRoles = async ({
  * @param {number} pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results
  * @param {boolean} pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getUserAts = async ({
@@ -197,7 +197,7 @@ const getUserAts = async ({
     where = {},
     userAtsAttributes = USER_ATS_ATTRIBUTES,
     pagination = {},
-    t
+    transaction
 }) => {
     if (search) throw new Error('Not implemented');
 
@@ -206,7 +206,7 @@ const getUserAts = async ({
         attributes: userAtsAttributes,
         include: [],
         pagination,
-        t
+        transaction
     });
 };
 
@@ -217,7 +217,7 @@ const getUserAts = async ({
  * @param {string[]} options.roleAttributes - Role attributes to be returned in the result
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createUser = async ({
@@ -226,11 +226,11 @@ const createUser = async ({
     roleAttributes = ROLE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    t
+    transaction
 }) => {
     const userResult = await ModelService.create(User, {
         values: { username },
-        t
+        transaction
     });
     const { id } = userResult;
 
@@ -243,7 +243,7 @@ const createUser = async ({
             atAssociation(atAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
-        t
+        transaction
     });
 };
 
@@ -255,7 +255,7 @@ const createUser = async ({
  * @param {string[]} options.roleAttributes - Role attributes to be returned in the result
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const updateUserById = async ({
@@ -265,9 +265,13 @@ const updateUserById = async ({
     roleAttributes = ROLE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    t
+    transaction
 }) => {
-    await ModelService.update(User, { where: { id }, values: { username }, t });
+    await ModelService.update(User, {
+        where: { id },
+        values: { username },
+        transaction
+    });
 
     return ModelService.getById(User, {
         id,
@@ -277,7 +281,7 @@ const updateUserById = async ({
             atAssociation(atAttributes),
             testPlanRunAssociation(testPlanRunAttributes)
         ],
-        t
+        transaction
     });
 };
 
@@ -285,11 +289,11 @@ const updateUserById = async ({
  * @param {object} options
  * @param {number} options.id - id of the User record to be removed
  * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeUserById = async ({ id, truncate = false, t }) => {
-    return ModelService.removeById(User, { id, truncate, t });
+const removeUserById = async ({ id, truncate = false, transaction }) => {
+    return ModelService.removeById(User, { id, truncate, transaction });
 };
 
 /**
@@ -299,32 +303,32 @@ const removeUserById = async ({ id, truncate = false, t }) => {
  *     where: { userId: 1 },
  *     values: [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
  *     userRolesAttributes: ['roleName'],
- *     t
+ *     transaction
  * });
  *
  * @param {object} where - values to be used to search Sequelize Model. Only supports exact values.
- * @param {object} expectedValues - array of objects containing a "roleName"
+ * @param {object} valuesList - array of objects containing a "roleName"
  * @param {string[]} userRolesAttributes - UserRoles attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const bulkGetOrReplaceUserRoles = async ({
     where: { userId },
     valuesList,
     userRolesAttributes,
-    t
+    transaction
 }) => {
     const isUpdated = await ModelService.bulkGetOrReplace(UserRoles, {
         where: { userId },
         valuesList,
-        t
+        transaction
     });
 
     const records = await getUserRoles({
         where: { userId },
         attributes: userRolesAttributes,
-        t
+        transaction
     });
 
     return [records, isUpdated];
@@ -335,34 +339,34 @@ const bulkGetOrReplaceUserRoles = async ({
  * @example
  * await bulkGetOrReplaceUserAts({
  *   where: { userId: 1 },
- *   values: [{ atId: 1 }, { atId: 2 }],
+ *   valuesList: [{ atId: 1 }, { atId: 2 }],
  *   userAtsAttributes: ['atId'],
- *   t
+ *   transaction
  * });
  *
  * @param {object} options
  * @param {object} options.where - values to be used to search Sequelize Model. Only supports exact values.
  * @param {object} options.valuesList - array of objects containing an "atId"
  * @param {string[]} options.userAtsAttributes - UserAts attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const bulkGetOrReplaceUserAts = async ({
     where: { userId },
     valuesList,
     userAtsAttributes,
-    t
+    transaction
 }) => {
     const isUpdated = await ModelService.bulkGetOrReplace(UserAts, {
         where: { userId },
         valuesList,
-        t
+        transaction
     });
 
     const records = await getUserAts({
         where: { userId },
         userAtsAttributes,
-        t
+        transaction
     });
 
     return [records, isUpdated];
@@ -377,7 +381,7 @@ const bulkGetOrReplaceUserAts = async ({
  * @param {string[]} options.roleAttributes - Role attributes to be returned in the result
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<[*, boolean]>}
  */
 const getOrCreateUser = async ({
@@ -387,7 +391,7 @@ const getOrCreateUser = async ({
     roleAttributes = ROLE_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    t
+    transaction
 }) => {
     const accumulatedResults = await ModelService.nestedGetOrCreate({
         operations: [
@@ -407,7 +411,7 @@ const getOrCreateUser = async ({
                 };
             }
         ],
-        t
+        transaction
     });
 
     const userId = accumulatedResults[0][0].id;
@@ -418,7 +422,7 @@ const getOrCreateUser = async ({
         roleAttributes,
         atAttributes,
         testPlanRunAttributes,
-        t
+        transaction
     });
 
     return [user, isNewUser];
@@ -431,30 +435,27 @@ const getOrCreateUser = async ({
  * @param {number} id - id of the User that the role will be added for
  * @param {string} role - role to be assigned to the User record referenced by {@param id}
  * @param {object} options
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const addUserToRole = async (id, role, { t }) => {
+const addUserRole = async (id, role, { transaction }) => {
     return ModelService.create(UserRoles, {
         values: { userId: id, roleName: role },
-        t
+        transaction
     });
 };
 
 /**
- * @param {number} id - id of the User that the role will be removed from
- * @param {string} role - role to be removed for the User record referenced by {@param id}
+ * @param {number} userId - id of the User that the role will be removed from
+ * @param {string} roleName - role to be removed for the User record referenced by {@param id}
  * @param {object} options
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const deleteUserFromRole = async (id, role, { t }) => {
+const removeUserRole = async (userId, roleName, { transaction }) => {
     return ModelService.removeByQuery(UserRoles, {
-        where: {
-            userId: id,
-            roleName: role
-        },
-        t
+        where: { userId, roleName },
+        transaction
     });
 };
 
@@ -473,6 +474,6 @@ module.exports = {
     getOrCreateUser,
 
     // Custom Functions
-    addUserToRole,
-    deleteUserFromRole
+    addUserRole,
+    removeUserRole
 };

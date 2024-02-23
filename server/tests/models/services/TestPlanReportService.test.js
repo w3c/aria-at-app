@@ -13,7 +13,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const testPlanReport =
             await TestPlanReportService.getTestPlanReportById({
                 id: _id,
-                t: false
+                transaction: false
             });
         const { id, testPlanVersionId, createdAt } = testPlanReport;
 
@@ -38,7 +38,7 @@ describe('TestPlanReportModel Data Checks', () => {
                 atAttributes: [],
                 browserAttributes: [],
                 userAttributes: [],
-                t: false
+                transaction: false
             });
 
         const { id, testPlanVersionId, createdAt, atId, browserId } =
@@ -61,7 +61,7 @@ describe('TestPlanReportModel Data Checks', () => {
         const testPlanReport =
             await TestPlanReportService.getTestPlanReportById({
                 id: _id,
-                t: false
+                transaction: false
             });
 
         expect(testPlanReport).toBeNull();
@@ -69,7 +69,7 @@ describe('TestPlanReportModel Data Checks', () => {
 
     it('should return collection of testPlanReports', async () => {
         const result = await TestPlanReportService.getTestPlanReports({
-            t: false
+            transaction: false
         });
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
@@ -83,7 +83,7 @@ describe('TestPlanReportModel Data Checks', () => {
             browserAttributes: [],
             userAttributes: [],
             pagination: { enablePagination: true },
-            t: false
+            transaction: false
         });
 
         expect(result.data.length).toBeGreaterThanOrEqual(1);
@@ -103,8 +103,8 @@ describe('TestPlanReportModel Data Checks', () => {
         );
     });
 
-    it('should create TestPlanReport', async () => {
-        await dbCleaner(async t => {
+    it('should create, update and remove TestPlanReport', async () => {
+        await dbCleaner(async transaction => {
             const _atId = 1;
             const _browserId = 1;
             const _testPlanVersionId = 3;
@@ -116,7 +116,25 @@ describe('TestPlanReportModel Data Checks', () => {
                         atId: _atId,
                         browserId: _browserId
                     },
-                    t
+                    transaction
+                });
+
+            const updatedTestPlanReport =
+                await TestPlanReportService.updateTestPlanReportById({
+                    id: testPlanReport.id,
+                    values: { metrics: { isExcellent: true } },
+                    transaction
+                });
+
+            await TestPlanReportService.removeTestPlanReportById({
+                id: testPlanReport.id,
+                transaction
+            });
+
+            const deletedTestPlanReport =
+                await TestPlanReportService.getTestPlanReportById({
+                    id: testPlanReport.id,
+                    transaction
                 });
 
             expect(testPlanReport).toEqual(
@@ -133,11 +151,15 @@ describe('TestPlanReportModel Data Checks', () => {
                     })
                 })
             );
+            expect(testPlanReport.metrics).not.toEqual(
+                updatedTestPlanReport.metrics
+            );
+            expect(deletedTestPlanReport).toBeNull();
         });
     });
 
     it('should getOrCreate TestPlanReport', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _testPlanVersionId = 2;
             const _atId = 2;
@@ -151,7 +173,7 @@ describe('TestPlanReportModel Data Checks', () => {
                         atId: _atId,
                         browserId: _browserId
                     },
-                    t
+                    transaction
                 });
 
             // A3

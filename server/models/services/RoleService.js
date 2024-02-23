@@ -21,20 +21,20 @@ const userAssociation = userAttributes => ({
  * @param {string} options.name - name of Role to be retrieved
  * @param {string[]} options.roleAttributes - Role attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getRoleByName = async ({
     name,
     roleAttributes = ROLE_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
     return ModelService.getByQuery(Role, {
         where: { name },
         attributes: roleAttributes,
         include: [userAssociation(userAttributes)],
-        t
+        transaction
     });
 };
 
@@ -49,7 +49,7 @@ const getRoleByName = async ({
  * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
  * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
  * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const getRoles = async ({
@@ -58,7 +58,7 @@ const getRoles = async ({
     roleAttributes = ROLE_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
     pagination = {},
-    t
+    transaction
 }) => {
     // search and filtering options
     const searchQuery = search ? `%${search}%` : '';
@@ -69,7 +69,7 @@ const getRoles = async ({
         attributes: roleAttributes,
         include: [userAssociation(userAttributes)],
         pagination,
-        t
+        transaction
     });
 };
 
@@ -78,16 +78,19 @@ const getRoles = async ({
  * @param {object} values - values to be used to create the Role
  * @param {string[]} roleAttributes - Role attributes to be returned in the result
  * @param {string[]} userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createRole = async ({
     values: { name },
     roleAttributes = ROLE_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
-    const role = await ModelService.create(Role, { values: { name }, t });
+    const role = await ModelService.create(Role, {
+        values: { name },
+        transaction
+    });
     const { name: createdName } = role; // in case some Postgres function is ever written to modify the the name value on insert
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
@@ -95,7 +98,7 @@ const createRole = async ({
         name: createdName,
         roleAttributes,
         userAttributes,
-        t
+        transaction
     });
 };
 
@@ -105,7 +108,7 @@ const createRole = async ({
  * @param {object} options.values - values to be used to update columns for the record being referenced for {@param id}
  * @param {string[]} options.roleAttributes - Role attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const updateRoleByName = async ({
@@ -113,16 +116,16 @@ const updateRoleByName = async ({
     values = {},
     roleAttributes = ROLE_ATTRIBUTES,
     userAttributes = USER_ATTRIBUTES,
-    t
+    transaction
 }) => {
-    await ModelService.update(Role, { where: { name }, values, t });
+    await ModelService.update(Role, { where: { name }, values, transaction });
     const { name: updatedName } = values;
 
     return getRoleByName({
         name: updatedName || name,
         roleAttributes,
         userAttributes,
-        t
+        transaction
     });
 };
 
@@ -130,14 +133,14 @@ const updateRoleByName = async ({
  * @param {object} options
  * @param {string} options.name - name of the Role record to be removed
  * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
- * @param {*} options.t - Sequelize transaction
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeRoleByName = async ({ name, truncate = false, t }) => {
+const removeRoleByName = async ({ name, truncate = false, transaction }) => {
     return ModelService.removeByQuery(Role, {
         where: { name },
         truncate,
-        t
+        transaction
     });
 };
 

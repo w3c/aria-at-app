@@ -26,7 +26,7 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for getById', async () => {
         const getById = async () => {
-            await ModelService.getById(null, { t: false });
+            await ModelService.getById(null, { transaction: false });
         };
 
         await expect(getById()).rejects.toThrow(/not defined/gi);
@@ -34,7 +34,7 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for getByQuery', async () => {
         const getByQuery = async () => {
-            await ModelService.getByQuery(null, { t: false });
+            await ModelService.getByQuery(null, { transaction: false });
         };
 
         await expect(getByQuery()).rejects.toThrow(/not defined/gi);
@@ -42,7 +42,7 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for get', async () => {
         const get = async () => {
-            await ModelService.get(null, { t: false });
+            await ModelService.get(null, { transaction: false });
         };
 
         await expect(get()).rejects.toThrow(/not defined/gi);
@@ -51,7 +51,7 @@ describe('ModelService', () => {
     it('should throw error if model not passed for create', async () => {
         const create = async () => {
             await dbCleaner(async () => {
-                await ModelService.create(null, { t: false });
+                await ModelService.create(null, { transaction: false });
             });
         };
 
@@ -61,7 +61,7 @@ describe('ModelService', () => {
     it('should throw error if model not passed for update', async () => {
         const update = async () => {
             await dbCleaner(async () => {
-                await ModelService.update(null, { t: false });
+                await ModelService.update(null, { transaction: false });
             });
         };
 
@@ -71,7 +71,7 @@ describe('ModelService', () => {
     it('should throw error if model not passed for removeById', async () => {
         const removeById = async () => {
             await dbCleaner(async () => {
-                await ModelService.removeById(null, { t: false });
+                await ModelService.removeById(null, { transaction: false });
             });
         };
 
@@ -81,7 +81,7 @@ describe('ModelService', () => {
     it('should throw error if model not passed for removeByQuery', async () => {
         const removeByQuery = async () => {
             await dbCleaner(async () => {
-                await ModelService.removeByQuery(null, { t: false });
+                await ModelService.removeByQuery(null, { transaction: false });
             });
         };
 
@@ -91,7 +91,7 @@ describe('ModelService', () => {
     it('should throw error if model not passed for bulkCreate', async () => {
         const bulkCreate = async () => {
             await dbCleaner(async () => {
-                await ModelService.bulkCreate(null, { t: false });
+                await ModelService.bulkCreate(null, { transaction: false });
             });
         };
 
@@ -149,7 +149,7 @@ describe('ModelService', () => {
     });
 
     it('should support nestedGetOrCreate', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             const _atId = 2;
             const _atVersion = '2222.0';
             const _browserId = 1;
@@ -173,7 +173,7 @@ describe('ModelService', () => {
                         returnAttributes: {}
                     }
                 ],
-                t
+                transaction
             });
 
             expect(results).toEqual([
@@ -196,7 +196,7 @@ describe('ModelService', () => {
     });
 
     it('should support bulkGetOrReplace', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             const adminUserId = 1;
 
             const updatedToAdmin = await ModelService.bulkGetOrReplace(
@@ -204,7 +204,7 @@ describe('ModelService', () => {
                 {
                     where: { userId: adminUserId },
                     valuesList: [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
-                    t
+                    transaction
                 }
             );
 
@@ -213,7 +213,7 @@ describe('ModelService', () => {
                 {
                     where: { userId: adminUserId },
                     valuesList: [{ roleName: 'TESTER' }],
-                    t
+                    transaction
                 }
             );
 
@@ -224,7 +224,7 @@ describe('ModelService', () => {
 
     it('should return result for raw query', async () => {
         const result = await ModelService.rawQuery(`SELECT * FROM "User"`, {
-            t: false
+            transaction: false
         });
 
         expect(result).toBeTruthy();

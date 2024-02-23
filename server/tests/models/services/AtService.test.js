@@ -13,7 +13,7 @@ describe('AtModel Data Checks', () => {
         const _id = 1;
 
         // A2
-        const at = await AtService.getAtById({ id: _id, t: false });
+        const at = await AtService.getAtById({ id: _id, transaction: false });
         const { id, name } = at;
 
         // A3
@@ -39,7 +39,7 @@ describe('AtModel Data Checks', () => {
             atVersionAttributes: [],
             atModeAttributes: [],
             browserAttributes: [],
-            t: false
+            transaction: false
         });
         const { id, name } = at;
 
@@ -61,7 +61,7 @@ describe('AtModel Data Checks', () => {
         const _id = 53935;
 
         // A2
-        const at = await AtService.getAtById({ id: _id, t: false });
+        const at = await AtService.getAtById({ id: _id, transaction: false });
 
         // A3
         expect(at).toBeNull();
@@ -72,7 +72,7 @@ describe('AtModel Data Checks', () => {
         const _id = 1;
 
         // A2
-        const at = await AtService.getAtById({ id: _id, t: false });
+        const at = await AtService.getAtById({ id: _id, transaction: false });
         const { atVersions } = at;
 
         // A3
@@ -85,7 +85,7 @@ describe('AtModel Data Checks', () => {
         const _id = 1;
 
         // A2
-        const at = await AtService.getAtById({ id: _id, t: false });
+        const at = await AtService.getAtById({ id: _id, transaction: false });
         const { modes } = at;
 
         // A3
@@ -98,7 +98,7 @@ describe('AtModel Data Checks', () => {
         const _id = 1;
 
         // A2
-        const at = await AtService.getAtById({ id: _id, t: false });
+        const at = await AtService.getAtById({ id: _id, transaction: false });
         const { browsers } = at;
 
         // A3
@@ -107,17 +107,20 @@ describe('AtModel Data Checks', () => {
     });
 
     it('should create and remove a new at', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _name = randomStringGenerator();
 
             // A2 - create at
-            const at = await AtService.createAt({ values: { name: _name }, t });
+            const at = await AtService.createAt({
+                values: { name: _name },
+                transaction
+            });
             const { id, name } = at;
 
             // A2 - remove at
-            await AtService.removeAtById({ id, t });
-            const deletedAt = await AtService.getAtById({ id, t });
+            await AtService.removeAtById({ id, transaction });
+            const deletedAt = await AtService.getAtById({ id, transaction });
 
             // after at created
             expect(id).toBeTruthy();
@@ -129,20 +132,23 @@ describe('AtModel Data Checks', () => {
     });
 
     it('should create and update a new at', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _name = randomStringGenerator();
             const _updatedName = randomStringGenerator();
 
             // A2 - create at
-            const at = await AtService.createAt({ values: { name: _name }, t });
+            const at = await AtService.createAt({
+                values: { name: _name },
+                transaction
+            });
             const { id, name } = at;
 
             // A2 - update at
             const updatedAt = await AtService.updateAtById({
                 id,
                 values: { name: _updatedName },
-                t
+                transaction
             });
             const { name: updatedName } = updatedAt;
 
@@ -158,16 +164,19 @@ describe('AtModel Data Checks', () => {
     });
 
     it('should return same at if no update params passed', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _id = 1;
 
             // A2
-            const originalAt = await AtService.getAtById({ id: _id, t });
+            const originalAt = await AtService.getAtById({
+                id: _id,
+                transaction
+            });
             const updatedAt = await AtService.updateAtById({
                 id: _id,
                 values: {},
-                t
+                transaction
             });
 
             // A3
@@ -177,7 +186,7 @@ describe('AtModel Data Checks', () => {
 
     it('should return collection of ats', async () => {
         // A1
-        const result = await AtService.getAts({ t: false });
+        const result = await AtService.getAts({ transaction: false });
 
         // A3
         expect(result.length).toBeGreaterThanOrEqual(1);
@@ -199,7 +208,7 @@ describe('AtModel Data Checks', () => {
         const search = 'nvd';
 
         // A2
-        const result = await AtService.getAts({ search, t: false });
+        const result = await AtService.getAts({ search, transaction: false });
 
         // A3
         expect(result).toBeInstanceOf(Array);
@@ -227,7 +236,7 @@ describe('AtModel Data Checks', () => {
             pagination: {
                 enablePagination: true
             },
-            t: false
+            transaction: false
         });
 
         // A3
@@ -257,7 +266,7 @@ describe('AtVersionModel Data Checks', () => {
         // A2
         const atVersion = await AtService.getAtVersionById({
             id: _id,
-            t: false
+            transaction: false
         });
         const { id, name, at, releasedAt } = atVersion;
 
@@ -286,7 +295,7 @@ describe('AtVersionModel Data Checks', () => {
                 name: _atVersion,
                 releasedAt: _releasedAt
             },
-            t: false
+            transaction: false
         });
         const { atId, name, at, releasedAt } = atVersionInstance;
 
@@ -318,7 +327,7 @@ describe('AtVersionModel Data Checks', () => {
         const atVersionInstance = await AtService.getAtVersionByQuery({
             where: { atId: _atId, name: _atVersion, releasedAt: _releasedAt },
             atAttributes: [],
-            t: false
+            transaction: false
         });
         const { atId, name } = atVersionInstance;
 
@@ -340,7 +349,7 @@ describe('AtVersionModel Data Checks', () => {
         // A2
         const atVersionResult = await AtService.getAtVersionByQuery({
             where: { atId: _atId, name: _atVersion, releasedAt: _releasedAt },
-            t: false
+            transaction: false
         });
 
         // A3
@@ -348,7 +357,7 @@ describe('AtVersionModel Data Checks', () => {
     });
 
     it('should create and remove a new atVersion', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _atId = 1;
             const _atVersion = randomStringGenerator();
@@ -361,14 +370,53 @@ describe('AtVersionModel Data Checks', () => {
                     name: _atVersion,
                     releasedAt: _releasedAt
                 },
-                t
+                transaction
+            });
+            const { atId, name, at } = atVersionInstance;
+
+            // A2
+            await AtService.removeAtVersionById({
+                id: atId,
+                transaction
+            });
+            const deletedAtVersion = await AtService.getAtVersionById({
+                id: atId,
+                transaction
+            });
+
+            // after atVersion created
+            expect(atId).toEqual(_atId);
+            expect(name).toEqual(_atVersion);
+            expect(at).toHaveProperty('id');
+            expect(at).toHaveProperty('name');
+
+            // after atVersion removed
+            expect(deletedAtVersion).toBeNull();
+        });
+    });
+
+    it('should create and remove an atVersion by query', async () => {
+        await dbCleaner(async transaction => {
+            // A1
+            const _atId = 1;
+            const _atVersion = randomStringGenerator();
+            const _releasedAt = new Date('2022-05-01 20:00:00-04');
+
+            // A2
+            const atVersionInstance = await AtService.createAtVersion({
+                values: {
+                    atId: _atId,
+                    name: _atVersion,
+                    releasedAt: _releasedAt
+                },
+                transaction
             });
             const { atId, name, at, releasedAt } = atVersionInstance;
 
             // A2
             await AtService.removeAtVersionByQuery({
                 where: { atId, name, releasedAt },
-                t
+                transaction
             });
             const deletedAtVersion = await AtService.getAtVersionByQuery({
                 where: {
@@ -376,7 +424,7 @@ describe('AtVersionModel Data Checks', () => {
                     name,
                     releasedAt
                 },
-                t
+                transaction
             });
 
             // after atVersion created
@@ -391,7 +439,7 @@ describe('AtVersionModel Data Checks', () => {
     });
 
     it('should create and update a new atVersion', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _atId = 1;
             const _atVersion = randomStringGenerator();
@@ -400,7 +448,7 @@ describe('AtVersionModel Data Checks', () => {
             // A2
             const atVersionInstance = await AtService.createAtVersion({
                 values: { atId: _atId, name: _atVersion },
-                t
+                transaction
             });
             const { id, atId, name, at } = atVersionInstance;
 
@@ -409,7 +457,7 @@ describe('AtVersionModel Data Checks', () => {
                 await AtService.updateAtVersionById({
                     id,
                     values: { name: _updatedAtVersion },
-                    t
+                    transaction
                 });
             const { name: updatedAtVersion } = updatedAtVersionInstance;
 
@@ -427,7 +475,7 @@ describe('AtVersionModel Data Checks', () => {
     });
 
     it('should return same atVersion if no update params passed', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _atId = 1;
             const _atVersion = '2021.2111.13';
@@ -440,7 +488,7 @@ describe('AtVersionModel Data Checks', () => {
                     name: _atVersion,
                     releasedAt: _releasedAt
                 },
-                t
+                transaction
             });
             const updatedAtVersion = await AtService.updateAtVersionByQuery({
                 where: {
@@ -449,7 +497,7 @@ describe('AtVersionModel Data Checks', () => {
                     releasedAt: _releasedAt
                 },
                 values: {},
-                t
+                transaction
             });
 
             // A3
@@ -459,7 +507,7 @@ describe('AtVersionModel Data Checks', () => {
 
     it('should return collection of atVersions', async () => {
         // A1
-        const result = await AtService.getAtVersions({ t: false });
+        const result = await AtService.getAtVersions({ transaction: false });
 
         // A3
         expect(result.length).toBeGreaterThanOrEqual(1);
@@ -484,7 +532,10 @@ describe('AtVersionModel Data Checks', () => {
         const search = '202';
 
         // A2
-        const result = await AtService.getAtVersions({ search, t: false });
+        const result = await AtService.getAtVersions({
+            search,
+            transaction: false
+        });
 
         // A3
         expect(result).toBeInstanceOf(Array);
@@ -511,7 +562,7 @@ describe('AtVersionModel Data Checks', () => {
             atVersionAttributes: ['name'],
             atAttributes: [],
             pagination: { enablePagination: true },
-            t: false
+            transaction: false
         });
 
         // A3
@@ -542,7 +593,7 @@ describe('AtModeModel Data Checks', () => {
         // A2
         const atMode = await AtService.getAtModeByQuery({
             where: { atId: _atId, name: _name },
-            t: false
+            transaction: false
         });
         const { atId, name, at } = atMode;
 
@@ -572,7 +623,7 @@ describe('AtModeModel Data Checks', () => {
         const atMode = await AtService.getAtModeByQuery({
             where: { atId: _atId, name: _name },
             atAttributes: [],
-            t: false
+            transaction: false
         });
         const { atId, name } = atMode;
 
@@ -596,7 +647,7 @@ describe('AtModeModel Data Checks', () => {
         // A2
         const atMode = await AtService.getAtModeByQuery({
             where: { atId: _atId, name: _name },
-            t: false
+            transaction: false
         });
 
         // A3
@@ -604,7 +655,7 @@ describe('AtModeModel Data Checks', () => {
     });
 
     it('should create and remove a new atMode', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _atId = 1;
             const _name = randomStringGenerator();
@@ -612,15 +663,18 @@ describe('AtModeModel Data Checks', () => {
             // A2
             const atMode = await AtService.createAtMode({
                 values: { atId: _atId, name: _name },
-                t
+                transaction
             });
             const { atId, name, at } = atMode;
 
             // A2
-            await AtService.removeAtModeByQuery({ where: { atId, name }, t });
+            await AtService.removeAtModeByQuery({
+                where: { atId, name },
+                transaction
+            });
             const deletedAtMode = await AtService.getAtModeByQuery({
                 where: { atId, name },
-                t
+                transaction
             });
 
             // after atMode created
@@ -635,7 +689,7 @@ describe('AtModeModel Data Checks', () => {
     });
 
     it('should create and update a new atMode', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _atId = 1;
             const _name = randomStringGenerator();
@@ -644,7 +698,7 @@ describe('AtModeModel Data Checks', () => {
             // A2
             const atMode = await AtService.createAtMode({
                 values: { atId: _atId, name: _name },
-                t
+                transaction
             });
             const { atId, name, at } = atMode;
 
@@ -652,7 +706,7 @@ describe('AtModeModel Data Checks', () => {
             const updatedMode = await AtService.updateAtModeByQuery({
                 where: { atId, name },
                 values: { name: _updatedName },
-                t
+                transaction
             });
             const { name: updatedName } = updatedMode;
 
@@ -670,7 +724,7 @@ describe('AtModeModel Data Checks', () => {
     });
 
     it('should return same atMode if no update params passed', async () => {
-        await dbCleaner(async t => {
+        await dbCleaner(async transaction => {
             // A1
             const _atId = 1;
             const _name = 'READING';
@@ -678,11 +732,11 @@ describe('AtModeModel Data Checks', () => {
             // A2
             const originalAtMode = await AtService.getAtModeByQuery({
                 where: { atId: _atId, name: _name },
-                t
+                transaction
             });
             const updatedAtMode = await AtService.updateAtModeByQuery({
                 where: { atId: _atId, name: _name },
-                t
+                transaction
             });
 
             // A3
@@ -692,7 +746,7 @@ describe('AtModeModel Data Checks', () => {
 
     it('should return collection of atModes', async () => {
         // A1
-        const result = await AtService.getAtModes({ t: false });
+        const result = await AtService.getAtModes({ transaction: false });
 
         // A3
         expect(result.length).toBeGreaterThanOrEqual(1);
@@ -715,7 +769,10 @@ describe('AtModeModel Data Checks', () => {
         const search = 'rea';
 
         // A2
-        const result = await AtService.getAtModes({ search, t: false });
+        const result = await AtService.getAtModes({
+            search,
+            transaction: false
+        });
 
         expect(result).toBeInstanceOf(Array);
         expect(result.length).toBeGreaterThanOrEqual(1);
@@ -739,7 +796,7 @@ describe('AtModeModel Data Checks', () => {
             atModeAttributes: ['name'],
             atAttributes: [],
             pagination: { enablePagination: true },
-            t: false
+            transaction: false
         });
 
         // A3
