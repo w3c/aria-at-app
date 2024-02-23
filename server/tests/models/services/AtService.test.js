@@ -372,6 +372,45 @@ describe('AtVersionModel Data Checks', () => {
                 },
                 transaction
             });
+            const { atId, name, at } = atVersionInstance;
+
+            // A2
+            await AtService.removeAtVersionById({
+                id: atId,
+                transaction
+            });
+            const deletedAtVersion = await AtService.getAtVersionById({
+                id: atId,
+                transaction
+            });
+
+            // after atVersion created
+            expect(atId).toEqual(_atId);
+            expect(name).toEqual(_atVersion);
+            expect(at).toHaveProperty('id');
+            expect(at).toHaveProperty('name');
+
+            // after atVersion removed
+            expect(deletedAtVersion).toBeNull();
+        });
+    });
+
+    it('should create and remove an atVersion by query', async () => {
+        await dbCleaner(async transaction => {
+            // A1
+            const _atId = 1;
+            const _atVersion = randomStringGenerator();
+            const _releasedAt = new Date('2022-05-01 20:00:00-04');
+
+            // A2
+            const atVersionInstance = await AtService.createAtVersion({
+                values: {
+                    atId: _atId,
+                    name: _atVersion,
+                    releasedAt: _releasedAt
+                },
+                transaction
+            });
             const { atId, name, at, releasedAt } = atVersionInstance;
 
             // A2

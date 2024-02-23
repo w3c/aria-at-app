@@ -307,7 +307,7 @@ const removeUserById = async ({ id, truncate = false, transaction }) => {
  * });
  *
  * @param {object} where - values to be used to search Sequelize Model. Only supports exact values.
- * @param {object} expectedValues - array of objects containing a "roleName"
+ * @param {object} valuesList - array of objects containing a "roleName"
  * @param {string[]} userRolesAttributes - UserRoles attributes to be returned in the result
  * @param {object} options - Generic options for Sequelize
  * @param {*} options.transaction - Sequelize transaction
@@ -339,27 +339,27 @@ const bulkGetOrReplaceUserRoles = async ({
  * @example
  * await bulkGetOrReplaceUserAts({
  *   where: { userId: 1 },
- *   values: [{ atId: 1 }, { atId: 2 }],
+ *   valuesList: [{ atId: 1 }, { atId: 2 }],
  *   userAtsAttributes: ['atId'],
  *   transaction
  * });
  *
  * @param {object} options
  * @param {object} options.where - values to be used to search Sequelize Model. Only supports exact values.
- * @param {object} options.values - array of objects containing an "atId"
+ * @param {object} options.valuesList - array of objects containing an "atId"
  * @param {string[]} options.userAtsAttributes - UserAts attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const bulkGetOrReplaceUserAts = async ({
     where: { userId },
-    values,
+    valuesList,
     userAtsAttributes,
     transaction
 }) => {
     const isUpdated = await ModelService.bulkGetOrReplace(UserAts, {
         where: { userId },
-        values,
+        valuesList,
         transaction
     });
 
@@ -438,7 +438,7 @@ const getOrCreateUser = async ({
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const addUserToRole = async (id, role, { transaction }) => {
+const addUserRole = async (id, role, { transaction }) => {
     return ModelService.create(UserRoles, {
         values: { userId: id, roleName: role },
         transaction
@@ -446,18 +446,15 @@ const addUserToRole = async (id, role, { transaction }) => {
 };
 
 /**
- * @param {number} id - id of the User that the role will be removed from
- * @param {string} role - role to be removed for the User record referenced by {@param id}
+ * @param {number} userId - id of the User that the role will be removed from
+ * @param {string} roleName - role to be removed for the User record referenced by {@param id}
  * @param {object} options
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const deleteUserFromRole = async (id, role, { transaction }) => {
+const removeUserRole = async (userId, roleName, { transaction }) => {
     return ModelService.removeByQuery(UserRoles, {
-        where: {
-            userId: id,
-            roleName: role
-        },
+        where: { userId, roleName },
         transaction
     });
 };
@@ -477,6 +474,6 @@ module.exports = {
     getOrCreateUser,
 
     // Custom Functions
-    addUserToRole,
-    deleteUserFromRole
+    addUserRole,
+    removeUserRole
 };

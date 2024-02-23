@@ -369,6 +369,44 @@ describe('BrowserVersionModel Data Checks', () => {
         });
     });
 
+    it('should create and remove a new browserVersion by query', async () => {
+        await dbCleaner(async transaction => {
+            // A1
+            const _browserId = 1;
+            const _name = randomStringGenerator();
+
+            // A2
+            const browserVersionInstance =
+                await BrowserService.findOrCreateBrowserVersion({
+                    values: { browserId: _browserId, name: _name },
+                    transaction
+                });
+            const { id, browserId, name, browser } = browserVersionInstance;
+
+            // A2
+            await BrowserService.removeBrowserVersionByQuery({
+                where: { browserId: _browserId, name: _name },
+                transaction
+            });
+
+            const deletedBrowserVersion =
+                await BrowserService.getBrowserVersionByQuery({
+                    where: { browserId, name },
+                    transaction
+                });
+
+            // after BrowserVersion created
+            expect(id).toBeTruthy();
+            expect(browserId).toEqual(_browserId);
+            expect(name).toEqual(_name);
+            expect(browser).toHaveProperty('id');
+            expect(browser).toHaveProperty('name');
+
+            // after browserVersion removed
+            expect(deletedBrowserVersion).toBeNull();
+        });
+    });
+
     it('should create and update a new browserVersion', async () => {
         await dbCleaner(async transaction => {
             // A1

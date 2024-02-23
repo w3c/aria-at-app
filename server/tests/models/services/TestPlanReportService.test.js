@@ -103,7 +103,7 @@ describe('TestPlanReportModel Data Checks', () => {
         );
     });
 
-    it('should create TestPlanReport', async () => {
+    it('should create, update and remove TestPlanReport', async () => {
         await dbCleaner(async transaction => {
             const _atId = 1;
             const _browserId = 1;
@@ -116,6 +116,24 @@ describe('TestPlanReportModel Data Checks', () => {
                         atId: _atId,
                         browserId: _browserId
                     },
+                    transaction
+                });
+
+            const updatedTestPlanReport =
+                await TestPlanReportService.updateTestPlanReportById({
+                    id: testPlanReport.id,
+                    values: { metrics: { isExcellent: true } },
+                    transaction
+                });
+
+            await TestPlanReportService.removeTestPlanReportById({
+                id: testPlanReport.id,
+                transaction
+            });
+
+            const deletedTestPlanReport =
+                await TestPlanReportService.getTestPlanReportById({
+                    id: testPlanReport.id,
                     transaction
                 });
 
@@ -133,6 +151,10 @@ describe('TestPlanReportModel Data Checks', () => {
                     })
                 })
             );
+            expect(testPlanReport.metrics).not.toEqual(
+                updatedTestPlanReport.metrics
+            );
+            expect(deletedTestPlanReport).toBeNull();
         });
     });
 

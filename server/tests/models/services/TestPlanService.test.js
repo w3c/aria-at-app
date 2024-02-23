@@ -56,7 +56,7 @@ describe('TestPlanReportModel Data Checks', () => {
         expect(testPlan).toBeNull();
     });
 
-    it('should create and update testPlan', async () => {
+    it('should create, update and remove testPlan', async () => {
         await dbCleaner(async transaction => {
             // A1
             const _title = randomStringGenerator();
@@ -88,6 +88,16 @@ describe('TestPlanReportModel Data Checks', () => {
                 updatedAt: updatedUpdatedAt
             } = updatedTestPlan;
 
+            await TestPlanService.removeTestPlanById({
+                id: createdId,
+                transaction
+            });
+
+            const deletedTestPlan = await TestPlanService.getTestPlanById({
+                id: createdId,
+                transaction
+            });
+
             // A3
             // After testPlan created
             expect(createdId).toBe(updatedId);
@@ -96,6 +106,9 @@ describe('TestPlanReportModel Data Checks', () => {
 
             // After update
             expect(updatedTitle).toBe(_updatedTitle);
+
+            // After delete
+            expect(deletedTestPlan).toBeNull();
 
             // Confirm that updates are not automatically managed - this
             // updatedAt refers to the source code.

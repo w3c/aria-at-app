@@ -194,7 +194,7 @@ describe('UserModel Data Checks', () => {
     });
 
     it('should return collection of users for username query', async () => {
-        const search = 'transaction';
+        const search = 't';
 
         const result = await UserService.getUsers({
             search,
@@ -207,7 +207,7 @@ describe('UserModel Data Checks', () => {
             expect.arrayContaining([
                 expect.objectContaining({
                     id: expect.any(Number),
-                    username: expect.stringMatching(/transaction/gi)
+                    username: expect.stringMatching(/t/gi)
                 })
             ])
         );
@@ -274,5 +274,64 @@ describe('UserModel Data Checks', () => {
                 updatedUserRoles.map(each => pick(each, ['roleName']))
             ).toEqual([{ roleName: 'TESTER' }]);
         });
+    });
+
+    it('should return collection of UserRoles', async () => {
+        const _userId = 1;
+
+        const user1Roles = await UserService.getUserRoles({
+            where: { userId: _userId },
+            transaction: false
+        });
+
+        expect(user1Roles.length).toBeGreaterThanOrEqual(1);
+        expect(user1Roles[0].userId).toBe(_userId);
+        expect(user1Roles[0].roleName).toBeTruthy();
+    });
+
+    it('should bulkGetOrReplace UserAts', async () => {
+        await dbCleaner(async transaction => {
+            // A1
+            const _userId = 1;
+
+            // A2
+            const [originalUserAts, isUpdated1] =
+                await UserService.bulkGetOrReplaceUserAts({
+                    where: { userId: _userId },
+                    valuesList: [{ atId: 1 }, { atId: 2 }],
+                    transaction
+                });
+
+            const [updatedUserAts, isUpdated2] =
+                await UserService.bulkGetOrReplaceUserAts({
+                    where: { userId: _userId },
+                    valuesList: [{ atId: 1 }],
+                    transaction
+                });
+
+            // A3
+            expect(isUpdated1).toBe(false);
+            expect(originalUserAts.length).toBe(2);
+            expect(originalUserAts.map(each => each.atId).sort()).toEqual([
+                1, 2
+            ]);
+
+            expect(isUpdated2).toBe(true);
+            expect(updatedUserAts.length).toBe(1);
+            expect(updatedUserAts[0].atId).toBe(1);
+        });
+    });
+
+    it('should return collection of UserAts', async () => {
+        const _userId = 1;
+
+        const user1Ats = await UserService.getUserAts({
+            where: { userId: _userId },
+            transaction: false
+        });
+
+        expect(user1Ats.length).toBeGreaterThanOrEqual(1);
+        expect(user1Ats[0].userId).toBe(_userId);
+        expect(user1Ats[0].atId).toBeTruthy();
     });
 });

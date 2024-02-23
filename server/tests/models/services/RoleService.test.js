@@ -114,7 +114,7 @@ describe('RoleModel Data Checks', () => {
             });
             const { name: updatedName, users: updatedUsers } = updatedRole;
 
-            await UserService.addUserToRole(_user, updatedName, {
+            await UserService.addUserRole(_user, updatedName, {
                 transaction
             });
 
@@ -124,6 +124,16 @@ describe('RoleModel Data Checks', () => {
             });
             const { name: addedUserRoleName, users: addedUserRoleUsers } =
                 addedUserRole;
+
+            await UserService.removeUserRole(_user, updatedName, {
+                transaction
+            });
+
+            const removedUserRole = await RoleService.getRoleByName({
+                name: updatedName,
+                transaction
+            });
+            const { users: removedUserRoleUsers } = removedUserRole;
 
             // after role created
             expect(name).toEqual(_name);
@@ -144,10 +154,13 @@ describe('RoleModel Data Checks', () => {
                     })
                 ])
             );
+            expect(addedUserRoleUsers.length - 1).toBe(
+                removedUserRoleUsers.length
+            );
         });
     });
 
-    it('should create and remove new a role', async () => {
+    it('should create and remove a role', async () => {
         await dbCleaner(async transaction => {
             const _name = randomStringGenerator();
 
