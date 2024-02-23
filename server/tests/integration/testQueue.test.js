@@ -413,7 +413,7 @@ describe('test queue', () => {
                                 output
                                 unexpectedBehaviors {
                                     text
-                                    otherUnexpectedBehaviorText
+                                    details
                                 }
                             }
                             assertionResult {
@@ -511,7 +511,7 @@ describe('test queue', () => {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviors": [
                           {
-                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
+                            "details": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],
@@ -560,11 +560,11 @@ describe('test queue', () => {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviors": [
                           {
-                            "otherUnexpectedBehaviorText": null,
+                            "details": "N/A",
                             "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
                           },
                           {
-                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
+                            "details": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],

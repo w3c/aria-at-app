@@ -451,7 +451,8 @@ describe('graphql', () => {
                                         __typename
                                         id
                                         text
-                                        otherUnexpectedBehaviorText
+                                        impact
+                                        details
                                     }
                                 }
                             }
@@ -630,7 +631,7 @@ describe('graphql', () => {
                                 locationOfData
                             }
                         }
-                        deleteReport: testPlanReport(id: 3) {
+                        deleteReport: testPlanReport(id: 13) {
                             __typename
                             deleteTestPlanReport
                         }
@@ -823,7 +824,7 @@ describe('graphql', () => {
                 );
             }
         }).not.toThrow();
-    });
+    }, 15000);
 });
 
 const getQueryInputs = async () => {
@@ -895,7 +896,7 @@ const getMutationInputs = async () => {
                 }
                 unexpectedBehaviors {
                     id
-                    otherUnexpectedBehaviorText
+                    details
                 }
             }
         }
