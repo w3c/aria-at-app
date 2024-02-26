@@ -45,6 +45,11 @@ module.exports = {
             `ALTER TABLE "CollectionJob" DROP CONSTRAINT "CollectionJob_pkey";`
         );
 
+        // Remove the default value from the 'id' column
+        await queryInterface.sequelize.query(
+            `ALTER TABLE "CollectionJob" ALTER COLUMN "id" DROP DEFAULT;`
+        );
+
         // Drop the sequence created for auto-increment
         await queryInterface.sequelize.query(
             `DROP SEQUENCE collectionjob_id_seq;`
