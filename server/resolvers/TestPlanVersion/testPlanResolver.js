@@ -1,7 +1,7 @@
 const { getTestPlanById } = require('../../models/services/TestPlanService');
 
 const testPlanResolver = async (testPlanVersion, _, context, info) => {
-    const { t } = context;
+    const { transaction } = context;
 
     const requestedFields =
         info?.fieldNodes[0] &&
@@ -16,7 +16,7 @@ const testPlanResolver = async (testPlanVersion, _, context, info) => {
         latestTestPlanVersion = await getTestPlanById({
             id: testPlanVersion.directory,
             testPlanVersionAttributes: [],
-            t
+            transaction
         });
     }
 

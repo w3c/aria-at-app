@@ -4,12 +4,12 @@ const {
 } = require('../models/services/CollectionJobService');
 
 const deleteCollectionJobResolver = async (_, { id }, context) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
-    return removeCollectionJobById({ id, t });
+    return removeCollectionJobById({ id, transaction });
 };
 
 module.exports = deleteCollectionJobResolver;

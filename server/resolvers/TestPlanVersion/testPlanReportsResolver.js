@@ -7,12 +7,12 @@ const testPlanReportsResolver = async (
     { isFinal },
     context
 ) => {
-    const { t } = context;
+    const { transaction } = context;
 
     const reports = await getTestPlanReports({
         where: { testPlanVersionId },
         pagination: { order: [['createdAt', 'desc']] },
-        t
+        transaction
     });
 
     if (isFinal === undefined) return reports;

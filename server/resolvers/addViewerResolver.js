@@ -5,7 +5,7 @@ const {
 } = require('../models/services/TestPlanVersionService');
 
 const addViewerResolver = async (_, { testPlanVersionId, testId }, context) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (
         !(
@@ -18,7 +18,7 @@ const addViewerResolver = async (_, { testPlanVersionId, testId }, context) => {
 
     const testPlanVersion = await getTestPlanVersionById({
         id: testPlanVersionId,
-        t
+        transaction
     });
     const currentTest = testPlanVersion.tests.find(each => each.id === testId);
     if (!currentTest.viewers) currentTest.viewers = [user];
@@ -30,7 +30,7 @@ const addViewerResolver = async (_, { testPlanVersionId, testId }, context) => {
     await updateTestPlanVersionById({
         id: testPlanVersionId,
         values: { tests: testPlanVersion.tests },
-        t
+        transaction
     });
 
     return user;

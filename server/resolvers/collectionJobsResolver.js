@@ -3,9 +3,9 @@ const {
 } = require('../models/services/CollectionJobService');
 
 const collectionJobsResolver = async (_, __, context) => {
-    const { t } = context;
+    const { transaction } = context;
 
-    const collectionJobs = await getCollectionJobs({ t });
+    const collectionJobs = await getCollectionJobs({ transaction });
 
     return collectionJobs;
 };

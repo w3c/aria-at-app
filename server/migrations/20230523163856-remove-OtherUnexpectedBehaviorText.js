@@ -129,7 +129,7 @@ module.exports = {
                     await updateTestPlanRunById({
                         id: testPlanRunId,
                         values: updateParams,
-                        t: false
+                        transaction: false
                     });
                 }
             }
@@ -149,7 +149,7 @@ module.exports = {
                         id: testPlanReportId,
                         testPlanReportAttributes,
                         testPlanVersionAttributes: ['id', 'tests'],
-                        t: false
+                        transaction: false
                     });
 
                     const conflicts = await conflictsResolver(testPlanReport);
@@ -163,7 +163,7 @@ module.exports = {
                     await updateTestPlanReportById({
                         id: testPlanReport.id,
                         values: updateParams,
-                        t: false
+                        transaction: false
                     });
                 }
             }

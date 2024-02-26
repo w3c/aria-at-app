@@ -310,7 +310,7 @@ module.exports = {
                     id: testPlanReportId,
                     testPlanReportAttributes,
                     testPlanVersionAttributes,
-                    t: false
+                    transaction: false
                 });
 
                 for (
@@ -324,7 +324,7 @@ module.exports = {
                         id: testPlanRunId,
                         testPlanReportAttributes,
                         testPlanVersionAttributes,
-                        t: false
+                        transaction: false
                     });
                     // testPlanReport = testPlanRun?.testPlanReport;
 
@@ -465,7 +465,7 @@ module.exports = {
                         },
                         testPlanReportAttributes,
                         testPlanVersionAttributes,
-                        t: false
+                        transaction: false
                     });
 
                 const candidatePhaseReachedAt =
@@ -487,7 +487,7 @@ module.exports = {
                     },
                     testPlanReportAttributes,
                     testPlanVersionAttributes,
-                    t: false
+                    transaction: false
                 });
 
                 // const locationOfData = {
@@ -522,7 +522,7 @@ module.exports = {
                         },
                         testPlanReportAttributes,
                         testPlanVersionAttributes,
-                        t: false
+                        transaction: false
                     });
 
                     for (const testResult of testPlanRun.testResults) {

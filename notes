@@ -4,3 +4,5 @@ browserloader
 context everywhere, check all resolvers
 persistConflictsCount
 populatedData
+dbCleaner
+sequelize.query

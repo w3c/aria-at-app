@@ -8,7 +8,7 @@ const findOrCreateBrowserVersionResolver = async (
     { input: { name } },
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (
         !user?.roles.find(
@@ -20,7 +20,7 @@ const findOrCreateBrowserVersionResolver = async (
 
     let version = await findOrCreateBrowserVersion({
         where: { browserId, name },
-        t
+        transaction
     });
 
     return version;

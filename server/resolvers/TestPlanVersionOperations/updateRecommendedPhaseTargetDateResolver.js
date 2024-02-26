@@ -9,7 +9,7 @@ const updateRecommendedPhaseTargetDateResolver = async (
     { recommendedPhaseTargetDate },
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
@@ -18,7 +18,7 @@ const updateRecommendedPhaseTargetDateResolver = async (
     await updateTestPlanVersionById({
         id: testPlanVersionId,
         values: { recommendedPhaseTargetDate },
-        t
+        transaction
     });
 
     return populateData({ testPlanVersionId });

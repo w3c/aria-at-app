@@ -6,13 +6,13 @@ const updateAtVersionResolver = async (
     { input },
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    return await updateAtVersionById({ id, values: input, t });
+    return await updateAtVersionById({ id, values: input, transaction });
 };
 
 module.exports = updateAtVersionResolver;

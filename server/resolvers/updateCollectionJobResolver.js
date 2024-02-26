@@ -8,7 +8,7 @@ const updateCollectionJobResolver = async (
     { id, status, externalLogsUrl },
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
@@ -19,7 +19,11 @@ const updateCollectionJobResolver = async (
         ...(externalLogsUrl && { externalLogsUrl })
     };
 
-    const collectionJobs = await updateCollectionJobById({ id, values, t });
+    const collectionJobs = await updateCollectionJobById({
+        id,
+        values,
+        transaction
+    });
 
     return collectionJobs;
 };

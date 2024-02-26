@@ -21,7 +21,7 @@ const saveTestResultCommon = async ({
     isSubmit,
     context
 }) => {
-    const { t } = context;
+    const { transaction } = context;
 
     const {
         testPlanRun,
@@ -76,7 +76,7 @@ const saveTestResultCommon = async ({
     await updateTestPlanRunById({
         id: testPlanRun.id,
         values: { testResults: newTestResults },
-        t
+        transaction
     });
 
     if (isSubmit) {
@@ -103,11 +103,11 @@ const saveTestResultCommon = async ({
             values: {
                 metrics: { ...testPlanReportPopulated.metrics, ...metrics }
             },
-            t
+            transaction
         });
     }
 
-    await persistConflictsCount(testPlanRun, { t });
+    await persistConflictsCount(testPlanRun, { transaction });
     return populateData({ testResultId }, { context });
 };
 

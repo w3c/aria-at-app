@@ -10,7 +10,7 @@ const assignTesterResolver = async (
     { userId: testerUserId, testPlanRunId },
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (
         !(
@@ -30,7 +30,7 @@ const assignTesterResolver = async (
     } else {
         const { id } = await createTestPlanRun({
             values: { testPlanReportId, testerUserId },
-            t
+            transaction
         });
         testPlanRunId = id;
     }

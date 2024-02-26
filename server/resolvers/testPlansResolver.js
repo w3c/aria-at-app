@@ -3,7 +3,7 @@ const retrieveAttributes = require('./helpers/retrieveAttributes');
 const { TEST_PLAN_VERSION_ATTRIBUTES } = require('../models/services/helpers');
 
 const testPlans = async (_, __, context, info) => {
-    const { t } = context;
+    const { transaction } = context;
 
     const requestedFields =
         info.fieldNodes[0] &&
@@ -37,7 +37,7 @@ const testPlans = async (_, __, context, info) => {
             ])
         ],
         pagination: { order: [['testPlanVersions', 'updatedAt', 'DESC']] },
-        t
+        transaction
     });
     return plans.map(p => {
         return { ...p.dataValues };

@@ -5,14 +5,14 @@ const {
 const populateData = require('../services/PopulatedData/populateData');
 
 const findOrCreateTestPlanReportResolver = async (_, { input }, context) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
     const [testPlanReport, createdLocationsOfData] =
-        await getOrCreateTestPlanReport({ where: input, t });
+        await getOrCreateTestPlanReport({ where: input, transaction });
 
     const locationOfData = { testPlanReportId: testPlanReport.id };
     const preloaded = { testPlanReport };

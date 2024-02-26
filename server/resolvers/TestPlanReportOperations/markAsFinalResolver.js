@@ -12,7 +12,7 @@ const markAsFinalResolver = async (
     _,
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
@@ -20,7 +20,7 @@ const markAsFinalResolver = async (
 
     const testPlanReport = await getTestPlanReportById({
         id: testPlanReportId,
-        t
+        transaction
     });
 
     const conflicts = await conflictsResolver(testPlanReport);
@@ -47,7 +47,7 @@ const markAsFinalResolver = async (
     await updateTestPlanReportById({
         id: testPlanReportId,
         values: { markedFinalAt: new Date() },
-        t
+        transaction
     });
 
     return populateData({ testPlanReportId });

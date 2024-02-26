@@ -9,7 +9,7 @@ const findOrCreateTestResultResolver = async (
     { testId, atVersionId, browserVersionId },
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     const {
         testPlanRun,
@@ -45,7 +45,7 @@ const findOrCreateTestResultResolver = async (
         testPlanRunId,
         atVersionId,
         browserVersionId,
-        t
+        transaction
     });
 };
 

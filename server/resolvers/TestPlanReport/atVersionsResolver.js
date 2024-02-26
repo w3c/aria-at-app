@@ -3,10 +3,10 @@ const {
 } = require('../../models/services/AtService');
 
 const atVersionsResolver = async (testPlanReport, _, context) => {
-    const { t } = context;
+    const { transaction } = context;
 
     const results = await getUniqueAtVersionsForReport(testPlanReport.id, {
-        t
+        transaction
     });
 
     return results.map(({ atVersionId, name, releasedAt }) => ({

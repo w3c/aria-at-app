@@ -10,7 +10,7 @@ const deleteTestResultsResolver = async (
     _,
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     const { testPlanRun } = await populateData({ testPlanRunId });
 
@@ -27,7 +27,7 @@ const deleteTestResultsResolver = async (
     await updateTestPlanRunById({
         id: testPlanRunId,
         values: { testResults: [] },
-        t
+        transaction
     });
 
     // TODO: Avoid blocking loads in test runs with a larger amount of tests

@@ -7,12 +7,12 @@ const latestAtVersionReleasedAtResolver = async (
     _,
     context
 ) => {
-    const { t } = context;
+    const { transaction } = context;
 
     // Return first element because result should already be sorted by descending
     // order of releasedAt date for AtVersion
     const results = await getUniqueAtVersionsForReport(testPlanReport.id, {
-        t
+        transaction
     });
     if (results[0]) {
         const { atVersionId, name, releasedAt } = results[0];
@@ -23,7 +23,7 @@ const latestAtVersionReleasedAtResolver = async (
         };
     }
 
-    // When TestPlanReport is DRAFT and an assigned tester hasn't set a
+    // When TestPlanReport is DRAFT and an assigned tester hasn'transaction set a
     // TestPlanVersion
     return null;
 };

@@ -8,7 +8,7 @@ const dbCleaner = require('../util/db-cleaner.deprecated');
 const { default: axios } = require('axios');
 const {
     getCollectionJobById
-} = require('../../models/services.deprecated/CollectionJobService');
+} = require('../../models/services/CollectionJobService');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -418,10 +418,13 @@ describe('Automation controller', () => {
     });
 
     it('should update job results', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             const { scheduleCollectionJob: job } =
                 await scheduleCollectionJobByMutation();
-            const collectionJob = await getCollectionJobById(job.id);
+            const collectionJob = await getCollectionJobById({
+                id: job.id,
+                transaction
+            });
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: 'RUNNING' })
@@ -493,7 +496,7 @@ describe('Automation controller', () => {
     });
 
     it('should copy assertion results when updating with results that match historical results', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             // Start by getting historical results for comparing later
             // Test plan report used for test is in Draft so it
             // must be markedAsFinal to have historical results
@@ -526,7 +529,10 @@ describe('Automation controller', () => {
 
             const { scheduleCollectionJob: job } =
                 await scheduleCollectionJobByMutation();
-            const collectionJob = await getCollectionJobById(job.id);
+            const collectionJob = await getCollectionJobById({
+                id: job.id,
+                transaction
+            });
             await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: 'RUNNING' })

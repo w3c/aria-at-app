@@ -13,7 +13,7 @@ const deleteTestPlanRunResolver = async (
     { userId: testerUserId },
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
     if (
         !(
             user?.roles.find(role => role.name === 'ADMIN') ||
@@ -26,7 +26,7 @@ const deleteTestPlanRunResolver = async (
 
     await removeTestPlanRunByQuery({
         where: { testPlanReportId, testerUserId },
-        t
+        transaction
     });
 
     const { testPlanReport } = await populateData({

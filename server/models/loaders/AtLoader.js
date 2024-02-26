@@ -11,7 +11,7 @@ const AtLoader = () => {
     let activePromise;
 
     singletonInstance = {
-        getAll: async ({ t }) => {
+        getAll: async ({ transaction }) => {
             if (ats) {
                 return ats;
             }
@@ -20,7 +20,7 @@ const AtLoader = () => {
                 return activePromise;
             }
 
-            activePromise = getAts({ t });
+            activePromise = getAts({ transaction });
             ats = await activePromise;
 
             // Sort date of atVersions subarray in desc order by releasedAt date

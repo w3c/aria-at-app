@@ -11,7 +11,7 @@ const BrowserLoader = () => {
     let activePromise;
 
     singletonInstance = {
-        getAll: async ({ t }) => {
+        getAll: async ({ transaction }) => {
             if (browsers) {
                 return browsers;
             }
@@ -20,7 +20,7 @@ const BrowserLoader = () => {
                 return activePromise;
             }
 
-            activePromise = getBrowsers({ t });
+            activePromise = getBrowsers({ transaction });
 
             browsers = await activePromise;
 

@@ -77,7 +77,7 @@ const cancelJob = async (req, res) => {
         const graphqlRes = await updateCollectionJobById({
             id: req.params.jobID,
             values: { status: COLLECTION_JOB_STATUS.CANCELLED },
-            t: req.t
+            transaction: req.transaction
         });
         if (!graphqlRes) {
             throwNoJobFoundError(req.params.jobID);
@@ -101,7 +101,7 @@ const updateJobStatus = async (req, res) => {
     const graphqlResponse = await updateCollectionJobById({
         id: req.params.jobID,
         values: updatePayload,
-        t: req.t
+        transaction: req.transaction
     });
 
     if (!graphqlResponse) {
@@ -141,7 +141,7 @@ const updateOrCreateTestResultWithResponses = async ({
     responses,
     atVersionId,
     browserVersionId,
-    t
+    transaction
 }) => {
     const allTestsForTestPlanVersion = await getTests(
         testPlanRun.testPlanReport.testPlanVersion
@@ -166,7 +166,7 @@ const updateOrCreateTestResultWithResponses = async ({
         testPlanRunId: testPlanRun.id,
         atVersionId,
         browserVersionId,
-        t
+        transaction
     });
 
     const historicalTestResults = await getApprovedFinalizedTestResults(
@@ -236,6 +236,7 @@ const updateOrCreateTestResultWithResponses = async ({
 
 const updateJobResults = async (req, res) => {
     const id = req.params.jobID;
+    const transaction = req.transaction;
     const {
         testCsvRow,
         presentationNumber,
@@ -243,7 +244,7 @@ const updateJobResults = async (req, res) => {
         atVersionName,
         browserVersionName
     } = req.body;
-    const job = await getCollectionJobById({ id, t: req.t });
+    const job = await getCollectionJobById({ id, transaction });
     if (!job) {
         throwNoJobFoundError(id);
     }
@@ -255,20 +256,23 @@ const updateJobResults = async (req, res) => {
     }
 
     /* TODO: Change this once we support more At + Browser Combos in Automation */
-    const [at] = await getAts({ where: { name: 'NVDA' }, t: req.t });
+    const [at] = await getAts({
+        where: { name: 'NVDA' },
+        transaction
+    });
     const [browser] = await getBrowsers({
         where: { name: 'Chrome' },
-        t: req.t
+        transaction
     });
 
     const [atVersion, browserVersion] = await Promise.all([
         findOrCreateAtVersion({
             where: { atId: at.id, name: atVersionName },
-            t: req.t
+            transaction
         }),
         findOrCreateBrowserVersion({
             where: { browserId: browser.id, name: browserVersionName },
-            t: req.t
+            transaction
         })
     ]);
 
@@ -283,7 +287,7 @@ const updateJobResults = async (req, res) => {
         testPlanRun: job.testPlanRun,
         atVersionId: atVersion.id,
         browserVersionId: browserVersion.id,
-        t: req.t
+        transaction
     });
 
     res.json({ success: true });

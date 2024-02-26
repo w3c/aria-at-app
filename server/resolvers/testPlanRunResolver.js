@@ -1,9 +1,9 @@
 const { getTestPlanRunById } = require('../models/services/TestPlanRunService');
 
 const testPlanRunResolver = async (_, { id }, context) => {
-    const { t } = context;
+    const { transaction } = context;
 
-    return getTestPlanRunById({ id, t });
+    return getTestPlanRunById({ id, transaction });
 };
 
 module.exports = testPlanRunResolver;

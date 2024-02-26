@@ -17,7 +17,7 @@ describe('transactionMiddleware', () => {
         const successfulController = async (req, res) => {
             await createUser({
                 values: { username: 'yay-it-works' },
-                t: req.t
+                transaction: req.transaction
             });
 
             res.status(200).send();
@@ -26,7 +26,7 @@ describe('transactionMiddleware', () => {
         const failingController = async (req /* , res */) => {
             await createUser({
                 values: { username: 'nay-it-norks' },
-                t: req.t
+                transaction: req.transaction
             });
 
             throw new Error('This route fails');
@@ -53,12 +53,12 @@ describe('transactionMiddleware', () => {
 
         const beforeSuccessfulUser = await getUserByUsername({
             username: 'yay-it-works',
-            t: false
+            transaction: false
         });
 
         const beforeFailedUser = await getUserByUsername({
             username: 'nay-it-norks',
-            t: false
+            transaction: false
         });
 
         await sessionAgent.get('/succeeds');
@@ -66,16 +66,16 @@ describe('transactionMiddleware', () => {
 
         const successfulUser = await getUserByUsername({
             username: 'yay-it-works',
-            t: false
+            transaction: false
         });
 
         const failedUser = await getUserByUsername({
             username: 'nay-it-norks',
-            t: false
+            transaction: false
         });
 
         if (successfulUser) {
-            await removeUserById({ id: successfulUser.id, t: false });
+            await removeUserById({ id: successfulUser.id, transaction: false });
         }
         await tearDown();
 

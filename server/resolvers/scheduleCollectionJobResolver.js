@@ -8,13 +8,13 @@ const scheduleCollectionJobResolver = async (
     { testPlanReportId },
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    return scheduleCollectionJob({ testPlanReportId }, { t });
+    return scheduleCollectionJob({ testPlanReportId }, { transaction });
 };
 
 module.exports = scheduleCollectionJobResolver;

@@ -1,19 +1,19 @@
 const {
     getTestPlanVersionById,
     getTestPlanById
-} = require('../../models/services.deprecated/TestPlanVersionService');
+} = require('../../models/services/TestPlanVersionService');
 const {
     getTestPlanReportById
-} = require('../../models/services.deprecated/TestPlanReportService');
+} = require('../../models/services/TestPlanReportService');
 const {
     getTestPlanRunById
-} = require('../../models/services.deprecated/TestPlanRunService');
+} = require('../../models/services/TestPlanRunService');
 const { decodeLocationOfDataId } = require('./locationOfDataId');
 const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanResolver');
 const {
     getTestResults
-} = require('../../models/services.deprecated/TestResultReadService');
-const getTests = require('../../models/services.deprecated/TestsService');
+} = require('../../models/services/TestResultReadService');
+const getTests = require('../../models/services/TestsService');
 
 /**
  *
@@ -24,7 +24,10 @@ const getTests = require('../../models/services.deprecated/TestsService');
  * and no database queries will be run by this function.
  * @returns
  */
-const populateData = async (locationOfData, { preloaded } = {}) => {
+const populateData = async (
+    locationOfData,
+    { transaction, preloaded } = {}
+) => {
     let {
         testPlanId,
         testPlanVersionId,
@@ -76,7 +79,10 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
             testPlanRun = preloaded.testPlanRun;
             testPlanReport = testPlanRun.testPlanReport;
         } else {
-            testPlanRun = await getTestPlanRunById(testPlanRunId);
+            testPlanRun = await getTestPlanRunById({
+                id: testPlanRunId,
+                transaction
+            });
             testPlanReport = testPlanRun?.testPlanReport;
         }
         testPlanVersion = testPlanReport?.testPlanVersion;
@@ -84,7 +90,10 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         if (preloaded?.testPlanReport) {
             testPlanReport = preloaded.testPlanReport;
         } else {
-            testPlanReport = await getTestPlanReportById(testPlanReportId);
+            testPlanReport = await getTestPlanReportById({
+                id: testPlanReportId,
+                transaction
+            });
         }
         testPlanVersion = testPlanReport.testPlanVersion;
     } else if (testPlanVersionId) {
@@ -93,13 +102,16 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         } else if (preloaded?.testPlanVersion) {
             testPlanVersion = preloaded.testPlanVersion;
         } else {
-            testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
+            testPlanVersion = await getTestPlanVersionById({
+                id: testPlanVersionId,
+                transaction
+            });
         }
     } else if (testPlanId) {
         if (preloaded?.testPlan) {
             testPlan = preloaded.testPlan;
         } else {
-            testPlan = await getTestPlanById(testPlanId);
+            testPlan = await getTestPlanById({ id: testPlanId, transaction });
         }
     }
 

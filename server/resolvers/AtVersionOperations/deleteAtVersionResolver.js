@@ -12,16 +12,18 @@ const deleteAtVersionResolver = async (
     _,
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    const resultIds = await getTestResultsUsingAtVersion(atVersionId, { t });
+    const resultIds = await getTestResultsUsingAtVersion(atVersionId, {
+        transaction
+    });
 
     if (!resultIds.length) {
-        await removeAtVersionById({ id: atVersionId, t });
+        await removeAtVersionById({ id: atVersionId, transaction });
         return { isDeleted: true };
     }
 
@@ -34,7 +36,7 @@ const deleteAtVersionResolver = async (
 };
 
 const populateTestResults = async (resultIds, context) => {
-    const { t } = context;
+    const { transaction } = context;
 
     // Limits the number of queries that will be made for this endpoint
     const queryLimit = 10;
@@ -46,7 +48,10 @@ const populateTestResults = async (resultIds, context) => {
     const preloadedTestPlanRunsById = {};
     await Promise.all(
         testPlanRunIds.map(async testPlanRunId => {
-            const data = await getTestPlanRunById({ id: testPlanRunId, t });
+            const data = await getTestPlanRunById({
+                id: testPlanRunId,
+                transaction
+            });
             preloadedTestPlanRunsById[testPlanRunId] = data;
         })
     );

@@ -6,13 +6,16 @@ const findOrCreateAtVersionResolver = async (
     { input: { name, releasedAt } },
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    return findOrCreateAtVersion({ where: { atId, name, releasedAt }, t });
+    return findOrCreateAtVersion({
+        where: { atId, name, releasedAt },
+        transaction
+    });
 };
 
 module.exports = findOrCreateAtVersionResolver;

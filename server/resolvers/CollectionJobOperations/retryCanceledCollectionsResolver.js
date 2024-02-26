@@ -12,7 +12,7 @@ const retryCanceledCollectionsResolver = async (
     _,
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (
         !user?.roles.find(
@@ -24,7 +24,7 @@ const retryCanceledCollectionsResolver = async (
 
     const collectionJob = await getCollectionJobById({
         id: collectionJobId,
-        t
+        transaction
     });
 
     if (!collectionJob) {
@@ -39,7 +39,7 @@ const retryCanceledCollectionsResolver = async (
         );
     }
 
-    return retryCanceledCollections({ collectionJob }, { t });
+    return retryCanceledCollections({ collectionJob }, { transaction });
 };
 
 module.exports = retryCanceledCollectionsResolver;

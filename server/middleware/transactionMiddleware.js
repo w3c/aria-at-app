@@ -16,12 +16,12 @@ const middleware = async (req, res, next) => {
         transaction = await sequelize.transaction();
     }
 
-    req.t = transaction;
+    req.transaction = transaction;
 
     res.once('finish', async () => {
-        if (!isPersistentTransaction && req.t) {
-            await req.t.commit();
-            delete req.t;
+        if (!isPersistentTransaction && req.transaction) {
+            await req.transaction.commit();
+            delete req.transaction;
         }
     });
 
@@ -33,9 +33,9 @@ const errorware = async (error, req, res, next) => {
     const isPersistentTransaction = !!transactionId;
 
     if (error) {
-        if (!isPersistentTransaction && req.t) {
-            await req.t.rollback();
-            delete req.t;
+        if (!isPersistentTransaction && req.transaction) {
+            await req.transaction.rollback();
+            delete req.transaction;
         }
     }
 

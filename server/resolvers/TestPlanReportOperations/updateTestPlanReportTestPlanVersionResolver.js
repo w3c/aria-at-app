@@ -77,7 +77,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     { input }, // { testPlanVersionId, atId, browserId }
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
@@ -87,7 +87,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     // [SECTION START]: Preparing data to be worked with in a similar way to TestPlanUpdaterModal
     const newTestPlanVersionData = (
-        await getTestPlanVersionById({ id: newTestPlanVersionId, t })
+        await getTestPlanVersionById({ id: newTestPlanVersionId, transaction })
     ).toJSON();
     const newTestPlanVersion = {
         id: newTestPlanVersionData.id,
@@ -119,7 +119,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     };
 
     const currentTestPlanReport = (
-        await getTestPlanReportById({ id: testPlanReportId, t })
+        await getTestPlanReportById({ id: testPlanReportId, transaction })
     ).toJSON();
 
     for (let i = 0; i < currentTestPlanReport.testPlanRuns.length; i++) {
@@ -242,7 +242,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     // TODO: If no input.testPlanVersionId, infer it by whatever the latest is for this directory
     const [foundOrCreatedTestPlanReport, createdLocationsOfData] =
-        await getOrCreateTestPlanReport({ where: input, t });
+        await getOrCreateTestPlanReport({ where: input, transaction });
 
     const candidatePhaseReachedAt =
         currentTestPlanReport.candidatePhaseReachedAt;
@@ -260,7 +260,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
             recommendedPhaseTargetDate,
             vendorReviewStatus
         },
-        t
+        transaction
     });
 
     const locationOfData = {
@@ -287,7 +287,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
                 testPlanReportId: foundOrCreatedTestPlanReport.id,
                 testerUserId: testPlanRun.tester.id
             },
-            t
+            transaction
         });
 
         for (const testResult of testPlanRun.testResults) {

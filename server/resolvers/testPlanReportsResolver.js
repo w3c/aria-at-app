@@ -20,7 +20,7 @@ const testPlanReportsResolver = async (
     context,
     info
 ) => {
-    const { t } = context;
+    const { transaction } = context;
 
     const where = {};
     if (testPlanVersionId) where.testPlanVersionId = testPlanVersionId;
@@ -68,7 +68,7 @@ const testPlanReportsResolver = async (
         testPlanRunAttributes,
         testPlanVersionAttributes,
         pagination: { order: [['createdAt', 'desc']] },
-        t
+        transaction
     });
 
     if (isFinal === undefined) {

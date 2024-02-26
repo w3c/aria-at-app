@@ -9,7 +9,7 @@ const deleteTestResultResolver = async (
     _,
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     const { testPlanRun } = await populateData({ testResultId });
 
@@ -34,7 +34,7 @@ const deleteTestResultResolver = async (
     await updateTestPlanRunById({
         id: testPlanRun.id,
         values: { testResults: newTestResults },
-        t
+        transaction
     });
 
     return populateData({ testPlanRunId: testPlanRun.id });

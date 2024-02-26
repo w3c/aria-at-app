@@ -4,13 +4,13 @@ const {
 } = require('../models/services/CollectionJobService');
 
 const restartCollectionJobResolver = async (_, { id }, context) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    return restartCollectionJob({ id }, { t });
+    return restartCollectionJob({ id }, { transaction });
 };
 
 module.exports = restartCollectionJobResolver;

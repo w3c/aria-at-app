@@ -7,11 +7,11 @@ const collectionJobByTestPlanRunIdResolver = async (
     { testPlanRunId },
     context
 ) => {
-    const { t } = context;
+    const { transaction } = context;
 
     const collectionJobs = await getCollectionJobs({
         where: { testPlanRunId },
-        t
+        transaction
     });
     if (!collectionJobs || collectionJobs.length === 0) {
         return null;

@@ -12,7 +12,7 @@ const findOrCreateTestResult = async ({
     testPlanRunId,
     atVersionId,
     browserVersionId,
-    t
+    transaction
 }) => {
     const { testPlanRun, testPlanReport } = await populateData({
         testPlanRunId
@@ -36,7 +36,7 @@ const findOrCreateTestResult = async ({
         await updateTestPlanReportById({
             id: testPlanReport.id,
             values: { metrics: { ...testPlanReport.metrics, ...metrics } },
-            t
+            transaction
         });
     };
 
@@ -69,7 +69,7 @@ const findOrCreateTestResult = async ({
         await updateTestPlanRunById({
             id: testPlanRun.id,
             values: { testResults: newTestResults },
-            t
+            transaction
         });
         await fixTestPlanReportMetrics(testPlanReport);
     } else {
@@ -85,7 +85,7 @@ const findOrCreateTestResult = async ({
         await updateTestPlanRunById({
             id: testPlanRun.id,
             values: { testResults: newTestResults },
-            t
+            transaction
         });
         await fixTestPlanReportMetrics(testPlanReport);
     }

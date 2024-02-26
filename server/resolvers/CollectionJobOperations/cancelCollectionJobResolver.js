@@ -12,7 +12,7 @@ const cancelCollectionJobResolver = async (
     _,
     context
 ) => {
-    const { user, t } = context;
+    const { user, transaction } = context;
 
     if (
         !user?.roles.find(
@@ -24,7 +24,7 @@ const cancelCollectionJobResolver = async (
 
     const collectionJob = await getCollectionJobById({
         id: collectionJobId,
-        t
+        transaction
     });
 
     if (!collectionJob) {
@@ -39,7 +39,7 @@ const cancelCollectionJobResolver = async (
         return updateCollectionJobById({
             id: collectionJobId,
             values: { status: COLLECTION_JOB_STATUS.CANCELLED },
-            t
+            transaction
         });
     }
 };

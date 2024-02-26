@@ -4,12 +4,10 @@ const deepFlatFilter = require('../../util/deepFlatFilter');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
 const dbCleaner = require('../util/db-cleaner.deprecated');
-const {
-    getAtVersionByQuery
-} = require('../../models/services.deprecated/AtService');
+const { getAtVersionByQuery } = require('../../models/services/AtService');
 const {
     getBrowserVersionByQuery
-} = require('../../models/services.deprecated/BrowserService');
+} = require('../../models/services/BrowserService');
 
 /**
  * Get a function for making GraphQL queries - as well as functions to check
@@ -871,15 +869,15 @@ const getMutationInputs = async () => {
         }
     `);
 
-    const atVersion = await getAtVersionByQuery(
-        { atId: at.id },
-        undefined,
-        undefined,
-        { order: [['releasedAt', 'DESC']] }
-    );
+    const atVersion = await getAtVersionByQuery({
+        where: { atId: at.id },
+        pagination: { order: [['releasedAt', 'DESC']] },
+        transaction: false
+    });
 
     const browserVersion = await getBrowserVersionByQuery({
-        browserId: browser.id
+        where: { browserId: browser.id },
+        transaction: false
     });
 
     const {

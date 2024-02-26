@@ -4,7 +4,7 @@ const {
     updateTestPlanReportById
 } = require('../../models/services/TestPlanReportService');
 
-const persistConflictsCount = async (testPlanRun, { t }) => {
+const persistConflictsCount = async (testPlanRun, { transaction }) => {
     const { testPlanReport: updatedTestPlanReport } = await populateData({
         testPlanRunId: testPlanRun.id
     });
@@ -17,7 +17,7 @@ const persistConflictsCount = async (testPlanRun, { t }) => {
                 conflictsCount: conflicts.length
             }
         },
-        t
+        transaction
     });
 };
 
