@@ -3,7 +3,7 @@ const populateData = require('../../services/PopulatedData/populateData');
 
 const {
     findOrCreateTestResult
-} = require('../../models/services/TestResultWriteService');
+} = require('../../models/services.deprecated/TestResultWriteService');
 
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },

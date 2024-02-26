@@ -2,7 +2,7 @@ const { AuthenticationError } = require('apollo-server');
 const {
     getTestPlanReportById,
     updateTestPlanReport
-} = require('../../models/services/TestPlanReportService');
+} = require('../../models/services.deprecated/TestPlanReportService');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');

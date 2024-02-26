@@ -1,9 +1,11 @@
-const { getTestPlans } = require('../models/services/TestPlanService');
+const {
+    getTestPlans
+} = require('../models/services.deprecated/TestPlanService');
 const retrieveAttributes = require('./helpers/retrieveAttributes');
 const {
     TEST_PLAN_VERSION_ATTRIBUTES,
     TEST_PLAN_ATTRIBUTES
-} = require('../models/services/helpers');
+} = require('../models/services.deprecated/helpers');
 
 const testPlans = async (_, __, ___, info) => {
     const requestedFields =

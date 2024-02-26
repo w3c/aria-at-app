@@ -1,5 +1,5 @@
 const fetch = require('node-fetch');
-const dbCleaner = require('../util/db-cleaner');
+const dbCleaner = require('../util/db-cleaner.deprecated');
 const setUpMockGithubServer = require('../util/mock-github-server');
 const startSupertestServer = require('../util/api-server');
 const authRoutes = require('../../routes/auth');

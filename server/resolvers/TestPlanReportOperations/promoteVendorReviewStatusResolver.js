@@ -1,6 +1,6 @@
 const {
     updateTestPlanReport
-} = require('../../models/services/TestPlanReportService');
+} = require('../../models/services.deprecated/TestPlanReportService');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const promoteVendorReviewStatusResolver = async (
