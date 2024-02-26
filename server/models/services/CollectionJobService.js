@@ -531,7 +531,7 @@ const scheduleCollectionJob = async (
 };
 
 /**
- * Gets one CollectionJob and optionally updates it, or creates it if it doesn'transaction exist.
+ * Gets one CollectionJob and optionally updates it, or creates it if it doesn't exist.
  * @param {object} options
  * @param {*} options.where - These values will be used to find a matching record, or they will be used to create one
  * @param {*} options.values - Additional values to be used when creating but not while finding
