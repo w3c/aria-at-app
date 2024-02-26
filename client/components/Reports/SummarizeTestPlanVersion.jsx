@@ -154,18 +154,30 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                                         {testResult.test.title}
                                                     </Link>
                                                 </td>
-                                                <td>{requiredFormatted}</td>
-                                                <td>{optionalFormatted}</td>
-                                                <td>{mayFormatted}</td>
+                                                <td>
+                                                    {requiredFormatted || none}
+                                                </td>
+                                                <td>
+                                                    {optionalFormatted || none}
+                                                </td>
+                                                <td>{mayFormatted || none}</td>
                                             </tr>
                                         );
                                     }
                                 )}
                                 <tr>
                                     <td>All Tests</td>
-                                    <td>{overallMetrics.requiredFormatted}</td>
-                                    <td>{overallMetrics.optionalFormatted}</td>
-                                    <td>{overallMetrics.mayFormatted}</td>
+                                    <td>
+                                        {overallMetrics.requiredFormatted ||
+                                            none}
+                                    </td>
+                                    <td>
+                                        {overallMetrics.optionalFormatted ||
+                                            none}
+                                    </td>
+                                    <td>
+                                        {overallMetrics.mayFormatted || none}
+                                    </td>
                                 </tr>
                             </tbody>
                         </Table>

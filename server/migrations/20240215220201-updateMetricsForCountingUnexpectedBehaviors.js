@@ -1,6 +1,6 @@
 'use strict';
 
-const getMetrics = require('../util/getMetrics');
+const { getMetrics } = require('shared');
 const populateData = require('../services/PopulatedData/populateData');
 const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
 const finalizedTestResultsResolver = require('../resolvers/TestPlanReport/finalizedTestResultsResolver');
