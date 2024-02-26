@@ -1,6 +1,6 @@
 const { omit } = require('lodash');
 const { TestPlanVersion } = require('../models');
-const commandList = require('../resources/commands.json');
+const commandList = require('../resources/commandsV1.json');
 
 module.exports = {
     up: async queryInterface => {
@@ -61,7 +61,7 @@ module.exports = {
                                                         .find(each => each.id === id)
                                                         ?.text || (() => {
                                                             throw new Error(
-                                                                `Command '${id}' found which is not in commands.json`
+                                                                `Command '${id}' found which is not in commandsV1.json`
                                                             );
                                                         })()
                                                 }));

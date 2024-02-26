@@ -17,7 +17,7 @@ import {
 } from '../../../resources/aria-at-test-io-format.mjs';
 import { TestWindow } from '../../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../../utils/aria.js';
-import commandsJson from '../../../resources/commands.json';
+import commandsJson from '../../../resources/commandsV1.json';
 import supportJson from '../../../resources/support.json';
 
 const NumberedList = styled.ol`
