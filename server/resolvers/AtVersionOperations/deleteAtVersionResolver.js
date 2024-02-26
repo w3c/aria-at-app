@@ -1,10 +1,12 @@
 const { AuthenticationError } = require('apollo-server');
 const { uniq: unique } = require('lodash');
-const { removeAtVersionById } = require('../../models/services/AtService');
+const {
+    removeAtVersionById
+} = require('../../models/services.deprecated/AtService');
 const {
     getTestResultsUsingAtVersion,
     getTestPlanRunById
-} = require('../../models/services/TestPlanRunService');
+} = require('../../models/services.deprecated/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const deleteAtVersionResolver = async (

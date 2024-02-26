@@ -1,12 +1,12 @@
 const { AuthenticationError } = require('apollo-server');
 const {
     removeTestPlanRunByQuery
-} = require('../../models/services/TestPlanRunService');
+} = require('../../models/services.deprecated/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const {
     updateTestPlanReport
-} = require('../../models/services/TestPlanReportService');
+} = require('../../models/services.deprecated/TestPlanReportService');
 
 const deleteTestPlanRunResolver = async (
     { parentContext: { id: testPlanReportId } },

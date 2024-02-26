@@ -7,7 +7,7 @@ const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTests
 const { getMetrics } = require('shared');
 const {
     updateTestPlanReport
-} = require('../models/services/TestPlanReportService');
+} = require('../models/services.deprecated/TestPlanReportService');
 
 module.exports = {
     up: queryInterface => {
