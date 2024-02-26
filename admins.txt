@@ -1,0 +1,20 @@
+# Allow users with the following GitHub usernames to sign in as admins.
+# One username per line.
+
+boazsender
+mfairchild365
+gnarf
+jugglinmike
+mzgoddard
+isaacdurazo
+sinabahram
+evmiguel
+alflennik
+jscholes
+howard-e
+mcking65
+lolaodelola
+stalgiag
+IsaDC
+ccanash
+Paul-Clue
