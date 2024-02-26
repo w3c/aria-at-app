@@ -248,7 +248,7 @@ const createTestPlanRun = async ({
     userAttributes = USER_ATTRIBUTES,
     transaction
 }) => {
-    // shouldn'transaction have duplicate entries for a tester unless it's automated
+    // shouldn't have duplicate entries for a tester unless it's automated
     if (!isAutomated) {
         const existingTestPlanRuns = await getTestPlanRuns({
             where: {
