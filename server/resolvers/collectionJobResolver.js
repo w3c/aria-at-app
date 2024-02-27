@@ -1,6 +1,6 @@
 const {
     getCollectionJobById
-} = require('../models/services.deprecated/CollectionJobService');
+} = require('../models/services/CollectionJobService');
 
 const collectionJobResolver = async (_, { id }, context) => {
     const { transaction } = context;

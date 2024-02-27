@@ -1,4 +1,4 @@
-const { getUserById } = require('../../models/services.deprecated/UserService');
+const { getUserById } = require('../../models/services/UserService');
 
 const atsResolver = async (_, __, context) => {
     const { user, transaction } = context;

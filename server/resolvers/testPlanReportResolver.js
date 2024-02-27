@@ -1,6 +1,6 @@
 const {
     getTestPlanReportById
-} = require('../models/services.deprecated/TestPlanReportService');
+} = require('../models/services/TestPlanReportService');
 
 const testPlanReportResolver = (_, { id }, context) => {
     const { transaction } = context;

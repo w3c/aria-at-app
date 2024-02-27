@@ -1,7 +1,7 @@
 const { AuthenticationError } = require('apollo-server-core');
 const {
     getOrCreateCollectionJob
-} = require('../models/services.deprecated/CollectionJobService');
+} = require('../models/services/CollectionJobService');
 
 const findOrCreateCollectionJobResolver = async (
     _,

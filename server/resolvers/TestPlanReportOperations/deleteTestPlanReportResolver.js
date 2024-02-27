@@ -4,7 +4,7 @@ const {
 } = require('../../models/services/TestPlanReportService');
 const {
     removeTestPlanRunByQuery
-} = require('../../models/services.deprecated/TestPlanRunService');
+} = require('../../models/services/TestPlanRunService');
 
 const deleteTestPlanReportResolver = async (
     { parentContext: { id: testPlanReportId } },

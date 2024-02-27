@@ -1,4 +1,4 @@
-const { getBrowsers } = require('../services.deprecated/BrowserService');
+const { getBrowsers } = require('../services/BrowserService');
 
 let singletonInstance = null;
 

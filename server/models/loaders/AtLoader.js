@@ -1,4 +1,4 @@
-const { getAts } = require('../services.deprecated/AtService');
+const { getAts } = require('../services/AtService');
 
 let singletonInstance = null;
 

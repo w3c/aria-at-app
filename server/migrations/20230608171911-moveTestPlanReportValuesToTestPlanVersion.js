@@ -3,7 +3,7 @@
 const {
     TEST_PLAN_REPORT_ATTRIBUTES,
     TEST_PLAN_VERSION_ATTRIBUTES
-} = require('../models/services.deprecated/helpers');
+} = require('../models/services/helpers');
 const scenariosResolver = require('../resolvers/Test/scenariosResolver');
 const {
     getTestPlanReportById,
@@ -15,7 +15,7 @@ const { testResultsResolver } = require('../resolvers/TestPlanRun');
 const {
     createTestPlanRun,
     getTestPlanRunById
-} = require('../models/services.deprecated/TestPlanRunService');
+} = require('../models/services/TestPlanRunService');
 const {
     findOrCreateTestResultResolver
 } = require('../resolvers/TestPlanRunOperations');

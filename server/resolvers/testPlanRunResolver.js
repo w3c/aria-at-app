@@ -1,6 +1,4 @@
-const {
-    getTestPlanRunById
-} = require('../models/services.deprecated/TestPlanRunService');
+const { getTestPlanRunById } = require('../models/services/TestPlanRunService');
 
 const testPlanRunResolver = async (_, { id }, context) => {
     const { transaction } = context;

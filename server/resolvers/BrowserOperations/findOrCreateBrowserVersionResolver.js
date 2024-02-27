@@ -1,7 +1,7 @@
 const { AuthenticationError } = require('apollo-server');
 const {
     findOrCreateBrowserVersion
-} = require('../../models/services.deprecated/BrowserService');
+} = require('../../models/services/BrowserService');
 
 const findOrCreateBrowserVersionResolver = async (
     { parentContext: { id: browserId } },

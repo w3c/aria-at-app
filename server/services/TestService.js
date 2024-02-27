@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 const {
     getTestPlanVersions
-} = require('../models/services.deprecated/TestPlanVersionService');
+} = require('../models/services/TestPlanVersionService');
 
 async function runImportScript(git_hash) {
     return new Promise((resolve, reject) => {

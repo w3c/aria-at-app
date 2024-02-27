@@ -1,6 +1,6 @@
 const {
     getCollectionJobs
-} = require('../models/services.deprecated/CollectionJobService');
+} = require('../models/services/CollectionJobService');
 
 const collectionJobByTestPlanRunIdResolver = async (
     _,

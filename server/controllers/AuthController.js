@@ -1,7 +1,5 @@
 const { User } = require('../models');
-const {
-    getOrCreateUser
-} = require('../models/services.deprecated/UserService');
+const { getOrCreateUser } = require('../models/services/UserService');
 const { GithubService } = require('../services');
 const getUsersFromFile = require('../util/getUsersFromFile');
 

@@ -1,6 +1,6 @@
 const {
     getUniqueAtVersionsForReport
-} = require('../../models/services.deprecated/AtService');
+} = require('../../models/services/AtService');
 
 const latestAtVersionReleasedAtResolver = async (
     testPlanReport,

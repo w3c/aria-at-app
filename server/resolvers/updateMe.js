@@ -1,7 +1,5 @@
 const { AuthenticationError } = require('apollo-server-express');
-const {
-    bulkGetOrReplaceUserAts
-} = require('../models/services.deprecated/UserService');
+const { bulkGetOrReplaceUserAts } = require('../models/services/UserService');
 
 const updateMeResolver = async (_, { input: { atIds } }, context) => {
     const { user, transaction } = context;

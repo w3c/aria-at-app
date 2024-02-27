@@ -1,6 +1,6 @@
 const {
     getTestPlanReports
-} = require('../../models/services.deprecated/TestPlanReportService');
+} = require('../../models/services/TestPlanReportService');
 
 const testPlanReportsResolver = async (
     { id: testPlanVersionId },

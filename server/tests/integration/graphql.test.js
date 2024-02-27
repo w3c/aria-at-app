@@ -3,13 +3,11 @@ const { difference, uniq: unique } = require('lodash');
 const deepFlatFilter = require('../../util/deepFlatFilter');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
-const dbCleaner = require('../util/db-cleaner.deprecated');
-const {
-    getAtVersionByQuery
-} = require('../../models/services.deprecated/AtService');
+const dbCleaner = require('../util/db-cleaner');
+const { getAtVersionByQuery } = require('../../models/services/AtService');
 const {
     getBrowserVersionByQuery
-} = require('../../models/services.deprecated/BrowserService');
+} = require('../../models/services/BrowserService');
 
 /**
  * Get a function for making GraphQL queries - as well as functions to check

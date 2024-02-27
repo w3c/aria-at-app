@@ -2,7 +2,7 @@ const { AuthenticationError, UserInputError } = require('apollo-server');
 const populateData = require('../../services/PopulatedData/populateData');
 const {
     findOrCreateTestResult
-} = require('../../models/services.deprecated/TestResultWriteService');
+} = require('../../models/services/TestResultWriteService');
 
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },

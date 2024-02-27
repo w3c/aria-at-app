@@ -1,7 +1,7 @@
 const { AuthenticationError } = require('apollo-server-core');
 const {
     restartCollectionJob
-} = require('../models/services.deprecated/CollectionJobService');
+} = require('../models/services/CollectionJobService');
 
 const restartCollectionJobResolver = async (_, { id }, context) => {
     const { user, transaction } = context;

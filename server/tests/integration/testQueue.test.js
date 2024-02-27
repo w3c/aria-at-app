@@ -1,5 +1,5 @@
 const { gql } = require('apollo-server');
-const dbCleaner = require('../util/db-cleaner.deprecated');
+const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const { sortBy } = require('lodash');
 const db = require('../../models');

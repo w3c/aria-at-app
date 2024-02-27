@@ -1,7 +1,5 @@
 const { AuthenticationError } = require('apollo-server');
-const {
-    updateAtVersionById
-} = require('../../models/services.deprecated/AtService');
+const { updateAtVersionById } = require('../../models/services/AtService');
 
 const updateAtVersionResolver = async (
     { parentContext: { id } },
