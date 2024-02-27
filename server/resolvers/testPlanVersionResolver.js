@@ -1,6 +1,6 @@
 const {
     getTestPlanVersionById
-} = require('../models/services/TestPlanVersionService');
+} = require('../models/services.deprecated/TestPlanVersionService');
 
 const testPlanVersionResolver = async (_, { id }, context) => {
     const { transaction } = context;

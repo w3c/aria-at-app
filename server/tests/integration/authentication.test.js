@@ -60,14 +60,14 @@ afterEach(async () => {
     await sessionAgent.post('/api/auth/signout');
 });
 
+const knownAdmin = 'mcking65';
+
 describe('authentication', () => {
     it('handles Oauth to and from GitHub with preexisting user', async () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
-            const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
-                githubUsername: _knownUsername,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2
@@ -96,49 +96,7 @@ describe('authentication', () => {
             expect(res.headers.location).toBe(
                 `${process.env.APP_SERVER}/test-queue`
             );
-            expect(data.me.username).toBe(_knownUsername);
-            expect(data.me.roles.sort()).toEqual(
-                ['ADMIN', 'TESTER', 'VENDOR'].sort()
-            );
-        });
-    });
-
-    it('handles Oauth redirection from GitHub with unknown user', async () => {
-        await apiServer.sessionAgentDbCleaner(async transaction => {
-            // A1
-            const _unknownUsername = 'aurelia-proudfeet';
-            mockGithubServer.nextLogin({
-                githubUsername: _unknownUsername,
-                isOnAdminTeam: true
-            });
-
-            // A2
-            const res = await followRedirects('/api/auth/oauth', {
-                transaction
-            });
-
-            const {
-                body: { data }
-            } = await sessionAgent
-                .post('/api/graphql')
-                .set('x-transaction-id', transaction.id)
-                .send({
-                    query: `
-                    query {
-                        me {
-                            username
-                            roles
-                        }
-                    }
-                `
-                });
-
-            // A3
-            expect(res.status).toBe(303);
-            expect(res.headers.location).toBe(
-                `${process.env.APP_SERVER}/test-queue`
-            );
-            expect(data.me.username).toBe(_unknownUsername);
+            expect(data.me.username).toBe(knownAdmin);
             expect(data.me.roles.sort()).toEqual(
                 ['ADMIN', 'TESTER', 'VENDOR'].sort()
             );
@@ -150,8 +108,7 @@ describe('authentication', () => {
             // A1
             const _testerUsername = 'a11ydoer'; // From testers.txt
             mockGithubServer.nextLogin({
-                githubUsername: _testerUsername,
-                isOnAdminTeam: false
+                githubUsername: _testerUsername
             });
 
             // A2
@@ -190,8 +147,7 @@ describe('authentication', () => {
             // A1
             const _unknownUsername = 'aurelia-proudfeet';
             mockGithubServer.nextLogin({
-                githubUsername: _unknownUsername,
-                isOnAdminTeam: false
+                githubUsername: _unknownUsername
             });
 
             // A2
@@ -227,10 +183,8 @@ describe('authentication', () => {
     it('supports signing out', async () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
-            const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
-                githubUsername: _knownUsername,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2
@@ -273,7 +227,7 @@ describe('authentication', () => {
                 });
 
             // A3
-            expect(first.me.username).toBe(_knownUsername);
+            expect(first.me.username).toBe(knownAdmin);
             expect(signoutRes.status).toBe(200);
             expect(second.me).toBe(null);
         });
@@ -283,10 +237,8 @@ describe('authentication', () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             const _dataFromFrontend = 'fakeRole-tester';
-            const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
-                githubUsername: _knownUsername,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2
@@ -343,10 +295,8 @@ describe('authentication', () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             const _dataFromFrontend = 'fakeRole-';
-            const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
-                githubUsername: _knownUsername,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2
@@ -367,10 +317,8 @@ describe('authentication', () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             const _dataFromFrontend = 'fakeRole-vendor';
-            const _knownUsername = 'esmeralda-baggins';
             mockGithubServer.nextLogin({
-                githubUsername: _knownUsername,
-                isOnAdminTeam: true
+                githubUsername: knownAdmin
             });
 
             // A2

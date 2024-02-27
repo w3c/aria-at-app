@@ -1,4 +1,6 @@
-const { getTestPlans } = require('../models/services/TestPlanService');
+const {
+    getTestPlans
+} = require('../models/services.deprecated/TestPlanService');
 
 const testPlanResolver = async (_, { id }, context) => {
     const { transaction } = context;

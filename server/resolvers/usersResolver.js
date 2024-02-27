@@ -1,4 +1,4 @@
-const { getUsers } = require('../models/services/UserService');
+const { getUsers } = require('../models/services.deprecated/UserService');
 
 const usersResolver = (_, __, context) => {
     const { transaction } = context;

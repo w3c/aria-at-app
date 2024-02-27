@@ -16,10 +16,8 @@ const {
     createTestPlanRun
 } = require('../../models/services/TestPlanRunService');
 const { findOrCreateTestResultResolver } = require('../TestPlanRunOperations');
-const {
-    submitTestResultResolver,
-    saveTestResultResolver
-} = require('../TestResultOperations');
+const submitTestResultResolver = require('../TestResultOperations/submitTestResultResolver');
+const saveTestResultResolver = require('../TestResultOperations/saveTestResultResolver');
 
 const compareTestContent = (currentTests, newTests) => {
     const hashTest = test => hash(omit(test, ['id']));

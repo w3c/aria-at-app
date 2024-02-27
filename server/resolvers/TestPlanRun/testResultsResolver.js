@@ -1,6 +1,6 @@
 const {
     getTestResults
-} = require('../../models/services/TestResultReadService');
+} = require('../../models/services.deprecated/TestResultReadService');
 
 const testResultsResolver = async (testPlanRun, _, context) => {
     const { transaction } = context;

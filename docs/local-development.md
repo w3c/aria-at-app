@@ -23,9 +23,9 @@
     ```
 Now you can navigate your browser to: [http://localhost:3000/](http://localhost:3000/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
 
-### Signing in as a tester and/or admin
+### Signing in as a tester, admin, or vendor
 
-ARIA-AT App determines if you are authorized to sign in as an admin based on whether you are a member of the official admin team within the W3C GitHub organization and as a tester based on whether your Github username is listed in the testers.txt file. The GitHub organization and team name can be changed by altering the app's environment variables, and there are dedicated teams for each app environment.
+ARIA-AT App determines if you are authorized to sign in as an admin, tester, or vendor based on whether your Github username is listed in the admins.txt, testers.txt, or vendors.txt file.
 
 Another way to log in as either a tester or admin, useful for quick testing and not requiring editing testers.txt or membership within any GitHub organizations or teams, is described below.
 

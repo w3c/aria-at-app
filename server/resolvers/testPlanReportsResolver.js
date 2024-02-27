@@ -1,12 +1,12 @@
 const {
     getTestPlanReports
-} = require('../models/services/TestPlanReportService');
+} = require('../models/services.deprecated/TestPlanReportService');
 const retrieveAttributes = require('./helpers/retrieveAttributes');
 const {
     TEST_PLAN_REPORT_ATTRIBUTES,
     TEST_PLAN_RUN_ATTRIBUTES,
     TEST_PLAN_VERSION_ATTRIBUTES
-} = require('../models/services/helpers');
+} = require('../models/services.deprecated/helpers');
 
 const testPlanReportsResolver = async (
     _,

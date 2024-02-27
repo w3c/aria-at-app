@@ -1,19 +1,19 @@
 const {
     getTestPlanVersionById,
     getTestPlanById
-} = require('../../models/services/TestPlanVersionService');
+} = require('../../models/services.deprecated/TestPlanVersionService');
 const {
     getTestPlanReportById
-} = require('../../models/services/TestPlanReportService');
+} = require('../../models/services.deprecated/TestPlanReportService');
 const {
     getTestPlanRunById
-} = require('../../models/services/TestPlanRunService');
+} = require('../../models/services.deprecated/TestPlanRunService');
 const { decodeLocationOfDataId } = require('./locationOfDataId');
 const testPlanVersionTestPlanResolver = require('../../resolvers/TestPlanVersion/testPlanResolver');
 const {
     getTestResults
-} = require('../../models/services/TestResultReadService');
-const getTests = require('../../models/services/TestsService');
+} = require('../../models/services.deprecated/TestResultReadService');
+const getTests = require('../../models/services.deprecated/TestsService');
 
 /**
  *

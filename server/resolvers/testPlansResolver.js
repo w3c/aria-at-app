@@ -1,4 +1,6 @@
-const { getTestPlans } = require('../models/services/TestPlanService');
+const {
+    getTestPlans
+} = require('../models/services.deprecated/TestPlanService');
 const retrieveAttributes = require('./helpers/retrieveAttributes');
 const { TEST_PLAN_VERSION_ATTRIBUTES } = require('../models/services/helpers');
 

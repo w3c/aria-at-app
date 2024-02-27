@@ -13,11 +13,11 @@ const {
 const {
     getTestPlans,
     createTestPlan
-} = require('../../models/services/TestPlanService');
+} = require('../../models/services.deprecated/TestPlanService');
 const {
     createAtMode,
     getAtModeByQuery
-} = require('../../models/services/AtService');
+} = require('../../models/services.deprecated/AtService');
 const {
     createTestId,
     createScenarioId,

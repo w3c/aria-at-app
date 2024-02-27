@@ -1,8 +1,10 @@
 const { gql } = require('apollo-server-core');
-const { getAtVersionByQuery } = require('../../models/services/AtService');
+const {
+    getAtVersionByQuery
+} = require('../../models/services.deprecated/AtService');
 const {
     getBrowserVersionByQuery
-} = require('../../models/services/BrowserService');
+} = require('../../models/services.deprecated/BrowserService');
 const { query, mutate } = require('../../tests/util/graphql-test-utilities');
 
 const populateFakeTestResults = async (

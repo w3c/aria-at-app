@@ -5,9 +5,11 @@ const {
 const {
     updateTestPlanReportById,
     getTestPlanReportById
-} = require('../models/services/TestPlanReportService');
+} = require('../models/services.deprecated/TestPlanReportService');
 const conflictsResolver = require('../resolvers/TestPlanReport/conflictsResolver');
-const { TEST_PLAN_REPORT_ATTRIBUTES } = require('../models/services/helpers');
+const {
+    TEST_PLAN_REPORT_ATTRIBUTES
+} = require('../models/services.deprecated/helpers');
 
 module.exports = {
     up: queryInterface => {

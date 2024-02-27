@@ -3,7 +3,7 @@ const { AuthenticationError } = require('apollo-server');
 const {
     updateCollectionJobById,
     getCollectionJobById
-} = require('../../models/services/CollectionJobService');
+} = require('../../models/services.deprecated/CollectionJobService');
 
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 

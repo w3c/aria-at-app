@@ -1,6 +1,6 @@
 const {
     getUniqueAtVersionsForReport
-} = require('../../models/services/AtService');
+} = require('../../models/services.deprecated/AtService');
 
 const atVersionsResolver = async (testPlanReport, _, context) => {
     const { transaction } = context;

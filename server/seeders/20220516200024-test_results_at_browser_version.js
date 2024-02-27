@@ -7,7 +7,7 @@ const {
 const { getAtVersionByQuery } = require('../models/services/AtService');
 const {
     getBrowserVersionByQuery
-} = require('../models/services/BrowserService');
+} = require('../models/services.deprecated/BrowserService');
 const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 
 module.exports = {
