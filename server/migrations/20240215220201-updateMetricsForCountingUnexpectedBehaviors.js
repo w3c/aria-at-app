@@ -6,7 +6,7 @@ const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTests
 const finalizedTestResultsResolver = require('../resolvers/TestPlanReport/finalizedTestResultsResolver');
 const {
     updateTestPlanReport
-} = require('../models/services/TestPlanReportService');
+} = require('../models/services.deprecated/TestPlanReportService');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
