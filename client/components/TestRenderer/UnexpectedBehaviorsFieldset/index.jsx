@@ -135,7 +135,6 @@ const UnexpectedBehaviorsFieldset = ({
                                         type="checkbox"
                                         value={description}
                                         className={`undesirable-${commandIndex}`}
-                                        tabIndex={optionIndex === 0 ? 0 : -1}
                                         autoFocus={isSubmitted && focus}
                                         checked={checked}
                                         onChange={e => change(e.target.checked)}
