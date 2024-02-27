@@ -168,7 +168,7 @@ const getMetrics = ({
         assertionsCount: requiredAssertionsCount,
         assertionsPassedCount: requiredAssertionsPassedCount,
         assertionsFailedCount: requiredAssertionsFailedCount
-    } = calculateAssertionPriorityCounts(result, 'REQUIRED');
+    } = calculateAssertionPriorityCounts(result, 'MUST');
     requiredAssertionsCount += commandsCount;
     requiredAssertionsPassedCount += highImpactPassedAssertionCount;
     requiredAssertionsFailedCount += highImpactFailedAssertionCount;
@@ -177,7 +177,7 @@ const getMetrics = ({
         assertionsCount: optionalAssertionsCount,
         assertionsPassedCount: optionalAssertionsPassedCount,
         assertionsFailedCount: optionalAssertionsFailedCount
-    } = calculateAssertionPriorityCounts(result, 'OPTIONAL');
+    } = calculateAssertionPriorityCounts(result, 'SHOULD');
     optionalAssertionsCount += commandsCount;
     optionalAssertionsPassedCount += moderateImpactPassedAssertionCount;
     optionalAssertionsFailedCount += moderateImpactFailedAssertionCount;

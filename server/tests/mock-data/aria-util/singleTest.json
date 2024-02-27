@@ -31,12 +31,12 @@
     {
       "id": "MDEyZeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ9DIzZj",
       "text": "Role 'alert' is conveyed",
-      "priority": "REQUIRED"
+      "priority": "MUST"
     },
     {
       "id": "MjEyOeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ9DUwY2",
       "text": "Text 'Hello' is conveyed",
-      "priority": "REQUIRED"
+      "priority": "MUST"
     }
   ],
   "renderedUrls": {

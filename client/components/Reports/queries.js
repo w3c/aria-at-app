@@ -82,7 +82,7 @@ export const REPORT_PAGE_QUERY = gql`
                             passed
                         }
                         requiredAssertionResults: assertionResults(
-                            priority: REQUIRED
+                            priority: MUST
                         ) {
                             assertion {
                                 text
@@ -90,7 +90,7 @@ export const REPORT_PAGE_QUERY = gql`
                             passed
                         }
                         optionalAssertionResults: assertionResults(
-                            priority: OPTIONAL
+                            priority: SHOULD
                         ) {
                             assertion {
                                 text
