@@ -3,6 +3,10 @@ table.test-plan-results-table {
     caption-side: unset;
 }
 
+table.test-plan-undesirable-behaviors-table {
+    margin-top: 0.5rem;
+}
+
 p.test-plan-results-response-p {
     margin: 0;
 }
