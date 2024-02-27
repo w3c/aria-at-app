@@ -1,6 +1,10 @@
 const { UserInputError } = require('apollo-server');
 
-const renderedUrl = (test, { atId }) => {
+const renderedUrl = (
+    test,
+    { atId },
+    context // eslint-disable-line no-unused-vars
+) => {
     if (!atId && !test.inferredAtId) {
         throw new UserInputError(
             'although the atId is optional when it can be inferred from ' +

@@ -11,17 +11,17 @@ const {
     updateTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 const populateData = require('../services/PopulatedData/populateData');
-const { testResults } = require('../resolvers/TestPlanRun');
+const { testResultsResolver } = require('../resolvers/TestPlanRun');
 const {
     createTestPlanRun,
     getTestPlanRunById
 } = require('../models/services/TestPlanRunService');
 const {
-    findOrCreateTestResult
+    findOrCreateTestResultResolver
 } = require('../resolvers/TestPlanRunOperations');
 const {
-    submitTestResult,
-    saveTestResult
+    submitTestResultResolver,
+    saveTestResultResolver
 } = require('../resolvers/TestResultOperations');
 const { hashTests } = require('../util/aria');
 
@@ -105,9 +105,7 @@ module.exports = {
                               join "TestPlanVersion" on "TestPlanReport"."testPlanVersionId" = "TestPlanVersion".id
                      where status in ('CANDIDATE', 'RECOMMENDED')
                      order by title, "gitShaDate" desc`,
-                {
-                    transaction
-                }
+                { transaction }
             );
             const testPlanReportsData = testPlanReportsQuery[0];
 
@@ -249,7 +247,8 @@ module.exports = {
                 const context = {
                     user: {
                         roles: [{ name: 'ADMIN' }]
-                    }
+                    },
+                    transaction
                 };
 
                 // [SECTION START]: Preparing data to be worked with in a similar way to TestPlanUpdaterModal
@@ -287,7 +286,8 @@ module.exports = {
                                 atMode,
                                 scenarios: scenariosResolver(
                                     { scenarios },
-                                    { atId }
+                                    { atId },
+                                    context
                                 ).map(({ commandIds }) => {
                                     return {
                                         commands: commandIds.map(commandId => ({
@@ -310,7 +310,7 @@ module.exports = {
                     id: testPlanReportId,
                     testPlanReportAttributes,
                     testPlanVersionAttributes,
-                    transaction: false
+                    transaction
                 });
 
                 for (
@@ -324,11 +324,11 @@ module.exports = {
                         id: testPlanRunId,
                         testPlanReportAttributes,
                         testPlanVersionAttributes,
-                        transaction: false
+                        transaction
                     });
                     // testPlanReport = testPlanRun?.testPlanReport;
 
-                    testPlanRun.testResults = await testResults(
+                    testPlanRun.testResults = await testResultsResolver(
                         testPlanRun,
                         null,
                         context
@@ -369,7 +369,8 @@ module.exports = {
                                                         scenarios:
                                                             test.scenarios
                                                     },
-                                                    { atId }
+                                                    { atId },
+                                                    context
                                                 ).map(({ commandIds }) => {
                                                     return {
                                                         commands:
@@ -465,7 +466,7 @@ module.exports = {
                         },
                         testPlanReportAttributes,
                         testPlanVersionAttributes,
-                        transaction: false
+                        transaction
                     });
 
                 const candidatePhaseReachedAt =
@@ -487,7 +488,7 @@ module.exports = {
                     },
                     testPlanReportAttributes,
                     testPlanVersionAttributes,
-                    transaction: false
+                    transaction
                 });
 
                 // const locationOfData = {
@@ -500,7 +501,8 @@ module.exports = {
                 const created = await Promise.all(
                     createdLocationsOfData.map(createdLocationOfData =>
                         populateData(createdLocationOfData, {
-                            preloaded
+                            preloaded,
+                            transaction
                         })
                     )
                 );
@@ -522,7 +524,7 @@ module.exports = {
                         },
                         testPlanReportAttributes,
                         testPlanVersionAttributes,
-                        transaction: false
+                        transaction
                     });
 
                     for (const testResult of testPlanRun.testResults) {
@@ -534,10 +536,8 @@ module.exports = {
 
                         // Create new testResults
                         const { testResult: testResultSkeleton } =
-                            await findOrCreateTestResult(
-                                {
-                                    parentContext: { id: testPlanRunId }
-                                },
+                            await findOrCreateTestResultResolver(
+                                { parentContext: { id: testPlanRunId } },
                                 { testId, atVersionId, browserVersionId },
                                 context
                             );
@@ -549,7 +549,7 @@ module.exports = {
 
                         let savedData;
                         if (testResult.completedAt) {
-                            savedData = await submitTestResult(
+                            savedData = await submitTestResultResolver(
                                 {
                                     parentContext: {
                                         id: copiedTestResultInput.id
@@ -559,7 +559,7 @@ module.exports = {
                                 context
                             );
                         } else {
-                            savedData = await saveTestResult(
+                            savedData = await saveTestResultResolver(
                                 {
                                     parentContext: {
                                         id: copiedTestResultInput.id
@@ -577,7 +577,7 @@ module.exports = {
                 // TODO: Delete the old TestPlanReport?
                 // await removeTestPlanRunByQuery({ testPlanReportId });
                 // await removeTestPlanReport(testPlanReportId);
-                // return populateData(locationOfData, { preloaded, context });
+                // return populateData(locationOfData, { preloaded, transaction });
             };
 
             for (let i = 0; i < Object.values(highestVersions).length; i++) {

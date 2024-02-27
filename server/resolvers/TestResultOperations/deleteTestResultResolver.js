@@ -11,7 +11,10 @@ const deleteTestResultResolver = async (
 ) => {
     const { user, transaction } = context;
 
-    const { testPlanRun } = await populateData({ testResultId });
+    const { testPlanRun } = await populateData(
+        { testResultId },
+        { transaction }
+    );
 
     if (
         !(
@@ -37,7 +40,7 @@ const deleteTestResultResolver = async (
         transaction
     });
 
-    return populateData({ testPlanRunId: testPlanRun.id });
+    return populateData({ testPlanRunId: testPlanRun.id }, { transaction });
 };
 
 module.exports = deleteTestResultResolver;

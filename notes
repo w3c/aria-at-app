@@ -1,8 +1,6 @@
-test write service and any others
-atloader
-browserloader
-context everywhere, check all resolvers
-persistConflictsCount
-populatedData
 dbCleaner
-sequelize.query
+setupMockAutomationSchedulerServer
+sessionAgent (including intermingling dbCleaner transaction)
+--
+After all is done, go back and check all new code and fix these changes
+Then go to all open PRs and do the same

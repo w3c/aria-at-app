@@ -9,14 +9,17 @@ const {
 const {
     getTestPlanVersionById
 } = require('../../models/services/TestPlanVersionService');
-const { testResults } = require('../TestPlanRun');
+const { testResultsResolver } = require('../TestPlanRun');
 const populateData = require('../../services/PopulatedData/populateData');
 const scenariosResolver = require('../Test/scenariosResolver');
 const {
     createTestPlanRun
 } = require('../../models/services/TestPlanRunService');
-const { findOrCreateTestResult } = require('../TestPlanRunOperations');
-const { submitTestResult, saveTestResult } = require('../TestResultOperations');
+const { findOrCreateTestResultResolver } = require('../TestPlanRunOperations');
+const {
+    submitTestResultResolver,
+    saveTestResultResolver
+} = require('../TestResultOperations');
 
 const compareTestContent = (currentTests, newTests) => {
     const hashTest = test => hash(omit(test, ['id']));
@@ -100,15 +103,17 @@ const updateTestPlanReportTestPlanVersionResolver = async (
                         id: atId
                     })),
                     atMode,
-                    scenarios: scenariosResolver({ scenarios }, { atId }).map(
-                        ({ commandIds }) => {
-                            return {
-                                commands: commandIds.map(commandId => ({
-                                    text: commandId
-                                }))
-                            };
-                        }
-                    ),
+                    scenarios: scenariosResolver(
+                        { scenarios },
+                        { atId },
+                        context
+                    ).map(({ commandIds }) => {
+                        return {
+                            commands: commandIds.map(commandId => ({
+                                text: commandId
+                            }))
+                        };
+                    }),
                     assertions: assertions.map(({ priority, text }) => ({
                         priority,
                         text
@@ -124,11 +129,12 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     for (let i = 0; i < currentTestPlanReport.testPlanRuns.length; i++) {
         const testPlanRun = currentTestPlanReport.testPlanRuns[i];
-        const { testPlanRun: populatedTestPlanRun } = await populateData({
-            testPlanRunId: testPlanRun.id
-        });
+        const { testPlanRun: populatedTestPlanRun } = await populateData(
+            { testPlanRunId: testPlanRun.id },
+            { transaction }
+        );
 
-        testPlanRun.testResults = await testResults(
+        testPlanRun.testResults = await testResultsResolver(
             populatedTestPlanRun.toJSON(),
             null,
             context
@@ -165,7 +171,8 @@ const updateTestPlanReportTestPlanVersionResolver = async (
                                 atMode: test.atMode,
                                 scenarios: scenariosResolver(
                                     { scenarios: test.scenarios },
-                                    { atId }
+                                    { atId },
+                                    context
                                 ).map(({ commandIds }) => {
                                     return {
                                         commands: commandIds.map(commandId => ({
@@ -270,7 +277,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     const created = await Promise.all(
         createdLocationsOfData.map(createdLocationOfData =>
-            populateData(createdLocationOfData, { preloaded })
+            populateData(createdLocationOfData, { preloaded, transaction })
         )
     );
     const reportIsNew = !!created.find(item => item.testPlanReport.id);
@@ -298,12 +305,12 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
             // Create new testResults
             const { testResult: testResultSkeleton } =
-                await findOrCreateTestResult(
+                await findOrCreateTestResultResolver(
                     {
                         parentContext: { id: testPlanRunId }
                     },
                     { testId, atVersionId, browserVersionId },
-                    { ...context, user }
+                    context
                 );
 
             const copiedTestResultInput = copyTestResult(
@@ -313,16 +320,16 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
             let savedData;
             if (testResult.completedAt) {
-                savedData = await submitTestResult(
+                savedData = await submitTestResultResolver(
                     { parentContext: { id: copiedTestResultInput.id } },
                     { input: copiedTestResultInput },
-                    { ...context, user }
+                    context
                 );
             } else {
-                savedData = await saveTestResult(
+                savedData = await saveTestResultResolver(
                     { parentContext: { id: copiedTestResultInput.id } },
                     { input: copiedTestResultInput },
-                    { ...context, user }
+                    context
                 );
             }
             if (savedData.errors)
@@ -334,7 +341,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     // await removeTestPlanRunByQuery({ testPlanReportId });
     // await removeTestPlanReport(testPlanReportId);
 
-    return populateData(locationOfData, { preloaded });
+    return populateData(locationOfData, { preloaded, transaction });
 };
 
 module.exports = updateTestPlanReportTestPlanVersionResolver;

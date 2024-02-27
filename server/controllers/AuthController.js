@@ -73,7 +73,8 @@ const oauthRedirectFromGithubController = async (req, res) => {
         where: { username: githubUsername },
         values: { roles },
         atAttributes: [],
-        testPlanRunAttributes: []
+        testPlanRunAttributes: [],
+        transaction: req.transaction
     });
 
     // Allows for quickly logging in with different roles - changing

@@ -42,4 +42,18 @@ const errorware = async (error, req, res, next) => {
     return next(error);
 };
 
-module.exports = { middleware, errorware };
+const forTestingPopulateTransaction = transaction => {
+    transactions[transaction.id] = transaction;
+};
+
+const forTestingRollBackTransaction = async transaction => {
+    await transaction.rollback();
+    delete transactions[transaction.id];
+};
+
+module.exports = {
+    middleware,
+    errorware,
+    forTestingPopulateTransaction,
+    forTestingRollBackTransaction
+};

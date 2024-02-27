@@ -6,6 +6,8 @@ const session = require('express-session');
 const typeDefs = require('../../graphql-schema');
 const getGraphQLContext = require('../../graphql-context');
 const resolvers = require('../../resolvers');
+const transactionMiddleware = require('../../middleware/transactionMiddleware');
+const { sequelize } = require('../../models');
 
 const startSupertestServer = async ({
     graphql = false,
@@ -24,6 +26,7 @@ const startSupertestServer = async ({
             cookie: { maxAge: 500000 } // Required
         })
     );
+    expressApp.use(transactionMiddleware.middleware);
     if (applyMiddleware) applyMiddleware(expressApp);
 
     let apolloServer;
@@ -42,6 +45,7 @@ const startSupertestServer = async ({
         expressApp.use(path, routes);
     });
 
+    expressApp.use(transactionMiddleware.errorware);
     if (applyErrorware) applyErrorware(expressApp);
 
     // Error handling must be the last middleware
@@ -52,13 +56,20 @@ const startSupertestServer = async ({
 
     const sessionAgent = getSessionAgent(expressApp);
 
+    const sessionAgentDbCleaner = async callback => {
+        const transaction = await sequelize.transaction();
+        transactionMiddleware.forTestingPopulateTransaction(transaction);
+        await callback(transaction);
+        await transactionMiddleware.forTestingRollBackTransaction(transaction);
+    };
+
     const tearDown = async () => {
         if (graphql) {
             await apolloServer.stop();
         }
     };
 
-    return { sessionAgent, tearDown };
+    return { sessionAgent, sessionAgentDbCleaner, tearDown };
 };
 
 module.exports = startSupertestServer;

@@ -21,7 +21,7 @@ const unmarkAsFinalResolver = async (
         transaction
     });
 
-    return populateData({ testPlanReportId });
+    return populateData({ testPlanReportId }, { transaction });
 };
 
 module.exports = unmarkAsFinalResolver;

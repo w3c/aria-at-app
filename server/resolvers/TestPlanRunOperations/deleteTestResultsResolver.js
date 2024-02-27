@@ -12,7 +12,10 @@ const deleteTestResultsResolver = async (
 ) => {
     const { user, transaction } = context;
 
-    const { testPlanRun } = await populateData({ testPlanRunId });
+    const { testPlanRun } = await populateData(
+        { testPlanRunId },
+        { transaction }
+    );
 
     if (
         !(
@@ -33,7 +36,7 @@ const deleteTestResultsResolver = async (
     // TODO: Avoid blocking loads in test runs with a larger amount of tests
     //       and/or test results
     await persistConflictsCount(testPlanRun, context);
-    return populateData({ testPlanRunId });
+    return populateData({ testPlanRunId }, { transaction });
 };
 
 module.exports = deleteTestResultsResolver;

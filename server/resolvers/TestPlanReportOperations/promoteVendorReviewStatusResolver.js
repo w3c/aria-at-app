@@ -5,8 +5,11 @@ const populateData = require('../../services/PopulatedData/populateData');
 
 const promoteVendorReviewStatusResolver = async (
     { parentContext: { id: testPlanReportId } },
-    { vendorReviewStatus }
+    { vendorReviewStatus },
+    context
 ) => {
+    const { transaction } = context;
+
     let values = { vendorReviewStatus };
 
     if (vendorReviewStatus === 'READY') {
@@ -20,10 +23,14 @@ const promoteVendorReviewStatusResolver = async (
     }
 
     if (vendorReviewStatus !== 'APPROVED') {
-        await updateTestPlanReportById({ id: testPlanReportId, values });
+        await updateTestPlanReportById({
+            id: testPlanReportId,
+            values,
+            transaction
+        });
     }
 
-    return populateData({ testPlanReportId });
+    return populateData({ testPlanReportId }, { transaction });
 };
 
 module.exports = promoteVendorReviewStatusResolver;

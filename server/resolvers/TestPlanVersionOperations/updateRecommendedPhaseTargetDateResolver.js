@@ -21,7 +21,7 @@ const updateRecommendedPhaseTargetDateResolver = async (
         transaction
     });
 
-    return populateData({ testPlanVersionId });
+    return populateData({ testPlanVersionId }, { transaction });
 };
 
 module.exports = updateRecommendedPhaseTargetDateResolver;

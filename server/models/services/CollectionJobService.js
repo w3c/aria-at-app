@@ -19,12 +19,12 @@ const {
 const responseCollectionUser = require('../../util/responseCollectionUser');
 const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
-const { runnableTests } = require('../../resolvers/TestPlanReport');
 const { default: axios } = require('axios');
 const {
     default: createGithubWorkflow,
     isEnabled: isGithubWorkflowEnabled
 } = require('../../services/GithubWorkflowService');
+const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 
 const axiosConfig = {
     headers: {
@@ -472,7 +472,12 @@ const scheduleCollectionJob = async (
     { testPlanReportId, testIds = null },
     { transaction }
 ) => {
-    const report = await getTestPlanReportById(testPlanReportId);
+    const context = { transaction };
+
+    const report = await getTestPlanReportById({
+        id: testPlanReportId,
+        transaction
+    });
 
     if (!report) {
         throw new HttpQueryError(
@@ -482,7 +487,7 @@ const scheduleCollectionJob = async (
         );
     }
 
-    const tests = await runnableTests(report);
+    const tests = await runnableTestsResolver(report, null, context);
     const { directory } = report.testPlanVersion.testPlan;
     const { gitSha } = report.testPlanVersion;
 
@@ -507,7 +512,7 @@ const scheduleCollectionJob = async (
     // TODO: Replace by allowing CollectionJob id to auto-increment
     const lastRecord = await sequelize.query(
         `SELECT * FROM "CollectionJob" ORDER BY CAST(id AS INTEGER) DESC LIMIT 1`,
-        { model: CollectionJob, mapToModel: true }
+        { model: CollectionJob, mapToModel: true, transaction }
     );
     let jobId;
     if (lastRecord.length > 0) {

@@ -21,7 +21,7 @@ const deleteTestPlanReportResolver = async (
         where: { testPlanReportId },
         transaction
     });
-    await removeTestPlanReportById({ id: testPlanReportId }, transaction);
+    await removeTestPlanReportById({ id: testPlanReportId, transaction });
 
     return true;
 };

@@ -12,6 +12,8 @@ const { TEST_PLAN_REPORT_ATTRIBUTES } = require('../models/services/helpers');
 module.exports = {
     up: queryInterface => {
         return queryInterface.sequelize.transaction(async transaction => {
+            const context = { transaction };
+
             const testPlanRunQuery = await queryInterface.sequelize.query(
                 `SELECT id, "testResults" FROM "TestPlanRun"`,
                 {
@@ -129,7 +131,7 @@ module.exports = {
                     await updateTestPlanRunById({
                         id: testPlanRunId,
                         values: updateParams,
-                        transaction: false
+                        transaction
                     });
                 }
             }
@@ -149,10 +151,14 @@ module.exports = {
                         id: testPlanReportId,
                         testPlanReportAttributes,
                         testPlanVersionAttributes: ['id', 'tests'],
-                        transaction: false
+                        transaction
                     });
 
-                    const conflicts = await conflictsResolver(testPlanReport);
+                    const conflicts = await conflictsResolver(
+                        testPlanReport,
+                        null,
+                        context
+                    );
 
                     updateParams = {
                         metrics: {
@@ -163,7 +169,7 @@ module.exports = {
                     await updateTestPlanReportById({
                         id: testPlanReport.id,
                         values: updateParams,
-                        transaction: false
+                        transaction
                     });
                 }
             }

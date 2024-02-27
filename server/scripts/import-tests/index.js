@@ -115,7 +115,7 @@ const importTestPlanVersions = async transaction => {
                 )`,
                 { transaction }
             )
-        ).rows[0].nextval;
+        )[0][0].nextval;
 
         // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
         // actually last changed
@@ -196,7 +196,11 @@ const importTestPlanVersions = async transaction => {
             }
         }
 
-        const versionString = await getVersionString({ updatedAt, directory });
+        const versionString = await getVersionString({
+            updatedAt,
+            directory,
+            transaction
+        });
 
         await createTestPlanVersion({
             values: {
@@ -387,18 +391,18 @@ const updateAtsJsonAndAtMode = async ({ ats, supportAts, transaction }) => {
     );
 };
 
-const getVersionString = async ({ directory, updatedAt }) => {
+const getVersionString = async ({ directory, updatedAt, transaction }) => {
     const versionStringBase = `V${convertDateToString(updatedAt, 'YY.MM.DD')}`;
     const result = await sequelize.query(
         `
             SELECT "versionString" FROM "TestPlanVersion"
-            WHERE directory = $1 AND "versionString" LIKE $2
+            WHERE directory = ? AND "versionString" LIKE ?
             ORDER BY "versionString" DESC;
         `,
-        [directory, `${versionStringBase}%`]
+        { replacements: [directory, `${versionStringBase}%`], transaction }
     );
 
-    let versionString = result.rows[0]?.versionString;
+    let versionString = result[0][0]?.versionString;
 
     if (!versionString) return versionStringBase;
 

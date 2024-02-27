@@ -19,11 +19,12 @@ const findOrCreateTestPlanReportResolver = async (_, { input }, context) => {
 
     return {
         populatedData: await populateData(locationOfData, {
-            preloaded
+            preloaded,
+            transaction
         }),
         created: await Promise.all(
             createdLocationsOfData.map(createdLocationOfData =>
-                populateData(createdLocationOfData, { preloaded })
+                populateData(createdLocationOfData, { preloaded, transaction })
             )
         )
     };

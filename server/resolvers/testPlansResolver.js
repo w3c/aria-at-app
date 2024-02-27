@@ -28,14 +28,23 @@ const testPlans = async (_, __, context, info) => {
         true
     );
 
+    const combinedTestPlanVersionAttributes = [
+        ...new Set([
+            ...latestTestPlanVersionAttributes,
+            ...testPlanVersionsAttributes
+        ])
+    ];
+
+    const hasAssociations = combinedTestPlanVersionAttributes.length !== 0;
+
     const plans = await getTestPlans({
         includeLatestTestPlanVersion,
-        testPlanVersionAttributes: [
-            ...new Set([
-                ...latestTestPlanVersionAttributes,
-                ...testPlanVersionsAttributes
-            ])
-        ],
+        testPlanVersionAttributes: combinedTestPlanVersionAttributes,
+        testPlanReportAttributes: hasAssociations ? null : [],
+        atAttributes: hasAssociations ? null : [],
+        browserAttributes: hasAssociations ? null : [],
+        testPlanRunAttributes: hasAssociations ? null : [],
+        userAttributes: hasAssociations ? null : [],
         pagination: { order: [['testPlanVersions', 'updatedAt', 'DESC']] },
         transaction
     });

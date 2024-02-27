@@ -23,14 +23,14 @@ const markAsFinalResolver = async (
         transaction
     });
 
-    const conflicts = await conflictsResolver(testPlanReport);
+    const conflicts = await conflictsResolver(testPlanReport, null, context);
     if (conflicts.length > 0) {
         throw new Error(
             'Cannot mark test plan report as final due to conflicts'
         );
     }
 
-    const runnableTests = runnableTestsResolver(testPlanReport);
+    const runnableTests = runnableTestsResolver(testPlanReport, null, context);
 
     const hasIncompleteTestRuns = testPlanReport.testPlanRuns.find(
         testPlanRun => {
@@ -50,7 +50,7 @@ const markAsFinalResolver = async (
         transaction
     });
 
-    return populateData({ testPlanReportId });
+    return populateData({ testPlanReportId }, { transaction });
 };
 
 module.exports = markAsFinalResolver;

@@ -3,12 +3,14 @@ const automationRoutes = require('../../routes/automation');
 const setupMockAutomationSchedulerServer = require('../util/mock-automation-scheduler-server');
 const db = require('../../models/index');
 const { query, mutate } = require('../util/graphql-test-utilities');
-const { markAsFinal } = require('../../resolvers/TestPlanReportOperations');
-const dbCleaner = require('../util/db-cleaner.deprecated');
+const dbCleaner = require('../util/db-cleaner');
 const { default: axios } = require('axios');
 const {
     getCollectionJobById
 } = require('../../models/services/CollectionJobService');
+const markAsFinalResolver = require('../../resolvers/TestPlanReportOperations/markAsFinalResolver');
+const AtLoader = require('../../models/loaders/AtLoader');
+const BrowserLoader = require('../../models/loaders/BrowserLoader');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -31,164 +33,185 @@ afterAll(async () => {
     await db.sequelize.close();
 });
 
-const getTestPlanReport = async id =>
-    await query(`
-        query {
-            testPlanReport(id: "${id}") {
-                id
-                markedFinalAt
-                finalizedTestResults {
-                    test{
-                        id
-                    }
-                    atVersion{
-                        name
-                    }
-                    browserVersion{
-                        name
-                    }
-                    scenarioResults {
-                        id
-                        scenario {
-                            id
-                        }
-                        output
-                        assertionResults {
-                            passed
-                            failedReason
-                        }
-                        unexpectedBehaviors {
-                            id
-                            details
-                        }
-                    }
-                }
-            }
-        }
-    `);
-
-const getTestPlanRun = async id =>
-    await query(`
-        query {
-            testPlanRun(id: "${id}") {
-                testResults {
+const getTestPlanReport = async (id, { transaction }) =>
+    await query(
+        `
+            query {
+                testPlanReport(id: "${id}") {
                     id
-                    test {
-                        id
-                    }
-                    atVersion {
-                        id
-                        name
-                    }
-                    browserVersion {
-                        id
-                        name
-                    }
-                    scenarioResults {
-                        id
-                        scenario {
+                    markedFinalAt
+                    finalizedTestResults {
+                        test{
                             id
                         }
-                        output
-                        assertionResults {
-                            passed
-                            failedReason
+                        atVersion{
+                            name
                         }
-                        unexpectedBehaviors {
+                        browserVersion{
+                            name
+                        }
+                        scenarioResults {
                             id
-                            details
+                            scenario {
+                                id
+                            }
+                            output
+                            assertionResults {
+                                passed
+                                failedReason
+                            }
+                            unexpectedBehaviors {
+                                id
+                                details
+                            }
                         }
                     }
-
                 }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
 
-const getTestCollectionJob = async () =>
-    await query(`
-        query {
-            collectionJob(id: "${jobId}") {
-                id
-                status
-                externalLogsUrl
-                testPlanRun {
-                    testPlanReport {
-                        id
-                        testPlanVersion {
-                            id
-                            phase
-                        }
-                    }
+const getTestPlanRun = async (id, { transaction }) =>
+    await query(
+        `
+            query {
+                testPlanRun(id: "${id}") {
                     testResults {
                         id
-                        scenarioResults {
-                            output
-                        }
-                    }
-                }
-            }
-        }
-    `);
-
-const scheduleCollectionJobByMutation = async () =>
-    await mutate(`
-        mutation {
-            scheduleCollectionJob(testPlanReportId: "${testPlanReportId}") {
-                id
-                status
-                testPlanRun {
-                    testPlanReport {
-                        id
-                        testPlanVersion {
+                        test {
                             id
-                            phase
                         }
-                    }
-                    testResults {
-                        id
+                        atVersion {
+                            id
+                            name
+                        }
+                        browserVersion {
+                            id
+                            name
+                        }
                         scenarioResults {
+                            id
+                            scenario {
+                                id
+                            }
                             output
+                            assertionResults {
+                                passed
+                                failedReason
+                            }
+                            unexpectedBehaviors {
+                                id
+                                details
+                            }
+                        }
+
+                    }
+                }
+            }
+        `,
+        { transaction }
+    );
+
+const getTestCollectionJob = async ({ transaction }) =>
+    await query(
+        `
+            query {
+                collectionJob(id: "${jobId}") {
+                    id
+                    status
+                    externalLogsUrl
+                    testPlanRun {
+                        testPlanReport {
+                            id
+                            testPlanVersion {
+                                id
+                                phase
+                            }
+                        }
+                        testResults {
+                            id
+                            scenarioResults {
+                                output
+                            }
                         }
                     }
                 }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
 
-const restartCollectionJobByMutation = async () =>
-    await mutate(`
-        mutation {
-            restartCollectionJob(id: "${jobId}") {
-                id
-                status
+const scheduleCollectionJobByMutation = async ({ transaction }) =>
+    await mutate(
+        `
+            mutation {
+                scheduleCollectionJob(testPlanReportId: "${testPlanReportId}") {
+                    id
+                    status
+                    testPlanRun {
+                        testPlanReport {
+                            id
+                            testPlanVersion {
+                                id
+                                phase
+                            }
+                        }
+                        testResults {
+                            id
+                            scenarioResults {
+                                output
+                            }
+                        }
+                    }
+                }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
 
-const cancelCollectionJobByMutation = async () =>
-    await mutate(`
-        mutation {
-            collectionJob(id: "${jobId}") {
-                cancelCollectionJob {
+const restartCollectionJobByMutation = async ({ transaction }) =>
+    await mutate(
+        `
+            mutation {
+                restartCollectionJob(id: "${jobId}") {
                     id
                     status
                 }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
 
-const deleteCollectionJobByMutation = async () =>
-    await mutate(`
-        mutation {
-            deleteCollectionJob(id: "${jobId}")
-        }
-    `);
+const cancelCollectionJobByMutation = async ({ transaction }) =>
+    await mutate(
+        `
+            mutation {
+                collectionJob(id: "${jobId}") {
+                    cancelCollectionJob {
+                        id
+                        status
+                    }
+                }
+            }
+        `,
+        { transaction }
+    );
+
+const deleteCollectionJobByMutation = async ({ transaction }) =>
+    await mutate(
+        `
+            mutation {
+                deleteCollectionJob(id: "${jobId}")
+            }
+        `,
+        { transaction }
+    );
 
 describe('Automation controller', () => {
     it('should schedule a new job', async () => {
-        await dbCleaner(async () => {
-            const job = await scheduleCollectionJobByMutation();
+        await dbCleaner(async transaction => {
+            const job = await scheduleCollectionJobByMutation({ transaction });
             // get job from result of graphql mutation
             const { scheduleCollectionJob: storedJob } = job;
             expect(storedJob).not.toEqual(undefined);
@@ -204,7 +227,7 @@ describe('Automation controller', () => {
     });
 
     it('should schedule a new job and correctly construct test data for automation scheduler', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             const axiosPostMock = jest.spyOn(axios, 'post').mockResolvedValue({
                 data: { id: '999', status: 'QUEUED' }
             });
@@ -217,21 +240,24 @@ describe('Automation controller', () => {
                         testPlan: { directory: testPlanName }
                     }
                 }
-            } = await query(`
-                query {
-                    testPlanReport(id: "${testPlanReportId}") {
-                        runnableTests {
-                            id
-                        }
-                        testPlanVersion {
-                            testPlan {
-                                directory
+            } = await query(
+                `
+                    query {
+                        testPlanReport(id: "${testPlanReportId}") {
+                            runnableTests {
+                                id
                             }
-                            gitSha
+                            testPlanVersion {
+                                testPlan {
+                                    directory
+                                }
+                                gitSha
+                            }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
 
             const testIds = runnableTests.map(({ id }) => id);
 
@@ -242,7 +268,7 @@ describe('Automation controller', () => {
                 jobId
             };
 
-            await scheduleCollectionJobByMutation();
+            await scheduleCollectionJobByMutation({ transaction });
 
             expect(axiosPostMock).toHaveBeenCalledWith(
                 `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
@@ -261,56 +287,60 @@ describe('Automation controller', () => {
     });
 
     it('should cancel a job', async () => {
-        await dbCleaner(async () => {
-            await scheduleCollectionJobByMutation();
+        await dbCleaner(async transaction => {
+            await scheduleCollectionJobByMutation({ transaction });
             const {
                 collectionJob: { cancelCollectionJob: cancelledCollectionJob }
-            } = await cancelCollectionJobByMutation();
+            } = await cancelCollectionJobByMutation({ transaction });
 
             expect(cancelledCollectionJob).toEqual({
                 id: jobId,
                 status: 'CANCELLED'
             });
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob();
+                await getTestCollectionJob({ transaction });
             expect(storedCollectionJob.id).toEqual(jobId);
             expect(storedCollectionJob.status).toEqual('CANCELLED');
         });
     });
 
     it('should gracefully reject request to cancel a job that does not exist', async () => {
-        expect.assertions(1); // Make sure an assertion is made
-        await expect(cancelCollectionJobByMutation()).rejects.toThrow(
-            'Could not find collection job with id 2'
-        );
+        await dbCleaner(async transaction => {
+            expect.assertions(1); // Make sure an assertion is made
+            await expect(
+                cancelCollectionJobByMutation({ transaction })
+            ).rejects.toThrow('Could not find collection job with id 2');
+        });
     });
 
     it('should restart a job', async () => {
-        await dbCleaner(async () => {
-            await scheduleCollectionJobByMutation();
+        await dbCleaner(async transaction => {
+            await scheduleCollectionJobByMutation({ transaction });
             const { restartCollectionJob: collectionJob } =
-                await restartCollectionJobByMutation();
+                await restartCollectionJobByMutation({ transaction });
             expect(collectionJob).not.toBe(undefined);
             expect(collectionJob).toEqual({
                 id: jobId,
                 status: 'QUEUED'
             });
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob();
+                await getTestCollectionJob({ transaction });
             expect(storedCollectionJob.id).toEqual(jobId);
             expect(storedCollectionJob.status).toEqual('QUEUED');
         });
     });
 
     it('should gracefully reject restarting a job that does not exist', async () => {
-        const { restartCollectionJob: res } =
-            await restartCollectionJobByMutation();
-        expect(res).toEqual(null);
+        await dbCleaner(async transaction => {
+            const { restartCollectionJob: res } =
+                await restartCollectionJobByMutation({ transaction });
+            expect(res).toEqual(null);
+        });
     });
 
     it('should not update a job status without verification', async () => {
-        await dbCleaner(async () => {
-            await scheduleCollectionJobByMutation();
+        await dbCleaner(async transaction => {
+            await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent.post(
                 `/api/jobs/${jobId}/update`
             );
@@ -322,8 +352,8 @@ describe('Automation controller', () => {
     });
 
     it('should fail to update a job status with invalid status', async () => {
-        await dbCleaner(async () => {
-            await scheduleCollectionJobByMutation();
+        await dbCleaner(async transaction => {
+            await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: 'INVALID' })
@@ -353,15 +383,16 @@ describe('Automation controller', () => {
     });
 
     it('should update a job status with verification', async () => {
-        await dbCleaner(async () => {
-            await scheduleCollectionJobByMutation();
+        await apiServer.sessionAgentDbCleaner(async transaction => {
+            await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
-                );
+                )
+                .set('x-transaction-id', transaction.id);
             const { body } = response;
             expect(response.statusCode).toBe(200);
             expect(body.id).toEqual(jobId);
@@ -372,7 +403,7 @@ describe('Automation controller', () => {
             );
 
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob();
+                await getTestCollectionJob({ transaction });
             expect(storedCollectionJob.id).toEqual(jobId);
             expect(storedCollectionJob.status).toEqual('RUNNING');
             expect(storedCollectionJob.externalLogsUrl).toEqual(null);
@@ -383,8 +414,8 @@ describe('Automation controller', () => {
     });
 
     it('should update a job externalLogsUrl with verification', async () => {
-        await dbCleaner(async () => {
-            await scheduleCollectionJobByMutation();
+        await apiServer.sessionAgentDbCleaner(async transaction => {
+            await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/update`)
                 .send({
@@ -394,7 +425,8 @@ describe('Automation controller', () => {
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
-                );
+                )
+                .set('x-transaction-id', transaction.id);
             const { body } = response;
             expect(response.statusCode).toBe(200);
             expect(body.id).toEqual(jobId);
@@ -405,7 +437,7 @@ describe('Automation controller', () => {
             );
 
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob();
+                await getTestCollectionJob({ transaction });
             expect(storedCollectionJob.id).toEqual(jobId);
             expect(storedCollectionJob.status).toEqual('CANCELLED');
             expect(storedCollectionJob.externalLogsUrl).toEqual(
@@ -418,9 +450,9 @@ describe('Automation controller', () => {
     });
 
     it('should update job results', async () => {
-        await dbCleaner(async transaction => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
             const { scheduleCollectionJob: job } =
-                await scheduleCollectionJobByMutation();
+                await scheduleCollectionJobByMutation({ transaction });
             const collectionJob = await getCollectionJobById({
                 id: job.id,
                 transaction
@@ -431,9 +463,19 @@ describe('Automation controller', () => {
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
-                );
+                )
+                .set('x-transaction-id', transaction.id);
             const automatedTestResponse = 'AUTOMATED TEST RESPONSE';
-            const { at, browser } = collectionJob.testPlanRun.testPlanReport;
+            const ats = await AtLoader().getAll({ transaction });
+            const browsers = await BrowserLoader().getAll({ transaction });
+            const at = ats.find(
+                at => at.id === collectionJob.testPlanRun.testPlanReport.at.id
+            );
+            const browser = browsers.find(
+                browser =>
+                    browser.id ===
+                    collectionJob.testPlanRun.testPlanReport.browser.id
+            );
             const { tests } =
                 collectionJob.testPlanRun.testPlanReport.testPlanVersion;
             const testResultsNumber =
@@ -458,12 +500,13 @@ describe('Automation controller', () => {
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
-                );
+                )
+                .set('x-transaction-id', transaction.id);
             expect(response.statusCode).toBe(200);
             const storedTestPlanRun = await getTestPlanRun(
-                collectionJob.testPlanRun.id
+                collectionJob.testPlanRun.id,
+                { transaction }
             );
-
             const { testResults } = storedTestPlanRun.testPlanRun;
             expect(testResults.length).toEqual(testResultsNumber + 1);
             testResults.forEach(testResult => {
@@ -496,24 +539,19 @@ describe('Automation controller', () => {
     });
 
     it('should copy assertion results when updating with results that match historical results', async () => {
-        await dbCleaner(async transaction => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
             // Start by getting historical results for comparing later
             // Test plan report used for test is in Draft so it
             // must be markedAsFinal to have historical results
-            const finalizedTestPlanVersion = await markAsFinal(
-                {
-                    parentContext: { id: testPlanReportId }
-                },
+            const finalizedTestPlanVersion = await markAsFinalResolver(
+                { parentContext: { id: testPlanReportId } },
                 null,
-                {
-                    user: {
-                        roles: [{ name: 'ADMIN' }]
-                    }
-                }
+                { user: { roles: [{ name: 'ADMIN' }] }, transaction }
             );
 
             const { testPlanReport } = await getTestPlanReport(
-                finalizedTestPlanVersion.testPlanReport.id
+                finalizedTestPlanVersion.testPlanReport.id,
+                { transaction }
             );
             const selectedTestIndex = 0;
             const selectedTestRowNumber = 1;
@@ -528,7 +566,7 @@ describe('Automation controller', () => {
             const { atVersion, browserVersion } = historicalTestResult;
 
             const { scheduleCollectionJob: job } =
-                await scheduleCollectionJobByMutation();
+                await scheduleCollectionJobByMutation({ transaction });
             const collectionJob = await getCollectionJobById({
                 id: job.id,
                 transaction
@@ -539,7 +577,8 @@ describe('Automation controller', () => {
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
-                );
+                )
+                .set('x-transaction-id', transaction.id);
 
             const response = await sessionAgent
                 .post(`/api/jobs/${jobId}/result`)
@@ -552,11 +591,13 @@ describe('Automation controller', () => {
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
-                );
+                )
+                .set('x-transaction-id', transaction.id);
             expect(response.statusCode).toBe(200);
 
             const storedTestPlanRun = await getTestPlanRun(
-                collectionJob.testPlanRun.id
+                collectionJob.testPlanRun.id,
+                { transaction }
             );
 
             const { testResults } = storedTestPlanRun.testPlanRun;
@@ -610,19 +651,19 @@ describe('Automation controller', () => {
     });
 
     it('should delete a job', async () => {
-        await dbCleaner(async () => {
-            await scheduleCollectionJobByMutation();
+        await dbCleaner(async transaction => {
+            await scheduleCollectionJobByMutation({ transaction });
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob();
+                await getTestCollectionJob({ transaction });
             expect(storedCollectionJob.id).toEqual(jobId);
 
-            const res = await deleteCollectionJobByMutation();
+            const res = await deleteCollectionJobByMutation({ transaction });
             expect(res).toEqual({
                 deleteCollectionJob: true
             });
 
             const { collectionJob: deletedCollectionJob } =
-                await getTestCollectionJob();
+                await getTestCollectionJob({ transaction });
             expect(deletedCollectionJob).toEqual(null);
         });
     });

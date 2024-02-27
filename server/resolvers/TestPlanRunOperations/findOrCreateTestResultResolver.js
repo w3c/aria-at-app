@@ -15,11 +15,12 @@ const findOrCreateTestResultResolver = async (
         testPlanRun,
         testPlanReport,
         testPlanVersion: testPlanRunTestPlanVersion
-    } = await populateData({
-        testPlanRunId
-    });
+    } = await populateData({ testPlanRunId }, { transaction });
 
-    const { test, testPlanVersion } = await populateData({ testId });
+    const { test, testPlanVersion } = await populateData(
+        { testId },
+        { transaction }
+    );
 
     if (
         !(

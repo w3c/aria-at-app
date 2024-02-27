@@ -50,7 +50,7 @@ const updatePhaseResolver = async (
             values: { phase, deprecatedAt: new Date() },
             transaction
         });
-        return populateData({ testPlanVersionId }, { context });
+        return populateData({ testPlanVersionId }, { transaction });
     }
 
     let testPlanVersionDataToInclude;
@@ -256,11 +256,13 @@ const updatePhaseResolver = async (
                         const { testPlanReport: populatedTestPlanReport } =
                             await populateData(
                                 { testPlanReportId: createdTestPlanReport.id },
-                                { context }
+                                { transaction }
                             );
 
                         const runnableTests = runnableTestsResolver(
-                            populatedTestPlanReport
+                            populatedTestPlanReport,
+                            null,
+                            context
                         );
                         let updateParams = {};
 
@@ -272,7 +274,9 @@ const updatePhaseResolver = async (
 
                         // Calculate the metrics (happens if updating to DRAFT)
                         const conflicts = await conflictsResolver(
-                            populatedTestPlanReport
+                            populatedTestPlanReport,
+                            null,
+                            context
                         );
 
                         if (conflicts.length > 0) {
@@ -397,7 +401,7 @@ const updatePhaseResolver = async (
             });
 
         const atLoader = AtLoader();
-        const ats = await atLoader.getAll();
+        const ats = await atLoader.getAll({ transaction });
 
         const missingAtBrowserCombinations = [];
 
@@ -434,14 +438,22 @@ const updatePhaseResolver = async (
     }
 
     for (const testPlanReport of testPlanReports) {
-        const runnableTests = runnableTestsResolver(testPlanReport);
+        const runnableTests = runnableTestsResolver(
+            testPlanReport,
+            null,
+            context
+        );
         let updateParams = {};
 
         const isReportCreatedFromOldResults =
             createdTestPlanReportIdsFromOldResults.includes(testPlanReport.id);
 
         if (phase === 'DRAFT') {
-            const conflicts = await conflictsResolver(testPlanReport);
+            const conflicts = await conflictsResolver(
+                testPlanReport,
+                null,
+                context
+            );
 
             updateParams = {
                 metrics: {
@@ -468,7 +480,11 @@ const updatePhaseResolver = async (
                 : testPlanReport.markedFinalAt;
 
         if (shouldThrowErrorIfFound) {
-            const conflicts = await conflictsResolver(testPlanReport);
+            const conflicts = await conflictsResolver(
+                testPlanReport,
+                null,
+                context
+            );
             if (conflicts.length > 0) {
                 // Throw away newly created test plan reports if exception was hit
                 if (createdTestPlanReportIdsFromOldResults.length)
@@ -558,9 +574,11 @@ const updatePhaseResolver = async (
             candidatePhaseReachedAt || new Date();
         const recommendedPhaseTargetDateValue =
             recommendedPhaseTargetDate ||
-            recommendedPhaseTargetDateResolver({
-                candidatePhaseReachedAt: candidatePhaseReachedAtValue
-            });
+            recommendedPhaseTargetDateResolver(
+                { candidatePhaseReachedAt: candidatePhaseReachedAtValue },
+                null,
+                context
+            );
         updateParams = {
             ...updateParams,
             candidatePhaseReachedAt: candidatePhaseReachedAtValue,
@@ -589,7 +607,7 @@ const updatePhaseResolver = async (
         values: updateParams,
         transaction
     });
-    return populateData({ testPlanVersionId });
+    return populateData({ testPlanVersionId }, { transaction });
 };
 
 module.exports = updatePhaseResolver;

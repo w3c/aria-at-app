@@ -4,7 +4,6 @@ const {
     removeUserById
 } = require('../models/services/UserService');
 const startSupertestServer = require('../tests/util/api-server');
-const transactionMiddleware = require('./transactionMiddleware');
 const db = require('../models/index');
 
 afterAll(async () => {
@@ -38,11 +37,7 @@ describe('transactionMiddleware', () => {
 
         const { sessionAgent, tearDown } = await startSupertestServer({
             graphql: false,
-            applyMiddleware: app => {
-                app.use(transactionMiddleware.middleware);
-            },
             applyErrorware: app => {
-                app.use(transactionMiddleware.errorware);
                 app.use(ignoreErrorsErrorware);
             },
             pathToRoutes: [

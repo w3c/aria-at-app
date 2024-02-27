@@ -14,18 +14,27 @@ const findOrCreateTestResult = async ({
     browserVersionId,
     transaction
 }) => {
-    const { testPlanRun, testPlanReport } = await populateData({
-        testPlanRunId
-    });
+    const context = { transaction };
+
+    const { testPlanRun, testPlanReport } = await populateData(
+        { testPlanRunId },
+        { transaction }
+    );
 
     const fixTestPlanReportMetrics = async testPlanReportStale => {
-        const { testPlanReport } = await populateData({
-            testPlanReportId: testPlanReportStale.id
-        });
-        const runnableTests = runnableTestsResolver(testPlanReport);
-        const finalizedTestResults = await getFinalizedTestResults({
-            ...testPlanReport
-        });
+        const { testPlanReport } = await populateData(
+            { testPlanReportId: testPlanReportStale.id },
+            { transaction }
+        );
+        const runnableTests = runnableTestsResolver(
+            testPlanReport,
+            null,
+            context
+        );
+        const finalizedTestResults = await getFinalizedTestResults(
+            { ...testPlanReport },
+            { transaction }
+        );
         const metrics = getMetrics({
             testPlanReport: {
                 ...testPlanReport,
@@ -40,7 +49,10 @@ const findOrCreateTestResult = async ({
         });
     };
 
-    const { test, testPlanVersion } = await populateData({ testId });
+    const { test, testPlanVersion } = await populateData(
+        { testId },
+        { transaction }
+    );
 
     const newTestResult = createTestResultSkeleton({
         test,
@@ -90,7 +102,7 @@ const findOrCreateTestResult = async ({
         await fixTestPlanReportMetrics(testPlanReport);
     }
 
-    return populateData({ testResultId: newTestResult.id });
+    return populateData({ testResultId: newTestResult.id }, { transaction });
 };
 
 module.exports = {

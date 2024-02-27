@@ -29,21 +29,23 @@ const deleteTestPlanRunResolver = async (
         transaction
     });
 
-    const { testPlanReport } = await populateData({
-        testPlanReportId
-    });
-    const conflicts = await conflictsResolver(testPlanReport);
+    const { testPlanReport } = await populateData(
+        { testPlanReportId },
+        { transaction }
+    );
+    const conflicts = await conflictsResolver(testPlanReport, null, context);
     await updateTestPlanReportById({
         id: testPlanReport.id,
-        where: {
+        values: {
             metrics: {
                 ...testPlanReport.metrics,
                 conflictsCount: conflicts.length
             }
-        }
+        },
+        transaction
     });
 
-    return populateData({ testPlanReportId });
+    return populateData({ testPlanReportId }, { transaction });
 };
 
 module.exports = deleteTestPlanRunResolver;

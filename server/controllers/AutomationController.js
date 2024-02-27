@@ -111,7 +111,10 @@ const updateJobStatus = async (req, res) => {
     res.json(graphqlResponse);
 };
 
-const getApprovedFinalizedTestResults = async testPlanRun => {
+const getApprovedFinalizedTestResults = async (
+    testPlanRun,
+    { transaction }
+) => {
     const {
         testPlanReport: { testPlanVersion }
     } = testPlanRun;
@@ -128,11 +131,12 @@ const getApprovedFinalizedTestResults = async testPlanRun => {
         return null;
     }
 
-    const { testPlanReport } = await populateData({
-        testPlanReportId: testPlanRun.testPlanReport.id
-    });
+    const { testPlanReport } = await populateData(
+        { testPlanReportId: testPlanRun.testPlanReport.id },
+        { transaction }
+    );
 
-    return getFinalizedTestResults(testPlanReport);
+    return getFinalizedTestResults(testPlanReport, { transaction });
 };
 
 const updateOrCreateTestResultWithResponses = async ({
@@ -170,7 +174,8 @@ const updateOrCreateTestResultWithResponses = async ({
     });
 
     const historicalTestResults = await getApprovedFinalizedTestResults(
-        testPlanRun
+        testPlanRun,
+        { transaction }
     );
 
     const historicalTestResult = historicalTestResults?.find(each => {
@@ -230,7 +235,8 @@ const updateOrCreateTestResultWithResponses = async ({
                 outputs: responses
             })
         ),
-        isSubmit: false
+        isSubmit: false,
+        context: { transaction }
     });
 };
 

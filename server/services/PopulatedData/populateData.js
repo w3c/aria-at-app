@@ -28,6 +28,8 @@ const populateData = async (
     locationOfData,
     { transaction, preloaded } = {}
 ) => {
+    const context = { transaction };
+
     let {
         testPlanId,
         testPlanVersionId,
@@ -129,7 +131,7 @@ const populateData = async (
 
     testPlan =
         testPlanVersion && !testPlan
-            ? testPlanVersionTestPlanResolver(testPlanVersion)
+            ? testPlanVersionTestPlanResolver(testPlanVersion, null, context)
             : null;
 
     // Populate data originating in the JSON part of the database
@@ -144,7 +146,7 @@ const populateData = async (
     let browserVersion;
 
     if (testResultId) {
-        const testResults = await getTestResults(testPlanRun);
+        const testResults = await getTestResults(testPlanRun, { transaction });
         testResult = testResults.find(each => each.id === testResultId);
         if (!testResult) {
             throw new Error(
