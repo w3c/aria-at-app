@@ -41,7 +41,7 @@ const UnexpectedBehaviorsFieldset = ({
     unexpectedBehaviors,
     isSubmitted
 }) => {
-    const impactOptions = ['Moderate', 'High'];
+    const impactOptions = ['Moderate', 'Severe'];
 
     return (
         <Fieldset id={`cmd-${commandIndex}-problems`}>

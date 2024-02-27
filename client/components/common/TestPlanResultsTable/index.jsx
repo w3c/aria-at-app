@@ -33,10 +33,10 @@ const TestPlanResultsTable = ({
                 const failedAssertions = scenarioResult.assertionResults.filter(
                     assertionResult => !assertionResult.passed
                 );
-                const hasNoHighUnexpectedBehavior =
+                const hasNoSevereUnexpectedBehavior =
                     !scenarioResult.unexpectedBehaviors.some(
                         unexpectedBehavior =>
-                            unexpectedBehavior.impact === 'HIGH'
+                            unexpectedBehavior.impact === 'SEVERE'
                     );
                 const hasNoModerateUnexpectedBehavior =
                     !scenarioResult.unexpectedBehaviors.some(
@@ -45,11 +45,11 @@ const TestPlanResultsTable = ({
                     );
                 const passedAssertionsLength =
                     passedAssertions.length +
-                    (hasNoHighUnexpectedBehavior ? 1 : 0) +
+                    (hasNoSevereUnexpectedBehavior ? 1 : 0) +
                     (hasNoModerateUnexpectedBehavior ? 1 : 0);
                 const failedAssertionsLength =
                     failedAssertions.length +
-                    (hasNoHighUnexpectedBehavior ? 0 : 1) +
+                    (hasNoSevereUnexpectedBehavior ? 0 : 1) +
                     (hasNoModerateUnexpectedBehavior ? 0 : 1);
 
                 // Rows are sorted by priority descending, then result (failures then passes), then
@@ -89,9 +89,9 @@ const TestPlanResultsTable = ({
                     {
                         id: `UnexpectedBehavior_MUST_${nextId()}`,
                         assertion: {
-                            text: 'Other behaviors that create high negative-impacts are not exhibited'
+                            text: 'Other behaviors that create severe negative-impacts are not exhibited'
                         },
-                        passed: hasNoHighUnexpectedBehavior,
+                        passed: hasNoSevereUnexpectedBehavior,
                         priorityString: 'MUST'
                     },
                     ...optionalAssertionResults.map(e => ({
