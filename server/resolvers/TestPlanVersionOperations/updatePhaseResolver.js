@@ -10,7 +10,7 @@ const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestRes
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const recommendedPhaseTargetDateResolver = require('../TestPlanVersion/recommendedPhaseTargetDateResolver');
 const populateData = require('../../services/PopulatedData/populateData');
-const getMetrics = require('../../util/getMetrics');
+const { getMetrics } = require('shared');
 const { hashTest } = require('../../util/aria');
 const {
     getTestPlanVersionById,

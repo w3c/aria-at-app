@@ -10,7 +10,7 @@ const createTestResultSkeleton = require('../TestPlanRunOperations/createTestRes
 const persistConflictsCount = require('../helpers/persistConflictsCount');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
-const getMetrics = require('../../util/getMetrics');
+const { getMetrics } = require('shared');
 const {
     updateTestPlanReport
 } = require('../../models/services.deprecated/TestPlanReportService');
