@@ -267,7 +267,7 @@ const updatePhaseResolver = async (
                         let updateParams = {};
 
                         // Mark the report as final if previously was for TestPlanVersion being deprecated; may still be
-                        // nullified if finalized test results aren'transaction equal to the amount known number of possible
+                        // nullified if finalized test results aren't equal to the amount known number of possible
                         // runnable tests, because no tests should be skipped. Would mean it CANNOT be final.
                         if (testPlanReportDataToInclude.markedFinalAt)
                             updateParams = { markedFinalAt: new Date() };
@@ -280,7 +280,7 @@ const updatePhaseResolver = async (
                         );
 
                         if (conflicts.length > 0) {
-                            // Then no chance to have finalized reports, and means it hasn'transaction been
+                            // Then no chance to have finalized reports, and means it hasn't been
                             // marked as final yet
                             updateParams = {
                                 ...updateParams,
@@ -360,7 +360,7 @@ const updatePhaseResolver = async (
         throw new Error('No test plan reports found.');
     }
 
-    // If there is at least one report that wasn'transaction created by the old reports then do the exception
+    // If there is at least one report that wasn't created by the old reports then do the exception
     // check
     if (
         testPlanReports.some(

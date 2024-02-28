@@ -23,7 +23,7 @@ const latestAtVersionReleasedAtResolver = async (
         };
     }
 
-    // When TestPlanReport is DRAFT and an assigned tester hasn'transaction set a
+    // When TestPlanReport is DRAFT and an assigned tester hasn't set a
     // TestPlanVersion
     return null;
 };
