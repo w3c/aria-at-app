@@ -18,6 +18,23 @@ const BotRunTestStatusUnorderedList = styled.ul`
     white-space: nowrap;
 `;
 
+/**
+ * Generate a string describing the status of some number of "Tests" where the
+ * word "Test" is pluralized appropriately and qualified with the provided
+ * status. As a single primitive string value, the output of this utility
+ * function can be rendered into the document without interstitial space
+ * characters which produces unnatural speech in some screen readers:
+ *
+ * https://github.com/w3c/aria-at-app/issues/872
+ *
+ * @param {number} count the integer number of tests being described
+ * @param {string} status the status of the tests being described
+ *
+ * @returns {string} the pluralized text
+ */
+const testCountString = (count, status) =>
+    `${count} Test${count === 1 ? '' : 's'} ${status}`;
+
 const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
     const {
         data: testPlanRunsQueryResult,
@@ -116,17 +133,15 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
         <BotRunTestStatusUnorderedList className="text-secondary fs-6">
             <li className="m-2">
                 <ReportStatusDot className="tests-complete" />
-                {numTestsCompleted} Test{numTestsCompleted === 1 ? '' : 's'}{' '}
-                Completed
+                {testCountString(numTestsCompleted, 'Completed')}
             </li>
             <li className="m-2">
                 <ReportStatusDot className="tests-queued" />
-                {numTestsQueued} Test{numTestsQueued === 1 ? '' : 's'} Queued
+                {testCountString(numTestsQueued, 'Queued')}
             </li>
             <li className="m-2">
                 <ReportStatusDot className="tests-cancelled" />
-                {numTestsCancelled} Test{numTestsCancelled === 1 ? '' : 's'}{' '}
-                Cancelled
+                {testCountString(numTestsCancelled, 'Cancelled')}
             </li>
         </BotRunTestStatusUnorderedList>
     );
