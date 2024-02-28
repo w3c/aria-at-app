@@ -148,7 +148,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         id
                         name
                     }
-                    atMode
                     renderedUrl
                     scenarios {
                         id
@@ -258,7 +257,6 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                     id
                     name
                 }
-                atMode
                 renderedUrl
                 renderableContent
                 scenarios {
@@ -443,7 +441,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 id
                                 name
                             }
-                            atMode
                             renderedUrl
                             scenarios {
                                 id
@@ -539,7 +536,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             id
                             name
                         }
-                        atMode
                         renderedUrl
                         scenarios {
                             id
@@ -728,7 +724,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 id
                                 name
                             }
-                            atMode
                             renderedUrl
                             scenarios {
                                 id
@@ -824,7 +819,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             id
                             name
                         }
-                        atMode
                         renderedUrl
                         scenarios {
                             id
@@ -1013,7 +1007,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 id
                                 name
                             }
-                            atMode
                             renderedUrl
                             scenarios {
                                 id
@@ -1109,7 +1102,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             id
                             name
                         }
-                        atMode
                         renderedUrl
                         scenarios {
                             id
