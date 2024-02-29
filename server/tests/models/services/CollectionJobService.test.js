@@ -9,7 +9,7 @@ describe('CollectionJob Service Tests', () => {
 
     it('should return valid CollectionJob for id query with all associations', async () => {
         // A1
-        const _id = '1';
+        const _id = 1;
 
         // A2
         const collectionJob = await CollectionJobService.getCollectionJobById({
@@ -36,7 +36,7 @@ describe('CollectionJob Service Tests', () => {
 
     it('should return valid CollectionJob for id query with no associations', async () => {
         // A1
-        const _id = '1';
+        const _id = 1;
 
         // A2
         const collectionJob = await CollectionJobService.getCollectionJobById({
