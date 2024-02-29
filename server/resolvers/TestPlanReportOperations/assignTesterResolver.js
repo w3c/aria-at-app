@@ -25,7 +25,8 @@ const assignTesterResolver = async (
     if (testPlanRunId) {
         await updateTestPlanRunById({
             id: testPlanRunId,
-            values: { testerUserId }
+            values: { testerUserId },
+            transaction
         });
     } else {
         const { id } = await createTestPlanRun({

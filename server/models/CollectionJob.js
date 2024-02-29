@@ -9,7 +9,8 @@ module.exports = function (sequelize, DataTypes) {
             id: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                primaryKey: true
+                primaryKey: true,
+                autoIncrement: true
             },
             status: {
                 type: DataTypes.STRING,
