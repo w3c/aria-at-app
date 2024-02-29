@@ -294,6 +294,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'radiogroup-roving-tabindex'
                         },
@@ -312,6 +317,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'radiogroup-aria-activedescendant'
                         },
@@ -330,6 +340,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'slider-multithumb'
                         },
@@ -348,6 +363,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'link-css'
                         },
@@ -366,6 +386,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'link-img-alt'
                         },
@@ -384,6 +409,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'alert'
                         },
@@ -419,6 +449,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'disclosure-navigation'
                         },
@@ -437,6 +472,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'breadcrumb'
                         },
@@ -455,6 +495,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'main'
                         },
@@ -473,6 +518,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'meter'
                         },
@@ -491,6 +541,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'switch'
                         },
@@ -509,6 +564,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'menu-button-navigation'
                         },
@@ -527,6 +587,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'toggle-button'
                         },
@@ -707,6 +772,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'command-button'
                         },
@@ -725,6 +795,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'link-span-text'
                         },
@@ -743,6 +818,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'horizontal-slider'
                         },
@@ -760,6 +840,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'combobox-autocomplete-both-updated'
                         },
@@ -778,6 +863,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'menu-button-actions-active-descendant'
                         },
@@ -796,6 +886,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'menu-button-actions'
                         },
@@ -814,6 +909,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'banner'
                         },
@@ -832,6 +932,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'checkbox'
                         },
@@ -850,6 +955,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'complementary'
                         },
@@ -868,6 +978,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'contentinfo'
                         },
@@ -886,6 +1001,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'minimal-data-grid'
                         },
@@ -904,6 +1024,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'datepicker-spin-button'
                         },
@@ -922,6 +1047,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'disclosure-faq'
                         },
@@ -940,6 +1070,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'menubar-editor'
                         },
@@ -958,6 +1093,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'form'
                         },
@@ -976,6 +1116,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'seek-slider'
                         },
@@ -994,6 +1139,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'rating-slider'
                         },
@@ -1012,6 +1162,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'combobox-select-only'
                         },
@@ -1308,6 +1463,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'tabs-manual-activation'
                         },
@@ -1326,6 +1486,11 @@ export default (
                         candidatePhaseReachedAt: null,
                         recommendedPhaseTargetDate: null,
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'vertical-temperature-slider'
                         },
@@ -1344,6 +1509,11 @@ export default (
                         candidatePhaseReachedAt: '2022-07-06T00:00:00.000Z',
                         recommendedPhaseTargetDate: '2023-01-02T00:00:00.000Z',
                         recommendedPhaseReachedAt: '2023-01-03T00:00:00.000Z',
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'checkbox-tri-state'
                         },
@@ -1690,6 +1860,11 @@ export default (
                         candidatePhaseReachedAt: '2022-07-06T00:00:00.000Z',
                         recommendedPhaseTargetDate: '2023-01-02T00:00:00.000Z',
                         recommendedPhaseReachedAt: null,
+                        metadata: {
+                            exampleUrl: null,
+                            designPatternUrl: null,
+                            testFormatVersion: 2
+                        },
                         testPlan: {
                             directory: 'modal-dialog'
                         },
@@ -2478,6 +2653,13 @@ export default (
                     candidatePhaseReachedAt: null,
                     recommendedPhaseTargetDate: null,
                     recommendedPhaseReachedAt: null,
+                    metadata: {
+                        exampleUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/',
+                        designPatternUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/',
+                        testFormatVersion: 2
+                    },
                     testPlan: {
                         directory: 'alert'
                     },
@@ -2521,6 +2703,13 @@ export default (
                     candidatePhaseReachedAt: '2022-07-06T00:00:00.000Z',
                     recommendedPhaseTargetDate: '2023-01-02T00:00:00.000Z',
                     recommendedPhaseReachedAt: '2023-01-03T00:00:00.000Z',
+                    metadata: {
+                        exampleUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/',
+                        designPatternUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/',
+                        testFormatVersion: 2
+                    },
                     testPlan: {
                         directory: 'checkbox-tri-state'
                     },
@@ -2876,6 +3065,13 @@ export default (
                     candidatePhaseReachedAt: null,
                     recommendedPhaseTargetDate: null,
                     recommendedPhaseReachedAt: null,
+                    metadata: {
+                        exampleUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/',
+                        designPatternUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/',
+                        testFormatVersion: 2
+                    },
                     testPlan: {
                         directory: 'combobox-select-only'
                     },
@@ -3180,6 +3376,13 @@ export default (
                     draftPhaseReachedAt: '2022-07-06T00:00:00.000Z',
                     candidatePhaseReachedAt: '2022-07-06T00:00:00.000Z',
                     recommendedPhaseTargetDate: '2023-01-02T00:00:00.000Z',
+                    metadata: {
+                        exampleUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/',
+                        designPatternUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/',
+                        testFormatVersion: 2
+                    },
                     recommendedPhaseReachedAt: null,
                     testPlan: {
                         directory: 'modal-dialog'
@@ -3967,6 +4170,13 @@ export default (
                     candidatePhaseReachedAt: null,
                     recommendedPhaseTargetDate: null,
                     recommendedPhaseReachedAt: null,
+                    metadata: {
+                        exampleUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/examples/button/',
+                        designPatternUrl:
+                            'https://www.w3.org/WAI/ARIA/apg/patterns/button/',
+                        testFormatVersion: 2
+                    },
                     testPlan: {
                         directory: 'toggle-button'
                     },

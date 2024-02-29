@@ -58,7 +58,6 @@ describe('Data Management page', () => {
     it('renders Status Summary component', async () => {
         // allow page time to load
         await waitFor(() => new Promise(res => setTimeout(res, 0)));
-
         const { queryAllByText } = wrapper;
         const statusSummaryElement = queryAllByText(
             /Test Plans Status Summary/i
