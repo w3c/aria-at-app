@@ -462,7 +462,9 @@ const getTests = ({
                             data.target.at.key
                         ];
                     const tokenizedAssertionPhrase =
-                        assertion?.tokenizedAssertionPhrase[data.target.at.key];
+                        assertion?.tokenizedAssertionPhrases[
+                            data.target.at.key
+                        ];
 
                     result.assertionStatement =
                         tokenizedAssertionStatement ||
