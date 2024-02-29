@@ -187,21 +187,17 @@ const TestReview = () => {
                     </Ul>
                 </li>
                 <li>
-                    <strong>Commit:&nbsp;</strong>
-                    {testPlanVersion.gitMessage}
+                    <strong>Latest Commit:&nbsp;</strong>
+                    <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href={`https://github.com/w3c/aria-at/commit/${testPlanVersion.gitSha}`}
+                    >
+                        {testPlanVersion.gitMessage}
+                    </a>
                 </li>
             </ul>
-            <h2>Tests</h2>
-            <FilterButtonContainer>
-                <FilterButtons
-                    filterLabel="Filter tests by covered AT"
-                    filterOptions={filterOptions}
-                    activeFilter={activeFilter}
-                    onFilterChange={selectedFilter => {
-                        setActiveFilter(selectedFilter);
-                    }}
-                />
-            </FilterButtonContainer>
+
             <h2>Supporting Documentation</h2>
             <ul>
                 {testPlanVersionTests[0].renderableContents[0].renderableContent.info.references.map(
@@ -244,6 +240,19 @@ const TestReview = () => {
                     }
                 )}
             </ul>
+
+            <h2>Tests</h2>
+            <FilterButtonContainer>
+                <FilterButtons
+                    filterLabel="Filter tests by covered AT"
+                    filterOptions={filterOptions}
+                    activeFilter={activeFilter}
+                    onFilterChange={selectedFilter => {
+                        setActiveFilter(selectedFilter);
+                    }}
+                />
+            </FilterButtonContainer>
+
             {filteredTests.map((test, index) => {
                 const isFirst = index === 0;
                 const hasAriaReference =
