@@ -7,8 +7,6 @@ describe('CollectionJob Service Tests', () => {
         await sequelize.close();
     });
 
-    const randomIdGenerator = () => Math.random().toString(36).substring(7);
-
     it('should return valid CollectionJob for id query with all associations', async () => {
         // A1
         const _id = '1';
@@ -77,7 +75,7 @@ describe('CollectionJob Service Tests', () => {
             // A2
             const collectionJob =
                 await CollectionJobService.createCollectionJob({
-                    values: { id: randomIdGenerator(), status: _status },
+                    values: { status: _status, testPlanReportId: 2 },
                     transaction
                 });
             const { id, status } = collectionJob;
@@ -104,54 +102,32 @@ describe('CollectionJob Service Tests', () => {
 
     it('should create a new CollectionJob with default status', async () => {
         await dbCleaner(async transaction => {
-            const id = randomIdGenerator();
             const collectionJob =
                 await CollectionJobService.createCollectionJob({
-                    values: { id, testPlanReportId: 2 },
+                    values: { testPlanReportId: 2 },
                     transaction
                 });
 
-            expect(collectionJob.id).toEqual(id);
             expect(collectionJob.status).toEqual('QUEUED');
         });
     });
 
     it('should create a new CollectionJob with provided status', async () => {
         await dbCleaner(async transaction => {
-            const id = randomIdGenerator();
             const status = 'IN_PROGRESS';
             const collectionJob =
                 await CollectionJobService.createCollectionJob({
-                    values: { id, status, testPlanReportId: 2 },
+                    values: { status, testPlanReportId: 2 },
                     transaction
                 });
 
-            expect(collectionJob.id).toEqual(id);
             expect(collectionJob.status).toEqual(status);
         });
     });
 
-    it('should throw an error when creating a CollectionJob with existing id', async () => {
-        await dbCleaner(async transaction => {
-            const id = randomIdGenerator();
-            await CollectionJobService.createCollectionJob({
-                values: { id, testPlanReportId: 2 },
-                transaction
-            });
-
-            await expect(
-                CollectionJobService.createCollectionJob({
-                    values: { id },
-                    transaction
-                })
-            ).rejects.toThrow(Error);
-        });
-    });
-
     it('should return null when getting a CollectionJob by unknown id', async () => {
-        const id = randomIdGenerator();
         const collectionJob = await CollectionJobService.getCollectionJobById({
-            id,
+            id: 999999,
             transaction: false
         });
 
@@ -160,16 +136,14 @@ describe('CollectionJob Service Tests', () => {
 
     it('should be able to get all CollectionJobs and filter by status', async () => {
         await dbCleaner(async transaction => {
-            const id1 = randomIdGenerator();
-            const id2 = randomIdGenerator();
             const status1 = 'QUEUED';
             const status2 = 'IN_PROGRESS';
-            await CollectionJobService.createCollectionJob({
-                values: { id: id1, status: status1, testPlanReportId: 2 },
+            const job1 = await CollectionJobService.createCollectionJob({
+                values: { status: status1, testPlanReportId: 2 },
                 transaction
             });
-            await CollectionJobService.createCollectionJob({
-                values: { id: id2, status: status2, testPlanReportId: 4 },
+            const job2 = await CollectionJobService.createCollectionJob({
+                values: { status: status2, testPlanReportId: 4 },
                 transaction
             });
 
@@ -179,8 +153,8 @@ describe('CollectionJob Service Tests', () => {
 
             expect(collectionJobs).toEqual(
                 expect.arrayContaining([
-                    expect.objectContaining({ id: id1 }),
-                    expect.objectContaining({ id: id2 })
+                    expect.objectContaining({ id: job1.id }),
+                    expect.objectContaining({ id: job2.id })
                 ])
             );
 
@@ -191,7 +165,7 @@ describe('CollectionJob Service Tests', () => {
 
             expect(queuedJobs).toEqual(
                 expect.arrayContaining([
-                    expect.objectContaining({ id: id1, status: status1 })
+                    expect.objectContaining({ id: job1.id, status: status1 })
                 ])
             );
         });
@@ -199,86 +173,40 @@ describe('CollectionJob Service Tests', () => {
 
     it('should be able to update the status of a CollectionJob', async () => {
         await dbCleaner(async transaction => {
-            const id = randomIdGenerator();
             const status = 'IN_PROGRESS';
             const initialJob = await CollectionJobService.createCollectionJob({
-                values: { id, testPlanReportId: 2 },
+                values: { testPlanReportId: 2 },
                 transaction
             });
-            expect(initialJob.id).toEqual(id);
             expect(initialJob.status).toEqual('QUEUED');
 
             const collectionJob =
                 await CollectionJobService.updateCollectionJobById({
-                    id,
+                    id: initialJob.id,
                     values: { status },
                     transaction
                 });
 
-            expect(collectionJob.id).toEqual(id);
-            expect(collectionJob.status).toEqual(status);
-        });
-    });
-
-    it('should create a new CollectionJob if one with that id does not exist with getOrCreate', async () => {
-        await dbCleaner(async transaction => {
-            const id = randomIdGenerator();
-            const status = 'IN_PROGRESS';
-            const initialJob = await CollectionJobService.getCollectionJobById({
-                id,
-                transaction
-            });
-            expect(initialJob).toBeNull();
-            const collectionJob =
-                await CollectionJobService.getOrCreateCollectionJob({
-                    where: { id },
-                    values: { status, testPlanReportId: 2 },
-                    transaction
-                });
-
-            expect(collectionJob.id).toEqual(id);
-            expect(collectionJob.status).toEqual(status);
-        });
-    });
-
-    it('should find an existing CollectionJob if one with that id exists with getOrCreate', async () => {
-        await dbCleaner(async transaction => {
-            const id = randomIdGenerator();
-            const status = 'IN_PROGRESS';
-            const initialJob = await CollectionJobService.createCollectionJob({
-                values: { id, status, testPlanReportId: 2 },
-                transaction
-            });
-            expect(initialJob.id).toEqual(id);
-            expect(initialJob.status).toEqual(status);
-            const collectionJob =
-                await CollectionJobService.getOrCreateCollectionJob({
-                    where: { id },
-                    transaction
-                });
-
-            expect(collectionJob.id).toEqual(id);
+            expect(collectionJob.id).toEqual(initialJob.id);
             expect(collectionJob.status).toEqual(status);
         });
     });
 
     it('should be able to remove a CollectionJob', async () => {
         await dbCleaner(async transaction => {
-            const id = randomIdGenerator();
             const initialJob = await CollectionJobService.createCollectionJob({
-                values: { id, testPlanReportId: 2 },
+                values: { testPlanReportId: 2 },
                 transaction
             });
-            expect(initialJob.id).toEqual(id);
 
             await CollectionJobService.removeCollectionJobById({
-                id,
+                id: initialJob.id,
                 transaction
             });
 
             const collectionJob =
                 await CollectionJobService.getCollectionJobById({
-                    id,
+                    id: initialJob.id,
                     transaction
                 });
             expect(collectionJob).toBeNull();
