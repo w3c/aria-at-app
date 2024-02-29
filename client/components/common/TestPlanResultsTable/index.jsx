@@ -89,7 +89,7 @@ const TestPlanResultsTable = ({
                     {
                         id: `UnexpectedBehavior_MUST_${nextId()}`,
                         assertion: {
-                            text: 'Other behaviors that create severe negative-impacts are not exhibited'
+                            text: 'Other behaviors that create severe negative impacts are not exhibited'
                         },
                         passed: hasNoSevereUnexpectedBehavior,
                         priorityString: 'MUST'
@@ -101,7 +101,7 @@ const TestPlanResultsTable = ({
                     {
                         id: `UnexpectedBehavior_SHOULD_${nextId()}`,
                         assertion: {
-                            text: 'Other behaviors that create moderate negative-impacts are not exhibited'
+                            text: 'Other behaviors that create moderate negative impacts are not exhibited'
                         },
                         passed: hasNoModerateUnexpectedBehavior,
                         priorityString: 'SHOULD'
@@ -154,7 +154,7 @@ const TestPlanResultsTable = ({
                                 bordered
                                 responsive
                                 aria-label={`Undesirable behaviors for test ${test.title}`}
-                                className={`test-plan-undesirable-behaviors-table ${tableClassName}`}
+                                className={`test-plan-unexpected-behaviors-table ${tableClassName}`}
                             >
                                 <thead>
                                     <tr>
