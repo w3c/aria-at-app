@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { Button } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import { unescape } from 'lodash';
 import {
     parseListContent,
@@ -19,6 +19,7 @@ import { TestWindow } from '../../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../../utils/aria.js';
 import commandsJson from '../../../resources/commands.json';
 import supportJson from '../../../resources/support.json';
+import { convertAssertionPriority } from 'shared';
 
 const NumberedList = styled.ol`
     counter-reset: numbered-list;
@@ -169,18 +170,81 @@ const InstructionsRenderer = ({
         commandsContent
     );
 
-    const assertions = [...pageContent.instructions.assertions.assertions];
-    const assertionsContent = parseListContent(assertions);
-
+    headingLevel = 5;
     const Heading = `h${headingLevel}`;
+
+    console.log(renderableContent)
 
     return (
         <>
             <NumberedList>{allInstructionsContent}</NumberedList>
-            <Heading>{pageContent.instructions.assertions.header}</Heading>
-            {pageContent.instructions.assertions.description}
-            <NumberedList>{assertionsContent}</NumberedList>
             {settingsContent.length ? settingsContent : null}
+
+            {renderableContent.commands.map(({ id, settings }, i) => {
+                debugger;
+                const settingsScreenText =
+                    renderableContent.target.at.raw.settings[settings]
+                        ?.screenText ?? '';
+
+                let mustCount = 0;
+                let shouldCount = 0;
+                let mayCount = 0;
+
+                renderableContent.assertions.forEach(({ priority }) => {
+                    const priorityString = convertAssertionPriority(priority);
+                    if (priorityString === 'MUST') mustCount += 1;
+                    if (priorityString === 'SHOULD') shouldCount += 1;
+                    if (priorityString === 'MAY') mayCount += 1;
+                });
+
+                const settingsScreenTextFormatted =
+                    settingsScreenText === '' ? '' : ` (${settingsScreenText})`;
+
+                const scenarioTitle =
+                    `${renderableContent.commands[i].keystroke}` +
+                    `${settingsScreenTextFormatted}: ${mustCount} MUST, ` +
+                    `${shouldCount} SHOULD, ${mayCount} MAY Assertions`;
+
+                return (
+                    <>
+                        <Heading>{scenarioTitle}</Heading>
+                        <Table
+                            key={`${id}-${i}`}
+                            bordered
+                            responsive
+                            aria-label={`Results for test ${test.title}`}
+                        >
+                            <thead>
+                                <tr>
+                                    <th>Priority</th>
+                                    <th>Assertion Phrase</th>
+                                    <th>Assertion Statement</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {renderableContent.assertions.map(
+                                    ({
+                                        assertionPhrase,
+                                        assertionStatement,
+                                        priority,
+                                        assertionId
+                                    }) => (
+                                        <tr key={`${i}-${assertionId}`}>
+                                            <td>
+                                                {convertAssertionPriority(
+                                                    priority
+                                                )}
+                                            </td>
+                                            <td>{assertionPhrase}</td>
+                                            <td>{assertionStatement}</td>
+                                        </tr>
+                                    )
+                                )}
+                            </tbody>
+                        </Table>
+                    </>
+                );
+            })}
 
             <Button
                 disabled={!pageContent.instructions.openTestPage.enabled}
