@@ -461,11 +461,14 @@ const getTests = ({
                         assertion?.tokenizedAssertionStatements[
                             data.target.at.key
                         ];
+                    const tokenizedAssertionPhrase =
+                        assertion?.tokenizedAssertionPhrase[data.target.at.key];
 
                     result.assertionStatement =
                         tokenizedAssertionStatement ||
                         assertion.assertionStatement;
-                    result.assertionPhrase = assertion.assertionPhrase;
+                    result.assertionPhrase =
+                        tokenizedAssertionPhrase || assertion.assertionPhrase;
                     result.assertionExceptions = data.commands.flatMap(
                         command => {
                             return command.assertionExceptions
@@ -579,10 +582,15 @@ const getTests = ({
                                 assertionStatement,
                                 assertionPhrase,
                                 refIds,
-                                tokenizedAssertionStatements
+                                tokenizedAssertionStatements,
+                                tokenizedAssertionPhrases
                             }) => {
                                 const tokenizedAssertionStatement =
                                     tokenizedAssertionStatements[
+                                        collected.target.at.key
+                                    ];
+                                const tokenizedAssertionPhrase =
+                                    tokenizedAssertionPhrases[
                                         collected.target.at.key
                                     ];
 
@@ -592,7 +600,9 @@ const getTests = ({
                                     assertionStatement:
                                         tokenizedAssertionStatement ||
                                         assertionStatement,
-                                    assertionPhrase,
+                                    assertionPhrase:
+                                        tokenizedAssertionPhrase ||
+                                        assertionPhrase,
                                     refIds
                                 };
                             }
