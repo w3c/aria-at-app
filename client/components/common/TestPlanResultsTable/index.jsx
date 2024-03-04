@@ -65,8 +65,21 @@ const TestPlanResultsTable = ({
                         a.passed === b.passed ? 0 : a.passed ? 1 : -1
                     );
 
+                // Workaround:
+                // Remove instances of content inside '()' to address edge case of
+                // COMMAND_TEXT (OPERATING_MODE) then COMMAND_TEXT (OPERATING_MODE).
+                // OPERATING_MODE should only show once
+                const bracketsRegex = /\((.*?)\)/g;
+
                 const commandsString = scenarioResult.scenario.commands
-                    .map(({ text }) => text)
+                    .map(({ text }, index) => {
+                        if (
+                            index !==
+                            scenarioResult.scenario.commands.length - 1
+                        )
+                            text = text.replace(bracketsRegex, '');
+                        return text.trim();
+                    })
                     .join(' then ');
 
                 const sortedAssertionResults = [
