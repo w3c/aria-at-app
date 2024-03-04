@@ -5,13 +5,15 @@ const populateData = require('../services/PopulatedData/populateData');
 const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
 const finalizedTestResultsResolver = require('../resolvers/TestPlanReport/finalizedTestResultsResolver');
 const {
-    updateTestPlanReport
-} = require('../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../models/services/TestPlanReportService');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
         return queryInterface.sequelize.transaction(async transaction => {
+            const context = { transaction };
+
             const testPlanReports = await queryInterface.sequelize.query(
                 `SELECT id, metrics FROM "TestPlanReport"`,
                 {
@@ -22,12 +24,19 @@ module.exports = {
 
             for (const testPlanReport of testPlanReports) {
                 const { testPlanReport: testPlanReportPopulated } =
-                    await populateData({ testPlanReportId: testPlanReport.id });
+                    await populateData(
+                        { testPlanReportId: testPlanReport.id },
+                        { transaction }
+                    );
                 const runnableTests = runnableTestsResolver(
-                    testPlanReportPopulated
+                    testPlanReportPopulated,
+                    null,
+                    context
                 );
                 const finalizedTestResults = await finalizedTestResultsResolver(
-                    testPlanReportPopulated
+                    testPlanReportPopulated,
+                    null,
+                    context
                 );
                 const metrics = getMetrics({
                     testPlanReport: {
@@ -36,8 +45,15 @@ module.exports = {
                         runnableTests
                     }
                 });
-                await updateTestPlanReport(testPlanReportPopulated.id, {
-                    metrics: { ...testPlanReportPopulated.metrics, ...metrics }
+                await updateTestPlanReportById({
+                    id: testPlanReportPopulated.id,
+                    values: {
+                        metrics: {
+                            ...testPlanReportPopulated.metrics,
+                            ...metrics
+                        }
+                    },
+                    transaction
                 });
             }
         });

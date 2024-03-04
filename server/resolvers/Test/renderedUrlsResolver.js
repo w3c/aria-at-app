@@ -2,11 +2,13 @@ const populateData = require('../../services/PopulatedData/populateData');
 const AtLoader = require('../../models/loaders/AtLoader');
 
 const renderedUrls = async (test, _, context) => {
-    const ats = await AtLoader().getAll();
+    const { transaction } = context;
+
+    const ats = await AtLoader().getAll({ transaction });
 
     const { testPlanVersion } = await populateData(
         { testId: test.id },
-        { context }
+        { transaction }
     );
 
     const isV2 = testPlanVersion.metadata.testFormatVersion === 2;

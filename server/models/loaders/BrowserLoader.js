@@ -1,4 +1,4 @@
-const { getBrowsers } = require('../services.deprecated/BrowserService');
+const { getBrowsers } = require('../services/BrowserService');
 
 let singletonInstance = null;
 
@@ -11,7 +11,7 @@ const BrowserLoader = () => {
     let activePromise;
 
     singletonInstance = {
-        getAll: async () => {
+        getAll: async ({ transaction }) => {
             if (browsers) {
                 return browsers;
             }
@@ -20,19 +20,21 @@ const BrowserLoader = () => {
                 return activePromise;
             }
 
-            activePromise = getBrowsers();
+            activePromise = getBrowsers({ transaction }).then(browsers => {
+                browsers = browsers.map(browser => ({
+                    ...browser.dataValues,
+                    candidateAts: browser.ats.filter(
+                        at => at.AtBrowsers.isCandidate
+                    ),
+                    recommendedAts: browser.ats.filter(
+                        at => at.AtBrowsers.isRecommended
+                    )
+                }));
+
+                return browsers;
+            });
 
             browsers = await activePromise;
-
-            browsers = browsers.map(browser => ({
-                ...browser.dataValues,
-                candidateAts: browser.ats.filter(
-                    at => at.AtBrowsers.isCandidate
-                ),
-                recommendedAts: browser.ats.filter(
-                    at => at.AtBrowsers.isRecommended
-                )
-            }));
 
             return browsers;
         },

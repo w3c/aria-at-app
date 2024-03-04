@@ -1,22 +1,27 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-    removeTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    removeTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 const {
     removeTestPlanRunByQuery
-} = require('../../models/services.deprecated/TestPlanRunService');
+} = require('../../models/services/TestPlanRunService');
 
 const deleteTestPlanReportResolver = async (
     { parentContext: { id: testPlanReportId } },
     _,
-    { user }
+    context
 ) => {
+    const { user, transaction } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    await removeTestPlanRunByQuery({ testPlanReportId });
-    await removeTestPlanReport(testPlanReportId);
+    await removeTestPlanRunByQuery({
+        where: { testPlanReportId },
+        transaction
+    });
+    await removeTestPlanReportById({ id: testPlanReportId, transaction });
 
     return true;
 };

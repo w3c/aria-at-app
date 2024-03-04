@@ -4,19 +4,20 @@ const { AuthenticationError } = require('apollo-server-express');
 const {
     getTestPlanReportById,
     getOrCreateTestPlanReport,
-    updateTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 const {
     getTestPlanVersionById
-} = require('../../models/services.deprecated/TestPlanVersionService');
-const { testResults } = require('../TestPlanRun');
+} = require('../../models/services/TestPlanVersionService');
+const { testResultsResolver } = require('../TestPlanRun');
 const populateData = require('../../services/PopulatedData/populateData');
 const scenariosResolver = require('../Test/scenariosResolver');
 const {
     createTestPlanRun
-} = require('../../models/services.deprecated/TestPlanRunService');
-const { findOrCreateTestResult } = require('../TestPlanRunOperations');
-const { submitTestResult, saveTestResult } = require('../TestResultOperations');
+} = require('../../models/services/TestPlanRunService');
+const { findOrCreateTestResultResolver } = require('../TestPlanRunOperations');
+const submitTestResultResolver = require('../TestResultOperations/submitTestResultResolver');
+const saveTestResultResolver = require('../TestResultOperations/saveTestResultResolver');
 
 const compareTestContent = (currentTests, newTests) => {
     const hashTest = test => hash(omit(test, ['id']));
@@ -77,7 +78,8 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     { input }, // { testPlanVersionId, atId, browserId }
     context
 ) => {
-    const { user } = context;
+    const { user, transaction } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
@@ -86,7 +88,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     // [SECTION START]: Preparing data to be worked with in a similar way to TestPlanUpdaterModal
     const newTestPlanVersionData = (
-        await getTestPlanVersionById(newTestPlanVersionId)
+        await getTestPlanVersionById({ id: newTestPlanVersionId, transaction })
     ).toJSON();
     const newTestPlanVersion = {
         id: newTestPlanVersionData.id,
@@ -99,15 +101,17 @@ const updateTestPlanReportTestPlanVersionResolver = async (
                         id: atId
                     })),
                     atMode,
-                    scenarios: scenariosResolver({ scenarios }, { atId }).map(
-                        ({ commandIds }) => {
-                            return {
-                                commands: commandIds.map(commandId => ({
-                                    text: commandId
-                                }))
-                            };
-                        }
-                    ),
+                    scenarios: scenariosResolver(
+                        { scenarios },
+                        { atId },
+                        context
+                    ).map(({ commandIds }) => {
+                        return {
+                            commands: commandIds.map(commandId => ({
+                                text: commandId
+                            }))
+                        };
+                    }),
                     assertions: assertions.map(({ priority, text }) => ({
                         priority,
                         text
@@ -118,16 +122,17 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     };
 
     const currentTestPlanReport = (
-        await getTestPlanReportById(testPlanReportId)
+        await getTestPlanReportById({ id: testPlanReportId, transaction })
     ).toJSON();
 
     for (let i = 0; i < currentTestPlanReport.testPlanRuns.length; i++) {
         const testPlanRun = currentTestPlanReport.testPlanRuns[i];
-        const { testPlanRun: populatedTestPlanRun } = await populateData({
-            testPlanRunId: testPlanRun.id
-        });
+        const { testPlanRun: populatedTestPlanRun } = await populateData(
+            { testPlanRunId: testPlanRun.id },
+            { transaction }
+        );
 
-        testPlanRun.testResults = await testResults(
+        testPlanRun.testResults = await testResultsResolver(
             populatedTestPlanRun.toJSON(),
             null,
             context
@@ -164,7 +169,8 @@ const updateTestPlanReportTestPlanVersionResolver = async (
                                 atMode: test.atMode,
                                 scenarios: scenariosResolver(
                                     { scenarios: test.scenarios },
-                                    { atId }
+                                    { atId },
+                                    context
                                 ).map(({ commandIds }) => {
                                     return {
                                         commands: commandIds.map(commandId => ({
@@ -241,7 +247,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     // TODO: If no input.testPlanVersionId, infer it by whatever the latest is for this directory
     const [foundOrCreatedTestPlanReport, createdLocationsOfData] =
-        await getOrCreateTestPlanReport(input);
+        await getOrCreateTestPlanReport({ where: input, transaction });
 
     const candidatePhaseReachedAt =
         currentTestPlanReport.candidatePhaseReachedAt;
@@ -251,11 +257,15 @@ const updateTestPlanReportTestPlanVersionResolver = async (
         currentTestPlanReport.recommendedPhaseTargetDate;
     const vendorReviewStatus = currentTestPlanReport.vendorReviewStatus;
 
-    await updateTestPlanReport(foundOrCreatedTestPlanReport.id, {
-        candidatePhaseReachedAt,
-        recommendedPhaseReachedAt,
-        recommendedPhaseTargetDate,
-        vendorReviewStatus
+    await updateTestPlanReportById({
+        id: foundOrCreatedTestPlanReport.id,
+        values: {
+            candidatePhaseReachedAt,
+            recommendedPhaseReachedAt,
+            recommendedPhaseTargetDate,
+            vendorReviewStatus
+        },
+        transaction
     });
 
     const locationOfData = {
@@ -265,7 +275,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     const created = await Promise.all(
         createdLocationsOfData.map(createdLocationOfData =>
-            populateData(createdLocationOfData, { preloaded })
+            populateData(createdLocationOfData, { preloaded, transaction })
         )
     );
     const reportIsNew = !!created.find(item => item.testPlanReport.id);
@@ -278,8 +288,11 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     for (const testPlanRun of runsWithResults) {
         // Create new TestPlanRuns
         const { id: testPlanRunId } = await createTestPlanRun({
-            testPlanReportId: foundOrCreatedTestPlanReport.id,
-            testerUserId: testPlanRun.tester.id
+            values: {
+                testPlanReportId: foundOrCreatedTestPlanReport.id,
+                testerUserId: testPlanRun.tester.id
+            },
+            transaction
         });
 
         for (const testResult of testPlanRun.testResults) {
@@ -290,12 +303,12 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
             // Create new testResults
             const { testResult: testResultSkeleton } =
-                await findOrCreateTestResult(
+                await findOrCreateTestResultResolver(
                     {
                         parentContext: { id: testPlanRunId }
                     },
                     { testId, atVersionId, browserVersionId },
-                    { ...context, user }
+                    context
                 );
 
             const copiedTestResultInput = copyTestResult(
@@ -305,16 +318,16 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
             let savedData;
             if (testResult.completedAt) {
-                savedData = await submitTestResult(
+                savedData = await submitTestResultResolver(
                     { parentContext: { id: copiedTestResultInput.id } },
                     { input: copiedTestResultInput },
-                    { ...context, user }
+                    context
                 );
             } else {
-                savedData = await saveTestResult(
+                savedData = await saveTestResultResolver(
                     { parentContext: { id: copiedTestResultInput.id } },
                     { input: copiedTestResultInput },
-                    { ...context, user }
+                    context
                 );
             }
             if (savedData.errors)
@@ -326,7 +339,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     // await removeTestPlanRunByQuery({ testPlanReportId });
     // await removeTestPlanReport(testPlanReportId);
 
-    return populateData(locationOfData, { preloaded });
+    return populateData(locationOfData, { preloaded, transaction });
 };
 
 module.exports = updateTestPlanReportTestPlanVersionResolver;

@@ -6,12 +6,14 @@ const finalizedTestResultsResolver = require('../resolvers/TestPlanReport/finali
 const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
 const { getMetrics } = require('shared');
 const {
-    updateTestPlanReport
-} = require('../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../models/services/TestPlanReportService');
 
 module.exports = {
     up: queryInterface => {
         return queryInterface.sequelize.transaction(async transaction => {
+            const context = { transaction };
+
             const testPlanReports = await queryInterface.sequelize.query(
                 `SELECT id, status FROM "TestPlanReport"`,
                 {
@@ -30,10 +32,16 @@ module.exports = {
                 );
                 let updateParams = {};
 
-                const { testPlanReport } = await populateData({
-                    testPlanReportId
-                });
-                const conflicts = await conflictsResolver(testPlanReport);
+                const { testPlanReport } = await populateData(
+                    { testPlanReportId },
+                    { transaction }
+                );
+
+                const conflicts = await conflictsResolver(
+                    testPlanReport,
+                    null,
+                    context
+                );
                 updateParams = {
                     metrics: {
                         conflictsCount: conflicts.length
@@ -42,13 +50,17 @@ module.exports = {
 
                 if (status === 'IN_REVIEW' || status === 'FINALIZED') {
                     const finalizedTestResults =
-                        finalizedTestResultsResolver({
-                            ...testPlanReport,
-                            status
-                        }) || [];
+                        finalizedTestResultsResolver(
+                            { ...testPlanReport, status },
+                            null,
+                            context
+                        ) || [];
                     if (finalizedTestResults.length) {
-                        const runnableTests =
-                            runnableTestsResolver(testPlanReport);
+                        const runnableTests = runnableTestsResolver(
+                            testPlanReport,
+                            null,
+                            context
+                        );
                         const metrics = getMetrics({
                             testPlanReport: {
                                 ...testPlanReport,
@@ -62,7 +74,11 @@ module.exports = {
                     }
                 }
 
-                await updateTestPlanReport(testPlanReport.id, updateParams);
+                await updateTestPlanReportById({
+                    id: testPlanReport.id,
+                    values: updateParams,
+                    t: false
+                });
             }
         });
     },

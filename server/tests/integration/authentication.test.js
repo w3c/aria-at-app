@@ -1,5 +1,4 @@
 const fetch = require('node-fetch');
-const dbCleaner = require('../util/db-cleaner.deprecated');
 const setUpMockGithubServer = require('../util/mock-github-server');
 const startSupertestServer = require('../util/api-server');
 const authRoutes = require('../../routes/auth');
@@ -9,8 +8,10 @@ let sessionAgent;
 let apiServer;
 let mockGithubServer;
 
-const followRedirects = async firstUrl => {
-    const res1 = await sessionAgent.get(firstUrl);
+const followRedirects = async (firstUrl, { transaction }) => {
+    const res1 = await sessionAgent
+        .get(firstUrl)
+        .set('x-transaction-id', transaction.id);
 
     expect(res1.status).toBe(303);
     expect(res1.headers.location).toMatch(
@@ -32,7 +33,9 @@ const followRedirects = async firstUrl => {
 
     const removeDomain = process.env.API_SERVER.length;
     const location3 = res2.headers.get('location').substr(removeDomain);
-    const res3 = await sessionAgent.get(location3);
+    const res3 = await sessionAgent
+        .get(location3)
+        .set('x-transaction-id', transaction.id);
 
     return res3;
 };
@@ -61,27 +64,32 @@ const knownAdmin = 'mcking65';
 
 describe('authentication', () => {
     it('handles Oauth to and from GitHub with preexisting user', async () => {
-        await dbCleaner(async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             mockGithubServer.nextLogin({
                 githubUsername: knownAdmin
             });
 
             // A2
-            const res = await followRedirects('/api/auth/oauth');
+            const res = await followRedirects('/api/auth/oauth', {
+                transaction
+            });
 
             const {
                 body: { data }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
-                    query {
-                        me {
-                            username
-                            roles
+            } = await sessionAgent
+                .post('/api/graphql')
+                .set('x-transaction-id', transaction.id)
+                .send({
+                    query: `
+                        query {
+                            me {
+                                username
+                                roles
+                            }
                         }
-                    }
-                `
-            });
+                    `
+                });
 
             // A3
             expect(res.status).toBe(303);
@@ -96,7 +104,7 @@ describe('authentication', () => {
     });
 
     it('signs in as a tester', async () => {
-        await dbCleaner(async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             const _testerUsername = 'a11ydoer'; // From testers.txt
             mockGithubServer.nextLogin({
@@ -104,12 +112,17 @@ describe('authentication', () => {
             });
 
             // A2
-            const res = await followRedirects('/api/auth/oauth');
+            const res = await followRedirects('/api/auth/oauth', {
+                transaction
+            });
 
             const {
                 body: { data }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
+            } = await sessionAgent
+                .post('/api/graphql')
+                .set('x-transaction-id', transaction.id)
+                .send({
+                    query: `
                     query {
                         me {
                             username
@@ -117,7 +130,7 @@ describe('authentication', () => {
                         }
                     }
                 `
-            });
+                });
 
             // A3
             expect(res.status).toBe(303);
@@ -130,7 +143,7 @@ describe('authentication', () => {
     });
 
     it('shows signup instructions when not known to the system', async () => {
-        await dbCleaner(async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             const _unknownUsername = 'aurelia-proudfeet';
             mockGithubServer.nextLogin({
@@ -138,12 +151,17 @@ describe('authentication', () => {
             });
 
             // A2
-            const res = await followRedirects('/api/auth/oauth');
+            const res = await followRedirects('/api/auth/oauth', {
+                transaction
+            });
 
             const {
                 body: { data }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
+            } = await sessionAgent
+                .post('/api/graphql')
+                .set('x-transaction-id', transaction.id)
+                .send({
+                    query: `
                     query {
                         me {
                             username
@@ -151,7 +169,7 @@ describe('authentication', () => {
                         }
                     }
                 `
-            });
+                });
 
             // A3
             expect(res.status).toBe(303);
@@ -163,19 +181,22 @@ describe('authentication', () => {
     });
 
     it('supports signing out', async () => {
-        await dbCleaner(async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             mockGithubServer.nextLogin({
                 githubUsername: knownAdmin
             });
 
             // A2
-            await followRedirects('/api/auth/oauth');
+            await followRedirects('/api/auth/oauth', { transaction });
 
             const {
                 body: { data: first }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
+            } = await sessionAgent
+                .post('/api/graphql')
+                .set('x-transaction-id', transaction.id)
+                .send({
+                    query: `
                     query {
                         me {
                             username
@@ -183,14 +204,19 @@ describe('authentication', () => {
                         }
                     }
                 `
-            });
+                });
 
-            const signoutRes = await sessionAgent.post('/api/auth/signout');
+            const signoutRes = await sessionAgent
+                .post('/api/auth/signout')
+                .set('x-transaction-id', transaction.id);
 
             const {
                 body: { data: second }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
+            } = await sessionAgent
+                .post('/api/graphql')
+                .set('x-transaction-id', transaction.id)
+                .send({
+                    query: `
                     query {
                         me {
                             username
@@ -198,7 +224,7 @@ describe('authentication', () => {
                         }
                     }
                 `
-            });
+                });
 
             // A3
             expect(first.me.username).toBe(knownAdmin);
@@ -208,7 +234,7 @@ describe('authentication', () => {
     });
 
     it('allows fake roles to be applied for the duration of a session', async () => {
-        await dbCleaner(async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             const _dataFromFrontend = 'fakeRole-tester';
             mockGithubServer.nextLogin({
@@ -217,36 +243,45 @@ describe('authentication', () => {
 
             // A2
             await followRedirects(
-                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
+                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`,
+                { transaction }
             );
 
             const {
                 body: { data: firstLogin }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
+            } = await sessionAgent
+                .post('/api/graphql')
+                .set('x-transaction-id', transaction.id)
+                .send({
+                    query: `
                     query {
                         me {
                             roles
                         }
                     }
                 `
-            });
+                });
 
-            await sessionAgent.post('/api/auth/signout');
+            await sessionAgent
+                .post('/api/auth/signout')
+                .set('x-transaction-id', transaction.id);
 
-            await followRedirects(`/api/auth/oauth`);
+            await followRedirects(`/api/auth/oauth`, { transaction });
 
             const {
                 body: { data: secondLogin }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
+            } = await sessionAgent
+                .post('/api/graphql')
+                .set('x-transaction-id', transaction.id)
+                .send({
+                    query: `
                     query {
                         me {
                             roles
                         }
                     }
                 `
-            });
+                });
 
             // A3
             expect(firstLogin.me.roles).toEqual(['TESTER']);
@@ -257,7 +292,7 @@ describe('authentication', () => {
     });
 
     it('allows faking no teams', async () => {
-        await dbCleaner(async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             const _dataFromFrontend = 'fakeRole-';
             mockGithubServer.nextLogin({
@@ -266,7 +301,8 @@ describe('authentication', () => {
 
             // A2
             const res = await followRedirects(
-                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
+                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`,
+                { transaction }
             );
 
             // A3
@@ -278,7 +314,7 @@ describe('authentication', () => {
     });
 
     it('allows faking vendor', async () => {
-        await dbCleaner(async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
             // A1
             const _dataFromFrontend = 'fakeRole-vendor';
             mockGithubServer.nextLogin({
@@ -287,7 +323,8 @@ describe('authentication', () => {
 
             // A2
             const res = await followRedirects(
-                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
+                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`,
+                { transaction }
             );
 
             // A3
@@ -298,15 +335,18 @@ describe('authentication', () => {
 
             const {
                 body: { data }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
-                    query {
-                        me {
-                            roles
+            } = await sessionAgent
+                .post('/api/graphql')
+                .set('x-transaction-id', transaction.id)
+                .send({
+                    query: `
+                        query {
+                            me {
+                                roles
+                            }
                         }
-                    }
-                `
-            });
+                    `
+                });
 
             expect(data.me.roles).toEqual(['VENDOR']);
         });

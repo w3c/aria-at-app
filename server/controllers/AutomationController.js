@@ -1,30 +1,30 @@
 const axios = require('axios');
 const {
     getCollectionJobById,
-    updateCollectionJob
-} = require('../models/services.deprecated/CollectionJobService');
+    updateCollectionJobById
+} = require('../models/services/CollectionJobService');
 const {
     findOrCreateTestResult
-} = require('../models/services.deprecated/TestResultWriteService');
+} = require('../models/services/TestResultWriteService');
 const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const {
     getAts,
     findOrCreateAtVersion
-} = require('../models/services.deprecated/AtService');
+} = require('../models/services/AtService');
 const {
     getBrowsers,
     findOrCreateBrowserVersion
-} = require('../models/services.deprecated/BrowserService');
+} = require('../models/services/BrowserService');
 const { HttpQueryError } = require('apollo-server-core');
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
 const populateData = require('../services/PopulatedData/populateData');
 const {
     getFinalizedTestResults
-} = require('../models/services.deprecated/TestResultReadService');
+} = require('../models/services/TestResultReadService');
 const http = require('http');
 const { NO_OUTPUT_STRING } = require('../util/constants');
-const getTests = require('../models/services.deprecated/TestsService');
+const getTests = require('../models/services/TestsService');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -74,8 +74,10 @@ const cancelJob = async (req, res) => {
         automationSchedulerResponse.data.status ===
         COLLECTION_JOB_STATUS.CANCELLED
     ) {
-        const graphqlRes = await updateCollectionJob(req.params.jobID, {
-            status: COLLECTION_JOB_STATUS.CANCELLED
+        const graphqlRes = await updateCollectionJobById({
+            id: req.params.jobID,
+            values: { status: COLLECTION_JOB_STATUS.CANCELLED },
+            transaction: req.transaction
         });
         if (!graphqlRes) {
             throwNoJobFoundError(req.params.jobID);
@@ -96,10 +98,11 @@ const updateJobStatus = async (req, res) => {
         ...(externalLogsUrl != null && { externalLogsUrl })
     };
 
-    const graphqlResponse = await updateCollectionJob(
-        req.params.jobID,
-        updatePayload
-    );
+    const graphqlResponse = await updateCollectionJobById({
+        id: req.params.jobID,
+        values: updatePayload,
+        transaction: req.transaction
+    });
 
     if (!graphqlResponse) {
         throwNoJobFoundError(req.params.jobID);
@@ -108,7 +111,10 @@ const updateJobStatus = async (req, res) => {
     res.json(graphqlResponse);
 };
 
-const getApprovedFinalizedTestResults = async testPlanRun => {
+const getApprovedFinalizedTestResults = async (
+    testPlanRun,
+    { transaction }
+) => {
     const {
         testPlanReport: { testPlanVersion }
     } = testPlanRun;
@@ -125,13 +131,12 @@ const getApprovedFinalizedTestResults = async testPlanRun => {
         return null;
     }
 
-    const { testPlanReport } = await populateData({
-        testPlanReportId: testPlanRun.testPlanReport.id
-    });
+    const { testPlanReport } = await populateData(
+        { testPlanReportId: testPlanRun.testPlanReport.id },
+        { transaction }
+    );
 
-    return await getFinalizedTestResults({
-        ...testPlanReport
-    });
+    return getFinalizedTestResults(testPlanReport, { transaction });
 };
 
 const updateOrCreateTestResultWithResponses = async ({
@@ -139,7 +144,8 @@ const updateOrCreateTestResultWithResponses = async ({
     testPlanRun,
     responses,
     atVersionId,
-    browserVersionId
+    browserVersionId,
+    transaction
 }) => {
     const allTestsForTestPlanVersion = await getTests(
         testPlanRun.testPlanReport.testPlanVersion
@@ -163,11 +169,13 @@ const updateOrCreateTestResultWithResponses = async ({
         testId,
         testPlanRunId: testPlanRun.id,
         atVersionId,
-        browserVersionId
+        browserVersionId,
+        transaction
     });
 
     const historicalTestResults = await getApprovedFinalizedTestResults(
-        testPlanRun
+        testPlanRun,
+        { transaction }
     );
 
     const historicalTestResult = historicalTestResults?.find(each => {
@@ -227,12 +235,14 @@ const updateOrCreateTestResultWithResponses = async ({
                 outputs: responses
             })
         ),
-        isSubmit: false
+        isSubmit: false,
+        context: { transaction }
     });
 };
 
 const updateJobResults = async (req, res) => {
     const id = req.params.jobID;
+    const transaction = req.transaction;
     const {
         testCsvRow,
         presentationNumber,
@@ -240,7 +250,7 @@ const updateJobResults = async (req, res) => {
         atVersionName,
         browserVersionName
     } = req.body;
-    const job = await getCollectionJobById(id);
+    const job = await getCollectionJobById({ id, transaction });
     if (!job) {
         throwNoJobFoundError(id);
     }
@@ -252,17 +262,23 @@ const updateJobResults = async (req, res) => {
     }
 
     /* TODO: Change this once we support more At + Browser Combos in Automation */
-    const [at] = await getAts(null, { name: 'NVDA' });
-    const [browser] = await getBrowsers(null, { name: 'Chrome' });
+    const [at] = await getAts({
+        where: { name: 'NVDA' },
+        transaction
+    });
+    const [browser] = await getBrowsers({
+        where: { name: 'Chrome' },
+        transaction
+    });
 
     const [atVersion, browserVersion] = await Promise.all([
         findOrCreateAtVersion({
-            atId: at.id,
-            name: atVersionName
+            where: { atId: at.id, name: atVersionName },
+            transaction
         }),
         findOrCreateBrowserVersion({
-            browserId: browser.id,
-            name: browserVersionName
+            where: { browserId: browser.id, name: browserVersionName },
+            transaction
         })
     ]);
 
@@ -276,7 +292,8 @@ const updateJobResults = async (req, res) => {
         responses: processedResponses,
         testPlanRun: job.testPlanRun,
         atVersionId: atVersion.id,
-        browserVersionId: browserVersion.id
+        browserVersionId: browserVersion.id,
+        transaction
     });
 
     res.json({ success: true });
