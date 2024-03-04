@@ -130,7 +130,7 @@ const countCommands = ({
     testPlanReport // Choose one to provide
 }) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult?.scenario?.commands?.length || 0;
+        return scenarioResult?.scenario?.commands?.length ? 1 : 0;
     };
     const countTestResult = testResult => {
         return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
@@ -248,7 +248,19 @@ const getMetrics = ({
         (requiredAssertionsPassedCount / requiredAssertionsCount) * 100
     );
 
+    const assertionsPassedCount =
+        requiredAssertionsPassedCount +
+        optionalAssertionsPassedCount +
+        mayAssertionsPassedCount;
+
+    const assertionsFailedCount =
+        requiredAssertionsFailedCount +
+        optionalAssertionsFailedCount +
+        mayAssertionsFailedCount;
+
     return {
+        assertionsPassedCount,
+        assertionsFailedCount,
         requiredAssertionsPassedCount,
         requiredAssertionsCount,
         requiredAssertionsFailedCount,

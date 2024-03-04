@@ -6,7 +6,8 @@ const assertionResultsResolver = (scenarioResult, { priority }) => {
     return scenarioResult.assertionResults.filter(assertionResult => {
         if (assertionResult.assertion?.assertionExceptions?.length) {
             const scenarioSettings = scenarioResult.scenario.settings;
-            const scenarioCommandId = scenarioResult.scenario.commandIds[0];
+            const scenarioCommandId =
+                scenarioResult.scenario.commandIds.join(' ');
 
             const foundException =
                 assertionResult.assertion.assertionExceptions.find(

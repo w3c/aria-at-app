@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import nextId from 'react-id-generator';
+import { getMetrics } from 'shared';
 import './TestPlanResultsTable.css';
 
 const renderAssertionRow = (assertionResult, priorityString) => {
@@ -27,30 +28,17 @@ const TestPlanResultsTable = ({
         <>
             {optionalHeader}
             {testResult.scenarioResults.map((scenarioResult, index) => {
-                const passedAssertions = scenarioResult.assertionResults.filter(
-                    assertionResult => assertionResult.passed
-                );
-                const failedAssertions = scenarioResult.assertionResults.filter(
-                    assertionResult => !assertionResult.passed
-                );
+                const {
+                    assertionsPassedCount,
+                    assertionsFailedCount,
+                    highImpactPassedAssertionCount,
+                    moderateImpactPassedAssertionCount
+                } = getMetrics({ scenarioResult });
+
                 const hasNoHighUnexpectedBehavior =
-                    !scenarioResult.unexpectedBehaviors.some(
-                        unexpectedBehavior =>
-                            unexpectedBehavior.impact === 'HIGH'
-                    );
+                    highImpactPassedAssertionCount > 0;
                 const hasNoModerateUnexpectedBehavior =
-                    !scenarioResult.unexpectedBehaviors.some(
-                        unexpectedBehavior =>
-                            unexpectedBehavior.impact === 'MODERATE'
-                    );
-                const passedAssertionsLength =
-                    passedAssertions.length +
-                    (hasNoHighUnexpectedBehavior ? 1 : 0) +
-                    (hasNoModerateUnexpectedBehavior ? 1 : 0);
-                const failedAssertionsLength =
-                    failedAssertions.length +
-                    (hasNoHighUnexpectedBehavior ? 0 : 1) +
-                    (hasNoModerateUnexpectedBehavior ? 0 : 1);
+                    moderateImpactPassedAssertionCount > 0;
 
                 // Rows are sorted by priority descending, then result (failures then passes), then
                 // assertion order. Assertion order refers to the order of assertion columns in the
@@ -116,8 +104,8 @@ const TestPlanResultsTable = ({
                     <React.Fragment key={scenarioResult.id}>
                         <CommandHeading>
                             {commandsString}&nbsp;Results:&nbsp;
-                            {passedAssertionsLength} passed,&nbsp;
-                            {failedAssertionsLength} failed
+                            {assertionsPassedCount} passed,&nbsp;
+                            {assertionsFailedCount} failed
                         </CommandHeading>
                         <p className="test-plan-results-response-p">
                             {test.at?.name} Response:
