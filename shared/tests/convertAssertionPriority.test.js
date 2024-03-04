@@ -6,9 +6,11 @@ describe('Verify expected values are returned when calling convertAssertionPrior
         const excludePriorityB = convertAssertionPriority('EXCLUDE');
 
         const mustPriorityA = convertAssertionPriority(1);
+        const mustPriorityB = convertAssertionPriority('REQUIRED');
         const mustPriorityC = convertAssertionPriority('MUST');
 
         const shouldPriorityA = convertAssertionPriority(2);
+        const shouldPriorityB = convertAssertionPriority('OPTIONAL');
         const shouldPriorityC = convertAssertionPriority('SHOULD');
 
         const mayPriorityA = convertAssertionPriority(3);
@@ -18,9 +20,11 @@ describe('Verify expected values are returned when calling convertAssertionPrior
         expect(excludePriorityB).toEqual('EXCLUDE');
 
         expect(mustPriorityA).toEqual('MUST');
+        expect(mustPriorityB).toEqual('MUST');
         expect(mustPriorityC).toEqual('MUST');
 
         expect(shouldPriorityA).toEqual('SHOULD');
+        expect(shouldPriorityB).toEqual('SHOULD');
         expect(shouldPriorityC).toEqual('SHOULD');
 
         expect(mayPriorityA).toEqual('MAY');
