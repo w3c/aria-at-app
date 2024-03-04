@@ -178,119 +178,138 @@ const InstructionsRenderer = ({
             <NumberedList>{allInstructionsContent}</NumberedList>
             {settingsContent.length ? settingsContent : null}
 
-            {renderableContent.commands.map(({ id, settings }, i) => {
-                // debugger;
-                const settingsScreenText = isV2
-                    ? renderableContent.target.at.raw.settings[settings]
-                          ?.screenText ?? ''
-                    : null;
+            {renderableContent.commands.map(
+                ({ id, settings, assertionExceptions = [] }, i) => {
+                    const settingsScreenText = isV2
+                        ? renderableContent.target.at.raw.settings[settings]
+                              ?.screenText ?? ''
+                        : null;
 
-                let mustCount = 0;
-                let shouldCount = 0;
-                let mayCount = 0;
+                    let mustCount = 0;
+                    let shouldCount = 0;
+                    let mayCount = 0;
 
-                renderableContent.assertions.forEach(({ priority }) => {
-                    const priorityString = convertAssertionPriority(priority);
-                    if (priorityString === 'MUST') mustCount += 1;
-                    if (priorityString === 'SHOULD') shouldCount += 1;
-                    if (priorityString === 'MAY') mayCount += 1;
-                });
+                    let assertions = [...renderableContent.assertions];
 
-                const settingsScreenTextFormatted =
-                    settingsScreenText === null
-                        ? ''
-                        : ` (${settingsScreenText})`;
+                    assertionExceptions.forEach(exception => {
+                        const assertionIndex = assertions.findIndex(
+                            assertion => {
+                                return (
+                                    assertion.assertionId ===
+                                    exception.assertionId
+                                );
+                            }
+                        );
+                        if (exception.priority === 0) {
+                            assertions.splice(assertionIndex, 1);
+                        } else {
+                            assertions[assertionIndex].priority =
+                                exception.priority;
+                        }
+                    });
 
-                const scenarioTitle =
-                    `${renderableContent.commands[i].keystroke}` +
-                    `${settingsScreenTextFormatted}: ${mustCount} MUST, ` +
-                    `${shouldCount} SHOULD, ${mayCount} MAY Assertions`;
+                    assertions.forEach(({ priority }) => {
+                        const priorityString =
+                            convertAssertionPriority(priority);
+                        if (priorityString === 'MUST') mustCount += 1;
+                        if (priorityString === 'SHOULD') shouldCount += 1;
+                        if (priorityString === 'MAY') mayCount += 1;
+                    });
 
-                if (isV2) {
-                    return (
-                        <>
-                            <Heading
-                                id={renderableContent.commands[i].keystroke}
-                            >
-                                {scenarioTitle}
-                            </Heading>
-                            <Table
-                                key={`${id}-${i}`}
-                                bordered
-                                responsive
-                                aria-labelledby={
-                                    renderableContent.commands[i].keystroke
-                                }
-                            >
-                                <thead>
-                                    <tr>
-                                        <th>Priority</th>
-                                        <th>Assertion Phrase</th>
-                                        <th>Assertion Statement</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {renderableContent.assertions.map(
-                                        ({
-                                            assertionPhrase,
-                                            assertionStatement,
-                                            priority,
-                                            assertionId
-                                        }) => (
-                                            <tr key={`${i}-${assertionId}`}>
-                                                <td>
-                                                    {convertAssertionPriority(
-                                                        priority
-                                                    )}
-                                                </td>
-                                                <td>{assertionPhrase}</td>
-                                                <td>{assertionStatement}</td>
-                                            </tr>
-                                        )
-                                    )}
-                                </tbody>
-                            </Table>
-                        </>
-                    );
-                } else {
-                    return (
-                        <>
-                            <Heading>{scenarioTitle}</Heading>
-                            <Table
-                                key={`${id}-${i}`}
-                                bordered
-                                responsive
-                                aria-label={`Results for test ${test.title}`}
-                            >
-                                <thead>
-                                    <tr>
-                                        <th>Priority</th>
-                                        <th>Assertion Statement</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {renderableContent.assertions.map(
-                                        ({
-                                            expectation,
-                                            priority,
-                                            assertionId
-                                        }) => (
-                                            <tr key={`${i}-${assertionId}`}>
-                                                <td>
-                                                    {convertAssertionPriority(
-                                                        priority
-                                                    )}
-                                                </td>
-                                                <td>{expectation}</td>
-                                            </tr>
-                                        )
-                                    )}
-                                </tbody>
-                            </Table>
-                        </>
-                    );
+                    const settingsScreenTextFormatted =
+                        settingsScreenText === null
+                            ? ''
+                            : ` (${settingsScreenText})`;
+
+                    const scenarioTitle =
+                        `${renderableContent.commands[i].keystroke}` +
+                        `${settingsScreenTextFormatted}: ${mustCount} MUST, ` +
+                        `${shouldCount} SHOULD, ${mayCount} MAY Assertions`;
+
+                    if (isV2) {
+                        return (
+                            <React.Fragment key={`command-${id}-${i}`}>
+                                <Heading
+                                    id={renderableContent.commands[i].keystroke}
+                                >
+                                    {scenarioTitle}
+                                </Heading>
+                                <Table
+                                    key={`${id}-${i}`}
+                                    bordered
+                                    responsive
+                                    aria-labelledby={
+                                        renderableContent.commands[i].keystroke
+                                    }
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th>Priority</th>
+                                            <th>Assertion Phrase</th>
+                                            <th>Assertion Statement</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {assertions.map(
+                                            ({
+                                                assertionPhrase,
+                                                assertionStatement,
+                                                priority,
+                                                assertionId
+                                            }) => (
+                                                <tr key={`${i}-${assertionId}`}>
+                                                    <td>
+                                                        {convertAssertionPriority(
+                                                            priority
+                                                        )}
+                                                    </td>
+                                                    <td>{assertionPhrase}</td>
+                                                    <td>
+                                                        {assertionStatement}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </React.Fragment>
+                        );
+                    } else {
+                        return (
+                            <React.Fragment key={`command-${id}-${i}`}>
+                                <Heading>{scenarioTitle}</Heading>
+                                <Table
+                                    key={`${id}-${i}`}
+                                    bordered
+                                    responsive
+                                    aria-label={`Results for test ${test.title}`}
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th>Priority</th>
+                                            <th>Assertion Statement</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {assertions.map(
+                                            ({ expectation, priority }) => (
+                                                <tr key={`${i}-${expectation}`}>
+                                                    <td>
+                                                        {convertAssertionPriority(
+                                                            priority
+                                                        )}
+                                                    </td>
+                                                    <td>{expectation}</td>
+                                                </tr>
+                                            )
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </React.Fragment>
+                        );
+                    }
                 }
-            })}
+            )}
 
             <Button
                 disabled={!pageContent.instructions.openTestPage.enabled}
