@@ -303,14 +303,14 @@ const updateJsons = async () => {
     const keysMjsPath = pathToFileURL(
         path.join(testsDirectory, 'resources', 'keys.mjs')
     );
-    const commands = Object.entries(await import(keysMjsPath)).map(
+    const commandsV1Parsed = Object.entries(await import(keysMjsPath)).map(
         ([id, text]) => ({ id, text })
     );
 
     // Write commands for v1 format
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/commandsV1.json'),
-        JSON.stringify(commands, null, 4)
+        JSON.stringify(commandsV1Parsed, null, 4)
     );
 
     try {
@@ -327,7 +327,7 @@ const updateJsons = async () => {
             JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
         );
     } catch (error) {
-        console.error('commandsV1.json for v2 test format may not exist');
+        console.error('commands.json for v2 test format may not exist');
     }
 
     // Path info for support.json
