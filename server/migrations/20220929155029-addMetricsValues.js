@@ -4,10 +4,10 @@ const populateData = require('../services/PopulatedData/populateData');
 const conflictsResolver = require('../resolvers/TestPlanReport/conflictsResolver');
 const finalizedTestResultsResolver = require('../resolvers/TestPlanReport/finalizedTestResultsResolver');
 const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
-const getMetrics = require('../util/getMetrics');
+const { getMetrics } = require('shared');
 const {
     updateTestPlanReport
-} = require('../models/services/TestPlanReportService');
+} = require('../models/services.deprecated/TestPlanReportService');
 
 module.exports = {
     up: queryInterface => {

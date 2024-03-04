@@ -10,15 +10,15 @@ const {
     createTestPlanVersion,
     getTestPlanVersions,
     updateTestPlanVersion
-} = require('../../models/services/TestPlanVersionService');
+} = require('../../models/services.deprecated/TestPlanVersionService');
 const {
     getTestPlans,
     createTestPlan
-} = require('../../models/services/TestPlanService');
+} = require('../../models/services.deprecated/TestPlanService');
 const {
     createAtMode,
     getAtModeByQuery
-} = require('../../models/services/AtService');
+} = require('../../models/services.deprecated/AtService');
 const {
     createTestId,
     createScenarioId,
@@ -27,7 +27,7 @@ const {
 const deepPickEqual = require('../../util/deepPickEqual');
 const { hashTests } = require('../../util/aria');
 const convertDateToString = require('../../util/convertDateToString');
-const convertAssertionPriority = require('../../util/convertAssertionPriority');
+const { convertAssertionPriority } = require('shared');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {

@@ -2,29 +2,29 @@ const axios = require('axios');
 const {
     getCollectionJobById,
     updateCollectionJob
-} = require('../models/services/CollectionJobService');
+} = require('../models/services.deprecated/CollectionJobService');
 const {
     findOrCreateTestResult
-} = require('../models/services/TestResultWriteService');
+} = require('../models/services.deprecated/TestResultWriteService');
 const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const {
     getAts,
     findOrCreateAtVersion
-} = require('../models/services/AtService');
+} = require('../models/services.deprecated/AtService');
 const {
     getBrowsers,
     findOrCreateBrowserVersion
-} = require('../models/services/BrowserService');
+} = require('../models/services.deprecated/BrowserService');
 const { HttpQueryError } = require('apollo-server-core');
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
 const populateData = require('../services/PopulatedData/populateData');
 const {
     getFinalizedTestResults
-} = require('../models/services/TestResultReadService');
+} = require('../models/services.deprecated/TestResultReadService');
 const http = require('http');
 const { NO_OUTPUT_STRING } = require('../util/constants');
-const getTests = require('../models/services/TestsService');
+const getTests = require('../models/services.deprecated/TestsService');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {

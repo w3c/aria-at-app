@@ -1,7 +1,7 @@
 const { UserInputError } = require('apollo-server');
 const {
     updateTestPlanRun
-} = require('../../models/services/TestPlanRunService');
+} = require('../../models/services.deprecated/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 const deepPickEqual = require('../../util/deepPickEqual');
@@ -10,10 +10,10 @@ const createTestResultSkeleton = require('../TestPlanRunOperations/createTestRes
 const persistConflictsCount = require('../helpers/persistConflictsCount');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
-const getMetrics = require('../../util/getMetrics');
+const { getMetrics } = require('shared');
 const {
     updateTestPlanReport
-} = require('../../models/services/TestPlanReportService');
+} = require('../../models/services.deprecated/TestPlanReportService');
 
 const saveTestResultCommon = async ({
     testResultId,

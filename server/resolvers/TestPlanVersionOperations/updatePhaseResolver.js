@@ -4,22 +4,22 @@ const {
     getTestPlanReports,
     getOrCreateTestPlanReport,
     removeTestPlanReport
-} = require('../../models/services/TestPlanReportService');
+} = require('../../models/services.deprecated/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const recommendedPhaseTargetDateResolver = require('../TestPlanVersion/recommendedPhaseTargetDateResolver');
 const populateData = require('../../services/PopulatedData/populateData');
-const getMetrics = require('../../util/getMetrics');
+const { getMetrics } = require('shared');
 const { hashTest } = require('../../util/aria');
 const {
     getTestPlanVersionById,
     updateTestPlanVersion
-} = require('../../models/services/TestPlanVersionService');
+} = require('../../models/services.deprecated/TestPlanVersionService');
 const {
     createTestPlanRun,
     updateTestPlanRun
-} = require('../../models/services/TestPlanRunService');
+} = require('../../models/services.deprecated/TestPlanRunService');
 const {
     createTestResultId,
     createScenarioResultId,

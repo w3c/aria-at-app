@@ -3,19 +3,19 @@
 const {
     TEST_PLAN_REPORT_ATTRIBUTES,
     TEST_PLAN_VERSION_ATTRIBUTES
-} = require('../models/services/helpers');
+} = require('../models/services.deprecated/helpers');
 const scenariosResolver = require('../resolvers/Test/scenariosResolver');
 const {
     getTestPlanReportById,
     getOrCreateTestPlanReport,
     updateTestPlanReport
-} = require('../models/services/TestPlanReportService');
+} = require('../models/services.deprecated/TestPlanReportService');
 const populateData = require('../services/PopulatedData/populateData');
 const { testResults } = require('../resolvers/TestPlanRun');
 const {
     createTestPlanRun,
     getTestPlanRunById
-} = require('../models/services/TestPlanRunService');
+} = require('../models/services.deprecated/TestPlanRunService');
 const {
     findOrCreateTestResult
 } = require('../resolvers/TestPlanRunOperations');

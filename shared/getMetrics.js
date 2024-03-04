@@ -1,12 +1,4 @@
-import React from 'react';
-import styled from '@emotion/styled';
-
-const StyledNone = styled.span`
-    font-style: italic;
-    color: #727272;
-`;
-
-const none = <StyledNone>None</StyledNone>;
+const convertAssertionPriority = require('./convertAssertionPriority');
 
 const sum = arr => arr?.reduce((total, item) => total + item, 0) || 0;
 
@@ -50,8 +42,20 @@ const countAssertions = ({
     passedOnly
 }) => {
     const countScenarioResult = scenarioResult => {
-        const all =
-            scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] || [];
+        const isClient =
+            `${priority.toLowerCase()}AssertionResults` in scenarioResult;
+        let all;
+        if (isClient) {
+            all =
+                scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] ||
+                [];
+        } else {
+            all = scenarioResult.assertionResults.filter(
+                a =>
+                    convertAssertionPriority(a.assertion.priority) ===
+                    convertAssertionPriority(priority)
+            );
+        }
         if (passedOnly) return all.filter(each => each.passed).length;
         return all.length;
     };
@@ -100,15 +104,19 @@ const countUnexpectedBehaviorsImpact = (
     impact
 ) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.unexpectedBehaviors.some(e => e.impact === impact)
+        return scenarioResult?.unexpectedBehaviors?.some(
+            e => e.impact === impact
+        )
             ? 1
             : 0;
     };
     const countTestResult = testResult => {
-        return sum(testResult.scenarioResults.map(countScenarioResult));
+        return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
@@ -122,13 +130,15 @@ const countCommands = ({
     testPlanReport // Choose one to provide
 }) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.scenario.commands.length;
+        return scenarioResult?.scenario?.commands?.length || 0;
     };
     const countTestResult = testResult => {
-        return sum(testResult.scenarioResults.map(countScenarioResult));
+        return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
@@ -212,17 +222,17 @@ const getMetrics = ({
     const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;
     const optionalFormatted =
         optionalAssertionsCount === 0
-            ? none
+            ? false
             : `${optionalAssertionsPassedCount} of ${optionalAssertionsCount} passed`;
     const mayFormatted =
         mayAssertionsCount === 0
-            ? none
+            ? false
             : `${mayAssertionsPassedCount} of ${mayAssertionsCount} passed`;
 
     const unexpectedBehaviorCount = countUnexpectedBehaviors({ ...result });
     const unexpectedBehaviorsFormatted =
         unexpectedBehaviorCount === 0
-            ? none
+            ? false
             : `${unexpectedBehaviorCount} found`;
 
     let supportLevel;
@@ -266,5 +276,4 @@ const getMetrics = ({
     };
 };
 
-export { none };
-export default getMetrics;
+module.exports = getMetrics;

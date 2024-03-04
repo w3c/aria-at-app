@@ -1,6 +1,6 @@
 const {
     getUniqueAtVersionsForReport
-} = require('../../models/services/AtService');
+} = require('../../models/services.deprecated/AtService');
 
 const latestAtVersionReleasedAtResolver = async testPlanReport => {
     // Return first element because result should already be sorted by descending

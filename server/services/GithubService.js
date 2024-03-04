@@ -6,10 +6,7 @@ const {
     GITHUB_GRAPHQL_SERVER,
     GITHUB_OAUTH_SERVER,
     GITHUB_CLIENT_ID,
-    GITHUB_CLIENT_SECRET,
-    GITHUB_TEAM_ADMIN,
-    GITHUB_TEAM_ORGANIZATION,
-    GITHUB_TEAM_QUERY
+    GITHUB_CLIENT_SECRET
 } = process.env;
 
 const GITHUB_ISSUES_API_URL =
@@ -110,36 +107,7 @@ module.exports = {
             response.data.data.viewer.username
         );
     },
-    async isMemberOfAdminTeam({ githubAccessToken, githubUsername }) {
-        const query = `
-            query {
-                organization(login: "${GITHUB_TEAM_ORGANIZATION}") {
-                    teams(
-                        userLogins: "${githubUsername}",
-                        query: "${GITHUB_TEAM_QUERY}",
-                        first: 100
-                    ) {
-                        edges {
-                            node {
-                                name
-                            }
-                        }
-                    }
-                }
-            }
-        `;
-        const response = await axios.post(
-            this.graphQLEndpoint,
-            { query },
-            { headers: { Authorization: `bearer ${githubAccessToken}` } }
-        );
 
-        const isMember = !!response.data.data.organization.teams.edges
-            .map(({ node: { name } }) => name)
-            .find(teamName => teamName === GITHUB_TEAM_ADMIN);
-
-        return isMember;
-    },
     getAllIssues: staleWhileRevalidate(getAllIssues, {
         millisecondsUntilStale: 10000 /* 10 seconds */
     })

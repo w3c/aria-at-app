@@ -264,10 +264,10 @@ const TestRun = () => {
         if (titleRef.current) titleRef.current.focus();
     };
 
-    const updateLocalState = (testPlanRun, testPlanReport) => {
-        const { conflicts, runnableTests } = testPlanReport;
+    const updateLocalState = (updatedTestPlanRun, updatedTestPlanReport) => {
+        const { conflicts, runnableTests } = updatedTestPlanReport;
 
-        const testResults = testPlanRun.testResults;
+        const testResults = updatedTestPlanRun.testResults;
         const tests = runnableTests.map((test, index) => ({
             ...test,
             index,
@@ -279,6 +279,7 @@ const TestRun = () => {
         setTests(tests);
         setTestResults(testResults);
         setCurrentTest(tests[currentTestIndex]);
+        setTestPlanReport({ ...testPlanReport, conflicts });
     };
 
     if (error) {
