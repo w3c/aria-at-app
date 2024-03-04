@@ -1,4 +1,4 @@
-const convertAssertionPriority = require('./convertAssertionPriority');
+const convertAssertionPriority = require('../convertAssertionPriority');
 
 describe('Verify expected values are returned when calling convertAssertionPriority', () => {
     it('expects valid priority strings are returned for known priority inputs', () => {

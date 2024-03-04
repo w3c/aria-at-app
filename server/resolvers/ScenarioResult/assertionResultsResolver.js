@@ -1,4 +1,4 @@
-const convertAssertionPriority = require('../../util/convertAssertionPriority');
+const { convertAssertionPriority } = require('shared');
 
 const assertionResultsResolver = (
     scenarioResult,

@@ -26,7 +26,7 @@ const {
 const deepPickEqual = require('../../util/deepPickEqual');
 const { hashTests } = require('../../util/aria');
 const convertDateToString = require('../../util/convertDateToString');
-const convertAssertionPriority = require('../../util/convertAssertionPriority');
+const { convertAssertionPriority } = require('shared');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
