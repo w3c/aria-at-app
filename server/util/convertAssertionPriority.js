@@ -1,11 +1,9 @@
 /**
  * This should take any of the valid priority inputs and return the currently known string
  * representation of that value.
- * TODO: Eventually, this should only need to take 'number' types as priority once 'REQUIRED' and
- *       'OPTIONAL' are no longer used
  *
  * @param {number|string} priority
- * @returns {null|string}
+ * @returns {null|string}
  */
 const convertAssertionPriority = priority => {
     const validInputRegex = /^(0|1|2|3|EXCLUDE|MUST|SHOULD|MAY)$/;

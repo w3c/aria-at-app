@@ -1642,7 +1642,7 @@ const UnexpectedBehaviorImpactMap = createEnumMap({
 /**
  * Command result derived from priority 1 and 2 assertions.
  *
- * Support is "FAILING" is priority 1 assertions fail. Support is "ALL MUST"
+ * Support is "FAILING" is priority 1 assertions fail. Support is "ALL REQUIRED"
  * if priority 2 assertions fail.
  *
  * In the submitted json object values may contain spaces and are in ALL CAPS.
@@ -1653,7 +1653,7 @@ const UnexpectedBehaviorImpactMap = createEnumMap({
 const CommandSupportJSONMap = createEnumMap({
   FULL: 'FULL',
   FAILING: 'FAILING',
-  ALL_REQUIRED: 'ALL MUST',
+  ALL_REQUIRED: 'ALL REQUIRED',
 });
 
 /**
