@@ -170,7 +170,6 @@ const InstructionsRenderer = ({
         commandsContent
     );
 
-    headingLevel = 5;
     const Heading = `h${headingLevel}`;
 
     return (
