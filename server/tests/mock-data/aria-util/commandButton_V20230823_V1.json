@@ -3,7 +3,6 @@
     "id": "NTNmYeyIyIjoiNTU1OTgifQTYwYz",
     "atIds": [1, 2],
     "title": "Navigate forwards to a button in reading mode",
-    "atMode": "READING",
     "viewers": [],
     "rowNumber": "1",
     "scenarios": [
@@ -211,7 +210,6 @@
     "id": "MTY0MeyIyIjoiNTU1OTgifQmIzNG",
     "atIds": [1, 2],
     "title": "Navigate backwards to a button in reading mode",
-    "atMode": "READING",
     "viewers": [],
     "rowNumber": "2",
     "scenarios": [
@@ -427,7 +425,6 @@
     "id": "MDUxNeyIyIjoiNTU1OTgifQWNiZT",
     "atIds": [1, 2],
     "title": "Navigate forwards to a button in interaction mode",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "3",
     "scenarios": [
@@ -571,7 +568,6 @@
     "id": "NjI2MeyIyIjoiNTU1OTgifQ2UzND",
     "atIds": [1, 2],
     "title": "Navigate backwards to a button in interaction mode",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "4",
     "scenarios": [
@@ -719,7 +715,6 @@
     "id": "ODlmMeyIyIjoiNTU1OTgifQjZlOW",
     "atIds": [3],
     "title": "Navigate forwards to a button",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "5",
     "scenarios": [
@@ -838,7 +833,6 @@
     "id": "YTE1NeyIyIjoiNTU1OTgifQGQ5Nj",
     "atIds": [3],
     "title": "Navigate backwards to a button",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "6",
     "scenarios": [
@@ -959,7 +953,6 @@
     "id": "MzdhYeyIyIjoiNTU1OTgifQTE1ZD",
     "atIds": [1, 2],
     "title": "Read information about a button in reading mode",
-    "atMode": "READING",
     "viewers": [],
     "rowNumber": "7",
     "scenarios": [
@@ -1131,7 +1124,6 @@
     "id": "YjI3MeyIyIjoiNTU1OTgifQGM1M2",
     "atIds": [1, 2],
     "title": "Read information about a button in interaction mode",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "8",
     "scenarios": [
@@ -1303,7 +1295,6 @@
     "id": "Y2E5NeyIyIjoiNTU1OTgifQTg5ZG",
     "atIds": [3],
     "title": "Read information about a button",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "9",
     "scenarios": [

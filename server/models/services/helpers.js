@@ -1,6 +1,5 @@
 const {
     At,
-    AtMode,
     AtVersion,
     Browser,
     BrowserVersion,
@@ -29,7 +28,6 @@ const getSequelizeModelAttributes = model => {
 module.exports = {
     getSequelizeModelAttributes,
     AT_ATTRIBUTES: getSequelizeModelAttributes(At),
-    AT_MODE_ATTRIBUTES: getSequelizeModelAttributes(AtMode),
     AT_VERSION_ATTRIBUTES: getSequelizeModelAttributes(AtVersion),
     BROWSER_ATTRIBUTES: getSequelizeModelAttributes(Browser),
     BROWSER_VERSION_ATTRIBUTES: getSequelizeModelAttributes(BrowserVersion),
