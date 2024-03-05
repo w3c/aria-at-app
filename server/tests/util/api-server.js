@@ -6,8 +6,15 @@ const session = require('express-session');
 const typeDefs = require('../../graphql-schema');
 const getGraphQLContext = require('../../graphql-context');
 const resolvers = require('../../resolvers');
+const transactionMiddleware = require('../../middleware/transactionMiddleware');
+const { sequelize } = require('../../models');
 
-const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
+const startSupertestServer = async ({
+    graphql = false,
+    applyMiddleware,
+    applyErrorware,
+    pathToRoutes = []
+}) => {
     const expressApp = express();
 
     expressApp.use(bodyParser.json());
@@ -16,9 +23,11 @@ const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
             secret: 'test environment',
             resave: false,
             saveUninitialized: true,
-            cookie: { maxAge: 30000 } // Required
+            cookie: { maxAge: 500000 } // Required
         })
     );
+    expressApp.use(transactionMiddleware.middleware);
+    if (applyMiddleware) applyMiddleware(expressApp);
 
     let apolloServer;
     if (graphql) {
@@ -36,6 +45,9 @@ const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
         expressApp.use(path, routes);
     });
 
+    expressApp.use(transactionMiddleware.errorware);
+    if (applyErrorware) applyErrorware(expressApp);
+
     // Error handling must be the last middleware
     expressApp.use((error, req, res, next) => {
         console.error(error);
@@ -44,13 +56,20 @@ const startSupertestServer = async ({ graphql = false, pathToRoutes = [] }) => {
 
     const sessionAgent = getSessionAgent(expressApp);
 
+    const sessionAgentDbCleaner = async callback => {
+        const transaction = await sequelize.transaction();
+        transactionMiddleware.forTestingPopulateTransaction(transaction);
+        await callback(transaction);
+        await transactionMiddleware.forTestingRollBackTransaction(transaction);
+    };
+
     const tearDown = async () => {
         if (graphql) {
             await apolloServer.stop();
         }
     };
 
-    return { sessionAgent, tearDown };
+    return { sessionAgent, sessionAgentDbCleaner, tearDown };
 };
 
 module.exports = startSupertestServer;

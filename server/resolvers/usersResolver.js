@@ -1,9 +1,12 @@
 const { getUsers } = require('../models/services/UserService');
 
-const usersResolver = () => {
+const usersResolver = (_, __, context) => {
+    const { transaction } = context;
+
     // No authentication since participation is public!
-    return getUsers(null, {}, null, null, null, null, {
-        order: [['username', 'ASC']]
+    return getUsers({
+        pagination: { order: [['username', 'ASC']] },
+        transaction
     });
 };
 

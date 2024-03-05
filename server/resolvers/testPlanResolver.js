@@ -1,7 +1,13 @@
 const { getTestPlans } = require('../models/services/TestPlanService');
 
-const testPlanResolver = async (_, { id }) => {
-    const testPlans = await getTestPlans({ directory: id }, true);
+const testPlanResolver = async (_, { id }, context) => {
+    const { transaction } = context;
+
+    const testPlans = await getTestPlans({
+        where: { directory: id },
+        includeLatestTestPlanVersion: true,
+        transaction
+    });
     return testPlans[0].dataValues;
 };
 

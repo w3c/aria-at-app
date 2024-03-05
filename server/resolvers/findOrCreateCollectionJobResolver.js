@@ -8,18 +8,17 @@ const findOrCreateCollectionJobResolver = async (
     { id, status, testPlanReportId },
     context
 ) => {
-    const { user } = context;
+    const { user, transaction } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    const collectionJob = await getOrCreateCollectionJob({
-        id,
-        status,
-        testPlanReportId
+    return getOrCreateCollectionJob({
+        where: { id },
+        values: { status, testPlanReportId },
+        transaction
     });
-
-    return collectionJob;
 };
 
 module.exports = findOrCreateCollectionJobResolver;

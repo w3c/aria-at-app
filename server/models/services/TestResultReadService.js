@@ -10,16 +10,18 @@ const deepCustomMerge = require('../../util/deepCustomMerge');
  * @param {Object} testPlanRun
  * @param {Object} testPlanRun.testPlanReport
  * @param {Object[]} testPlanRun.testResults
+ * @param {Object} options
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<Object[]>}
  */
-const getTestResults = async testPlanRun => {
+const getTestResults = async (testPlanRun, { transaction }) => {
     const { testPlanReport } = testPlanRun;
     const tests = getTests(testPlanReport);
     const atLoader = AtLoader();
     const browserLoader = BrowserLoader();
     const [ats, browsers] = await Promise.all([
-        atLoader.getAll(),
-        browserLoader.getAll()
+        atLoader.getAll({ transaction }),
+        browserLoader.getAll({ transaction })
     ]);
 
     // Populate nested test, atVersion, browserVersion, scenario, assertion and
@@ -68,9 +70,11 @@ const getTestResults = async testPlanRun => {
  * browserVersion, scenario, assertion and unexpectedBehavior fields populated.
  * @param {Object} testPlanReport
  * @param {Object[]} testPlanReport.testPlanRuns
+ * @param {Object} options
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<Object[]>}
  */
-const getFinalizedTestResults = testPlanReport => {
+const getFinalizedTestResults = (testPlanReport, { transaction }) => {
     if (!testPlanReport.testPlanRuns.length) {
         return null;
     }
@@ -89,7 +93,10 @@ const getFinalizedTestResults = testPlanReport => {
             }
         );
     }
-    return getTestResults({ testPlanReport, testResults: merged });
+    return getTestResults(
+        { testPlanReport, testResults: merged },
+        { transaction }
+    );
 };
 
 module.exports = {

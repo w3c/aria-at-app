@@ -1,24 +1,24 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-    updateTestPlanReport,
+    updateTestPlanReportById,
     getTestPlanReports,
     getOrCreateTestPlanReport,
-    removeTestPlanReport
+    removeTestPlanReportById
 } = require('../../models/services/TestPlanReportService');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const recommendedPhaseTargetDateResolver = require('../TestPlanVersion/recommendedPhaseTargetDateResolver');
 const populateData = require('../../services/PopulatedData/populateData');
-const getMetrics = require('../../util/getMetrics');
+const { getMetrics } = require('shared');
 const { hashTest } = require('../../util/aria');
 const {
     getTestPlanVersionById,
-    updateTestPlanVersion
+    updateTestPlanVersionById
 } = require('../../models/services/TestPlanVersionService');
 const {
     createTestPlanRun,
-    updateTestPlanRun
+    updateTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
 const {
     createTestResultId,
@@ -37,18 +37,20 @@ const updatePhaseResolver = async (
     },
     context
 ) => {
-    const { user } = context;
+    const { user, transaction } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
     // Immediately deprecate version without further checks
     if (phase === 'DEPRECATED') {
-        await updateTestPlanVersion(testPlanVersionId, {
-            phase,
-            deprecatedAt: new Date()
+        await updateTestPlanVersionById({
+            id: testPlanVersionId,
+            values: { phase, deprecatedAt: new Date() },
+            transaction
         });
-        return populateData({ testPlanVersionId }, { context });
+        return populateData({ testPlanVersionId }, { transaction });
     }
 
     let testPlanVersionDataToInclude;
@@ -56,32 +58,28 @@ const updatePhaseResolver = async (
     let createdTestPlanReportIdsFromOldResults = [];
 
     // The testPlanVersion being updated
-    const testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
+    const testPlanVersion = await getTestPlanVersionById({
+        id: testPlanVersionId,
+        transaction
+    });
 
     // These checks are needed to support the test plan version reports being updated with earlier
     // versions' data
     if (testPlanVersionDataToIncludeId) {
-        testPlanVersionDataToInclude = await getTestPlanVersionById(
-            testPlanVersionDataToIncludeId
-        );
+        testPlanVersionDataToInclude = await getTestPlanVersionById({
+            id: testPlanVersionDataToIncludeId,
+            transaction
+        });
 
         const whereTestPlanVersion = {
             testPlanVersionId: testPlanVersionDataToIncludeId
         };
 
-        testPlanReportsDataToIncludeId = await getTestPlanReports(
-            null,
-            whereTestPlanVersion,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            {
-                order: [['createdAt', 'desc']]
-            }
-        );
+        testPlanReportsDataToIncludeId = await getTestPlanReports({
+            where: whereTestPlanVersion,
+            pagination: { order: [['createdAt', 'desc']] },
+            transaction
+        });
     }
 
     // The test plan reports which will be updated
@@ -89,19 +87,11 @@ const updatePhaseResolver = async (
     const whereTestPlanVersion = {
         testPlanVersionId
     };
-    testPlanReports = await getTestPlanReports(
-        null,
-        whereTestPlanVersion,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        {
-            order: [['createdAt', 'desc']]
-        }
-    );
+    testPlanReports = await getTestPlanReports({
+        where: whereTestPlanVersion,
+        pagination: { order: [['createdAt', 'desc']] },
+        transaction
+    });
 
     // If there is an earlier version that for this phase and that version has some test plan runs
     // in the test queue, this will run the process for updating existing test plan versions for the
@@ -170,9 +160,13 @@ const updatePhaseResolver = async (
                     if (Object.keys(testResultsToSave).length) {
                         const [createdTestPlanReport] =
                             await getOrCreateTestPlanReport({
-                                testPlanVersionId,
-                                atId: testPlanReportDataToInclude.atId,
-                                browserId: testPlanReportDataToInclude.browserId
+                                where: {
+                                    testPlanVersionId,
+                                    atId: testPlanReportDataToInclude.atId,
+                                    browserId:
+                                        testPlanReportDataToInclude.browserId
+                                },
+                                transaction
                             });
 
                         createdTestPlanReportIdsFromOldResults.push(
@@ -180,8 +174,11 @@ const updatePhaseResolver = async (
                         );
 
                         const createdTestPlanRun = await createTestPlanRun({
-                            testerUserId: testPlanRun.testerUserId,
-                            testPlanReportId: createdTestPlanReport.id
+                            values: {
+                                testerUserId: testPlanRun.testerUserId,
+                                testPlanReportId: createdTestPlanReport.id
+                            },
+                            transaction
                         });
 
                         const testResults = [];
@@ -249,19 +246,23 @@ const updatePhaseResolver = async (
 
                         // Update TestPlanRun test results to be used in metrics evaluation
                         // afterward
-                        await updateTestPlanRun(createdTestPlanRun.id, {
-                            testResults
+                        await updateTestPlanRunById({
+                            id: createdTestPlanRun.id,
+                            values: { testResults },
+                            transaction
                         });
 
                         // Update metrics for TestPlanReport
                         const { testPlanReport: populatedTestPlanReport } =
                             await populateData(
                                 { testPlanReportId: createdTestPlanReport.id },
-                                { context }
+                                { transaction }
                             );
 
                         const runnableTests = runnableTestsResolver(
-                            populatedTestPlanReport
+                            populatedTestPlanReport,
+                            null,
+                            context
                         );
                         let updateParams = {};
 
@@ -273,7 +274,9 @@ const updatePhaseResolver = async (
 
                         // Calculate the metrics (happens if updating to DRAFT)
                         const conflicts = await conflictsResolver(
-                            populatedTestPlanReport
+                            populatedTestPlanReport,
+                            null,
+                            context
                         );
 
                         if (conflicts.length > 0) {
@@ -332,28 +335,21 @@ const updatePhaseResolver = async (
                             }
                         }
 
-                        await updateTestPlanReport(
-                            populatedTestPlanReport.id,
-                            updateParams
-                        );
+                        await updateTestPlanReportById({
+                            id: populatedTestPlanReport.id,
+                            values: updateParams,
+                            transaction
+                        });
                     }
                 }
             }
         }
 
-        testPlanReports = await getTestPlanReports(
-            null,
-            whereTestPlanVersion,
-            null,
-            null,
-            null,
-            undefined,
-            undefined,
-            null,
-            {
-                order: [['createdAt', 'desc']]
-            }
-        );
+        testPlanReports = await getTestPlanReports({
+            where: whereTestPlanVersion,
+            pagination: { order: [['createdAt', 'desc']] },
+            transaction
+        });
     }
 
     if (
@@ -378,7 +374,10 @@ const updatePhaseResolver = async (
             // Throw away newly created test plan reports if exception was hit
             if (createdTestPlanReportIdsFromOldResults.length)
                 for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
-                    await removeTestPlanReport(createdTestPlanReportId);
+                    await removeTestPlanReportById({
+                        id: createdTestPlanReportId,
+                        transaction
+                    });
                 }
 
             // Do not update phase if no reports marked as final were found
@@ -402,7 +401,7 @@ const updatePhaseResolver = async (
             });
 
         const atLoader = AtLoader();
-        const ats = await atLoader.getAll();
+        const ats = await atLoader.getAll({ transaction });
 
         const missingAtBrowserCombinations = [];
 
@@ -424,7 +423,10 @@ const updatePhaseResolver = async (
             // Throw away newly created test plan reports if exception was hit
             if (createdTestPlanReportIdsFromOldResults.length)
                 for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
-                    await removeTestPlanReport(createdTestPlanReportId);
+                    await removeTestPlanReportById({
+                        id: createdTestPlanReportId,
+                        transaction
+                    });
                 }
 
             throw new Error(
@@ -436,14 +438,22 @@ const updatePhaseResolver = async (
     }
 
     for (const testPlanReport of testPlanReports) {
-        const runnableTests = runnableTestsResolver(testPlanReport);
+        const runnableTests = runnableTestsResolver(
+            testPlanReport,
+            null,
+            context
+        );
         let updateParams = {};
 
         const isReportCreatedFromOldResults =
             createdTestPlanReportIdsFromOldResults.includes(testPlanReport.id);
 
         if (phase === 'DRAFT') {
-            const conflicts = await conflictsResolver(testPlanReport);
+            const conflicts = await conflictsResolver(
+                testPlanReport,
+                null,
+                context
+            );
 
             updateParams = {
                 metrics: {
@@ -456,7 +466,11 @@ const updatePhaseResolver = async (
             if (!isReportCreatedFromOldResults)
                 updateParams = { ...updateParams, markedFinalAt: null };
 
-            await updateTestPlanReport(testPlanReport.id, updateParams);
+            await updateTestPlanReportById({
+                id: testPlanReport.id,
+                values: updateParams,
+                transaction
+            });
         }
 
         const shouldThrowErrorIfFound =
@@ -466,12 +480,19 @@ const updatePhaseResolver = async (
                 : testPlanReport.markedFinalAt;
 
         if (shouldThrowErrorIfFound) {
-            const conflicts = await conflictsResolver(testPlanReport);
+            const conflicts = await conflictsResolver(
+                testPlanReport,
+                null,
+                context
+            );
             if (conflicts.length > 0) {
                 // Throw away newly created test plan reports if exception was hit
                 if (createdTestPlanReportIdsFromOldResults.length)
                     for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
-                        await removeTestPlanReport(createdTestPlanReportId);
+                        await removeTestPlanReportById({
+                            id: createdTestPlanReportId,
+                            transaction
+                        });
                     }
 
                 throw new Error(
@@ -489,7 +510,10 @@ const updatePhaseResolver = async (
                 // Throw away newly created test plan reports if exception was hit
                 if (createdTestPlanReportIdsFromOldResults.length)
                     for (const createdTestPlanReportId of createdTestPlanReportIdsFromOldResults) {
-                        await removeTestPlanReport(createdTestPlanReportId);
+                        await removeTestPlanReportById({
+                            id: createdTestPlanReportId,
+                            transaction
+                        });
                     }
 
                 throw new Error(
@@ -519,7 +543,11 @@ const updatePhaseResolver = async (
                 };
             }
         }
-        await updateTestPlanReport(testPlanReport.id, updateParams);
+        await updateTestPlanReportById({
+            id: testPlanReport.id,
+            values: updateParams,
+            transaction
+        });
     }
 
     let updateParams = { phase };
@@ -546,9 +574,11 @@ const updatePhaseResolver = async (
             candidatePhaseReachedAt || new Date();
         const recommendedPhaseTargetDateValue =
             recommendedPhaseTargetDate ||
-            recommendedPhaseTargetDateResolver({
-                candidatePhaseReachedAt: candidatePhaseReachedAtValue
-            });
+            recommendedPhaseTargetDateResolver(
+                { candidatePhaseReachedAt: candidatePhaseReachedAtValue },
+                null,
+                context
+            );
         updateParams = {
             ...updateParams,
             candidatePhaseReachedAt: candidatePhaseReachedAtValue,
@@ -566,13 +596,18 @@ const updatePhaseResolver = async (
     // If testPlanVersionDataToIncludeId's results are being used to update this earlier version,
     // deprecate it
     if (testPlanVersionDataToIncludeId)
-        await updateTestPlanVersion(testPlanVersionDataToIncludeId, {
-            phase: 'DEPRECATED',
-            deprecatedAt: new Date()
+        await updateTestPlanVersionById({
+            id: testPlanVersionDataToIncludeId,
+            values: { phase: 'DEPRECATED', deprecatedAt: new Date() },
+            transaction
         });
 
-    await updateTestPlanVersion(testPlanVersionId, updateParams);
-    return populateData({ testPlanVersionId });
+    await updateTestPlanVersionById({
+        id: testPlanVersionId,
+        values: updateParams,
+        transaction
+    });
+    return populateData({ testPlanVersionId }, { transaction });
 };
 
 module.exports = updatePhaseResolver;

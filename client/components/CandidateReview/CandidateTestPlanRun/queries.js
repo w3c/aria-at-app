@@ -140,7 +140,8 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                     unexpectedBehaviors {
                         id
                         text
-                        otherUnexpectedBehaviorText
+                        impact
+                        details
                     }
                 }
             }

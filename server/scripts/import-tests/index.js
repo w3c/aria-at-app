@@ -1,15 +1,14 @@
 /* eslint no-console: 0 */
 
 const path = require('path');
-const { Client } = require('pg');
 const fse = require('fs-extra');
 const { pathToFileURL } = require('url');
 const spawn = require('cross-spawn');
-const { At } = require('../../models');
+const { At, sequelize } = require('../../models');
 const {
     createTestPlanVersion,
     getTestPlanVersions,
-    updateTestPlanVersion
+    updateTestPlanVersionById
 } = require('../../models/services/TestPlanVersionService');
 const {
     getTestPlans,
@@ -27,7 +26,7 @@ const {
 const deepPickEqual = require('../../util/deepPickEqual');
 const { hashTests } = require('../../util/aria');
 const convertDateToString = require('../../util/convertDateToString');
-const convertAssertionPriority = require('../../util/convertAssertionPriority');
+const { convertAssertionPriority } = require('shared');
 
 const args = require('minimist')(process.argv.slice(2), {
     alias: {
@@ -51,8 +50,6 @@ Default use:
     process.exit();
 }
 
-const client = new Client();
-
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
 const ariaAtDefaultBranch = 'master';
 const gitCloneDirectory = path.resolve(__dirname, 'tmp');
@@ -66,9 +63,7 @@ const gitRun = (args, cwd = gitCloneDirectory) => {
         .trimEnd();
 };
 
-const importTestPlanVersions = async () => {
-    await client.connect();
-
+const importTestPlanVersions = async transaction => {
     const { gitCommitDate } = await readRepo();
 
     console.log('Running `npm install` ...\n');
@@ -86,7 +81,7 @@ const importTestPlanVersions = async () => {
     const { support } = await updateJsons();
 
     const ats = await At.findAll();
-    await updateAtsJsonAndAtMode(ats, support.ats);
+    await updateAtsJsonAndAtMode({ ats, supportAts: support.ats, transaction });
 
     for (const directory of fse.readdirSync(builtTestsDirectory)) {
         if (directory === 'resources') continue;
@@ -114,12 +109,13 @@ const importTestPlanVersions = async () => {
         // Gets the next ID and increments the ID counter in Postgres
         // Needed to create the testIds - see LocationOfDataId.js for more info
         const testPlanVersionId = (
-            await client.query(
+            await sequelize.query(
                 `SELECT nextval(
                     pg_get_serial_sequence('"TestPlanVersion"', 'id')
-                )`
+                )`,
+                { transaction }
             )
-        ).rows[0].nextval;
+        )[0][0].nextval;
 
         // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
         // actually last changed
@@ -147,7 +143,10 @@ const importTestPlanVersions = async () => {
 
         const hashedTests = hashTests(tests);
 
-        const existing = await getTestPlanVersions('', { hashedTests });
+        const existing = await getTestPlanVersions({
+            where: { hashedTests },
+            transaction
+        });
 
         if (existing.length) continue;
 
@@ -157,20 +156,26 @@ const importTestPlanVersions = async () => {
         });
 
         let testPlanId = null;
-        const associatedTestPlans = await getTestPlans({ directory });
+        const associatedTestPlans = await getTestPlans({
+            where: { directory },
+            transaction
+        });
 
         if (associatedTestPlans.length) {
             testPlanId = associatedTestPlans[0].dataValues.id;
         } else {
-            const newTestPlan = await createTestPlan({ title, directory });
+            const newTestPlan = await createTestPlan({
+                values: { title, directory },
+                transaction
+            });
             testPlanId = newTestPlan.dataValues.id;
         }
 
         // Check if any TestPlanVersions exist for the directory and is currently in RD, and set it
         // to DEPRECATED
-        const testPlanVersionsToDeprecate = await getTestPlanVersions('', {
-            phase: 'RD',
-            directory
+        const testPlanVersionsToDeprecate = await getTestPlanVersions({
+            where: { phase: 'RD', directory },
+            transaction
         });
         if (testPlanVersionsToDeprecate.length) {
             for (const testPlanVersionToDeprecate of testPlanVersionsToDeprecate) {
@@ -182,38 +187,46 @@ const importTestPlanVersions = async () => {
                     // This is to maintain correctness and any app sorts issues
                     const deprecatedAt = new Date(updatedAt);
                     deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 60);
-                    await updateTestPlanVersion(testPlanVersionToDeprecate.id, {
-                        phase: 'DEPRECATED',
-                        deprecatedAt
+                    await updateTestPlanVersionById({
+                        id: testPlanVersionToDeprecate.id,
+                        values: { phase: 'DEPRECATED', deprecatedAt },
+                        transaction
                     });
                 }
             }
         }
 
-        const versionString = await getVersionString({ updatedAt, directory });
+        const versionString = await getVersionString({
+            updatedAt,
+            directory,
+            transaction
+        });
 
         await createTestPlanVersion({
-            id: testPlanVersionId,
-            title,
-            directory,
-            testPageUrl: getAppUrl(testPageUrl, {
+            values: {
+                id: testPlanVersionId,
+                title,
+                directory,
+                testPageUrl: getAppUrl(testPageUrl, {
+                    gitSha,
+                    directoryPath: useBuildInAppAppUrlPath
+                        ? builtDirectoryPath
+                        : sourceDirectoryPath
+                }),
                 gitSha,
-                directoryPath: useBuildInAppAppUrlPath
-                    ? builtDirectoryPath
-                    : sourceDirectoryPath
-            }),
-            gitSha,
-            gitMessage,
-            hashedTests,
-            updatedAt,
-            versionString,
-            metadata: {
-                designPatternUrl,
-                exampleUrl,
-                testFormatVersion: isV2 ? 2 : 1
+                gitMessage,
+                hashedTests,
+                updatedAt,
+                versionString,
+                metadata: {
+                    designPatternUrl,
+                    exampleUrl,
+                    testFormatVersion: isV2 ? 2 : 1
+                },
+                tests,
+                testPlanId
             },
-            tests,
-            testPlanId
+            transaction
         });
     }
 };
@@ -340,7 +353,7 @@ const updateJsons = async () => {
     return { support: supportParsed };
 };
 
-const updateAtsJsonAndAtMode = async (ats, supportAts) => {
+const updateAtsJsonAndAtMode = async ({ ats, supportAts, transaction }) => {
     const atsResult = ats.map(at => ({
         ...at.dataValues,
         ...supportAts.find(supportAt => supportAt.name === at.dataValues.name)
@@ -350,16 +363,22 @@ const updateAtsJsonAndAtMode = async (ats, supportAts) => {
         if (at.settings) {
             for (const setting in at.settings) {
                 const existingAtMode = await getAtModeByQuery({
-                    atId: at.id,
-                    name: setting
+                    where: {
+                        atId: at.id,
+                        name: setting
+                    },
+                    transaction
                 });
 
                 if (!existingAtMode) {
                     await createAtMode({
-                        atId: at.id,
-                        name: setting,
-                        screenText: at.settings[setting].screenText,
-                        instructions: at.settings[setting].instructions
+                        values: {
+                            atId: at.id,
+                            name: setting,
+                            screenText: at.settings[setting].screenText,
+                            instructions: at.settings[setting].instructions
+                        },
+                        transaction
                     });
                 }
             }
@@ -372,18 +391,18 @@ const updateAtsJsonAndAtMode = async (ats, supportAts) => {
     );
 };
 
-const getVersionString = async ({ directory, updatedAt }) => {
+const getVersionString = async ({ directory, updatedAt, transaction }) => {
     const versionStringBase = `V${convertDateToString(updatedAt, 'YY.MM.DD')}`;
-    const result = await client.query(
+    const result = await sequelize.query(
         `
             SELECT "versionString" FROM "TestPlanVersion"
-            WHERE directory = $1 AND "versionString" LIKE $2
+            WHERE directory = ? AND "versionString" LIKE ?
             ORDER BY "versionString" DESC;
         `,
-        [directory, `${versionStringBase}%`]
+        { replacements: [directory, `${versionStringBase}%`], transaction }
     );
 
-    let versionString = result.rows[0]?.versionString;
+    let versionString = result[0][0]?.versionString;
 
     if (!versionString) return versionStringBase;
 
@@ -648,7 +667,8 @@ const getTests = ({
     return tests;
 };
 
-importTestPlanVersions()
+sequelize
+    .transaction(importTestPlanVersions)
     .then(
         () => console.log('Done, no errors'),
         err => {
@@ -659,7 +679,6 @@ importTestPlanVersions()
     .finally(() => {
         // Delete temporary files
         fse.removeSync(gitCloneDirectory);
-        client.end();
         process.exit();
     });
 

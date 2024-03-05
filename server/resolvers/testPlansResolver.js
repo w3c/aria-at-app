@@ -1,11 +1,10 @@
 const { getTestPlans } = require('../models/services/TestPlanService');
 const retrieveAttributes = require('./helpers/retrieveAttributes');
-const {
-    TEST_PLAN_VERSION_ATTRIBUTES,
-    TEST_PLAN_ATTRIBUTES
-} = require('../models/services/helpers');
+const { TEST_PLAN_VERSION_ATTRIBUTES } = require('../models/services/helpers');
 
-const testPlans = async (_, __, ___, info) => {
+const testPlans = async (_, __, context, info) => {
+    const { transaction } = context;
+
     const requestedFields =
         info.fieldNodes[0] &&
         info.fieldNodes[0].selectionSet.selections.map(
@@ -29,20 +28,26 @@ const testPlans = async (_, __, ___, info) => {
         true
     );
 
-    const plans = await getTestPlans(
-        {},
+    const combinedTestPlanVersionAttributes = [
+        ...new Set([
+            ...latestTestPlanVersionAttributes,
+            ...testPlanVersionsAttributes
+        ])
+    ];
+
+    const hasAssociations = combinedTestPlanVersionAttributes.length !== 0;
+
+    const plans = await getTestPlans({
         includeLatestTestPlanVersion,
-        TEST_PLAN_ATTRIBUTES,
-        [
-            ...new Set([
-                ...latestTestPlanVersionAttributes,
-                ...testPlanVersionsAttributes
-            ])
-        ],
-        {
-            order: [['testPlanVersions', 'updatedAt', 'DESC']]
-        }
-    );
+        testPlanVersionAttributes: combinedTestPlanVersionAttributes,
+        testPlanReportAttributes: hasAssociations ? null : [],
+        atAttributes: hasAssociations ? null : [],
+        browserAttributes: hasAssociations ? null : [],
+        testPlanRunAttributes: hasAssociations ? null : [],
+        userAttributes: hasAssociations ? null : [],
+        pagination: { order: [['testPlanVersions', 'updatedAt', 'DESC']] },
+        transaction
+    });
     return plans.map(p => {
         return { ...p.dataValues };
     });

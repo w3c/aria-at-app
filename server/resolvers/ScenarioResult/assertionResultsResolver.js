@@ -1,6 +1,10 @@
-const convertAssertionPriority = require('../../util/convertAssertionPriority');
+const { convertAssertionPriority } = require('shared');
 
-const assertionResultsResolver = (scenarioResult, { priority }) => {
+const assertionResultsResolver = (
+    scenarioResult,
+    { priority },
+    context // eslint-disable-line no-unused-vars
+) => {
     if (!priority) return scenarioResult.assertionResults;
 
     return scenarioResult.assertionResults.filter(assertionResult => {
