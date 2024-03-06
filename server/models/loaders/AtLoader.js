@@ -20,23 +20,26 @@ const AtLoader = () => {
                 return activePromise;
             }
 
-            activePromise = getAts();
+            activePromise = getAts().then(ats => {
+                // Sort date of atVersions subarray in desc order by releasedAt date
+                ats.forEach(item =>
+                    item.atVersions.sort((a, b) => b.releasedAt - a.releasedAt)
+                );
+
+                ats = ats.map(at => ({
+                    ...at.dataValues,
+                    candidateBrowsers: at.browsers.filter(
+                        browser => browser.AtBrowsers.isCandidate
+                    ),
+                    recommendedBrowsers: at.browsers.filter(
+                        browser => browser.AtBrowsers.isRecommended
+                    )
+                }));
+
+                return ats;
+            });
+
             ats = await activePromise;
-
-            // Sort date of atVersions subarray in desc order by releasedAt date
-            ats.forEach(item =>
-                item.atVersions.sort((a, b) => b.releasedAt - a.releasedAt)
-            );
-
-            ats = ats.map(at => ({
-                ...at.dataValues,
-                candidateBrowsers: at.browsers.filter(
-                    browser => browser.AtBrowsers.isCandidate
-                ),
-                recommendedBrowsers: at.browsers.filter(
-                    browser => browser.AtBrowsers.isRecommended
-                )
-            }));
 
             return ats;
         },

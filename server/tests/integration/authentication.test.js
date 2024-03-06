@@ -17,7 +17,7 @@ const followRedirects = async firstUrl => {
         RegExp(`^${process.env.GITHUB_OAUTH_SERVER}`)
     );
     expect(res1.headers.location).toMatch(
-        /\/login\/oauth\/authorize\?scope=[\w:%]+&client_id=\w+&state=[%\w-]*$/
+        /\/login\/oauth\/authorize\?scope=[\w:%]+&client_id=\w+$/
     );
 
     const res2 = await fetch(res1.headers.location, { redirect: 'manual' });
@@ -27,7 +27,7 @@ const followRedirects = async firstUrl => {
         RegExp(`^${process.env.API_SERVER}`)
     );
     expect(res2.headers.get('location')).toMatch(
-        /\/api\/auth\/authorize\?code=\w+&state=[%\w-]*$/
+        /\/api\/auth\/authorize\?code=\w+$/
     );
 
     const removeDomain = process.env.API_SERVER.length;
@@ -204,111 +204,6 @@ describe('authentication', () => {
             expect(first.me.username).toBe(knownAdmin);
             expect(signoutRes.status).toBe(200);
             expect(second.me).toBe(null);
-        });
-    });
-
-    it('allows fake roles to be applied for the duration of a session', async () => {
-        await dbCleaner(async () => {
-            // A1
-            const _dataFromFrontend = 'fakeRole-tester';
-            mockGithubServer.nextLogin({
-                githubUsername: knownAdmin
-            });
-
-            // A2
-            await followRedirects(
-                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
-            );
-
-            const {
-                body: { data: firstLogin }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
-                    query {
-                        me {
-                            roles
-                        }
-                    }
-                `
-            });
-
-            await sessionAgent.post('/api/auth/signout');
-
-            await followRedirects(`/api/auth/oauth`);
-
-            const {
-                body: { data: secondLogin }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
-                    query {
-                        me {
-                            roles
-                        }
-                    }
-                `
-            });
-
-            // A3
-            expect(firstLogin.me.roles).toEqual(['TESTER']);
-            expect(secondLogin.me.roles.sort()).toEqual(
-                ['ADMIN', 'TESTER', 'VENDOR'].sort()
-            );
-        });
-    });
-
-    it('allows faking no teams', async () => {
-        await dbCleaner(async () => {
-            // A1
-            const _dataFromFrontend = 'fakeRole-';
-            mockGithubServer.nextLogin({
-                githubUsername: knownAdmin
-            });
-
-            // A2
-            const res = await followRedirects(
-                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
-            );
-
-            // A3
-            expect(res.status).toBe(303);
-            expect(res.headers.location).toBe(
-                `${process.env.APP_SERVER}/signup-instructions`
-            );
-        });
-    });
-
-    it('allows faking vendor', async () => {
-        await dbCleaner(async () => {
-            // A1
-            const _dataFromFrontend = 'fakeRole-vendor';
-            mockGithubServer.nextLogin({
-                githubUsername: knownAdmin
-            });
-
-            // A2
-            const res = await followRedirects(
-                `/api/auth/oauth?dataFromFrontend=${_dataFromFrontend}`
-            );
-
-            // A3
-            expect(res.status).toBe(303);
-            expect(res.headers.location).toBe(
-                `${process.env.APP_SERVER}/test-queue`
-            );
-
-            const {
-                body: { data }
-            } = await sessionAgent.post('/api/graphql').send({
-                query: `
-                    query {
-                        me {
-                            roles
-                        }
-                    }
-                `
-            });
-
-            expect(data.me.roles).toEqual(['VENDOR']);
         });
     });
 });
