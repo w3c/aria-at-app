@@ -224,21 +224,23 @@ const InstructionsRenderer = ({
                         `${settingsScreenTextFormatted}: ${mustCount} MUST, ` +
                         `${shouldCount} SHOULD, ${mayCount} MAY Assertions`;
 
+                    const scenarioId =
+                        `${at.name}-test${test.rowNumber}-${id}-cmd${i}`.replaceAll(
+                            /[,+\s]+/g,
+                            '_'
+                        );
+
                     if (isV2) {
                         return (
                             <React.Fragment key={`command-${id}-${i}`}>
-                                <Heading
-                                    id={renderableContent.commands[i].keystroke}
-                                >
+                                <Heading id={scenarioId}>
                                     {scenarioTitle}
                                 </Heading>
                                 <Table
                                     key={`${id}-${i}`}
                                     bordered
                                     responsive
-                                    aria-labelledby={
-                                        renderableContent.commands[i].keystroke
-                                    }
+                                    aria-labelledby={scenarioId}
                                 >
                                     <thead>
                                         <tr>
@@ -275,12 +277,14 @@ const InstructionsRenderer = ({
                     } else {
                         return (
                             <React.Fragment key={`command-${id}-${i}`}>
-                                <Heading>{scenarioTitle}</Heading>
+                                <Heading id={scenarioId}>
+                                    {scenarioTitle}
+                                </Heading>
                                 <Table
                                     key={`${id}-${i}`}
                                     bordered
                                     responsive
-                                    aria-label={`Results for test ${test.title}`}
+                                    aria-labelledby={scenarioId}
                                 >
                                     <thead>
                                         <tr>
