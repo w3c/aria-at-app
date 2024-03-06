@@ -459,7 +459,6 @@ function renderVirtualInstructionDocument(doc) {
               value(failOption.description),
               id(`${failOptionId}-${commandIndex}-checkbox`),
               className([`undesirable-${commandIndex}`]),
-              tabIndex(failOption.tabbable ? '0' : '-1'),
               disabled(!failOption.enabled),
               checked(failOption.checked),
               focus(failOption.focus),
@@ -488,7 +487,7 @@ function renderVirtualInstructionDocument(doc) {
               id(`${failOptionId}-${commandIndex}-impact`),
               ariaLabel(`Impact for ${failOption.description}`),
               option(UnexpectedBehaviorImpactMap.MODERATE),
-              option(UnexpectedBehaviorImpactMap.HIGH),
+              option(UnexpectedBehaviorImpactMap.SEVERE),
               disabled(!failOption.checked),
               onchange(ev =>
                 failOption.impactchange(/** @type {HTMLInputElement} */ (ev.currentTarget).value)

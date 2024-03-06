@@ -267,7 +267,7 @@ const getFake = async ({
             });
             testResult.scenarioResults[0].unexpectedBehaviors.push({
                 id: 'OTHER',
-                impact: 'HIGH',
+                impact: 'SEVERE',
                 details: 'Seeded other unexpected behavior'
             });
             break;
