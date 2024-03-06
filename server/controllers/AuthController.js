@@ -5,12 +5,10 @@ const {
 const { GithubService } = require('../services');
 const getUsersFromFile = require('../util/getUsersFromFile');
 
-const ALLOW_FAKE_ROLE = process.env.ALLOW_FAKE_ROLE === 'true';
 const APP_SERVER = process.env.APP_SERVER;
 
 const oauthRedirectToGithubController = async (req, res) => {
-    const { dataFromFrontend: state } = req.query;
-    const oauthUrl = GithubService.getOauthUrl({ state });
+    const oauthUrl = GithubService.getOauthUrl();
     res.redirect(303, oauthUrl);
     res.end();
 };
@@ -34,7 +32,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
         );
     };
 
-    const { code, state: dataFromFrontend } = req.query;
+    const { code } = req.query;
 
     const githubAccessToken = await GithubService.getGithubAccessToken(code);
     if (!githubAccessToken) return loginFailedDueToGitHub();
@@ -74,24 +72,6 @@ const oauthRedirectFromGithubController = async (req, res) => {
         [],
         []
     );
-
-    // Allows for quickly logging in with different roles - changing
-    // roles would otherwise require leaving and joining GitHub teams.
-    // Should not be saved to database.
-    const matchedFakeRole =
-        dataFromFrontend && dataFromFrontend.match(/fakeRole-(\w*)/);
-    if (ALLOW_FAKE_ROLE && matchedFakeRole) {
-        user = user.get({ plain: true });
-        user.roles =
-            matchedFakeRole[1] === ''
-                ? []
-                : [{ name: matchedFakeRole[1].toUpperCase() }];
-        if (user.roles[0] && user.roles[0].name === User.ADMIN) {
-            user.roles.push({ name: User.TESTER }); // Admins are always testers
-            user.roles.push({ name: User.VENDOR });
-        }
-    }
-    if (user.roles.length === 0) return loginFailedDueToRole();
 
     req.session.user = user;
 
