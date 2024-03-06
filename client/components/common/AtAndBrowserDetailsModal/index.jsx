@@ -205,7 +205,7 @@ const AtAndBrowserDetailsModal = ({
             fullVersion = `${majorVersion}`;
         } else if (patch === '0' || patch === undefined) {
             fullVersion = `${majorVersion}.${minorVersion}`;
-        } else if (rest === undefined) {
+        } else if (rest === undefined || rest.length === 0) {
             fullVersion = `${majorVersion}.${minorVersion}.${patch}`;
         } else {
             fullVersion = `${majorVersion}.${minorVersion}.${patch}.${rest.join(
