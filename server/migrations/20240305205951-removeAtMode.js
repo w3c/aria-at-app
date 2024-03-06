@@ -8,20 +8,6 @@ module.exports = {
                 cascade: true,
                 transaction
             });
-            // try {
-            //     throw new Error('ERROR HERE');
-            // } catch (e) {
-            //     console.log(e);
-            // }
         });
-        /*TODO:
-        
-       - Delete AtMode table
-       - Update the tests field on testPlanVersions to remove
-          the atMode field
-
-       */
-    },
-
-    async down(queryInterface, Sequelize) {}
+    }
 };
