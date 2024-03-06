@@ -35,7 +35,7 @@ describe('Verify test hashes are matching as expected - (v1 test format)', () =>
 
     it('should match TestPlanVersion.hashedTests for Alert 252 in production', () => {
         const testPlanVersionHashedTestsAlert252 =
-            '2236c51249aa66f67720b9c9bb25d35532fd26c2';
+            '41e9d7106beac575fc3849a24d4f45bc28377ad1';
         // InsureA is based on TestPlanVersion 252 as the tests/alert directory was updated; see
         // https://github.com/w3c/aria-at/commit/9ccc788
         const testsHashA = hashTests(testsWithInstructionsSayingInsureA);
@@ -45,7 +45,7 @@ describe('Verify test hashes are matching as expected - (v1 test format)', () =>
 
     it('should match test hash in production', () => {
         const singleTestHashInProduction =
-            '5a0f2508e73f3de8de176923c946d6e9024144bd';
+            'e08b4e06c39378fbbc5c404a221158e5f6d7c2d0';
 
         const testIndex0Hash = hashTest(testsWithInstructionsSayingInsureA[0]);
         // singleTest.json is based on testsWithInstructionsSayingInsureA[0]

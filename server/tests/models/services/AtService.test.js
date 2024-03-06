@@ -25,7 +25,6 @@ describe('AtModel Data Checks', () => {
             })
         );
         expect(at).toHaveProperty('atVersions');
-        expect(at).toHaveProperty('modes');
         expect(at).toHaveProperty('browsers');
     });
 
@@ -51,7 +50,6 @@ describe('AtModel Data Checks', () => {
             })
         );
         expect(at).not.toHaveProperty('atVersions');
-        expect(at).not.toHaveProperty('modes');
         expect(at).not.toHaveProperty('browsers');
     });
 
@@ -77,19 +75,6 @@ describe('AtModel Data Checks', () => {
         // A3
         expect(atVersions).toBeInstanceOf(Array);
         expect(atVersions.length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('should contain valid at with modes array', async () => {
-        // A1
-        const _id = 1;
-
-        // A2
-        const at = await AtService.getAtById({ id: _id, transaction: false });
-        const { modes } = at;
-
-        // A3
-        expect(modes).toBeInstanceOf(Array);
-        expect(modes.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should contain valid at with browsers array', async () => {
@@ -195,7 +180,6 @@ describe('AtModel Data Checks', () => {
                     id: expect.any(Number),
                     name: expect.any(String),
                     atVersions: expect.any(Array),
-                    modes: expect.any(Array),
                     browsers: expect.any(Array)
                 })
             ])
@@ -218,7 +202,6 @@ describe('AtModel Data Checks', () => {
                     id: expect.any(Number),
                     name: expect.stringMatching(/nvd/gi),
                     atVersions: expect.any(Array),
-                    modes: expect.any(Array),
                     browsers: expect.any(Array)
                 })
             ])
