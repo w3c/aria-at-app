@@ -215,16 +215,9 @@ const InstructionsRenderer = ({
                         if (priorityString === 'MAY') mayCount += 1;
                     });
 
-                    let settingsScreenTextFormatted;
-
-                    if (
-                        settingsScreenText === null ||
-                        settingsScreenText === ''
-                    ) {
-                        settingsScreenTextFormatted = '';
-                    } else {
-                        settingsScreenTextFormatted = ` (${settingsScreenText})`;
-                    }
+                    const settingsScreenTextFormatted = settingsScreenText
+                        ? ` (${settingsScreenText})`
+                        : '';
 
                     const scenarioTitle =
                         `${renderableContent.commands[i].keystroke}` +
