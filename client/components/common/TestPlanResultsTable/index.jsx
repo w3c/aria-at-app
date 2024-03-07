@@ -31,12 +31,12 @@ const TestPlanResultsTable = ({
                 const {
                     assertionsPassedCount,
                     assertionsFailedCount,
-                    highImpactPassedAssertionCount,
+                    severeImpactPassedAssertionCount,
                     moderateImpactPassedAssertionCount
                 } = getMetrics({ scenarioResult });
 
-                const hasNoHighUnexpectedBehavior =
-                    highImpactPassedAssertionCount > 0;
+                const hasNoSevereUnexpectedBehavior =
+                    severeImpactPassedAssertionCount > 0;
                 const hasNoModerateUnexpectedBehavior =
                     moderateImpactPassedAssertionCount > 0;
 
@@ -90,9 +90,9 @@ const TestPlanResultsTable = ({
                     {
                         id: `UnexpectedBehavior_MUST_${nextId()}`,
                         assertion: {
-                            text: 'Other behaviors that create high negative-impacts are not exhibited'
+                            text: 'Other behaviors that create severe negative impacts are not exhibited'
                         },
-                        passed: hasNoHighUnexpectedBehavior,
+                        passed: hasNoSevereUnexpectedBehavior,
                         priorityString: 'MUST'
                     },
                     ...optionalAssertionResults.map(e => ({
@@ -102,7 +102,7 @@ const TestPlanResultsTable = ({
                     {
                         id: `UnexpectedBehavior_SHOULD_${nextId()}`,
                         assertion: {
-                            text: 'Other behaviors that create moderate negative-impacts are not exhibited'
+                            text: 'Other behaviors that create moderate negative impacts are not exhibited'
                         },
                         passed: hasNoModerateUnexpectedBehavior,
                         priorityString: 'SHOULD'
@@ -149,23 +149,33 @@ const TestPlanResultsTable = ({
                                 )}
                             </tbody>
                         </Table>
-                        Unexpected Behaviors:{' '}
+                        Other behaviors that create negative impact:{' '}
                         {scenarioResult.unexpectedBehaviors.length ? (
-                            <ul>
-                                {scenarioResult.unexpectedBehaviors.map(
-                                    ({ id, text, impact, details }) => {
-                                        const description = `${text} (Details: ${details}, Impact: ${impact})`;
-                                        return (
-                                            <li
-                                                key={id}
-                                                className="test-plan-results-li"
-                                            >
-                                                {description}
-                                            </li>
-                                        );
-                                    }
-                                )}
-                            </ul>
+                            <Table
+                                bordered
+                                responsive
+                                aria-label={`Undesirable behaviors for test ${test.title}`}
+                                className={`test-plan-unexpected-behaviors-table ${tableClassName}`}
+                            >
+                                <thead>
+                                    <tr>
+                                        <th>Behavior</th>
+                                        <th>Details</th>
+                                        <th>Impact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {scenarioResult.unexpectedBehaviors.map(
+                                        ({ id, text, details, impact }) => (
+                                            <tr key={id}>
+                                                <td>{text}</td>
+                                                <td>{details}</td>
+                                                <td>{impact}</td>
+                                            </tr>
+                                        )
+                                    )}
+                                </tbody>
+                            </Table>
                         ) : (
                             'None'
                         )}
