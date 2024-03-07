@@ -8,11 +8,12 @@ const { getMetrics } = require('shared');
 const {
     updateTestPlanReportById
 } = require('../models/services/TestPlanReportService');
+const getGraphQLContext = require('../graphql-context');
 
 module.exports = {
     up: queryInterface => {
         return queryInterface.sequelize.transaction(async transaction => {
-            const context = { transaction };
+            const context = getGraphQLContext({ req: { transaction } });
 
             const testPlanReports = await queryInterface.sequelize.query(
                 `SELECT id, status FROM "TestPlanReport"`,
@@ -34,7 +35,7 @@ module.exports = {
 
                 const { testPlanReport } = await populateData(
                     { testPlanReportId },
-                    { transaction }
+                    { context }
                 );
 
                 const conflicts = await conflictsResolver(

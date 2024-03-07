@@ -60,7 +60,9 @@ const startSupertestServer = async ({
         const transaction = await sequelize.transaction();
         transactionMiddleware.forTestingPopulateTransaction(transaction);
         await callback(transaction);
-        await transactionMiddleware.forTestingRollBackTransaction(transaction);
+        await transactionMiddleware.forTestingRollBackTransaction(
+            transaction.id
+        );
     };
 
     const tearDown = async () => {

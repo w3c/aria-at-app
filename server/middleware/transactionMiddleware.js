@@ -46,9 +46,10 @@ const forTestingPopulateTransaction = transaction => {
     transactions[transaction.id] = transaction;
 };
 
-const forTestingRollBackTransaction = async transaction => {
+const forTestingRollBackTransaction = async transactionId => {
+    const transaction = transactions[transactionId];
     await transaction.rollback();
-    delete transactions[transaction.id];
+    delete transactions[transactionId];
 };
 
 module.exports = {

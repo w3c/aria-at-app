@@ -24,6 +24,7 @@ const {
     saveTestResultResolver
 } = require('../resolvers/TestResultOperations');
 const { hashTests } = require('../util/aria');
+const getGraphQLContext = require('../graphql-context');
 
 const testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES.filter(
     attr => attr !== 'versionString'
@@ -244,12 +245,12 @@ module.exports = {
                 newTestPlanVersionId,
                 testPlanReportAttributes
             }) => {
-                const context = {
-                    user: {
-                        roles: [{ name: 'ADMIN' }]
-                    },
-                    transaction
-                };
+                const context = getGraphQLContext({
+                    req: {
+                        transaction,
+                        session: { user: { roles: [{ name: 'ADMIN' }] } }
+                    }
+                });
 
                 // [SECTION START]: Preparing data to be worked with in a similar way to TestPlanUpdaterModal
                 const newTestPlanVersionQuery =
@@ -502,7 +503,7 @@ module.exports = {
                     createdLocationsOfData.map(createdLocationOfData =>
                         populateData(createdLocationOfData, {
                             preloaded,
-                            transaction
+                            context
                         })
                     )
                 );
@@ -577,7 +578,7 @@ module.exports = {
                 // TODO: Delete the old TestPlanReport?
                 // await removeTestPlanRunByQuery({ testPlanReportId });
                 // await removeTestPlanReport(testPlanReportId);
-                // return populateData(locationOfData, { preloaded, transaction });
+                // return populateData(locationOfData, { preloaded, context });
             };
 
             for (let i = 0; i < Object.values(highestVersions).length; i++) {

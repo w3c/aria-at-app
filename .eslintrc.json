@@ -26,7 +26,8 @@
         "eol-last": ["error", "always"],
         "no-console": ["error", { "allow": ["warn", "error"] }],
         "no-use-before-define": ["off"],
-        "react/display-name": ["off"]
+        "react/display-name": ["off"],
+        "jest/expect-expect": ["off"]
     },
     "settings": {
         "react": {

@@ -25,7 +25,6 @@ const {
     createScenarioResultId,
     createAssertionResultId
 } = require('../../services/PopulatedData/locationOfDataId');
-const AtLoader = require('../../models/loaders/AtLoader');
 
 const updatePhaseResolver = async (
     { parentContext: { id: testPlanVersionId } },
@@ -37,7 +36,7 @@ const updatePhaseResolver = async (
     },
     context
 ) => {
-    const { user, transaction } = context;
+    const { user, atLoader, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
@@ -50,7 +49,7 @@ const updatePhaseResolver = async (
             values: { phase, deprecatedAt: new Date() },
             transaction
         });
-        return populateData({ testPlanVersionId }, { transaction });
+        return populateData({ testPlanVersionId }, { context });
     }
 
     let testPlanVersionDataToInclude;
@@ -256,7 +255,7 @@ const updatePhaseResolver = async (
                         const { testPlanReport: populatedTestPlanReport } =
                             await populateData(
                                 { testPlanReportId: createdTestPlanReport.id },
-                                { transaction }
+                                { context }
                             );
 
                         const runnableTests = runnableTestsResolver(
@@ -400,7 +399,6 @@ const updatePhaseResolver = async (
                 reportsByAtAndBrowser[at.id][browser.id] = testPlanReport;
             });
 
-        const atLoader = AtLoader();
         const ats = await atLoader.getAll({ transaction });
 
         const missingAtBrowserCombinations = [];
@@ -607,7 +605,7 @@ const updatePhaseResolver = async (
         values: updateParams,
         transaction
     });
-    return populateData({ testPlanVersionId }, { transaction });
+    return populateData({ testPlanVersionId }, { context });
 };
 
 module.exports = updatePhaseResolver;

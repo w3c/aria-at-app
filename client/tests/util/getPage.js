@@ -3,9 +3,10 @@ const path = require('path');
 const spawn = require('cross-spawn');
 const treeKill = require('tree-kill');
 
+const isDebugMode = process.argv.some(arg => arg.startsWith('--testTimeout'));
+
 let clientServer;
 let backendServer;
-let browser;
 
 const PORT = 8033;
 const CLIENT_PORT = 3033;
@@ -14,21 +15,27 @@ const baseUrl = `http://localhost:${CLIENT_PORT}`;
 
 const startServer = async serverOrClient => {
     return new Promise(resolve => {
-        const server = spawn('yarn', ['workspace', serverOrClient, 'dev'], {
-            cwd: path.resolve(__dirname, '../../'),
-            env: {
-                PATH: process.env.PATH,
-                PORT,
-                CLIENT_PORT,
-                AUTOMATION_SCHEDULER_PORT,
-                API_SERVER: `http://localhost:${PORT}`,
-                APP_SERVER: baseUrl,
-                AUTOMATION_SCHEDULER_URL: `http://localhost:${AUTOMATION_SCHEDULER_PORT}`,
-                PGDATABASE: 'aria_at_report_test',
-                PGPORT: 5432,
-                ENVIRONMENT: 'test'
+        const server = spawn(
+            'yarn',
+            serverOrClient === 'server'
+                ? ['workspace', 'server', 'dev-debug']
+                : ['workspace', 'client', 'dev'],
+            {
+                cwd: path.resolve(__dirname, '../../'),
+                env: {
+                    PATH: process.env.PATH,
+                    PORT,
+                    CLIENT_PORT,
+                    AUTOMATION_SCHEDULER_PORT,
+                    API_SERVER: `http://localhost:${PORT}`,
+                    APP_SERVER: baseUrl,
+                    AUTOMATION_SCHEDULER_URL: `http://localhost:${AUTOMATION_SCHEDULER_PORT}`,
+                    PGDATABASE: 'aria_at_report_test',
+                    PGPORT: 5432,
+                    ENVIRONMENT: 'test'
+                }
             }
-        });
+        );
 
         const killServer = async () => {
             await new Promise((resolve, reject) => {
@@ -65,14 +72,16 @@ const setup = async () => {
     console.info(
         'Starting dev servers. This is required for end-to-end testing'
     );
+
     [clientServer, backendServer] = await Promise.all([
         startServer('client'),
         startServer('server')
     ]);
 
-    browser = await puppeteer.launch({
-        headless: 'new',
-        args: ['--no-sandbox'] // Required for GitHub environment
+    return puppeteer.launch({
+        headless: isDebugMode ? false : 'new',
+        args: ['--no-sandbox'], // Required for GitHub environment
+        devtools: isDebugMode
     });
 };
 
@@ -80,7 +89,7 @@ const teardown = async () => {
     await Promise.all([backendServer.close(), clientServer.close()]);
 
     // Browser might not be defined, if it failed to start
-    if (browser) await browser.close();
+    if (global.__BROWSER_GLOBAL__) await global.__BROWSER_GLOBAL__.close();
 };
 
 let incognitoContexts = {};
@@ -102,8 +111,11 @@ const getPage = async (options, callback) => {
         throw new Error('Please provide a valid role');
     }
 
-    if (!incognitoContexts[role]) {
-        incognitoContexts[role] = await browser.createIncognitoBrowserContext();
+    const foundExistingIncognitoContext = !!incognitoContexts[role];
+
+    if (!foundExistingIncognitoContext) {
+        incognitoContexts[role] =
+            await global.__BROWSER_GLOBAL__.createIncognitoBrowserContext();
     }
     const incognitoContext = incognitoContexts[role];
 
@@ -113,9 +125,13 @@ const getPage = async (options, callback) => {
         throw new Error('Please provide a URL, even if it it is simply "/"');
     }
 
-    await page.goto(`http://localhost:${CLIENT_PORT}${url}`);
+    if (isDebugMode) {
+        page.setDefaultTimeout(604800000 /* a week should be enough */);
+    }
 
-    if (role) {
+    await page.goto(`${baseUrl}${url}`);
+
+    if (role && !foundExistingIncognitoContext) {
         await page.waitForSelector('::-p-text(Sign in with GitHub)');
 
         const username = `joe-the-${role}`;
@@ -133,10 +149,17 @@ const getPage = async (options, callback) => {
         await page.waitForSelector('::-p-text(Signed in)');
     }
 
-    await callback(page, { baseUrl });
+    await page.evaluate('startTestTransaction()');
+
+    try {
+        await callback(page, { baseUrl });
+    } finally {
+        await page.evaluate('endTestTransaction()');
+    }
 
     await page.close();
 };
 
-export default getPage;
-export { setup, teardown };
+module.exports = getPage;
+module.exports.setup = setup;
+module.exports.teardown = teardown;

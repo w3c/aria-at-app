@@ -8,7 +8,11 @@
       "request": "launch",
       "envFile": "${workspaceFolder}/config/dev.env",
       "skipFiles": [
-        "<node_internals>/**"
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**/*.js",
+        "${workspaceFolder}/client/node_modules/**/*.js",
+        "${workspaceFolder}/server/node_modules/**/*.js",
+        "${workspaceFolder}/shared/node_modules/**/*.js"
       ],
       "type": "node"
     },
@@ -24,7 +28,14 @@
       "disableOptimisticBPs": true,
       "windows": {
         "program": "${workspaceFolder}/server/node_modules/jest/bin/jest"
-      }
+      },
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**/*.js",
+        "${workspaceFolder}/client/node_modules/**/*.js",
+        "${workspaceFolder}/server/node_modules/**/*.js",
+        "${workspaceFolder}/shared/node_modules/**/*.js"
+      ],
     },
     {
       "type": "node",
@@ -33,12 +44,19 @@
       //"env": { "NODE_ENV": "test" },
       "envFile": "${workspaceFolder}/config/test.env",
       "program": "${workspaceFolder}/client/node_modules/.bin/jest",
-      "args": ["${fileBasenameNoExtension}", "--config", "client/jest.setup.js"],
+      "args": ["${fileBasenameNoExtension}", "--config", "${workspaceFolder}/client/jest.config.js", "--testTimeout=604800000"],
       "console": "integratedTerminal",
       "disableOptimisticBPs": true,
       "windows": {
         "program": "${workspaceFolder}/client/node_modules/jest/bin/jest"
-      }
+      },
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**/*.js",
+        "${workspaceFolder}/client/node_modules/**/*.js",
+        "${workspaceFolder}/server/node_modules/**/*.js",
+        "${workspaceFolder}/shared/node_modules/**/*.js"
+      ],
     }
   ]
 }
