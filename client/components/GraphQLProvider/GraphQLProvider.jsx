@@ -9,6 +9,7 @@ import {
     concat
 } from '@apollo/client';
 
+// Dynamically set GraphQL request headers
 // See https://www.apollographql.com/docs/react/networking/advanced-http-networking#customizing-request-logic
 const headerMiddleware = new ApolloLink((operation, forward) => {
     const currentTransactionId = sessionStorage.getItem('currentTransactionId');

@@ -46,7 +46,7 @@ We expect PRs for all features to include enough tests to give confidence that n
 
 100% test coverage is not the expectation. We do not expect contributors to comprehensively test every esoteric failure state. We do expect the happy path and common failure states to be tested.
 
-We provide capabilities for unit testing, integration testing and end-to-end testing. Unit or integration testing every component is not the expectation, since trivial components will be covered by end-to-end tests (for example, the router.) On the other hand, non-trivial components should be integration tested (For example, a modal or other application flow control components).
+We provide capabilities for unit testing, integration testing and end-to-end testing. Unit or integration testing every component is not the expectation, since trivial components will be covered by end-to-end tests (for example, the router). On the other hand, non-trivial components should be integration tested (For example, a modal or other application flow control components).
 
 We expect contributors to use the type of testing which corresponds to the architecture of their code. For example, in the case of a utility function, unit tests are preferable to end-to-end testing, because of the complexity of end-to-end which runs a full browser, server and database. On the flipside, attempting to unit test a major set of features like the overall function of the data management page would require so many mocks that end-to-end testing would be the only efficient option.
 

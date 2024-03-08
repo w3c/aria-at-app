@@ -24,14 +24,14 @@ class PuppeteerEnvironment extends NodeEnvironment {
         }
 
         // connect to puppeteer
-        this.global.__BROWSER_GLOBAL__ = await puppeteer.connect({
+        this.global.browser = await puppeteer.connect({
             browserWSEndpoint: wsEndpoint
         });
     }
 
     async teardown() {
-        if (this.global.__BROWSER_GLOBAL__) {
-            this.global.__BROWSER_GLOBAL__.disconnect();
+        if (this.global.browser) {
+            this.global.browser.disconnect();
         }
         await super.teardown();
     }

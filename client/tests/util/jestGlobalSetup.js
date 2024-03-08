@@ -12,7 +12,7 @@ module.exports = async () => {
 
     // store the browser instance so we can teardown it later
     // this global is only available in the teardown but not in TestEnvironments
-    global.__BROWSER_GLOBAL__ = browser;
+    global.browser = browser;
 
     if (!isDebugMode) {
         // use the file system to expose the wsEndpoint for TestEnvironments

@@ -81,7 +81,7 @@ const setup = async () => {
     return puppeteer.launch({
         headless: isDebugMode ? false : 'new',
         args: ['--no-sandbox'], // Required for GitHub environment
-        devtools: isDebugMode
+        devtools: isDebugMode // Allows `debugger;` statements to work
     });
 };
 
@@ -89,14 +89,14 @@ const teardown = async () => {
     await Promise.all([backendServer.close(), clientServer.close()]);
 
     // Browser might not be defined, if it failed to start
-    if (global.__BROWSER_GLOBAL__) await global.__BROWSER_GLOBAL__.close();
+    if (global.browser) await global.browser.close();
 };
 
 let incognitoContexts = {};
 
 /**
  * Load a page for end-to-end testing.
- * @param {*} options
+ * @param {Object} options
  * @param {'admin'|'tester'|'vendor'|false} options.role - The login state
  * of the user.
  * @param {string} options.url - The URL to start on.
@@ -115,7 +115,7 @@ const getPage = async (options, callback) => {
 
     if (!foundExistingIncognitoContext) {
         incognitoContexts[role] =
-            await global.__BROWSER_GLOBAL__.createIncognitoBrowserContext();
+            await global.browser.createIncognitoBrowserContext();
     }
     const incognitoContext = incognitoContexts[role];
 

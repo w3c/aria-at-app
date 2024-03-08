@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "webpack-dev-server --mode development",
     "build": "webpack --config webpack.prod.js",
-    "jest": "jest --config jest.config.js",
+    "jest": "jest",
     "prettier": "prettier --write \"**/*.{js,jsx,css}\"",
     "lint": "eslint --ext js,jsx .",
     "storybook": "start-storybook -p 6006",
