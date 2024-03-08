@@ -23,7 +23,7 @@
       //"env": { "NODE_ENV": "test" },
       "envFile": "${workspaceFolder}/config/test.env",
       "program": "${workspaceFolder}/server/node_modules/.bin/jest",
-      "args": ["${fileBasenameNoExtension}", "--config", "server/jest.config.js"],
+      "args": ["${fileBasenameNoExtension}", "--config", "server/jest.config.js", "--testTimeout=604800000"],
       "console": "integratedTerminal",
       "disableOptimisticBPs": true,
       "windows": {

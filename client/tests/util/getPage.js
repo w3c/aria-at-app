@@ -131,6 +131,10 @@ const getPage = async (options, callback) => {
 
     await page.goto(`${baseUrl}${url}`);
 
+    await page.waitForNetworkIdle();
+
+    await page.evaluate('startTestTransaction()');
+
     if (role && !foundExistingIncognitoContext) {
         await page.waitForSelector('::-p-text(Sign in with GitHub)');
 
@@ -148,8 +152,6 @@ const getPage = async (options, callback) => {
 
         await page.waitForSelector('::-p-text(Signed in)');
     }
-
-    await page.evaluate('startTestTransaction()');
 
     try {
         await callback(page, { baseUrl });

@@ -145,8 +145,6 @@ const updateOrCreateTestResultWithResponses = async ({
     browserVersionId,
     context
 }) => {
-    const { transaction } = context;
-
     const allTestsForTestPlanVersion = await getTests(
         testPlanRun.testPlanReport.testPlanVersion
     );
@@ -170,7 +168,7 @@ const updateOrCreateTestResultWithResponses = async ({
         testPlanRunId: testPlanRun.id,
         atVersionId,
         browserVersionId,
-        transaction
+        context
     });
 
     const historicalTestResults = await getApprovedFinalizedTestResults(
