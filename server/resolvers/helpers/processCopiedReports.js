@@ -1,11 +1,11 @@
 const {
     getTestPlanVersionById
-} = require('../../models/services.deprecated/TestPlanVersionService');
+} = require('../../models/services/TestPlanVersionService');
 const {
     getTestPlanReports,
     getOrCreateTestPlanReport,
-    updateTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 const {
     createTestResultId,
     createScenarioResultId,
@@ -14,8 +14,8 @@ const {
 const { hashTest } = require('../../util/aria');
 const {
     createTestPlanRun,
-    updateTestPlanRun
-} = require('../../models/services.deprecated/TestPlanRunService');
+    updateTestPlanRunById
+} = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
@@ -28,10 +28,13 @@ const processCopiedReports = async ({
     newTestPlanReports,
     context
 }) => {
+    const { transaction } = context;
+
     // The testPlanVersion being updated
-    const newTestPlanVersion = await getTestPlanVersionById(
-        newTestPlanVersionId
-    );
+    const newTestPlanVersion = await getTestPlanVersionById({
+        id: newTestPlanVersionId,
+        transaction
+    });
 
     let oldTestPlanVersion;
     let oldTestPlanReports = [];
@@ -41,23 +44,22 @@ const processCopiedReports = async ({
     // These checks are needed to support the test plan version reports being updated with earlier
     // versions' data
     if (oldTestPlanVersionId) {
-        oldTestPlanVersion = await getTestPlanVersionById(oldTestPlanVersionId);
+        oldTestPlanVersion = await getTestPlanVersionById({
+            id: oldTestPlanVersionId,
+            transaction
+        });
 
-        oldTestPlanReports = await getTestPlanReports(
-            null,
-            {
-                testPlanVersionId: oldTestPlanVersionId
-            },
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            {
-                order: [['createdAt', 'desc']]
-            }
-        );
+        oldTestPlanReports = await getTestPlanReports({
+            where: { testPlanVersionId: oldTestPlanVersionId },
+            testPlanReportAttributes: null,
+            testPlanRunAttributes: null,
+            testPlanVersionAttributes: null,
+            testPlanAttributes: null,
+            atAttributes: null,
+            browserAttributes: null,
+            userAttributes: null,
+            pagination: { order: [['createdAt', 'desc']] }
+        });
     }
 
     // There is no older test plan reports to process
@@ -164,17 +166,23 @@ const processCopiedReports = async ({
                 if (Object.keys(newTestResultsToSaveByTestId).length) {
                     const [newTestPlanReport] = await getOrCreateTestPlanReport(
                         {
-                            testPlanVersionId: newTestPlanVersionId,
-                            atId: oldTestPlanReport.atId,
-                            browserId: oldTestPlanReport.browserId
+                            where: {
+                                testPlanVersionId: newTestPlanVersionId,
+                                atId: oldTestPlanReport.atId,
+                                browserId: oldTestPlanReport.browserId
+                            },
+                            transaction
                         }
                     );
 
                     newTestPlanReportIds.push(newTestPlanReport.id);
 
                     const newTestPlanRun = await createTestPlanRun({
-                        testerUserId: oldTestPlanRun.testerUserId,
-                        testPlanReportId: newTestPlanReport.id
+                        values: {
+                            testerUserId: oldTestPlanRun.testerUserId,
+                            testPlanReportId: newTestPlanReport.id
+                        },
+                        transaction
                     });
 
                     const newTestResults = [];
@@ -263,19 +271,23 @@ const processCopiedReports = async ({
 
                     // Update TestPlanRun test results to be used in metrics evaluation
                     // afterward
-                    await updateTestPlanRun(newTestPlanRun.id, {
-                        testResults: newTestResults
+                    await updateTestPlanRunById({
+                        id: newTestPlanRun.id,
+                        values: { testResults: newTestResults },
+                        transaction
                     });
 
                     // Update metrics for TestPlanReport
                     const { testPlanReport: populatedTestPlanReport } =
                         await populateData(
                             { testPlanReportId: newTestPlanReport.id },
-                            { context }
+                            { transaction }
                         );
 
                     const runnableTests = runnableTestsResolver(
-                        populatedTestPlanReport
+                        populatedTestPlanReport,
+                        null,
+                        context
                     );
                     let updateParams = {};
 
@@ -287,7 +299,9 @@ const processCopiedReports = async ({
 
                     // Calculate the metrics (happens if updating to DRAFT)
                     const conflicts = await conflictsResolver(
-                        populatedTestPlanReport
+                        populatedTestPlanReport,
+                        null,
+                        context
                     );
 
                     if (conflicts.length > 0) {
@@ -346,28 +360,25 @@ const processCopiedReports = async ({
                         }
                     }
 
-                    await updateTestPlanReport(
-                        populatedTestPlanReport.id,
-                        updateParams
-                    );
+                    await updateTestPlanReportById({
+                        id: populatedTestPlanReport.id,
+                        values: updateParams,
+                        transaction
+                    });
                 }
             }
         }
     }
 
-    updatedTestPlanReports = await getTestPlanReports(
-        null,
-        { testPlanVersionId: newTestPlanVersionId },
-        null,
-        null,
-        null,
-        undefined,
-        undefined,
-        null,
-        {
-            order: [['createdAt', 'desc']]
-        }
-    );
+    updatedTestPlanReports = await getTestPlanReports({
+        where: { testPlanVersionId: newTestPlanVersionId },
+        testPlanRunAttributes: null,
+        testPlanVersionAttributes: null,
+        testPlanAttributes: null,
+        userAttributes: null,
+        pagination: { order: [['createdAt', 'desc']] },
+        transaction
+    });
 
     return {
         newTestPlanReportIds,
