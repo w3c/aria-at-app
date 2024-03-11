@@ -11,13 +11,15 @@ const { hashTests } = require('../../util/aria');
  * @param queryInterface - The Sequelize.QueryInterface object.
  * @param transaction - The Sequelize.Transaction object.
  * @param testPlanVersionWhere - Additional WHERE clauses when querying TestPlanVersion if needed
+ * @param pruneOldVersions - Force removal of TestPlanVersions with conflicting hashes after regenerating
  * See {@https://sequelize.org/api/v6/class/src/sequelize.js~sequelize#instance-method-transaction}
  * @returns {Promise<void>}
  */
 const computeTestPlanVersionHashedTests = async (
     queryInterface,
     transaction,
-    testPlanVersionWhere
+    testPlanVersionWhere,
+    pruneOldVersions
 ) => {
     const results = await queryInterface.sequelize.query(
         `SELECT COUNT(*) FROM "TestPlanVersion" ${testPlanVersionWhere}`,
@@ -64,7 +66,7 @@ const computeTestPlanVersionHashedTests = async (
                             transaction
                         }
                     );
-                } else {
+                } else if (pruneOldVersions) {
                     // Remove any accidentally created TestPlanVersion rows created prior to migration
                     await queryInterface.sequelize.query(
                         `DELETE FROM "TestPlanVersion" WHERE id = ?`,
@@ -218,19 +220,22 @@ const regenerateExistingTestResults = async (
  * TestRuns and regenerates TestPlanVersion.hashedTests if required
  * @param queryInterface - The Sequelize.QueryInterface object.
  * @param transaction - The Sequelize.Transaction object.
- * @param testPlanVersionWhere - Additional WHERE clauses when querying TestPlanVersion if needed
+ * @param options - Additional options to use when performing function
+ * @param options.testPlanVersionWhere - Additional WHERE clauses when querying TestPlanVersion if needed
+ * @param options.pruneOldVersions - Force removal of TestPlanVersions with conflicting hashes after regenerating
  * See {@https://sequelize.org/api/v6/class/src/sequelize.js~sequelize#instance-method-transaction}
  * @returns {Promise<void>}
  */
 const regenerateResultsAndRecalculateHashes = async (
     queryInterface,
     transaction,
-    testPlanVersionWhere = ''
+    { testPlanVersionWhere = '', pruneOldVersions = true } = {}
 ) => {
     await computeTestPlanVersionHashedTests(
         queryInterface,
         transaction,
-        testPlanVersionWhere
+        testPlanVersionWhere,
+        pruneOldVersions
     );
 
     await regenerateExistingTestResults(
