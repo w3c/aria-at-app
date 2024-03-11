@@ -1,18 +1,10 @@
 const objectHash = require('object-hash');
-const { omit, pick } = require('lodash');
+const { omit } = require('lodash');
 
 const evaluateAtNameKey = atName => {
     // Could probably add back support for AT keys from the database level
     if (atName.toLowerCase().includes('voiceover')) return 'voiceover_macos';
     else return atName.toLowerCase();
-};
-
-const assertionWithModifiedAttributes = (assertion, { forUpdateCompare }) => {
-    // During comparison for phase update, we only need to make sure the assertionId hasn't
-    // changed, so the result isn't affected by the text changing
-    // if (forUpdateCompare) return omit(assertion, ['assertionId']);
-    if (forUpdateCompare) return pick(assertion, ['assertionId']);
-    return omit(assertion, ['id']);
 };
 
 const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
@@ -25,13 +17,16 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
         'viewers'
     ];
 
+    // During comparison for phase update, we only need to make sure the assertionId hasn't
+    // changed so the potentially copied result isn't affected by the assertionStatement or
+    // assertionPhrase being changed
     if (forUpdateCompare) {
-        // Changed text in renderableContent.assertions[].assertion(Statement|Phrase) shouldn't matter
-        // during comparison of results
+        // Changed text in renderableContent.assertions[].assertion(Statement|Phrase) shouldn't
+        // matter during comparison of results
         propertiesToOmit.push('renderableContent.assertions');
 
-        // The collection of assertions won't matter during a update comparison; a per assertion
-        // check will
+        // The collection of assertions won't matter during an update comparison; a per-assertion
+        // check will that is handled separately in processCopiedReports.js
         propertiesToOmit.push('assertions');
 
         return {
@@ -41,7 +36,9 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
     } else {
         return {
             ...omit(test, propertiesToOmit),
-            assertions: test.assertions.map(assertionWithModifiedAttributes),
+            assertions: test.assertions.map(assertion =>
+                omit(assertion, ['id'])
+            ),
             scenarios: test.scenarios.map(scenario => omit(scenario, ['id']))
         };
     }

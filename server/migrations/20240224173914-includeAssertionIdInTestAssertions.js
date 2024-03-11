@@ -21,7 +21,7 @@ module.exports = {
                             test.assertions = test.assertions.map(
                                 assertion => ({
                                     id: assertion.id,
-                                    assertionId:
+                                    rawAssertionId:
                                         test.renderableContent.assertions.find(
                                             otherAssertion =>
                                                 otherAssertion.assertionStatement ===

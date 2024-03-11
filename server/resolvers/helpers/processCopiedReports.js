@@ -113,9 +113,9 @@ const processCopiedReports = async ({
                     // otherwise mark the test as not being complete
                     const knownAssertionIdsForOldTest = [];
                     for (const oldTestPlanVersionAssertion of oldTestPlanVersionTest.assertions) {
-                        if (oldTestPlanVersionAssertion.assertionId)
+                        if (oldTestPlanVersionAssertion.rawAssertionId)
                             knownAssertionIdsForOldTest.push(
-                                oldTestPlanVersionAssertion.assertionId
+                                oldTestPlanVersionAssertion.rawAssertionId
                             );
                     }
 
@@ -204,10 +204,6 @@ const processCopiedReports = async ({
                         newTestResult.testId = testResultToSaveTestId;
                         newTestResult.id = newTestResultId;
 
-                        // TODO: Check if scenario has changed (if command added or removed for
-                        //  a test). @func testHash function would have to relax constraints on
-                        //  'scenarios' attribute
-
                         // The hash confirms the scenario (commands) arrays should be in the same
                         // order, and regenerate the test result related ids for the carried
                         // over data
@@ -244,13 +240,14 @@ const processCopiedReports = async ({
                                         eachAssertionResult.assertionId
                                     );
 
-                                // Nullify 'passed' value and mark the test as not completed
+                                // Checks if rawAssertionId is persisted across TestPlanVersions
+                                // Nullify 'passed' and mark the test as not completed if it isn't
                                 if (
                                     knownAssertionIdsForOldTest[
                                         assertionIndex
                                     ] !==
                                     foundKeptNewTest.assertions[assertionIndex]
-                                        .assertionId
+                                        .rawAssertionId
                                 ) {
                                     eachAssertionResult.passed = null;
                                     newTestResult.completedAt = null;
