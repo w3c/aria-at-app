@@ -58,7 +58,8 @@ const processCopiedReports = async ({
             atAttributes: null,
             browserAttributes: null,
             userAttributes: null,
-            pagination: { order: [['createdAt', 'desc']] }
+            pagination: { order: [['createdAt', 'desc']] },
+            transaction
         });
     }
 
