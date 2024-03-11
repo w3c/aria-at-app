@@ -243,11 +243,14 @@ const processCopiedReports = async ({
                                 // Checks if rawAssertionId is persisted across TestPlanVersions
                                 // Nullify 'passed' and mark the test as not completed if it isn't
                                 if (
+                                    knownAssertionIdsForOldTest.length ===
+                                        foundKeptNewTest.assertions.length &&
                                     knownAssertionIdsForOldTest[
                                         assertionIndex
                                     ] !==
-                                    foundKeptNewTest.assertions[assertionIndex]
-                                        .rawAssertionId
+                                        foundKeptNewTest.assertions[
+                                            assertionIndex
+                                        ].rawAssertionId
                                 ) {
                                     eachAssertionResult.passed = null;
                                     newTestResult.completedAt = null;
