@@ -39,7 +39,7 @@ exports.setup = async () => {
     );
     if (!callbackUrlHostname) {
         throw new Error(
-            'Envrionment AUTOMATION_CALLBACK_FQDN must be set to a valid hostname for the public address.'
+            'Environment AUTOMATION_CALLBACK_FQDN must be set to a valid hostname for the public address.'
         );
     }
     try {
