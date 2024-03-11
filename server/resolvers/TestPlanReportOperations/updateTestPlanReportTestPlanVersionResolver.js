@@ -9,15 +9,15 @@ const {
 const {
     getTestPlanVersionById
 } = require('../../models/services/TestPlanVersionService');
-const { testResultsResolver } = require('../TestPlanRun');
 const populateData = require('../../services/PopulatedData/populateData');
 const scenariosResolver = require('../Test/scenariosResolver');
 const {
     createTestPlanRun
 } = require('../../models/services/TestPlanRunService');
-const { findOrCreateTestResultResolver } = require('../TestPlanRunOperations');
 const submitTestResultResolver = require('../TestResultOperations/submitTestResultResolver');
 const saveTestResultResolver = require('../TestResultOperations/saveTestResultResolver');
+const testResultsResolver = require('../TestPlanRun/testResultsResolver');
+const findOrCreateTestResultResolver = require('../TestPlanRunOperations/findOrCreateTestResultResolver');
 
 const compareTestContent = (currentTests, newTests) => {
     const hashTest = test => hash(omit(test, ['id']));

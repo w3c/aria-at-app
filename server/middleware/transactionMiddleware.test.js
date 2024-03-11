@@ -76,7 +76,7 @@ describe('transactionMiddleware', () => {
 
         expect(beforeSuccessfulUser).toBe(null);
         expect(beforeFailedUser).toBe(null);
-        expect(successfulUser).not.toBe(null);
+        expect(successfulUser.username).toBe('yay-it-works');
         expect(failedUser).toBe(null);
     });
 });
