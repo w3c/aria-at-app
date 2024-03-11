@@ -198,17 +198,17 @@ const AtAndBrowserDetailsModal = ({
         // Discard trailing zeros in found minor and patches.
         // This also accounts for trailing numbers after the patch.
         let fullVersion = '';
-        let [majorVersion, minorVersion, patch, ...rest] =
+        let [majorVersion, minorVersion = '0', patchVersion = '0', ...rest] =
             updatedBrowserVersion.split('.');
 
-        if (minorVersion === '0' && (patch === '0' || patch === undefined)) {
+        if (minorVersion === '0' && patchVersion === '0') {
             fullVersion = `${majorVersion}`;
-        } else if (patch === '0' || patch === undefined) {
+        } else if (patchVersion === '0') {
             fullVersion = `${majorVersion}.${minorVersion}`;
         } else if (rest === undefined || rest.length === 0) {
-            fullVersion = `${majorVersion}.${minorVersion}.${patch}`;
+            fullVersion = `${majorVersion}.${minorVersion}.${patchVersion}`;
         } else {
-            fullVersion = `${majorVersion}.${minorVersion}.${patch}.${rest.join(
+            fullVersion = `${majorVersion}.${minorVersion}.${patchVersion}.${rest.join(
                 '.'
             )}`;
         }
