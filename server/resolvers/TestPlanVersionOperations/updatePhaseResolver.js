@@ -40,9 +40,6 @@ const updatePhaseResolver = async (
         return populateData({ testPlanVersionId }, { context });
     }
 
-    // The testPlanVersion being updated
-    // const testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
-
     // The test plan reports which will be updated
     let testPlanReports = await getTestPlanReports(
         null,
