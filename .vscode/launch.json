@@ -25,6 +25,20 @@
       "windows": {
         "program": "${workspaceFolder}/server/node_modules/jest/bin/jest"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest Client Debug Current Test File",
+      //"env": { "NODE_ENV": "test" },
+      "envFile": "${workspaceFolder}/config/test.env",
+      "program": "${workspaceFolder}/client/node_modules/.bin/jest",
+      "args": ["${fileBasenameNoExtension}", "--config", "client/jest.setup.js"],
+      "console": "integratedTerminal",
+      "disableOptimisticBPs": true,
+      "windows": {
+        "program": "${workspaceFolder}/client/node_modules/jest/bin/jest"
+      }
     }
   ]
 }

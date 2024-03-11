@@ -481,6 +481,7 @@ const getTests = ({
                             data.target.at.key
                         ];
 
+                    result.rawAssertionId = assertion.assertionId;
                     result.assertionStatement =
                         tokenizedAssertionStatement ||
                         assertion.assertionStatement;
