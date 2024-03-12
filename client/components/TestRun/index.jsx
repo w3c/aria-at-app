@@ -655,7 +655,7 @@ const TestRun = () => {
             ({ assertionResults, id, output, unexpectedBehaviors }) => ({
                 id,
                 output: output,
-                unexpectedBehaviors: unexpectedBehaviors.map(
+                unexpectedBehaviors: unexpectedBehaviors?.map(
                     ({ id, impact, details }) => ({
                         id,
                         impact,
