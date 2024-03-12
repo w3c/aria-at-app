@@ -446,6 +446,7 @@ const getTests = ({
                 if (assertion.priority === 2) priority = 'SHOULD';
                 // Available for v2
                 if (assertion.priority === 3) priority = 'MAY';
+                if (assertion.priority === 0) priority = 'EXCLUDE';
 
                 let result = {
                     id: createAssertionId(testId, index),

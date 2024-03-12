@@ -199,13 +199,24 @@ const InstructionsRenderer = ({
                                 );
                             }
                         );
+
+                        if (assertionIndex < 0) return;
+
                         if (exception.priority === 0) {
                             assertions.splice(assertionIndex, 1);
                         } else {
-                            assertions[assertionIndex].priority =
-                                exception.priority;
+                            assertions[assertionIndex] = {
+                                ...assertions[assertionIndex],
+                                priority: exception.priority
+                            };
                         }
                     });
+
+                    // Filter out assertions that were originally set to 0 when declared through
+                    // tests.csv instead of *-commands.csv
+                    assertions = assertions.filter(
+                        ({ priority }) => priority !== 0
+                    );
 
                     assertions.forEach(({ priority }) => {
                         const priorityString =
