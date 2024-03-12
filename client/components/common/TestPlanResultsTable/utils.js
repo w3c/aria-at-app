@@ -1,4 +1,4 @@
-// For each command, high and moderate negative behaviors is tracked, so 2
+// For each command, severe and moderate negative behaviors is tracked, so 2
 const NUMBER_NEGATIVE_IMPACTS = 2;
 
 const getImpactFailedAssertionCount = (scenarioResults, impact) => {
@@ -28,10 +28,10 @@ export const calculateAssertionsCount = testResult => {
     const maxUnexpectedBehaviorsPassCount =
         testResult.scenarioResults.length * NUMBER_NEGATIVE_IMPACTS;
 
-    // Any high impact negative behavior is a failure
-    const highImpactFailedAssertionCount = getImpactFailedAssertionCount(
+    // Any severe impact negative behavior is a failure
+    const severeImpactFailedAssertionCount = getImpactFailedAssertionCount(
         testResult.scenarioResults,
-        'HIGH'
+        'SEVERE'
     );
 
     // Any moderate impact negative behavior is a failure
@@ -41,7 +41,7 @@ export const calculateAssertionsCount = testResult => {
     );
 
     const weightedImpactFailedAssertionsCount =
-        highImpactFailedAssertionCount + moderateImpactFailedAssertionCount;
+        severeImpactFailedAssertionCount + moderateImpactFailedAssertionCount;
 
     const weightedImpactPassedAssertionsCount =
         maxUnexpectedBehaviorsPassCount - weightedImpactFailedAssertionsCount;

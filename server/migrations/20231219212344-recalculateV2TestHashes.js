@@ -9,7 +9,9 @@ module.exports = {
             await regenerateResultsAndRecalculateHashes(
                 queryInterface,
                 transaction,
-                `WHERE metadata->>'testFormatVersion' = '2'`
+                {
+                    testPlanVersionWhere: `WHERE metadata->>'testFormatVersion' = '2'`
+                }
             );
         });
     }
