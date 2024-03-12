@@ -1,26 +1,26 @@
 const { AuthenticationError, UserInputError } = require('apollo-server');
 const populateData = require('../../services/PopulatedData/populateData');
-
 const {
     findOrCreateTestResult
-} = require('../../models/services.deprecated/TestResultWriteService');
+} = require('../../models/services/TestResultWriteService');
 
 const findOrCreateTestResultResolver = async (
     { parentContext: { id: testPlanRunId } },
     { testId, atVersionId, browserVersionId },
     context
 ) => {
-    const { user } = context;
+    const { user, transaction } = context;
 
     const {
         testPlanRun,
         testPlanReport,
         testPlanVersion: testPlanRunTestPlanVersion
-    } = await populateData({
-        testPlanRunId
-    });
+    } = await populateData({ testPlanRunId }, { transaction });
 
-    const { test, testPlanVersion } = await populateData({ testId });
+    const { test, testPlanVersion } = await populateData(
+        { testId },
+        { transaction }
+    );
 
     if (
         !(
@@ -41,11 +41,12 @@ const findOrCreateTestResultResolver = async (
         );
     }
 
-    return await findOrCreateTestResult({
+    return findOrCreateTestResult({
         testId,
         testPlanRunId,
         atVersionId,
-        browserVersionId
+        browserVersionId,
+        transaction
     });
 };
 

@@ -1,8 +1,8 @@
 const { AuthenticationError } = require('apollo-server');
 const {
     getTestPlanReportById,
-    updateTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
@@ -12,22 +12,25 @@ const markAsFinalResolver = async (
     _,
     context
 ) => {
-    const { user } = context;
+    const { user, transaction } = context;
 
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    const testPlanReport = await getTestPlanReportById(testPlanReportId);
+    const testPlanReport = await getTestPlanReportById({
+        id: testPlanReportId,
+        transaction
+    });
 
-    const conflicts = await conflictsResolver(testPlanReport);
+    const conflicts = await conflictsResolver(testPlanReport, null, context);
     if (conflicts.length > 0) {
         throw new Error(
             'Cannot mark test plan report as final due to conflicts'
         );
     }
 
-    const runnableTests = runnableTestsResolver(testPlanReport);
+    const runnableTests = runnableTestsResolver(testPlanReport, null, context);
 
     const hasIncompleteTestRuns = testPlanReport.testPlanRuns.find(
         testPlanRun => {
@@ -41,9 +44,13 @@ const markAsFinalResolver = async (
         );
     }
 
-    await updateTestPlanReport(testPlanReportId, { markedFinalAt: new Date() });
+    await updateTestPlanReportById({
+        id: testPlanReportId,
+        values: { markedFinalAt: new Date() },
+        transaction
+    });
 
-    return populateData({ testPlanReportId });
+    return populateData({ testPlanReportId }, { transaction });
 };
 
 module.exports = markAsFinalResolver;

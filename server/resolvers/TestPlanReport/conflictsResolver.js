@@ -3,16 +3,19 @@ const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
 
-const conflictsResolver = async testPlanReport => {
+const conflictsResolver = async (testPlanReport, _, context) => {
+    const { transaction } = context;
+
     let testPlanReportData = {};
 
     // Used in cases where the testPlanRuns to evaluate the conflicts doesn't
     // exist for `testPlanReport`, such as this function being called from
     // `conflictsLengthResolver.js`
     if (testPlanReport.testPlanRuns.some(t => !t.testResults)) {
-        const { testPlanReport: _testPlanReport } = await populateData({
-            testPlanReportId: testPlanReport.id
-        });
+        const { testPlanReport: _testPlanReport } = await populateData(
+            { testPlanReportId: testPlanReport.id },
+            { transaction }
+        );
         testPlanReportData = _testPlanReport;
     } else testPlanReportData = testPlanReport;
 
@@ -21,7 +24,11 @@ const conflictsResolver = async testPlanReport => {
     const testResultsByTestId = {};
     for (const testPlanRun of testPlanReportData.testPlanRuns) {
         testPlanRun.testPlanReport = testPlanReportData; // TODO: remove hacky fix
-        const testResults = await testResultsResolver(testPlanRun);
+        const testResults = await testResultsResolver(
+            testPlanRun,
+            null,
+            context
+        );
         testResults
             .filter(testResult => testResult.completedAt)
             .forEach(testResult => {
@@ -99,10 +106,10 @@ const conflictsResolver = async testPlanReport => {
 
     return Promise.all(
         conflicts.map(async ({ source, conflictingResults }) => ({
-            source: await populateData(source, { preloaded }),
+            source: await populateData(source, { preloaded, transaction }),
             conflictingResults: await Promise.all(
                 conflictingResults.map(conflictingResult =>
-                    populateData(conflictingResult, { preloaded })
+                    populateData(conflictingResult, { preloaded, transaction })
                 )
             )
         }))

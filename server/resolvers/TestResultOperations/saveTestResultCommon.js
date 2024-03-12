@@ -1,7 +1,7 @@
 const { UserInputError } = require('apollo-server');
 const {
-    updateTestPlanRun
-} = require('../../models/services.deprecated/TestPlanRunService');
+    updateTestPlanRunById
+} = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 const deepPickEqual = require('../../util/deepPickEqual');
@@ -12,8 +12,8 @@ const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver')
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 const { getMetrics } = require('shared');
 const {
-    updateTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 
 const saveTestResultCommon = async ({
     testResultId,
@@ -21,12 +21,14 @@ const saveTestResultCommon = async ({
     isSubmit,
     context
 }) => {
+    const { transaction } = context;
+
     const {
         testPlanRun,
         testPlanReport,
         test,
         testResult: testResultPopulated
-    } = await populateData({ testResultId });
+    } = await populateData({ testResultId }, { transaction });
 
     // The populateData function will populate associations of JSON-based
     // models, but not Sequelize-based models. This is why the
@@ -71,15 +73,23 @@ const saveTestResultCommon = async ({
         ...oldTestResults.slice(index + 1)
     ];
 
-    await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
+    await updateTestPlanRunById({
+        id: testPlanRun.id,
+        values: { testResults: newTestResults },
+        transaction
+    });
 
     if (isSubmit) {
         // Update metrics when result is saved
         const { testPlanReport: testPlanReportPopulated } = await populateData(
             { testPlanReportId: testPlanReport.id },
-            { context }
+            { transaction }
         );
-        const runnableTests = runnableTestsResolver(testPlanReportPopulated);
+        const runnableTests = runnableTestsResolver(
+            testPlanReportPopulated,
+            null,
+            context
+        );
         const finalizedTestResults = await finalizedTestResultsResolver(
             testPlanReportPopulated,
             null,
@@ -92,13 +102,17 @@ const saveTestResultCommon = async ({
                 runnableTests
             }
         });
-        await updateTestPlanReport(testPlanReportPopulated.id, {
-            metrics: { ...testPlanReportPopulated.metrics, ...metrics }
+        await updateTestPlanReportById({
+            id: testPlanReportPopulated.id,
+            values: {
+                metrics: { ...testPlanReportPopulated.metrics, ...metrics }
+            },
+            transaction
         });
     }
 
     await persistConflictsCount(testPlanRun, context);
-    return populateData({ testResultId }, { context });
+    return populateData({ testResultId }, { transaction });
 };
 
 const assertTestResultIsValid = newTestResult => {

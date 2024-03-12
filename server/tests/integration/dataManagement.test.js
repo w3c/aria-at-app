@@ -1,5 +1,5 @@
 const { gql } = require('apollo-server');
-const dbCleaner = require('../util/db-cleaner.deprecated');
+const dbCleaner = require('../util/db-cleaner');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models');
 
@@ -10,206 +10,219 @@ afterAll(async () => {
     await db.sequelize.close();
 }, 20000);
 
-const testPlanVersionsQuery = () => {
-    return query(gql`
-        query {
-            testPlanVersions(phases: [RD, DRAFT, CANDIDATE]) {
-                id
-                phase
-                gitSha
-                metadata
-                testPlan {
-                    directory
-                }
-                testPlanReports {
+const testPlanVersionsQuery = ({ transaction }) => {
+    return query(
+        gql`
+            query {
+                testPlanVersions(phases: [RD, DRAFT, CANDIDATE]) {
                     id
-                    markedFinalAt
-                    at {
+                    phase
+                    gitSha
+                    metadata
+                    testPlan {
+                        directory
+                    }
+                    testPlanReports {
                         id
-                    }
-                    browser {
-                        id
-                    }
-                    draftTestPlanRuns {
-                        testResults {
-                            id
-                            completedAt
-                            test {
-                                id
-                                rowNumber
-                                title
-                                ats {
-                                    id
-                                    name
-                                }
-                                atMode
-                                scenarios {
-                                    id
-                                    commands {
-                                        id
-                                        text
-                                    }
-                                }
-                                assertions {
-                                    id
-                                    priority
-                                    text
-                                }
-                            }
-                            scenarioResults {
-                                output
-                                assertionResults {
-                                    id
-                                    assertion {
-                                        text
-                                    }
-                                    passed
-                                }
-                                scenario {
-                                    id
-                                    commands {
-                                        id
-                                        text
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    `);
-};
-
-const updateVersionToPhaseQuery = (
-    testPlanVersionId,
-    phase,
-    { testPlanVersionDataToIncludeId } = {}
-) => {
-    return mutate(gql`
-        mutation {
-            testPlanVersion(id: ${testPlanVersionId}) {
-                updatePhase(
-                    phase: ${phase}
-                    testPlanVersionDataToIncludeId: ${
-                        testPlanVersionDataToIncludeId ?? null
-                    }
-                ) {
-                    testPlanVersion {
-                        phase
-                        testPlanReports {
-                            id
-                            markedFinalAt
-                            at {
-                                id
-                            }
-                            browser {
-                                id
-                            }
-                            draftTestPlanRuns {
-                                testResults {
-                                    id
-                                    completedAt
-                                    test {
-                                        id
-                                        rowNumber
-                                        title
-                                        ats {
-                                            id
-                                            name
-                                        }
-                                        atMode
-                                        scenarios {
-                                            id
-                                            commands {
-                                                id
-                                                text
-                                            }
-                                        }
-                                        assertions {
-                                            id
-                                            priority
-                                            text
-                                        }
-                                    }
-                                    scenarioResults {
-                                        output
-                                        assertionResults {
-                                            id
-                                            assertion {
-                                                text
-                                            }
-                                            passed
-                                        }
-                                        scenario {
-                                            id
-                                            commands {
-                                                id
-                                                text
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    `);
-};
-
-const findOrCreateTestPlanReportQuery = (
-    testPlanVersionId,
-    atId,
-    browserId
-) => {
-    return mutate(gql`
-        mutation {
-            findOrCreateTestPlanReport(input: {
-                testPlanVersionId: ${testPlanVersionId}
-                atId: ${atId}
-                browserId: ${browserId}
-            }) {
-                populatedData {
-                    testPlanReport {
-                        id
+                        markedFinalAt
                         at {
                             id
                         }
                         browser {
                             id
                         }
-                    }
-                    testPlanVersion {
-                        id
-                        phase
-                        testPlanReports {
-                            id
+                        draftTestPlanRuns {
+                            testResults {
+                                id
+                                completedAt
+                                test {
+                                    id
+                                    rowNumber
+                                    title
+                                    ats {
+                                        id
+                                        name
+                                    }
+                                    atMode
+                                    scenarios {
+                                        id
+                                        commands {
+                                            id
+                                            text
+                                        }
+                                    }
+                                    assertions {
+                                        id
+                                        priority
+                                        text
+                                    }
+                                }
+                                scenarioResults {
+                                    output
+                                    assertionResults {
+                                        id
+                                        assertion {
+                                            text
+                                        }
+                                        passed
+                                    }
+                                    scenario {
+                                        id
+                                        commands {
+                                            id
+                                            text
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                created {
-                    locationOfData
-                }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
 };
 
-const markAsFinal = testPlanReportId => {
-    return mutate(gql`
-        mutation {
-            testPlanReport(id: ${testPlanReportId}) {
-                markAsFinal {
-                    testPlanReport {
-                        id
-                        markedFinalAt
+const updateVersionToPhaseQuery = (
+    testPlanVersionId,
+    phase,
+    { testPlanVersionDataToIncludeId, transaction } = {}
+) => {
+    return mutate(
+        gql`
+            mutation {
+                testPlanVersion(id: ${testPlanVersionId}) {
+                    updatePhase(
+                        phase: ${phase}
+                        testPlanVersionDataToIncludeId: ${
+                            testPlanVersionDataToIncludeId ?? null
+                        }
+                    ) {
+                        testPlanVersion {
+                            phase
+                            testPlanReports {
+                                id
+                                markedFinalAt
+                                at {
+                                    id
+                                }
+                                browser {
+                                    id
+                                }
+                                draftTestPlanRuns {
+                                    testResults {
+                                        id
+                                        completedAt
+                                        test {
+                                            id
+                                            rowNumber
+                                            title
+                                            ats {
+                                                id
+                                                name
+                                            }
+                                            atMode
+                                            scenarios {
+                                                id
+                                                commands {
+                                                    id
+                                                    text
+                                                }
+                                            }
+                                            assertions {
+                                                id
+                                                priority
+                                                text
+                                            }
+                                        }
+                                        scenarioResults {
+                                            output
+                                            assertionResults {
+                                                id
+                                                assertion {
+                                                    text
+                                                }
+                                                passed
+                                            }
+                                            scenario {
+                                                id
+                                                commands {
+                                                    id
+                                                    text
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
+};
+
+const findOrCreateTestPlanReportQuery = (
+    testPlanVersionId,
+    atId,
+    browserId,
+    { transaction }
+) => {
+    return mutate(
+        gql`
+            mutation {
+                findOrCreateTestPlanReport(input: {
+                    testPlanVersionId: ${testPlanVersionId}
+                    atId: ${atId}
+                    browserId: ${browserId}
+                }) {
+                    populatedData {
+                        testPlanReport {
+                            id
+                            at {
+                                id
+                            }
+                            browser {
+                                id
+                            }
+                        }
+                        testPlanVersion {
+                            id
+                            phase
+                            testPlanReports {
+                                id
+                            }
+                        }
+                    }
+                    created {
+                        locationOfData
+                    }
+                }
+            }
+        `,
+        { transaction }
+    );
+};
+
+const markAsFinal = (testPlanReportId, { transaction }) => {
+    return mutate(
+        gql`
+            mutation {
+                testPlanReport(id: ${testPlanReportId}) {
+                    markAsFinal {
+                        testPlanReport {
+                            id
+                            markedFinalAt
+                        }
+                    }
+                }
+            }
+        `,
+        { transaction }
+    );
 };
 
 const countCompletedTests = testPlanReports => {
@@ -227,66 +240,79 @@ const countCompletedTests = testPlanReports => {
 
 describe('data management', () => {
     it('can set test plan version to candidate and recommended', async () => {
-        await dbCleaner(async () => {
-            const candidateTestPlanVersions = await query(gql`
-                query {
-                    testPlanVersions(phases: [CANDIDATE]) {
-                        id
-                        phase
+        await dbCleaner(async transaction => {
+            const candidateTestPlanVersions = await query(
+                gql`
+                    query {
+                        testPlanVersions(phases: [CANDIDATE]) {
+                            id
+                            phase
+                        }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
             const candidateTestPlanVersion =
                 candidateTestPlanVersions.testPlanVersions[0];
 
             // This version is in 'CANDIDATE' phase. Set it to DRAFT
             // This will also remove the associated TestPlanReports markedFinalAt values
             const testPlanVersionId = candidateTestPlanVersion.id;
-            await updateVersionToPhaseQuery(testPlanVersionId, 'DRAFT');
+            await updateVersionToPhaseQuery(testPlanVersionId, 'DRAFT', {
+                transaction
+            });
 
-            const previous = await query(gql`
-                query {
-                    testPlanVersion(id: ${testPlanVersionId}) {
-                        phase
-                        testPlanReports {
-                            id
+            const previous = await query(
+                gql`
+                    query {
+                        testPlanVersion(id: ${testPlanVersionId}) {
+                            phase
+                            testPlanReports {
+                                id
+                            }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
             const previousPhase = previous.testPlanVersion.phase;
             const previousPhaseTestPlanReportId =
                 previous.testPlanVersion.testPlanReports[0].id;
 
             // Need to approve at least one of the associated reports
-            await markAsFinal(previousPhaseTestPlanReportId);
+            await markAsFinal(previousPhaseTestPlanReportId, { transaction });
 
             // Check to see that the testPlanVersion cannot be updated until the reports have been
             // finalized
             await expect(() => {
                 return updateVersionToPhaseQuery(
                     testPlanVersionId,
-                    'CANDIDATE'
+                    'CANDIDATE',
+                    { transaction }
                 );
             }).rejects.toThrow(
                 /Cannot set phase to candidate because the following required reports have not been collected or finalized:/i
             );
 
-            const testPlanReportsToMarkAsFinalResult = await query(gql`
-                query {
-                    testPlanReports(testPlanVersionId: ${testPlanVersionId}) {
-                        id
+            const testPlanReportsToMarkAsFinalResult = await query(
+                gql`
+                    query {
+                        testPlanReports(testPlanVersionId: ${testPlanVersionId}) {
+                            id
+                        }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
 
             for (const testPlanReport of testPlanReportsToMarkAsFinalResult.testPlanReports) {
-                await markAsFinal(testPlanReport.id);
+                await markAsFinal(testPlanReport.id, { transaction });
             }
 
             const candidateResult = await updateVersionToPhaseQuery(
                 testPlanVersionId,
-                'CANDIDATE'
+                'CANDIDATE',
+                { transaction }
             );
             const candidateResultPhase =
                 candidateResult.testPlanVersion.updatePhase.testPlanVersion
@@ -294,7 +320,8 @@ describe('data management', () => {
 
             const recommendedResult = await updateVersionToPhaseQuery(
                 testPlanVersionId,
-                'RECOMMENDED'
+                'RECOMMENDED',
+                { transaction }
             );
             const recommendedResultPhase =
                 recommendedResult.testPlanVersion.updatePhase.testPlanVersion
@@ -308,8 +335,10 @@ describe('data management', () => {
     });
 
     it('updates test plan version and copies results from previous version reports', async () => {
-        await dbCleaner(async () => {
-            const testPlanVersions = await testPlanVersionsQuery();
+        await dbCleaner(async transaction => {
+            const testPlanVersions = await testPlanVersionsQuery({
+                transaction
+            });
 
             // This has reports for JAWS + Chrome, NVDA + Chrome, VO + Safari + additional
             // non-required reports
@@ -323,7 +352,9 @@ describe('data management', () => {
             // This version is in 'CANDIDATE' phase. Set it to DRAFT
             // This will also remove the associated TestPlanReports markedFinalAt values
             const oldTestPlanVersionId = oldModalDialogVersion.id;
-            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT');
+            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT', {
+                transaction
+            });
 
             const oldModalDialogVersionTestPlanReports =
                 oldModalDialogVersion.testPlanReports;
@@ -368,7 +399,9 @@ describe('data management', () => {
                     newModalDialogVersion.id,
                     'DRAFT',
                     {
-                        testPlanVersionDataToIncludeId: oldModalDialogVersion.id
+                        testPlanVersionDataToIncludeId:
+                            oldModalDialogVersion.id,
+                        transaction
                     }
                 );
             const newModalDialogVersionTestPlanReportsInDraft =
@@ -436,8 +469,10 @@ describe('data management', () => {
     });
 
     it('updates test plan version and copies all but one report from previous version', async () => {
-        await dbCleaner(async () => {
-            const testPlanVersions = await testPlanVersionsQuery();
+        await dbCleaner(async transaction => {
+            const testPlanVersions = await testPlanVersionsQuery({
+                transaction
+            });
 
             // This has reports for JAWS + Chrome, NVDA + Chrome, VO + Safari + additional
             // non-required reports
@@ -451,7 +486,9 @@ describe('data management', () => {
             // This version is in 'CANDIDATE' phase. Set it to DRAFT
             // This will also remove the associated TestPlanReports markedFinalAt values
             const oldTestPlanVersionId = oldModalDialogVersion.id;
-            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT');
+            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT', {
+                transaction
+            });
 
             const oldModalDialogVersionTestPlanReports =
                 oldModalDialogVersion.testPlanReports;
@@ -475,7 +512,9 @@ describe('data management', () => {
             const newModalDialogVersionTestPlanReportsInRDCount =
                 newModalDialogVersion.testPlanReports.length;
 
-            await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT');
+            await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT', {
+                transaction
+            });
 
             const {
                 findOrCreateTestPlanReport: {
@@ -486,7 +525,8 @@ describe('data management', () => {
             } = await findOrCreateTestPlanReportQuery(
                 newModalDialogVersion.id,
                 3,
-                1
+                1,
+                { transaction }
             );
 
             const newModalDialogVersionTestPlanReportsInDraftCount =
@@ -498,7 +538,8 @@ describe('data management', () => {
                 newModalDialogVersion.id,
                 'DRAFT',
                 {
-                    testPlanVersionDataToIncludeId: oldModalDialogVersion.id
+                    testPlanVersionDataToIncludeId: oldModalDialogVersion.id,
+                    transaction
                 }
             );
             const newModalDialogVersionTestPlanReportsInDraftWithOldResults =
@@ -546,8 +587,10 @@ describe('data management', () => {
     });
 
     it('updates test plan version but has new reports that are required and not yet marked as final', async () => {
-        await dbCleaner(async () => {
-            const testPlanVersions = await testPlanVersionsQuery();
+        await dbCleaner(async transaction => {
+            const testPlanVersions = await testPlanVersionsQuery({
+                transaction
+            });
 
             // This has reports for JAWS + Chrome, NVDA + Chrome, VO + Safari + additional
             // non-required reports
@@ -579,7 +622,9 @@ describe('data management', () => {
             const newModalDialogVersionTestPlanReportsInRDCount =
                 newModalDialogVersion.testPlanReports.length;
 
-            await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT');
+            await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT', {
+                transaction
+            });
 
             const {
                 findOrCreateTestPlanReport: {
@@ -590,7 +635,8 @@ describe('data management', () => {
             } = await findOrCreateTestPlanReportQuery(
                 newModalDialogVersion.id,
                 3,
-                3
+                3,
+                { transaction }
             );
 
             const newModalDialogVersionTestPlanReportsInDraftCount =
@@ -602,7 +648,9 @@ describe('data management', () => {
                     newModalDialogVersion.id,
                     'CANDIDATE',
                     {
-                        testPlanVersionDataToIncludeId: oldModalDialogVersion.id
+                        testPlanVersionDataToIncludeId:
+                            oldModalDialogVersion.id,
+                        transaction
                     }
                 );
             }).rejects.toThrow(/No reports have been marked as final/i);
@@ -629,12 +677,14 @@ describe('data management', () => {
     });
 
     it('updates test plan version but removes marked as final for test plan report when new report has incomplete runs', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             function markedFinalAtReduce(acc, curr) {
                 return acc + (curr.markedFinalAt ? 1 : 0);
             }
 
-            const testPlanVersions = await testPlanVersionsQuery();
+            const testPlanVersions = await testPlanVersionsQuery({
+                transaction
+            });
 
             const [oldCommandButtonVersion] =
                 testPlanVersions.testPlanVersions.filter(
@@ -664,7 +714,8 @@ describe('data management', () => {
                     'DRAFT',
                     {
                         testPlanVersionDataToIncludeId:
-                            oldCommandButtonVersion.id
+                            oldCommandButtonVersion.id,
+                        transaction
                     }
                 );
             const newCommandButtonVersionInDraftMarkedFinalReportsCount =

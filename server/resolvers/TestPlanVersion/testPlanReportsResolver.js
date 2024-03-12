@@ -1,28 +1,19 @@
 const {
     getTestPlanReports
-} = require('../../models/services.deprecated/TestPlanReportService');
+} = require('../../models/services/TestPlanReportService');
 
 const testPlanReportsResolver = async (
     { id: testPlanVersionId },
-    { isFinal }
+    { isFinal },
+    context
 ) => {
-    const where = {
-        testPlanVersionId
-    };
+    const { transaction } = context;
 
-    const reports = await getTestPlanReports(
-        null,
-        where,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        {
-            order: [['createdAt', 'desc']]
-        }
-    );
+    const reports = await getTestPlanReports({
+        where: { testPlanVersionId },
+        pagination: { order: [['createdAt', 'desc']] },
+        transaction
+    });
 
     if (isFinal === undefined) return reports;
     else if (isFinal) return reports.filter(report => !!report.markedFinalAt);
