@@ -1,6 +1,6 @@
 const populateData = require('../../services/PopulatedData/populateData');
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
-const getMetrics = require('../../util/getMetrics');
+const { getMetrics } = require('shared');
 const { updateTestPlanReportById } = require('./TestPlanReportService');
 const createTestResultSkeleton = require('../../resolvers/TestPlanRunOperations/createTestResultSkeleton');
 const sortArrayLikeArray = require('../../util/sortArrayLikeArray');
@@ -32,7 +32,7 @@ const findOrCreateTestResult = async ({
             context
         );
         const finalizedTestResults = await getFinalizedTestResults(
-            { ...testPlanReport },
+            testPlanReport,
             { transaction }
         );
         const metrics = getMetrics({

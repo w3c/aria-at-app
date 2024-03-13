@@ -774,7 +774,7 @@ const graphqlSchema = gql`
 
     enum UnexpectedBehaviorImpact {
         MODERATE
-        HIGH
+        SEVERE
     }
 
     """
