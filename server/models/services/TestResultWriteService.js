@@ -32,7 +32,7 @@ const findOrCreateTestResult = async ({
             context
         );
         const finalizedTestResults = await getFinalizedTestResults(
-            { ...testPlanReport },
+            testPlanReport,
             { transaction }
         );
         const metrics = getMetrics({
