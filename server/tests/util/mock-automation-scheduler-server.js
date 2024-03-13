@@ -6,8 +6,11 @@ const {
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const { default: axios } = require('axios');
 const { gql } = require('apollo-server-core');
-const apolloServer = require('../../graphql-server');
 const { axiosConfig } = require('../../controllers/AutomationController');
+const {
+    getTransactionById
+} = require('../../middleware/transactionMiddleware');
+const { query } = require('../util/graphql-test-utilities');
 
 const setupMockAutomationSchedulerServer = async () => {
     const app = express();
@@ -35,7 +38,9 @@ const setupMockAutomationSchedulerServer = async () => {
 
     const simulateResultCompletion = async (
         tests,
+        atName,
         atVersionName,
+        browserName,
         browserVersionName,
         jobId,
         currentTestIndex,
@@ -52,8 +57,12 @@ const setupMockAutomationSchedulerServer = async () => {
         });
 
         const testResult = {
-            atVersionName,
-            browserVersionName,
+            capabilities: {
+                atName,
+                atVersion: atVersionName,
+                browserName,
+                browserVersion: browserVersionName
+            },
             responses
         };
 
@@ -74,7 +83,9 @@ const setupMockAutomationSchedulerServer = async () => {
             setTimeout(() => {
                 simulateResultCompletion(
                     tests,
+                    atName,
                     atVersionName,
+                    browserName,
                     browserVersionName,
                     jobId,
                     currentTestIndex + 1,
@@ -102,64 +113,56 @@ const setupMockAutomationSchedulerServer = async () => {
             });
         } else {
             // Local development must simulate posting results
-            const { testPlanVersionGitSha, testPlanName, jobId } = req.body;
-
-            const {
-                data: { testPlanVersions }
-            } = await apolloServer.executeOperation({
-                query: gql`
+            const { jobId, transactionId } = req.body;
+            const transaction = getTransactionById(transactionId);
+            const data = await query(
+                gql`
                     query {
-                        testPlanVersions {
-                            id
-                            gitSha
-                            metadata
-                            testPlan {
-                                id
-                            }
-                            testPlanReports {
-                                at {
-                                    name
-                                    atVersions {
+                        collectionJob(id: "${jobId}") {
+                            testPlanRun {
+                                testPlanReport {
+                                    testPlanVersion {
+                                        metadata
+                                        gitSha
+                                    }
+                                    at {
                                         name
+                                        atVersions {
+                                            name
+                                        }
                                     }
-                                }
-                                browser {
-                                    name
-                                    browserVersions {
+                                    browser {
                                         name
+                                        browserVersions {
+                                            name
+                                        }
                                     }
-                                }
-                                runnableTests {
-                                    id
-                                    rowNumber
-                                    scenarios {
+                                    runnableTests {
                                         id
-                                    }
-                                    assertions {
-                                        id
+                                        rowNumber
+                                        scenarios {
+                                            id
+                                        }
+                                        assertions {
+                                            id
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                `
-            });
-
-            const testPlanVersion = testPlanVersions.find(
-                testPlanVersion =>
-                    testPlanVersion.gitSha === testPlanVersionGitSha &&
-                    testPlanVersion.testPlan.id === testPlanName
+                `,
+                { transaction }
             );
+            const { collectionJob } = data;
+            const { testPlanReport } = collectionJob.testPlanRun;
+            const { testPlanVersion } = testPlanReport;
 
-            const testPlanReport = testPlanVersion.testPlanReports.find(
-                testPlanReport =>
-                    testPlanReport.at.name === 'NVDA' &&
-                    testPlanReport.browser.name === 'Chrome'
-            );
-
+            const browserName = testPlanReport.browser.name;
             const browserVersionName =
                 testPlanReport.browser.browserVersions[0].name;
 
+            const atName = testPlanReport.at.name;
             const atVersionName = testPlanReport.at.atVersions[0].name;
             const { runnableTests } = testPlanReport;
 
@@ -178,7 +181,9 @@ const setupMockAutomationSchedulerServer = async () => {
                 () =>
                     simulateResultCompletion(
                         runnableTests,
+                        atName,
                         atVersionName,
+                        browserName,
                         browserVersionName,
                         jobId,
                         0,

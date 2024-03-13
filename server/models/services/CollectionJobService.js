@@ -360,7 +360,8 @@ const triggerWorkflow = async (job, testIds, { transaction }) => {
                     testPlanVersionGitSha: gitSha,
                     testIds,
                     testPlanName: directory,
-                    jobId: job.id
+                    jobId: job.id,
+                    transactionId: transaction.id
                 },
                 axiosConfig
             );
