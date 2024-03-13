@@ -5,6 +5,10 @@ const usersResolver = (_, __, context) => {
 
     // No authentication since participation is public!
     return getUsers({
+        userAttributes: null,
+        roleAttributes: null,
+        atAttributes: null,
+        testPlanRunAttributes: null,
         pagination: { order: [['username', 'ASC']] },
         transaction
     });

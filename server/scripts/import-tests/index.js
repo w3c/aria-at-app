@@ -108,14 +108,14 @@ const importTestPlanVersions = async transaction => {
 
         // Gets the next ID and increments the ID counter in Postgres
         // Needed to create the testIds - see LocationOfDataId.js for more info
-        const testPlanVersionId = (
-            await sequelize.query(
-                `SELECT nextval(
-                    pg_get_serial_sequence('"TestPlanVersion"', 'id')
-                )`,
-                { transaction }
-            )
-        )[0][0].nextval;
+        const [testPlanVersionIdResult] = await sequelize.query(
+            `SELECT nextval(
+                pg_get_serial_sequence('"TestPlanVersion"', 'id')
+            )`,
+            { transaction }
+        );
+        const testPlanVersionIdResultRow = testPlanVersionIdResult[0];
+        const testPlanVersionId = testPlanVersionIdResultRow.nextval;
 
         // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
         // actually last changed
@@ -465,6 +465,7 @@ const getTests = ({
                 if (assertion.priority === 2) priority = 'SHOULD';
                 // Available for v2
                 if (assertion.priority === 3) priority = 'MAY';
+                if (assertion.priority === 0) priority = 'EXCLUDE';
 
                 let result = {
                     id: createAssertionId(testId, index),
@@ -481,6 +482,7 @@ const getTests = ({
                             data.target.at.key
                         ];
 
+                    result.rawAssertionId = assertion.assertionId;
                     result.assertionStatement =
                         tokenizedAssertionStatement ||
                         assertion.assertionStatement;

@@ -78,7 +78,7 @@ module.exports = {
                 await updateTestPlanReportById({
                     id: testPlanReport.id,
                     values: updateParams,
-                    t: false
+                    transaction
                 });
             }
         });

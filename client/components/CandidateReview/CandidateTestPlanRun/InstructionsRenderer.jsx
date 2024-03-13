@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { Button } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 import { unescape } from 'lodash';
 import {
     parseListContent,
@@ -19,6 +19,7 @@ import { TestWindow } from '../../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../../utils/aria.js';
 import commandsJson from '../../../resources/commands.json';
 import supportJson from '../../../resources/support.json';
+import { convertAssertionPriority } from 'shared';
 
 const NumberedList = styled.ol`
     counter-reset: numbered-list;
@@ -169,18 +170,159 @@ const InstructionsRenderer = ({
         commandsContent
     );
 
-    const assertions = [...pageContent.instructions.assertions.assertions];
-    const assertionsContent = parseListContent(assertions);
-
     const Heading = `h${headingLevel}`;
 
     return (
         <>
             <NumberedList>{allInstructionsContent}</NumberedList>
-            <Heading>{pageContent.instructions.assertions.header}</Heading>
-            {pageContent.instructions.assertions.description}
-            <NumberedList>{assertionsContent}</NumberedList>
             {settingsContent.length ? settingsContent : null}
+
+            {renderableContent.commands.map(
+                ({ id, settings, assertionExceptions = [] }, i) => {
+                    const settingsScreenText = isV2
+                        ? renderableContent.target.at.raw.settings[settings]
+                              ?.screenText ?? ''
+                        : null;
+
+                    let mustCount = 0;
+                    let shouldCount = 0;
+                    let mayCount = 0;
+
+                    let assertions = [...renderableContent.assertions];
+
+                    assertionExceptions.forEach(exception => {
+                        const assertionIndex = assertions.findIndex(
+                            assertion => {
+                                return (
+                                    assertion.assertionId ===
+                                    exception.assertionId
+                                );
+                            }
+                        );
+
+                        if (assertionIndex < 0) return;
+
+                        if (exception.priority === 0) {
+                            assertions.splice(assertionIndex, 1);
+                        } else {
+                            assertions[assertionIndex] = {
+                                ...assertions[assertionIndex],
+                                priority: exception.priority
+                            };
+                        }
+                    });
+
+                    // Filter out assertions that were originally set to 0 when declared through
+                    // tests.csv instead of *-commands.csv
+                    assertions = assertions.filter(
+                        ({ priority }) => priority !== 0
+                    );
+
+                    assertions.forEach(({ priority }) => {
+                        const priorityString =
+                            convertAssertionPriority(priority);
+                        if (priorityString === 'MUST') mustCount += 1;
+                        if (priorityString === 'SHOULD') shouldCount += 1;
+                        if (priorityString === 'MAY') mayCount += 1;
+                    });
+
+                    const settingsScreenTextFormatted = settingsScreenText
+                        ? ` (${settingsScreenText})`
+                        : '';
+
+                    const scenarioTitle =
+                        `${renderableContent.commands[i].keystroke}` +
+                        `${settingsScreenTextFormatted}: ${mustCount} MUST, ` +
+                        `${shouldCount} SHOULD, ${mayCount} MAY Assertions`;
+
+                    const scenarioId =
+                        `${at.name}-test${test.rowNumber}-${id}-cmd${i}`.replaceAll(
+                            /[,+\s]+/g,
+                            '_'
+                        );
+
+                    if (isV2) {
+                        return (
+                            <React.Fragment key={`command-${id}-${i}`}>
+                                <Heading id={scenarioId}>
+                                    {scenarioTitle}
+                                </Heading>
+                                <Table
+                                    key={`${id}-${i}`}
+                                    bordered
+                                    responsive
+                                    aria-labelledby={scenarioId}
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th>Priority</th>
+                                            <th>Assertion Phrase</th>
+                                            <th>Assertion Statement</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {assertions.map(
+                                            ({
+                                                assertionPhrase,
+                                                assertionStatement,
+                                                priority,
+                                                assertionId
+                                            }) => (
+                                                <tr key={`${i}-${assertionId}`}>
+                                                    <td>
+                                                        {convertAssertionPriority(
+                                                            priority
+                                                        )}
+                                                    </td>
+                                                    <td>{assertionPhrase}</td>
+                                                    <td>
+                                                        {assertionStatement}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </React.Fragment>
+                        );
+                    } else {
+                        return (
+                            <React.Fragment key={`command-${id}-${i}`}>
+                                <Heading id={scenarioId}>
+                                    {scenarioTitle}
+                                </Heading>
+                                <Table
+                                    key={`${id}-${i}`}
+                                    bordered
+                                    responsive
+                                    aria-labelledby={scenarioId}
+                                >
+                                    <thead>
+                                        <tr>
+                                            <th>Priority</th>
+                                            <th>Assertion Statement</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {assertions.map(
+                                            ({ expectation, priority }) => (
+                                                <tr key={`${i}-${expectation}`}>
+                                                    <td>
+                                                        {convertAssertionPriority(
+                                                            priority
+                                                        )}
+                                                    </td>
+                                                    <td>{expectation}</td>
+                                                </tr>
+                                            )
+                                        )}
+                                    </tbody>
+                                </Table>
+                            </React.Fragment>
+                        );
+                    }
+                }
+            )}
 
             <Button
                 disabled={!pageContent.instructions.openTestPage.enabled}

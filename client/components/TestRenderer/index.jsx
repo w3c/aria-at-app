@@ -8,8 +8,8 @@ import React, {
 import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import { unescape } from 'lodash';
+import { getMetrics } from 'shared';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
-import { calculateAssertionsCount } from '../common/TestPlanResultsTable/utils';
 import { parseListContent, parseSettingsContent } from './utils.js';
 import {
     userCloseWindow,
@@ -494,16 +494,17 @@ const TestRenderer = ({
         const { results } = submitResult;
         const { header } = results;
 
-        const { passedAssertionsCount, failedAssertionsCount } =
-            calculateAssertionsCount(testResult);
+        const { assertionsPassedCount, assertionsFailedCount } = getMetrics({
+            testResult
+        });
 
         return (
             <>
                 <HeadingText>{header}</HeadingText>
                 <SubHeadingText id="overallstatus">
                     Test Results&nbsp;(
-                    {passedAssertionsCount} passed,&nbsp;
-                    {failedAssertionsCount} failed)
+                    {assertionsPassedCount} passed,&nbsp;
+                    {assertionsFailedCount} failed)
                 </SubHeadingText>
                 <TestPlanResultsTable
                     test={{ title: header, at }}

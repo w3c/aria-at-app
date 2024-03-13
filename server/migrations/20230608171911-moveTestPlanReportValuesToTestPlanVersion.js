@@ -11,19 +11,15 @@ const {
     updateTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 const populateData = require('../services/PopulatedData/populateData');
-const { testResultsResolver } = require('../resolvers/TestPlanRun');
 const {
     createTestPlanRun,
     getTestPlanRunById
 } = require('../models/services/TestPlanRunService');
-const {
-    findOrCreateTestResultResolver
-} = require('../resolvers/TestPlanRunOperations');
-const {
-    submitTestResultResolver,
-    saveTestResultResolver
-} = require('../resolvers/TestResultOperations');
 const { hashTests } = require('../util/aria');
+const testResultsResolver = require('../resolvers/TestPlanRun/testResultsResolver');
+const submitTestResultResolver = require('../resolvers/TestResultOperations/submitTestResultResolver');
+const saveTestResultResolver = require('../resolvers/TestResultOperations/saveTestResultResolver');
+const findOrCreateTestResultResolver = require('../resolvers/TestPlanRunOperations/findOrCreateTestResultResolver');
 const getGraphQLContext = require('../graphql-context');
 
 const testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES.filter(

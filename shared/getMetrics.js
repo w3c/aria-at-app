@@ -130,7 +130,7 @@ const countCommands = ({
     testPlanReport // Choose one to provide
 }) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult?.scenario?.commands?.length || 0;
+        return scenarioResult?.scenario?.commands?.length ? 1 : 0;
     };
     const countTestResult = testResult => {
         return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
@@ -169,21 +169,21 @@ const getMetrics = ({
     const result = { scenarioResult, testResult, testPlanReport };
 
     // Each command has 2 additional assertions:
-    // * Other behaviors that create high negative impact
+    // * Other behaviors that create severe negative impact
     // * Other behaviors that create moderate negative impact
     const commandsCount = countCommands({ ...result });
 
-    const highImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
+    const severeImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
         { ...result },
-        'HIGH'
+        'SEVERE'
     );
     const moderateImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
         { ...result },
         'MODERATE'
     );
 
-    const highImpactPassedAssertionCount =
-        commandsCount - highImpactFailedAssertionCount;
+    const severeImpactPassedAssertionCount =
+        commandsCount - severeImpactFailedAssertionCount;
     const moderateImpactPassedAssertionCount =
         commandsCount - moderateImpactFailedAssertionCount;
 
@@ -193,8 +193,8 @@ const getMetrics = ({
         assertionsFailedCount: requiredAssertionsFailedCount
     } = calculateAssertionPriorityCounts(result, 'REQUIRED');
     requiredAssertionsCount += commandsCount;
-    requiredAssertionsPassedCount += highImpactPassedAssertionCount;
-    requiredAssertionsFailedCount += highImpactFailedAssertionCount;
+    requiredAssertionsPassedCount += severeImpactPassedAssertionCount;
+    requiredAssertionsFailedCount += severeImpactFailedAssertionCount;
 
     let {
         assertionsCount: optionalAssertionsCount,
@@ -248,7 +248,19 @@ const getMetrics = ({
         (requiredAssertionsPassedCount / requiredAssertionsCount) * 100
     );
 
+    const assertionsPassedCount =
+        requiredAssertionsPassedCount +
+        optionalAssertionsPassedCount +
+        mayAssertionsPassedCount;
+
+    const assertionsFailedCount =
+        requiredAssertionsFailedCount +
+        optionalAssertionsFailedCount +
+        mayAssertionsFailedCount;
+
     return {
+        assertionsPassedCount,
+        assertionsFailedCount,
         requiredAssertionsPassedCount,
         requiredAssertionsCount,
         requiredAssertionsFailedCount,
@@ -262,8 +274,8 @@ const getMetrics = ({
         testsCount,
         testsFailedCount,
         unexpectedBehaviorCount,
-        highImpactPassedAssertionCount,
-        highImpactFailedAssertionCount,
+        severeImpactPassedAssertionCount,
+        severeImpactFailedAssertionCount,
         moderateImpactPassedAssertionCount,
         moderateImpactFailedAssertionCount,
         commandsCount,
