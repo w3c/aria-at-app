@@ -1,12 +1,10 @@
 const { AuthenticationError } = require('apollo-server');
 const { uniq: unique } = require('lodash');
-const {
-    removeAtVersionById
-} = require('../../models/services.deprecated/AtService');
+const { removeAtVersionById } = require('../../models/services/AtService');
 const {
     getTestResultsUsingAtVersion,
     getTestPlanRunById
-} = require('../../models/services.deprecated/TestPlanRunService');
+} = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const deleteAtVersionResolver = async (
@@ -14,15 +12,18 @@ const deleteAtVersionResolver = async (
     _,
     context
 ) => {
-    const { user } = context;
+    const { user, transaction } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    const resultIds = await getTestResultsUsingAtVersion(atVersionId);
+    const resultIds = await getTestResultsUsingAtVersion(atVersionId, {
+        transaction
+    });
 
     if (!resultIds.length) {
-        await removeAtVersionById(atVersionId);
+        await removeAtVersionById({ id: atVersionId, transaction });
         return { isDeleted: true };
     }
 
@@ -34,7 +35,9 @@ const deleteAtVersionResolver = async (
     };
 };
 
-const populateTestResults = async resultIds => {
+const populateTestResults = async (resultIds, context) => {
+    const { transaction } = context;
+
     // Limits the number of queries that will be made for this endpoint
     const queryLimit = 10;
 
@@ -45,7 +48,10 @@ const populateTestResults = async resultIds => {
     const preloadedTestPlanRunsById = {};
     await Promise.all(
         testPlanRunIds.map(async testPlanRunId => {
-            const data = await getTestPlanRunById(testPlanRunId);
+            const data = await getTestPlanRunById({
+                id: testPlanRunId,
+                transaction
+            });
             preloadedTestPlanRunsById[testPlanRunId] = data;
         })
     );
@@ -55,7 +61,7 @@ const populateTestResults = async resultIds => {
             const testPlanRun = preloadedTestPlanRunsById[testPlanRunId];
             return populateData(
                 { testResultId },
-                { preloaded: { testPlanRun } }
+                { preloaded: { testPlanRun }, transaction }
             );
         })
     );

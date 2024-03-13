@@ -1,7 +1,7 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-    updateTestPlanRun
-} = require('../../models/services.deprecated/TestPlanRunService');
+    updateTestPlanRunById
+} = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 const persistConflictsCount = require('../helpers/persistConflictsCount');
 
@@ -10,8 +10,12 @@ const deleteTestResultsResolver = async (
     _,
     context
 ) => {
-    const { user } = context;
-    const { testPlanRun } = await populateData({ testPlanRunId });
+    const { user, transaction } = context;
+
+    const { testPlanRun } = await populateData(
+        { testPlanRunId },
+        { transaction }
+    );
 
     if (
         !(
@@ -23,12 +27,16 @@ const deleteTestResultsResolver = async (
         throw new AuthenticationError();
     }
 
-    await updateTestPlanRun(testPlanRunId, { testResults: [] });
+    await updateTestPlanRunById({
+        id: testPlanRunId,
+        values: { testResults: [] },
+        transaction
+    });
 
     // TODO: Avoid blocking loads in test runs with a larger amount of tests
     //       and/or test results
     await persistConflictsCount(testPlanRun, context);
-    return populateData({ testPlanRunId });
+    return populateData({ testPlanRunId }, { transaction });
 };
 
 module.exports = deleteTestResultsResolver;

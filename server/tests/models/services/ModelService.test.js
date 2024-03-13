@@ -50,8 +50,8 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for create', async () => {
         const create = async () => {
-            await dbCleaner(async () => {
-                await ModelService.create(null, { transaction: false });
+            await dbCleaner(async transaction => {
+                await ModelService.create(null, { transaction });
             });
         };
 
@@ -60,8 +60,8 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for update', async () => {
         const update = async () => {
-            await dbCleaner(async () => {
-                await ModelService.update(null, { transaction: false });
+            await dbCleaner(async transaction => {
+                await ModelService.update(null, { transaction });
             });
         };
 
@@ -70,8 +70,8 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for removeById', async () => {
         const removeById = async () => {
-            await dbCleaner(async () => {
-                await ModelService.removeById(null, { transaction: false });
+            await dbCleaner(async transaction => {
+                await ModelService.removeById(null, { transaction });
             });
         };
 
@@ -80,8 +80,8 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for removeByQuery', async () => {
         const removeByQuery = async () => {
-            await dbCleaner(async () => {
-                await ModelService.removeByQuery(null, { transaction: false });
+            await dbCleaner(async transaction => {
+                await ModelService.removeByQuery(null, { transaction });
             });
         };
 
@@ -90,8 +90,8 @@ describe('ModelService', () => {
 
     it('should throw error if model not passed for bulkCreate', async () => {
         const bulkCreate = async () => {
-            await dbCleaner(async () => {
-                await ModelService.bulkCreate(null, { transaction: false });
+            await dbCleaner(async transaction => {
+                await ModelService.bulkCreate(null, { transaction });
             });
         };
 

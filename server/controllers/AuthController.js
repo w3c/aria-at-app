@@ -1,7 +1,5 @@
 const { User } = require('../models');
-const {
-    getOrCreateUser
-} = require('../models/services.deprecated/UserService');
+const { getOrCreateUser } = require('../models/services/UserService');
 const { GithubService } = require('../services');
 const getUsersFromFile = require('../util/getUsersFromFile');
 
@@ -64,14 +62,13 @@ const oauthRedirectFromGithubController = async (req, res) => {
 
     if (roles.length === 0) return loginFailedDueToRole();
 
-    let [user] = await getOrCreateUser(
-        { username: githubUsername },
-        { roles },
-        undefined,
-        undefined,
-        [],
-        []
-    );
+    let [user] = await getOrCreateUser({
+        where: { username: githubUsername },
+        values: { roles },
+        atAttributes: [],
+        testPlanRunAttributes: [],
+        transaction: req.transaction
+    });
 
     req.session.user = user;
 

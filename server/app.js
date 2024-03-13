@@ -10,11 +10,13 @@ const automationSchedulerRoutes = require('./routes/automation');
 const path = require('path');
 const apolloServer = require('./graphql-server');
 const setupMockAutomationSchedulerServer = require('./tests/util/mock-automation-scheduler-server');
+const transactionMiddleware = require('./middleware/transactionMiddleware');
 const app = express();
 
 // test session
 app.use(session);
 app.use(bodyParser.json());
+app.use(transactionMiddleware.middleware);
 app.use('/auth', authRoutes);
 app.use('/test', testRoutes);
 app.use('/jobs', automationSchedulerRoutes);
@@ -52,6 +54,8 @@ if (
         console.error('Failed to initialize mock automation server:', error);
     });
 }
+
+app.use(transactionMiddleware.errorware);
 
 // Error handling must be the last middleware
 listener.use((error, req, res, next) => {
