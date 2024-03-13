@@ -7,11 +7,14 @@ const finalizedTestResultsResolver = require('../resolvers/TestPlanReport/finali
 const {
     updateTestPlanReportById
 } = require('../models/services/TestPlanReportService');
+const getGraphQLContext = require('../graphql-context');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
         return queryInterface.sequelize.transaction(async transaction => {
+            const context = getGraphQLContext({ req: { transaction } });
+
             const testPlanReports = await queryInterface.sequelize.query(
                 `SELECT id, metrics FROM "TestPlanReport"`,
                 {
@@ -22,12 +25,19 @@ module.exports = {
 
             for (const testPlanReport of testPlanReports) {
                 const { testPlanReport: testPlanReportPopulated } =
-                    await populateData({ testPlanReportId: testPlanReport.id });
+                    await populateData(
+                        { testPlanReportId: testPlanReport.id },
+                        { transaction }
+                    );
                 const runnableTests = runnableTestsResolver(
-                    testPlanReportPopulated
+                    testPlanReportPopulated,
+                    null,
+                    context
                 );
                 const finalizedTestResults = await finalizedTestResultsResolver(
-                    testPlanReportPopulated
+                    testPlanReportPopulated,
+                    null,
+                    context
                 );
                 const metrics = getMetrics({
                     testPlanReport: {
