@@ -7,7 +7,9 @@ export const calculateTestPlanReportCompletionPercentage = ({
     const totalTestsPossible = metrics.testsCount * assignedUserCount;
     let totalTestsCompleted = 0;
     draftTestPlanRuns.forEach(draftTestPlanRun => {
-        totalTestsCompleted += draftTestPlanRun.testResults.length;
+        totalTestsCompleted += draftTestPlanRun.testResults.filter(
+            ({ completedAt }) => !!completedAt
+        ).length;
     });
     const percentage = (totalTestsCompleted / totalTestsPossible) * 100;
     if (isNaN(percentage) || !isFinite(percentage)) return 0;
