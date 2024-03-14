@@ -64,15 +64,16 @@ const SortableTableHeader = ({
     const [currentSortOrder, setCurrentSortOrder] =
         useState(initialSortDirection);
 
-    const { setMessage } = useAriaLiveRegion();
+    const setAlertMessage = useAriaLiveRegion();
 
     useEffect(() => {
-        if (!setMessage) return;
         if (active) {
-            const message = ` now sorted by ${title} in ${currentSortOrder.toLowerCase()} order`;
-            setMessage(message);
+            const message =
+                `Test Plans Status Summary Table, now sorted by ${title} in ` +
+                `${currentSortOrder.toLowerCase()} order`;
+            setAlertMessage(message);
         }
-    }, [active, currentSortOrder, setMessage, title]);
+    }, [active, currentSortOrder, setAlertMessage, title]);
 
     const handleClick = () => {
         if (active) {

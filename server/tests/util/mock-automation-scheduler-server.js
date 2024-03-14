@@ -6,7 +6,7 @@ const {
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const { default: axios } = require('axios');
 const { gql } = require('apollo-server-core');
-const { query } = require('../util/graphql-test-utilities');
+const apolloServer = require('../../graphql-server');
 const { axiosConfig } = require('../../controllers/AutomationController');
 
 const setupMockAutomationSchedulerServer = async () => {
@@ -104,42 +104,47 @@ const setupMockAutomationSchedulerServer = async () => {
             // Local development must simulate posting results
             const { testPlanVersionGitSha, testPlanName, jobId } = req.body;
 
-            const { testPlanVersions } = await query(gql`
-                query {
-                    testPlanVersions {
-                        id
-                        gitSha
-                        metadata
-                        testPlan {
+            const {
+                data: { testPlanVersions }
+            } = await apolloServer.executeOperation({
+                query: gql`
+                    query {
+                        testPlanVersions {
                             id
-                        }
-                        testPlanReports {
-                            at {
-                                name
-                                atVersions {
-                                    name
-                                }
-                            }
-                            browser {
-                                name
-                                browserVersions {
-                                    name
-                                }
-                            }
-                            runnableTests {
+                            gitSha
+                            metadata
+                            testPlan {
                                 id
-                                rowNumber
-                                scenarios {
-                                    id
+                            }
+                            testPlanReports {
+                                at {
+                                    name
+                                    atVersions {
+                                        name
+                                    }
                                 }
-                                assertions {
+                                browser {
+                                    name
+                                    browserVersions {
+                                        name
+                                    }
+                                }
+                                runnableTests {
                                     id
+                                    rowNumber
+                                    scenarios {
+                                        id
+                                    }
+                                    assertions {
+                                        id
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            `);
+                `
+            });
+
             const testPlanVersion = testPlanVersions.find(
                 testPlanVersion =>
                     testPlanVersion.gitSha === testPlanVersionGitSha &&

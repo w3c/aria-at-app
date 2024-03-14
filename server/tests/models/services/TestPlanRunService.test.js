@@ -10,7 +10,10 @@ describe('TestPlanRunModel Data Checks', () => {
     it('should return valid testPlanRun for id query with all associations', async () => {
         const _id = 1;
 
-        const testPlanRun = await TestPlanRunService.getTestPlanRunById(_id);
+        const testPlanRun = await TestPlanRunService.getTestPlanRunById({
+            id: _id,
+            transaction: false
+        });
         const { id, testerUserId, testPlanReportId, testResults } = testPlanRun;
 
         expect(id).toEqual(_id);
@@ -24,16 +27,16 @@ describe('TestPlanRunModel Data Checks', () => {
     it('should return valid testPlanRun for id query with no associations', async () => {
         const _id = 1;
 
-        const testPlanRun = await TestPlanRunService.getTestPlanRunById(
-            _id,
-            null,
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        );
+        const testPlanRun = await TestPlanRunService.getTestPlanRunById({
+            id: _id,
+            nestedTestPlanRunAttributes: [],
+            testPlanReportAttributes: [],
+            testPlanVersionAttributes: [],
+            testPlanAttributes: [],
+            atAttributes: [],
+            userAttributes: [],
+            transaction: false
+        });
         const { id, testerUserId, testPlanReportId, testResults } = testPlanRun;
 
         expect(id).toEqual(_id);
@@ -47,14 +50,21 @@ describe('TestPlanRunModel Data Checks', () => {
     it('should not be valid testPlanRun query', async () => {
         const _id = 53935;
 
-        const user = await TestPlanRunService.getTestPlanRunById(_id);
+        const user = await TestPlanRunService.getTestPlanRunById({
+            id: _id,
+            transaction: false
+        });
+
         expect(user).toBeNull();
     });
 
     it('should contain valid testPlanRun', async () => {
         const _id = 1;
 
-        const testPlanRun = await TestPlanRunService.getTestPlanRunById(_id);
+        const testPlanRun = await TestPlanRunService.getTestPlanRunById({
+            id: _id,
+            transaction: false
+        });
         const { testPlanReport } = testPlanRun;
 
         expect(testPlanReport).toBeTruthy();
@@ -62,20 +72,25 @@ describe('TestPlanRunModel Data Checks', () => {
     });
 
     it('should not create additional testPlanRun if already exists for tester; return testPlanRun if exists instead', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             const _testPlanReportId = 1;
             const _testerUserId = 1;
 
-            const testPlanRuns = await TestPlanRunService.getTestPlanRuns('');
+            const testPlanRuns = await TestPlanRunService.getTestPlanRuns({
+                transaction
+            });
             const testPlanRunsLength = testPlanRuns.length;
 
             const testPlanRun = await TestPlanRunService.createTestPlanRun({
-                testerUserId: _testerUserId,
-                testPlanReportId: _testPlanReportId
+                values: {
+                    testerUserId: _testerUserId,
+                    testPlanReportId: _testPlanReportId
+                },
+                transaction
             });
-            const newTestPlanRuns = await TestPlanRunService.getTestPlanRuns(
-                ''
-            );
+            const newTestPlanRuns = await TestPlanRunService.getTestPlanRuns({
+                transaction
+            });
             const newTestPlanRunsLength = newTestPlanRuns.length;
 
             expect(testPlanRun).toHaveProperty('id');
@@ -86,20 +101,25 @@ describe('TestPlanRunModel Data Checks', () => {
     });
 
     it('should create testPlanRun if none exists for tester', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             const _testPlanReportId = 1;
             const _testerUserId = 2;
 
-            const testPlanRuns = await TestPlanRunService.getTestPlanRuns('');
+            const testPlanRuns = await TestPlanRunService.getTestPlanRuns({
+                transaction
+            });
             const testPlanRunsLength = testPlanRuns.length;
 
             const testPlanRun = await TestPlanRunService.createTestPlanRun({
-                testerUserId: _testerUserId,
-                testPlanReportId: _testPlanReportId
+                values: {
+                    testerUserId: _testerUserId,
+                    testPlanReportId: _testPlanReportId
+                },
+                transaction
             });
-            const newTestPlanRuns = await TestPlanRunService.getTestPlanRuns(
-                ''
-            );
+            const newTestPlanRuns = await TestPlanRunService.getTestPlanRuns({
+                transaction
+            });
             const newTestPlanRunsLength = newTestPlanRuns.length;
 
             expect(testPlanRun).toHaveProperty('id');
@@ -111,24 +131,30 @@ describe('TestPlanRunModel Data Checks', () => {
     });
 
     it('should create and update a new testPlanRun', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             const _testPlanReportId = 1;
             const _testerUserId = 2;
             const _testResults = [{ test: 'goesHere' }, { test: 'goesHere' }];
 
             const testPlanRun = await TestPlanRunService.createTestPlanRun({
-                testerUserId: _testerUserId,
-                testPlanReportId: _testPlanReportId,
-                testResults: _testResults
+                values: {
+                    testerUserId: _testerUserId,
+                    testPlanReportId: _testPlanReportId,
+                    testResults: _testResults
+                },
+                transaction
             });
 
             const { id, testerUserId, testPlanReportId, testResults } =
                 testPlanRun;
 
             const updatedTestPlanRun =
-                await TestPlanRunService.updateTestPlanRun(id, {
-                    testResults: [{ test: 'goesHere' }]
+                await TestPlanRunService.updateTestPlanRunById({
+                    id,
+                    values: { testResults: [{ test: 'goesHere' }] },
+                    transaction
                 });
+
             const {
                 testerUserId: updatedTesterUserId,
                 testPlanReportId: updatedTestPlanReportId,
@@ -148,17 +174,24 @@ describe('TestPlanRunModel Data Checks', () => {
     });
 
     it('should remove existing testPlanRun', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             const _id = 1;
 
-            const testPlanRun = await TestPlanRunService.getTestPlanRunById(
-                _id
-            );
+            const testPlanRun = await TestPlanRunService.getTestPlanRunById({
+                id: _id,
+                transaction
+            });
 
-            await TestPlanRunService.removeTestPlanRun(_id);
+            await TestPlanRunService.removeTestPlanRunById({
+                id: _id,
+                transaction
+            });
 
             const deletedTestPlanRun =
-                await TestPlanRunService.getTestPlanRunById(_id);
+                await TestPlanRunService.getTestPlanRunById({
+                    id: _id,
+                    transaction
+                });
 
             // before testPlanRun removed
             expect(testPlanRun).not.toBeNull();
@@ -169,21 +202,25 @@ describe('TestPlanRunModel Data Checks', () => {
     });
 
     it('should remove existing testPlanRun by query', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             const _id = 1;
 
-            const testPlanRun = await TestPlanRunService.getTestPlanRunById(
-                _id
-            );
+            const testPlanRun = await TestPlanRunService.getTestPlanRunById({
+                id: _id,
+                transaction
+            });
             const { testerUserId, testPlanReportId } = testPlanRun;
 
             await TestPlanRunService.removeTestPlanRunByQuery({
-                testerUserId,
-                testPlanReportId
+                where: { testerUserId, testPlanReportId },
+                transaction
             });
 
             const deletedTestPlanRun =
-                await TestPlanRunService.getTestPlanRunById(_id);
+                await TestPlanRunService.getTestPlanRunById({
+                    id: _id,
+                    transaction
+                });
 
             // before testPlanRun removed
             expect(testPlanRun).not.toBeNull();
@@ -194,23 +231,23 @@ describe('TestPlanRunModel Data Checks', () => {
     });
 
     it('should return collection of testPlanRuns', async () => {
-        const result = await TestPlanRunService.getTestPlanRuns('', {});
+        const result = await TestPlanRunService.getTestPlanRuns({
+            transaction: false
+        });
         expect(result.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should return collection of testPlanRuns with paginated structure', async () => {
-        const result = await TestPlanRunService.getTestPlanRuns(
-            '',
-            {},
-            ['id'],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            { enablePagination: true }
-        );
+        const result = await TestPlanRunService.getTestPlanRuns({
+            nestedTestPlanRunAttributes: [],
+            testPlanReportAttributes: [],
+            testPlanVersionAttributes: [],
+            testPlanAttributes: [],
+            atAttributes: [],
+            userAttributes: [],
+            pagination: { enablePagination: true },
+            transaction: false
+        });
 
         expect(result.data.length).toBeGreaterThanOrEqual(1);
         expect(result).toEqual(

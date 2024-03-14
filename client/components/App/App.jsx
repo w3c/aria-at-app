@@ -10,13 +10,11 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import ScrollFixer from '../../utils/ScrollFixer';
 import routes from '../../routes';
 import { ME_QUERY } from './queries';
-import useSigninUrl from './useSigninUrl';
 import SkipLink from '../SkipLink';
 import './App.css';
 
 const App = () => {
     const location = useLocation();
-    const signinUrl = useSigninUrl();
     const { client, loading, data } = useQuery(ME_QUERY);
     const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
 
@@ -159,7 +157,7 @@ const App = () => {
                                         as={Link}
                                         to="#"
                                         onClick={() =>
-                                            (window.location.href = signinUrl)
+                                            (window.location.href = `/api/auth/oauth`)
                                         }
                                     >
                                         Sign in with GitHub

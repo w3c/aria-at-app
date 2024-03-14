@@ -532,6 +532,14 @@ const graphqlSchema = gql`
         A human-readable version of the command, such as "Control+Alt+Down"
         """
         text: String!
+        """
+        The AT mode this command may be getting ran in, such as quickNavOn,
+        browseMode, etc.
+        The same command can be ran during the same test, but in a different
+        mode.
+        """
+        # TODO: Add link to list of known AT modes
+        atOperatingMode: String
     }
 
     """
@@ -564,6 +572,12 @@ const graphqlSchema = gql`
         SHOULD
         # TODO Define MAY
         MAY
+        """
+        This assertion should not be included in the test and should not be
+        used to determine if the test should pass or fail.
+        This exclusion may be overwritten with an assertion exception.
+        """
+        EXCLUDE
     }
 
     """
@@ -764,6 +778,11 @@ const graphqlSchema = gql`
         OTHER
     }
 
+    enum UnexpectedBehaviorImpact {
+        MODERATE
+        SEVERE
+    }
+
     """
     A failure state such as "AT became excessively sluggish" which, if it
     occurs, should count as a scenario failure.
@@ -779,11 +798,13 @@ const graphqlSchema = gql`
         """
         text: String!
         """
-        One of the unexpected behaviors is "other", which means the user must
-        provide text explaining what occurred. For all other unexpected
-        behaviors this field can be ignored.
+        The user must provide text explaining what occurred.
         """
-        otherUnexpectedBehaviorText: String
+        details: String!
+        """
+        The user must indicate the severity of the behavior.
+        """
+        impact: UnexpectedBehaviorImpact!
     }
 
     """
@@ -797,7 +818,11 @@ const graphqlSchema = gql`
         """
         See UnexpectedBehavior for more information.
         """
-        otherUnexpectedBehaviorText: String
+        details: String!
+        """
+        See UnexpectedBehavior for more information.
+        """
+        impact: UnexpectedBehaviorImpact!
     }
 
     """

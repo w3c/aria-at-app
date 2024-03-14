@@ -32,6 +32,13 @@ const mockTestPlanReportsQueryResult = {
                     id: 'testPlanRunId',
                     isInitiatedByAutomation: false,
                     markedFinalAt: null
+                },
+                isFinal: false,
+                at: {
+                    id: '1'
+                },
+                browser: {
+                    id: '2'
                 }
             }
         ]

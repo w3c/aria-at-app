@@ -23,18 +23,31 @@
     ```
 Now you can navigate your browser to: [http://localhost:3000/](http://localhost:3000/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
 
-### Signing in as a tester and/or admin
+### Signing in as a tester, admin, or vendor
 
-ARIA-AT App determines if you are authorized to sign in as an admin based on whether you are a member of the official admin team within the W3C GitHub organization and as a tester based on whether your Github username is listed in the testers.txt file. The GitHub organization and team name can be changed by altering the app's environment variables, and there are dedicated teams for each app environment.
+ARIA-AT App determines if you are authorized to sign in as an admin, tester, or vendor based on whether your Github username is listed in the admins.txt, testers.txt, or vendors.txt file.
 
 Another way to log in as either a tester or admin, useful for quick testing and not requiring editing testers.txt or membership within any GitHub organizations or teams, is described below.
 
-1. Sign out and return to the home page.
-2. Add `?fakeRole=admin` to the URL bar and press enter. Alternatively use `?fakeRole=tester` to log in as a tester only or `?fakeRole=` to preview logging in without a role.
-3. Follow the sign in steps as normal.
-4. After signing in, your selected role will be used for the duration of your session.
+1. With the app running, open the browser DevTools.
+2. Go to the DevTools console.
+3. Paste in the following code:
+    - To become an admin:
+        ```
+          signMeInAsAdmin("joe-the-admin")
+        ```
+    - To become a tester:
+        ```
+          signMeInAsTester("joe-the-tester")
+        ```
+    - To become a vendor:
+        ```
+          signMeInAsVendor("joe-the-vendor")
+        ```
 
-This functionality is available in development environments where the ALLOW_FAKE_ROLE environment variable is "true".
+The part in quotes is the username, feel free to change the username to whatever you prefer.
+
+This functionality is available in development environments where the ALLOW_FAKE_USER environment variable is "true".
 
 ## Debugging
 

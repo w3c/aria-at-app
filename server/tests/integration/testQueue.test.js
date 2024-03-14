@@ -43,7 +43,8 @@ describe('test queue', () => {
                         }
                     }
                 }
-            `
+            `,
+            { transaction: false }
         );
 
         expect(result).toEqual({
@@ -81,43 +82,49 @@ describe('test queue', () => {
     });
 
     it('assigns testers to a test plan report', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             // A1
             const testReportId = '1';
             const newTesterId = '2';
-            const previous = await query(gql`
-                query {
-                    testPlanReport(id: ${testReportId}) {
-                        draftTestPlanRuns {
-                            tester {
-                                id
+            const previous = await query(
+                gql`
+                    query {
+                        testPlanReport(id: ${testReportId}) {
+                            draftTestPlanRuns {
+                                tester {
+                                    id
+                                }
                             }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
             const previousTesterIds =
                 previous.testPlanReport.draftTestPlanRuns.map(
                     testPlanRun => testPlanRun.tester.id
                 );
 
             // A2
-            const result = await mutate(gql`
-                mutation {
-                    testPlanReport(id: ${testReportId}) {
-                        assignTester(userId: ${newTesterId}) {
-                            testPlanReport {
-                                draftTestPlanRuns {
-                                    tester {
-                                        id
-                                        username
+            const result = await mutate(
+                gql`
+                    mutation {
+                        testPlanReport(id: ${testReportId}) {
+                            assignTester(userId: ${newTesterId}) {
+                                testPlanReport {
+                                    draftTestPlanRuns {
+                                        tester {
+                                            id
+                                            username
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
 
             // prettier-ignore
             const resultTesterIds = result
@@ -137,42 +144,48 @@ describe('test queue', () => {
     });
 
     it('removes testers from a test plan report', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             // A1
             const testPlanReportId = '1';
             const previousTesterId = '1';
-            const previous = await query(gql`
-                query {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        draftTestPlanRuns {
-                            tester {
-                                id
+            const previous = await query(
+                gql`
+                    query {
+                        testPlanReport(id: ${testPlanReportId}) {
+                            draftTestPlanRuns {
+                                tester {
+                                    id
+                                }
                             }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
             const previousTesterIds =
                 previous.testPlanReport.draftTestPlanRuns.map(
                     run => run.tester.id
                 );
 
             // A2
-            const result = await mutate(gql`
-                mutation {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        deleteTestPlanRun(userId: ${previousTesterId}) {
-                            testPlanReport {
-                                draftTestPlanRuns {
-                                    tester {
-                                        username
+            const result = await mutate(
+                gql`
+                    mutation {
+                        testPlanReport(id: ${testPlanReportId}) {
+                            deleteTestPlanRun(userId: ${previousTesterId}) {
+                                testPlanReport {
+                                    draftTestPlanRuns {
+                                        tester {
+                                            username
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
 
             // prettier-ignore
             const resultTesterIds = result
@@ -192,32 +205,35 @@ describe('test queue', () => {
     });
 
     it('queries for information needed to add reports', async () => {
-        const result = await query(gql`
-            query {
-                ats {
-                    id
-                    name
-                    atVersions {
+        const result = await query(
+            gql`
+                query {
+                    ats {
                         id
                         name
+                        atVersions {
+                            id
+                            name
+                        }
                     }
-                }
-                browsers {
-                    id
-                    name
-                    browserVersions {
+                    browsers {
                         id
                         name
+                        browserVersions {
+                            id
+                            name
+                        }
+                    }
+                    testPlans {
+                        latestTestPlanVersion {
+                            id
+                            title
+                        }
                     }
                 }
-                testPlans {
-                    latestTestPlanVersion {
-                        id
-                        title
-                    }
-                }
-            }
-        `);
+            `,
+            { transaction: false }
+        );
 
         expect(result).toEqual(
             expect.objectContaining({
@@ -258,13 +274,14 @@ describe('test queue', () => {
     });
 
     it('supports adding reports', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             // A1
             const testPlanVersionId = '1';
             const atId = '1';
             const browserId = '1';
             const mutationToTest = async () => {
-                const result = await mutate(gql`
+                const result = await mutate(
+                    gql`
                         mutation {
                             findOrCreateTestPlanReport(input: {
                                 testPlanVersionId: ${testPlanVersionId}
@@ -291,7 +308,9 @@ describe('test queue', () => {
                                 }
                             }
                         }
-                    `);
+                    `,
+                    { transaction }
+                );
                 const {
                     populatedData: { testPlanReport, testPlanVersion },
                     created
@@ -343,36 +362,45 @@ describe('test queue', () => {
     });
 
     it('can be deleted along with associated runs', async () => {
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             const testPlanReportId = '4';
-            const queryBefore = await query(gql`
-                query {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        id
-                        draftTestPlanRuns {
+            const queryBefore = await query(
+                gql`
+                    query {
+                        testPlanReport(id: ${testPlanReportId}) {
+                            id
+                            draftTestPlanRuns {
+                                id
+                            }
+                        }
+                    }
+                `,
+                { transaction }
+            );
+            const { draftTestPlanRuns } = queryBefore.testPlanReport;
+            await mutate(
+                gql`
+                    mutation {
+                        testPlanReport(id: ${testPlanReportId}) {
+                            deleteTestPlanReport
+                        }
+                    }
+                `,
+                { transaction }
+            );
+            const queryAfter = await query(
+                gql`
+                    query {
+                        testPlanReport(id: ${testPlanReportId}) {
+                            id
+                        }
+                        testPlanRun(id: ${draftTestPlanRuns[0].id}) {
                             id
                         }
                     }
-                }
-            `);
-            const { draftTestPlanRuns } = queryBefore.testPlanReport;
-            await mutate(gql`
-                mutation {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        deleteTestPlanReport
-                    }
-                }
-            `);
-            const queryAfter = await query(gql`
-                query {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        id
-                    }
-                    testPlanRun(id: ${draftTestPlanRuns[0].id}) {
-                        id
-                    }
-                }
-            `);
+                `,
+                { transaction }
+            );
 
             expect(queryBefore.testPlanReport.id).toBeTruthy();
             expect(draftTestPlanRuns.length).toBeGreaterThan(0);
@@ -384,46 +412,49 @@ describe('test queue', () => {
     it('displays conflicts', async () => {
         const conflictingReportId = '2';
 
-        const result = await query(gql`
-            query {
-                testPlanReport(id: ${conflictingReportId}) {
-                    conflicts {
-                        source {
-                            test {
-                                title
-                                rowNumber
-                            }
-                            scenario {
-                                commands {
+        const result = await query(
+            gql`
+                query {
+                    testPlanReport(id: ${conflictingReportId}) {
+                        conflicts {
+                            source {
+                                test {
+                                    title
+                                    rowNumber
+                                }
+                                scenario {
+                                    commands {
+                                        text
+                                    }
+                                }
+                                assertion {
                                     text
                                 }
                             }
-                            assertion {
-                                text
-                            }
-                        }
-                        conflictingResults {
-                            testPlanRun {
-                                id
-                                tester {
-                                    username
+                            conflictingResults {
+                                testPlanRun {
+                                    id
+                                    tester {
+                                        username
+                                    }
                                 }
-                            }
-                            scenarioResult {
-                                output
-                                unexpectedBehaviors {
-                                    text
-                                    otherUnexpectedBehaviorText
+                                scenarioResult {
+                                    output
+                                    unexpectedBehaviors {
+                                        text
+                                        details
+                                    }
                                 }
-                            }
-                            assertionResult {
-                                passed
+                                assertionResult {
+                                    passed
+                                }
                             }
                         }
                     }
                 }
-            }
-        `);
+            `,
+            { transaction: false }
+        );
 
         // Nested sorting turns out to be inconsistent across environments -
         // it might be nice to figure out an elegant way to establish a default
@@ -511,7 +542,7 @@ describe('test queue', () => {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviors": [
                           {
-                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
+                            "details": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],
@@ -560,11 +591,11 @@ describe('test queue', () => {
                         "output": "automatically seeded sample output",
                         "unexpectedBehaviors": [
                           {
-                            "otherUnexpectedBehaviorText": null,
+                            "details": "N/A",
                             "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
                           },
                           {
-                            "otherUnexpectedBehaviorText": "Seeded other unexpected behavior",
+                            "details": "Seeded other unexpected behavior",
                             "text": "Other",
                           },
                         ],

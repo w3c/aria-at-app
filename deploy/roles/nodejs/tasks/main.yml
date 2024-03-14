@@ -25,6 +25,7 @@
     name:
       - nodejs
       - yarn
+      - npm
     state: present
   become: yes
 
@@ -34,3 +35,10 @@
 
 - name: Show status of nodejs installation
   debug: msg="{{ new_node_version.stdout }}"
+
+- name: Check if npm exists
+  command: npm --version
+  register: npm_version
+
+- name: Show status of nodejs installation
+  debug: msg="{{ npm_version.stdout }}"

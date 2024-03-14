@@ -3,11 +3,8 @@ const randomStringGenerator = require('./random-character-generator');
 const { ApolloServer, gql } = require('apollo-server-express');
 const { GracefulShutdownManager } = require('@moebius/http-graceful-shutdown');
 
-const { GITHUB_TEAM_ADMIN } = process.env;
-
 const setUpMockGithubServer = async () => {
     let nextGithubUsername;
-    let nextIsOnAdminTeam;
 
     const typeDefs = gql`
         type Node {
@@ -26,13 +23,8 @@ const setUpMockGithubServer = async () => {
             login: String
         }
 
-        type Organization {
-            teams(userLogins: String, query: String, first: Int): Connection
-        }
-
         type Query {
             viewer: Viewer
-            organization(login: String): Organization
         }
     `;
 
@@ -40,15 +32,6 @@ const setUpMockGithubServer = async () => {
         Query: {
             viewer: () => {
                 return { login: nextGithubUsername };
-            },
-            organization: () => {
-                return {};
-            }
-        },
-        Organization: {
-            teams: () => {
-                const teamName = nextIsOnAdminTeam ? GITHUB_TEAM_ADMIN : null;
-                return { edges: [{ node: { name: teamName } }] };
             }
         }
     };
@@ -62,10 +45,8 @@ const setUpMockGithubServer = async () => {
 
     expressApp.get('/login/oauth/authorize', (req, res) => {
         const code = randomStringGenerator();
-        const { state } = req.query;
         res.status(303).redirect(
-            `${process.env.API_SERVER}/api/auth/authorize` +
-                `?code=${code}&state=${state}`
+            `${process.env.API_SERVER}/api/auth/authorize?code=${code}`
         );
     });
 
@@ -82,9 +63,8 @@ const setUpMockGithubServer = async () => {
         shutdownManager = new GracefulShutdownManager(listener);
     });
 
-    const nextLogin = ({ githubUsername, isOnAdminTeam }) => {
+    const nextLogin = ({ githubUsername }) => {
         nextGithubUsername = githubUsername;
-        nextIsOnAdminTeam = isOnAdminTeam;
     };
 
     const tearDown = async () => {

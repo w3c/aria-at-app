@@ -1,8 +1,8 @@
-const {
-    getTestPlanById
-} = require('../../models/services/TestPlanVersionService');
+const { getTestPlanById } = require('../../models/services/TestPlanService');
 
-const testPlanResolver = async (testPlanVersion, args, context, info) => {
+const testPlanResolver = async (testPlanVersion, _, context, info) => {
+    const { transaction } = context;
+
     const requestedFields =
         info?.fieldNodes[0] &&
         info.fieldNodes[0].selectionSet.selections.map(
@@ -13,12 +13,11 @@ const testPlanResolver = async (testPlanVersion, args, context, info) => {
     let latestTestPlanVersion = { latestTestPlanVersion: null };
 
     if (includeLatest) {
-        latestTestPlanVersion = await getTestPlanById(
-            testPlanVersion.directory,
-            {
-                includeTestPlanVersions: false
-            }
-        );
+        latestTestPlanVersion = await getTestPlanById({
+            id: testPlanVersion.directory,
+            testPlanVersionAttributes: [],
+            transaction
+        });
     }
 
     return {

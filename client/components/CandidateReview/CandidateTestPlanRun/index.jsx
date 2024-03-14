@@ -17,13 +17,13 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { getMetrics } from 'shared';
 import './CandidateTestPlanRun.css';
 import '../../TestRun/TestRun.css';
 import '../../App/App.css';
 import { useMediaQuery } from 'react-responsive';
 import { convertDateToString } from '../../../utils/formatter';
 import TestPlanResultsTable from '../../common/TestPlanResultsTable';
-import { calculateAssertionsCount } from '../../common/TestPlanResultsTable/utils';
 import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
 import ThankYouModal from '../CandidateModals/ThankYouModal';
 import FeedbackListItem from '../FeedbackListItem';
@@ -508,15 +508,15 @@ const CandidateTestPlanRun = () => {
                                 currentTestIndex
                             ];
 
-                        const { passedAssertionsCount, failedAssertionsCount } =
-                            calculateAssertionsCount(testResult);
+                        const { assertionsPassedCount, assertionsFailedCount } =
+                            getMetrics({ testResult });
 
                         return (
                             <>
                                 <h2 className="test-results-header">
                                     Test Results&nbsp;(
-                                    {passedAssertionsCount} passed,&nbsp;
-                                    {failedAssertionsCount} failed)
+                                    {assertionsPassedCount} passed,&nbsp;
+                                    {assertionsFailedCount} failed)
                                 </h2>
                                 <TestPlanResultsTable
                                     key={`${testPlanReport.id} + ${testResult.id}`}

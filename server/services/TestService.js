@@ -29,17 +29,16 @@ async function runImportScript(git_hash) {
 async function importTests(gitSha) {
     if (gitSha) {
         // check if version exists
-        let results = await getTestPlanVersions(
-            null,
-            { gitSha },
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        );
+        let results = await getTestPlanVersions({
+            where: { gitSha },
+            testPlanAttributes: [],
+            testPlanReportAttributes: [],
+            atAttributes: [],
+            browserAttributes: [],
+            testPlanRunAttributes: [],
+            userAttributes: [],
+            transaction: false
+        });
         let versionExists = results.length !== 0;
         if (versionExists) return versionExists;
     }

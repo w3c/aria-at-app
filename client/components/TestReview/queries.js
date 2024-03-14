@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const TEST_REVIEW_PAGE_QUERY = gql`
-    query TestPlanVersionsPageQuery($testPlanVersionId: ID!) {
+    query TestReviewPageQuery($testPlanVersionId: ID!) {
         testPlanVersion(id: $testPlanVersionId) {
             id
             title
@@ -40,6 +40,7 @@ export const TEST_REVIEW_PAGE_QUERY = gql`
                     renderableContent
                 }
             }
+            metadata
         }
     }
 `;

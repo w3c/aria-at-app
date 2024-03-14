@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import getMetrics from './getMetrics';
+import { none } from './None';
+import { getMetrics } from 'shared';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -125,9 +126,9 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                             <thead>
                                 <tr>
                                     <th>Test Name</th>
-                                    <th>MUST-DO Behaviors</th>
-                                    <th>SHOULD-DO Behaviors</th>
-                                    <th>Unexpected Behaviors</th>
+                                    <th>MUST HAVE Behaviors</th>
+                                    <th>SHOULD HAVE Behaviors</th>
+                                    <th>MAY HAVE Behaviors</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -136,7 +137,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                         const {
                                             requiredFormatted,
                                             optionalFormatted,
-                                            unexpectedBehaviorsFormatted
+                                            mayFormatted
                                         } = getMetrics({
                                             testResult
                                         });
@@ -153,25 +154,29 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                                         {testResult.test.title}
                                                     </Link>
                                                 </td>
-                                                <td>{requiredFormatted}</td>
-                                                <td>{optionalFormatted}</td>
                                                 <td>
-                                                    {
-                                                        unexpectedBehaviorsFormatted
-                                                    }
+                                                    {requiredFormatted || none}
                                                 </td>
+                                                <td>
+                                                    {optionalFormatted || none}
+                                                </td>
+                                                <td>{mayFormatted || none}</td>
                                             </tr>
                                         );
                                     }
                                 )}
                                 <tr>
                                     <td>All Tests</td>
-                                    <td>{overallMetrics.requiredFormatted}</td>
-                                    <td>{overallMetrics.optionalFormatted}</td>
                                     <td>
-                                        {
-                                            overallMetrics.unexpectedBehaviorsFormatted
-                                        }
+                                        {overallMetrics.requiredFormatted ||
+                                            none}
+                                    </td>
+                                    <td>
+                                        {overallMetrics.optionalFormatted ||
+                                            none}
+                                    </td>
+                                    <td>
+                                        {overallMetrics.mayFormatted || none}
                                     </td>
                                 </tr>
                             </tbody>

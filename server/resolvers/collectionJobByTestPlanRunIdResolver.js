@@ -2,8 +2,17 @@ const {
     getCollectionJobs
 } = require('../models/services/CollectionJobService');
 
-const collectionJobByTestPlanRunIdResolver = async (_, { testPlanRunId }) => {
-    const collectionJobs = await getCollectionJobs(_, { testPlanRunId });
+const collectionJobByTestPlanRunIdResolver = async (
+    _,
+    { testPlanRunId },
+    context
+) => {
+    const { transaction } = context;
+
+    const collectionJobs = await getCollectionJobs({
+        where: { testPlanRunId },
+        transaction
+    });
     if (!collectionJobs || collectionJobs.length === 0) {
         return null;
     } else if (collectionJobs.length > 1) {

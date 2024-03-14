@@ -50,13 +50,17 @@ const failWithErrors = errors => {
  * not expected.
  * @param {GraphQLSyntaxTree} gql - GraphQL query from a gql template string.
  * @example gql`query { me { username } }`
- * @param {object=} options
- * @param {object=} options.user - Replace the default user or set it to null
+ * @param {object} options
+ * @param {object} options.user - Replace the default user or set it to null
  * to simulate being logged out.
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {any} Data matching the query.
  */
-const query = async (gql, { user = defaultUser, ...queryOptions } = {}) => {
-    mockReq = { session: { user } };
+const query = async (
+    gql,
+    { transaction, user = defaultUser, ...queryOptions } = {}
+) => {
+    mockReq = { session: { user }, transaction };
     const { data, errors } = await server.executeOperation({
         query: gql,
         ...queryOptions

@@ -1,9 +1,11 @@
 const { getTestPlanRuns } = require('../models/services/TestPlanRunService');
 
-const testPlanRunsResolver = async (_, { testPlanReportId }) => {
+const testPlanRunsResolver = async (_, { testPlanReportId }, context) => {
+    const { transaction } = context;
+
     const where = {};
     if (testPlanReportId) where.testPlanReportId = testPlanReportId;
-    return getTestPlanRuns(null, where);
+    return getTestPlanRuns({ where, transaction });
 };
 
 module.exports = testPlanRunsResolver;

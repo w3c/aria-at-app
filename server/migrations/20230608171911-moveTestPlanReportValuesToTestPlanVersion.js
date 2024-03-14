@@ -8,22 +8,18 @@ const scenariosResolver = require('../resolvers/Test/scenariosResolver');
 const {
     getTestPlanReportById,
     getOrCreateTestPlanReport,
-    updateTestPlanReport
+    updateTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 const populateData = require('../services/PopulatedData/populateData');
-const { testResults } = require('../resolvers/TestPlanRun');
 const {
     createTestPlanRun,
     getTestPlanRunById
 } = require('../models/services/TestPlanRunService');
-const {
-    findOrCreateTestResult
-} = require('../resolvers/TestPlanRunOperations');
-const {
-    submitTestResult,
-    saveTestResult
-} = require('../resolvers/TestResultOperations');
 const { hashTests } = require('../util/aria');
+const testResultsResolver = require('../resolvers/TestPlanRun/testResultsResolver');
+const submitTestResultResolver = require('../resolvers/TestResultOperations/submitTestResultResolver');
+const saveTestResultResolver = require('../resolvers/TestResultOperations/saveTestResultResolver');
+const findOrCreateTestResultResolver = require('../resolvers/TestPlanRunOperations/findOrCreateTestResultResolver');
 
 const testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES.filter(
     attr => attr !== 'versionString'
@@ -105,9 +101,7 @@ module.exports = {
                               join "TestPlanVersion" on "TestPlanReport"."testPlanVersionId" = "TestPlanVersion".id
                      where status in ('CANDIDATE', 'RECOMMENDED')
                      order by title, "gitShaDate" desc`,
-                {
-                    transaction
-                }
+                { transaction }
             );
             const testPlanReportsData = testPlanReportsQuery[0];
 
@@ -249,7 +243,8 @@ module.exports = {
                 const context = {
                     user: {
                         roles: [{ name: 'ADMIN' }]
-                    }
+                    },
+                    transaction
                 };
 
                 // [SECTION START]: Preparing data to be worked with in a similar way to TestPlanUpdaterModal
@@ -287,7 +282,8 @@ module.exports = {
                                 atMode,
                                 scenarios: scenariosResolver(
                                     { scenarios },
-                                    { atId }
+                                    { atId },
+                                    context
                                 ).map(({ commandIds }) => {
                                     return {
                                         commands: commandIds.map(commandId => ({
@@ -306,12 +302,12 @@ module.exports = {
                     )
                 };
 
-                const currentTestPlanReport = await getTestPlanReportById(
-                    testPlanReportId,
+                const currentTestPlanReport = await getTestPlanReportById({
+                    id: testPlanReportId,
                     testPlanReportAttributes,
-                    undefined,
-                    testPlanVersionAttributes
-                );
+                    testPlanVersionAttributes,
+                    transaction
+                });
 
                 for (
                     let i = 0;
@@ -320,16 +316,15 @@ module.exports = {
                 ) {
                     const testPlanRunId =
                         currentTestPlanReport.testPlanRuns[i].id;
-                    const testPlanRun = await getTestPlanRunById(
-                        testPlanRunId,
-                        null,
-                        null,
+                    const testPlanRun = await getTestPlanRunById({
+                        id: testPlanRunId,
                         testPlanReportAttributes,
-                        testPlanVersionAttributes
-                    );
+                        testPlanVersionAttributes,
+                        transaction
+                    });
                     // testPlanReport = testPlanRun?.testPlanReport;
 
-                    testPlanRun.testResults = await testResults(
+                    testPlanRun.testResults = await testResultsResolver(
                         testPlanRun,
                         null,
                         context
@@ -370,7 +365,8 @@ module.exports = {
                                                         scenarios:
                                                             test.scenarios
                                                     },
-                                                    { atId }
+                                                    { atId },
+                                                    context
                                                 ).map(({ commandIds }) => {
                                                     return {
                                                         commands:
@@ -458,16 +454,16 @@ module.exports = {
 
                 // TODO: If no input.testPlanVersionId, infer it by whatever the latest is for this directory
                 const [foundOrCreatedTestPlanReport, createdLocationsOfData] =
-                    await getOrCreateTestPlanReport(
-                        {
+                    await getOrCreateTestPlanReport({
+                        where: {
                             testPlanVersionId: newTestPlanVersionId,
                             atId,
                             browserId
                         },
                         testPlanReportAttributes,
-                        undefined,
-                        testPlanVersionAttributes
-                    );
+                        testPlanVersionAttributes,
+                        transaction
+                    });
 
                 const candidatePhaseReachedAt =
                     currentTestPlanReport.candidatePhaseReachedAt;
@@ -478,18 +474,18 @@ module.exports = {
                 const vendorReviewStatus =
                     currentTestPlanReport.vendorReviewStatus;
 
-                await updateTestPlanReport(
-                    foundOrCreatedTestPlanReport.id,
-                    {
+                await updateTestPlanReportById({
+                    id: foundOrCreatedTestPlanReport.id,
+                    values: {
                         candidatePhaseReachedAt,
                         recommendedPhaseReachedAt,
                         recommendedPhaseTargetDate,
                         vendorReviewStatus
                     },
                     testPlanReportAttributes,
-                    undefined,
-                    testPlanVersionAttributes
-                );
+                    testPlanVersionAttributes,
+                    transaction
+                });
 
                 // const locationOfData = {
                 //     testPlanReportId: foundOrCreatedTestPlanReport.id
@@ -501,7 +497,8 @@ module.exports = {
                 const created = await Promise.all(
                     createdLocationsOfData.map(createdLocationOfData =>
                         populateData(createdLocationOfData, {
-                            preloaded
+                            preloaded,
+                            transaction
                         })
                     )
                 );
@@ -516,16 +513,15 @@ module.exports = {
 
                 for (const testPlanRun of runsWithResults) {
                     // Create new TestPlanRuns
-                    const { id: testPlanRunId } = await createTestPlanRun(
-                        {
+                    const { id: testPlanRunId } = await createTestPlanRun({
+                        values: {
                             testPlanReportId: foundOrCreatedTestPlanReport.id,
                             testerUserId: testPlanRun.tester.id
                         },
-                        null,
-                        null,
                         testPlanReportAttributes,
-                        testPlanVersionAttributes
-                    );
+                        testPlanVersionAttributes,
+                        transaction
+                    });
 
                     for (const testResult of testPlanRun.testResults) {
                         const testId =
@@ -536,10 +532,8 @@ module.exports = {
 
                         // Create new testResults
                         const { testResult: testResultSkeleton } =
-                            await findOrCreateTestResult(
-                                {
-                                    parentContext: { id: testPlanRunId }
-                                },
+                            await findOrCreateTestResultResolver(
+                                { parentContext: { id: testPlanRunId } },
                                 { testId, atVersionId, browserVersionId },
                                 context
                             );
@@ -551,7 +545,7 @@ module.exports = {
 
                         let savedData;
                         if (testResult.completedAt) {
-                            savedData = await submitTestResult(
+                            savedData = await submitTestResultResolver(
                                 {
                                     parentContext: {
                                         id: copiedTestResultInput.id
@@ -561,7 +555,7 @@ module.exports = {
                                 context
                             );
                         } else {
-                            savedData = await saveTestResult(
+                            savedData = await saveTestResultResolver(
                                 {
                                     parentContext: {
                                         id: copiedTestResultInput.id
@@ -579,7 +573,7 @@ module.exports = {
                 // TODO: Delete the old TestPlanReport?
                 // await removeTestPlanRunByQuery({ testPlanReportId });
                 // await removeTestPlanReport(testPlanReportId);
-                // return populateData(locationOfData, { preloaded, context });
+                // return populateData(locationOfData, { preloaded, transaction });
             };
 
             for (let i = 0; i < Object.values(highestVersions).length; i++) {
