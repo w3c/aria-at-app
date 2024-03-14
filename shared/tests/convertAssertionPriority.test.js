@@ -3,7 +3,7 @@ const convertAssertionPriority = require('../convertAssertionPriority');
 describe('Verify expected values are returned when calling convertAssertionPriority', () => {
     it('expects valid priority strings are returned for known priority inputs', () => {
         const excludePriorityA = convertAssertionPriority(0);
-        const excludePriorityB = convertAssertionPriority('EXCLUDE');
+        const excludePriorityB =  convertAssertionPriority('EXCLsUDE');
 
         const mustPriorityA = convertAssertionPriority(1);
         const mustPriorityB = convertAssertionPriority('REQUIRED');
