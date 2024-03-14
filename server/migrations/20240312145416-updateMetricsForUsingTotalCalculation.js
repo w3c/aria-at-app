@@ -30,10 +30,14 @@ module.exports = {
                         { context }
                     );
                 const runnableTests = runnableTestsResolver(
-                    testPlanReportPopulated
+                    testPlanReportPopulated,
+                    null,
+                    context
                 );
                 const finalizedTestResults = await finalizedTestResultsResolver(
-                    testPlanReportPopulated
+                    testPlanReportPopulated,
+                    null,
+                    context
                 );
                 const metrics = getMetrics({
                     testPlanReport: {
