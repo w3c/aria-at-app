@@ -1,4 +1,4 @@
-const getTests = require('../../models/services.deprecated/TestsService');
+const getTests = require('../../models/services/TestsService');
 
 /**
  * Resolves the Tests from their reduced form in the database to a fully-
@@ -8,6 +8,10 @@ const getTests = require('../../models/services.deprecated/TestsService');
  * default atId for child fields as in the `renderableContent(atId: ID)` field.
  * @returns {array[*]} - An array of resolved tests.
  */
-const testsResolver = parentRecord => getTests(parentRecord);
+const testsResolver = (
+    parentRecord,
+    args, // eslint-disable-line no-unused-vars
+    context // eslint-disable-line no-unused-vars
+) => getTests(parentRecord);
 
 module.exports = testsResolver;

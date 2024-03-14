@@ -1,4 +1,8 @@
-const mutateTestPlanRunResolver = (_, { id }) => {
+const mutateTestPlanRunResolver = (
+    _,
+    { id },
+    context // eslint-disable-line no-unused-vars
+) => {
     return { parentContext: { id } };
 };
 

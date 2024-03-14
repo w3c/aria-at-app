@@ -1,13 +1,15 @@
 const { AuthenticationError } = require('apollo-server');
 const {
     findOrCreateBrowserVersion
-} = require('../../models/services.deprecated/BrowserService');
+} = require('../../models/services/BrowserService');
 
 const findOrCreateBrowserVersionResolver = async (
     { parentContext: { id: browserId } },
     { input: { name } },
-    { user }
+    context
 ) => {
+    const { user, transaction } = context;
+
     if (
         !user?.roles.find(
             role => role.name === 'ADMIN' || role.name === 'TESTER'
@@ -16,7 +18,10 @@ const findOrCreateBrowserVersionResolver = async (
         throw new AuthenticationError();
     }
 
-    let version = await findOrCreateBrowserVersion({ browserId, name });
+    let version = await findOrCreateBrowserVersion({
+        where: { browserId, name },
+        transaction
+    });
 
     return version;
 };

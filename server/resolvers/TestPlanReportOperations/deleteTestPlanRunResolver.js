@@ -1,19 +1,19 @@
 const { AuthenticationError } = require('apollo-server');
 const {
     removeTestPlanRunByQuery
-} = require('../../models/services.deprecated/TestPlanRunService');
+} = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const {
-    updateTestPlanReport
-} = require('../../models/services.deprecated/TestPlanReportService');
+    updateTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 
 const deleteTestPlanRunResolver = async (
     { parentContext: { id: testPlanReportId } },
     { userId: testerUserId },
     context
 ) => {
-    const { user } = context;
+    const { user, transaction } = context;
     if (
         !(
             user?.roles.find(role => role.name === 'ADMIN') ||
@@ -25,22 +25,27 @@ const deleteTestPlanRunResolver = async (
     }
 
     await removeTestPlanRunByQuery({
-        testPlanReportId,
-        testerUserId
+        where: { testPlanReportId, testerUserId },
+        transaction
     });
 
-    const { testPlanReport } = await populateData({
-        testPlanReportId
-    });
-    const conflicts = await conflictsResolver(testPlanReport);
-    await updateTestPlanReport(testPlanReport.id, {
-        metrics: {
-            ...testPlanReport.metrics,
-            conflictsCount: conflicts.length
-        }
+    const { testPlanReport } = await populateData(
+        { testPlanReportId },
+        { transaction }
+    );
+    const conflicts = await conflictsResolver(testPlanReport, null, context);
+    await updateTestPlanReportById({
+        id: testPlanReport.id,
+        values: {
+            metrics: {
+                ...testPlanReport.metrics,
+                conflictsCount: conflicts.length
+            }
+        },
+        transaction
     });
 
-    return populateData({ testPlanReportId });
+    return populateData({ testPlanReportId }, { transaction });
 };
 
 module.exports = deleteTestPlanRunResolver;

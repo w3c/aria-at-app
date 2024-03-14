@@ -1,6 +1,6 @@
 const populateData = require('../../services/PopulatedData/populateData');
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
-const getMetrics = require('../../util/getMetrics');
+const { getMetrics } = require('shared');
 const { updateTestPlanReport } = require('./TestPlanReportService');
 const createTestResultSkeleton = require('../../resolvers/TestPlanRunOperations/createTestResultSkeleton');
 const sortArrayLikeArray = require('../../util/sortArrayLikeArray');

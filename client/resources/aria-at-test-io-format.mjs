@@ -817,7 +817,7 @@ class BehaviorInput {
             };
           }
 
-          // { assertionId, priority, assertionStatement, assertionPhrase, refIds, tokenizedAssertionStatements }
+          // { assertionId, priority, assertionStatement, assertionPhrase, refIds, tokenizedAssertionStatements, tokenizedAssertionPhrases }
           return {
             priority: assertion.priority,
             assertion:
@@ -1634,7 +1634,7 @@ const AssertionFailJSONMap = createEnumMap({
 
 const UnexpectedBehaviorImpactMap = createEnumMap({
   MODERATE: 'Moderate',
-  HIGH: 'High',
+  SEVERE: 'Severe',
 });
 
 /** @typedef {SubmitResultDetailsCommandsAssertionsPass | SubmitResultDetailsCommandsAssertionsFail} SubmitResultAssertionsJSON */

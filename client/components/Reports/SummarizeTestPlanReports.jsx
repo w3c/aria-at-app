@@ -6,7 +6,7 @@ import { Container, Table } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import { derivePhaseName } from '../../utils/aria';
-import { none } from './getMetrics';
+import { none } from './None';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
 

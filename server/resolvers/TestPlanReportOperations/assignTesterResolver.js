@@ -1,8 +1,8 @@
 const { AuthenticationError } = require('apollo-server');
 const {
     createTestPlanRun,
-    updateTestPlanRun
-} = require('../../models/services.deprecated/TestPlanRunService');
+    updateTestPlanRunById
+} = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const assignTesterResolver = async (
@@ -10,7 +10,8 @@ const assignTesterResolver = async (
     { userId: testerUserId, testPlanRunId },
     context
 ) => {
-    const { user } = context;
+    const { user, transaction } = context;
+
     if (
         !(
             user?.roles.find(role => role.name === 'ADMIN') ||
@@ -22,18 +23,20 @@ const assignTesterResolver = async (
     }
     // If testPlanRunId is provided reassign the tester to the testPlanRun
     if (testPlanRunId) {
-        await updateTestPlanRun(testPlanRunId, {
-            testerUserId
+        await updateTestPlanRunById({
+            id: testPlanRunId,
+            values: { testerUserId },
+            transaction
         });
     } else {
         const { id } = await createTestPlanRun({
-            testPlanReportId,
-            testerUserId
+            values: { testPlanReportId, testerUserId },
+            transaction
         });
         testPlanRunId = id;
     }
 
-    return populateData({ testPlanRunId });
+    return populateData({ testPlanRunId }, { transaction });
 };
 
 module.exports = assignTesterResolver;

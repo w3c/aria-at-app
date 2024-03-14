@@ -1,6 +1,6 @@
 const convertAssertionPriority = require('./convertAssertionPriority');
 
-const sum = arr => arr.reduce((total, item) => total + item, 0);
+const sum = arr => arr?.reduce((total, item) => total + item, 0) || 0;
 
 const countTests = ({
     testPlanReport, // Choose one to provide
@@ -9,25 +9,29 @@ const countTests = ({
     passedOnly
 }) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.assertionResults.every(
-            assertionResult => assertionResult.passed
+        return (
+            scenarioResult?.assertionResults?.every(
+                assertionResult => assertionResult.passed
+            ) || 0
         );
     };
 
     const countTestResult = testResult => {
         if (passedOnly)
-            return testResult.scenarioResults.every(countScenarioResult)
+            return testResult?.scenarioResults?.every(countScenarioResult)
                 ? 1
                 : 0;
         return testResult ? 1 : 0;
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
     if (testResult) return countTestResult(testResult);
-    return countScenarioResult(scenarioResult, testResult);
+    return countScenarioResult(scenarioResult);
 };
 
 const countAssertions = ({
@@ -38,19 +42,30 @@ const countAssertions = ({
     passedOnly
 }) => {
     const countScenarioResult = scenarioResult => {
-        const all = scenarioResult.assertionResults.filter(
-            a =>
-                convertAssertionPriority(a.assertion.priority) ===
-                convertAssertionPriority(priority)
-        );
+        const isClient =
+            `${priority.toLowerCase()}AssertionResults` in scenarioResult;
+        let all;
+        if (isClient) {
+            all =
+                scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] ||
+                [];
+        } else {
+            all = scenarioResult.assertionResults.filter(
+                a =>
+                    convertAssertionPriority(a.assertion.priority) ===
+                    convertAssertionPriority(priority)
+            );
+        }
         if (passedOnly) return all.filter(each => each.passed).length;
         return all.length;
     };
     const countTestResult = testResult => {
-        return sum(testResult.scenarioResults.map(countScenarioResult));
+        return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
@@ -64,13 +79,15 @@ const countUnexpectedBehaviors = ({
     testPlanReport // Choose one to provide
 }) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.unexpectedBehaviors.length;
+        return scenarioResult?.unexpectedBehaviors?.length || 0;
     };
     const countTestResult = testResult => {
-        return sum(testResult.scenarioResults.map(countScenarioResult));
+        return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
@@ -87,15 +104,19 @@ const countUnexpectedBehaviorsImpact = (
     impact
 ) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.unexpectedBehaviors.some(e => e.impact === impact)
+        return scenarioResult?.unexpectedBehaviors?.some(
+            e => e.impact === impact
+        )
             ? 1
             : 0;
     };
     const countTestResult = testResult => {
-        return sum(testResult.scenarioResults.map(countScenarioResult));
+        return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
@@ -109,13 +130,15 @@ const countCommands = ({
     testPlanReport // Choose one to provide
 }) => {
     const countScenarioResult = scenarioResult => {
-        return scenarioResult.scenario.commands.length;
+        return scenarioResult?.scenario?.commands?.length ? 1 : 0;
     };
     const countTestResult = testResult => {
-        return sum(testResult.scenarioResults.map(countScenarioResult));
+        return sum(testResult?.scenarioResults?.map(countScenarioResult) || []);
     };
     const countTestPlanReport = testPlanReport => {
-        return sum(testPlanReport.finalizedTestResults.map(countTestResult));
+        return sum(
+            testPlanReport?.finalizedTestResults?.map(countTestResult) || []
+        );
     };
 
     if (testPlanReport) return countTestPlanReport(testPlanReport);
@@ -146,21 +169,21 @@ const getMetrics = ({
     const result = { scenarioResult, testResult, testPlanReport };
 
     // Each command has 2 additional assertions:
-    // * Other behaviors that create high negative impact
+    // * Other behaviors that create severe negative impact
     // * Other behaviors that create moderate negative impact
     const commandsCount = countCommands({ ...result });
 
-    const highImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
+    const severeImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
         { ...result },
-        'HIGH'
+        'SEVERE'
     );
     const moderateImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
         { ...result },
         'MODERATE'
     );
 
-    const highImpactPassedAssertionCount =
-        commandsCount - highImpactFailedAssertionCount;
+    const severeImpactPassedAssertionCount =
+        commandsCount - severeImpactFailedAssertionCount;
     const moderateImpactPassedAssertionCount =
         commandsCount - moderateImpactFailedAssertionCount;
 
@@ -170,8 +193,8 @@ const getMetrics = ({
         assertionsFailedCount: requiredAssertionsFailedCount
     } = calculateAssertionPriorityCounts(result, 'MUST');
     requiredAssertionsCount += commandsCount;
-    requiredAssertionsPassedCount += highImpactPassedAssertionCount;
-    requiredAssertionsFailedCount += highImpactFailedAssertionCount;
+    requiredAssertionsPassedCount += severeImpactPassedAssertionCount;
+    requiredAssertionsFailedCount += severeImpactFailedAssertionCount;
 
     let {
         assertionsCount: optionalAssertionsCount,
@@ -193,7 +216,7 @@ const getMetrics = ({
         passedOnly: true
     });
     const testsCount =
-        testPlanReport?.runnableTests.length || countTests({ ...result });
+        testPlanReport?.runnableTests?.length || countTests({ ...result });
     const testsFailedCount = testsCount - testsPassedCount;
 
     const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;
@@ -225,7 +248,19 @@ const getMetrics = ({
         (requiredAssertionsPassedCount / requiredAssertionsCount) * 100
     );
 
+    const assertionsPassedCount =
+        requiredAssertionsPassedCount +
+        optionalAssertionsPassedCount +
+        mayAssertionsPassedCount;
+
+    const assertionsFailedCount =
+        requiredAssertionsFailedCount +
+        optionalAssertionsFailedCount +
+        mayAssertionsFailedCount;
+
     return {
+        assertionsPassedCount,
+        assertionsFailedCount,
         requiredAssertionsPassedCount,
         requiredAssertionsCount,
         requiredAssertionsFailedCount,
@@ -239,8 +274,8 @@ const getMetrics = ({
         testsCount,
         testsFailedCount,
         unexpectedBehaviorCount,
-        highImpactPassedAssertionCount,
-        highImpactFailedAssertionCount,
+        severeImpactPassedAssertionCount,
+        severeImpactFailedAssertionCount,
         moderateImpactPassedAssertionCount,
         moderateImpactFailedAssertionCount,
         commandsCount,

@@ -1,5 +1,5 @@
 const express = require('express');
-const { resolve } = require('path');
+const path = require('path');
 const { create } = require('express-handlebars');
 const { gql } = require('apollo-server-core');
 const apolloServer = require('../graphql-server');
@@ -7,22 +7,20 @@ const staleWhileRevalidate = require('../util/staleWhileRevalidate');
 const hash = require('object-hash');
 
 const app = express();
-const handlebarsPath =
-    process.env.ENVIRONMENT === 'dev' || process.env.ENVIRONMENT === 'test'
-        ? 'handlebars/embed'
-        : 'server/handlebars/embed';
+
+const handlebarsPath = path.resolve(__dirname, '../handlebars/embed');
 
 // handlebars
 const hbs = create({
-    layoutsDir: resolve(handlebarsPath, 'views/layouts'),
+    layoutsDir: path.resolve(handlebarsPath, 'views/layouts'),
     extname: 'hbs',
     defaultLayout: 'index',
-    helpers: require(resolve(handlebarsPath, 'helpers'))
+    helpers: require(path.resolve(handlebarsPath, 'helpers'))
 });
 
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
-app.set('views', resolve(handlebarsPath, 'views'));
+app.set('views', path.resolve(handlebarsPath, 'views'));
 
 // Prevent refreshing cached data for five seconds - using a short time like
 // this is possible because the stale-while-revalidate caching strategy works in
@@ -229,7 +227,7 @@ const renderEmbed = ({
         })
     );
 
-    return hbs.renderView(resolve(handlebarsPath, 'views/main.hbs'), {
+    return hbs.renderView(path.resolve(handlebarsPath, 'views/main.hbs'), {
         layout: 'index',
         dataEmpty: Object.keys(reportsByAt).length === 0,
         allAtBrowserCombinations,
@@ -281,6 +279,6 @@ app.get('/reports/:pattern', async (req, res) => {
     res.set('cache-control', 'must-revalidate').send(embedRendered);
 });
 
-app.use(express.static(resolve(`${handlebarsPath}/public`)));
+app.use(express.static(path.resolve(`${handlebarsPath}/public`)));
 
 module.exports = app;

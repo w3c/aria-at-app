@@ -3,13 +3,11 @@ const { difference, uniq: unique } = require('lodash');
 const deepFlatFilter = require('../../util/deepFlatFilter');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
-const dbCleaner = require('../util/db-cleaner.deprecated');
-const {
-    getAtVersionByQuery
-} = require('../../models/services.deprecated/AtService');
+const dbCleaner = require('../util/db-cleaner');
+const { getAtVersionByQuery } = require('../../models/services/AtService');
 const {
     getBrowserVersionByQuery
-} = require('../../models/services.deprecated/BrowserService');
+} = require('../../models/services/BrowserService');
 
 /**
  * Get a function for making GraphQL queries - as well as functions to check
@@ -43,7 +41,8 @@ const getTypeAwareQuery = async ({
                     }
                 }
             }
-        `
+        `,
+        { transaction: false }
     );
 
     introspectionResult.__schema.types.forEach(graphqlType => {
@@ -563,10 +562,11 @@ describe('graphql', () => {
                         }
                     }
                 }
-            `
+            `,
+            { transaction: false }
         );
 
-        await dbCleaner(async () => {
+        await dbCleaner(async transaction => {
             const {
                 emptyTestResultInput,
                 passingTestResultInput,
@@ -786,7 +786,8 @@ describe('graphql', () => {
                         testPlanRun1TestId,
                         atVersionId,
                         browserVersionId
-                    }
+                    },
+                    transaction
                 }
             );
         });
@@ -828,19 +829,22 @@ describe('graphql', () => {
 });
 
 const getQueryInputs = async () => {
-    const { testPlanRun } = await query(gql`
-        query {
-            testPlanRun(id: 1) {
-                testResults {
-                    scenarioResults {
-                        assertionResults {
-                            id
+    const { testPlanRun } = await query(
+        gql`
+            query {
+                testPlanRun(id: 1) {
+                    testResults {
+                        scenarioResults {
+                            assertionResults {
+                                id
+                            }
                         }
                     }
                 }
             }
-        }
-    `);
+        `,
+        { transaction: false }
+    );
 
     return {
         assertionResultId:
@@ -853,86 +857,92 @@ const getMutationInputs = async () => {
         populateData: {
             testPlanReport: { runnableTests, at, browser }
         }
-    } = await query(gql`
-        query {
-            populateData(locationOfData: { testPlanRunId: 1 }) {
-                testPlanReport {
-                    runnableTests {
-                        id
-                    }
-                    at {
-                        id
-                    }
-                    browser {
-                        id
+    } = await query(
+        gql`
+            query {
+                populateData(locationOfData: { testPlanRunId: 1 }) {
+                    testPlanReport {
+                        runnableTests {
+                            id
+                        }
+                        at {
+                            id
+                        }
+                        browser {
+                            id
+                        }
                     }
                 }
             }
-        }
-    `);
-
-    const atVersion = await getAtVersionByQuery(
-        { atId: at.id },
-        undefined,
-        undefined,
-        { order: [['releasedAt', 'DESC']] }
+        `,
+        { transaction: false }
     );
 
+    const atVersion = await getAtVersionByQuery({
+        where: { atId: at.id },
+        pagination: { order: [['releasedAt', 'DESC']] },
+        transaction: false
+    });
+
     const browserVersion = await getBrowserVersionByQuery({
-        browserId: browser.id
+        where: { browserId: browser.id },
+        transaction: false
     });
 
     const {
         testPlanRun: { empty, toBePassing, toBeDeleted }
-    } = await mutate(gql`
-        fragment TestResultFields on TestResult {
-            id
-            scenarioResults {
+    } = await mutate(
+        gql`
+            fragment TestResultFields on TestResult {
                 id
-                output
-                assertionResults {
+                scenarioResults {
                     id
-                    passed
-                }
-                unexpectedBehaviors {
-                    id
-                    details
-                }
-            }
-        }
-
-        mutation {
-            testPlanRun(id: 1) {
-                empty: findOrCreateTestResult(
-                    testId: "${runnableTests[0].id}",
-                    atVersionId: "${atVersion.id}",
-                    browserVersionId: "${browserVersion.id}"
-                ) {
-                    testResult {
-                        ...TestResultFields
-                    }
-                }
-                toBePassing: findOrCreateTestResult(
-                    testId: "${runnableTests[1].id}",
-                    atVersionId: "${atVersion.id}",
-                    browserVersionId: "${browserVersion.id}"
-                ) {
-                    testResult {
-                        ...TestResultFields
-                    }
-                }
-                toBeDeleted:  findOrCreateTestResult(
-                    testId: "${runnableTests[2].id}",
-                    atVersionId: "${atVersion.id}",
-                    browserVersionId: "${browserVersion.id}"
-                ) {
-                    testResult {
+                    output
+                    assertionResults {
                         id
+                        passed
+                    }
+                    unexpectedBehaviors {
+                        id
+                        details
                     }
                 }
             }
-        }
-    `);
+
+            mutation {
+                testPlanRun(id: 1) {
+                    empty: findOrCreateTestResult(
+                        testId: "${runnableTests[0].id}",
+                        atVersionId: "${atVersion.id}",
+                        browserVersionId: "${browserVersion.id}"
+                    ) {
+                        testResult {
+                            ...TestResultFields
+                        }
+                    }
+                    toBePassing: findOrCreateTestResult(
+                        testId: "${runnableTests[1].id}",
+                        atVersionId: "${atVersion.id}",
+                        browserVersionId: "${browserVersion.id}"
+                    ) {
+                        testResult {
+                            ...TestResultFields
+                        }
+                    }
+                    toBeDeleted:  findOrCreateTestResult(
+                        testId: "${runnableTests[2].id}",
+                        atVersionId: "${atVersion.id}",
+                        browserVersionId: "${browserVersion.id}"
+                    ) {
+                        testResult {
+                            id
+                        }
+                    }
+                }
+            }
+        `,
+        { transaction: false }
+    );
 
     const passingTestResultInput = {
         ...toBePassing.testResult,
