@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import nextId from 'react-id-generator';
+import { getMetrics } from 'shared';
 import './TestPlanResultsTable.css';
 
 const renderAssertionRow = (assertionResult, priorityString) => {
@@ -27,30 +28,17 @@ const TestPlanResultsTable = ({
         <>
             {optionalHeader}
             {testResult.scenarioResults.map((scenarioResult, index) => {
-                const passedAssertions = scenarioResult.assertionResults.filter(
-                    assertionResult => assertionResult.passed
-                );
-                const failedAssertions = scenarioResult.assertionResults.filter(
-                    assertionResult => !assertionResult.passed
-                );
-                const hasNoHighUnexpectedBehavior =
-                    !scenarioResult.unexpectedBehaviors.some(
-                        unexpectedBehavior =>
-                            unexpectedBehavior.impact === 'HIGH'
-                    );
+                const {
+                    assertionsPassedCount,
+                    assertionsFailedCount,
+                    severeImpactPassedAssertionCount,
+                    moderateImpactPassedAssertionCount
+                } = getMetrics({ scenarioResult });
+
+                const hasNoSevereUnexpectedBehavior =
+                    severeImpactPassedAssertionCount > 0;
                 const hasNoModerateUnexpectedBehavior =
-                    !scenarioResult.unexpectedBehaviors.some(
-                        unexpectedBehavior =>
-                            unexpectedBehavior.impact === 'MODERATE'
-                    );
-                const passedAssertionsLength =
-                    passedAssertions.length +
-                    (hasNoHighUnexpectedBehavior ? 1 : 0) +
-                    (hasNoModerateUnexpectedBehavior ? 1 : 0);
-                const failedAssertionsLength =
-                    failedAssertions.length +
-                    (hasNoHighUnexpectedBehavior ? 0 : 1) +
-                    (hasNoModerateUnexpectedBehavior ? 0 : 1);
+                    moderateImpactPassedAssertionCount > 0;
 
                 // Rows are sorted by priority descending, then result (failures then passes), then
                 // assertion order. Assertion order refers to the order of assertion columns in the
@@ -77,8 +65,21 @@ const TestPlanResultsTable = ({
                         a.passed === b.passed ? 0 : a.passed ? 1 : -1
                     );
 
+                // Workaround:
+                // Remove instances of content inside '()' to address edge case of
+                // COMMAND_TEXT (OPERATING_MODE) then COMMAND_TEXT (OPERATING_MODE).
+                // OPERATING_MODE should only show once
+                const bracketsRegex = /\((.*?)\)/g;
+
                 const commandsString = scenarioResult.scenario.commands
-                    .map(({ text }) => text)
+                    .map(({ text }, index) => {
+                        if (
+                            index !==
+                            scenarioResult.scenario.commands.length - 1
+                        )
+                            text = text.replace(bracketsRegex, '');
+                        return text.trim();
+                    })
                     .join(' then ');
 
                 const sortedAssertionResults = [
@@ -89,9 +90,9 @@ const TestPlanResultsTable = ({
                     {
                         id: `UnexpectedBehavior_MUST_${nextId()}`,
                         assertion: {
-                            text: 'Other behaviors that create high negative-impacts are not exhibited'
+                            text: 'Other behaviors that create severe negative impacts are not exhibited'
                         },
-                        passed: hasNoHighUnexpectedBehavior,
+                        passed: hasNoSevereUnexpectedBehavior,
                         priorityString: 'MUST'
                     },
                     ...optionalAssertionResults.map(e => ({
@@ -101,7 +102,7 @@ const TestPlanResultsTable = ({
                     {
                         id: `UnexpectedBehavior_SHOULD_${nextId()}`,
                         assertion: {
-                            text: 'Other behaviors that create moderate negative-impacts are not exhibited'
+                            text: 'Other behaviors that create moderate negative impacts are not exhibited'
                         },
                         passed: hasNoModerateUnexpectedBehavior,
                         priorityString: 'SHOULD'
@@ -116,8 +117,8 @@ const TestPlanResultsTable = ({
                     <React.Fragment key={scenarioResult.id}>
                         <CommandHeading>
                             {commandsString}&nbsp;Results:&nbsp;
-                            {passedAssertionsLength} passed,&nbsp;
-                            {failedAssertionsLength} failed
+                            {assertionsPassedCount} passed,&nbsp;
+                            {assertionsFailedCount} failed
                         </CommandHeading>
                         <p className="test-plan-results-response-p">
                             {test.at?.name} Response:
@@ -148,23 +149,33 @@ const TestPlanResultsTable = ({
                                 )}
                             </tbody>
                         </Table>
-                        Unexpected Behaviors:{' '}
+                        Other behaviors that create negative impact:{' '}
                         {scenarioResult.unexpectedBehaviors.length ? (
-                            <ul>
-                                {scenarioResult.unexpectedBehaviors.map(
-                                    ({ id, text, impact, details }) => {
-                                        const description = `${text} (Details: ${details}, Impact: ${impact})`;
-                                        return (
-                                            <li
-                                                key={id}
-                                                className="test-plan-results-li"
-                                            >
-                                                {description}
-                                            </li>
-                                        );
-                                    }
-                                )}
-                            </ul>
+                            <Table
+                                bordered
+                                responsive
+                                aria-label={`Undesirable behaviors for test ${test.title}`}
+                                className={`test-plan-unexpected-behaviors-table ${tableClassName}`}
+                            >
+                                <thead>
+                                    <tr>
+                                        <th>Behavior</th>
+                                        <th>Details</th>
+                                        <th>Impact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {scenarioResult.unexpectedBehaviors.map(
+                                        ({ id, text, details, impact }) => (
+                                            <tr key={id}>
+                                                <td>{text}</td>
+                                                <td>{details}</td>
+                                                <td>{impact}</td>
+                                            </tr>
+                                        )
+                                    )}
+                                </tbody>
+                            </Table>
                         ) : (
                             'None'
                         )}

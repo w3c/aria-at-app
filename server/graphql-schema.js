@@ -545,6 +545,12 @@ const graphqlSchema = gql`
         SHOULD
         # TODO Define MAY
         MAY
+        """
+        This assertion should not be included in the test and should not be
+        used to determine if the test should pass or fail.
+        This exclusion may be overwritten with an assertion exception.
+        """
+        EXCLUDE
     }
 
     """
@@ -747,7 +753,7 @@ const graphqlSchema = gql`
 
     enum UnexpectedBehaviorImpact {
         MODERATE
-        HIGH
+        SEVERE
     }
 
     """

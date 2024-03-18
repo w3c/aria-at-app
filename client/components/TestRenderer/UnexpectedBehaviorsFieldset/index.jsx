@@ -41,7 +41,7 @@ const UnexpectedBehaviorsFieldset = ({
     unexpectedBehaviors,
     isSubmitted
 }) => {
-    const impactOptions = ['Moderate', 'High'];
+    const impactOptions = ['Moderate', 'Severe'];
 
     return (
         <Fieldset id={`cmd-${commandIndex}-problems`}>
@@ -135,7 +135,6 @@ const UnexpectedBehaviorsFieldset = ({
                                         type="checkbox"
                                         value={description}
                                         className={`undesirable-${commandIndex}`}
-                                        tabIndex={optionIndex === 0 ? 0 : -1}
                                         autoFocus={isSubmitted && focus}
                                         checked={checked}
                                         onChange={e => change(e.target.checked)}
