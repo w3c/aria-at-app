@@ -9,7 +9,7 @@ module.exports = {
                     // This query is returning tests that have any assertions that
                     // have a priority value of REQUIRED or OPTIONAL.
                     `
-                  SELECT
+                    SELECT
                     id,
                     tests
                   FROM
@@ -24,8 +24,7 @@ module.exports = {
                       WHERE
                         assertion ->> 'priority' = 'REQUIRED'
                         OR assertion ->> 'priority' = 'OPTIONAL'
-                  ),
-                  id = ?`,
+                    )`,
                     {
                         type: Sequelize.QueryTypes.SELECT,
                         transaction
@@ -61,21 +60,14 @@ module.exports = {
                             })
                         );
                         await queryInterface.sequelize.query(
-                            `UPDATE
-                            "TestPlanVersion"
-                          SET
-                            tests = ?
-                          WHERE
-                            EXISTS (
-                              SELECT
-                                1
-                              FROM
-                                jsonb_array_elements(tests) AS test,
-                                jsonb_array_elements(test -> 'assertions') AS assertion
-                              WHERE
-                                assertion ->> 'priority' = 'REQUIRED'
-                                OR assertion ->> 'priority' = 'OPTIONAL'
-                            )`,
+                            `
+                                UPDATE
+                                    "TestPlanVersion"
+                                SET
+                                    tests = ?
+                                WHERE
+                                    id = ?
+                            `,
                             { replacements: [updatedTests, id], transaction }
                         );
                     })
