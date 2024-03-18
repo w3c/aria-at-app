@@ -1,5 +1,6 @@
 'use strict';
 
+const { regenerateResultsAndRecalculateHashes } = require('./utils');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
@@ -29,6 +30,11 @@ module.exports = {
                         { replacements: [updatedTests, id], transaction }
                     );
                 })
+            );
+            await regenerateResultsAndRecalculateHashes(
+                queryInterface,
+                transaction,
+                { pruneOldVersions: false }
             );
         });
     }
