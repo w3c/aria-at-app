@@ -1442,23 +1442,6 @@ const graphqlSchema = gql`
             testPlanReportId: ID!
         ): CollectionJob!
         """
-        Find or create a CollectionJob
-        """
-        findOrCreateCollectionJob(
-            """
-            The CollectionJob to find or create.
-            """
-            id: ID!
-            """
-            The status of the CollectionJob.
-            """
-            status: CollectionJobStatus
-            """
-            The TestPlanReport id to use to create the TestPlanRun associated with the CollectionJob.
-            """
-            testPlanReportId: ID
-        ): CollectionJob!
-        """
         Update a CollectionJob
         """
         updateCollectionJob(

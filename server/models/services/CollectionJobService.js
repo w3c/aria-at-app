@@ -1,5 +1,5 @@
 const ModelService = require('./ModelService');
-const { CollectionJob, sequelize } = require('../');
+const { CollectionJob } = require('../');
 const {
     COLLECTION_JOB_ATTRIBUTES,
     TEST_PLAN_ATTRIBUTES,
@@ -189,7 +189,6 @@ const userAssociation = userAttributes => ({
  */
 const createCollectionJob = async ({
     values: {
-        id,
         status = COLLECTION_JOB_STATUS.QUEUED,
         testPlanRun,
         testPlanReportId
@@ -217,13 +216,13 @@ const createCollectionJob = async ({
 
     const { id: testPlanRunId } = testPlanRun.get({ plain: true });
 
-    await ModelService.create(CollectionJob, {
-        values: { id, status, testPlanRunId },
+    const collectionJobResult = await ModelService.create(CollectionJob, {
+        values: { status, testPlanRunId },
         transaction
     });
 
     return ModelService.getById(CollectionJob, {
-        id,
+        id: collectionJobResult.id,
         attributes: collectionJobAttributes,
         include: [
             testPlanRunAssociation(
@@ -509,21 +508,8 @@ const scheduleCollectionJob = async (
         );
     }
 
-    // TODO: Replace by allowing CollectionJob id to auto-increment
-    const lastRecord = await sequelize.query(
-        `SELECT * FROM "CollectionJob" ORDER BY CAST(id AS INTEGER) DESC LIMIT 1`,
-        { model: CollectionJob, mapToModel: true, transaction }
-    );
-    let jobId;
-    if (lastRecord.length > 0) {
-        jobId = (Number(lastRecord[0].id) + 1).toString();
-    } else {
-        jobId = '1';
-    }
-
     const job = await createCollectionJob({
         values: {
-            id: jobId,
             status: COLLECTION_JOB_STATUS.QUEUED,
             testPlanReportId
         },
@@ -533,37 +519,6 @@ const scheduleCollectionJob = async (
     return triggerWorkflow(job, testIds ?? tests.map(test => test.id), {
         transaction
     });
-};
-
-/**
- * Gets one CollectionJob and optionally updates it, or creates it if it doesn't exist.
- * @param {object} options
- * @param {*} options.where - These values will be used to find a matching record, or they will be used to create one
- * @param {*} options.values - Additional values to be used when creating but not while finding
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<[*, [*]]>}
- */
-const getOrCreateCollectionJob = async ({
-    where: { id },
-    values: { status, testPlanRun, testPlanReportId } = {},
-    transaction
-}) => {
-    const existingJob = await getCollectionJobById({ id, transaction });
-
-    if (existingJob) {
-        return existingJob;
-    } else {
-        if (!testPlanReportId) {
-            throw new Error(
-                'testPlanReportId is required to create a new CollectionJob'
-            );
-        }
-
-        return createCollectionJob({
-            values: { id, status, testPlanRun, testPlanReportId },
-            transaction
-        });
-    }
 };
 
 /**
@@ -642,8 +597,6 @@ module.exports = {
     getCollectionJobs,
     updateCollectionJobById,
     removeCollectionJobById,
-    // Nested CRUD
-    getOrCreateCollectionJob,
     // Custom for Response Scheduler
     scheduleCollectionJob,
     restartCollectionJob,
