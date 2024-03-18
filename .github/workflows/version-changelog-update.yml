@@ -1,0 +1,38 @@
+name: Version Bump and Changelog Update
+
+on:
+  push:
+    branches:
+      - releases
+    paths-ignore:
+      - package.json
+      - CHANGELOG.md
+
+jobs:
+  version-changelog-update:
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Install NodeJS 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+      - name: Conventional Changelog Action
+        uses: TriPSs/conventional-changelog-action@v3
+        with:
+          github-token: ${{ secrets.github_token }}
+          git-user-name: github-actions[bot]
+          git-user-email: github-actions[bot]@users.noreply.github.com
+          release-count: 0
+          preset: conventionalcommits
+      - name: Pull changes from the development branch
+        run: |
+          git config --global pull.rebase false
+          git pull origin development
+      - name: Update development with version bump from CHANGELOG.md and package.json
+        run: git push origin HEAD:development
