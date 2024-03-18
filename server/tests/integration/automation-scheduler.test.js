@@ -321,6 +321,7 @@ describe('Automation controller', () => {
             });
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
             expect(storedCollectionJob.status).toEqual('QUEUED');
         });
     });
@@ -437,6 +438,7 @@ describe('Automation controller', () => {
 
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
             expect(storedCollectionJob.status).toEqual('CANCELLED');
             expect(storedCollectionJob.externalLogsUrl).toEqual(
                 'https://www.aol.com/'
