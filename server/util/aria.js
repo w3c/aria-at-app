@@ -24,14 +24,15 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
         // Changed text in renderableContent.assertions[].assertion(Statement|Phrase) shouldn't
         // matter during comparison of results
         propertiesToOmit.push('renderableContent.assertions');
-
-        // The collection of assertions won't matter during an update comparison; a per-assertion
-        // check will that is handled separately in processCopiedReports.js
         propertiesToOmit.push('assertions');
 
+        // The collection of scenarios (commands) won't matter during an update comparison;
+        // a per-command check will that is handled separately in processCopiedReports.js
+        propertiesToOmit.push('renderableContent.commands');
+        propertiesToOmit.push('scenarios');
+
         return {
-            ...omit(test, propertiesToOmit),
-            scenarios: test.scenarios.map(scenario => omit(scenario, ['id']))
+            ...omit(test, propertiesToOmit)
         };
     } else {
         return {
