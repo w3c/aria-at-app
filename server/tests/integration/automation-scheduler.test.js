@@ -39,14 +39,16 @@ const getTestPlanReport = async (id, { transaction }) =>
                 testPlanReport(id: "${id}") {
                     id
                     markedFinalAt
+                    at { name }
+                    browser { name }
                     finalizedTestResults {
-                        test{
+                        test {
                             id
                         }
-                        atVersion{
+                        atVersion {
                             name
                         }
-                        browserVersion{
+                        browserVersion {
                             name
                         }
                         scenarioResults {
@@ -265,7 +267,8 @@ describe('Automation controller', () => {
                 testPlanVersionGitSha,
                 testIds,
                 testPlanName,
-                jobId: parseInt(collectionJob.scheduleCollectionJob.id)
+                jobId: parseInt(collectionJob.scheduleCollectionJob.id),
+                transactionId: transaction.id
             };
 
             expect(axiosPostMock).toHaveBeenCalledWith(
@@ -491,8 +494,12 @@ describe('Automation controller', () => {
                 .post(`/api/jobs/${job.id}/result`)
                 .send({
                     testCsvRow: selectedTestRowNumber,
-                    atVersionName: at.atVersions[0].name,
-                    browserVersionName: browser.browserVersions[0].name,
+                    capabilities: {
+                        atName: at.name,
+                        atVersion: at.atVersions[0].name,
+                        browserName: browser.name,
+                        browserVersion: browser.browserVersions[0].name
+                    },
                     responses: new Array(numberOfScenarios).fill(
                         automatedTestResponse
                     )
@@ -556,6 +563,7 @@ describe('Automation controller', () => {
             const selectedTestIndex = 0;
             const selectedTestRowNumber = 1;
 
+            const { at, browser } = testPlanReport;
             const historicalTestResult =
                 testPlanReport.finalizedTestResults[selectedTestIndex];
             expect(historicalTestResult).not.toEqual(undefined);
@@ -584,8 +592,12 @@ describe('Automation controller', () => {
                 .post(`/api/jobs/${job.id}/result`)
                 .send({
                     testCsvRow: selectedTestRowNumber,
-                    atVersionName: atVersion.name,
-                    browserVersionName: browserVersion.name,
+                    capabilities: {
+                        atName: at.name,
+                        atVersion: atVersion.name,
+                        browserName: browser.name,
+                        browserVersion: browserVersion.name
+                    },
                     responses: historicalResponses
                 })
                 .set(
