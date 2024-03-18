@@ -562,13 +562,11 @@ const graphqlSchema = gql`
         All required assertions must pass for the test to pass. This should be
         considered as 'MUST Behaviors'.
         """
-        REQUIRED
         MUST
         """
         This assertion is not considered when deciding if a test is passing.
         This should be considered as 'SHOULD Behaviors'.
         """
-        OPTIONAL
         SHOULD
         # TODO Define MAY
         MAY

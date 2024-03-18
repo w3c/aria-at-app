@@ -24,8 +24,8 @@ module.exports = {
                       WHERE
                         assertion ->> 'priority' = 'REQUIRED'
                         OR assertion ->> 'priority' = 'OPTIONAL'
-                  )
-                `,
+                  ),
+                  id = ?`,
                     {
                         type: Sequelize.QueryTypes.SELECT,
                         transaction

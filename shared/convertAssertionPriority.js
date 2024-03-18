@@ -3,7 +3,7 @@
  * representation of that value.
  *
  * @param {number|string} priority
- * @returns {null|string}
+ * @returns {null|string}
  */
 const convertAssertionPriority = priority => {
     const validInputRegex = /^(0|1|2|3|EXCLUDE|MUST|SHOULD|MAY)$/;
