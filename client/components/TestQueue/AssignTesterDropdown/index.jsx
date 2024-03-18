@@ -110,7 +110,6 @@ const AssignTesterDropdown = ({
             return <FontAwesomeIcon icon={faUserPlus} />;
         }
     };
-    // section:
     const clearAriaLiveRegion = () => {
         setAlertMessage('');
     };
@@ -163,7 +162,6 @@ const AssignTesterDropdown = ({
                                                     : `now unchecked. ${tester.username}'s test plan run has been deleted.`
                                             }`
                                         );
-                                        // section: run function
                                         setTimeout(clearAriaLiveRegion, 6000);
                                         await toggleTesterAssign(username);
                                         await onChange();
