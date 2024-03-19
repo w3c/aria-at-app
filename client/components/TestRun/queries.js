@@ -36,15 +36,13 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         }
                         passed
                     }
-                    requiredAssertionResults: assertionResults(priority: MUST) {
+                    mustAssertionResults: assertionResults(priority: MUST) {
                         assertion {
                             text
                         }
                         passed
                     }
-                    optionalAssertionResults: assertionResults(
-                        priority: SHOULD
-                    ) {
+                    shouldAssertionResults: assertionResults(priority: SHOULD) {
                         assertion {
                             text
                         }
@@ -330,7 +328,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 }
                                 passed
                             }
-                            requiredAssertionResults: assertionResults(
+                            mustAssertionResults: assertionResults(
                                 priority: MUST
                             ) {
                                 assertion {
@@ -338,7 +336,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 }
                                 passed
                             }
-                            optionalAssertionResults: assertionResults(
+                            shouldAssertionResults: assertionResults(
                                 priority: SHOULD
                             ) {
                                 assertion {
@@ -618,7 +616,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 }
                                 passed
                             }
-                            requiredAssertionResults: assertionResults(
+                            mustAssertionResults: assertionResults(
                                 priority: MUST
                             ) {
                                 assertion {
@@ -626,7 +624,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 }
                                 passed
                             }
-                            optionalAssertionResults: assertionResults(
+                            shouldAssertionResults: assertionResults(
                                 priority: SHOULD
                             ) {
                                 assertion {
@@ -906,7 +904,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 }
                                 passed
                             }
-                            requiredAssertionResults: assertionResults(
+                            mustAssertionResults: assertionResults(
                                 priority: MUST
                             ) {
                                 assertion {
@@ -914,7 +912,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 }
                                 passed
                             }
-                            optionalAssertionResults: assertionResults(
+                            shouldAssertionResults: assertionResults(
                                 priority: SHOULD
                             ) {
                                 assertion {

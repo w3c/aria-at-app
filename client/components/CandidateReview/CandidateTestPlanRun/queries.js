@@ -115,15 +115,13 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                         }
                         passed
                     }
-                    requiredAssertionResults: assertionResults(priority: MUST) {
+                    mustAssertionResults: assertionResults(priority: MUST) {
                         assertion {
                             text
                         }
                         passed
                     }
-                    optionalAssertionResults: assertionResults(
-                        priority: SHOULD
-                    ) {
+                    mustAssertionResults: assertionResults(priority: SHOULD) {
                         assertion {
                             text
                         }
