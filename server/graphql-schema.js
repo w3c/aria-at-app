@@ -600,7 +600,6 @@ const graphqlSchema = gql`
         A human-readable version of the assertion.
         """
         text: String!
-        rawAssertionId: String
     }
 
     """
