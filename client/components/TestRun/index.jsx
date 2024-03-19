@@ -110,7 +110,6 @@ const TestRun = () => {
         FIND_OR_CREATE_BROWSER_VERSION_MUTATION
     );
 
-    const [isRunning, setIsRunning] = useState(false);
     const [isRendererReady, setIsRendererReady] = useState(false);
     const [isSavingForm, setIsSavingForm] = useState(false);
     const [isTestSubmitClicked, setIsTestSubmitClicked] = useState(false);
@@ -131,12 +130,6 @@ const TestRun = () => {
     const [isEditAtBrowserDetailsModalClick, setIsEditAtBrowserDetailsClicked] =
         useState(false);
     const [updateMessageComponent, setUpdateMessageComponent] = useState(null);
-    // section:
-    if (isRunning) {
-        if (updateMessageComponent) {
-            setUpdateMessageComponent(null);
-        }
-    }
 
     // Queried State Values
     const [testPlanRun, setTestPlanRun] = useState({});
@@ -520,7 +513,9 @@ const TestRun = () => {
             forceSave = false,
             forceEdit = false
         ) => {
-            setIsRunning(true);
+            if (updateMessageComponent) {
+                setUpdateMessageComponent(null);
+            }
             try {
                 if (forceEdit) setIsTestEditClicked(true);
                 else setIsTestEditClicked(false);
@@ -556,7 +551,6 @@ const TestRun = () => {
                 console.error('save.error', e);
                 setIsSavingForm(false);
             }
-            setIsRunning(false);
         };
 
         switch (action) {
