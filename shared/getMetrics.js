@@ -219,8 +219,8 @@ const getMetrics = ({
         testPlanReport?.runnableTests?.length || countTests({ ...result });
     const testsFailedCount = testsCount - testsPassedCount;
 
-    const requiredFormatted = `${mustAssertionsPassedCount} of ${mustAssertionsCount} passed`;
-    const optionalFormatted =
+    const mustFormatted = `${mustAssertionsPassedCount} of ${mustAssertionsCount} passed`;
+    const shouldFormatted =
         shouldAssertionsCount === 0
             ? false
             : `${shouldAssertionsPassedCount} of ${shouldAssertionsCount} passed`;
@@ -279,8 +279,8 @@ const getMetrics = ({
         moderateImpactPassedAssertionCount,
         moderateImpactFailedAssertionCount,
         commandsCount,
-        requiredFormatted,
-        optionalFormatted,
+        mustFormatted,
+        shouldFormatted,
         mayFormatted,
         unexpectedBehaviorsFormatted,
         supportLevel,
