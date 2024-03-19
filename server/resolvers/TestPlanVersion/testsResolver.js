@@ -9,9 +9,9 @@ const getTests = require('../../models/services/TestsService');
  * @returns {array[*]} - An array of resolved tests.
  */
 const testsResolver = (
-    parentRecord,
-    args, // eslint-disable-line no-unused-vars
-    context // eslint-disable-line no-unused-vars
+  parentRecord,
+  args, // eslint-disable-line no-unused-vars
+  context // eslint-disable-line no-unused-vars
 ) => getTests(parentRecord);
 
 module.exports = testsResolver;

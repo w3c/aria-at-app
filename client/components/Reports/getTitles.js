@@ -1,5 +1,5 @@
 const getTestPlanVersionTitle = testPlanVersion => {
-    return testPlanVersion.title || `"${testPlanVersion.testPlan.directory}"`;
+  return testPlanVersion.title || `"${testPlanVersion.testPlan.directory}"`;
 };
 
 // const getTestPlanTargetTitle = ({ browser, browserVersion, at, atVersion }) => {
@@ -7,7 +7,7 @@ const getTestPlanVersionTitle = testPlanVersion => {
 // };
 
 const getTestPlanTargetTitle = ({ browser, at }) => {
-    return `${at.name} and ${browser.name}`;
+  return `${at.name} and ${browser.name}`;
 };
 
 export { getTestPlanTargetTitle, getTestPlanVersionTitle };

@@ -7,30 +7,30 @@
  * @returns
  */
 const sortArrayLikeArray = (
-    array1,
-    array2,
-    { identifyArrayItem = null } = {}
+  array1,
+  array2,
+  { identifyArrayItem = null } = {}
 ) => {
-    const finalArray = [];
+  const finalArray = [];
 
-    array2.forEach(array2Item => {
-        array1.forEach(array1Item => {
-            if (
-                Object.is(
-                    identifyArrayItem?.(array1Item) || array1Item,
-                    identifyArrayItem?.(array2Item) || array2Item
-                )
-            ) {
-                finalArray.push(array1Item);
-            }
-        });
+  array2.forEach(array2Item => {
+    array1.forEach(array1Item => {
+      if (
+        Object.is(
+          identifyArrayItem?.(array1Item) || array1Item,
+          identifyArrayItem?.(array2Item) || array2Item
+        )
+      ) {
+        finalArray.push(array1Item);
+      }
     });
+  });
 
-    if (finalArray.length !== array1.length) {
-        throw new Error('Item or items in array1 do not exist in array2.');
-    }
+  if (finalArray.length !== array1.length) {
+    throw new Error('Item or items in array1 do not exist in array2.');
+  }
 
-    return finalArray;
+  return finalArray;
 };
 
 module.exports = sortArrayLikeArray;

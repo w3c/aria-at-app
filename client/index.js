@@ -10,41 +10,41 @@ import { AriaLiveRegionProvider } from './components/providers/AriaLiveRegionPro
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
-    <GraphQLProvider>
-        <AriaLiveRegionProvider>
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
-        </AriaLiveRegionProvider>
-    </GraphQLProvider>
+  <GraphQLProvider>
+    <AriaLiveRegionProvider>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </AriaLiveRegionProvider>
+  </GraphQLProvider>
 );
 
 const signMeInCommon = async user => {
-    if (!user.username) throw new Error('Please provide a username');
+  if (!user.username) throw new Error('Please provide a username');
 
-    const response = await fetch('/api/auth/fake-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(user)
-    });
+  const response = await fetch('/api/auth/fake-user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(user)
+  });
 
-    const responseText = await response.text();
-    if (!response.ok) throw responseText;
+  const responseText = await response.text();
+  if (!response.ok) throw responseText;
 
-    location.reload();
+  location.reload();
 };
 
 window.signMeInAsAdmin = username => {
-    return signMeInCommon({
-        username,
-        roles: [{ name: 'ADMIN' }, { name: 'TESTER' }, { name: 'VENDOR' }]
-    });
+  return signMeInCommon({
+    username,
+    roles: [{ name: 'ADMIN' }, { name: 'TESTER' }, { name: 'VENDOR' }]
+  });
 };
 
 window.signMeInAsTester = username => {
-    return signMeInCommon({ username, roles: [{ name: 'TESTER' }] });
+  return signMeInCommon({ username, roles: [{ name: 'TESTER' }] });
 };
 
 window.signMeInAsVendor = username => {
-    return signMeInCommon({ username, roles: [{ name: 'VENDOR' }] });
+  return signMeInCommon({ username, roles: [{ name: 'VENDOR' }] });
 };

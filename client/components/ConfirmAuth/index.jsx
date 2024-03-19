@@ -6,30 +6,30 @@ import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 
 const ConfirmAuth = ({ children, requiredPermission }) => {
-    const { data } = useQuery(ME_QUERY);
+  const { data } = useQuery(ME_QUERY);
 
-    const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { roles, username, isAdmin, isSignedIn } = auth;
+  const auth = evaluateAuth(data && data.me ? data.me : {});
+  const { roles, username, isAdmin, isSignedIn } = auth;
 
-    if (!username) return <Navigate to={{ pathname: '/invalid-request' }} />;
+  if (!username) return <Navigate to={{ pathname: '/invalid-request' }} />;
 
-    // If you are an admin, you can access all other role actions by default
-    const authConfirmed =
-        isSignedIn && (roles.includes(requiredPermission) || isAdmin);
+  // If you are an admin, you can access all other role actions by default
+  const authConfirmed =
+    isSignedIn && (roles.includes(requiredPermission) || isAdmin);
 
-    if (!authConfirmed) {
-        return <Navigate to="/404" replace />;
-    }
+  if (!authConfirmed) {
+    return <Navigate to="/404" replace />;
+  }
 
-    return children;
+  return children;
 };
 
 ConfirmAuth.propTypes = {
-    children: PropTypes.oneOfType([
-        PropTypes.arrayOf(PropTypes.node),
-        PropTypes.node
-    ]).isRequired,
-    requiredPermission: PropTypes.string
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node
+  ]).isRequired,
+  requiredPermission: PropTypes.string
 };
 
 export default ConfirmAuth;

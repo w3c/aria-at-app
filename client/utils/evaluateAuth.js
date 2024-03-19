@@ -10,20 +10,20 @@
  * @returns {Auth} - evaluated auth object
  */
 export const evaluateAuth = (data = {}) => {
-    const roles = data.roles || [];
+  const roles = data.roles || [];
 
-    return {
-        // calculated booleans
-        isAdmin: roles.includes('ADMIN'),
-        isTester: roles.includes('TESTER'),
-        isVendor: roles.includes('VENDOR'),
-        isSignedIn: !!data.username,
+  return {
+    // calculated booleans
+    isAdmin: roles.includes('ADMIN'),
+    isTester: roles.includes('TESTER'),
+    isVendor: roles.includes('VENDOR'),
+    isSignedIn: !!data.username,
 
-        // user object values
-        id: data.id || null,
-        username: data.username || null,
-        roles
-    };
+    // user object values
+    id: data.id || null,
+    username: data.username || null,
+    roles
+  };
 };
 
 /**

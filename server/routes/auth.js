@@ -1,8 +1,8 @@
 const { Router } = require('express');
 const {
-    oauthRedirectToGithubController,
-    oauthRedirectFromGithubController,
-    signoutController
+  oauthRedirectToGithubController,
+  oauthRedirectFromGithubController,
+  signoutController
 } = require('../controllers/AuthController');
 const setFakeUserController = require('../controllers/FakeUserController');
 

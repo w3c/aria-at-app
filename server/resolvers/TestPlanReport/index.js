@@ -12,16 +12,16 @@ const latestAtVersionReleasedAt = require('./latestAtVersionReleasedAtResolver')
 const isFinal = require('./isFinalResolver');
 
 module.exports = {
-    runnableTests,
-    runnableTestsLength,
-    draftTestPlanRuns,
-    finalizedTestResults,
-    conflicts,
-    conflictsLength,
-    issues,
-    atVersions,
-    at,
-    browser,
-    latestAtVersionReleasedAt,
-    isFinal
+  runnableTests,
+  runnableTestsLength,
+  draftTestPlanRuns,
+  finalizedTestResults,
+  conflicts,
+  conflictsLength,
+  issues,
+  atVersions,
+  at,
+  browser,
+  latestAtVersionReleasedAt,
+  isFinal
 };

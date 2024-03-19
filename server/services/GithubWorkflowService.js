@@ -4,7 +4,7 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const {
-    promises: { resolve }
+  promises: { resolve }
 } = require('dns');
 
 const ONE_MINUTE = 60;
@@ -29,29 +29,29 @@ let privateKey = null;
 let callbackUrlHostname = null;
 
 exports.setup = async () => {
-    privateKey = fs.readFileSync(
-        path.join(__dirname, '../../jwt-signing-key.pem')
+  privateKey = fs.readFileSync(
+    path.join(__dirname, '../../jwt-signing-key.pem')
+  );
+  // strip possible https:// at start and trailing /
+  callbackUrlHostname = process.env.AUTOMATION_CALLBACK_FQDN?.replace(
+    /(^[^:]+:\/\/|\/$)/g,
+    ''
+  );
+  if (!callbackUrlHostname) {
+    throw new Error(
+      'Environment AUTOMATION_CALLBACK_FQDN must be set to a valid hostname for the public address.'
     );
-    // strip possible https:// at start and trailing /
-    callbackUrlHostname = process.env.AUTOMATION_CALLBACK_FQDN?.replace(
-        /(^[^:]+:\/\/|\/$)/g,
-        ''
+  }
+  try {
+    const results = await resolve(callbackUrlHostname);
+    if (results.length < 1) {
+      throw new Error('no results');
+    }
+  } catch (error) {
+    throw new Error(
+      `Error while resolving AUTOMATION_CALLBACK_FQDN ${callbackUrlHostname} ${error}`
     );
-    if (!callbackUrlHostname) {
-        throw new Error(
-            'Environment AUTOMATION_CALLBACK_FQDN must be set to a valid hostname for the public address.'
-        );
-    }
-    try {
-        const results = await resolve(callbackUrlHostname);
-        if (results.length < 1) {
-            throw new Error('no results');
-        }
-    } catch (error) {
-        throw new Error(
-            `Error while resolving AUTOMATION_CALLBACK_FQDN ${callbackUrlHostname} ${error}`
-        );
-    }
+  }
 };
 
 exports.isEnabled = () => privateKey && callbackUrlHostname;
@@ -79,11 +79,11 @@ const GITHUB_APP_INSTALLATION_ID = '42217598';
 const calculateIssuedAt = () => Math.round(Date.now() / 1000) - ONE_MINUTE;
 
 const createJWT = (payload, privateKey, algorithm) => {
-    return new Promise((resolve, reject) => {
-        jwt.sign(payload, privateKey, { algorithm }, (err, token) => {
-            token ? resolve(token) : reject(err);
-        });
+  return new Promise((resolve, reject) => {
+    jwt.sign(payload, privateKey, { algorithm }, (err, token) => {
+      token ? resolve(token) : reject(err);
     });
+  });
 };
 
 // > The expiration time of the JWT, after which it can't be used to request an
@@ -94,68 +94,68 @@ const createJWT = (payload, privateKey, algorithm) => {
 const calculateExpiresAt = () => Math.round(Date.now() / 1000) + 9 * ONE_MINUTE;
 
 const fetchInstallationAccessToken = async (jsonWebToken, installationID) => {
-    const response = await axios({
-        method: 'POST',
-        url: `https://api.github.com/app/installations/${installationID}/access_tokens`,
-        headers: {
-            Accept: 'application/vnd.github+json',
-            Authorization: `Bearer ${jsonWebToken}`,
-            'X-GitHub-Api-Version': '2022-11-28'
-        },
-        transformResponse: [],
-        validateStatus: () => true,
-        responseType: 'text'
-    });
+  const response = await axios({
+    method: 'POST',
+    url: `https://api.github.com/app/installations/${installationID}/access_tokens`,
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${jsonWebToken}`,
+      'X-GitHub-Api-Version': '2022-11-28'
+    },
+    transformResponse: [],
+    validateStatus: () => true,
+    responseType: 'text'
+  });
 
-    if (response.status < 200 || response.status >= 300) {
-        throw new Error(
-            response.data ?? 'Unable to retrieve installation access token'
-        );
-    }
-    return JSON.parse(response.data).token;
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(
+      response.data ?? 'Unable to retrieve installation access token'
+    );
+  }
+  return JSON.parse(response.data).token;
 };
 
 const createGithubWorkflow = async ({ job, directory, gitSha }) => {
-    const payload = {
-        iat: calculateIssuedAt(),
-        exp: calculateExpiresAt(),
-        iss: GITHUB_APP_ID
-    };
-    const jsonWebToken = await createJWT(payload, privateKey, ALGORITHM);
-    const accessToken = await fetchInstallationAccessToken(
-        jsonWebToken,
-        GITHUB_APP_INSTALLATION_ID
-    );
-    const inputs = {
-        callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/result`,
-        status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/update`,
-        callback_header: `x-automation-secret:${process.env.AUTOMATION_SCHEDULER_SECRET}`,
-        work_dir: `tests/${directory}`,
-        test_pattern: '{reference/**,test-*-nvda.*}',
-        aria_at_ref: gitSha
-    };
-    const axiosConfig = {
-        method: 'POST',
-        url: `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${WORKFLOW_FILE_NAME}/dispatches`,
+  const payload = {
+    iat: calculateIssuedAt(),
+    exp: calculateExpiresAt(),
+    iss: GITHUB_APP_ID
+  };
+  const jsonWebToken = await createJWT(payload, privateKey, ALGORITHM);
+  const accessToken = await fetchInstallationAccessToken(
+    jsonWebToken,
+    GITHUB_APP_INSTALLATION_ID
+  );
+  const inputs = {
+    callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/result`,
+    status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/update`,
+    callback_header: `x-automation-secret:${process.env.AUTOMATION_SCHEDULER_SECRET}`,
+    work_dir: `tests/${directory}`,
+    test_pattern: '{reference/**,test-*-nvda.*}',
+    aria_at_ref: gitSha
+  };
+  const axiosConfig = {
+    method: 'POST',
+    url: `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${WORKFLOW_FILE_NAME}/dispatches`,
 
-        headers: {
-            Accept: 'application/vnd.github+json',
-            Authorization: `Bearer ${accessToken}`,
-            'X-GitHub-Api-Version': '2022-11-28'
-        },
-        data: JSON.stringify({
-            ref: 'main',
-            inputs
-        }),
-        validateStatus: () => true,
-        responseType: 'text'
-    };
-    const response = await axios(axiosConfig);
-    if (response.status < 200 || response.status >= 300) {
-        throw new Error(response.data ?? 'Unable to initiate workflow');
-    }
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${accessToken}`,
+      'X-GitHub-Api-Version': '2022-11-28'
+    },
+    data: JSON.stringify({
+      ref: 'main',
+      inputs
+    }),
+    validateStatus: () => true,
+    responseType: 'text'
+  };
+  const response = await axios(axiosConfig);
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(response.data ?? 'Unable to initiate workflow');
+  }
 
-    return true;
+  return true;
 };
 
 exports.default = createGithubWorkflow;

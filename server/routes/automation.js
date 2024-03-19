@@ -1,10 +1,10 @@
 const { Router } = require('express');
 const {
-    updateJobStatus,
-    updateJobResults
+  updateJobStatus,
+  updateJobResults
 } = require('../controllers/AutomationController');
 const {
-    verifyAutomationScheduler
+  verifyAutomationScheduler
 } = require('../middleware/verifyAutomationScheduler');
 const { handleError } = require('../middleware/handleError');
 

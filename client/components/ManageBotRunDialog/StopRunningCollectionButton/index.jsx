@@ -6,55 +6,55 @@ import { CANCEL_COLLECTION_JOB } from '../queries';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 
 const StopRunningCollectionButton = ({ collectionJob, onClick = () => {} }) => {
-    if (!collectionJob) {
-        return null;
+  if (!collectionJob) {
+    return null;
+  }
+
+  const { triggerLoad, loadingMessage } = useTriggerLoad();
+
+  const [cancelCollectionJob] = useMutation(CANCEL_COLLECTION_JOB, {
+    variables: {
+      collectionJobId: collectionJob.id
     }
+  });
 
-    const { triggerLoad, loadingMessage } = useTriggerLoad();
+  const handleClick = async () => {
+    await triggerLoad(async () => {
+      await cancelCollectionJob();
+    }, 'Cancelling Collection Job');
+    await onClick();
+  };
 
-    const [cancelCollectionJob] = useMutation(CANCEL_COLLECTION_JOB, {
-        variables: {
-            collectionJobId: collectionJob.id
+  return (
+    <LoadingStatus message={loadingMessage}>
+      <Button
+        variant="secondary"
+        onClick={handleClick}
+        disabled={
+          !(
+            collectionJob.status === 'RUNNING' ||
+            collectionJob.status === 'QUEUED'
+          )
         }
-    });
-
-    const handleClick = async () => {
-        await triggerLoad(async () => {
-            await cancelCollectionJob();
-        }, 'Cancelling Collection Job');
-        await onClick();
-    };
-
-    return (
-        <LoadingStatus message={loadingMessage}>
-            <Button
-                variant="secondary"
-                onClick={handleClick}
-                disabled={
-                    !(
-                        collectionJob.status === 'RUNNING' ||
-                        collectionJob.status === 'QUEUED'
-                    )
-                }
-            >
-                Stop Running
-            </Button>
-        </LoadingStatus>
-    );
+      >
+        Stop Running
+      </Button>
+    </LoadingStatus>
+  );
 };
 
 StopRunningCollectionButton.propTypes = {
-    collectionJob: PropTypes.shape({
-        id: PropTypes.string,
-        status: PropTypes.oneOf([
-            'QUEUED',
-            'RUNNING',
-            'CANCELLED',
-            'COMPLETED',
-            'ERROR'
-        ])
-    }),
-    onClick: PropTypes.func
+  collectionJob: PropTypes.shape({
+    id: PropTypes.string,
+    status: PropTypes.oneOf([
+      'QUEUED',
+      'RUNNING',
+      'CANCELLED',
+      'COMPLETED',
+      'ERROR'
+    ])
+  }),
+  onClick: PropTypes.func
 };
 
 export default StopRunningCollectionButton;

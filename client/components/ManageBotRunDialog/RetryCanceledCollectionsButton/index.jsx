@@ -5,45 +5,45 @@ import { useMutation } from '@apollo/client';
 import { RETRY_CANCELED_COLLECTIONS } from '../queries';
 
 const RetryCanceledCollectionsButton = ({
-    collectionJob,
-    onClick = () => {}
+  collectionJob,
+  onClick = () => {}
 }) => {
-    if (!collectionJob) {
-        return null;
-    }
+  if (!collectionJob) {
+    return null;
+  }
 
-    const [retryCanceledCollections] = useMutation(RETRY_CANCELED_COLLECTIONS, {
-        variables: { collectionJobId: collectionJob.id }
-    });
+  const [retryCanceledCollections] = useMutation(RETRY_CANCELED_COLLECTIONS, {
+    variables: { collectionJobId: collectionJob.id }
+  });
 
-    const handleClick = async () => {
-        await retryCanceledCollections();
-        await onClick();
-    };
+  const handleClick = async () => {
+    await retryCanceledCollections();
+    await onClick();
+  };
 
-    return (
-        <Button
-            variant="secondary"
-            onClick={handleClick}
-            disabled={collectionJob.status !== 'CANCELLED'}
-        >
-            Retry Cancelled Collections
-        </Button>
-    );
+  return (
+    <Button
+      variant="secondary"
+      onClick={handleClick}
+      disabled={collectionJob.status !== 'CANCELLED'}
+    >
+      Retry Cancelled Collections
+    </Button>
+  );
 };
 
 RetryCanceledCollectionsButton.propTypes = {
-    collectionJob: PropTypes.shape({
-        id: PropTypes.string,
-        status: PropTypes.oneOf([
-            'QUEUED',
-            'RUNNING',
-            'CANCELLED',
-            'COMPLETED',
-            'ERROR'
-        ])
-    }),
-    onClick: PropTypes.func
+  collectionJob: PropTypes.shape({
+    id: PropTypes.string,
+    status: PropTypes.oneOf([
+      'QUEUED',
+      'RUNNING',
+      'CANCELLED',
+      'COMPLETED',
+      'ERROR'
+    ])
+  }),
+  onClick: PropTypes.func
 };
 
 export default RetryCanceledCollectionsButton;

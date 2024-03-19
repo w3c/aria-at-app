@@ -1,36 +1,36 @@
 const ModelService = require('./ModelService');
 const { CollectionJob, sequelize } = require('../');
 const {
-    COLLECTION_JOB_ATTRIBUTES,
-    TEST_PLAN_ATTRIBUTES,
-    TEST_PLAN_REPORT_ATTRIBUTES,
-    TEST_PLAN_RUN_ATTRIBUTES,
-    TEST_PLAN_VERSION_ATTRIBUTES,
-    AT_ATTRIBUTES,
-    BROWSER_ATTRIBUTES,
-    USER_ATTRIBUTES
+  COLLECTION_JOB_ATTRIBUTES,
+  TEST_PLAN_ATTRIBUTES,
+  TEST_PLAN_REPORT_ATTRIBUTES,
+  TEST_PLAN_RUN_ATTRIBUTES,
+  TEST_PLAN_VERSION_ATTRIBUTES,
+  AT_ATTRIBUTES,
+  BROWSER_ATTRIBUTES,
+  USER_ATTRIBUTES
 } = require('./helpers');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const { Op } = require('sequelize');
 const {
-    createTestPlanRun,
-    removeTestPlanRunById
+  createTestPlanRun,
+  removeTestPlanRunById
 } = require('./TestPlanRunService');
 const responseCollectionUser = require('../../util/responseCollectionUser');
 const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { default: axios } = require('axios');
 const {
-    default: createGithubWorkflow,
-    isEnabled: isGithubWorkflowEnabled
+  default: createGithubWorkflow,
+  isEnabled: isGithubWorkflowEnabled
 } = require('../../services/GithubWorkflowService');
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 
 const axiosConfig = {
-    headers: {
-        'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
-    },
-    timeout: 1000
+  headers: {
+    'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
+  },
+  timeout: 1000
 };
 
 // association helpers to be included with Models' results
@@ -46,29 +46,29 @@ const axiosConfig = {
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanRunAssociation = (
-    testPlanRunAttributes,
-    userAttributes,
-    testPlanReportAttributes,
-    testPlanVersionAttributes,
-    testPlanAttributes,
-    atAttributes,
-    browserAttributes
+  testPlanRunAttributes,
+  userAttributes,
+  testPlanReportAttributes,
+  testPlanVersionAttributes,
+  testPlanAttributes,
+  atAttributes,
+  browserAttributes
 ) => ({
-    association: 'testPlanRun',
-    attributes: testPlanRunAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        userAssociation(userAttributes),
-        testPlanReportAssociation(
-            testPlanReportAttributes,
-            testPlanRunAttributes,
-            testPlanVersionAttributes,
-            testPlanAttributes,
-            atAttributes,
-            browserAttributes,
-            userAttributes
-        )
-    ]
+  association: 'testPlanRun',
+  attributes: testPlanRunAttributes,
+  include: [
+    // eslint-disable-next-line no-use-before-define
+    userAssociation(userAttributes),
+    testPlanReportAssociation(
+      testPlanReportAttributes,
+      testPlanRunAttributes,
+      testPlanVersionAttributes,
+      testPlanAttributes,
+      atAttributes,
+      browserAttributes,
+      userAttributes
+    )
+  ]
 });
 
 /**
@@ -82,29 +82,26 @@ const testPlanRunAssociation = (
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanReportAssociation = (
-    testPlanReportAttributes,
-    testPlanRunAttributes,
-    testPlanVersionAttributes,
-    testPlanAttributes,
-    atAttributes,
-    browserAttributes,
-    userAttributes
+  testPlanReportAttributes,
+  testPlanRunAttributes,
+  testPlanVersionAttributes,
+  testPlanAttributes,
+  atAttributes,
+  browserAttributes,
+  userAttributes
 ) => ({
-    association: 'testPlanReport',
-    attributes: testPlanReportAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        nestedTestPlanRunAssociation(testPlanRunAttributes, userAttributes),
-        // eslint-disable-next-line no-use-before-define
-        testPlanVersionAssociation(
-            testPlanVersionAttributes,
-            testPlanAttributes
-        ),
-        // eslint-disable-next-line no-use-before-define
-        atAssociation(atAttributes),
-        // eslint-disable-next-line no-use-before-define
-        browserAssociation(browserAttributes)
-    ]
+  association: 'testPlanReport',
+  attributes: testPlanReportAttributes,
+  include: [
+    // eslint-disable-next-line no-use-before-define
+    nestedTestPlanRunAssociation(testPlanRunAttributes, userAttributes),
+    // eslint-disable-next-line no-use-before-define
+    testPlanVersionAssociation(testPlanVersionAttributes, testPlanAttributes),
+    // eslint-disable-next-line no-use-before-define
+    atAssociation(atAttributes),
+    // eslint-disable-next-line no-use-before-define
+    browserAssociation(browserAttributes)
+  ]
 });
 
 /**
@@ -114,15 +111,15 @@ const testPlanReportAssociation = (
  * @returns {{association: string, attributes: string[]}}
  */
 const nestedTestPlanRunAssociation = (
-    testPlanRunAttributes,
-    userAttributes
+  testPlanRunAttributes,
+  userAttributes
 ) => ({
-    association: 'testPlanRuns',
-    attributes: testPlanRunAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        userAssociation(userAttributes)
-    ]
+  association: 'testPlanRuns',
+  attributes: testPlanRunAttributes,
+  include: [
+    // eslint-disable-next-line no-use-before-define
+    userAssociation(userAttributes)
+  ]
 });
 
 /**
@@ -130,12 +127,12 @@ const nestedTestPlanRunAssociation = (
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanVersionAssociation = (
-    testPlanVersionAttributes,
-    testPlanAttributes
+  testPlanVersionAttributes,
+  testPlanAttributes
 ) => ({
-    association: 'testPlanVersion',
-    attributes: testPlanVersionAttributes,
-    include: [testPlanAssociation(testPlanAttributes)]
+  association: 'testPlanVersion',
+  attributes: testPlanVersionAttributes,
+  include: [testPlanAssociation(testPlanAttributes)]
 });
 
 /**
@@ -143,8 +140,8 @@ const testPlanVersionAssociation = (
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanAssociation = testPlanAttributes => ({
-    association: 'testPlan',
-    attributes: testPlanAttributes
+  association: 'testPlan',
+  attributes: testPlanAttributes
 });
 
 /**
@@ -152,8 +149,8 @@ const testPlanAssociation = testPlanAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const browserAssociation = browserAttributes => ({
-    association: 'browser',
-    attributes: browserAttributes
+  association: 'browser',
+  attributes: browserAttributes
 });
 
 /**
@@ -161,8 +158,8 @@ const browserAssociation = browserAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const atAssociation = atAttributes => ({
-    association: 'at',
-    attributes: atAttributes
+  association: 'at',
+  attributes: atAttributes
 });
 
 /**
@@ -170,8 +167,8 @@ const atAssociation = atAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const userAssociation = userAttributes => ({
-    association: 'tester',
-    attributes: userAttributes
+  association: 'tester',
+  attributes: userAttributes
 });
 
 /**
@@ -188,56 +185,56 @@ const userAssociation = userAttributes => ({
  * @returns {Promise<*>}
  */
 const createCollectionJob = async ({
-    values: {
-        id,
-        status = COLLECTION_JOB_STATUS.QUEUED,
-        testPlanRun,
-        testPlanReportId
-    },
-    collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  values: {
+    id,
+    status = COLLECTION_JOB_STATUS.QUEUED,
+    testPlanRun,
+    testPlanReportId
+  },
+  collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    if (!testPlanRun) {
-        testPlanRun = await createTestPlanRun({
-            values: {
-                testerUserId: responseCollectionUser.id,
-                testPlanReportId: testPlanReportId,
-                isAutomated: true
-            },
-            transaction
-        });
-    }
-
-    const { id: testPlanRunId } = testPlanRun.get({ plain: true });
-
-    await ModelService.create(CollectionJob, {
-        values: { id, status, testPlanRunId },
-        transaction
+  if (!testPlanRun) {
+    testPlanRun = await createTestPlanRun({
+      values: {
+        testerUserId: responseCollectionUser.id,
+        testPlanReportId: testPlanReportId,
+        isAutomated: true
+      },
+      transaction
     });
+  }
 
-    return ModelService.getById(CollectionJob, {
-        id,
-        attributes: collectionJobAttributes,
-        include: [
-            testPlanRunAssociation(
-                testPlanRunAttributes,
-                userAttributes,
-                testPlanReportAttributes,
-                testPlanVersionAttributes,
-                testPlanAttributes,
-                atAttributes,
-                browserAttributes
-            )
-        ],
-        transaction
-    });
+  const { id: testPlanRunId } = testPlanRun.get({ plain: true });
+
+  await ModelService.create(CollectionJob, {
+    values: { id, status, testPlanRunId },
+    transaction
+  });
+
+  return ModelService.getById(CollectionJob, {
+    id,
+    attributes: collectionJobAttributes,
+    include: [
+      testPlanRunAssociation(
+        testPlanRunAttributes,
+        userAttributes,
+        testPlanReportAttributes,
+        testPlanVersionAttributes,
+        testPlanAttributes,
+        atAttributes,
+        browserAttributes
+      )
+    ],
+    transaction
+  });
 };
 
 /**
@@ -254,33 +251,33 @@ const createCollectionJob = async ({
  * @returns {Promise<*>}
  */
 const getCollectionJobById = async ({
-    id,
-    collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  id,
+  collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    return ModelService.getById(CollectionJob, {
-        id,
-        attributes: collectionJobAttributes,
-        include: [
-            testPlanRunAssociation(
-                testPlanRunAttributes,
-                userAttributes,
-                testPlanReportAttributes,
-                testPlanVersionAttributes,
-                testPlanAttributes,
-                atAttributes,
-                browserAttributes
-            )
-        ],
-        transaction
-    });
+  return ModelService.getById(CollectionJob, {
+    id,
+    attributes: collectionJobAttributes,
+    include: [
+      testPlanRunAssociation(
+        testPlanRunAttributes,
+        userAttributes,
+        testPlanReportAttributes,
+        testPlanVersionAttributes,
+        testPlanAttributes,
+        atAttributes,
+        browserAttributes
+      )
+    ],
+    transaction
+  });
 };
 
 /**
@@ -303,40 +300,40 @@ const getCollectionJobById = async ({
  * @returns {Promise<*>}
  */
 const getCollectionJobs = async ({
-    search,
-    where = {},
-    collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    pagination = {},
-    transaction
+  search,
+  where = {},
+  collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  pagination = {},
+  transaction
 }) => {
-    // search and filtering options
-    const searchQuery = search ? `%${search}%` : '';
-    if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
+  // search and filtering options
+  const searchQuery = search ? `%${search}%` : '';
+  if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
-    return ModelService.get(CollectionJob, {
-        where,
-        attributes: collectionJobAttributes,
-        include: [
-            testPlanRunAssociation(
-                testPlanRunAttributes,
-                userAttributes,
-                testPlanReportAttributes,
-                testPlanVersionAttributes,
-                testPlanAttributes,
-                atAttributes,
-                browserAttributes
-            )
-        ],
-        pagination,
-        transaction
-    });
+  return ModelService.get(CollectionJob, {
+    where,
+    attributes: collectionJobAttributes,
+    include: [
+      testPlanRunAssociation(
+        testPlanRunAttributes,
+        userAttributes,
+        testPlanReportAttributes,
+        testPlanVersionAttributes,
+        testPlanAttributes,
+        atAttributes,
+        browserAttributes
+      )
+    ],
+    pagination,
+    transaction
+  });
 };
 
 /**
@@ -348,33 +345,33 @@ const getCollectionJobs = async ({
  * @returns Promise<CollectionJob>
  */
 const triggerWorkflow = async (job, testIds, { transaction }) => {
-    const { testPlanVersion } = job.testPlanRun.testPlanReport;
-    const { gitSha, directory } = testPlanVersion;
-    try {
-        if (isGithubWorkflowEnabled()) {
-            // TODO: pass the reduced list of testIds along / deal with them somehow
-            await createGithubWorkflow({ job, directory, gitSha });
-        } else {
-            await axios.post(
-                `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-                {
-                    testPlanVersionGitSha: gitSha,
-                    testIds,
-                    testPlanName: directory,
-                    jobId: job.id
-                },
-                axiosConfig
-            );
-        }
-    } catch (error) {
-        // TODO: What to do with the actual error (could be nice to have an additional "string" status field?)
-        return updateCollectionJobById({
-            id: job.id,
-            values: { status: COLLECTION_JOB_STATUS.ERROR },
-            transaction
-        });
+  const { testPlanVersion } = job.testPlanRun.testPlanReport;
+  const { gitSha, directory } = testPlanVersion;
+  try {
+    if (isGithubWorkflowEnabled()) {
+      // TODO: pass the reduced list of testIds along / deal with them somehow
+      await createGithubWorkflow({ job, directory, gitSha });
+    } else {
+      await axios.post(
+        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
+        {
+          testPlanVersionGitSha: gitSha,
+          testIds,
+          testPlanName: directory,
+          jobId: job.id
+        },
+        axiosConfig
+      );
     }
-    return job;
+  } catch (error) {
+    // TODO: What to do with the actual error (could be nice to have an additional "string" status field?)
+    return updateCollectionJobById({
+      id: job.id,
+      values: { status: COLLECTION_JOB_STATUS.ERROR },
+      transaction
+    });
+  }
+  return job;
 };
 
 /**
@@ -392,40 +389,40 @@ const triggerWorkflow = async (job, testIds, { transaction }) => {
  * @returns {Promise<*>}
  */
 const updateCollectionJobById = async ({
-    id,
-    values = {},
-    collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  id,
+  values = {},
+  collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    await ModelService.update(CollectionJob, {
-        where: { id },
-        values,
-        transaction
-    });
+  await ModelService.update(CollectionJob, {
+    where: { id },
+    values,
+    transaction
+  });
 
-    return ModelService.getById(CollectionJob, {
-        id,
-        attributes: collectionJobAttributes,
-        include: [
-            testPlanRunAssociation(
-                testPlanRunAttributes,
-                userAttributes,
-                testPlanReportAttributes,
-                testPlanVersionAttributes,
-                testPlanAttributes,
-                atAttributes,
-                browserAttributes
-            )
-        ],
-        transaction
-    });
+  return ModelService.getById(CollectionJob, {
+    id,
+    attributes: collectionJobAttributes,
+    include: [
+      testPlanRunAssociation(
+        testPlanRunAttributes,
+        userAttributes,
+        testPlanReportAttributes,
+        testPlanVersionAttributes,
+        testPlanAttributes,
+        atAttributes,
+        browserAttributes
+      )
+    ],
+    transaction
+  });
 };
 
 /**
@@ -437,26 +434,24 @@ const updateCollectionJobById = async ({
  * @returns {Promise<*>}
  */
 const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
-    if (!collectionJob) {
-        throw new Error('collectionJob is required to retry cancelled tests');
-    }
+  if (!collectionJob) {
+    throw new Error('collectionJob is required to retry cancelled tests');
+  }
 
-    const cancelledTests = collectionJob.testPlanRun.testResults.filter(
-        testResult =>
-            // Find tests that don't have complete output
-            !testResult?.scenarioResults?.every(
-                scenario => scenario?.output !== null
-            )
-    );
+  const cancelledTests = collectionJob.testPlanRun.testResults.filter(
+    testResult =>
+      // Find tests that don't have complete output
+      !testResult?.scenarioResults?.every(scenario => scenario?.output !== null)
+  );
 
-    const testIds = cancelledTests.map(test => test.id);
+  const testIds = cancelledTests.map(test => test.id);
 
-    const job = await getCollectionJobById({
-        id: collectionJob.id,
-        transaction
-    });
+  const job = await getCollectionJobById({
+    id: collectionJob.id,
+    transaction
+  });
 
-    return triggerWorkflow(job, testIds, { transaction });
+  return triggerWorkflow(job, testIds, { transaction });
 };
 
 /**
@@ -469,70 +464,70 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
  * @returns {Promise<*>}
  */
 const scheduleCollectionJob = async (
-    { testPlanReportId, testIds = null },
-    { transaction }
+  { testPlanReportId, testIds = null },
+  { transaction }
 ) => {
-    const context = { transaction };
+  const context = { transaction };
 
-    const report = await getTestPlanReportById({
-        id: testPlanReportId,
-        transaction
-    });
+  const report = await getTestPlanReportById({
+    id: testPlanReportId,
+    transaction
+  });
 
-    if (!report) {
-        throw new HttpQueryError(
-            404,
-            `Test plan report with id ${testPlanReportId} not found`,
-            true
-        );
-    }
-
-    const tests = await runnableTestsResolver(report, null, context);
-    const { directory } = report.testPlanVersion.testPlan;
-    const { gitSha } = report.testPlanVersion;
-
-    if (!tests || tests.length === 0) {
-        throw new Error(
-            `No runnable tests found for test plan report with id ${testPlanReportId}`
-        );
-    }
-
-    if (!gitSha) {
-        throw new Error(
-            `Test plan version with id ${report.testPlanVersionId} does not have a gitSha`
-        );
-    }
-
-    if (!directory) {
-        throw new Error(
-            `Test plan with id ${report.testPlanVersion.testPlanId} does not have a directory`
-        );
-    }
-
-    // TODO: Replace by allowing CollectionJob id to auto-increment
-    const lastRecord = await sequelize.query(
-        `SELECT * FROM "CollectionJob" ORDER BY CAST(id AS INTEGER) DESC LIMIT 1`,
-        { model: CollectionJob, mapToModel: true, transaction }
+  if (!report) {
+    throw new HttpQueryError(
+      404,
+      `Test plan report with id ${testPlanReportId} not found`,
+      true
     );
-    let jobId;
-    if (lastRecord.length > 0) {
-        jobId = (Number(lastRecord[0].id) + 1).toString();
-    } else {
-        jobId = '1';
-    }
+  }
 
-    const job = await createCollectionJob({
-        values: {
-            id: jobId,
-            status: COLLECTION_JOB_STATUS.QUEUED,
-            testPlanReportId
-        },
-        transaction
-    });
+  const tests = await runnableTestsResolver(report, null, context);
+  const { directory } = report.testPlanVersion.testPlan;
+  const { gitSha } = report.testPlanVersion;
 
-    return triggerWorkflow(job, testIds ?? tests.map(test => test.id), {
-        transaction
-    });
+  if (!tests || tests.length === 0) {
+    throw new Error(
+      `No runnable tests found for test plan report with id ${testPlanReportId}`
+    );
+  }
+
+  if (!gitSha) {
+    throw new Error(
+      `Test plan version with id ${report.testPlanVersionId} does not have a gitSha`
+    );
+  }
+
+  if (!directory) {
+    throw new Error(
+      `Test plan with id ${report.testPlanVersion.testPlanId} does not have a directory`
+    );
+  }
+
+  // TODO: Replace by allowing CollectionJob id to auto-increment
+  const lastRecord = await sequelize.query(
+    `SELECT * FROM "CollectionJob" ORDER BY CAST(id AS INTEGER) DESC LIMIT 1`,
+    { model: CollectionJob, mapToModel: true, transaction }
+  );
+  let jobId;
+  if (lastRecord.length > 0) {
+    jobId = (Number(lastRecord[0].id) + 1).toString();
+  } else {
+    jobId = '1';
+  }
+
+  const job = await createCollectionJob({
+    values: {
+      id: jobId,
+      status: COLLECTION_JOB_STATUS.QUEUED,
+      testPlanReportId
+    },
+    transaction
+  });
+
+  return triggerWorkflow(job, testIds ?? tests.map(test => test.id), {
+    transaction
+  });
 };
 
 /**
@@ -544,26 +539,26 @@ const scheduleCollectionJob = async (
  * @returns {Promise<[*, [*]]>}
  */
 const getOrCreateCollectionJob = async ({
-    where: { id },
-    values: { status, testPlanRun, testPlanReportId } = {},
-    transaction
+  where: { id },
+  values: { status, testPlanRun, testPlanReportId } = {},
+  transaction
 }) => {
-    const existingJob = await getCollectionJobById({ id, transaction });
+  const existingJob = await getCollectionJobById({ id, transaction });
 
-    if (existingJob) {
-        return existingJob;
-    } else {
-        if (!testPlanReportId) {
-            throw new Error(
-                'testPlanReportId is required to create a new CollectionJob'
-            );
-        }
-
-        return createCollectionJob({
-            values: { id, status, testPlanRun, testPlanReportId },
-            transaction
-        });
+  if (existingJob) {
+    return existingJob;
+  } else {
+    if (!testPlanReportId) {
+      throw new Error(
+        'testPlanReportId is required to create a new CollectionJob'
+      );
     }
+
+    return createCollectionJob({
+      values: { id, status, testPlanRun, testPlanReportId },
+      transaction
+    });
+  }
 };
 
 /**
@@ -574,13 +569,13 @@ const getOrCreateCollectionJob = async ({
  * @returns {Promise<[*, [*]]>}
  */
 const cancelCollectionJob = async ({ id }, { transaction }) => {
-    return updateCollectionJobById({
-        id,
-        values: {
-            status: 'CANCELLED'
-        },
-        transaction
-    });
+  return updateCollectionJobById({
+    id,
+    values: {
+      status: 'CANCELLED'
+    },
+    transaction
+  });
 };
 
 /**
@@ -591,24 +586,24 @@ const cancelCollectionJob = async ({ id }, { transaction }) => {
  * @returns {Promise<*>}
  */
 const removeCollectionJobById = async ({
-    id,
-    truncate = false,
-    transaction
+  id,
+  truncate = false,
+  transaction
 }) => {
-    // Remove test plan run, may want to allow test plan run to
-    // continue existing independent of collection job
-    const collectionJob = await getCollectionJobById({ id, transaction });
-    const result = await ModelService.removeById(CollectionJob, {
-        id,
-        truncate,
-        transaction
-    });
-    await removeTestPlanRunById({
-        id: collectionJob.testPlanRun?.id,
-        truncate,
-        transaction
-    });
-    return result;
+  // Remove test plan run, may want to allow test plan run to
+  // continue existing independent of collection job
+  const collectionJob = await getCollectionJobById({ id, transaction });
+  const result = await ModelService.removeById(CollectionJob, {
+    id,
+    truncate,
+    transaction
+  });
+  await removeTestPlanRunById({
+    id: collectionJob.testPlanRun?.id,
+    truncate,
+    transaction
+  });
+  return result;
 };
 
 /**
@@ -620,33 +615,33 @@ const removeCollectionJobById = async ({
  * @returns
  */
 const restartCollectionJob = async ({ id }, { transaction }) => {
-    const job = await updateCollectionJobById({
-        id,
-        values: {
-            status: 'QUEUED'
-        },
-        transaction
-    });
+  const job = await updateCollectionJobById({
+    id,
+    values: {
+      status: 'QUEUED'
+    },
+    transaction
+  });
 
-    if (!job) {
-        return null;
-    }
+  if (!job) {
+    return null;
+  }
 
-    return triggerWorkflow(job, [], { transaction });
+  return triggerWorkflow(job, [], { transaction });
 };
 
 module.exports = {
-    // Basic CRUD
-    createCollectionJob,
-    getCollectionJobById,
-    getCollectionJobs,
-    updateCollectionJobById,
-    removeCollectionJobById,
-    // Nested CRUD
-    getOrCreateCollectionJob,
-    // Custom for Response Scheduler
-    scheduleCollectionJob,
-    restartCollectionJob,
-    cancelCollectionJob,
-    retryCanceledCollections
+  // Basic CRUD
+  createCollectionJob,
+  getCollectionJobById,
+  getCollectionJobs,
+  updateCollectionJobById,
+  removeCollectionJobById,
+  // Nested CRUD
+  getOrCreateCollectionJob,
+  // Custom for Response Scheduler
+  scheduleCollectionJob,
+  restartCollectionJob,
+  cancelCollectionJob,
+  retryCanceledCollections
 };

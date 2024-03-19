@@ -10,9 +10,9 @@ const { Op } = Sequelize;
  * @returns {{association: string, attributes: string[], through: {attributes: string[]}}}
  */
 const userAssociation = userAttributes => ({
-    association: 'users',
-    attributes: userAttributes,
-    through: { attributes: [] }
+  association: 'users',
+  attributes: userAttributes,
+  through: { attributes: [] }
 });
 
 /**
@@ -25,18 +25,18 @@ const userAssociation = userAttributes => ({
  * @returns {Promise<*>}
  */
 const getRoleByName = async (
-    name,
-    roleAttributes = ROLE_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    options = {}
+  name,
+  roleAttributes = ROLE_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  options = {}
 ) => {
-    return await ModelService.getByQuery(
-        Role,
-        { name },
-        roleAttributes,
-        [userAssociation(userAttributes)],
-        options
-    );
+  return await ModelService.getByQuery(
+    Role,
+    { name },
+    roleAttributes,
+    [userAssociation(userAttributes)],
+    options
+  );
 };
 
 /**
@@ -54,26 +54,26 @@ const getRoleByName = async (
  * @returns {Promise<*>}
  */
 const getRoles = async (
-    search,
-    filter = {}, // pass to 'where' for top level Role object
-    roleAttributes = ROLE_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    pagination = {},
-    options = {}
+  search,
+  filter = {}, // pass to 'where' for top level Role object
+  roleAttributes = ROLE_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  pagination = {},
+  options = {}
 ) => {
-    // search and filtering options
-    let where = { ...filter };
-    const searchQuery = search ? `%${search}%` : '';
-    if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
+  // search and filtering options
+  let where = { ...filter };
+  const searchQuery = search ? `%${search}%` : '';
+  if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
-    return await ModelService.get(
-        Role,
-        where,
-        roleAttributes,
-        [userAssociation(userAttributes)],
-        pagination,
-        options
-    );
+  return await ModelService.get(
+    Role,
+    where,
+    roleAttributes,
+    [userAssociation(userAttributes)],
+    pagination,
+    options
+  );
 };
 
 /**
@@ -85,21 +85,21 @@ const getRoles = async (
  * @returns {Promise<*>}
  */
 const createRole = async (
-    { name },
-    roleAttributes = ROLE_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    options = {}
+  { name },
+  roleAttributes = ROLE_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  options = {}
 ) => {
-    const role = await ModelService.create(Role, { name });
-    const { name: createdName } = role; // in case some Postgres function is ever written to modify the the name value on insert
+  const role = await ModelService.create(Role, { name });
+  const { name: createdName } = role; // in case some Postgres function is ever written to modify the the name value on insert
 
-    // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await getRoleByName(
-        createdName,
-        roleAttributes,
-        userAttributes,
-        options
-    );
+  // to ensure the structure being returned matches what we expect for simple queries and can be controlled
+  return await getRoleByName(
+    createdName,
+    roleAttributes,
+    userAttributes,
+    options
+  );
 };
 
 /**
@@ -112,21 +112,21 @@ const createRole = async (
  * @returns {Promise<*>}
  */
 const updateRole = async (
-    name,
-    updateParams = {},
-    roleAttributes = ROLE_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    options
+  name,
+  updateParams = {},
+  roleAttributes = ROLE_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  options
 ) => {
-    await ModelService.update(Role, { name }, updateParams, options);
-    const { name: updatedName } = updateParams;
+  await ModelService.update(Role, { name }, updateParams, options);
+  const { name: updatedName } = updateParams;
 
-    return await getRoleByName(
-        updatedName || name,
-        roleAttributes,
-        userAttributes,
-        options
-    );
+  return await getRoleByName(
+    updatedName || name,
+    roleAttributes,
+    userAttributes,
+    options
+  );
 };
 
 /**
@@ -135,14 +135,14 @@ const updateRole = async (
  * @returns {Promise<boolean>}
  */
 const removeRole = async (name, deleteOptions) => {
-    return await ModelService.removeByQuery(Role, { name }, deleteOptions);
+  return await ModelService.removeByQuery(Role, { name }, deleteOptions);
 };
 
 module.exports = {
-    // Basic CRUD
-    getRoleByName,
-    getRoles,
-    createRole,
-    updateRole,
-    removeRole
+  // Basic CRUD
+  getRoleByName,
+  getRoles,
+  createRole,
+  updateRole,
+  removeRole
 };

@@ -3,44 +3,44 @@
  */
 import React from 'react';
 import {
-    render,
-    fireEvent,
-    waitFor,
-    screen,
-    cleanup
+  render,
+  fireEvent,
+  waitFor,
+  screen,
+  cleanup
 } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import AssignTesterDropdown from '../components/TestQueue/AssignTesterDropdown';
 import {
-    ASSIGN_TESTER_MUTATION,
-    REMOVE_TESTER_MUTATION,
-    TEST_PLAN_REPORT_AT_BROWSER_QUERY
+  ASSIGN_TESTER_MUTATION,
+  REMOVE_TESTER_MUTATION,
+  TEST_PLAN_REPORT_AT_BROWSER_QUERY
 } from '../components/TestQueue/queries';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../components/AddTestToQueueWithConfirmation/queries';
 import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('@apollo/client', () => {
-    const original = jest.requireActual('@apollo/client');
-    return {
-        ...original,
-        useMutation: jest.fn()
-    };
+  const original = jest.requireActual('@apollo/client');
+  return {
+    ...original,
+    useMutation: jest.fn()
+  };
 });
 
 const mockPossibleTesters = [
-    { id: '1', username: 'bee' },
-    { id: '2', username: 'puppy' },
-    { id: '3', username: 'NVDA Bot' }
+  { id: '1', username: 'bee' },
+  { id: '2', username: 'puppy' },
+  { id: '3', username: 'NVDA Bot' }
 ];
 
 const mockProps = {
-    testPlanReportId: 'report1',
-    possibleTesters: mockPossibleTesters,
-    onChange: jest.fn(),
-    testPlanRun: null,
-    draftTestPlanRuns: [],
-    label: 'Assign testers',
-    setAlertMessage: jest.fn()
+  testPlanReportId: 'report1',
+  possibleTesters: mockPossibleTesters,
+  onChange: jest.fn(),
+  testPlanRun: null,
+  draftTestPlanRuns: [],
+  label: 'Assign testers',
+  setAlertMessage: jest.fn()
 };
 
 import { useMutation } from '@apollo/client';
@@ -48,233 +48,233 @@ import { act } from 'react-dom/test-utils';
 
 // Mock useMutation hook
 useMutation.mockImplementation(mutation => {
-    let response;
+  let response;
 
-    if (mutation === ASSIGN_TESTER_MUTATION) {
-        response = 'ASSIGN';
-    } else if (mutation === REMOVE_TESTER_MUTATION) {
-        response = 'REMOVE';
-    } else if (mutation === SCHEDULE_COLLECTION_JOB_MUTATION) {
-        response = 'SCHEDULE';
-    }
+  if (mutation === ASSIGN_TESTER_MUTATION) {
+    response = 'ASSIGN';
+  } else if (mutation === REMOVE_TESTER_MUTATION) {
+    response = 'REMOVE';
+  } else if (mutation === SCHEDULE_COLLECTION_JOB_MUTATION) {
+    response = 'SCHEDULE';
+  }
 
-    return [jest.fn(() => response), { loading: false, error: null }];
+  return [jest.fn(() => response), { loading: false, error: null }];
 });
 
 // Mocked GraphQL responses
 const mocks = [
-    {
-        request: {
-            query: ASSIGN_TESTER_MUTATION,
-            variables: {
-                testReportId: 'report1',
-                testerId: '1'
-            }
-        },
-        result: {
-            data: {
-                testPlanReport: {
-                    assignTester: {
-                        testPlanReport: {
-                            draftTestPlanRuns: [
-                                {
-                                    initiatedByAutomation: false,
-                                    tester: {
-                                        id: '1',
-                                        username: 'bee'
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        }
+  {
+    request: {
+      query: ASSIGN_TESTER_MUTATION,
+      variables: {
+        testReportId: 'report1',
+        testerId: '1'
+      }
     },
-    {
-        request: {
-            query: REMOVE_TESTER_MUTATION,
-            variables: {
-                testReportId: 'report1',
-                testerId: '1'
-            }
-        },
-        result: {
-            data: {
-                testPlanReport: {
-                    deleteTestPlanRun: {
-                        testPlanReport: {
-                            draftTestPlanRuns: []
-                        }
-                    }
+    result: {
+      data: {
+        testPlanReport: {
+          assignTester: {
+            testPlanReport: {
+              draftTestPlanRuns: [
+                {
+                  initiatedByAutomation: false,
+                  tester: {
+                    id: '1',
+                    username: 'bee'
+                  }
                 }
+              ]
             }
+          }
         }
-    },
-    {
-        request: {
-            query: SCHEDULE_COLLECTION_JOB_MUTATION,
-            variables: {
-                testPlanReportId: 'report1'
-            }
-        },
-        result: {
-            data: {
-                scheduleCollectionJob: {
-                    id: 'some-job-id',
-                    status: 'pending'
-                }
-            }
-        }
-    },
-    {
-        request: {
-            query: TEST_PLAN_REPORT_AT_BROWSER_QUERY,
-            variables: {
-                testPlanReportId: 'report1'
-            }
-        },
-        result: {
-            data: {
-                testPlanReport: {
-                    id: 'report1',
-                    at: {
-                        id: 2,
-                        name: 'NVDA'
-                    },
-                    browser: {
-                        id: 1,
-                        name: 'Chrome'
-                    }
-                }
-            }
-        }
+      }
     }
+  },
+  {
+    request: {
+      query: REMOVE_TESTER_MUTATION,
+      variables: {
+        testReportId: 'report1',
+        testerId: '1'
+      }
+    },
+    result: {
+      data: {
+        testPlanReport: {
+          deleteTestPlanRun: {
+            testPlanReport: {
+              draftTestPlanRuns: []
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: SCHEDULE_COLLECTION_JOB_MUTATION,
+      variables: {
+        testPlanReportId: 'report1'
+      }
+    },
+    result: {
+      data: {
+        scheduleCollectionJob: {
+          id: 'some-job-id',
+          status: 'pending'
+        }
+      }
+    }
+  },
+  {
+    request: {
+      query: TEST_PLAN_REPORT_AT_BROWSER_QUERY,
+      variables: {
+        testPlanReportId: 'report1'
+      }
+    },
+    result: {
+      data: {
+        testPlanReport: {
+          id: 'report1',
+          at: {
+            id: 2,
+            name: 'NVDA'
+          },
+          browser: {
+            id: 1,
+            name: 'Chrome'
+          }
+        }
+      }
+    }
+  }
 ];
 
 describe('AssignTesterDropdown', () => {
-    beforeEach(() => {
-        cleanup();
+  beforeEach(() => {
+    cleanup();
+  });
+
+  it('renders without crashing', () => {
+    render(
+      <MockedProvider mocks={mocks}>
+        <AssignTesterDropdown {...mockProps} />
+      </MockedProvider>
+    );
+    expect(screen.getByLabelText('Assign testers')).toBeInTheDocument();
+  });
+
+  it('assigns tester correctly and calls assignTester mutation', async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <AssignTesterDropdown {...mockProps} />
+      </MockedProvider>
+    );
+
+    const button = await screen.getByRole('button', {
+      name: /assign testers/i
+    });
+    fireEvent.click(button);
+
+    const items = await screen.findAllByText(/bee/);
+    expect(items.length).toBe(2); // One for display, one for sr-only
+    fireEvent.click(items[0]);
+
+    await waitFor(async () => {
+      expect(useMutation).toHaveBeenCalledWith(ASSIGN_TESTER_MUTATION);
+      expect(mockProps.onChange).toHaveBeenCalledTimes(1);
+      expect(mockProps.setAlertMessage).toHaveBeenCalledTimes(1);
+      expect(mockProps.setAlertMessage).toHaveBeenCalledWith(
+        expect.stringContaining('bee now checked')
+      );
+    });
+  });
+
+  it('assigns bot correctly and calls scheduleCollection mutation', async () => {
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <AssignTesterDropdown {...mockProps} />
+      </MockedProvider>
+    );
+
+    const button = await screen.getByRole('button', {
+      name: /assign testers/i
+    });
+    fireEvent.click(button);
+
+    const items = await screen.findAllByText(/NVDA Bot/);
+    expect(items.length).toBe(2); // One for display, one for sr-only
+    fireEvent.click(items[0]);
+
+    await waitFor(() => {
+      expect(useMutation).toHaveBeenCalledWith(
+        SCHEDULE_COLLECTION_JOB_MUTATION
+      );
+      expect(mockProps.onChange).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('does not list bot when run does not support automation', async () => {
+    await act(async () => {
+      const jawsMock = [...mocks];
+      jawsMock[3].result.data.testPlanReport.at.name = 'JAWS';
+
+      render(
+        <MockedProvider mocks={jawsMock} addTypename={false}>
+          <AssignTesterDropdown {...mockProps} />
+        </MockedProvider>
+      );
+    });
+    let button;
+    await waitFor(async () => {
+      button = await screen.getByRole('button', {
+        name: /assign testers/i
+      });
     });
 
-    it('renders without crashing', () => {
-        render(
-            <MockedProvider mocks={mocks}>
-                <AssignTesterDropdown {...mockProps} />
-            </MockedProvider>
-        );
-        expect(screen.getByLabelText('Assign testers')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(button);
     });
 
-    it('assigns tester correctly and calls assignTester mutation', async () => {
-        render(
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <AssignTesterDropdown {...mockProps} />
-            </MockedProvider>
-        );
+    await waitFor(async () => {
+      const items = await screen.queryByText(/NVDA Bot/);
+      expect(items).toBeNull();
+    });
+  });
 
-        const button = await screen.getByRole('button', {
-            name: /assign testers/i
-        });
-        fireEvent.click(button);
+  it('removes tester correctly and calls removeTester mutation', async () => {
+    mockProps.draftTestPlanRuns = [
+      {
+        initiatedByAutomation: false,
+        tester: {
+          id: '1',
+          username: 'bee'
+        }
+      }
+    ];
 
-        const items = await screen.findAllByText(/bee/);
-        expect(items.length).toBe(2); // One for display, one for sr-only
-        fireEvent.click(items[0]);
+    render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <AssignTesterDropdown {...mockProps} />
+      </MockedProvider>
+    );
 
-        await waitFor(async () => {
-            expect(useMutation).toHaveBeenCalledWith(ASSIGN_TESTER_MUTATION);
-            expect(mockProps.onChange).toHaveBeenCalledTimes(1);
-            expect(mockProps.setAlertMessage).toHaveBeenCalledTimes(1);
-            expect(mockProps.setAlertMessage).toHaveBeenCalledWith(
-                expect.stringContaining('bee now checked')
-            );
-        });
+    const button = await screen.getByRole('button', {
+      name: /assign testers/i
     });
 
-    it('assigns bot correctly and calls scheduleCollection mutation', async () => {
-        render(
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <AssignTesterDropdown {...mockProps} />
-            </MockedProvider>
-        );
+    fireEvent.click(button);
 
-        const button = await screen.getByRole('button', {
-            name: /assign testers/i
-        });
-        fireEvent.click(button);
+    const items = await screen.findAllByText(/bee/);
+    fireEvent.click(items[0]);
 
-        const items = await screen.findAllByText(/NVDA Bot/);
-        expect(items.length).toBe(2); // One for display, one for sr-only
-        fireEvent.click(items[0]);
-
-        await waitFor(() => {
-            expect(useMutation).toHaveBeenCalledWith(
-                SCHEDULE_COLLECTION_JOB_MUTATION
-            );
-            expect(mockProps.onChange).toHaveBeenCalledTimes(1);
-        });
+    await waitFor(() => {
+      expect(useMutation).toHaveBeenCalledWith(REMOVE_TESTER_MUTATION);
+      expect(mockProps.setAlertMessage).toHaveBeenCalledWith(
+        expect.stringContaining('bee now unchecked')
+      );
     });
-
-    it('does not list bot when run does not support automation', async () => {
-        await act(async () => {
-            const jawsMock = [...mocks];
-            jawsMock[3].result.data.testPlanReport.at.name = 'JAWS';
-
-            render(
-                <MockedProvider mocks={jawsMock} addTypename={false}>
-                    <AssignTesterDropdown {...mockProps} />
-                </MockedProvider>
-            );
-        });
-        let button;
-        await waitFor(async () => {
-            button = await screen.getByRole('button', {
-                name: /assign testers/i
-            });
-        });
-
-        await act(async () => {
-            fireEvent.click(button);
-        });
-
-        await waitFor(async () => {
-            const items = await screen.queryByText(/NVDA Bot/);
-            expect(items).toBeNull();
-        });
-    });
-
-    it('removes tester correctly and calls removeTester mutation', async () => {
-        mockProps.draftTestPlanRuns = [
-            {
-                initiatedByAutomation: false,
-                tester: {
-                    id: '1',
-                    username: 'bee'
-                }
-            }
-        ];
-
-        render(
-            <MockedProvider mocks={mocks} addTypename={false}>
-                <AssignTesterDropdown {...mockProps} />
-            </MockedProvider>
-        );
-
-        const button = await screen.getByRole('button', {
-            name: /assign testers/i
-        });
-
-        fireEvent.click(button);
-
-        const items = await screen.findAllByText(/bee/);
-        fireEvent.click(items[0]);
-
-        await waitFor(() => {
-            expect(useMutation).toHaveBeenCalledWith(REMOVE_TESTER_MUTATION);
-            expect(mockProps.setAlertMessage).toHaveBeenCalledWith(
-                expect.stringContaining('bee now unchecked')
-            );
-        });
-    });
+  });
 });

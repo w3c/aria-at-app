@@ -5,11 +5,11 @@ const testPlanReports = require('./testPlanReportsResolver');
 const recommendedPhaseTargetDate = require('./recommendedPhaseTargetDateResolver');
 
 const TestPlanVersion = {
-    testPlan,
-    gitMessage,
-    tests,
-    testPlanReports,
-    recommendedPhaseTargetDate
+  testPlan,
+  gitMessage,
+  tests,
+  testPlanReports,
+  recommendedPhaseTargetDate
 };
 
 module.exports = TestPlanVersion;

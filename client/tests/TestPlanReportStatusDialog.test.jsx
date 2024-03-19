@@ -16,61 +16,59 @@ import { TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA } from './__mocks__/GraphQLMoc
 import { mockedTestPlanVersion } from './__mocks__/GraphQLMocks/TestPlanReportStatusDialogMock';
 
 const setup = (props, mocks = []) => {
-    return render(
-        <BrowserRouter>
-            <MockedProvider
-                mocks={mocks}
-                cache={new InMemoryCache({ addTypename: false })}
-            >
-                <TestPlanReportStatusDialog {...props} />
-            </MockedProvider>
-        </BrowserRouter>
-    );
+  return render(
+    <BrowserRouter>
+      <MockedProvider
+        mocks={mocks}
+        cache={new InMemoryCache({ addTypename: false })}
+      >
+        <TestPlanReportStatusDialog {...props} />
+      </MockedProvider>
+    </BrowserRouter>
+  );
 };
 
 describe('TestPlanReportStatusDialog', () => {
-    let getByRole, getByText;
+  let getByRole, getByText;
 
-    beforeEach(() => {
-        const show = true;
-        const handleHide = jest.fn();
-        const testPlanVersion = mockedTestPlanVersion;
-        const [
-            ,
-            {
-                result: {
-                    data: { ats }
-                }
-            }
-        ] = TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA;
+  beforeEach(() => {
+    const show = true;
+    const handleHide = jest.fn();
+    const testPlanVersion = mockedTestPlanVersion;
+    const [
+      ,
+      {
+        result: {
+          data: { ats }
+        }
+      }
+    ] = TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA;
 
-        const result = setup(
-            { testPlanVersion, show, ats, handleHide },
-            TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA
-        );
+    const result = setup(
+      { testPlanVersion, show, ats, handleHide },
+      TEST_PLAN_REPORT_STATUS_DIALOG_MOCK_DATA
+    );
 
-        getByRole = result.getByRole;
-        getByText = result.getByText;
+    getByRole = result.getByRole;
+    getByText = result.getByText;
+  });
+
+  test('renders without error', async () => {
+    await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument());
+  });
+
+  test('displays the dialog title', async () => {
+    await waitFor(() => {
+      expect(getByText('Report Status for the Test Plan')).toBeInTheDocument();
     });
+  });
 
-    test('renders without error', async () => {
-        await waitFor(() => expect(getByRole('dialog')).toBeInTheDocument());
+  test('displays the table headers', async () => {
+    await waitFor(() => {
+      expect(getByText('Required')).toBeInTheDocument();
+      expect(getByText('AT')).toBeInTheDocument();
+      expect(getByText('Browser')).toBeInTheDocument();
+      expect(getByText('Report Status')).toBeInTheDocument();
     });
-
-    test('displays the dialog title', async () => {
-        await waitFor(() => {
-            expect(
-                getByText('Report Status for the Test Plan')
-            ).toBeInTheDocument();
-        });
-    });
-
-    test('displays the table headers', async () => {
-        await waitFor(() => {
-            expect(getByText('Required')).toBeInTheDocument();
-            expect(getByText('AT')).toBeInTheDocument();
-            expect(getByText('Browser')).toBeInTheDocument();
-            expect(getByText('Report Status')).toBeInTheDocument();
-        });
-    });
+  });
 });

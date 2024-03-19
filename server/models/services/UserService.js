@@ -1,11 +1,11 @@
 const ModelService = require('./ModelService');
 const {
-    USER_ATTRIBUTES,
-    ROLE_ATTRIBUTES,
-    USER_ROLES_ATTRIBUTES,
-    TEST_PLAN_RUN_ATTRIBUTES,
-    AT_ATTRIBUTES,
-    USER_ATS_ATTRIBUTES
+  USER_ATTRIBUTES,
+  ROLE_ATTRIBUTES,
+  USER_ROLES_ATTRIBUTES,
+  TEST_PLAN_RUN_ATTRIBUTES,
+  AT_ATTRIBUTES,
+  USER_ATS_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, User, UserRoles, UserAts } = require('../');
 const { Op } = Sequelize;
@@ -17,9 +17,9 @@ const { Op } = Sequelize;
  * @returns {{association: string, attributes: string[], through: {attributes: string[]}}}
  */
 const roleAssociation = roleAttributes => ({
-    association: 'roles',
-    attributes: roleAttributes,
-    through: { attributes: [] }
+  association: 'roles',
+  attributes: roleAttributes,
+  through: { attributes: [] }
 });
 
 /**
@@ -27,9 +27,9 @@ const roleAssociation = roleAttributes => ({
  * @returns {{association: string, attributes: string[], through: {attributes: string[]}}}
  */
 const atAssociation = atAttributes => ({
-    association: 'ats',
-    attributes: atAttributes,
-    through: { attributes: [] }
+  association: 'ats',
+  attributes: atAttributes,
+  through: { attributes: [] }
 });
 
 /**
@@ -37,8 +37,8 @@ const atAssociation = atAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanRunAssociation = testPlanRunAttributes => ({
-    association: 'testPlanRuns',
-    attributes: testPlanRunAttributes
+  association: 'testPlanRuns',
+  attributes: testPlanRunAttributes
 });
 
 /**
@@ -53,23 +53,23 @@ const testPlanRunAssociation = testPlanRunAttributes => ({
  * @returns {Promise<*>}
  */
 const getUserById = async ({
-    id,
-    userAttributes = USER_ATTRIBUTES,
-    roleAttributes = ROLE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    transaction
+  id,
+  userAttributes = USER_ATTRIBUTES,
+  roleAttributes = ROLE_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  transaction
 }) => {
-    return ModelService.getById(User, {
-        id,
-        attributes: userAttributes,
-        include: [
-            roleAssociation(roleAttributes),
-            atAssociation(atAttributes),
-            testPlanRunAssociation(testPlanRunAttributes)
-        ],
-        transaction
-    });
+  return ModelService.getById(User, {
+    id,
+    attributes: userAttributes,
+    include: [
+      roleAssociation(roleAttributes),
+      atAssociation(atAttributes),
+      testPlanRunAssociation(testPlanRunAttributes)
+    ],
+    transaction
+  });
 };
 
 /**
@@ -84,23 +84,23 @@ const getUserById = async ({
  * @returns {Promise<*>}
  */
 const getUserByUsername = async ({
-    username,
-    userAttributes = USER_ATTRIBUTES,
-    roleAttributes = ROLE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    transaction
+  username,
+  userAttributes = USER_ATTRIBUTES,
+  roleAttributes = ROLE_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  transaction
 }) => {
-    return ModelService.getByQuery(User, {
-        where: { username },
-        attributes: userAttributes,
-        include: [
-            roleAssociation(roleAttributes),
-            atAssociation(atAttributes),
-            testPlanRunAssociation(testPlanRunAttributes)
-        ],
-        transaction
-    });
+  return ModelService.getByQuery(User, {
+    where: { username },
+    attributes: userAttributes,
+    include: [
+      roleAssociation(roleAttributes),
+      atAssociation(atAttributes),
+      testPlanRunAssociation(testPlanRunAttributes)
+    ],
+    transaction
+  });
 };
 
 /**
@@ -120,32 +120,32 @@ const getUserByUsername = async ({
  * @returns {Promise<*>}
  */
 const getUsers = async ({
-    search,
-    where = {}, // pass to 'where' for top level User object
-    userAttributes = USER_ATTRIBUTES,
-    roleAttributes = ROLE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    pagination = {},
-    transaction
+  search,
+  where = {}, // pass to 'where' for top level User object
+  userAttributes = USER_ATTRIBUTES,
+  roleAttributes = ROLE_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  pagination = {},
+  transaction
 }) => {
-    // search and filtering options
-    const searchQuery = search ? `%${search}%` : '';
-    if (searchQuery) {
-        where = { ...where, username: { [Op.iLike]: searchQuery } };
-    }
+  // search and filtering options
+  const searchQuery = search ? `%${search}%` : '';
+  if (searchQuery) {
+    where = { ...where, username: { [Op.iLike]: searchQuery } };
+  }
 
-    return ModelService.get(User, {
-        where,
-        attributes: userAttributes,
-        include: [
-            roleAssociation(roleAttributes),
-            atAssociation(atAttributes),
-            testPlanRunAssociation(testPlanRunAttributes)
-        ],
-        pagination,
-        transaction
-    });
+  return ModelService.get(User, {
+    where,
+    attributes: userAttributes,
+    include: [
+      roleAssociation(roleAttributes),
+      atAssociation(atAttributes),
+      testPlanRunAssociation(testPlanRunAttributes)
+    ],
+    pagination,
+    transaction
+  });
 };
 
 /**
@@ -162,21 +162,21 @@ const getUsers = async ({
  * @returns {Promise<*>}
  */
 const getUserRoles = async ({
-    search,
-    where = {},
-    userRolesAttributes = USER_ROLES_ATTRIBUTES,
-    pagination = {},
-    transaction
+  search,
+  where = {},
+  userRolesAttributes = USER_ROLES_ATTRIBUTES,
+  pagination = {},
+  transaction
 }) => {
-    if (search) throw new Error('Not implemented');
+  if (search) throw new Error('Not implemented');
 
-    return ModelService.get(UserRoles, {
-        where,
-        attributes: userRolesAttributes,
-        include: [],
-        pagination,
-        transaction
-    });
+  return ModelService.get(UserRoles, {
+    where,
+    attributes: userRolesAttributes,
+    include: [],
+    pagination,
+    transaction
+  });
 };
 
 /**
@@ -193,21 +193,21 @@ const getUserRoles = async ({
  * @returns {Promise<*>}
  */
 const getUserAts = async ({
-    search,
-    where = {},
-    userAtsAttributes = USER_ATS_ATTRIBUTES,
-    pagination = {},
-    transaction
+  search,
+  where = {},
+  userAtsAttributes = USER_ATS_ATTRIBUTES,
+  pagination = {},
+  transaction
 }) => {
-    if (search) throw new Error('Not implemented');
+  if (search) throw new Error('Not implemented');
 
-    return ModelService.get(UserAts, {
-        where,
-        attributes: userAtsAttributes,
-        include: [],
-        pagination,
-        transaction
-    });
+  return ModelService.get(UserAts, {
+    where,
+    attributes: userAtsAttributes,
+    include: [],
+    pagination,
+    transaction
+  });
 };
 
 /**
@@ -221,30 +221,30 @@ const getUserAts = async ({
  * @returns {Promise<*>}
  */
 const createUser = async ({
-    values: { username },
-    userAttributes = USER_ATTRIBUTES,
-    roleAttributes = ROLE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    transaction
+  values: { username },
+  userAttributes = USER_ATTRIBUTES,
+  roleAttributes = ROLE_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  transaction
 }) => {
-    const userResult = await ModelService.create(User, {
-        values: { username },
-        transaction
-    });
-    const { id } = userResult;
+  const userResult = await ModelService.create(User, {
+    values: { username },
+    transaction
+  });
+  const { id } = userResult;
 
-    // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return ModelService.getById(User, {
-        id,
-        attributes: userAttributes,
-        include: [
-            roleAssociation(roleAttributes),
-            atAssociation(atAttributes),
-            testPlanRunAssociation(testPlanRunAttributes)
-        ],
-        transaction
-    });
+  // to ensure the structure being returned matches what we expect for simple queries and can be controlled
+  return ModelService.getById(User, {
+    id,
+    attributes: userAttributes,
+    include: [
+      roleAssociation(roleAttributes),
+      atAssociation(atAttributes),
+      testPlanRunAssociation(testPlanRunAttributes)
+    ],
+    transaction
+  });
 };
 
 /**
@@ -259,30 +259,30 @@ const createUser = async ({
  * @returns {Promise<*>}
  */
 const updateUserById = async ({
-    id,
-    values: { username },
-    userAttributes = USER_ATTRIBUTES,
-    roleAttributes = ROLE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    transaction
+  id,
+  values: { username },
+  userAttributes = USER_ATTRIBUTES,
+  roleAttributes = ROLE_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  transaction
 }) => {
-    await ModelService.update(User, {
-        where: { id },
-        values: { username },
-        transaction
-    });
+  await ModelService.update(User, {
+    where: { id },
+    values: { username },
+    transaction
+  });
 
-    return ModelService.getById(User, {
-        id,
-        attributes: userAttributes,
-        include: [
-            roleAssociation(roleAttributes),
-            atAssociation(atAttributes),
-            testPlanRunAssociation(testPlanRunAttributes)
-        ],
-        transaction
-    });
+  return ModelService.getById(User, {
+    id,
+    attributes: userAttributes,
+    include: [
+      roleAssociation(roleAttributes),
+      atAssociation(atAttributes),
+      testPlanRunAssociation(testPlanRunAttributes)
+    ],
+    transaction
+  });
 };
 
 /**
@@ -293,7 +293,7 @@ const updateUserById = async ({
  * @returns {Promise<boolean>}
  */
 const removeUserById = async ({ id, truncate = false, transaction }) => {
-    return ModelService.removeById(User, { id, truncate, transaction });
+  return ModelService.removeById(User, { id, truncate, transaction });
 };
 
 /**
@@ -314,24 +314,24 @@ const removeUserById = async ({ id, truncate = false, transaction }) => {
  * @returns {Promise<*>}
  */
 const bulkGetOrReplaceUserRoles = async ({
+  where: { userId },
+  valuesList,
+  userRolesAttributes,
+  transaction
+}) => {
+  const isUpdated = await ModelService.bulkGetOrReplace(UserRoles, {
     where: { userId },
     valuesList,
-    userRolesAttributes,
     transaction
-}) => {
-    const isUpdated = await ModelService.bulkGetOrReplace(UserRoles, {
-        where: { userId },
-        valuesList,
-        transaction
-    });
+  });
 
-    const records = await getUserRoles({
-        where: { userId },
-        attributes: userRolesAttributes,
-        transaction
-    });
+  const records = await getUserRoles({
+    where: { userId },
+    attributes: userRolesAttributes,
+    transaction
+  });
 
-    return [records, isUpdated];
+  return [records, isUpdated];
 };
 
 /**
@@ -352,24 +352,24 @@ const bulkGetOrReplaceUserRoles = async ({
  * @returns {Promise<*>}
  */
 const bulkGetOrReplaceUserAts = async ({
+  where: { userId },
+  valuesList,
+  userAtsAttributes,
+  transaction
+}) => {
+  const isUpdated = await ModelService.bulkGetOrReplace(UserAts, {
     where: { userId },
     valuesList,
+    transaction
+  });
+
+  const records = await getUserAts({
+    where: { userId },
     userAtsAttributes,
     transaction
-}) => {
-    const isUpdated = await ModelService.bulkGetOrReplace(UserAts, {
-        where: { userId },
-        valuesList,
-        transaction
-    });
+  });
 
-    const records = await getUserAts({
-        where: { userId },
-        userAtsAttributes,
-        transaction
-    });
-
-    return [records, isUpdated];
+  return [records, isUpdated];
 };
 
 /**
@@ -385,47 +385,47 @@ const bulkGetOrReplaceUserAts = async ({
  * @returns {Promise<[*, boolean]>}
  */
 const getOrCreateUser = async ({
-    where: { username },
-    values: { roles },
-    userAttributes = USER_ATTRIBUTES,
-    roleAttributes = ROLE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    transaction
+  where: { username },
+  values: { roles },
+  userAttributes = USER_ATTRIBUTES,
+  roleAttributes = ROLE_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  transaction
 }) => {
-    const accumulatedResults = await ModelService.nestedGetOrCreate({
-        operations: [
-            {
-                get: getUsers,
-                create: createUser,
-                values: { username },
-                returnAttributes: {}
-            },
-            accumulatedResults => {
-                const userId = accumulatedResults[0][0].id;
-                return {
-                    bulkGetOrReplace: bulkGetOrReplaceUserRoles,
-                    bulkGetOrReplaceWhere: { userId },
-                    valuesList: roles.map(({ name }) => ({ roleName: name })),
-                    returnAttributes: {}
-                };
-            }
-        ],
-        transaction
-    });
+  const accumulatedResults = await ModelService.nestedGetOrCreate({
+    operations: [
+      {
+        get: getUsers,
+        create: createUser,
+        values: { username },
+        returnAttributes: {}
+      },
+      accumulatedResults => {
+        const userId = accumulatedResults[0][0].id;
+        return {
+          bulkGetOrReplace: bulkGetOrReplaceUserRoles,
+          bulkGetOrReplaceWhere: { userId },
+          valuesList: roles.map(({ name }) => ({ roleName: name })),
+          returnAttributes: {}
+        };
+      }
+    ],
+    transaction
+  });
 
-    const userId = accumulatedResults[0][0].id;
-    const isNewUser = accumulatedResults[0][1];
-    const user = await getUserById({
-        id: userId,
-        userAttributes,
-        roleAttributes,
-        atAttributes,
-        testPlanRunAttributes,
-        transaction
-    });
+  const userId = accumulatedResults[0][0].id;
+  const isNewUser = accumulatedResults[0][1];
+  const user = await getUserById({
+    id: userId,
+    userAttributes,
+    roleAttributes,
+    atAttributes,
+    testPlanRunAttributes,
+    transaction
+  });
 
-    return [user, isNewUser];
+  return [user, isNewUser];
 };
 
 // Custom Functions
@@ -439,10 +439,10 @@ const getOrCreateUser = async ({
  * @returns {Promise<*>}
  */
 const addUserRole = async (id, role, { transaction }) => {
-    return ModelService.create(UserRoles, {
-        values: { userId: id, roleName: role },
-        transaction
-    });
+  return ModelService.create(UserRoles, {
+    values: { userId: id, roleName: role },
+    transaction
+  });
 };
 
 /**
@@ -453,27 +453,27 @@ const addUserRole = async (id, role, { transaction }) => {
  * @returns {Promise<boolean>}
  */
 const removeUserRole = async (userId, roleName, { transaction }) => {
-    return ModelService.removeByQuery(UserRoles, {
-        where: { userId, roleName },
-        transaction
-    });
+  return ModelService.removeByQuery(UserRoles, {
+    where: { userId, roleName },
+    transaction
+  });
 };
 
 module.exports = {
-    // Basic CRUD
-    getUserById,
-    getUserByUsername,
-    getUsers,
-    getUserRoles,
-    getUserAts,
-    createUser,
-    updateUserById,
-    removeUserById,
-    bulkGetOrReplaceUserRoles,
-    bulkGetOrReplaceUserAts,
-    getOrCreateUser,
+  // Basic CRUD
+  getUserById,
+  getUserByUsername,
+  getUsers,
+  getUserRoles,
+  getUserAts,
+  createUser,
+  updateUserById,
+  removeUserById,
+  bulkGetOrReplaceUserRoles,
+  bulkGetOrReplaceUserAts,
+  getOrCreateUser,
 
-    // Custom Functions
-    addUserRole,
-    removeUserRole
+  // Custom Functions
+  addUserRole,
+  removeUserRole
 };

@@ -11,15 +11,15 @@ import GraphQLProvider from '../components/GraphQLProvider';
 Enzyme.configure({ adapter: new EnzymeAdapter() });
 
 const setup = () => {
-    const wrapper = shallow(
-        <GraphQLProvider>
-            <App />
-        </GraphQLProvider>
-    ).dive();
-    return wrapper;
+  const wrapper = shallow(
+    <GraphQLProvider>
+      <App />
+    </GraphQLProvider>
+  ).dive();
+  return wrapper;
 };
 
 test('renders without crashing', () => {
-    const wrapper = setup();
-    expect(wrapper).toBeTruthy();
+  const wrapper = setup();
+  expect(wrapper).toBeTruthy();
 });

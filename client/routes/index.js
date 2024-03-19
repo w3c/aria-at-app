@@ -16,70 +16,66 @@ import TestPlanVersionsPage from '../components/TestPlanVersionsPage';
 import TestReview from '../components/TestReview';
 
 export default () => (
-    <Routes>
-        <Route index path="/" exact element={<Home />} />
-        <Route
-            exact
-            path="/signup-instructions"
-            element={<SignupInstructions />}
-        />
-        <Route
-            exact
-            path="/account/settings"
-            element={
-                <ConfirmAuth requiredPermission="TESTER">
-                    <UserSettings />
-                </ConfirmAuth>
-            }
-        />
-        <Route
-            exact
-            path="/candidate-test-plan/:testPlanVersionId/:atId"
-            element={
-                <ConfirmAuth requiredPermission="VENDOR">
-                    <CandidateTestPlanRun />
-                </ConfirmAuth>
-            }
-        />
-        <Route exact path="/test-queue" element={<TestQueue />} />
-        <Route
-            exact
-            path="/test-plan-report/:testPlanReportId"
-            element={<TestRun />}
-        />
-        <Route
-            exact
-            path="/run/:runId"
-            element={
-                <ConfirmAuth requiredPermission="TESTER">
-                    <TestRun />
-                </ConfirmAuth>
-            }
-        />
-        <Route
-            exact
-            path="/test-review/:testPlanVersionId"
-            element={<TestReview />}
-        />
-        <Route exact path="/reports" element={<Reports />} />
-        <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
-        <Route
-            exact
-            path="/candidate-review"
-            element={
-                <ConfirmAuth requiredPermission="VENDOR">
-                    <CandidateReview />
-                </ConfirmAuth>
-            }
-        />
-        <Route exact path="/data-management" element={<DataManagement />} />
-        <Route
-            exact
-            path="/data-management/:testPlanDirectory/"
-            element={<TestPlanVersionsPage />}
-        />
-        <Route exact path="/invalid-request" element={<InvalidRequest />} />
-        <Route exact path="/404" element={<NotFound />} />
-        <Route exact path="*" element={<Navigate to="/404" replace />} />
-    </Routes>
+  <Routes>
+    <Route index path="/" exact element={<Home />} />
+    <Route exact path="/signup-instructions" element={<SignupInstructions />} />
+    <Route
+      exact
+      path="/account/settings"
+      element={
+        <ConfirmAuth requiredPermission="TESTER">
+          <UserSettings />
+        </ConfirmAuth>
+      }
+    />
+    <Route
+      exact
+      path="/candidate-test-plan/:testPlanVersionId/:atId"
+      element={
+        <ConfirmAuth requiredPermission="VENDOR">
+          <CandidateTestPlanRun />
+        </ConfirmAuth>
+      }
+    />
+    <Route exact path="/test-queue" element={<TestQueue />} />
+    <Route
+      exact
+      path="/test-plan-report/:testPlanReportId"
+      element={<TestRun />}
+    />
+    <Route
+      exact
+      path="/run/:runId"
+      element={
+        <ConfirmAuth requiredPermission="TESTER">
+          <TestRun />
+        </ConfirmAuth>
+      }
+    />
+    <Route
+      exact
+      path="/test-review/:testPlanVersionId"
+      element={<TestReview />}
+    />
+    <Route exact path="/reports" element={<Reports />} />
+    <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
+    <Route
+      exact
+      path="/candidate-review"
+      element={
+        <ConfirmAuth requiredPermission="VENDOR">
+          <CandidateReview />
+        </ConfirmAuth>
+      }
+    />
+    <Route exact path="/data-management" element={<DataManagement />} />
+    <Route
+      exact
+      path="/data-management/:testPlanDirectory/"
+      element={<TestPlanVersionsPage />}
+    />
+    <Route exact path="/invalid-request" element={<InvalidRequest />} />
+    <Route exact path="/404" element={<NotFound />} />
+    <Route exact path="*" element={<Navigate to="/404" replace />} />
+  </Routes>
 );

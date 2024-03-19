@@ -11,12 +11,12 @@
  * @returns - The same object but with its keys sorted.
  */
 const alphabetizeObjectBy = (object, getString) => {
-    return Object.fromEntries(
-        Object.entries(object).sort((a, b) => {
-            // https://stackoverflow.com/a/45544166/3888572
-            return getString(a).localeCompare(getString(b));
-        })
-    );
+  return Object.fromEntries(
+    Object.entries(object).sort((a, b) => {
+      // https://stackoverflow.com/a/45544166/3888572
+      return getString(a).localeCompare(getString(b));
+    })
+  );
 };
 
 export default alphabetizeObjectBy;
