@@ -76,22 +76,6 @@ const TestRun = () => {
             variables: { testPlanRunId, testPlanReportId }
         }
     );
-    /* HOMEWORK
-        *try changing or turning off the fetchPolicy so that loading won't be false
-            and to see the behavior.
-        *You are trying to catch the page loading so the if statement will run.
-            Use whatever catches the page load as if statement conditional.
-    */
-    //    section:
-    // console.log('performance', performance.navigation.TYPE_RELOAD);
-    // console.log('loading', loading);
-    // console.log('updateMessageComponent', updateMessageComponent);
-    // useEffect(() => {
-    //     if (performance.navigation.TYPE_RELOAD) {
-    //         console.log('IT RAN')
-    //         // setUpdateMessageComponent(null);
-    //     }
-    // }, [performance.navigation.TYPE_RELOAD]);
 
     const { data: collectionJobQuery } = useQuery(
         COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
@@ -1409,7 +1393,6 @@ const TestRun = () => {
                         )}
                         patternName={testPlanVersion.title}
                         testerName={tester.username}
-                        // section:
                         handleAction={handleAtAndBrowserDetailsModalAction}
                         handleClose={handleAtAndBrowserDetailsModalCloseAction}
                     />
