@@ -674,16 +674,29 @@ describe('data management', () => {
         });
     });
 
-    it('updates test plan version but removes marked as final for test plan report when new report has incomplete runs', async () => {
+    it('updates test plan version over another which had all test plan reports as final but removes final for all newly created test plan reports', async () => {
         await dbCleaner(async transaction => {
-            function markedFinalAtReduce(acc, curr) {
-                return acc + (curr.markedFinalAt ? 1 : 0);
+            function markedFinalAtFilter({ markedFinalAt }) {
+                return !!markedFinalAt;
+            }
+
+            function completedResultsCount(testPlanReports, atId) {
+                return (
+                    testPlanReports
+                        .find(({ at }) => at.id == atId)
+                        // 0 because only 1 tester for each already marked final
+                        // report matters during this test
+                        .draftTestPlanRuns[0].testResults.filter(
+                            ({ completedAt }) => !!completedAt
+                        ).length
+                );
             }
 
             const testPlanVersions = await testPlanVersionsQuery({
                 transaction
             });
 
+            // Process counts for old test plan version
             const [oldCommandButtonVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
@@ -691,13 +704,27 @@ describe('data management', () => {
                         e.phase === 'DRAFT' &&
                         e.metadata.testFormatVersion === 2
                 );
-
             const oldCommandButtonVersionMarkedFinalReportsCount =
-                oldCommandButtonVersion.testPlanReports.reduce(
-                    markedFinalAtReduce,
-                    0
+                oldCommandButtonVersion.testPlanReports.filter(
+                    markedFinalAtFilter
+                ).length;
+            const oldCommandButtonJawsCompletedTestResultsCount =
+                completedResultsCount(
+                    oldCommandButtonVersion.testPlanReports,
+                    1
+                );
+            const oldCommandButtonNvdaCompletedTestResultsCount =
+                completedResultsCount(
+                    oldCommandButtonVersion.testPlanReports,
+                    2
+                );
+            const oldCommandButtonSafariCompletedTestResultsCount =
+                completedResultsCount(
+                    oldCommandButtonVersion.testPlanReports,
+                    3
                 );
 
+            // Process counts for new test plan version
             const [newCommandButtonVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
@@ -705,7 +732,6 @@ describe('data management', () => {
                         e.phase === 'RD' &&
                         e.metadata.testFormatVersion === 2
                 );
-
             const { testPlanVersion: newCommandButtonVersionInDraft } =
                 await updateVersionToPhaseQuery(
                     newCommandButtonVersion.id,
@@ -717,9 +743,26 @@ describe('data management', () => {
                     }
                 );
             const newCommandButtonVersionInDraftMarkedFinalReportsCount =
-                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.reduce(
-                    markedFinalAtReduce,
-                    0
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.filter(
+                    markedFinalAtFilter
+                ).length;
+            const newCommandButtonJawsCompletedTestResultsCount =
+                completedResultsCount(
+                    newCommandButtonVersionInDraft.updatePhase.testPlanVersion
+                        .testPlanReports,
+                    1
+                );
+            const newCommandButtonNvdaCompletedTestResultsCount =
+                completedResultsCount(
+                    newCommandButtonVersionInDraft.updatePhase.testPlanVersion
+                        .testPlanReports,
+                    2
+                );
+            const newCommandButtonSafariCompletedTestResultsCount =
+                completedResultsCount(
+                    newCommandButtonVersionInDraft.updatePhase.testPlanVersion
+                        .testPlanReports,
+                    3
                 );
 
             // The difference between them is that there have been updated settings for VoiceOver tests;
@@ -729,14 +772,24 @@ describe('data management', () => {
             // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
             // 'reqInfoAboutButton' should still match
             //
-            // This means only 1 test plan report should be affected, for VoiceOver and now unmarked as final.
-            // The single JAWS and NVDA reports should be unaffected
+            // This means only 1 test plan report was affected results-wise, for VoiceOver, but they should all still be
+            // unmarked as final. The single JAWS and NVDA reports should have unaffected results but also unmarked as
+            // final.
+            expect(
+                oldCommandButtonVersionMarkedFinalReportsCount
+            ).toBeGreaterThan(0);
             expect(
                 newCommandButtonVersionInDraftMarkedFinalReportsCount
-            ).toBeGreaterThan(1);
-            expect(
-                newCommandButtonVersionInDraftMarkedFinalReportsCount
-            ).toEqual(oldCommandButtonVersionMarkedFinalReportsCount - 1);
+            ).toEqual(0);
+            expect(newCommandButtonJawsCompletedTestResultsCount).toEqual(
+                oldCommandButtonJawsCompletedTestResultsCount
+            );
+            expect(newCommandButtonNvdaCompletedTestResultsCount).toEqual(
+                oldCommandButtonNvdaCompletedTestResultsCount
+            );
+            expect(newCommandButtonSafariCompletedTestResultsCount).toEqual(
+                oldCommandButtonSafariCompletedTestResultsCount - 2
+            );
         });
     });
 });

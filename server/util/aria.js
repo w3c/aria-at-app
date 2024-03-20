@@ -14,6 +14,8 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
         'renderedUrls',
         'renderedUrl',
         'renderableContent.target.at.raw',
+        'renderableContent.target.at.settings',
+        'renderableContent.instructions.mode',
         'viewers'
     ];
 
