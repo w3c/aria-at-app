@@ -43,17 +43,14 @@ const TestPlanResultsTable = ({
                 // Rows are sorted by priority descending, then result (failures then passes), then
                 // assertion order. Assertion order refers to the order of assertion columns in the
                 // tests.csv file.
-                // TODO: Update named references of REQUIRED to MUST
-                const requiredAssertionResults =
-                    scenarioResult.requiredAssertionResults
-                        .slice()
-                        .sort((a, b) =>
-                            a.passed === b.passed ? 0 : a.passed ? 1 : -1
-                        );
+                const mustAssertionResults = scenarioResult.mustAssertionResults
+                    .slice()
+                    .sort((a, b) =>
+                        a.passed === b.passed ? 0 : a.passed ? 1 : -1
+                    );
 
-                // TODO: Update named references of OPTIONAL to SHOULD
-                const optionalAssertionResults =
-                    scenarioResult.optionalAssertionResults
+                const shouldAssertionResults =
+                    scenarioResult.shouldAssertionResults
                         .slice()
                         .sort((a, b) =>
                             a.passed === b.passed ? 0 : a.passed ? 1 : -1
@@ -83,7 +80,7 @@ const TestPlanResultsTable = ({
                     .join(' then ');
 
                 const sortedAssertionResults = [
-                    ...requiredAssertionResults.map(e => ({
+                    ...mustAssertionResults.map(e => ({
                         ...e,
                         priorityString: 'MUST'
                     })),
@@ -95,7 +92,7 @@ const TestPlanResultsTable = ({
                         passed: hasNoSevereUnexpectedBehavior,
                         priorityString: 'MUST'
                     },
-                    ...optionalAssertionResults.map(e => ({
+                    ...shouldAssertionResults.map(e => ({
                         ...e,
                         priorityString: 'SHOULD'
                     })),
