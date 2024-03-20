@@ -24,11 +24,11 @@
   "assertions": [
     {
       "text": "Role 'alert' is conveyed",
-      "priority": "REQUIRED"
+      "priority": "MUST"
     },
     {
       "text": "Text 'Hello' is conveyed",
-      "priority": "REQUIRED"
+      "priority": "MUST"
     }
   ],
   "renderedUrls": {

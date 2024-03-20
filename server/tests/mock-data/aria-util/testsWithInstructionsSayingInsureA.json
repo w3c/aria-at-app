@@ -31,12 +31,12 @@
       {
         "id": "MDEyZeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ9DIzZj",
         "text": "Role 'alert' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       },
       {
         "id": "MjEyOeyIzIjoiTmpKa09leUl5SWpvaU1qVXlJbjBHSmtNRyJ9DUwY2",
         "text": "Text 'Hello' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       }
     ],
     "renderedUrls": {
@@ -184,12 +184,12 @@
       {
         "id": "NGIwNeyIzIjoiT0RFMVlleUl5SWpvaU1qVXlJbjBUTTJORCJ9WI0Mz",
         "text": "Role 'alert' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       },
       {
         "id": "MmJhOeyIzIjoiT0RFMVlleUl5SWpvaU1qVXlJbjBUTTJORCJ9WM2Nz",
         "text": "Text 'Hello' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       }
     ],
     "renderedUrls": {
@@ -332,12 +332,12 @@
       {
         "id": "NTU0YeyIzIjoiTkdNeE1leUl5SWpvaU1qVXlJbjB6RXdOVCJ9jFmYz",
         "text": "Role 'alert' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       },
       {
         "id": "MmNiNeyIzIjoiTkdNeE1leUl5SWpvaU1qVXlJbjB6RXdOVCJ9zI1Zj",
         "text": "Text 'Hello' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       }
     ],
     "renderedUrls": {
