@@ -34,8 +34,9 @@ const getKnownScenariosAndCommandIdsForTest = testPlanVersionTest => {
     }
 
     for (const testPlanVersionScenario of testPlanVersionTest.scenarios) {
-        const { commandIds, settings } = testPlanVersionScenario;
+        const { commandIds, atId, settings } = testPlanVersionScenario;
         let scenarioId = commandIds.join('-');
+        scenarioId = `${scenarioId}_${atId}`;
 
         // settings may not exist if v1 test format
         if (settings) scenarioId = `${scenarioId}_${settings}`;
