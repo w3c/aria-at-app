@@ -1,7 +1,6 @@
 {
   "atIds": [1, 2],
   "title": "Trigger an alert in reading mode",
-  "atMode": "READING",
   "viewers": [],
   "rowNumber": "1",
   "scenarios": [

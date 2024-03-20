@@ -93,14 +93,13 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     const newTestPlanVersion = {
         id: newTestPlanVersionData.id,
         tests: newTestPlanVersionData.tests.map(
-            ({ assertions, atMode, atIds, id, scenarios, title }) => {
+            ({ assertions, atIds, id, scenarios, title }) => {
                 return {
                     id,
                     title,
                     ats: atIds.map(atId => ({
                         id: atId
                     })),
-                    atMode,
                     scenarios: scenariosResolver(
                         { scenarios },
                         { atId },
@@ -166,7 +165,6 @@ const updateTestPlanReportTestPlanVersionResolver = async (
                                 ats: test.ats.map(({ id }) => ({
                                     id
                                 })),
-                                atMode: test.atMode,
                                 scenarios: scenariosResolver(
                                     { scenarios: test.scenarios },
                                     { atId },

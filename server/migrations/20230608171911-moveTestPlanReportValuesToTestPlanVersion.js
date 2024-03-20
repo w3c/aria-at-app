@@ -265,21 +265,13 @@ module.exports = {
                 const newTestPlanVersion = {
                     id: newTestPlanVersionData.id,
                     tests: newTestPlanVersionData.tests.map(
-                        ({
-                            assertions,
-                            atMode,
-                            atIds,
-                            id,
-                            scenarios,
-                            title
-                        }) => {
+                        ({ assertions, atIds, id, scenarios, title }) => {
                             return {
                                 id,
                                 title,
                                 ats: atIds.map(atId => ({
                                     id: atId
                                 })),
-                                atMode,
                                 scenarios: scenariosResolver(
                                     { scenarios },
                                     { atId },
@@ -359,7 +351,6 @@ module.exports = {
                                                 ats: test.ats.map(({ id }) => ({
                                                     id
                                                 })),
-                                                atMode: test.atMode,
                                                 scenarios: scenariosResolver(
                                                     {
                                                         scenarios:

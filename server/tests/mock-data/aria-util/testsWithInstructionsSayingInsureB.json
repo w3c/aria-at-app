@@ -3,7 +3,6 @@
     "id": "MTRjOeyIyIjoiNDM1In0TVmYT",
     "atIds": [1, 2],
     "title": "Trigger an alert in reading mode",
-    "atMode": "READING",
     "viewers": [],
     "rowNumber": "1",
     "scenarios": [
@@ -157,7 +156,6 @@
     "id": "NzFjYeyIyIjoiNDM1In0TYzZT",
     "atIds": [1, 2],
     "title": "Trigger an alert in interaction mode",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "2",
     "scenarios": [
@@ -311,7 +309,6 @@
     "id": "MDM4NeyIyIjoiNDM1In0zc0Mm",
     "atIds": [3],
     "title": "Trigger an alert",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "3",
     "scenarios": [

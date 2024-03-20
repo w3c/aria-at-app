@@ -25,7 +25,6 @@ describe('AtModel Data Checks', () => {
             })
         );
         expect(at).toHaveProperty('atVersions');
-        expect(at).toHaveProperty('modes');
         expect(at).toHaveProperty('browsers');
     });
 
@@ -37,7 +36,6 @@ describe('AtModel Data Checks', () => {
         const at = await AtService.getAtById({
             id: _id,
             atVersionAttributes: [],
-            atModeAttributes: [],
             browserAttributes: [],
             transaction: false
         });
@@ -52,7 +50,6 @@ describe('AtModel Data Checks', () => {
             })
         );
         expect(at).not.toHaveProperty('atVersions');
-        expect(at).not.toHaveProperty('modes');
         expect(at).not.toHaveProperty('browsers');
     });
 
@@ -78,19 +75,6 @@ describe('AtModel Data Checks', () => {
         // A3
         expect(atVersions).toBeInstanceOf(Array);
         expect(atVersions.length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('should contain valid at with modes array', async () => {
-        // A1
-        const _id = 1;
-
-        // A2
-        const at = await AtService.getAtById({ id: _id, transaction: false });
-        const { modes } = at;
-
-        // A3
-        expect(modes).toBeInstanceOf(Array);
-        expect(modes.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should contain valid at with browsers array', async () => {
@@ -196,7 +180,6 @@ describe('AtModel Data Checks', () => {
                     id: expect.any(Number),
                     name: expect.any(String),
                     atVersions: expect.any(Array),
-                    modes: expect.any(Array),
                     browsers: expect.any(Array)
                 })
             ])
@@ -219,7 +202,6 @@ describe('AtModel Data Checks', () => {
                     id: expect.any(Number),
                     name: expect.stringMatching(/nvd/gi),
                     atVersions: expect.any(Array),
-                    modes: expect.any(Array),
                     browsers: expect.any(Array)
                 })
             ])
@@ -231,7 +213,6 @@ describe('AtModel Data Checks', () => {
         const result = await AtService.getAts({
             atAttributes: ['name'],
             atVersionAttributes: [],
-            atModeAttributes: [],
             browserAttributes: [],
             pagination: {
                 enablePagination: true
@@ -560,240 +541,6 @@ describe('AtVersionModel Data Checks', () => {
         // A1
         const result = await AtService.getAtVersions({
             atVersionAttributes: ['name'],
-            atAttributes: [],
-            pagination: { enablePagination: true },
-            transaction: false
-        });
-
-        // A3
-        expect(result.data.length).toBeGreaterThanOrEqual(1);
-        expect(result).toEqual(
-            expect.objectContaining({
-                page: 1,
-                pageSize: expect.any(Number),
-                resultsCount: expect.any(Number),
-                totalResultsCount: expect.any(Number),
-                pagesCount: expect.any(Number),
-                data: expect.arrayContaining([
-                    expect.objectContaining({
-                        name: expect.any(String)
-                    })
-                ])
-            })
-        );
-    });
-});
-
-describe('AtModeModel Data Checks', () => {
-    it('should return valid atMode with at for query with all associations', async () => {
-        // A1
-        const _atId = 1;
-        const _name = 'READING';
-
-        // A2
-        const atMode = await AtService.getAtModeByQuery({
-            where: { atId: _atId, name: _name },
-            transaction: false
-        });
-        const { atId, name, at } = atMode;
-
-        // A3
-        expect(atId).toBeTruthy();
-        expect(name).toBeTruthy();
-        expect(at).toBeTruthy();
-        expect(atMode).toEqual(
-            expect.objectContaining({
-                atId: _atId,
-                name: _name,
-                at: expect.objectContaining({
-                    id: _atId,
-                    name: expect.any(String)
-                })
-            })
-        );
-        expect(atMode).toHaveProperty('at');
-    });
-
-    it('should return valid atMode for query with no associations', async () => {
-        // A1
-        const _atId = 1;
-        const _name = 'READING';
-
-        // A2
-        const atMode = await AtService.getAtModeByQuery({
-            where: { atId: _atId, name: _name },
-            atAttributes: [],
-            transaction: false
-        });
-        const { atId, name } = atMode;
-
-        // A3
-        expect(atId).toBeTruthy();
-        expect(name).toBeTruthy();
-        expect(atMode).toEqual(
-            expect.objectContaining({
-                atId: _atId,
-                name: _name
-            })
-        );
-        expect(atMode).not.toHaveProperty('at');
-    });
-
-    it('should not be valid atMode query', async () => {
-        // A1
-        const _atId = 53935;
-        const _name = randomStringGenerator();
-
-        // A2
-        const atMode = await AtService.getAtModeByQuery({
-            where: { atId: _atId, name: _name },
-            transaction: false
-        });
-
-        // A3
-        expect(atMode).toBeNull();
-    });
-
-    it('should create and remove a new atMode', async () => {
-        await dbCleaner(async transaction => {
-            // A1
-            const _atId = 1;
-            const _name = randomStringGenerator();
-
-            // A2
-            const atMode = await AtService.createAtMode({
-                values: { atId: _atId, name: _name },
-                transaction
-            });
-            const { atId, name, at } = atMode;
-
-            // A2
-            await AtService.removeAtModeByQuery({
-                where: { atId, name },
-                transaction
-            });
-            const deletedAtMode = await AtService.getAtModeByQuery({
-                where: { atId, name },
-                transaction
-            });
-
-            // after atMode created
-            expect(atId).toEqual(_atId);
-            expect(name).toEqual(_name);
-            expect(at).toHaveProperty('id');
-            expect(at).toHaveProperty('name');
-
-            // after atMode removed
-            expect(deletedAtMode).toBeNull();
-        });
-    });
-
-    it('should create and update a new atMode', async () => {
-        await dbCleaner(async transaction => {
-            // A1
-            const _atId = 1;
-            const _name = randomStringGenerator();
-            const _updatedName = randomStringGenerator();
-
-            // A2
-            const atMode = await AtService.createAtMode({
-                values: { atId: _atId, name: _name },
-                transaction
-            });
-            const { atId, name, at } = atMode;
-
-            // A2
-            const updatedMode = await AtService.updateAtModeByQuery({
-                where: { atId, name },
-                values: { name: _updatedName },
-                transaction
-            });
-            const { name: updatedName } = updatedMode;
-
-            // after atMode created
-            expect(atId).toEqual(_atId);
-            expect(name).toEqual(_name);
-            expect(at).toHaveProperty('id');
-            expect(at).toHaveProperty('name');
-
-            // after atMode updated
-            expect(_name).not.toEqual(_updatedName);
-            expect(name).not.toEqual(updatedName);
-            expect(updatedName).toEqual(_updatedName);
-        });
-    });
-
-    it('should return same atMode if no update params passed', async () => {
-        await dbCleaner(async transaction => {
-            // A1
-            const _atId = 1;
-            const _name = 'READING';
-
-            // A2
-            const originalAtMode = await AtService.getAtModeByQuery({
-                where: { atId: _atId, name: _name },
-                transaction
-            });
-            const updatedAtMode = await AtService.updateAtModeByQuery({
-                where: { atId: _atId, name: _name },
-                transaction
-            });
-
-            // A3
-            expect(originalAtMode).toMatchObject(updatedAtMode);
-        });
-    });
-
-    it('should return collection of atModes', async () => {
-        // A1
-        const result = await AtService.getAtModes({ transaction: false });
-
-        // A3
-        expect(result.length).toBeGreaterThanOrEqual(1);
-        expect(result).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    atId: expect.any(Number),
-                    name: expect.any(String),
-                    at: expect.objectContaining({
-                        id: expect.any(Number),
-                        name: expect.any(String)
-                    })
-                })
-            ])
-        );
-    });
-
-    it('should return collection of atModes for name query', async () => {
-        // A1
-        const search = 'rea';
-
-        // A2
-        const result = await AtService.getAtModes({
-            search,
-            transaction: false
-        });
-
-        expect(result).toBeInstanceOf(Array);
-        expect(result.length).toBeGreaterThanOrEqual(1);
-        expect(result).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    atId: expect.any(Number),
-                    name: expect.stringMatching(/read/gi),
-                    at: expect.objectContaining({
-                        id: expect.any(Number),
-                        name: expect.any(String)
-                    })
-                })
-            ])
-        );
-    });
-
-    it('should return collection of atModes with paginated structure', async () => {
-        // A1
-        const result = await AtService.getAtModes({
-            atModeAttributes: ['name'],
             atAttributes: [],
             pagination: { enablePagination: true },
             transaction: false
