@@ -66,6 +66,7 @@ const processCopiedReports = async ({
     // There is no older test plan reports to process
     if (!oldTestPlanReports.length) {
         return {
+            oldTestPlanVersion,
             newTestPlanReportIds,
             updatedTestPlanReports
         };
@@ -382,6 +383,7 @@ const processCopiedReports = async ({
     });
 
     return {
+        oldTestPlanVersion,
         newTestPlanReportIds,
         updatedTestPlanReports
     };
