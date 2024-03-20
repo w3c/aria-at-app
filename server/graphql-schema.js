@@ -157,23 +157,6 @@ const graphqlSchema = gql`
     }
 
     """
-    Some ATs like JAWS have modes - for example, normally pushing "h" would
-    navigate to the next header, but when you are interacting with a text input,
-    typing "h" would insert the letter "h" into that input. Our tests are aware
-    of these modes.
-    """
-    enum AtMode {
-        """
-        JAWS "browse" mode or NVDA "browse" mode.
-        """
-        READING
-        """
-        JAWS "forms" mode, NVDA "focus" mode, or VoiceOver's one-and-only mode.
-        """
-        INTERACTION
-    }
-
-    """
     An assistive technology to be tested, such as NVDA or JAWS.
     """
     type At {
@@ -185,11 +168,6 @@ const graphqlSchema = gql`
         Human-readable name for the AT, such as "NVDA".
         """
         name: String!
-        # TODO: reenable when this data is properly flowing into the system
-        # """
-        # The categories of generalized AT modes the AT supports.
-        # """
-        # modes: [AtMode]!
         atVersions: [AtVersion]!
         """
         The browsers which can run the At, for example, Safari can run VoiceOver but not Jaws because Jaws is Windows only.
@@ -425,12 +403,7 @@ const graphqlSchema = gql`
         The ATs the test was written to expect.
         """
         ats: [At]!
-        # TODO: consider moving to the Scenario type if we support a single test
-        # applying to multiple AT modes.
-        """
-        The AT mode the test was written to expect.
-        """
-        atMode: AtMode
+
         """
         Raw execution-specific data for the Test Renderer such as inputs needed
         to generate the manual test instructions or links to the setup scripts
@@ -562,13 +535,11 @@ const graphqlSchema = gql`
         All required assertions must pass for the test to pass. This should be
         considered as 'MUST Behaviors'.
         """
-        REQUIRED
         MUST
         """
         This assertion is not considered when deciding if a test is passing.
         This should be considered as 'SHOULD Behaviors'.
         """
-        OPTIONAL
         SHOULD
         # TODO Define MAY
         MAY

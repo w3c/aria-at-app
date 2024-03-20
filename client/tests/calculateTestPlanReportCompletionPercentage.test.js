@@ -1,6 +1,8 @@
 import { calculateTestPlanReportCompletionPercentage } from '../components/TestPlanReportStatusDialog/calculateTestPlanReportCompletionPercentage';
 
 describe('calculateTestPlanReportCompletionPercentage', () => {
+    const testResult = (id, completedAt = null) => ({ id, completedAt });
+
     test('returns 0 when metrics or draftTestPlanRuns is not defined', () => {
         expect(calculateTestPlanReportCompletionPercentage({})).toBe(0);
         expect(
@@ -24,9 +26,15 @@ describe('calculateTestPlanReportCompletionPercentage', () => {
 
     test('returns 0 and not Infinity when total tests possible is 0', () => {
         const metrics = { testsCount: 0 };
+        const t1 = testResult(1);
+        const t2 = testResult(2);
+        const t3 = testResult(3);
+        const t4 = testResult(4);
+        const t5 = testResult(5);
+
         const draftTestPlanRuns = [
-            { testResults: [1, 2, 3] },
-            { testResults: [1, 2, 3, 4, 5] }
+            { testResults: [t1, t2, t3] },
+            { testResults: [t1, t2, t3, t4, t5] }
         ];
 
         expect(
@@ -39,9 +47,14 @@ describe('calculateTestPlanReportCompletionPercentage', () => {
 
     test('calculates and returns the correct percentage when draftTestPlanRuns has testResults', () => {
         const metrics = { testsCount: 5 };
+        const date = new Date();
+        const t1 = testResult(1, date);
+        const t2 = testResult(2, date);
+        const t3 = testResult(3, date);
+
         const draftTestPlanRuns = [
-            { testResults: [1, 2] },
-            { testResults: [1, 2, 3] }
+            { testResults: [t1, t2] },
+            { testResults: [t1, t2, t3] }
         ];
 
         // Output should follow this formula:

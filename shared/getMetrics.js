@@ -188,22 +188,22 @@ const getMetrics = ({
         commandsCount - moderateImpactFailedAssertionCount;
 
     let {
-        assertionsCount: requiredAssertionsCount,
-        assertionsPassedCount: requiredAssertionsPassedCount,
-        assertionsFailedCount: requiredAssertionsFailedCount
-    } = calculateAssertionPriorityCounts(result, 'REQUIRED');
-    requiredAssertionsCount += commandsCount;
-    requiredAssertionsPassedCount += severeImpactPassedAssertionCount;
-    requiredAssertionsFailedCount += severeImpactFailedAssertionCount;
+        assertionsCount: mustAssertionsCount,
+        assertionsPassedCount: mustAssertionsPassedCount,
+        assertionsFailedCount: mustAssertionsFailedCount
+    } = calculateAssertionPriorityCounts(result, 'MUST');
+    mustAssertionsCount += commandsCount;
+    mustAssertionsPassedCount += severeImpactPassedAssertionCount;
+    mustAssertionsFailedCount += severeImpactFailedAssertionCount;
 
     let {
-        assertionsCount: optionalAssertionsCount,
-        assertionsPassedCount: optionalAssertionsPassedCount,
-        assertionsFailedCount: optionalAssertionsFailedCount
-    } = calculateAssertionPriorityCounts(result, 'OPTIONAL');
-    optionalAssertionsCount += commandsCount;
-    optionalAssertionsPassedCount += moderateImpactPassedAssertionCount;
-    optionalAssertionsFailedCount += moderateImpactFailedAssertionCount;
+        assertionsCount: shouldAssertionsCount,
+        assertionsPassedCount: shouldAssertionsPassedCount,
+        assertionsFailedCount: shouldAssertionsFailedCount
+    } = calculateAssertionPriorityCounts(result, 'SHOULD');
+    shouldAssertionsCount += commandsCount;
+    shouldAssertionsPassedCount += moderateImpactPassedAssertionCount;
+    shouldAssertionsFailedCount += moderateImpactFailedAssertionCount;
 
     const {
         assertionsCount: mayAssertionsCount,
@@ -219,11 +219,11 @@ const getMetrics = ({
         testPlanReport?.runnableTests?.length || countTests({ ...result });
     const testsFailedCount = testsCount - testsPassedCount;
 
-    const requiredFormatted = `${requiredAssertionsPassedCount} of ${requiredAssertionsCount} passed`;
-    const optionalFormatted =
-        optionalAssertionsCount === 0
+    const mustFormatted = `${mustAssertionsPassedCount} of ${mustAssertionsCount} passed`;
+    const shouldFormatted =
+        shouldAssertionsCount === 0
             ? false
-            : `${optionalAssertionsPassedCount} of ${optionalAssertionsCount} passed`;
+            : `${shouldAssertionsPassedCount} of ${shouldAssertionsCount} passed`;
     const mayFormatted =
         mayAssertionsCount === 0
             ? false
@@ -236,37 +236,37 @@ const getMetrics = ({
             : `${unexpectedBehaviorCount} found`;
 
     let supportLevel;
-    if (unexpectedBehaviorCount > 0 || requiredAssertionsFailedCount > 0) {
+    if (unexpectedBehaviorCount > 0 || mustAssertionsFailedCount > 0) {
         supportLevel = 'FAILING';
-    } else if (optionalAssertionsFailedCount > 0) {
+    } else if (shouldAssertionsFailedCount > 0) {
         supportLevel = 'ALL_REQUIRED';
     } else {
         supportLevel = 'FULL';
     }
 
     const supportPercent = Math.round(
-        (requiredAssertionsPassedCount / requiredAssertionsCount) * 100
+        (mustAssertionsPassedCount / mustAssertionsCount) * 100
     );
 
     const assertionsPassedCount =
-        requiredAssertionsPassedCount +
-        optionalAssertionsPassedCount +
+        mustAssertionsPassedCount +
+        shouldAssertionsPassedCount +
         mayAssertionsPassedCount;
 
     const assertionsFailedCount =
-        requiredAssertionsFailedCount +
-        optionalAssertionsFailedCount +
+        mustAssertionsFailedCount +
+        shouldAssertionsFailedCount +
         mayAssertionsFailedCount;
 
     return {
         assertionsPassedCount,
         assertionsFailedCount,
-        requiredAssertionsPassedCount,
-        requiredAssertionsCount,
-        requiredAssertionsFailedCount,
-        optionalAssertionsPassedCount,
-        optionalAssertionsCount,
-        optionalAssertionsFailedCount,
+        mustAssertionsPassedCount,
+        mustAssertionsCount,
+        mustAssertionsFailedCount,
+        shouldAssertionsPassedCount,
+        shouldAssertionsCount,
+        shouldAssertionsFailedCount,
         mayAssertionsPassedCount,
         mayAssertionsCount,
         mayAssertionsFailedCount,
@@ -279,8 +279,8 @@ const getMetrics = ({
         moderateImpactPassedAssertionCount,
         moderateImpactFailedAssertionCount,
         commandsCount,
-        requiredFormatted,
-        optionalFormatted,
+        mustFormatted,
+        shouldFormatted,
         mayFormatted,
         unexpectedBehaviorsFormatted,
         supportLevel,
