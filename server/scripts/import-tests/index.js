@@ -15,10 +15,6 @@ const {
     createTestPlan
 } = require('../../models/services/TestPlanService');
 const {
-    createAtMode,
-    getAtModeByQuery
-} = require('../../models/services/AtService');
-const {
     createTestId,
     createScenarioId,
     createAssertionId
@@ -81,7 +77,7 @@ const importTestPlanVersions = async transaction => {
     const { support } = await updateJsons();
 
     const ats = await At.findAll();
-    await updateAtsJsonAndAtMode({ ats, supportAts: support.ats, transaction });
+    await updateAtsJson({ ats, supportAts: support.ats });
 
     for (const directory of fse.readdirSync(builtTestsDirectory)) {
         if (directory === 'resources') continue;
@@ -353,37 +349,11 @@ const updateJsons = async () => {
     return { support: supportParsed };
 };
 
-const updateAtsJsonAndAtMode = async ({ ats, supportAts, transaction }) => {
+const updateAtsJson = async ({ ats, supportAts }) => {
     const atsResult = ats.map(at => ({
         ...at.dataValues,
         ...supportAts.find(supportAt => supportAt.name === at.dataValues.name)
     }));
-
-    for (const at of atsResult) {
-        if (at.settings) {
-            for (const setting in at.settings) {
-                const existingAtMode = await getAtModeByQuery({
-                    where: {
-                        atId: at.id,
-                        name: setting
-                    },
-                    transaction
-                });
-
-                if (!existingAtMode) {
-                    await createAtMode({
-                        values: {
-                            atId: at.id,
-                            name: setting,
-                            screenText: at.settings[setting].screenText,
-                            instructions: at.settings[setting].instructions
-                        },
-                        transaction
-                    });
-                }
-            }
-        }
-    }
 
     await fse.writeFile(
         path.resolve(__dirname, '../../resources/ats.json'),
@@ -481,12 +451,17 @@ const getTests = ({
                         assertion?.tokenizedAssertionStatements[
                             data.target.at.key
                         ];
+                    const tokenizedAssertionPhrase =
+                        assertion?.tokenizedAssertionPhrases?.[
+                            data.target.at.key
+                        ];
 
                     result.rawAssertionId = assertion.assertionId;
                     result.assertionStatement =
                         tokenizedAssertionStatement ||
                         assertion.assertionStatement;
-                    result.assertionPhrase = assertion.assertionPhrase;
+                    result.assertionPhrase =
+                        tokenizedAssertionPhrase || assertion.assertionPhrase;
                     result.assertionExceptions = data.commands.flatMap(
                         command => {
                             return command.assertionExceptions
@@ -529,7 +504,6 @@ const getTests = ({
                 rowNumber: rawTestId,
                 title: common.info.title,
                 atIds,
-                atMode: common.target.mode.toUpperCase(),
                 renderableContent: Object.fromEntries(
                     allCollected.map((collected, index) => {
                         /** @type RenderableContent **/
@@ -600,10 +574,15 @@ const getTests = ({
                                 assertionStatement,
                                 assertionPhrase,
                                 refIds,
-                                tokenizedAssertionStatements
+                                tokenizedAssertionStatements,
+                                tokenizedAssertionPhrases
                             }) => {
                                 const tokenizedAssertionStatement =
                                     tokenizedAssertionStatements[
+                                        collected.target.at.key
+                                    ];
+                                const tokenizedAssertionPhrase =
+                                    tokenizedAssertionPhrases?.[
                                         collected.target.at.key
                                     ];
 
@@ -613,7 +592,9 @@ const getTests = ({
                                     assertionStatement:
                                         tokenizedAssertionStatement ||
                                         assertionStatement,
-                                    assertionPhrase,
+                                    assertionPhrase:
+                                        tokenizedAssertionPhrase ||
+                                        assertionPhrase,
                                     refIds
                                 };
                             }

@@ -296,7 +296,6 @@ describe('graphql', () => {
                                 ats {
                                     id
                                 }
-                                atMode
                                 scenarios {
                                     __typename
                                     id
@@ -749,31 +748,21 @@ describe('graphql', () => {
                         ) {
                             username
                         }
-                        findOrCreateCollectionJob(
-                            id: 333
-                            testPlanReportId: 4
-                        ) {
-                            id
-                            status
-                            testPlanRun {
-                                id
-                            }
-                        }
-                        collectionJob(id: 333) {
+                        collectionJob(id: 1) {
                             __typename
                             cancelCollectionJob {
                                 id
                                 status
                             }
                         }
-                        updateCollectionJob(id: 333, status: COMPLETED) {
+                        updateCollectionJob(id: 1, status: COMPLETED) {
                             id
                             status
                             testPlanRun {
                                 id
                             }
                         }
-                        deleteCollectionJob(id: 333)
+                        deleteCollectionJob(id: 1)
                     }
                 `,
                 {

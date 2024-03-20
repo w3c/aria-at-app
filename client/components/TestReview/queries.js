@@ -22,7 +22,6 @@ export const TEST_REVIEW_PAGE_QUERY = gql`
                 id
                 rowNumber
                 title
-                atMode
                 ats {
                     id
                     name
