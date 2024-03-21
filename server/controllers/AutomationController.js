@@ -246,8 +246,12 @@ const updateJobResults = async (req, res) => {
         testCsvRow,
         presentationNumber,
         responses,
-        atVersionName,
-        browserVersionName
+        capabilities: {
+            atName,
+            atVersion: atVersionName,
+            browserName,
+            browserVersion: browserVersionName
+        }
     } = req.body;
     const job = await getCollectionJobById({ id, transaction });
     if (!job) {
@@ -260,15 +264,9 @@ const updateJobResults = async (req, res) => {
         );
     }
 
-    /* TODO: Change this once we support more At + Browser Combos in Automation */
-    const [at] = await getAts({
-        where: { name: 'NVDA' },
-        transaction
-    });
-    const [browser] = await getBrowsers({
-        where: { name: 'Chrome' },
-        transaction
-    });
+    /* TODO: Change this to use a better key based lookup system after gh-958 */
+    const [at] = await getAts({ search: atName, transaction });
+    const [browser] = await getBrowsers({ search: browserName, transaction });
 
     const [atVersion, browserVersion] = await Promise.all([
         findOrCreateAtVersion({

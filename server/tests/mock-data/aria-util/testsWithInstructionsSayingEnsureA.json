@@ -3,7 +3,6 @@
     "id": "NWRiZeyIyIjoiODE1In0mUxMD",
     "atIds": [1, 2],
     "title": "Trigger an alert in reading mode",
-    "atMode": "READING",
     "viewers": [],
     "rowNumber": "1",
     "scenarios": [
@@ -32,12 +31,12 @@
       {
         "id": "ZDkyYeyIzIjoiTldSaVpleUl5SWpvaU9ERTFJbjBtVXhNRCJ9mFjMm",
         "text": "Role 'alert' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       },
       {
         "id": "MTllZeyIzIjoiTldSaVpleUl5SWpvaU9ERTFJbjBtVXhNRCJ9mMwNT",
         "text": "Text 'Hello' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       }
     ],
     "renderedUrls": {
@@ -157,7 +156,6 @@
     "id": "M2RlOeyIyIjoiODE1In0TViZT",
     "atIds": [1, 2],
     "title": "Trigger an alert in interaction mode",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "2",
     "scenarios": [
@@ -186,12 +184,12 @@
       {
         "id": "NDM3NeyIzIjoiTTJSbE9leUl5SWpvaU9ERTFJbjBUVmlaVCJ9WNmYz",
         "text": "Role 'alert' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       },
       {
         "id": "NDVhZeyIzIjoiTTJSbE9leUl5SWpvaU9ERTFJbjBUVmlaVCJ9jIwZD",
         "text": "Text 'Hello' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       }
     ],
     "renderedUrls": {
@@ -311,7 +309,6 @@
     "id": "MjVjNeyIyIjoiODE1In0zk3Zm",
     "atIds": [3],
     "title": "Trigger an alert",
-    "atMode": "INTERACTION",
     "viewers": [],
     "rowNumber": "3",
     "scenarios": [
@@ -335,12 +332,12 @@
       {
         "id": "ZDM0NeyIzIjoiTWpWak5leUl5SWpvaU9ERTFJbjB6azNabSJ9WM5Mj",
         "text": "Role 'alert' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       },
       {
         "id": "ZDgyMeyIzIjoiTWpWak5leUl5SWpvaU9ERTFJbjB6azNabSJ9Tg3NT",
         "text": "Text 'Hello' is conveyed",
-        "priority": "REQUIRED"
+        "priority": "MUST"
       }
     ],
     "renderedUrls": {

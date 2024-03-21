@@ -135,8 +135,8 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                 {testPlanReport.finalizedTestResults.map(
                                     testResult => {
                                         const {
-                                            requiredFormatted,
-                                            optionalFormatted,
+                                            mustFormatted,
+                                            shouldFormatted,
                                             mayFormatted
                                         } = getMetrics({
                                             testResult
@@ -154,11 +154,9 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                                         {testResult.test.title}
                                                     </Link>
                                                 </td>
+                                                <td>{mustFormatted || none}</td>
                                                 <td>
-                                                    {requiredFormatted || none}
-                                                </td>
-                                                <td>
-                                                    {optionalFormatted || none}
+                                                    {shouldFormatted || none}
                                                 </td>
                                                 <td>{mayFormatted || none}</td>
                                             </tr>
@@ -168,12 +166,10 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                                 <tr>
                                     <td>All Tests</td>
                                     <td>
-                                        {overallMetrics.requiredFormatted ||
-                                            none}
+                                        {overallMetrics.mustFormatted || none}
                                     </td>
                                     <td>
-                                        {overallMetrics.optionalFormatted ||
-                                            none}
+                                        {overallMetrics.shouldFormatted || none}
                                     </td>
                                     <td>
                                         {overallMetrics.mayFormatted || none}

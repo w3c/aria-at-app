@@ -1,7 +1,6 @@
 {
   "atIds": [1, 2],
   "title": "Trigger an alert in reading mode",
-  "atMode": "READING",
   "viewers": [],
   "rowNumber": "1",
   "scenarios": [
@@ -25,11 +24,11 @@
   "assertions": [
     {
       "text": "Role 'alert' is conveyed",
-      "priority": "REQUIRED"
+      "priority": "MUST"
     },
     {
       "text": "Text 'Hello' is conveyed",
-      "priority": "REQUIRED"
+      "priority": "MUST"
     }
   ],
   "renderedUrls": {

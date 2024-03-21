@@ -23,19 +23,17 @@ const middleware = async (req, res, next) => {
     let transaction;
     if (transactionId && transactions[transactionId]) {
         transaction = transactions[transactionId];
-    } else if (transactionId) {
-        transaction = await sequelize.transaction();
-        transactions[transactionId] = transaction;
     } else {
         transaction = await sequelize.transaction();
+        transactions[transaction.id] = transaction;
     }
-
     req.transaction = transaction;
 
     res.once('finish', async () => {
         if (!isPersistentTransaction && req.transaction) {
             await req.transaction.commit();
             delete req.transaction;
+            delete transactions[transaction.id];
         }
     });
 
@@ -66,9 +64,14 @@ const forTestingRollBackTransaction = async transactionId => {
     delete transactions[transactionId];
 };
 
+const getTransactionById = id => {
+    return transactions[id];
+};
+
 module.exports = {
     middleware,
     errorware,
+    getTransactionById,
     forTestingPopulateTransaction,
     forTestingRollBackTransaction
 };

@@ -55,7 +55,7 @@ const updatePhaseResolver = async (
         transaction
     });
 
-    const { newTestPlanReportIds, updatedTestPlanReports } =
+    const { oldTestPlanVersion, newTestPlanReportIds, updatedTestPlanReports } =
         await processCopiedReports({
             oldTestPlanVersionId: testPlanVersionDataToIncludeId,
             newTestPlanVersionId: testPlanVersionId,
@@ -279,9 +279,19 @@ const updatePhaseResolver = async (
             deprecatedAt: null
         };
     else if (phase === 'CANDIDATE') {
+        // Preserve candidate phase related dates from older TestPlanVersion since not yet gone to
+        // recommended
+        const {
+            candidatePhaseReachedAt: oldCandidatePhaseReachedAtDate,
+            recommendedPhaseTargetDate: oldRecommendedPhaseTargetDate
+        } = oldTestPlanVersion || {};
+
         const candidatePhaseReachedAtValue =
-            candidatePhaseReachedAt || new Date();
+            oldCandidatePhaseReachedAtDate ||
+            candidatePhaseReachedAt ||
+            new Date();
         const recommendedPhaseTargetDateValue =
+            oldRecommendedPhaseTargetDate ||
             recommendedPhaseTargetDate ||
             recommendedPhaseTargetDateResolver(
                 { candidatePhaseReachedAt: candidatePhaseReachedAtValue },
