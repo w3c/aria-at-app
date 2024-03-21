@@ -19,10 +19,22 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
         'viewers'
     ];
 
-    // During comparison for phase update, we only need to make sure the assertionId hasn't
-    // changed so the potentially copied result isn't affected by the assertionStatement or
-    // assertionPhrase being changed
+    // During comparison for phase update, we need to make sure the assertionId and
+    // commandIds hasn't changed so the potentially copied result isn't affected by
+    // the assertionStatement, assertionPhrase, settings or instructions content
+    // being changed
     if (forUpdateCompare) {
+        // Don't factor in settings and instructions changes during update
+        propertiesToOmit.push('renderableContent.target.at.settings');
+        propertiesToOmit.push('renderableContent.instructions');
+        // for v1 format since structure is:
+        // { ..., renderableContent: { 1: ..., 2: ... }, ... }
+        for (let key in test.renderableContent) {
+            test.renderableContent[key] = omit(test.renderableContent[key], [
+                'instructions'
+            ]);
+        }
+
         // Changed text in renderableContent.assertions[].assertion(Statement|Phrase) shouldn't
         // matter during comparison of results
         propertiesToOmit.push('renderableContent.assertions');
