@@ -652,14 +652,23 @@ const DataManagementRow = ({
                     // updating existing reports and preserving data for tests that have not
                     // changed.
                     let testPlanVersionDataToInclude;
-                    if (otherTestPlanVersions.length) {
+                    const testPlanVersionsDataToInclude = [
+                        ...candidateTestPlanVersions,
+                        ...recommendedTestPlanVersions
+                    ];
+                    if (testPlanVersionsDataToInclude.length) {
                         const {
-                            latestVersion: otherLatestVersion,
-                            latestVersionDate: otherLatestVersionDate
-                        } = getVersionData(otherTestPlanVersions);
+                            latestVersion: testPlanDataToIncludeLatestVersion,
+                            latestVersionDate:
+                                testPlanDataToIncludeLatestVersionDate
+                        } = getVersionData(testPlanVersionsDataToInclude);
 
-                        if (otherLatestVersionDate < latestVersionDate)
-                            testPlanVersionDataToInclude = otherLatestVersion;
+                        if (
+                            testPlanDataToIncludeLatestVersionDate <
+                            latestVersionDate
+                        )
+                            testPlanVersionDataToInclude =
+                                testPlanDataToIncludeLatestVersion;
                     }
 
                     let coveredReports = [];
