@@ -8,11 +8,12 @@ const {
 } = require('../models/services/TestPlanReportService');
 const conflictsResolver = require('../resolvers/TestPlanReport/conflictsResolver');
 const { TEST_PLAN_REPORT_ATTRIBUTES } = require('../models/services/helpers');
+const getGraphQLContext = require('../graphql-context');
 
 module.exports = {
     up: queryInterface => {
         return queryInterface.sequelize.transaction(async transaction => {
-            const context = { transaction };
+            const context = getGraphQLContext({ req: { transaction } });
 
             const testPlanRunQuery = await queryInterface.sequelize.query(
                 `SELECT id, "testResults" FROM "TestPlanRun"`,

@@ -24,11 +24,8 @@ const getTests = require('../../models/services/TestsService');
  * and no database queries will be run by this function.
  * @returns
  */
-const populateData = async (
-    locationOfData,
-    { transaction, preloaded } = {}
-) => {
-    const context = { transaction };
+const populateData = async (locationOfData, { context, preloaded } = {}) => {
+    const { transaction } = context;
 
     let {
         testPlanId,
@@ -146,7 +143,7 @@ const populateData = async (
     let browserVersion;
 
     if (testResultId) {
-        const testResults = await getTestResults(testPlanRun, { transaction });
+        const testResults = await getTestResults({ testPlanRun, context });
         testResult = testResults.find(each => each.id === testResultId);
         if (!testResult) {
             throw new Error(

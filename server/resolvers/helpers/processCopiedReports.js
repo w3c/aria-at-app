@@ -283,7 +283,7 @@ const processCopiedReports = async ({
                     const { testPlanReport: populatedTestPlanReport } =
                         await populateData(
                             { testPlanReportId: newTestPlanReport.id },
-                            { transaction }
+                            { context }
                         );
 
                     const runnableTests = runnableTestsResolver(

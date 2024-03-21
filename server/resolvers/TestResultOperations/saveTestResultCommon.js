@@ -28,7 +28,7 @@ const saveTestResultCommon = async ({
         testPlanReport,
         test,
         testResult: testResultPopulated
-    } = await populateData({ testResultId }, { transaction });
+    } = await populateData({ testResultId }, { context });
 
     // The populateData function will populate associations of JSON-based
     // models, but not Sequelize-based models. This is why the
@@ -83,7 +83,7 @@ const saveTestResultCommon = async ({
         // Update metrics when result is saved
         const { testPlanReport: testPlanReportPopulated } = await populateData(
             { testPlanReportId: testPlanReport.id },
-            { transaction }
+            { context }
         );
         const runnableTests = runnableTestsResolver(
             testPlanReportPopulated,
@@ -112,7 +112,7 @@ const saveTestResultCommon = async ({
     }
 
     await persistConflictsCount(testPlanRun, context);
-    return populateData({ testResultId }, { transaction });
+    return populateData({ testResultId }, { context });
 };
 
 const assertTestResultIsValid = newTestResult => {

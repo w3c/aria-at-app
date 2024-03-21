@@ -30,7 +30,7 @@ const promoteVendorReviewStatusResolver = async (
         });
     }
 
-    return populateData({ testPlanReportId }, { transaction });
+    return populateData({ testPlanReportId }, { context });
 };
 
 module.exports = promoteVendorReviewStatusResolver;
