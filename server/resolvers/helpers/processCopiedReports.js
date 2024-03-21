@@ -368,7 +368,7 @@ const processCopiedReports = async ({
 
                 const { test } = await populateData(
                     { testId: testResultToSaveTestId },
-                    { transaction }
+                    { context }
                 );
 
                 // Re-run createTestResultSkeleton to avoid unexpected scenario index matching issues when saving
