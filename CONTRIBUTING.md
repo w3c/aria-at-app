@@ -25,7 +25,7 @@ Pull requests should be small and granular, ideally addressing one issue or feat
 In order to open a pull request:
 
 1. Fork the repo and create your branch from `main`.
-1. If you've added code that should be tested, add tests.
+1. If you've added code that should be tested, add tests. See below for some additional guidance on testing.
 1. If you've changed APIs, update the documentation.
 1. Ensure the test suite passes.
 1. If the pull request is not a bug fix, please link to the related implementation proposal and consensus issue.
@@ -39,6 +39,16 @@ All pull requests, including pull requests opened by maintainers, require code r
 The second maintainer who reviews is responsible for merging the pull request into the protected `main` branch.
 
 Maintainers will periodically deploy the `main` branch to the [staging environments](https://github.com/w3c/aria-at-app/wiki).
+
+## Guidance on Testing
+
+We expect PRs for all features to include enough tests to give confidence that new features are working and will continue to work.
+
+100% test coverage is not the expectation. We do not expect contributors to comprehensively test every esoteric failure state. We do expect the happy path and common failure states to be tested.
+
+We provide capabilities for unit testing, integration testing and end-to-end testing. Unit or integration testing every component is not the expectation, since trivial components will be covered by end-to-end tests (for example, the router). On the other hand, non-trivial components should be integration tested (For example, a modal or other application flow control components).
+
+We expect contributors to use the type of testing which corresponds to the architecture of their code. For example, in the case of a utility function, unit tests are preferable to end-to-end testing, because of the complexity of end-to-end which runs a full browser, server and database. On the flipside, attempting to unit test a major set of features like the overall function of the data management page would require so many mocks that end-to-end testing would be the only efficient option.
 
 ## License
 When you submit code changes, your submissions are understood to be under the same [W3C Document License](https://github.com/w3c/aria-at-app/blob/main/LICENSE.md) that covers the project.

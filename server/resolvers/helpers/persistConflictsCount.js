@@ -9,7 +9,7 @@ const persistConflictsCount = async (testPlanRun, context) => {
 
     const { testPlanReport: updatedTestPlanReport } = await populateData(
         { testPlanRunId: testPlanRun.id },
-        { transaction }
+        { context }
     );
     const conflicts = await conflictsResolver(
         updatedTestPlanReport,
