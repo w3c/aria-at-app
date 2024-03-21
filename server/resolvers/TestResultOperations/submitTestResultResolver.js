@@ -7,12 +7,9 @@ const submitTestResultResolver = async (
     { input },
     context
 ) => {
-    const { user, transaction } = context;
+    const { user } = context;
 
-    const { testPlanRun } = await populateData(
-        { testResultId },
-        { transaction }
-    );
+    const { testPlanRun } = await populateData({ testResultId }, { context });
 
     if (
         !(
@@ -32,7 +29,7 @@ const submitTestResultResolver = async (
     ) {
         const { testResult } = await populateData(
             { testResultId },
-            { transaction }
+            { context }
         );
 
         if (!testResult) {

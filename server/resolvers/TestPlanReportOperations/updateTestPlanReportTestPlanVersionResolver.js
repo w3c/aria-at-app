@@ -128,7 +128,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
         const testPlanRun = currentTestPlanReport.testPlanRuns[i];
         const { testPlanRun: populatedTestPlanRun } = await populateData(
             { testPlanRunId: testPlanRun.id },
-            { transaction }
+            { context }
         );
 
         testPlanRun.testResults = await testResultsResolver(
@@ -273,7 +273,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
 
     const created = await Promise.all(
         createdLocationsOfData.map(createdLocationOfData =>
-            populateData(createdLocationOfData, { preloaded, transaction })
+            populateData(createdLocationOfData, { preloaded, context })
         )
     );
     const reportIsNew = !!created.find(item => item.testPlanReport.id);
@@ -302,9 +302,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
             // Create new testResults
             const { testResult: testResultSkeleton } =
                 await findOrCreateTestResultResolver(
-                    {
-                        parentContext: { id: testPlanRunId }
-                    },
+                    { parentContext: { id: testPlanRunId } },
                     { testId, atVersionId, browserVersionId },
                     context
                 );
@@ -337,7 +335,7 @@ const updateTestPlanReportTestPlanVersionResolver = async (
     // await removeTestPlanRunByQuery({ testPlanReportId });
     // await removeTestPlanReport(testPlanReportId);
 
-    return populateData(locationOfData, { preloaded, transaction });
+    return populateData(locationOfData, { preloaded, context });
 };
 
 module.exports = updateTestPlanReportTestPlanVersionResolver;

@@ -25,6 +25,7 @@ const {
     isEnabled: isGithubWorkflowEnabled
 } = require('../../services/GithubWorkflowService');
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
+const getGraphQLContext = require('../../graphql-context');
 
 const axiosConfig = {
     headers: {
@@ -472,7 +473,7 @@ const scheduleCollectionJob = async (
     { testPlanReportId, testIds = null },
     { transaction }
 ) => {
-    const context = { transaction };
+    const context = getGraphQLContext({ req: { transaction } });
 
     const report = await getTestPlanReportById({
         id: testPlanReportId,

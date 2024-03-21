@@ -25,6 +25,7 @@ const {
 const http = require('http');
 const { NO_OUTPUT_STRING } = require('../util/constants');
 const getTests = require('../models/services/TestsService');
+const getGraphQLContext = require('../graphql-context');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -111,10 +112,7 @@ const updateJobStatus = async (req, res) => {
     res.json(graphqlResponse);
 };
 
-const getApprovedFinalizedTestResults = async (
-    testPlanRun,
-    { transaction }
-) => {
+const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
     const {
         testPlanReport: { testPlanVersion }
     } = testPlanRun;
@@ -133,10 +131,10 @@ const getApprovedFinalizedTestResults = async (
 
     const { testPlanReport } = await populateData(
         { testPlanReportId: testPlanRun.testPlanReport.id },
-        { transaction }
+        { context }
     );
 
-    return getFinalizedTestResults(testPlanReport, { transaction });
+    return getFinalizedTestResults({ testPlanReport, context });
 };
 
 const updateOrCreateTestResultWithResponses = async ({
@@ -145,7 +143,7 @@ const updateOrCreateTestResultWithResponses = async ({
     responses,
     atVersionId,
     browserVersionId,
-    transaction
+    context
 }) => {
     const allTestsForTestPlanVersion = await getTests(
         testPlanRun.testPlanReport.testPlanVersion
@@ -170,12 +168,12 @@ const updateOrCreateTestResultWithResponses = async ({
         testPlanRunId: testPlanRun.id,
         atVersionId,
         browserVersionId,
-        transaction
+        context
     });
 
     const historicalTestResults = await getApprovedFinalizedTestResults(
         testPlanRun,
-        { transaction }
+        context
     );
 
     const historicalTestResult = historicalTestResults?.find(each => {
@@ -236,13 +234,14 @@ const updateOrCreateTestResultWithResponses = async ({
             })
         ),
         isSubmit: false,
-        context: { transaction }
+        context
     });
 };
 
 const updateJobResults = async (req, res) => {
     const id = req.params.jobID;
-    const transaction = req.transaction;
+    const context = getGraphQLContext({ req });
+    const { transaction } = context;
     const {
         testCsvRow,
         presentationNumber,
@@ -291,7 +290,7 @@ const updateJobResults = async (req, res) => {
         testPlanRun: job.testPlanRun,
         atVersionId: atVersion.id,
         browserVersionId: browserVersion.id,
-        transaction
+        context
     });
 
     res.json({ success: true });

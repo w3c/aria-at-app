@@ -1,12 +1,10 @@
 const ModelService = require('./ModelService');
-
 const {
     AT_ATTRIBUTES,
     AT_VERSION_ATTRIBUTES,
     BROWSER_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, At, AtVersion } = require('../');
-const { clearCachedAts } = require('../loaders/utils');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -183,7 +181,6 @@ const updateAtById = async ({
  * @returns {Promise<boolean>}
  */
 const removeAtById = async ({ id, truncate = false, transaction }) => {
-    clearCachedAts();
     return ModelService.removeById(At, { id, truncate, transaction });
 };
 
@@ -292,7 +289,6 @@ const createAtVersion = async ({
         values: { atId, name, releasedAt },
         transaction
     });
-    clearCachedAts();
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return ModelService.getByQuery(AtVersion, {
         where: { atId, name },
@@ -323,7 +319,6 @@ const updateAtVersionByQuery = async ({
         values,
         transaction
     });
-    clearCachedAts();
     return ModelService.getByQuery(AtVersion, {
         where: { atId, name: values.name || name, releasedAt },
         attributes: atVersionAttributes,
@@ -353,7 +348,6 @@ const updateAtVersionById = async ({
         values,
         transaction
     });
-    clearCachedAts();
     return ModelService.getById(AtVersion, {
         id,
         attributes: atVersionAttributes,
@@ -374,13 +368,11 @@ const removeAtVersionByQuery = async ({
     truncate = false,
     transaction
 }) => {
-    const result = await ModelService.removeByQuery(AtVersion, {
+    return ModelService.removeByQuery(AtVersion, {
         where: { atId, name, releasedAt },
         truncate,
         transaction
     });
-    clearCachedAts();
-    return result;
 };
 
 /**
@@ -391,13 +383,11 @@ const removeAtVersionByQuery = async ({
  * @returns {Promise<boolean>}
  */
 const removeAtVersionById = async ({ id, truncate = false, transaction }) => {
-    const result = await ModelService.removeById(AtVersion, {
+    return ModelService.removeById(AtVersion, {
         id,
         truncate,
         transaction
     });
-    clearCachedAts();
-    return result;
 };
 
 const getUniqueAtVersionsForReport = async (

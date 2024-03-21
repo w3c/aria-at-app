@@ -102,30 +102,6 @@
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.11.1"
   },
-  "jest": {
-    "moduleNameMapper": {
-      "^@client(.*)": "<rootDir>/$1",
-      "^@components(.*)": "<rootDir>/components/$1",
-      "\\.(css|less)$": "<rootDir>/tests/__mocks__/styleMock.js",
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/tests/__mocks__/fileMock.js"
-    },
-    "setupFiles": [
-      "core-js"
-    ],
-    "setupFilesAfterEnv": [
-      "./jest.setup.js"
-    ],
-    "transform": {
-      "^.+\\.(js|jsx|mjs)$": "babel-jest"
-    },
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules/",
-      "<rootDir>/resources/"
-    ],
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/resources/"
-    ]
-  },
   "resolutions": {
     "jest-environment-jsdom": "^29.3.1"
   }

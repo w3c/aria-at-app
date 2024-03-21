@@ -61,7 +61,7 @@ const populateTestResults = async (resultIds, context) => {
             const testPlanRun = preloadedTestPlanRunsById[testPlanRunId];
             return populateData(
                 { testResultId },
-                { preloaded: { testPlanRun }, transaction }
+                { preloaded: { testPlanRun }, context }
             );
         })
     );

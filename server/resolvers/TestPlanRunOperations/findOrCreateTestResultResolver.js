@@ -9,17 +9,17 @@ const findOrCreateTestResultResolver = async (
     { testId, atVersionId, browserVersionId },
     context
 ) => {
-    const { user, transaction } = context;
+    const { user } = context;
 
     const {
         testPlanRun,
         testPlanReport,
         testPlanVersion: testPlanRunTestPlanVersion
-    } = await populateData({ testPlanRunId }, { transaction });
+    } = await populateData({ testPlanRunId }, { context });
 
     const { test, testPlanVersion } = await populateData(
         { testId },
-        { transaction }
+        { context }
     );
 
     if (
@@ -46,7 +46,7 @@ const findOrCreateTestResultResolver = async (
         testPlanRunId,
         atVersionId,
         browserVersionId,
-        transaction
+        context
     });
 };
 
