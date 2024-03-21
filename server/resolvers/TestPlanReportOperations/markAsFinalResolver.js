@@ -50,7 +50,7 @@ const markAsFinalResolver = async (
         transaction
     });
 
-    return populateData({ testPlanReportId }, { transaction });
+    return populateData({ testPlanReportId }, { context });
 };
 
 module.exports = markAsFinalResolver;

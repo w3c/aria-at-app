@@ -167,7 +167,7 @@ const updateMetricsAndMarkedFinalAtForTestPlanReport = async ({
     // Update metrics for TestPlanReport
     const { testPlanReport: populatedTestPlanReport } = await populateData(
         { testPlanReportId: newTestPlanReport.id },
-        { transaction }
+        { context }
     );
 
     const runnableTests = runnableTestsResolver(
@@ -369,7 +369,7 @@ const processCopiedReports = async ({
 
                 const { test } = await populateData(
                     { testId: testResultToSaveTestId },
-                    { transaction }
+                    { context }
                 );
 
                 // Re-run createTestResultSkeleton to avoid unexpected scenario index matching issues when saving

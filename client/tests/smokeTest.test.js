@@ -1,25 +1,7 @@
-import getPage, { setup, teardown } from './util/getPage';
-
-/*
-End-to-End Testing TODO:
-- The server start and close functions should be handled in one place by
-Jest's setup and teardown scripts.
-- It should be possible to reset the database to a predictable state after each
-test, ideally in such a way that concurrency remains possible. See the POC
-here: https://github.com/w3c/aria-at-app/pull/895
-- Add section to docs for end-to-end testing
-*/
+import getPage from './util/getPage';
 
 describe('smoke test', () => {
-    beforeAll(async () => {
-        await setup();
-    }, 30000);
-
-    afterAll(async () => {
-        await teardown();
-    }, 30000);
-
-    it('can sign in as admin, tester, vendor, or logged out', async () => {
+    it('end-to-end tests can simultaneously sign in with all roles', async () => {
         await Promise.all([
             getPage({ role: 'admin', url: '/test-queue' }, async page => {
                 // Only admins can remove rows from the test queue
@@ -53,7 +35,7 @@ describe('smoke test', () => {
                 await page.waitForSelector('td.actions ::-p-text(View tests)');
             })
         ]);
-    }, 10000);
+    });
 
     it('loads various pages without crashing', async () => {
         await Promise.all([
@@ -84,5 +66,5 @@ describe('smoke test', () => {
                 expect(h1Text).toBe('Data Management');
             })
         ]);
-    }, 10000);
+    });
 });

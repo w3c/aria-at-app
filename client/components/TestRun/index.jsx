@@ -497,6 +497,9 @@ const TestRun = () => {
             forceSave = false,
             forceEdit = false
         ) => {
+            if (updateMessageComponent) {
+                setUpdateMessageComponent(null);
+            }
             try {
                 if (forceEdit) setIsTestEditClicked(true);
                 else setIsTestEditClicked(false);

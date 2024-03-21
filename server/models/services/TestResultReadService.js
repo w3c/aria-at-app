@@ -1,7 +1,5 @@
 const unexpectedBehaviorsJson = require('../../resources/unexpectedBehaviors.json');
 const getTests = require('./TestsService');
-const AtLoader = require('../loaders/AtLoader');
-const BrowserLoader = require('../loaders/BrowserLoader');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 
 /**
@@ -10,19 +8,19 @@ const deepCustomMerge = require('../../util/deepCustomMerge');
  * @param {Object} testPlanRun
  * @param {Object} testPlanRun.testPlanReport
  * @param {Object[]} testPlanRun.testResults
- * @param {Object} options
- * @param {*} options.transaction - Sequelize transaction
+ * @param {Object} context
+ * @param {*} context.browserLoader
+ * @param {*} context.atLoader
+ * @param {*} context.transaction - Sequelize transaction
  * @returns {Promise<Object[]>}
  */
-const getTestResults = async (testPlanRun, { transaction }) => {
+const getTestResults = async ({ testPlanRun, context }) => {
+    const { atLoader, browserLoader, transaction } = context;
+
     const { testPlanReport } = testPlanRun;
     const tests = getTests(testPlanReport);
-    const atLoader = AtLoader();
-    const browserLoader = BrowserLoader();
-    const [ats, browsers] = await Promise.all([
-        atLoader.getAll({ transaction }),
-        browserLoader.getAll({ transaction })
-    ]);
+    const ats = await atLoader.getAll({ transaction });
+    const browsers = await browserLoader.getAll({ transaction });
 
     // Populate nested test, atVersion, browserVersion, scenario, assertion and
     // unexpectedBehavior fields
@@ -70,11 +68,10 @@ const getTestResults = async (testPlanRun, { transaction }) => {
  * browserVersion, scenario, assertion and unexpectedBehavior fields populated.
  * @param {Object} testPlanReport
  * @param {Object[]} testPlanReport.testPlanRuns
- * @param {Object} options
- * @param {*} options.transaction - Sequelize transaction
+ * @param {Object} context - GraphQL context
  * @returns {Promise<Object[]>}
  */
-const getFinalizedTestResults = (testPlanReport, { transaction }) => {
+const getFinalizedTestResults = ({ testPlanReport, context }) => {
     if (!testPlanReport.testPlanRuns.length) {
         return null;
     }
@@ -93,10 +90,10 @@ const getFinalizedTestResults = (testPlanReport, { transaction }) => {
             }
         );
     }
-    return getTestResults(
-        { testPlanReport, testResults: merged },
-        { transaction }
-    );
+    return getTestResults({
+        testPlanRun: { testPlanReport, testResults: merged },
+        context
+    });
 };
 
 module.exports = {

@@ -39,7 +39,7 @@ const updatePhaseResolver = async (
             values: { phase, deprecatedAt: new Date() },
             transaction
         });
-        return populateData({ testPlanVersionId }, { transaction });
+        return populateData({ testPlanVersionId }, { context });
     }
 
     // The test plan reports which will be updated
@@ -327,7 +327,7 @@ const updatePhaseResolver = async (
         values: updateParams,
         transaction
     });
-    return populateData({ testPlanVersionId }, { transaction });
+    return populateData({ testPlanVersionId }, { context });
 };
 
 module.exports = updatePhaseResolver;
