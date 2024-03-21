@@ -11,6 +11,7 @@ const {
 const markAsFinalResolver = require('../../resolvers/TestPlanReportOperations/markAsFinalResolver');
 const AtLoader = require('../../models/loaders/AtLoader');
 const BrowserLoader = require('../../models/loaders/BrowserLoader');
+const getGraphQLContext = require('../../graphql-context');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -547,13 +548,20 @@ describe('Automation controller', () => {
 
     it('should copy assertion results when updating with results that match historical results', async () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
+            const context = getGraphQLContext({
+                req: {
+                    session: { user: { roles: [{ name: 'ADMIN' }] } },
+                    transaction
+                }
+            });
+
             // Start by getting historical results for comparing later
             // Test plan report used for test is in Draft so it
             // must be markedAsFinal to have historical results
             const finalizedTestPlanVersion = await markAsFinalResolver(
                 { parentContext: { id: testPlanReportId } },
                 null,
-                { user: { roles: [{ name: 'ADMIN' }] }, transaction }
+                context
             );
 
             const { testPlanReport } = await getTestPlanReport(

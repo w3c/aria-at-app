@@ -5,7 +5,6 @@ const {
     AT_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, Browser, BrowserVersion } = require('../');
-const { clearCachedBrowsers } = require('../loaders/utils');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -189,7 +188,6 @@ const removeBrowserById = async ({ id, truncate = false, transaction }) => {
         truncate,
         transaction
     });
-    clearCachedBrowsers();
     return result;
 };
 
@@ -271,7 +269,6 @@ const createBrowserVersion = async ({
         values: { browserId, name },
         transaction
     });
-    clearCachedBrowsers();
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
     return ModelService.getByQuery(BrowserVersion, {
         where: { browserId, name },
@@ -302,7 +299,6 @@ const updateBrowserVersionByQuery = async ({
         values,
         transaction
     });
-    clearCachedBrowsers();
     return ModelService.getByQuery(BrowserVersion, {
         where: {
             browserId,
@@ -335,7 +331,6 @@ const updateBrowserVersionById = async ({
         values,
         transaction
     });
-    clearCachedBrowsers();
     return ModelService.getById(BrowserVersion, {
         id,
         attributes: browserVersionAttributes,
@@ -356,13 +351,11 @@ const removeBrowserVersionByQuery = async ({
     truncate = false,
     transaction
 }) => {
-    const result = await ModelService.removeByQuery(BrowserVersion, {
+    return ModelService.removeByQuery(BrowserVersion, {
         where: { browserId, name },
         truncate,
         transaction
     });
-    clearCachedBrowsers();
-    return result;
 };
 
 /**
@@ -377,13 +370,11 @@ const removeBrowserVersionById = async ({
     truncate = false,
     transaction
 }) => {
-    const result = await ModelService.removeById(BrowserVersion, {
+    return ModelService.removeById(BrowserVersion, {
         id,
         truncate,
         transaction
     });
-    clearCachedBrowsers();
-    return result;
 };
 
 /**

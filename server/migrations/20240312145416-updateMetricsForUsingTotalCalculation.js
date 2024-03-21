@@ -27,7 +27,7 @@ module.exports = {
                 const { testPlanReport: testPlanReportPopulated } =
                     await populateData(
                         { testPlanReportId: testPlanReport.id },
-                        { transaction }
+                        { context }
                     );
                 const runnableTests = runnableTestsResolver(
                     testPlanReportPopulated,

@@ -6,6 +6,7 @@ const { session } = require('./middleware/session');
 const embedApp = require('./apps/embed');
 const authRoutes = require('./routes/auth');
 const testRoutes = require('./routes/tests');
+const transactionRoutes = require('./routes/transactions');
 const automationSchedulerRoutes = require('./routes/automation');
 const path = require('path');
 const apolloServer = require('./graphql-server');
@@ -19,6 +20,7 @@ app.use(bodyParser.json());
 app.use(transactionMiddleware.middleware);
 app.use('/auth', authRoutes);
 app.use('/test', testRoutes);
+app.use('/transactions', transactionRoutes);
 app.use('/jobs', automationSchedulerRoutes);
 
 apolloServer.start().then(() => {
