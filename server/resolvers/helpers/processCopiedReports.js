@@ -243,6 +243,7 @@ const processCopiedReports = async ({
     oldTestPlanVersionId,
     newTestPlanVersionId,
     newTestPlanReports,
+    atBrowserCombinations = [],
     context
 }) => {
     const { transaction } = context;
@@ -300,6 +301,17 @@ const processCopiedReports = async ({
                 ({ atId, browserId }) =>
                     atId === oldTestPlanReport.atId &&
                     browserId === oldTestPlanReport.browserId
+            )
+        ) {
+            continue;
+        }
+
+        if (
+            atBrowserCombinations.length &&
+            !atBrowserCombinations.find(
+                combination =>
+                    combination ===
+                    `${oldTestPlanReport.atId}_${oldTestPlanReport.browserId}`
             )
         ) {
             continue;
@@ -450,7 +462,11 @@ const processCopiedReports = async ({
     return {
         oldTestPlanVersion,
         newTestPlanReportIds,
-        updatedTestPlanReports
+        updatedTestPlanReports: atBrowserCombinations.length
+            ? updatedTestPlanReports.filter(({ atId, browserId }) =>
+                  atBrowserCombinations.includes(`${atId}_${browserId}`)
+              )
+            : updatedTestPlanReports
     };
 };
 
