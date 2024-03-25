@@ -243,6 +243,7 @@ const processCopiedReports = async ({
     oldTestPlanVersionId,
     newTestPlanVersionId,
     newTestPlanReports,
+    atBrowserCombinationsToInclude = [],
     context
 }) => {
     const { transaction } = context;
@@ -289,6 +290,10 @@ const processCopiedReports = async ({
         };
     }
 
+    const atBrowserStringCombinations = atBrowserCombinationsToInclude.map(
+        ({ atId, browserId }) => `${atId}_${browserId}`
+    );
+
     // If there is an earlier version that for this phase and that version has some test plan runs
     // in the test queue, this will run the process for updating existing test plan versions for the
     // test plan version and preserving data for tests that have not changed.
@@ -300,6 +305,17 @@ const processCopiedReports = async ({
                 ({ atId, browserId }) =>
                     atId === oldTestPlanReport.atId &&
                     browserId === oldTestPlanReport.browserId
+            )
+        ) {
+            continue;
+        }
+
+        if (
+            atBrowserStringCombinations.length &&
+            !atBrowserStringCombinations.find(
+                combination =>
+                    combination ===
+                    `${oldTestPlanReport.atId}_${oldTestPlanReport.browserId}`
             )
         ) {
             continue;
@@ -450,7 +466,11 @@ const processCopiedReports = async ({
     return {
         oldTestPlanVersion,
         newTestPlanReportIds,
-        updatedTestPlanReports
+        updatedTestPlanReports: atBrowserStringCombinations.length
+            ? updatedTestPlanReports.filter(({ atId, browserId }) =>
+                  atBrowserStringCombinations.includes(`${atId}_${browserId}`)
+              )
+            : updatedTestPlanReports
     };
 };
 

@@ -4,11 +4,17 @@ const {
 const retrieveAttributes = require('./helpers/retrieveAttributes');
 const { TEST_PLAN_VERSION_ATTRIBUTES } = require('../models/services/helpers');
 
-const testPlanVersionsResolver = async (_, { phases }, context, info) => {
+const testPlanVersionsResolver = async (
+    _,
+    { phases, directory },
+    context,
+    info
+) => {
     const { transaction } = context;
 
     const where = {};
     if (phases) where.phase = phases;
+    if (directory) where.directory = directory;
 
     const { attributes: testPlanVersionAttributes } = retrieveAttributes(
         'testPlanVersion',
