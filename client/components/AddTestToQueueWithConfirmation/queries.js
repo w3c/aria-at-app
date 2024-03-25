@@ -10,8 +10,11 @@ export const SCHEDULE_COLLECTION_JOB_MUTATION = gql`
 `;
 
 export const EXISTING_TEST_PLAN_REPORTS = gql`
-    query ExistingTestPlanReports($testPlanVersionId: ID!) {
-        testPlanVersion(id: $testPlanVersionId) {
+    query ExistingTestPlanReports(
+        $testPlanVersionId: ID!
+        $directory: String!
+    ) {
+        existingTestPlanVersion: testPlanVersion(id: $testPlanVersionId) {
             id
             testPlanReports {
                 id
@@ -20,6 +23,22 @@ export const EXISTING_TEST_PLAN_REPORTS = gql`
                 draftTestPlanRuns {
                     initiatedByAutomation
                 }
+                at {
+                    id
+                }
+                browser {
+                    id
+                }
+            }
+        }
+        oldTestPlanVersions: testPlanVersions(
+            phases: [CANDIDATE, RECOMMENDED]
+            directory: $directory
+        ) {
+            id
+            updatedAt
+            testPlanReports {
+                id
                 at {
                     id
                 }

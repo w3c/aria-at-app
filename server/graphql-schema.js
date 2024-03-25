@@ -1016,6 +1016,7 @@ const graphqlSchema = gql`
         testPlanVersionId: ID!
         atId: ID!
         browserId: ID!
+        testPlanVersionDataToIncludeId: ID
     }
 
     """
@@ -1101,7 +1102,10 @@ const graphqlSchema = gql`
         """
         Get all TestPlanVersions.
         """
-        testPlanVersions(phases: [TestPlanVersionPhase]): [TestPlanVersion]!
+        testPlanVersions(
+            phases: [TestPlanVersionPhase]
+            directory: String
+        ): [TestPlanVersion]!
         """
         Get a particular TestPlanVersion by ID.
         """
