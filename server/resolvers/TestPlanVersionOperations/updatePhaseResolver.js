@@ -312,14 +312,15 @@ const updatePhaseResolver = async (
             deprecatedAt: null
         };
 
-    // If testPlanVersionDataToIncludeId's results are being used to update this earlier version,
-    // deprecate it
-    if (testPlanVersionDataToIncludeId)
+    // If oldTestPlanVersion's results are being used to update this earlier
+    // version, deprecate it (if the same phase)
+    if (oldTestPlanVersion && phase === oldTestPlanVersion.phase) {
         await updateTestPlanVersionById({
-            id: testPlanVersionDataToIncludeId,
+            id: oldTestPlanVersion.id, // same as testPlanVersionDataToIncludeId
             values: { phase: 'DEPRECATED', deprecatedAt: new Date() },
             transaction
         });
+    }
 
     await updateTestPlanVersionById({
         id: testPlanVersionId,

@@ -332,27 +332,20 @@ describe('data management', () => {
         });
     });
 
-    it('updates test plan version and copies results from previous version reports', async () => {
+    it('updates test plan version and copies results from previous version reports even in advanced phase', async () => {
         await dbCleaner(async transaction => {
             const testPlanVersions = await testPlanVersionsQuery({
                 transaction
             });
 
             // This has reports for JAWS + Chrome, NVDA + Chrome, VO + Safari + additional
-            // non-required reports
+            // non-required reports in CANDIDATE
             const [oldModalDialogVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
                         e.testPlan.directory === 'modal-dialog' &&
                         e.phase === 'CANDIDATE'
                 );
-
-            // This version is in 'CANDIDATE' phase. Set it to DRAFT
-            // This will also remove the associated TestPlanReports markedFinalAt values
-            const oldTestPlanVersionId = oldModalDialogVersion.id;
-            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT', {
-                transaction
-            });
 
             const oldModalDialogVersionTestPlanReports =
                 oldModalDialogVersion.testPlanReports;
@@ -383,6 +376,7 @@ describe('data management', () => {
                     )
                 );
 
+            // Process new version coming in as RD
             const [newModalDialogVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
@@ -392,6 +386,8 @@ describe('data management', () => {
             const newModalDialogVersionTestPlanReportsInRDCount =
                 newModalDialogVersion.testPlanReports.length;
 
+            // Should still retrieve results from older CANDIDATE version since
+            // no DRAFT version was present
             const { testPlanVersion: newModalDialogVersionInDraft } =
                 await updateVersionToPhaseQuery(
                     newModalDialogVersion.id,
