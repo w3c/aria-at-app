@@ -792,4 +792,127 @@ describe('data management', () => {
             );
         });
     });
+
+    it('preserves results for all results where commands or assertions are unchanged', async () => {
+        await dbCleaner(async transaction => {
+            function countCollectedAssertionResults(run) {
+                return run.testResults.reduce((trSum, tr) => {
+                    return (
+                        trSum +
+                        tr.scenarioResults.reduce((srSum, sr) => {
+                            // Check if assertion has been collected; null
+                            // if not yet collected
+                            return (
+                                srSum +
+                                sr.assertionResults.filter(
+                                    ({ passed }) => passed != null
+                                ).length
+                            );
+                        }, 0)
+                    );
+                }, 0);
+            }
+
+            const testPlanVersions = await testPlanVersionsQuery({
+                transaction
+            });
+
+            // Process counts for old version
+            const oldCommandButtonVersion =
+                testPlanVersions.testPlanVersions.find(
+                    e =>
+                        e.testPlan.directory === 'command-button' &&
+                        e.phase === 'DRAFT' &&
+                        e.metadata.testFormatVersion === 2
+                );
+            const oldJAWSReport = oldCommandButtonVersion.testPlanReports.find(
+                ({ at }) => at.id == 1
+            );
+            const oldNVDAReport = oldCommandButtonVersion.testPlanReports.find(
+                ({ at }) => at.id == 2
+            );
+            const oldVOReport = oldCommandButtonVersion.testPlanReports.find(
+                ({ at }) => at.id == 3
+            );
+
+            // They're all marked as final so only one run matters for this test
+            const [oldJAWSRun] = oldJAWSReport.draftTestPlanRuns;
+            const [oldNVDARun] = oldNVDAReport.draftTestPlanRuns;
+            const [oldVORun] = oldVOReport.draftTestPlanRuns;
+
+            const oldJAWSAssertionsCollectedCount =
+                countCollectedAssertionResults(oldJAWSRun);
+            const oldNVDAAssertionsCollectedCount =
+                countCollectedAssertionResults(oldNVDARun);
+            const oldVOAssertionsCollectedCount =
+                countCollectedAssertionResults(oldVORun);
+
+            // Process counts for new version
+            const [newCommandButtonVersion] =
+                testPlanVersions.testPlanVersions.filter(
+                    e =>
+                        e.testPlan.directory === 'command-button' &&
+                        e.phase === 'RD' &&
+                        e.metadata.testFormatVersion === 2
+                );
+
+            const { testPlanVersion: newCommandButtonVersionInDraft } =
+                await updateVersionToPhaseQuery(
+                    newCommandButtonVersion.id,
+                    'DRAFT',
+                    {
+                        testPlanVersionDataToIncludeId:
+                            oldCommandButtonVersion.id,
+                        transaction
+                    }
+                );
+
+            const newJAWSReport =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+                    ({ at }) => at.id == 1
+                );
+            const newNVDAReport =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+                    ({ at }) => at.id == 2
+                );
+            const newVOReport =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+                    ({ at }) => at.id == 3
+                );
+
+            // They're all marked as final so only one run matters for this test
+            const [newJAWSRun] = newJAWSReport.draftTestPlanRuns;
+            const [newNVDARun] = newNVDAReport.draftTestPlanRuns;
+            const [newVORun] = newVOReport.draftTestPlanRuns;
+
+            const newJAWSAssertionsCollectedCount =
+                countCollectedAssertionResults(newJAWSRun);
+            const newNVDAAssertionsCollectedCount =
+                countCollectedAssertionResults(newNVDARun);
+            const newVOAssertionsCollectedCount =
+                countCollectedAssertionResults(newVORun);
+
+            // The difference between them is that there have been updated settings for VoiceOver tests;
+            // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn' which means the tracked command
+            // has been changed.
+            //
+            // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
+            // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
+            // 'reqInfoAboutButton' should still match.
+            //
+            // This means only 1 test plan report should be affected, for VoiceOver for 2 tests,
+            // for 1 command, which carries 2 assertions. So 2 tests * 2 assertions = 4 assertions
+            // have been affected.
+            // The JAWS and NVDA reports should be unaffected.
+            expect(newJAWSAssertionsCollectedCount).toEqual(
+                oldJAWSAssertionsCollectedCount
+            );
+            expect(newNVDAAssertionsCollectedCount).toEqual(
+                oldNVDAAssertionsCollectedCount
+            );
+            expect(newVOAssertionsCollectedCount).toEqual(
+                oldVOAssertionsCollectedCount - 4
+            );
+        });
+    });
 });
