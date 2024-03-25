@@ -332,27 +332,20 @@ describe('data management', () => {
         });
     });
 
-    it('updates test plan version and copies results from previous version reports', async () => {
+    it('updates test plan version and copies results from previous version reports even in advanced phase', async () => {
         await dbCleaner(async transaction => {
             const testPlanVersions = await testPlanVersionsQuery({
                 transaction
             });
 
             // This has reports for JAWS + Chrome, NVDA + Chrome, VO + Safari + additional
-            // non-required reports
+            // non-required reports in CANDIDATE
             const [oldModalDialogVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
                         e.testPlan.directory === 'modal-dialog' &&
                         e.phase === 'CANDIDATE'
                 );
-
-            // This version is in 'CANDIDATE' phase. Set it to DRAFT
-            // This will also remove the associated TestPlanReports markedFinalAt values
-            const oldTestPlanVersionId = oldModalDialogVersion.id;
-            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT', {
-                transaction
-            });
 
             const oldModalDialogVersionTestPlanReports =
                 oldModalDialogVersion.testPlanReports;
@@ -383,6 +376,7 @@ describe('data management', () => {
                     )
                 );
 
+            // Process new version coming in as RD
             const [newModalDialogVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
@@ -392,6 +386,8 @@ describe('data management', () => {
             const newModalDialogVersionTestPlanReportsInRDCount =
                 newModalDialogVersion.testPlanReports.length;
 
+            // Should still retrieve results from older CANDIDATE version since
+            // no DRAFT version was present
             const { testPlanVersion: newModalDialogVersionInDraft } =
                 await updateVersionToPhaseQuery(
                     newModalDialogVersion.id,
@@ -789,6 +785,129 @@ describe('data management', () => {
             );
             expect(newCommandButtonSafariCompletedTestResultsCount).toEqual(
                 oldCommandButtonSafariCompletedTestResultsCount - 2
+            );
+        });
+    });
+
+    it('preserves results for all results where commands or assertions are unchanged', async () => {
+        await dbCleaner(async transaction => {
+            function countCollectedAssertionResults(run) {
+                return run.testResults.reduce((trSum, tr) => {
+                    return (
+                        trSum +
+                        tr.scenarioResults.reduce((srSum, sr) => {
+                            // Check if assertion has been collected; null
+                            // if not yet collected
+                            return (
+                                srSum +
+                                sr.assertionResults.filter(
+                                    ({ passed }) => passed != null
+                                ).length
+                            );
+                        }, 0)
+                    );
+                }, 0);
+            }
+
+            const testPlanVersions = await testPlanVersionsQuery({
+                transaction
+            });
+
+            // Process counts for old version
+            const oldCommandButtonVersion =
+                testPlanVersions.testPlanVersions.find(
+                    e =>
+                        e.testPlan.directory === 'command-button' &&
+                        e.phase === 'DRAFT' &&
+                        e.metadata.testFormatVersion === 2
+                );
+            const oldJAWSReport = oldCommandButtonVersion.testPlanReports.find(
+                ({ at }) => at.id == 1
+            );
+            const oldNVDAReport = oldCommandButtonVersion.testPlanReports.find(
+                ({ at }) => at.id == 2
+            );
+            const oldVOReport = oldCommandButtonVersion.testPlanReports.find(
+                ({ at }) => at.id == 3
+            );
+
+            // They're all marked as final so only one run matters for this test
+            const [oldJAWSRun] = oldJAWSReport.draftTestPlanRuns;
+            const [oldNVDARun] = oldNVDAReport.draftTestPlanRuns;
+            const [oldVORun] = oldVOReport.draftTestPlanRuns;
+
+            const oldJAWSAssertionsCollectedCount =
+                countCollectedAssertionResults(oldJAWSRun);
+            const oldNVDAAssertionsCollectedCount =
+                countCollectedAssertionResults(oldNVDARun);
+            const oldVOAssertionsCollectedCount =
+                countCollectedAssertionResults(oldVORun);
+
+            // Process counts for new version
+            const [newCommandButtonVersion] =
+                testPlanVersions.testPlanVersions.filter(
+                    e =>
+                        e.testPlan.directory === 'command-button' &&
+                        e.phase === 'RD' &&
+                        e.metadata.testFormatVersion === 2
+                );
+
+            const { testPlanVersion: newCommandButtonVersionInDraft } =
+                await updateVersionToPhaseQuery(
+                    newCommandButtonVersion.id,
+                    'DRAFT',
+                    {
+                        testPlanVersionDataToIncludeId:
+                            oldCommandButtonVersion.id,
+                        transaction
+                    }
+                );
+
+            const newJAWSReport =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+                    ({ at }) => at.id == 1
+                );
+            const newNVDAReport =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+                    ({ at }) => at.id == 2
+                );
+            const newVOReport =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+                    ({ at }) => at.id == 3
+                );
+
+            // They're all marked as final so only one run matters for this test
+            const [newJAWSRun] = newJAWSReport.draftTestPlanRuns;
+            const [newNVDARun] = newNVDAReport.draftTestPlanRuns;
+            const [newVORun] = newVOReport.draftTestPlanRuns;
+
+            const newJAWSAssertionsCollectedCount =
+                countCollectedAssertionResults(newJAWSRun);
+            const newNVDAAssertionsCollectedCount =
+                countCollectedAssertionResults(newNVDARun);
+            const newVOAssertionsCollectedCount =
+                countCollectedAssertionResults(newVORun);
+
+            // The difference between them is that there have been updated settings for VoiceOver tests;
+            // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn' which means the tracked command
+            // has been changed.
+            //
+            // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
+            // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
+            // 'reqInfoAboutButton' should still match.
+            //
+            // This means only 1 test plan report should be affected, for VoiceOver for 2 tests,
+            // for 1 command, which carries 2 assertions. So 2 tests * 2 assertions = 4 assertions
+            // have been affected.
+            // The JAWS and NVDA reports should be unaffected.
+            expect(newJAWSAssertionsCollectedCount).toEqual(
+                oldJAWSAssertionsCollectedCount
+            );
+            expect(newNVDAAssertionsCollectedCount).toEqual(
+                oldNVDAAssertionsCollectedCount
+            );
+            expect(newVOAssertionsCollectedCount).toEqual(
+                oldVOAssertionsCollectedCount - 4
             );
         });
     });
