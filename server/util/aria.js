@@ -23,6 +23,9 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
     // being changed
     if (forUpdateCompare) {
         // Don't factor in settings and instructions changes during update
+        // eligibility in the case where ONLY the instructions has changed,
+        // so that the updated instructions or settings are shown when the
+        // copy process happens
         propertiesToOmit.push('renderableContent.target.at.settings');
         propertiesToOmit.push('renderableContent.instructions');
         // for v1 format since structure is:
