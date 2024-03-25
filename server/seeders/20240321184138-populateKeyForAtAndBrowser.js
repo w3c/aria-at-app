@@ -28,7 +28,7 @@ module.exports = {
     },
 
     async down(queryInterface) {
-        await queryInterface.removeColumn('At', 'key');
-        await queryInterface.removeColumn('Browser', 'key');
+        await queryInterface.bulkUpdate('At', { key: null });
+        await queryInterface.bulkUpdate('Browser', { key: null });
     }
 };
