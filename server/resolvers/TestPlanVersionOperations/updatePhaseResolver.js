@@ -281,15 +281,11 @@ const updatePhaseResolver = async (
     else if (phase === 'CANDIDATE') {
         // Preserve candidate phase related dates from older TestPlanVersion since not yet gone to
         // recommended
-        const {
-            candidatePhaseReachedAt: oldCandidatePhaseReachedAtDate,
-            recommendedPhaseTargetDate: oldRecommendedPhaseTargetDate
-        } = oldTestPlanVersion || {};
+        const { recommendedPhaseTargetDate: oldRecommendedPhaseTargetDate } =
+            oldTestPlanVersion || {};
 
         const candidatePhaseReachedAtValue =
-            oldCandidatePhaseReachedAtDate ||
-            candidatePhaseReachedAt ||
-            new Date();
+            candidatePhaseReachedAt || new Date();
         const recommendedPhaseTargetDateValue =
             oldRecommendedPhaseTargetDate ||
             recommendedPhaseTargetDate ||
