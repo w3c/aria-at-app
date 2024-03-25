@@ -31,6 +31,19 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             directory
             title
         }
+        deprecatedTestPlanVersions: testPlanVersions(phases: [DEPRECATED]) {
+            id
+            phase
+            updatedAt
+            draftPhaseReachedAt
+            candidatePhaseReachedAt
+            recommendedPhaseTargetDate
+            recommendedPhaseReachedAt
+            deprecatedAt
+            testPlan {
+                directory
+            }
+        }
         testPlanVersions(phases: [RD, DRAFT, CANDIDATE, RECOMMENDED]) {
             id
             title

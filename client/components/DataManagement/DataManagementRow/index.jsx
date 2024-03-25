@@ -152,6 +152,7 @@ const DataManagementRow = ({
     testPlan,
     testPlanVersions,
     setTestPlanVersions,
+    deprecatedTestPlanVersions,
     tableRowIndex
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
@@ -425,9 +426,69 @@ const DataManagementRow = ({
             return otherVersionsInProgress.length;
         };
 
-        if (recommendedTestPlanVersions.length) {
+        const getDeprecatedVersionsByDatePhase = phase => {
+            switch (phase) {
+                case 'RECOMMENDED':
+                    return deprecatedTestPlanVersions
+                        .filter(
+                            ({ recommendedPhaseReachedAt }) =>
+                                !!recommendedPhaseReachedAt
+                        )
+                        .map(testPlanVersion => ({
+                            ...testPlanVersion,
+                            phase: 'RECOMMENDED'
+                        }));
+                case 'CANDIDATE':
+                    return deprecatedTestPlanVersions
+                        .filter(
+                            ({
+                                candidatePhaseReachedAt,
+                                recommendedPhaseReachedAt
+                            }) =>
+                                !!candidatePhaseReachedAt &&
+                                !recommendedPhaseReachedAt
+                        )
+                        .map(testPlanVersion => ({
+                            ...testPlanVersion,
+                            phase: 'CANDIDATE'
+                        }));
+                case 'DRAFT':
+                    return deprecatedTestPlanVersions
+                        .filter(
+                            ({
+                                draftPhaseReachedAt,
+                                candidatePhaseReachedAt,
+                                recommendedPhaseReachedAt
+                            }) =>
+                                !!draftPhaseReachedAt &&
+                                !candidatePhaseReachedAt &&
+                                !recommendedPhaseReachedAt
+                        )
+                        .map(testPlanVersion => ({
+                            ...testPlanVersion,
+                            phase: 'DRAFT'
+                        }));
+            }
+        };
+
+        let recommendedWithDeprecatedTestPlanVersions = [
+            ...recommendedTestPlanVersions,
+            ...getDeprecatedVersionsByDatePhase('RECOMMENDED')
+        ];
+
+        let candidateWithDeprecatedTestPlanVersions = [
+            ...candidateTestPlanVersions,
+            ...getDeprecatedVersionsByDatePhase('CANDIDATE')
+        ];
+
+        let draftWithDeprecatedTestPlanVersions = [
+            ...draftTestPlanVersions,
+            ...getDeprecatedVersionsByDatePhase('DRAFT')
+        ];
+
+        if (recommendedWithDeprecatedTestPlanVersions.length) {
             const { earliestVersion, earliestVersionDate } = getVersionData(
-                recommendedTestPlanVersions,
+                recommendedWithDeprecatedTestPlanVersions,
                 'recommendedPhaseReachedAt'
             );
             const { phase } = earliestVersion;
@@ -441,9 +502,9 @@ const DataManagementRow = ({
             );
         }
 
-        if (candidateTestPlanVersions.length) {
+        if (candidateWithDeprecatedTestPlanVersions.length) {
             const { earliestVersion, earliestVersionDate } = getVersionData(
-                candidateTestPlanVersions,
+                candidateWithDeprecatedTestPlanVersions,
                 'candidatePhaseReachedAt'
             );
             const { phase } = earliestVersion;
@@ -461,9 +522,9 @@ const DataManagementRow = ({
             );
         }
 
-        if (draftTestPlanVersions.length) {
+        if (draftWithDeprecatedTestPlanVersions.length) {
             const { earliestVersion, earliestVersionDate } = getVersionData(
-                draftTestPlanVersions,
+                draftWithDeprecatedTestPlanVersions,
                 'draftPhaseReachedAt'
             );
             const { phase } = earliestVersion;
