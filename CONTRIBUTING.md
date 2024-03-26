@@ -52,7 +52,7 @@ We expect contributors to use the type of testing which corresponds to the archi
 
 ## Technical incident reporting
 
-The project maintainers keep a record of the technical problems which cause unforeseen interruptions to the service provided by the application in production. These incident reports document the aberrant behavior, the investigation process, and the technical resolution. They are available in [`docs/incident-reports/`](docs/incident-reports).
+The project maintainers keep a record of the technical problems which cause unforeseen interruptions to the service provided by the application in production. These incident reports document the aberrant behavior, the investigation process, and the technical resolution. They are available in [the project wiki](https://github.com/w3c/aria-at-app/wiki#incident-reports).
 
 ## License
 When you submit code changes, your submissions are understood to be under the same [W3C Document License](https://github.com/w3c/aria-at-app/blob/main/LICENSE.md) that covers the project.
