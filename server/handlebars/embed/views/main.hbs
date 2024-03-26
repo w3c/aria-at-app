@@ -43,7 +43,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{#each reportsByAt}}
+                    {{!-- {{#each reportsByAt}}
+                    {{log this}}
                         <tr>
                             <th><b>{{@key}}</b> <span id="at-version">{{getAtVersion @../this @key}}</span></th>
                             {{#each this}}
@@ -110,6 +111,13 @@
                             {{/each}}
                             {{resetMap}}
                         </tr>
+                    {{/each}} --}}
+                    
+                    {{#each reportsByAt}}
+                    
+                    <tr>
+                        <th><b>{{@key}}</b>
+                    </tr>
                     {{/each}}
                 </tbody>
             </table>

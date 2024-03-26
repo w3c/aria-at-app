@@ -69,12 +69,6 @@ const queryReports = async () => {
                         testPlan {
                             id
                         }
-                        tests {
-                            ats {
-                                id
-                                name
-                            }
-                        }
                     }
                 }
             }
@@ -118,7 +112,7 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     let testPlanVersionIds = new Set();
     const uniqueReports = [];
     let latestReports = [];
-
+    // section:
     testPlanReports.forEach(report => {
         allAts.add(report.at.name);
         allBrowsers.add(report.browser.name);
@@ -156,7 +150,14 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
 
         testPlanVersionIds.add(report.testPlanVersion.id);
     });
-
+    // section:
+    // const numberArray = allAts.map((at) => {
+    //     return allBrowsers.map((browser) => {
+    //         return {at, browser}
+    //     })
+    // })
+    // const numberArray =
+    // console.log(numberArray);
     uniqueReports.forEach(group => {
         if (group.length <= 1) {
             latestReports.push(group.pop());
@@ -170,6 +171,7 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
                 .pop();
 
             latestReports.push(latestReport);
+            // use latest reports for the loop for the table
         }
     });
 
@@ -197,6 +199,7 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
         testPlanVersionIds,
         phase,
         reportsByAt
+        // numberArray
     };
 };
 
@@ -215,6 +218,7 @@ const renderEmbed = ({
         testPlanVersionIds,
         phase,
         reportsByAt
+        // numberArray
     } = getLatestReportsForPattern({ pattern, allTestPlanReports });
     const allAtBrowserCombinations = Object.fromEntries(
         ats.map(at => {
@@ -235,6 +239,8 @@ const renderEmbed = ({
         pattern,
         phase,
         allBrowsers,
+        // section:
+        // numberArray: numberArray,
         allAtVersionsByAt,
         reportsByAt,
         completeReportLink: `${protocol}${host}/report/${testPlanVersionIds.join(
