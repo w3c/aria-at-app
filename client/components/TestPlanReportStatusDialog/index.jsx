@@ -80,11 +80,7 @@ const TestPlanReportStatusDialog = ({
     const renderReportStatus = ({ report, at, browser }) => {
         if (report) {
             const { markedFinalAt } = report;
-            const { phase } = testPlanVersion;
-            if (
-                markedFinalAt &&
-                (phase === 'CANDIDATE' || phase === 'RECOMMENDED')
-            ) {
+            if (markedFinalAt) {
                 return renderCompleteReportStatus(report);
             } else {
                 return renderPartialCompleteReportStatus(report);
