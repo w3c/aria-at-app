@@ -21,7 +21,7 @@ export class commandsAPI {
    *     }
    *   }
    * @param {object} supportJson - The data object found in `tests/support.json`
-   * @param {object} commandsJson - The data object found in `tests/commands.json`
+   * @param {object} commandsJson - The data object found in `tests/commandsV1.json`
    */
   constructor(commands, supportJson, commandsJson) {
     if (!commands) {
@@ -92,7 +92,7 @@ export class commandsAPI {
               command = keys[command];
               if (typeof command === 'undefined') {
                 throw new Error(
-                  `Key instruction identifier "${c}" for AT "${assistiveTech.name}", mode "${mode}", task "${task}" is not an available identifier. Update your commands.json file to the correct identifier or add your identifier to resources/keys.mjs.`
+                  `Key instruction identifier "${c}" for AT "${assistiveTech.name}", mode "${mode}", task "${task}" is not an available identifier. Update your commandsV1.json file to the correct identifier or add your identifier to resources/keys.mjs.`
                 );
               }
 
@@ -111,7 +111,7 @@ export class commandsAPI {
             const commandKVs = this.findValuesByKeys([commandId]);
             if (!commandKVs.length) {
               throw new Error(
-                `Key instruction identifier "${commandId}" for AT "${assistiveTech.name}", mode "${mode}", task "${task}" is not an available identifier. Update your commands.json file to the correct identifier or add your identifier to tests/commands.json.`
+                `Key instruction identifier "${commandId}" for AT "${assistiveTech.name}", mode "${mode}", task "${task}" is not an available identifier. Update your commandsV1.json file to the correct identifier or add your identifier to tests/commandsV1.json.`
               );
             }
 

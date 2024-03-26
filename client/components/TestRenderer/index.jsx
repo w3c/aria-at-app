@@ -25,7 +25,7 @@ import OutputTextArea from './OutputTextArea';
 import AssertionsFieldset from './AssertionsFieldset';
 import UnexpectedBehaviorsFieldset from './UnexpectedBehaviorsFieldset';
 import supportJson from '../../resources/support.json';
-import commandsJson from '../../resources/commands.json';
+import commandsJson from '../../resources/commandsV1.json';
 
 const Container = styled.div`
     width: 100%;
