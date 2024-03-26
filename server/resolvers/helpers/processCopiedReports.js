@@ -144,7 +144,6 @@ const getKeptTestResultsByTestId = (testResults, keptTestsByTestHash) => {
 
 /**
  * Updates metrics and markedFinalAt status for newly created TestPlanReports after copying process
- * @param oldTestPlanReport
  * @param newTestPlanReport
  * @param testPlanRun
  * @param testResults
@@ -153,7 +152,6 @@ const getKeptTestResultsByTestId = (testResults, keptTestsByTestHash) => {
  * @returns {Promise<void>}
  */
 const updateMetricsAndMarkedFinalAtForTestPlanReport = async ({
-    oldTestPlanReport,
     newTestPlanReport,
     testPlanRun,
     testResults,
@@ -177,13 +175,12 @@ const updateMetricsAndMarkedFinalAtForTestPlanReport = async ({
         null,
         context
     );
-    let updateParams = {};
 
-    // Mark the report as final if previously was for TestPlanVersion being deprecated; may still be
-    // nullified if finalized test results aren't equal to the amount known number of possible
-    // runnable tests, because no tests should be skipped. Would mean it CANNOT be final.
-    if (oldTestPlanReport.markedFinalAt)
-        updateParams = { markedFinalAt: new Date() };
+    // Even if oldTestPlanReport.markedFinalAt exists, it should be nullified
+    // when copied over because it should be on the test admin(s) to ensure
+    // the copied data isn't incorrect in certain instances or needs to be
+    // updated before finalizing again
+    let updateParams = { markedFinalAt: null };
 
     // Calculate the metrics (happens if updating to DRAFT)
     const conflicts = await conflictsResolver(
@@ -197,7 +194,6 @@ const updateMetricsAndMarkedFinalAtForTestPlanReport = async ({
         // marked as final yet
         updateParams = {
             ...updateParams,
-            markedFinalAt: null,
             metrics: {
                 ...populatedTestPlanReport.metrics,
                 conflictsCount: conflicts.length
@@ -213,7 +209,6 @@ const updateMetricsAndMarkedFinalAtForTestPlanReport = async ({
         if (!finalizedTestResults || !finalizedTestResults.length) {
             updateParams = {
                 ...updateParams,
-                markedFinalAt: null,
                 metrics: {
                     ...populatedTestPlanReport.metrics
                 }
@@ -229,12 +224,6 @@ const updateMetricsAndMarkedFinalAtForTestPlanReport = async ({
 
             updateParams = {
                 ...updateParams,
-                // means test results have now been 'skipped' during the update process so these
-                // cannot be finalized and must be updated in the test queue
-                markedFinalAt:
-                    finalizedTestResults.length < runnableTests.length
-                        ? null
-                        : updateParams.markedFinalAt,
                 metrics: {
                     ...populatedTestPlanReport.metrics,
                     ...metrics
@@ -439,7 +428,6 @@ const processCopiedReports = async ({
 
             // Run updated metrics calculations for new TestPlanRun test results to be used in metrics calculations
             await updateMetricsAndMarkedFinalAtForTestPlanReport({
-                oldTestPlanReport,
                 newTestPlanReport,
                 testPlanRun: newTestPlanRun,
                 testResults: newTestResults,
