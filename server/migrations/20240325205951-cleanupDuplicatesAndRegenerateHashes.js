@@ -130,5 +130,6 @@ module.exports = {
                 { pruneOldVersions: false }
             );
         });
-    }
+    },
+    async down() {}
 };
