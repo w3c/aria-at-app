@@ -279,17 +279,21 @@ const updatePhaseResolver = async (
             deprecatedAt: null
         };
     else if (phase === 'CANDIDATE') {
-        // Preserve candidate phase related dates from older TestPlanVersion since not yet gone to
-        // recommended
-        const {
-            candidatePhaseReachedAt: oldCandidatePhaseReachedAtDate,
-            recommendedPhaseTargetDate: oldRecommendedPhaseTargetDate
-        } = oldTestPlanVersion || {};
+        // Preserve candidate target date for updated since not yet gone to
+        // recommended so technically newer candidate versions would still be
+        // in the same candidate review 'window'.
+        //
+        // When a candidate version eventually goes to recommended, this will
+        // implicitly create a new window so there won't be an 'older' version's
+        // data to copy
+        let oldRecommendedPhaseTargetDate;
+        if (oldTestPlanVersion && oldTestPlanVersion.phase === 'CANDIDATE') {
+            oldRecommendedPhaseTargetDate =
+                oldTestPlanVersion.recommendedPhaseTargetDate;
+        }
 
         const candidatePhaseReachedAtValue =
-            oldCandidatePhaseReachedAtDate ||
-            candidatePhaseReachedAt ||
-            new Date();
+            candidatePhaseReachedAt || new Date();
         const recommendedPhaseTargetDateValue =
             oldRecommendedPhaseTargetDate ||
             recommendedPhaseTargetDate ||
