@@ -15,7 +15,8 @@ module.exports = {
                  where id in
                        (55591, 55592, 55593, 55594, 55595, 55596, 55597, 55598, 55599, 55600, 55601, 55602, 55603, 55604, 55605, 55606,
                         55607, 55608, 55609, 55610, 55611, 55612, 55613, 55614, 55615, 55616, 55617, 55618, 55619, 55620, 55621, 55622,
-                        55623, 55624, 55625)`,
+                        55623, 55624, 55625)
+                   and "gitSha" = '836fb2a997f5b2844035b8c934f8fda9833cd5b2'`,
                 {
                     transaction
                 }
@@ -34,7 +35,14 @@ module.exports = {
                 `update "TestPlanVersion"
                  set phase          = 'RD',
                      "deprecatedAt" = null
-                 where id in (1566, 1591, 1618, 1798, 2129, 2162, 2245, 2347)`,
+                 where id = 1566 and directory = 'switch' and "gitSha" = '9d0e4e3d1040d64d9db69647e615c4ec0be723c2'
+                    or id = 1591 and directory = 'meter' and "gitSha" = '32d2d9db48becfc008fc566b569ac1563576ceb9'
+                    or id = 1618 and directory = 'main' and "gitSha" = 'c87a66ea13a2b6fac6d79fe1fb0b7a2f721dcd22'
+                    or id = 1798 and directory = 'checkbox-tri-state' and "gitSha" = 'b3d0576a2901ea7f100f49a994b64edbecf81cff'
+                    or id = 2129 and directory = 'link-img-alt' and "gitSha" = 'dc637636cff74b51f5c468ff3b81bd1f38aefbb2'
+                    or id = 2162 and directory = 'link-css' and "gitSha" = '7a8454bca6de980199868101431817cea03cce35'
+                    or id = 2245 and directory = 'slider-multithumb' and "gitSha" = 'b5fe3efd569518e449ef9a0978b0dec1f2a08bd6'
+                    or id = 2347 and directory = 'radiogroup-roving-tabindex' and "gitSha" = '1768070bd68beefef29284b568d2da910b449c14'`,
                 {
                     transaction
                 }
@@ -49,7 +57,9 @@ module.exports = {
                 `update "TestPlanVersion"
                  set phase          = 'DEPRECATED',
                      "deprecatedAt" = '2023-12-14 21:51:35.527000 +00:00'
-                 where id = 62309`,
+                 where id = 62309
+                   and directory = 'toggle-button'
+                   and "versionString" = 'V23.12.13'`,
                 {
                     transaction
                 }
