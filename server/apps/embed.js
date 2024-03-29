@@ -30,16 +30,40 @@ app.set('views', path.resolve(handlebarsPath, 'views'));
 // stale data for however long it takes for the query to complete.
 const millisecondsUntilStale = 5000;
 
-const queryReports = async () => {
+const queryReports = async testPlanDirectory => {
     const { data, errors } = await apolloServer.executeOperation({
         query: gql`
-            query {
+            query TestPlanQuery($testPlanDirectory: ID!) {
                 ats {
                     id
                     name
                     browsers {
                         id
                         name
+                    }
+                }
+                testPlan(id: $testPlanDirectory) {
+                    testPlanVersions {
+                        id
+                        title
+                        phase
+                        testPlanReports(isFinal: true) {
+                            id
+                            metrics
+                            at {
+                                id
+                                name
+                            }
+                            browser {
+                                id
+                                name
+                            }
+                            latestAtVersionReleasedAt {
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
                     }
                 }
                 testPlanReports(
@@ -72,7 +96,8 @@ const queryReports = async () => {
                     }
                 }
             }
-        `
+        `,
+        variables: { testPlanDirectory }
     });
 
     if (errors) {
