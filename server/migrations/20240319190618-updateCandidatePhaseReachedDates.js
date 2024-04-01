@@ -39,12 +39,10 @@ module.exports = {
                 for (const restTestPlanVersion of rest) {
                     await queryInterface.sequelize.query(
                         `update "TestPlanVersion"
-                                set "candidatePhaseReachedAt" = ?,
-                                    "recommendedPhaseTargetDate" = ?
-                                where id = ?`,
+                         set "recommendedPhaseTargetDate" = ?
+                         where id = ?`,
                         {
                             replacements: [
-                                firstTestPlanVersion.candidatePhaseReachedAt,
                                 firstTestPlanVersion.recommendedPhaseTargetDate,
                                 restTestPlanVersion.id
                             ],
