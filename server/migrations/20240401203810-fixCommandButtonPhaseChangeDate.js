@@ -18,7 +18,7 @@ module.exports = {
             );
 
             // Update deprecation date for Command Button V23.12.06 to be a
-            // second before it's current time. It was the same time Command
+            // second before its current time. It was the same time Command
             // Button V23.12.13 was updated to draft which isn't functionally
             // possible
             await queryInterface.sequelize.query(
