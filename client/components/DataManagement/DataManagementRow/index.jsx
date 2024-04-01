@@ -432,7 +432,7 @@ const DataManagementRow = ({
          * @param {"RECOMMENDED"|"CANDIDATE"|"DRAFT"} phase
          * @returns {TestPlanVersion[]}
          */
-        const deriveVersionsByDates = phase => {
+        const getVersionsThatReachedPhase = phase => {
             switch (phase) {
                 case 'RECOMMENDED':
                     return testPlanVersions.filter(
@@ -462,13 +462,15 @@ const DataManagementRow = ({
             }
         };
 
-        const derivedRecommendedVersions = deriveVersionsByDates('RECOMMENDED');
-        const derivedCandidateVersions = deriveVersionsByDates('CANDIDATE');
-        const derivedDraftVersions = deriveVersionsByDates('DRAFT');
+        const versionsThatReachedRecommended =
+            getVersionsThatReachedPhase('RECOMMENDED');
+        const versionsThatReachedCandidate =
+            getVersionsThatReachedPhase('CANDIDATE');
+        const versionsThatReachedDraft = getVersionsThatReachedPhase('DRAFT');
 
-        if (derivedRecommendedVersions.length) {
+        if (versionsThatReachedRecommended.length) {
             const { earliestVersionDate } = getVersionData(
-                derivedRecommendedVersions,
+                versionsThatReachedRecommended,
                 'recommendedPhaseReachedAt'
             );
             const phase = 'RECOMMENDED';
@@ -482,9 +484,9 @@ const DataManagementRow = ({
             );
         }
 
-        if (derivedCandidateVersions.length) {
+        if (versionsThatReachedCandidate.length) {
             const { earliestVersionDate } = getVersionData(
-                derivedCandidateVersions,
+                versionsThatReachedCandidate,
                 'candidatePhaseReachedAt'
             );
             const phase = 'CANDIDATE';
@@ -501,9 +503,9 @@ const DataManagementRow = ({
             );
         }
 
-        if (derivedDraftVersions.length) {
+        if (versionsThatReachedDraft.length) {
             const { earliestVersionDate } = getVersionData(
-                derivedDraftVersions,
+                versionsThatReachedDraft,
                 'draftPhaseReachedAt'
             );
             const phase = 'DRAFT';
