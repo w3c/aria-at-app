@@ -425,6 +425,13 @@ const DataManagementRow = ({
             return otherVersionsInProgress.length;
         };
 
+        /**
+         * Uses the truthy state of defined dates for a TestPlanVersion to
+         * determine if the version was ever in that phase at any given point.
+         * Useful if the phase of the TestPlanVersion is currently DEPRECATED.
+         * @param {RECOMMENDED|CANDIDATE|DRAFT} phase
+         * @returns {TestPlanVersion[]}
+         */
         const deriveVersionsByDates = phase => {
             switch (phase) {
                 case 'RECOMMENDED':
