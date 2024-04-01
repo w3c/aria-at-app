@@ -220,12 +220,10 @@ const DataManagement = () => {
                                 isAdmin={isAdmin}
                                 ats={ats}
                                 testPlan={testPlan}
-                                testPlanVersions={testPlanVersions.filter(
-                                    testPlanVersion =>
-                                        testPlanVersion.testPlan.directory ===
-                                        testPlan.directory
-                                )}
-                                deprecatedTestPlanVersions={deprecatedTestPlanVersions.filter(
+                                testPlanVersions={[
+                                    ...deprecatedTestPlanVersions,
+                                    ...testPlanVersions
+                                ].filter(
                                     testPlanVersion =>
                                         testPlanVersion.testPlan.directory ===
                                         testPlan.directory

@@ -152,7 +152,6 @@ const DataManagementRow = ({
     testPlan,
     testPlanVersions,
     setTestPlanVersions,
-    deprecatedTestPlanVersions,
     tableRowIndex
 }) => {
     const { triggerLoad, loadingMessage } = useTriggerLoad();
@@ -426,72 +425,46 @@ const DataManagementRow = ({
             return otherVersionsInProgress.length;
         };
 
-        const getDeprecatedVersionsByDatePhase = phase => {
+        const deriveVersionsByDates = phase => {
             switch (phase) {
                 case 'RECOMMENDED':
-                    return deprecatedTestPlanVersions
-                        .filter(
-                            ({ recommendedPhaseReachedAt }) =>
-                                !!recommendedPhaseReachedAt
-                        )
-                        .map(testPlanVersion => ({
-                            ...testPlanVersion,
-                            phase: 'RECOMMENDED'
-                        }));
+                    return testPlanVersions.filter(
+                        ({ recommendedPhaseReachedAt }) =>
+                            !!recommendedPhaseReachedAt
+                    );
                 case 'CANDIDATE':
-                    return deprecatedTestPlanVersions
-                        .filter(
-                            ({
-                                candidatePhaseReachedAt,
-                                recommendedPhaseReachedAt
-                            }) =>
-                                !!candidatePhaseReachedAt &&
-                                !recommendedPhaseReachedAt
-                        )
-                        .map(testPlanVersion => ({
-                            ...testPlanVersion,
-                            phase: 'CANDIDATE'
-                        }));
+                    return testPlanVersions.filter(
+                        ({
+                            candidatePhaseReachedAt,
+                            recommendedPhaseReachedAt
+                        }) =>
+                            !!candidatePhaseReachedAt &&
+                            !recommendedPhaseReachedAt
+                    );
                 case 'DRAFT':
-                    return deprecatedTestPlanVersions
-                        .filter(
-                            ({
-                                draftPhaseReachedAt,
-                                candidatePhaseReachedAt,
-                                recommendedPhaseReachedAt
-                            }) =>
-                                !!draftPhaseReachedAt &&
-                                !candidatePhaseReachedAt &&
-                                !recommendedPhaseReachedAt
-                        )
-                        .map(testPlanVersion => ({
-                            ...testPlanVersion,
-                            phase: 'DRAFT'
-                        }));
+                    return testPlanVersions.filter(
+                        ({
+                            draftPhaseReachedAt,
+                            candidatePhaseReachedAt,
+                            recommendedPhaseReachedAt
+                        }) =>
+                            !!draftPhaseReachedAt &&
+                            !candidatePhaseReachedAt &&
+                            !recommendedPhaseReachedAt
+                    );
             }
         };
 
-        let recommendedWithDeprecatedTestPlanVersions = [
-            ...recommendedTestPlanVersions,
-            ...getDeprecatedVersionsByDatePhase('RECOMMENDED')
-        ];
+        const derivedRecommendedVersions = deriveVersionsByDates('RECOMMENDED');
+        const derivedCandidateVersions = deriveVersionsByDates('CANDIDATE');
+        const derivedDraftVersions = deriveVersionsByDates('DRAFT');
 
-        let candidateWithDeprecatedTestPlanVersions = [
-            ...candidateTestPlanVersions,
-            ...getDeprecatedVersionsByDatePhase('CANDIDATE')
-        ];
-
-        let draftWithDeprecatedTestPlanVersions = [
-            ...draftTestPlanVersions,
-            ...getDeprecatedVersionsByDatePhase('DRAFT')
-        ];
-
-        if (recommendedWithDeprecatedTestPlanVersions.length) {
-            const { earliestVersion, earliestVersionDate } = getVersionData(
-                recommendedWithDeprecatedTestPlanVersions,
+        if (derivedRecommendedVersions.length) {
+            const { earliestVersionDate } = getVersionData(
+                derivedRecommendedVersions,
                 'recommendedPhaseReachedAt'
             );
-            const { phase } = earliestVersion;
+            const phase = 'RECOMMENDED';
             const versionsInProgressCount = otherVersionsInProgressCount(phase);
 
             return (
@@ -502,13 +475,12 @@ const DataManagementRow = ({
             );
         }
 
-        if (candidateWithDeprecatedTestPlanVersions.length) {
-            const { earliestVersion, earliestVersionDate } = getVersionData(
-                candidateWithDeprecatedTestPlanVersions,
+        if (derivedCandidateVersions.length) {
+            const { earliestVersionDate } = getVersionData(
+                derivedCandidateVersions,
                 'candidatePhaseReachedAt'
             );
-            const { phase } = earliestVersion;
-
+            const phase = 'CANDIDATE';
             const versionsInProgressCount = otherVersionsInProgressCount(
                 phase,
                 ['RECOMMENDED']
@@ -522,13 +494,12 @@ const DataManagementRow = ({
             );
         }
 
-        if (draftWithDeprecatedTestPlanVersions.length) {
-            const { earliestVersion, earliestVersionDate } = getVersionData(
-                draftWithDeprecatedTestPlanVersions,
+        if (derivedDraftVersions.length) {
+            const { earliestVersionDate } = getVersionData(
+                derivedDraftVersions,
                 'draftPhaseReachedAt'
             );
-            const { phase } = earliestVersion;
-
+            const phase = 'DRAFT';
             const versionsInProgressCount = otherVersionsInProgressCount(
                 phase,
                 ['RECOMMENDED', 'CANDIDATE']
