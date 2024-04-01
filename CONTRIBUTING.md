@@ -50,5 +50,9 @@ We provide capabilities for unit testing, integration testing and end-to-end tes
 
 We expect contributors to use the type of testing which corresponds to the architecture of their code. For example, in the case of a utility function, unit tests are preferable to end-to-end testing, because of the complexity of end-to-end which runs a full browser, server and database. On the flipside, attempting to unit test a major set of features like the overall function of the data management page would require so many mocks that end-to-end testing would be the only efficient option.
 
+## Technical incident reporting
+
+The project maintainers keep a record of the technical problems which cause unforeseen interruptions to the service provided by the application in production. These incident reports document the aberrant behavior, the investigation process, and the technical resolution. They are available in [the project wiki](https://github.com/w3c/aria-at-app/wiki#incident-reports).
+
 ## License
 When you submit code changes, your submissions are understood to be under the same [W3C Document License](https://github.com/w3c/aria-at-app/blob/main/LICENSE.md) that covers the project.
