@@ -789,7 +789,7 @@ describe('data management', () => {
         });
     });
 
-    it('preserves results for all results where commands or assertions are unchanged', async () => {
+    it('preserves results for copied report combinations where commands or assertions are unchanged', async () => {
         await dbCleaner(async transaction => {
             function countCollectedAssertionResults(run) {
                 return run.testResults.reduce((trSum, tr) => {
