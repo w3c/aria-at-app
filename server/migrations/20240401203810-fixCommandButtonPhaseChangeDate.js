@@ -33,5 +33,29 @@ module.exports = {
             );
         });
     },
-    async down() {}
+    async down(queryInterface) {
+        return queryInterface.sequelize.transaction(async transaction => {
+            await queryInterface.sequelize.query(
+                `update "TestPlanVersion"
+                 set "candidatePhaseReachedAt" = '2022-05-05 21:34:31.000000 +00:00'
+                 where id = 62353
+                   and "gitSha" = '565a87b4111acebdb883d187b581e82c42a73844'
+                   and directory = 'command-button'`,
+                {
+                    transaction
+                }
+            );
+
+            await queryInterface.sequelize.query(
+                `update "TestPlanVersion"
+                 set "deprecatedAt" = '2023-12-13 22:19:04.298000 +00:00'
+                 where id = 56298
+                   and "gitSha" = 'd9a19f815d0f21194023b1c5919eb3b04d5c1ab7'
+                   and directory = 'command-button'`,
+                {
+                    transaction
+                }
+            );
+        });
+    }
 };
