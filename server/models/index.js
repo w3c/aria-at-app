@@ -18,7 +18,7 @@ sequelize = new Sequelize(
             native: true
         },
         pool: {
-            max: 100
+            max: 80
         },
         logging: false // console.log // eslint-disable-line
     }
