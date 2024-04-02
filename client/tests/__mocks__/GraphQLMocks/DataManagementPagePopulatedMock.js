@@ -280,6 +280,7 @@ export default (
                         title: 'Banner Landmark'
                     }
                 ],
+                deprecatedTestPlanVersions: [],
                 testPlanVersions: [
                     {
                         id: '28',
