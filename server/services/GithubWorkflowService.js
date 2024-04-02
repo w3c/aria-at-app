@@ -21,7 +21,7 @@ const ALGORITHM = 'RS256';
 // > the workflow file is on the default branch.
 //
 // https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
-const WORKFLOW_FILE_NAME = 'nvda-chrome.yml';
+const WORKFLOW_FILE_NAME = 'nvda-test.yml';
 const WORKFLOW_REPO = 'bocoup/aria-at-gh-actions-helper';
 
 // Generated from the GitHub.com UI
@@ -39,7 +39,7 @@ exports.setup = async () => {
     );
     if (!callbackUrlHostname) {
         throw new Error(
-            'Envrionment AUTOMATION_CALLBACK_FQDN must be set to a valid hostname for the public address.'
+            'Environment AUTOMATION_CALLBACK_FQDN must be set to a valid hostname for the public address.'
         );
     }
     try {
@@ -126,13 +126,15 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
         jsonWebToken,
         GITHUB_APP_INSTALLATION_ID
     );
+    const browser = job.testPlanRun.testPlanReport.browser.name.toLowerCase();
     const inputs = {
         callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/result`,
         status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/update`,
         callback_header: `x-automation-secret:${process.env.AUTOMATION_SCHEDULER_SECRET}`,
         work_dir: `tests/${directory}`,
-        test_pattern: 'reference/**,test-*-nvda.*',
-        aria_at_ref: gitSha
+        test_pattern: '{reference/**,test-*-nvda.*}',
+        aria_at_ref: gitSha,
+        browser
     };
     const axiosConfig = {
         method: 'POST',

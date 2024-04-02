@@ -9,7 +9,7 @@ const saveTestResultResolver = async (
 ) => {
     const { user } = context;
 
-    const { testPlanRun } = await populateData({ testResultId });
+    const { testPlanRun } = await populateData({ testResultId }, { context });
 
     if (
         !(

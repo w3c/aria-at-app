@@ -1,6 +1,6 @@
 const { UserInputError } = require('apollo-server');
 const {
-    updateTestPlanRun
+    updateTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 const deepCustomMerge = require('../../util/deepCustomMerge');
@@ -10,9 +10,9 @@ const createTestResultSkeleton = require('../TestPlanRunOperations/createTestRes
 const persistConflictsCount = require('../helpers/persistConflictsCount');
 const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
-const getMetrics = require('../../util/getMetrics');
+const { getMetrics } = require('shared');
 const {
-    updateTestPlanReport
+    updateTestPlanReportById
 } = require('../../models/services/TestPlanReportService');
 
 const saveTestResultCommon = async ({
@@ -21,12 +21,14 @@ const saveTestResultCommon = async ({
     isSubmit,
     context
 }) => {
+    const { transaction } = context;
+
     const {
         testPlanRun,
         testPlanReport,
         test,
         testResult: testResultPopulated
-    } = await populateData({ testResultId });
+    } = await populateData({ testResultId }, { context });
 
     // The populateData function will populate associations of JSON-based
     // models, but not Sequelize-based models. This is why the
@@ -38,20 +40,6 @@ const saveTestResultCommon = async ({
     const newTestResult = deepCustomMerge(oldTestResult, input, {
         identifyArrayItem: item => item.id,
         removeArrayItems: true
-    });
-
-    // Some clients might send an otherUnexpectedBehaviorText for unexpectedBehaviors
-    // that are not "OTHER". As long as the otherUnexpectedBehaviorText is null or undefined,
-    // the best course of action is probably to allow it, but not save it to the database.
-    newTestResult.scenarioResults?.forEach(scenarioResult => {
-        scenarioResult.unexpectedBehaviors?.forEach(unexpectedBehavior => {
-            if (
-                unexpectedBehavior.id !== 'OTHER' &&
-                unexpectedBehavior.otherUnexpectedBehaviorText == null
-            ) {
-                delete unexpectedBehavior.otherUnexpectedBehaviorText;
-            }
-        });
     });
 
     const isCorrupted = !deepPickEqual(
@@ -85,7 +73,11 @@ const saveTestResultCommon = async ({
         ...oldTestResults.slice(index + 1)
     ];
 
-    await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
+    await updateTestPlanRunById({
+        id: testPlanRun.id,
+        values: { testResults: newTestResults },
+        transaction
+    });
 
     if (isSubmit) {
         // Update metrics when result is saved
@@ -93,7 +85,11 @@ const saveTestResultCommon = async ({
             { testPlanReportId: testPlanReport.id },
             { context }
         );
-        const runnableTests = runnableTestsResolver(testPlanReportPopulated);
+        const runnableTests = runnableTestsResolver(
+            testPlanReportPopulated,
+            null,
+            context
+        );
         const finalizedTestResults = await finalizedTestResultsResolver(
             testPlanReportPopulated,
             null,
@@ -106,8 +102,12 @@ const saveTestResultCommon = async ({
                 runnableTests
             }
         });
-        await updateTestPlanReport(testPlanReportPopulated.id, {
-            metrics: { ...testPlanReportPopulated.metrics, ...metrics }
+        await updateTestPlanReportById({
+            id: testPlanReportPopulated.id,
+            values: {
+                metrics: { ...testPlanReportPopulated.metrics, ...metrics }
+            },
+            transaction
         });
     }
 
@@ -128,14 +128,8 @@ const assertTestResultIsValid = newTestResult => {
     };
 
     const checkUnexpectedBehavior = unexpectedBehavior => {
-        if (
-            (!!unexpectedBehavior.otherUnexpectedBehaviorText &&
-                unexpectedBehavior.id !== 'OTHER') ||
-            (!unexpectedBehavior.otherUnexpectedBehaviorText &&
-                unexpectedBehavior.id === 'OTHER')
-        ) {
-            failed = true;
-        }
+        const { impact, details } = unexpectedBehavior;
+        if (!impact || !details) failed = true;
     };
 
     const checkScenarioResult = scenarioResult => {

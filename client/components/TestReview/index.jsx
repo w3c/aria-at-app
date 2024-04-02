@@ -7,10 +7,10 @@ import { Helmet } from 'react-helmet';
 import PageStatus from '../common/PageStatus';
 import InstructionsRenderer from '../CandidateReview/CandidateTestPlanRun/InstructionsRenderer';
 import FilterButtons from '../common/FilterButtons';
-import { uniq as unique } from 'lodash';
 import styled from '@emotion/styled';
 import { derivePhaseName } from '../../utils/aria';
 import { convertDateToString } from '../../utils/formatter';
+import supportJson from '../../resources/support.json';
 
 const Ul = styled.ul`
     li {
@@ -33,7 +33,6 @@ const TestReview = () => {
         variables: { testPlanVersionId },
         fetchPolicy: 'cache-and-network'
     });
-
     const [activeFilter, setActiveFilter] = useState('All ATs');
 
     if (loading) {
@@ -44,7 +43,6 @@ const TestReview = () => {
             />
         );
     }
-
     if (error || !data?.testPlanVersion) {
         const errorMessage =
             error?.message ??
@@ -58,17 +56,44 @@ const TestReview = () => {
             />
         );
     }
-
     const testPlanVersion = data.testPlanVersion;
-    const atNames = unique(
-        testPlanVersion.tests.flatMap(test => test.ats.map(at => at.name))
-    );
+    const atNames = supportJson.ats.map(at => at.name);
+    const isV2 = testPlanVersion.metadata.testFormatVersion === 2;
+
+    let testPlanVersionTests;
+    if (isV2) {
+        testPlanVersionTests = [];
+        testPlanVersion.tests.forEach(test => {
+            const testIndex = testPlanVersionTests.findIndex(
+                el => el.title === test.title
+            );
+
+            if (testIndex < 0) testPlanVersionTests.push(test);
+            else {
+                testPlanVersionTests[testIndex] = {
+                    ...testPlanVersionTests[testIndex],
+                    id: `${testPlanVersionTests[testIndex].id}${test.id}`,
+                    ats: [...testPlanVersionTests[testIndex].ats, ...test.ats],
+                    renderableContents: [
+                        ...testPlanVersionTests[testIndex].renderableContents,
+                        ...test.renderableContents
+                    ],
+                    renderedUrls: [
+                        ...testPlanVersionTests[testIndex].renderedUrls,
+                        ...test.renderedUrls
+                    ]
+                };
+            }
+        });
+    } else {
+        testPlanVersionTests = testPlanVersion.tests;
+    }
 
     let filteredTests;
     if (activeFilter === 'All ATs') {
-        filteredTests = testPlanVersion.tests;
+        filteredTests = testPlanVersionTests;
     } else {
-        filteredTests = testPlanVersion.tests.filter(test =>
+        filteredTests = testPlanVersionTests.filter(test =>
             test.ats.find(at => at.name === activeFilter)
         );
     }
@@ -77,9 +102,9 @@ const TestReview = () => {
         ['All ATs', ...atNames].map(key => {
             let count;
             if (key === 'All ATs') {
-                count = testPlanVersion.tests.length;
+                count = testPlanVersionTests.length;
             } else {
-                count = testPlanVersion.tests.filter(test =>
+                count = testPlanVersionTests.filter(test =>
                     test.ats.find(at => at.name === key)
                 ).length;
             }
@@ -162,14 +187,63 @@ const TestReview = () => {
                     </Ul>
                 </li>
                 <li>
-                    <strong>Commit:&nbsp;</strong>
-                    {testPlanVersion.gitMessage}
+                    <strong>Latest Commit:&nbsp;</strong>
+                    <a
+                        target="_blank"
+                        rel="noreferrer"
+                        href={`https://github.com/w3c/aria-at/commit/${testPlanVersion.gitSha}`}
+                    >
+                        {testPlanVersion.gitMessage}
+                    </a>
                 </li>
+            </ul>
+
+            <h2>Supporting Documentation</h2>
+            <ul>
+                {testPlanVersionTests[0].renderableContents[0].renderableContent.info.references.map(
+                    reference => {
+                        if (isV2) {
+                            let refValue = '';
+                            let refLinkText = '';
+                            if (
+                                reference.refId === 'example' ||
+                                reference.refId === 'designPattern' ||
+                                reference.refId === 'developmentDocumentation'
+                            ) {
+                                refValue = reference.value;
+                                refLinkText = reference.linkText;
+                            }
+                            return refValue ? (
+                                <li key={refValue}>
+                                    <a
+                                        href={refValue}
+                                        rel="noreferrer"
+                                        target="_blank"
+                                    >
+                                        {refLinkText}
+                                    </a>
+                                </li>
+                            ) : null;
+                        } else {
+                            return (
+                                <li key={reference.value}>
+                                    <a
+                                        href={reference.value}
+                                        rel="noreferrer"
+                                        target="_blank"
+                                    >
+                                        {reference.refId}
+                                    </a>
+                                </li>
+                            );
+                        }
+                    }
+                )}
             </ul>
             <h2>Tests</h2>
             <FilterButtonContainer>
                 <FilterButtons
-                    filterLabel="Filter tests by AT"
+                    filterLabel="Filter tests by covered AT"
                     filterOptions={filterOptions}
                     activeFilter={activeFilter}
                     onFilterChange={selectedFilter => {
@@ -179,14 +253,9 @@ const TestReview = () => {
             </FilterButtonContainer>
             {filteredTests.map((test, index) => {
                 const isFirst = index === 0;
-
-                const atMode =
-                    test.atMode.substring(0, 1) +
-                    test.atMode.toLowerCase().substring(1);
-
-                const specifications =
-                    test.renderableContents[0].renderableContent.info.references.map(
-                        ({ refId, value }) => [refId, value]
+                const hasAriaReference =
+                    test.renderableContents[0].renderableContent.info.references.some(
+                        reference => reference.type === 'aria'
                     );
 
                 let filteredAts;
@@ -201,36 +270,42 @@ const TestReview = () => {
                 return (
                     <Fragment key={test.id}>
                         {isFirst ? null : <hr />}
-                        <h3>{`Test ${test.rowNumber}: ${test.title}`}</h3>
-                        <ul>
-                            <li>
-                                <strong>Mode:&nbsp;</strong>
-                                {atMode}
-                            </li>
-                            <li>
-                                <strong>Assistive technologies:&nbsp;</strong>
-                                {test.ats.map(at => at.name).join(', ')}
-                            </li>
-                            <li>
-                                <strong>Relevant specifications:&nbsp;</strong>
-                                {specifications.map(([title, link], index) => {
-                                    const isLast =
-                                        index === specifications.length - 1;
-                                    return (
-                                        <Fragment key={title}>
-                                            <a
-                                                href={link}
-                                                rel="noreferrer"
-                                                target="_blank"
-                                            >
-                                                {title}
-                                            </a>
-                                            {isLast ? '' : ', '}
-                                        </Fragment>
-                                    );
-                                })}
-                            </li>
-                        </ul>
+                        <h3>{`Test ${index + 1}: ${test.title}`}</h3>
+                        {/* A defined 'aria' type is only available in v2 */}
+                        {isV2 && hasAriaReference ? (
+                            <>
+                                <p>
+                                    {
+                                        supportJson.testPlanStrings
+                                            .ariaSpecsPreface
+                                    }
+                                </p>
+                                <ul>
+                                    {test.renderableContents[0].renderableContent.info.references.map(
+                                        reference => {
+                                            let refValue = '';
+                                            let refLinkText = '';
+                                            if (reference.type === 'aria') {
+                                                refValue = reference.value;
+                                                refLinkText =
+                                                    reference.linkText;
+                                            }
+                                            return refValue ? (
+                                                <li key={refValue}>
+                                                    <a
+                                                        href={refValue}
+                                                        rel="noreferrer"
+                                                        target="_blank"
+                                                    >
+                                                        {refLinkText}
+                                                    </a>
+                                                </li>
+                                            ) : null;
+                                        }
+                                    )}
+                                </ul>
+                            </>
+                        ) : null}
                         {filteredAts.map(at => {
                             const renderableContent =
                                 test.renderableContents.find(
@@ -241,6 +316,7 @@ const TestReview = () => {
                             return (
                                 <Fragment key={at.id}>
                                     <h4>{at.name}</h4>
+                                    <h5>Instructions</h5>
                                     <InstructionsRenderer
                                         test={{ ...test, renderableContent }}
                                         testPageUrl={
@@ -248,6 +324,10 @@ const TestReview = () => {
                                         }
                                         at={at}
                                         headingLevel={5}
+                                        testFormatVersion={
+                                            testPlanVersion.metadata
+                                                .testFormatVersion
+                                        }
                                     />
                                 </Fragment>
                             );

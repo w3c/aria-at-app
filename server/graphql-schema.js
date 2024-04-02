@@ -157,23 +157,6 @@ const graphqlSchema = gql`
     }
 
     """
-    Some ATs like JAWS have modes - for example, normally pushing "h" would
-    navigate to the next header, but when you are interacting with a text input,
-    typing "h" would insert the letter "h" into that input. Our tests are aware
-    of these modes.
-    """
-    enum AtMode {
-        """
-        JAWS "browse" mode or NVDA "browse" mode.
-        """
-        READING
-        """
-        JAWS "forms" mode, NVDA "focus" mode, or VoiceOver's one-and-only mode.
-        """
-        INTERACTION
-    }
-
-    """
     An assistive technology to be tested, such as NVDA or JAWS.
     """
     type At {
@@ -185,11 +168,6 @@ const graphqlSchema = gql`
         Human-readable name for the AT, such as "NVDA".
         """
         name: String!
-        # TODO: reenable when this data is properly flowing into the system
-        # """
-        # The categories of generalized AT modes the AT supports.
-        # """
-        # modes: [AtMode]!
         atVersions: [AtVersion]!
         """
         The browsers which can run the At, for example, Safari can run VoiceOver but not Jaws because Jaws is Windows only.
@@ -425,12 +403,7 @@ const graphqlSchema = gql`
         The ATs the test was written to expect.
         """
         ats: [At]!
-        # TODO: consider moving to the Scenario type if we support a single test
-        # applying to multiple AT modes.
-        """
-        The AT mode the test was written to expect.
-        """
-        atMode: AtMode
+
         """
         Raw execution-specific data for the Test Renderer such as inputs needed
         to generate the manual test instructions or links to the setup scripts
@@ -532,6 +505,14 @@ const graphqlSchema = gql`
         A human-readable version of the command, such as "Control+Alt+Down"
         """
         text: String!
+        """
+        The AT mode this command may be getting ran in, such as quickNavOn,
+        browseMode, etc.
+        The same command can be ran during the same test, but in a different
+        mode.
+        """
+        # TODO: Add link to list of known AT modes
+        atOperatingMode: String
     }
 
     """
@@ -554,16 +535,20 @@ const graphqlSchema = gql`
         All required assertions must pass for the test to pass. This should be
         considered as 'MUST Behaviors'.
         """
-        REQUIRED
         MUST
         """
         This assertion is not considered when deciding if a test is passing.
         This should be considered as 'SHOULD Behaviors'.
         """
-        OPTIONAL
         SHOULD
         # TODO Define MAY
         MAY
+        """
+        This assertion should not be included in the test and should not be
+        used to determine if the test should pass or fail.
+        This exclusion may be overwritten with an assertion exception.
+        """
+        EXCLUDE
     }
 
     """
@@ -764,6 +749,11 @@ const graphqlSchema = gql`
         OTHER
     }
 
+    enum UnexpectedBehaviorImpact {
+        MODERATE
+        SEVERE
+    }
+
     """
     A failure state such as "AT became excessively sluggish" which, if it
     occurs, should count as a scenario failure.
@@ -779,11 +769,13 @@ const graphqlSchema = gql`
         """
         text: String!
         """
-        One of the unexpected behaviors is "other", which means the user must
-        provide text explaining what occurred. For all other unexpected
-        behaviors this field can be ignored.
+        The user must provide text explaining what occurred.
         """
-        otherUnexpectedBehaviorText: String
+        details: String!
+        """
+        The user must indicate the severity of the behavior.
+        """
+        impact: UnexpectedBehaviorImpact!
     }
 
     """
@@ -797,7 +789,11 @@ const graphqlSchema = gql`
         """
         See UnexpectedBehavior for more information.
         """
-        otherUnexpectedBehaviorText: String
+        details: String!
+        """
+        See UnexpectedBehavior for more information.
+        """
+        impact: UnexpectedBehaviorImpact!
     }
 
     """
@@ -1415,23 +1411,6 @@ const graphqlSchema = gql`
             The CollectionJob to schedule.
             """
             testPlanReportId: ID!
-        ): CollectionJob!
-        """
-        Find or create a CollectionJob
-        """
-        findOrCreateCollectionJob(
-            """
-            The CollectionJob to find or create.
-            """
-            id: ID!
-            """
-            The status of the CollectionJob.
-            """
-            status: CollectionJobStatus
-            """
-            The TestPlanReport id to use to create the TestPlanRun associated with the CollectionJob.
-            """
-            testPlanReportId: ID
         ): CollectionJob!
         """
         Update a CollectionJob

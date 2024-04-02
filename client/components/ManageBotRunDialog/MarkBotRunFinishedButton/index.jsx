@@ -52,6 +52,11 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
         await onClick();
     };
 
+    const buttonDisabled =
+        totalPossibleAssertions === 0 ||
+        totalValidatedAssertions < totalPossibleAssertions ||
+        runIsFinished;
+
     return (
         <LoadingStatus message={loadingMessage}>
             <BasicModal
@@ -72,10 +77,7 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
             <Button
                 variant="secondary"
                 onClick={() => setShowConfirmation(true)}
-                disabled={
-                    totalValidatedAssertions < totalPossibleAssertions ||
-                    runIsFinished
-                }
+                disabled={buttonDisabled}
             >
                 Mark as finished
             </Button>

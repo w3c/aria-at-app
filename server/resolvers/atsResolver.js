@@ -1,8 +1,8 @@
-const AtLoader = require('../models/loaders/AtLoader');
+const atsResolver = async (_, __, context) => {
+    const { transaction, atLoader } = context;
 
-const atsResolver = async () => {
-    const atLoader = AtLoader();
-    return atLoader.getAll();
+    const result = await atLoader.getAll({ transaction });
+    return result;
 };
 
 module.exports = atsResolver;

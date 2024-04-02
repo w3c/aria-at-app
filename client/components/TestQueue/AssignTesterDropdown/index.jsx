@@ -75,7 +75,7 @@ const AssignTesterDropdown = ({
                         testerId: tester.id
                     }
                 });
-            }, 'Updating Test Plan Assignees');
+            }, `Updating Test Plan Assignees. Deleting Test Plan Run for ${tester.username}`);
         } else {
             if (isBot(tester)) {
                 await triggerLoad(async () => {
@@ -110,7 +110,9 @@ const AssignTesterDropdown = ({
             return <FontAwesomeIcon icon={faUserPlus} />;
         }
     };
-
+    const clearAriaLiveRegion = () => {
+        setAlertMessage('');
+    };
     return (
         <LoadingStatus message={loadingMessage}>
             <Dropdown aria-label="Assign testers menu">
@@ -125,9 +127,8 @@ const AssignTesterDropdown = ({
                 <Dropdown.Menu role="menu" className="assign-menu">
                     {possibleTesters?.length ? (
                         possibleTesters.map(tester => {
-                            const testerIsAssigned = isTesterAssigned(
-                                tester.username
-                            );
+                            const { username } = tester;
+                            const testerIsAssigned = isTesterAssigned(username);
                             const classname = [
                                 testerIsAssigned ? 'assigned' : 'not-assigned',
                                 isBot(tester) ? 'bot' : 'human'
@@ -150,24 +151,32 @@ const AssignTesterDropdown = ({
                                     role="menuitem"
                                     variant="secondary"
                                     as="button"
-                                    key={`tpr-${testPlanReportId}-assign-tester-${tester.username}`}
+                                    key={`tpr-${testPlanReportId}-assign-tester-${username}`}
                                     onClick={async () => {
-                                        await toggleTesterAssign(
-                                            tester.username
-                                        );
+                                        const updatedIsAssigned =
+                                            !testerIsAssigned;
                                         setAlertMessage(
-                                            `${tester.username} has been ${
-                                                classname.includes('not')
-                                                    ? 'assigned to'
-                                                    : 'removed from'
-                                            } this test run.`
+                                            `${username} ${
+                                                updatedIsAssigned
+                                                    ? 'now checked'
+                                                    : `now unchecked. ${tester.username}'s test plan run has been deleted.`
+                                            }`
                                         );
+                                        setTimeout(clearAriaLiveRegion, 6000);
+                                        await toggleTesterAssign(username);
                                         await onChange();
                                     }}
-                                    aria-checked={isTesterAssigned}
                                 >
                                     {icon && <FontAwesomeIcon icon={icon} />}
-                                    <span className={classname}>
+                                    <span className="sr-only">{`${username} ${
+                                        testerIsAssigned
+                                            ? 'checked'
+                                            : 'unchecked'
+                                    }`}</span>
+                                    <span
+                                        aria-hidden="true"
+                                        className={classname}
+                                    >
                                         {`${tester.username}`}
                                     </span>
                                 </Dropdown.Item>

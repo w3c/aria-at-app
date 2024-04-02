@@ -15,16 +15,19 @@ let assertionResultId1;
 let assertionResultId2;
 let assertionResultId3;
 
-const getTestPlanVersionId = async (testFormatVersion = 1) => {
-    const queryResult = await query(gql`
-        query {
-            testPlanVersions {
-                id
-                title
-                metadata
+const getTestPlanVersionId = async ({ testFormatVersion = 1, transaction }) => {
+    const queryResult = await query(
+        gql`
+            query {
+                testPlanVersions {
+                    id
+                    title
+                    metadata
+                }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
     testPlanVersionId = queryResult.testPlanVersions.find(
         each =>
             each.title === 'Checkbox Example (Two State)' &&
@@ -33,74 +36,83 @@ const getTestPlanVersionId = async (testFormatVersion = 1) => {
     ).id;
 };
 
-const prepopulateTestPlanReport = async () => {
-    if (!testPlanVersionId) await getTestPlanVersionId();
-    const mutationResult = await mutate(gql`
-        mutation {
-            findOrCreateTestPlanReport(
-                input: {
-                    testPlanVersionId: ${testPlanVersionId}
-                    atId: 1
-                    browserId: 1
-                }
-            ) {
-                populatedData {
-                    testPlanReport {
-                        id
-                        runnableTests {
+const prepopulateTestPlanReport = async ({ transaction }) => {
+    if (!testPlanVersionId) await getTestPlanVersionId({ transaction });
+    const mutationResult = await mutate(
+        gql`
+            mutation {
+                findOrCreateTestPlanReport(
+                    input: {
+                        testPlanVersionId: ${testPlanVersionId}
+                        atId: 1
+                        browserId: 1
+                    }
+                ) {
+                    populatedData {
+                        testPlanReport {
                             id
+                            runnableTests {
+                                id
+                            }
                         }
                     }
                 }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
     const { testPlanReport } =
         mutationResult.findOrCreateTestPlanReport.populatedData;
     testPlanReportId = testPlanReport.id;
     testId = testPlanReport.runnableTests[1].id;
 };
 
-const prepopulateTestPlanRun = async () => {
-    const mutationResult = await mutate(gql`
-        mutation {
-            testPlanReport(id: ${testPlanReportId}) {
-                assignTester(userId: 1) {
-                    testPlanRun {
-                        id
+const prepopulateTestPlanRun = async ({ transaction }) => {
+    const mutationResult = await mutate(
+        gql`
+            mutation {
+                testPlanReport(id: ${testPlanReportId}) {
+                    assignTester(userId: 1) {
+                        testPlanRun {
+                            id
+                        }
                     }
                 }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
     testPlanRunId = mutationResult.testPlanReport.assignTester.testPlanRun.id;
 };
 
-const prepopulateTestResult = async () => {
-    const mutationResult = await mutate(gql`
-        mutation {
-            testPlanRun(id: "${testPlanRunId}") {
-                findOrCreateTestResult(
-                    testId: "${testId}",
-                    atVersionId: "${atVersionId}",
-                    browserVersionId: "${browserVersionId}"
-                ) {
-                    testResult {
-                        id
-                        scenarioResults {
+const prepopulateTestResult = async ({ transaction }) => {
+    const mutationResult = await mutate(
+        gql`
+            mutation {
+                testPlanRun(id: "${testPlanRunId}") {
+                    findOrCreateTestResult(
+                        testId: "${testId}",
+                        atVersionId: "${atVersionId}",
+                        browserVersionId: "${browserVersionId}"
+                    ) {
+                        testResult {
                             id
-                            assertionResults {
+                            scenarioResults {
                                 id
-                            }
-                            unexpectedBehaviors {
-                                id
+                                assertionResults {
+                                    id
+                                }
+                                unexpectedBehaviors {
+                                    id
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-    `);
+        `,
+        { transaction }
+    );
     const testResult =
         mutationResult.testPlanRun.findOrCreateTestResult.testResult;
     testResultId = testResult.id;
@@ -117,23 +129,26 @@ describe('testPlanRun', () => {
     });
 
     it('creates a testPlanRun', async () => {
-        await dbCleaner(async () => {
-            await prepopulateTestPlanReport();
+        await dbCleaner(async transaction => {
+            await prepopulateTestPlanReport({ transaction });
             const _userId = '1';
 
-            const mutationResult = await mutate(gql`
-                mutation {
-                    testPlanReport(id: ${testPlanReportId}) {
-                        assignTester(userId: ${_userId}) {
-                            testPlanRun {
-                                tester {
-                                    id
+            const mutationResult = await mutate(
+                gql`
+                    mutation {
+                        testPlanReport(id: ${testPlanReportId}) {
+                            assignTester(userId: ${_userId}) {
+                                testPlanRun {
+                                    tester {
+                                        id
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
             const { testPlanRun } = mutationResult.testPlanReport.assignTester;
 
             expect(testPlanRun.tester.id).toBe(_userId);
@@ -141,28 +156,31 @@ describe('testPlanRun', () => {
     });
 
     it('creates a testResult', async () => {
-        await dbCleaner(async () => {
-            await prepopulateTestPlanReport();
-            await prepopulateTestPlanRun();
+        await dbCleaner(async transaction => {
+            await prepopulateTestPlanReport({ transaction });
+            await prepopulateTestPlanRun({ transaction });
 
-            const mutationResult = await mutate(gql`
-                mutation {
-                    testPlanRun(id: "${testPlanRunId}") {
-                        findOrCreateTestResult(
-                            testId: "${testId}",
-                            atVersionId: "${atVersionId}",
-                            browserVersionId: "${browserVersionId}"
-                        ) {
-                            testResult {
-                                id
-                                test {
+            const mutationResult = await mutate(
+                gql`
+                    mutation {
+                        testPlanRun(id: "${testPlanRunId}") {
+                            findOrCreateTestResult(
+                                testId: "${testId}",
+                                atVersionId: "${atVersionId}",
+                                browserVersionId: "${browserVersionId}"
+                            ) {
+                                testResult {
                                     id
+                                    test {
+                                        id
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
             const { testResult } =
                 mutationResult.testPlanRun.findOrCreateTestResult;
 
@@ -172,53 +190,56 @@ describe('testPlanRun', () => {
     });
 
     it('saves a testResult', async () => {
-        await dbCleaner(async () => {
-            await prepopulateTestPlanReport();
-            await prepopulateTestPlanRun();
-            await prepopulateTestResult();
+        await dbCleaner(async transaction => {
+            await prepopulateTestPlanReport({ transaction });
+            await prepopulateTestPlanRun({ transaction });
+            await prepopulateTestResult({ transaction });
 
-            const mutationResult = await mutate(gql`
-                mutation {
-                    testResult(id: "${testResultId}") {
-                        saveTestResult(
-                            input: {
-                                id: "${testResultId}"
-                                atVersionId: "${atVersionId}"
-                                browserVersionId: "${browserVersionId}"
-                                scenarioResults: [
-                                    {
-                                        id: "${scenarioResultId}"
-                                        output: null
-                                        assertionResults: [
-                                            {
-                                                id: "${assertionResultId1}"
-                                                passed: true
-                                            }
-                                            {
-                                                id: "${assertionResultId2}"
-                                                passed: null
-                                            }
-                                            {
-                                                id: "${assertionResultId3}"
-                                                passed: null
-                                            }
-                                        ]
-                                        unexpectedBehaviors: []
-                                    }
-                                ]
-                            }
-                        ) {
-                            testResult {
-                                scenarioResults {
-                                    assertionResults {
-                                        passed
+            const mutationResult = await mutate(
+                gql`
+                    mutation {
+                        testResult(id: "${testResultId}") {
+                            saveTestResult(
+                                input: {
+                                    id: "${testResultId}"
+                                    atVersionId: "${atVersionId}"
+                                    browserVersionId: "${browserVersionId}"
+                                    scenarioResults: [
+                                        {
+                                            id: "${scenarioResultId}"
+                                            output: null
+                                            assertionResults: [
+                                                {
+                                                    id: "${assertionResultId1}"
+                                                    passed: true
+                                                }
+                                                {
+                                                    id: "${assertionResultId2}"
+                                                    passed: null
+                                                }
+                                                {
+                                                    id: "${assertionResultId3}"
+                                                    passed: null
+                                                }
+                                            ]
+                                            unexpectedBehaviors: []
+                                        }
+                                    ]
+                                }
+                            ) {
+                                testResult {
+                                    scenarioResults {
+                                        assertionResults {
+                                            passed
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
             const { testResult } = mutationResult.testResult.saveTestResult;
             const firstPass = testResult.scenarioResults[0].assertionResults[0];
 
@@ -227,48 +248,51 @@ describe('testPlanRun', () => {
     });
 
     it('detects corrupt testResults', async () => {
-        await dbCleaner(async () => {
-            await prepopulateTestPlanReport();
-            await prepopulateTestPlanRun();
-            await prepopulateTestResult();
+        await dbCleaner(async transaction => {
+            await prepopulateTestPlanReport({ transaction });
+            await prepopulateTestPlanRun({ transaction });
+            await prepopulateTestResult({ transaction });
 
             let error;
-            await mutate(gql`
-                mutation {
-                    testResult(id: "${testResultId}") {
-                        saveTestResult(
-                            input: {
-                                id: "${testResultId}"
-                                atVersionId: "${atVersionId}"
-                                browserVersionId: "${browserVersionId}"
-                                scenarioResults: [
-                                    {
-                                        id: "${scenarioResultId}"
-                                        output: null
-                                        assertionResults: [
-                                            {
-                                                id: "${assertionResultId1}"
-                                                passed: true
-                                            }
-                                            {
-                                                id: "${assertionResultId2}"
-                                                passed: null
-                                            }
-                                            {
-                                                id: "invalid-id-123" # invalid
-                                                passed: null
-                                            }
-                                        ]
-                                        unexpectedBehaviors: []
-                                    }
-                                ]
+            await mutate(
+                gql`
+                    mutation {
+                        testResult(id: "${testResultId}") {
+                            saveTestResult(
+                                input: {
+                                    id: "${testResultId}"
+                                    atVersionId: "${atVersionId}"
+                                    browserVersionId: "${browserVersionId}"
+                                    scenarioResults: [
+                                        {
+                                            id: "${scenarioResultId}"
+                                            output: null
+                                            assertionResults: [
+                                                {
+                                                    id: "${assertionResultId1}"
+                                                    passed: true
+                                                }
+                                                {
+                                                    id: "${assertionResultId2}"
+                                                    passed: null
+                                                }
+                                                {
+                                                    id: "invalid-id-123" # invalid
+                                                    passed: null
+                                                }
+                                            ]
+                                            unexpectedBehaviors: []
+                                        }
+                                    ]
+                                }
+                            ) {
+                                locationOfData
                             }
-                        ) {
-                            locationOfData
                         }
                     }
-                }
-            `).catch(err => {
+                `,
+                { transaction }
+            ).catch(err => {
                 error = err;
             });
             expect(error.message).toContain(
@@ -278,14 +302,69 @@ describe('testPlanRun', () => {
     });
 
     it('submits a testResult', async () => {
-        await dbCleaner(async () => {
-            await prepopulateTestPlanReport();
-            await prepopulateTestPlanRun();
-            await prepopulateTestResult();
+        await dbCleaner(async transaction => {
+            await prepopulateTestPlanReport({ transaction });
+            await prepopulateTestPlanRun({ transaction });
+            await prepopulateTestResult({ transaction });
 
-            const mutationResult = await mutate(gql`
-                mutation {
-                    testResult(id: "${testResultId}") {
+            const mutationResult = await mutate(
+                gql`
+                    mutation {
+                        testResult(id: "${testResultId}") {
+                                submitTestResult(
+                                    input: {
+                                        id: "${testResultId}"
+                                        atVersionId: "${atVersionId}"
+                                        browserVersionId: "${browserVersionId}"
+                                        scenarioResults: [
+                                            {
+                                                id: "${scenarioResultId}"
+                                                output: "completed test result"
+                                                assertionResults: [
+                                                    {
+                                                        id: "${assertionResultId1}"
+                                                        passed: true
+                                                    }
+                                                    {
+                                                        id: "${assertionResultId2}"
+                                                        passed: false
+                                                    }
+                                                    {
+                                                        id: "${assertionResultId3}"
+                                                        passed: false
+                                                    }
+                                                ]
+                                                unexpectedBehaviors: []
+                                            }
+                                        ]
+                                    }
+                                ) {
+                                    testResult {
+                                        completedAt
+                                    }
+                                }
+                            }
+                    }
+                `,
+                { transaction }
+            );
+            const { testResult } = mutationResult.testResult.submitTestResult;
+
+            expect(testResult.completedAt).toBeTruthy();
+        });
+    });
+
+    it('detects invalid testResult', async () => {
+        await dbCleaner(async transaction => {
+            await prepopulateTestPlanReport({ transaction });
+            await prepopulateTestPlanRun({ transaction });
+            await prepopulateTestResult({ transaction });
+
+            let error;
+            await mutate(
+                gql`
+                    mutation {
+                        testResult(id: "${testResultId}") {
                             submitTestResult(
                                 input: {
                                     id: "${testResultId}"
@@ -306,7 +385,7 @@ describe('testPlanRun', () => {
                                                 }
                                                 {
                                                     id: "${assertionResultId3}"
-                                                    passed: false
+                                                    passed: null # invalid
                                                 }
                                             ]
                                             unexpectedBehaviors: []
@@ -314,62 +393,13 @@ describe('testPlanRun', () => {
                                     ]
                                 }
                             ) {
-                                testResult {
-                                    completedAt
-                                }
+                                locationOfData
                             }
-                        }
-                }
-            `);
-            const { testResult } = mutationResult.testResult.submitTestResult;
-
-            expect(testResult.completedAt).toBeTruthy();
-        });
-    });
-
-    it('detects invalid testResult', async () => {
-        await dbCleaner(async () => {
-            await prepopulateTestPlanReport();
-            await prepopulateTestPlanRun();
-            await prepopulateTestResult();
-
-            let error;
-            await mutate(gql`
-                mutation {
-                    testResult(id: "${testResultId}") {
-                        submitTestResult(
-                            input: {
-                                id: "${testResultId}"
-                                atVersionId: "${atVersionId}"
-                                browserVersionId: "${browserVersionId}"
-                                scenarioResults: [
-                                    {
-                                        id: "${scenarioResultId}"
-                                        output: "completed test result"
-                                        assertionResults: [
-                                            {
-                                                id: "${assertionResultId1}"
-                                                passed: true
-                                            }
-                                            {
-                                                id: "${assertionResultId2}"
-                                                passed: false
-                                            }
-                                            {
-                                                id: "${assertionResultId3}"
-                                                passed: null # invalid
-                                            }
-                                        ]
-                                        unexpectedBehaviors: []
-                                    }
-                                ]
-                            }
-                        ) {
-                            locationOfData
                         }
                     }
-                }
-            `).catch(err => {
+                `,
+                { transaction }
+            ).catch(err => {
                 error = err;
             });
             expect(error).toBeTruthy();
@@ -377,30 +407,17 @@ describe('testPlanRun', () => {
     });
 
     it('deletes a testResult', async () => {
-        await dbCleaner(async () => {
-            await prepopulateTestPlanReport();
-            await prepopulateTestPlanRun();
-            await prepopulateTestResult();
+        await dbCleaner(async transaction => {
+            await prepopulateTestPlanReport({ transaction });
+            await prepopulateTestPlanRun({ transaction });
+            await prepopulateTestResult({ transaction });
 
-            const queryResult = await query(gql`
-                query {
-                    populateData(locationOfData: {
-                        testResultId: "${testResultId}"
-                    }) {
-                        locationOfData
-                        testPlanRun {
-                            id
-                            testResults {
-                                id
-                            }
-                        }
-                    }
-                }
-            `);
-            const mutation = await mutate(gql`
-                mutation {
-                    testResult(id: "${testResultId}") {
-                        deleteTestResult {
+            const queryResult = await query(
+                gql`
+                    query {
+                        populateData(locationOfData: {
+                            testResultId: "${testResultId}"
+                        }) {
                             locationOfData
                             testPlanRun {
                                 id
@@ -410,8 +427,27 @@ describe('testPlanRun', () => {
                             }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
+            const mutation = await mutate(
+                gql`
+                    mutation {
+                        testResult(id: "${testResultId}") {
+                            deleteTestResult {
+                                locationOfData
+                                testPlanRun {
+                                    id
+                                    testResults {
+                                        id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                { transaction }
+            );
             const before = queryResult.populateData.testPlanRun;
             const after = mutation.testResult.deleteTestResult.testPlanRun;
             const beforeId = before.testResults.find(
@@ -427,38 +463,44 @@ describe('testPlanRun', () => {
     });
 
     it('allows admins to delete all testResults', async () => {
-        await dbCleaner(async () => {
-            await prepopulateTestPlanReport();
-            await prepopulateTestPlanRun();
-            await prepopulateTestResult();
+        await dbCleaner(async transaction => {
+            await prepopulateTestPlanReport({ transaction });
+            await prepopulateTestPlanRun({ transaction });
+            await prepopulateTestResult({ transaction });
 
-            const queryResult = await query(gql`
-                query {
-                    populateData(locationOfData: {
-                        testResultId: "${testResultId}"
-                    }) {
-                        testPlanRun {
-                            testResults {
-                                id
-                            }
-                        }
-                    }
-                }
-            `);
-            const mutation = await mutate(gql`
-                mutation {
-                    testPlanRun(id: ${testPlanRunId}) {
-                        deleteTestResults {
+            const queryResult = await query(
+                gql`
+                    query {
+                        populateData(locationOfData: {
+                            testResultId: "${testResultId}"
+                        }) {
                             testPlanRun {
-                                id
                                 testResults {
                                     id
                                 }
                             }
                         }
                     }
-                }
-            `);
+                `,
+                { transaction }
+            );
+            const mutation = await mutate(
+                gql`
+                    mutation {
+                        testPlanRun(id: ${testPlanRunId}) {
+                            deleteTestResults {
+                                testPlanRun {
+                                    id
+                                    testResults {
+                                        id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                { transaction }
+            );
             const before = queryResult.populateData.testPlanRun;
             const after = mutation.testPlanRun.deleteTestResults.testPlanRun;
 

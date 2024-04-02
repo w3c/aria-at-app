@@ -10,8 +10,10 @@ const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const retryCanceledCollectionsResolver = async (
     { parentContext: { id: collectionJobId } },
     _,
-    { user }
+    context
 ) => {
+    const { user, transaction } = context;
+
     if (
         !user?.roles.find(
             role => role.name === 'ADMIN' || role.name === 'TESTER'
@@ -20,7 +22,10 @@ const retryCanceledCollectionsResolver = async (
         throw new AuthenticationError();
     }
 
-    const collectionJob = await getCollectionJobById(collectionJobId);
+    const collectionJob = await getCollectionJobById({
+        id: collectionJobId,
+        transaction
+    });
 
     if (!collectionJob) {
         throw new Error(
@@ -34,7 +39,7 @@ const retryCanceledCollectionsResolver = async (
         );
     }
 
-    return retryCanceledCollections({ collectionJob });
+    return retryCanceledCollections({ collectionJob }, { transaction });
 };
 
 module.exports = retryCanceledCollectionsResolver;

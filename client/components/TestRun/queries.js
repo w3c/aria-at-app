@@ -36,17 +36,13 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         }
                         passed
                     }
-                    requiredAssertionResults: assertionResults(
-                        priority: REQUIRED
-                    ) {
+                    mustAssertionResults: assertionResults(priority: MUST) {
                         assertion {
                             text
                         }
                         passed
                     }
-                    optionalAssertionResults: assertionResults(
-                        priority: OPTIONAL
-                    ) {
+                    shouldAssertionResults: assertionResults(priority: SHOULD) {
                         assertion {
                             text
                         }
@@ -61,7 +57,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     unexpectedBehaviors {
                         id
                         text
-                        otherUnexpectedBehaviorText
+                        impact
+                        details
                     }
                 }
                 atVersion {
@@ -104,7 +101,8 @@ export const TEST_RUN_PAGE_QUERY = gql`
                             output
                             unexpectedBehaviors {
                                 text
-                                otherUnexpectedBehaviorText
+                                impact
+                                details
                             }
                         }
                         assertionResult {
@@ -148,7 +146,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         id
                         name
                     }
-                    atMode
                     renderedUrl
                     scenarios {
                         id
@@ -214,7 +211,8 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                         output
                         unexpectedBehaviors {
                             text
-                            otherUnexpectedBehaviorText
+                            impact
+                            details
                         }
                     }
                     assertionResult {
@@ -258,7 +256,6 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                     id
                     name
                 }
-                atMode
                 renderedUrl
                 renderableContent
                 scenarios {
@@ -329,16 +326,16 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 }
                                 passed
                             }
-                            requiredAssertionResults: assertionResults(
-                                priority: REQUIRED
+                            mustAssertionResults: assertionResults(
+                                priority: MUST
                             ) {
                                 assertion {
                                     text
                                 }
                                 passed
                             }
-                            optionalAssertionResults: assertionResults(
-                                priority: OPTIONAL
+                            shouldAssertionResults: assertionResults(
+                                priority: SHOULD
                             ) {
                                 assertion {
                                     text
@@ -356,7 +353,8 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             unexpectedBehaviors {
                                 id
                                 text
-                                otherUnexpectedBehaviorText
+                                impact
+                                details
                             }
                         }
                         atVersion {
@@ -399,7 +397,8 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                     output
                                     unexpectedBehaviors {
                                         text
-                                        otherUnexpectedBehaviorText
+                                        impact
+                                        details
                                     }
                                 }
                                 assertionResult {
@@ -443,7 +442,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 id
                                 name
                             }
-                            atMode
                             renderedUrl
                             scenarios {
                                 id
@@ -495,7 +493,8 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 output
                                 unexpectedBehaviors {
                                     text
-                                    otherUnexpectedBehaviorText
+                                    impact
+                                    details
                                 }
                             }
                             assertionResult {
@@ -523,6 +522,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                         id
                         title
                         phase
+                        updatedAt
                         gitSha
                         testPageUrl
                         testPlan {
@@ -538,7 +538,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             id
                             name
                         }
-                        atMode
                         renderedUrl
                         scenarios {
                             id
@@ -613,16 +612,16 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 }
                                 passed
                             }
-                            requiredAssertionResults: assertionResults(
-                                priority: REQUIRED
+                            mustAssertionResults: assertionResults(
+                                priority: MUST
                             ) {
                                 assertion {
                                     text
                                 }
                                 passed
                             }
-                            optionalAssertionResults: assertionResults(
-                                priority: OPTIONAL
+                            shouldAssertionResults: assertionResults(
+                                priority: SHOULD
                             ) {
                                 assertion {
                                     text
@@ -640,7 +639,8 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             unexpectedBehaviors {
                                 id
                                 text
-                                otherUnexpectedBehaviorText
+                                impact
+                                details
                             }
                         }
                         atVersion {
@@ -683,7 +683,8 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                     output
                                     unexpectedBehaviors {
                                         text
-                                        otherUnexpectedBehaviorText
+                                        impact
+                                        details
                                     }
                                 }
                                 assertionResult {
@@ -727,7 +728,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 id
                                 name
                             }
-                            atMode
                             renderedUrl
                             scenarios {
                                 id
@@ -779,7 +779,8 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 output
                                 unexpectedBehaviors {
                                     text
-                                    otherUnexpectedBehaviorText
+                                    impact
+                                    details
                                 }
                             }
                             assertionResult {
@@ -807,6 +808,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                         id
                         title
                         phase
+                        updatedAt
                         gitSha
                         testPageUrl
                         testPlan {
@@ -822,7 +824,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             id
                             name
                         }
-                        atMode
                         renderedUrl
                         scenarios {
                             id
@@ -897,16 +898,16 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 }
                                 passed
                             }
-                            requiredAssertionResults: assertionResults(
-                                priority: REQUIRED
+                            mustAssertionResults: assertionResults(
+                                priority: MUST
                             ) {
                                 assertion {
                                     text
                                 }
                                 passed
                             }
-                            optionalAssertionResults: assertionResults(
-                                priority: OPTIONAL
+                            shouldAssertionResults: assertionResults(
+                                priority: SHOULD
                             ) {
                                 assertion {
                                     text
@@ -924,7 +925,8 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             unexpectedBehaviors {
                                 id
                                 text
-                                otherUnexpectedBehaviorText
+                                impact
+                                details
                             }
                         }
                         atVersion {
@@ -967,7 +969,8 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                     output
                                     unexpectedBehaviors {
                                         text
-                                        otherUnexpectedBehaviorText
+                                        impact
+                                        details
                                     }
                                 }
                                 assertionResult {
@@ -1011,7 +1014,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 id
                                 name
                             }
-                            atMode
                             renderedUrl
                             scenarios {
                                 id
@@ -1063,7 +1065,8 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 output
                                 unexpectedBehaviors {
                                     text
-                                    otherUnexpectedBehaviorText
+                                    impact
+                                    details
                                 }
                             }
                             assertionResult {
@@ -1091,6 +1094,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                         id
                         title
                         phase
+                        updatedAt
                         gitSha
                         testPageUrl
                         testPlan {
@@ -1106,7 +1110,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             id
                             name
                         }
-                        atMode
                         renderedUrl
                         scenarios {
                             id

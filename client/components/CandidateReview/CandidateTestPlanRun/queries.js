@@ -115,17 +115,13 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                         }
                         passed
                     }
-                    requiredAssertionResults: assertionResults(
-                        priority: REQUIRED
-                    ) {
+                    mustAssertionResults: assertionResults(priority: MUST) {
                         assertion {
                             text
                         }
                         passed
                     }
-                    optionalAssertionResults: assertionResults(
-                        priority: OPTIONAL
-                    ) {
+                    shouldAssertionResults: assertionResults(priority: SHOULD) {
                         assertion {
                             text
                         }
@@ -140,7 +136,8 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                     unexpectedBehaviors {
                         id
                         text
-                        otherUnexpectedBehaviorText
+                        impact
+                        details
                     }
                 }
             }

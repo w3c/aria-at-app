@@ -9,7 +9,7 @@ const submitTestResultResolver = async (
 ) => {
     const { user } = context;
 
-    const { testPlanRun } = await populateData({ testResultId });
+    const { testPlanRun } = await populateData({ testResultId }, { context });
 
     if (
         !(
@@ -27,7 +27,10 @@ const submitTestResultResolver = async (
         !testResultInput.browserVersionId ||
         !testResultInput.scenarioResults
     ) {
-        const { testResult } = await populateData({ testResultId });
+        const { testResult } = await populateData(
+            { testResultId },
+            { context }
+        );
 
         if (!testResult) {
             throw new Error(

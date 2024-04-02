@@ -1,6 +1,6 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-    updateTestPlanRun
+    updateTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
 const populateData = require('../../services/PopulatedData/populateData');
 
@@ -9,8 +9,9 @@ const deleteTestResultResolver = async (
     _,
     context
 ) => {
-    const { user } = context;
-    const { testPlanRun } = await populateData({ testResultId });
+    const { user, transaction } = context;
+
+    const { testPlanRun } = await populateData({ testResultId }, { context });
 
     if (
         !(
@@ -30,9 +31,13 @@ const deleteTestResultResolver = async (
         ...testPlanRun.testResults.slice(index + 1)
     ];
 
-    await updateTestPlanRun(testPlanRun.id, { testResults: newTestResults });
+    await updateTestPlanRunById({
+        id: testPlanRun.id,
+        values: { testResults: newTestResults },
+        transaction
+    });
 
-    return populateData({ testPlanRunId: testPlanRun.id });
+    return populateData({ testPlanRunId: testPlanRun.id }, { context });
 };
 
 module.exports = deleteTestResultResolver;

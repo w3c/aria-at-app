@@ -1,21 +1,17 @@
 const db = require('../../models/index');
 
 /**
- * Uses a global transaction to clean up the database after each test. All
- * functions which work with the database must check for the
- * global.globalTestTransaction.
+ * Uses a transaction to clean up the database after each test.
  * @param {function} callback - async function
  * @returns {*}
  */
 const dbCleaner = async callback => {
-    global.globalTestTransaction = await db.sequelize.transaction();
+    const transaction = await db.sequelize.transaction();
     try {
-        await callback();
-        await global.globalTestTransaction.rollback();
-        global.globalTestTransaction = undefined;
+        await callback(transaction);
+        await transaction.rollback();
     } catch (error) {
-        await global.globalTestTransaction.rollback();
-        global.globalTestTransaction = undefined;
+        await transaction.rollback();
         throw error;
     }
 };

@@ -2,7 +2,7 @@
 
 const {
     getTestPlanRuns,
-    updateTestPlanRun
+    updateTestPlanRunById
 } = require('../models/services/TestPlanRunService');
 const { getAtVersionByQuery } = require('../models/services/AtService');
 const {
@@ -23,20 +23,13 @@ module.exports = {
                     testResults
                 } = run;
                 if (!atVersions[atId])
-                    atVersions[atId] = await getAtVersionByQuery(
-                        { atId },
-                        undefined,
-                        undefined,
-                        { transaction }
-                    );
+                    atVersions[atId] = await getAtVersionByQuery({
+                        where: { atId },
+                        transaction
+                    });
                 if (!browserVersions[browserId])
                     browserVersions[browserId] = await getBrowserVersionByQuery(
-                        {
-                            browserId
-                        },
-                        undefined,
-                        undefined,
-                        { transaction }
+                        { where: { browserId }, transaction }
                     );
 
                 for (let result of testResults) {
@@ -50,20 +43,11 @@ module.exports = {
                     convertTestResultToInput
                 );
 
-                await updateTestPlanRun(
-                    runId,
-                    { testResults: testResultInputs },
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    { transaction }
-                );
+                await updateTestPlanRunById({
+                    id: runId,
+                    values: { testResults: testResultInputs },
+                    pagination: { transaction }
+                });
             }
         });
     },
@@ -77,18 +61,11 @@ module.exports = {
                     delete result.atVersionId;
                     delete result.browserVersionId;
                 }
-                await updateTestPlanRun(
-                    runId,
-                    { testResults },
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    { transaction }
-                );
+                await updateTestPlanRunById({
+                    id: runId,
+                    values: { testResults },
+                    transaction
+                });
             }
         });
     }

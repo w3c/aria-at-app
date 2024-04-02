@@ -515,8 +515,8 @@ const TestPlans = ({ testPlanVersions }) => {
                                             allMetrics.reduce(
                                                 (acc, obj) =>
                                                     acc +
-                                                    obj.optionalAssertionsFailedCount +
-                                                    obj.requiredAssertionsFailedCount,
+                                                    obj.shouldAssertionsFailedCount +
+                                                    obj.mustAssertionsFailedCount,
                                                 0
                                             ),
                                         totalSupportPercent:

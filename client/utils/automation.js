@@ -2,7 +2,10 @@ export const isSupportedByResponseCollector = ctx => {
     if (!ctx || !ctx.at || !ctx.browser) {
         return false;
     }
-    return ctx.at.name === 'NVDA' && ctx.browser.name === 'Chrome';
+    return (
+        ctx.at.name === 'NVDA' &&
+        (ctx.browser.name === 'Chrome' || ctx.browser.name === 'Firefox')
+    );
 };
 
 export const isBot = user => user?.username?.toLowerCase().slice(-3) === 'bot';

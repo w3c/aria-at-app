@@ -37,12 +37,6 @@ module.exports = function (sequelize, DataTypes) {
             foreignKey: 'atId',
             otherKey: 'browserId'
         });
-
-        Model.hasMany(models.AtMode, {
-            ...Model.AT_MODE_ASSOCIATION,
-            foreignKey: 'atId',
-            sourceKey: 'id'
-        });
     };
 
     return Model;

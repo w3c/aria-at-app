@@ -5,7 +5,6 @@ const {
     AT_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, Browser, BrowserVersion } = require('../');
-const { clearCachedBrowsers } = require('../loaders/utils');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -41,356 +40,369 @@ const atAssociation = atAttributes => ({
 
 /**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
- * @param {number} id - unique id of the Browser model being queried
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {number} options.id - unique id of the Browser model being queried
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getBrowserById = async (
+const getBrowserById = async ({
     id,
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    return ModelService.getById(
-        Browser,
+    transaction
+}) => {
+    return ModelService.getById(Browser, {
         id,
-        browserAttributes,
-        [
+        attributes: browserAttributes,
+        include: [
             browserVersionAssociation(browserVersionAttributes),
             atAssociation(atAttributes)
         ],
-        options
-    );
+        transaction
+    });
 };
 
 /**
- * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
- * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {string|any} options.search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
+ * @param {object} options.pagination - pagination options for query
+ * @param {number} options.pagination.page - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getBrowsers = async (
+const getBrowsers = async ({
     search,
-    filter = {},
+    where = {},
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     pagination = {},
-    options = {}
-) => {
+    transaction
+}) => {
     // search and filtering options
-    let where = { ...filter };
     const searchQuery = search ? `%${search}%` : '';
     if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
-    return await ModelService.get(
-        Browser,
+    return ModelService.get(Browser, {
         where,
-        browserAttributes,
-        [
+        attributes: browserAttributes,
+        include: [
             browserVersionAssociation(browserVersionAttributes),
             atAssociation(atAttributes)
         ],
         pagination,
-        options
-    );
+        transaction
+    });
 };
 
 /**
- * @param {object} createParams - values to be used to create the Browser record
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.values - values to be used to create the Browser record
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const createBrowser = async (
-    { name },
+const createBrowser = async ({
+    values: { name },
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    const browserResult = await ModelService.create(Browser, { name }, options);
+    transaction
+}) => {
+    const browserResult = await ModelService.create(Browser, {
+        values: { name },
+        transaction
+    });
     const { id } = browserResult;
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await ModelService.getById(
-        Browser,
+    return ModelService.getById(Browser, {
         id,
-        browserAttributes,
-        [
+        attributes: browserAttributes,
+        include: [
             browserVersionAssociation(browserVersionAttributes),
             atAssociation(atAttributes)
         ],
-        options
-    );
+        transaction
+    });
 };
 
 /**
- * @param {number} id - id of the Browser record to be updated
- * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {number} options.id - id of the Browser record to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced for {@param id}
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const updateBrowser = async (
+const updateBrowserById = async ({
     id,
-    { name },
+    values: { name },
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.update(Browser, { id }, { name }, options);
+    transaction
+}) => {
+    await ModelService.update(Browser, {
+        where: { id },
+        values: { name },
+        transaction
+    });
 
-    return await ModelService.getById(
-        Browser,
+    return ModelService.getById(Browser, {
         id,
-        browserAttributes,
-        [
+        attributes: browserAttributes,
+        include: [
             browserVersionAssociation(browserVersionAttributes),
             atAssociation(atAttributes)
         ],
-        options
-    );
+        transaction
+    });
 };
 
 /**
- * @param {number} id - id of the Browser record to be removed
- * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @param {object} options
+ * @param {number} options.id - id of the Browser record to be removed
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeBrowser = async (id, deleteOptions = { truncate: false }) => {
-    clearCachedBrowsers();
-    return await ModelService.removeById(Browser, id, deleteOptions);
+const removeBrowserById = async ({ id, truncate = false, transaction }) => {
+    const result = await ModelService.removeById(Browser, {
+        id,
+        truncate,
+        transaction
+    });
+    return result;
 };
 
 // BrowserVersion
 
 /**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
- * @param {object} queryParams - unique values of the BrowserVersion model being queried
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.where - unique values of the BrowserVersion model being queried
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getBrowserVersionByQuery = async (
-    { browserId, name },
+const getBrowserVersionByQuery = async ({
+    where: { browserId, name },
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    options = {}
-) => {
-    return ModelService.getByQuery(
-        BrowserVersion,
-        { browserId, ...(name && { name }) },
-        browserVersionAttributes,
-        [browserAssociation(browserAttributes)],
-        options
-    );
+    transaction
+}) => {
+    return ModelService.getByQuery(BrowserVersion, {
+        where: { browserId, ...(name && { name }) },
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
+        transaction
+    });
 };
 
 /**
- * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
- * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {string|any} options.search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
+ * @param {object} options.pagination - pagination options for query
+ * @param {number} options.pagination.page - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getBrowserVersions = async (
+const getBrowserVersions = async ({
     search,
-    filter = {},
+    where = {},
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     pagination = {},
-    options = {}
-) => {
+    transaction
+}) => {
     // search and filtering options
-    let where = { ...filter };
     const searchQuery = search ? `%${search}%` : '';
     if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
-    return await ModelService.get(
-        BrowserVersion,
+    return ModelService.get(BrowserVersion, {
         where,
-        browserVersionAttributes,
-        [browserAssociation(browserAttributes)],
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
         pagination,
-        options
-    );
+        transaction
+    });
 };
 
 /**
- * @param {object} createParams - values to be used to create the BrowserVersion record
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.values - values to be used to create the BrowserVersion record
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const createBrowserVersion = async (
-    { browserId, name },
+const createBrowserVersion = async ({
+    values: { browserId, name },
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.create(BrowserVersion, { browserId, name }, options);
-
-    clearCachedBrowsers();
+    transaction
+}) => {
+    await ModelService.create(BrowserVersion, {
+        values: { browserId, name },
+        transaction
+    });
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await ModelService.getByQuery(
-        BrowserVersion,
-        { browserId, name },
-        browserVersionAttributes,
-        [browserAssociation(browserAttributes)],
-        options
-    );
+    return ModelService.getByQuery(BrowserVersion, {
+        where: { browserId, name },
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
+        transaction
+    });
 };
 
 /**
- * @param {object} queryParams - values of the BrowserVersion record to be updated
- * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.where - values of the BrowserVersion record to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const updateBrowserVersionByQuery = async (
-    { browserId, name },
-    updateParams = {},
+const updateBrowserVersionByQuery = async ({
+    where: { browserId, name },
+    values = {},
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.update(
-        BrowserVersion,
-        { browserId, name },
-        updateParams,
-        options
-    );
-
-    clearCachedBrowsers();
-    return await ModelService.getByQuery(
-        BrowserVersion,
-        {
+    transaction
+}) => {
+    await ModelService.update(BrowserVersion, {
+        where: { browserId, name },
+        values,
+        transaction
+    });
+    return ModelService.getByQuery(BrowserVersion, {
+        where: {
             browserId,
-            name: updateParams.name || name
+            name: values.name || name
         },
-        browserVersionAttributes,
-        [browserAssociation(browserAttributes)],
-        options
-    );
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
+        transaction
+    });
 };
 
 /**
- * @param {number} id - Postgres ID of BrowserVersion record to be updated
- * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {number} options.id - Postgres ID of BrowserVersion record to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const updateBrowserVersionById = async (
+const updateBrowserVersionById = async ({
     id,
-    updateParams = {},
+    values = {},
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.update(BrowserVersion, { id }, updateParams, options);
-
-    clearCachedBrowsers();
-    return await ModelService.getById(
-        BrowserVersion,
+    transaction
+}) => {
+    await ModelService.update(BrowserVersion, {
+        where: { id },
+        values,
+        transaction
+    });
+    return ModelService.getById(BrowserVersion, {
         id,
-        browserVersionAttributes,
-        [browserAssociation(browserAttributes)],
-        options
-    );
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
+        transaction
+    });
 };
 
 /**
- * @param {object} queryParams - values of the BrowserVersion record to be removed
- * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @param {object} options
+ * @param {object} options.where - values of the BrowserVersion record to be removed
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeBrowserVersionByQuery = async (
-    { browserId, name },
-    deleteOptions = { truncate: false }
-) => {
-    clearCachedBrowsers();
-    return await ModelService.removeByQuery(
-        BrowserVersion,
-        { browserId, name },
-        deleteOptions
-    );
+const removeBrowserVersionByQuery = async ({
+    where: { browserId, name },
+    truncate = false,
+    transaction
+}) => {
+    return ModelService.removeByQuery(BrowserVersion, {
+        where: { browserId, name },
+        truncate,
+        transaction
+    });
 };
 
 /**
- * @param {object} id - id of the BrowserVersion record to be removed
- * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @param {object} options
+ * @param {object} options.id - id of the BrowserVersion record to be removed
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeBrowserVersionById = async (
+const removeBrowserVersionById = async ({
     id,
-    deleteOptions = { truncate: false }
-) => {
-    clearCachedBrowsers();
-    return await ModelService.removeById(BrowserVersion, id, deleteOptions);
+    truncate = false,
+    transaction
+}) => {
+    return ModelService.removeById(BrowserVersion, {
+        id,
+        truncate,
+        transaction
+    });
 };
 
 /**
- * @param {object} params - values to be used to create or find the BrowserVersion record
- * @param {string[]} browserVersionAttributes  - BrowserVersion attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.where - values to be used to create or find the BrowserVersion record
+ * @param {string[]} options.browserVersionAttributes  - BrowserVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {BrowserVersion}
  */
-const findOrCreateBrowserVersion = async (
-    { browserId, name },
+const findOrCreateBrowserVersion = async ({
+    where: { browserId, name },
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    options = {}
-) => {
-    let version = await getBrowserVersionByQuery(
-        { browserId, name },
+    transaction
+}) => {
+    let version = await getBrowserVersionByQuery({
+        where: { browserId, name },
         browserVersionAttributes,
         browserAttributes,
-        options
-    );
+        transaction
+    });
 
     if (!version) {
-        version = await createBrowserVersion({ browserId, name });
+        version = await createBrowserVersion({
+            values: { browserId, name },
+            transaction
+        });
     }
 
     return version;
@@ -401,8 +413,8 @@ module.exports = {
     getBrowserById,
     getBrowsers,
     createBrowser,
-    updateBrowser,
-    removeBrowser,
+    updateBrowserById,
+    removeBrowserById,
 
     // Basic CRUD [BrowserVersion]
     getBrowserVersionByQuery,
