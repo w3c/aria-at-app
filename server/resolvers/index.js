@@ -24,7 +24,6 @@ const updateMe = require('./updateMe');
 const populateData = require('./populateDataResolver');
 const collectionJob = require('./collectionJobResolver');
 const collectionJobs = require('./collectionJobsResolver');
-const findOrCreateCollectionJob = require('./findOrCreateCollectionJobResolver');
 const updateCollectionJob = require('./updateCollectionJobResolver');
 const deleteCollectionJob = require('./deleteCollectionJobResolver');
 const scheduleCollectionJob = require('./scheduleCollectionJobResolver');
@@ -77,7 +76,6 @@ const resolvers = {
         findOrCreateTestPlanReport,
         updateMe,
         addViewer,
-        findOrCreateCollectionJob,
         updateCollectionJob,
         deleteCollectionJob,
         scheduleCollectionJob,

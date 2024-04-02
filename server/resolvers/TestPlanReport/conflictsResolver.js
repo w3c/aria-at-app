@@ -4,8 +4,6 @@ const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
 
 const conflictsResolver = async (testPlanReport, _, context) => {
-    const { transaction } = context;
-
     let testPlanReportData = {};
 
     // Used in cases where the testPlanRuns to evaluate the conflicts doesn't
@@ -14,7 +12,7 @@ const conflictsResolver = async (testPlanReport, _, context) => {
     if (testPlanReport.testPlanRuns.some(t => !t.testResults)) {
         const { testPlanReport: _testPlanReport } = await populateData(
             { testPlanReportId: testPlanReport.id },
-            { transaction }
+            { context }
         );
         testPlanReportData = _testPlanReport;
     } else testPlanReportData = testPlanReport;
@@ -106,10 +104,10 @@ const conflictsResolver = async (testPlanReport, _, context) => {
 
     return Promise.all(
         conflicts.map(async ({ source, conflictingResults }) => ({
-            source: await populateData(source, { preloaded, transaction }),
+            source: await populateData(source, { preloaded, context }),
             conflictingResults: await Promise.all(
                 conflictingResults.map(conflictingResult =>
-                    populateData(conflictingResult, { preloaded, transaction })
+                    populateData(conflictingResult, { preloaded, context })
                 )
             )
         }))

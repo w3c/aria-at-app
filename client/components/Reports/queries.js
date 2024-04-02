@@ -81,16 +81,14 @@ export const REPORT_PAGE_QUERY = gql`
                             }
                             passed
                         }
-                        requiredAssertionResults: assertionResults(
-                            priority: REQUIRED
-                        ) {
+                        mustAssertionResults: assertionResults(priority: MUST) {
                             assertion {
                                 text
                             }
                             passed
                         }
-                        optionalAssertionResults: assertionResults(
-                            priority: OPTIONAL
+                        shouldAssertionResults: assertionResults(
+                            priority: SHOULD
                         ) {
                             assertion {
                                 text

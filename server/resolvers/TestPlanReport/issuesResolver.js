@@ -1,20 +1,14 @@
 const { GithubService } = require('../../services');
-const AtLoader = require('../../models/loaders/AtLoader');
-const BrowserLoader = require('../../models/loaders/BrowserLoader');
 
 const issuesResolver = (testPlanReport, _, context) => {
-    const { transaction } = context;
-
-    return getIssues({ testPlanReport, transaction });
+    return getIssues({ testPlanReport, context });
 };
 
-const getIssues = async ({ testPlanReport, testPlan, transaction }) => {
-    const atLoader = AtLoader();
-    const browserLoader = BrowserLoader();
-    const [ats, browsers] = await Promise.all([
-        atLoader.getAll({ transaction }),
-        browserLoader.getAll({ transaction })
-    ]);
+const getIssues = async ({ testPlanReport, testPlan, context }) => {
+    const { transaction, atLoader, browserLoader } = context;
+
+    const ats = await atLoader.getAll({ transaction });
+    const browsers = await browserLoader.getAll({ transaction });
 
     const issues = await GithubService.getAllIssues();
 

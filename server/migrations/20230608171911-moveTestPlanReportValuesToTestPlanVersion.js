@@ -20,6 +20,7 @@ const testResultsResolver = require('../resolvers/TestPlanRun/testResultsResolve
 const submitTestResultResolver = require('../resolvers/TestResultOperations/submitTestResultResolver');
 const saveTestResultResolver = require('../resolvers/TestResultOperations/saveTestResultResolver');
 const findOrCreateTestResultResolver = require('../resolvers/TestPlanRunOperations/findOrCreateTestResultResolver');
+const getGraphQLContext = require('../graphql-context');
 
 const testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES.filter(
     attr => attr !== 'versionString'
@@ -240,12 +241,12 @@ module.exports = {
                 newTestPlanVersionId,
                 testPlanReportAttributes
             }) => {
-                const context = {
-                    user: {
-                        roles: [{ name: 'ADMIN' }]
-                    },
-                    transaction
-                };
+                const context = getGraphQLContext({
+                    req: {
+                        transaction,
+                        session: { user: { roles: [{ name: 'ADMIN' }] } }
+                    }
+                });
 
                 // [SECTION START]: Preparing data to be worked with in a similar way to TestPlanUpdaterModal
                 const newTestPlanVersionQuery =
@@ -265,21 +266,13 @@ module.exports = {
                 const newTestPlanVersion = {
                     id: newTestPlanVersionData.id,
                     tests: newTestPlanVersionData.tests.map(
-                        ({
-                            assertions,
-                            atMode,
-                            atIds,
-                            id,
-                            scenarios,
-                            title
-                        }) => {
+                        ({ assertions, atIds, id, scenarios, title }) => {
                             return {
                                 id,
                                 title,
                                 ats: atIds.map(atId => ({
                                     id: atId
                                 })),
-                                atMode,
                                 scenarios: scenariosResolver(
                                     { scenarios },
                                     { atId },
@@ -359,7 +352,6 @@ module.exports = {
                                                 ats: test.ats.map(({ id }) => ({
                                                     id
                                                 })),
-                                                atMode: test.atMode,
                                                 scenarios: scenariosResolver(
                                                     {
                                                         scenarios:
@@ -498,7 +490,7 @@ module.exports = {
                     createdLocationsOfData.map(createdLocationOfData =>
                         populateData(createdLocationOfData, {
                             preloaded,
-                            transaction
+                            context
                         })
                     )
                 );
@@ -573,7 +565,7 @@ module.exports = {
                 // TODO: Delete the old TestPlanReport?
                 // await removeTestPlanRunByQuery({ testPlanReportId });
                 // await removeTestPlanReport(testPlanReportId);
-                // return populateData(locationOfData, { preloaded, transaction });
+                // return populateData(locationOfData, { preloaded, context });
             };
 
             for (let i = 0; i < Object.values(highestVersions).length; i++) {

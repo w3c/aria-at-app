@@ -7,7 +7,6 @@ const {
 
 const AtModel = require('../../models/At');
 const AtVersionModel = require('../../models/AtVersion');
-const AtModeModel = require('../../models/AtMode');
 const BrowserModel = require('../../models/Browser');
 
 describe('AtModel', () => {
@@ -26,13 +25,11 @@ describe('AtModel', () => {
     describe('associations', () => {
         // A1
         const AT_VERSION_ASSOCIATION = { as: 'atVersions' };
-        const AT_MODE_ASSOCIATION = { as: 'modes' };
         const BROWSER_ASSOCIATION = { through: 'AtBrowsers', as: 'browsers' };
 
         // A2
         beforeAll(() => {
             Model.hasMany(AtVersionModel, AT_VERSION_ASSOCIATION);
-            Model.hasMany(AtModeModel, AT_MODE_ASSOCIATION);
             Model.hasMany(BrowserModel, BROWSER_ASSOCIATION);
         });
 
@@ -41,14 +38,6 @@ describe('AtModel', () => {
             expect(Model.hasMany).toHaveBeenCalledWith(
                 AtVersionModel,
                 expect.objectContaining(Model.AT_VERSION_ASSOCIATION)
-            );
-        });
-
-        it('defined a hasMany association with AtMode', () => {
-            // A3
-            expect(Model.hasMany).toHaveBeenCalledWith(
-                AtModeModel,
-                expect.objectContaining(Model.AT_MODE_ASSOCIATION)
             );
         });
     });

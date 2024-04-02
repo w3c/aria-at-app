@@ -11,12 +11,12 @@ const {
 const markAsFinalResolver = require('../../resolvers/TestPlanReportOperations/markAsFinalResolver');
 const AtLoader = require('../../models/loaders/AtLoader');
 const BrowserLoader = require('../../models/loaders/BrowserLoader');
+const getGraphQLContext = require('../../graphql-context');
 
 let mockAutomationSchedulerServer;
 let apiServer;
 let sessionAgent;
 
-const jobId = '2';
 const testPlanReportId = '4';
 
 beforeAll(async () => {
@@ -40,14 +40,16 @@ const getTestPlanReport = async (id, { transaction }) =>
                 testPlanReport(id: "${id}") {
                     id
                     markedFinalAt
+                    at { name }
+                    browser { name }
                     finalizedTestResults {
-                        test{
+                        test {
                             id
                         }
-                        atVersion{
+                        atVersion {
                             name
                         }
-                        browserVersion{
+                        browserVersion {
                             name
                         }
                         scenarioResults {
@@ -113,7 +115,7 @@ const getTestPlanRun = async (id, { transaction }) =>
         { transaction }
     );
 
-const getTestCollectionJob = async ({ transaction }) =>
+const getTestCollectionJob = async (jobId, { transaction }) =>
     await query(
         `
             query {
@@ -170,7 +172,7 @@ const scheduleCollectionJobByMutation = async ({ transaction }) =>
         { transaction }
     );
 
-const restartCollectionJobByMutation = async ({ transaction }) =>
+const restartCollectionJobByMutation = async (jobId, { transaction }) =>
     await mutate(
         `
             mutation {
@@ -183,7 +185,7 @@ const restartCollectionJobByMutation = async ({ transaction }) =>
         { transaction }
     );
 
-const cancelCollectionJobByMutation = async ({ transaction }) =>
+const cancelCollectionJobByMutation = async (jobId, { transaction }) =>
     await mutate(
         `
             mutation {
@@ -198,7 +200,7 @@ const cancelCollectionJobByMutation = async ({ transaction }) =>
         { transaction }
     );
 
-const deleteCollectionJobByMutation = async ({ transaction }) =>
+const deleteCollectionJobByMutation = async (jobId, { transaction }) =>
     await mutate(
         `
             mutation {
@@ -215,9 +217,6 @@ describe('Automation controller', () => {
             // get job from result of graphql mutation
             const { scheduleCollectionJob: storedJob } = job;
             expect(storedJob).not.toEqual(undefined);
-            expect(storedJob.id).toEqual(jobId);
-            expect(storedJob.status).toEqual('QUEUED');
-            expect(storedJob.id).toEqual(jobId);
             expect(storedJob.status).toEqual('QUEUED');
             expect(storedJob.testPlanRun.testPlanReport.id).toEqual(
                 testPlanReportId
@@ -261,14 +260,17 @@ describe('Automation controller', () => {
 
             const testIds = runnableTests.map(({ id }) => id);
 
+            const collectionJob = await scheduleCollectionJobByMutation({
+                transaction
+            });
+
             const expectedRequestBody = {
                 testPlanVersionGitSha,
                 testIds,
                 testPlanName,
-                jobId
+                jobId: parseInt(collectionJob.scheduleCollectionJob.id),
+                transactionId: transaction.id
             };
-
-            await scheduleCollectionJobByMutation({ transaction });
 
             expect(axiosPostMock).toHaveBeenCalledWith(
                 `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
@@ -288,18 +290,15 @@ describe('Automation controller', () => {
 
     it('should cancel a job', async () => {
         await dbCleaner(async transaction => {
-            await scheduleCollectionJobByMutation({ transaction });
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
             const {
                 collectionJob: { cancelCollectionJob: cancelledCollectionJob }
-            } = await cancelCollectionJobByMutation({ transaction });
+            } = await cancelCollectionJobByMutation(job.id, { transaction });
 
-            expect(cancelledCollectionJob).toEqual({
-                id: jobId,
-                status: 'CANCELLED'
-            });
+            expect(cancelledCollectionJob.status).toEqual('CANCELLED');
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob({ transaction });
-            expect(storedCollectionJob.id).toEqual(jobId);
+                await getTestCollectionJob(job.id, { transaction });
             expect(storedCollectionJob.status).toEqual('CANCELLED');
         });
     });
@@ -308,24 +307,25 @@ describe('Automation controller', () => {
         await dbCleaner(async transaction => {
             expect.assertions(1); // Make sure an assertion is made
             await expect(
-                cancelCollectionJobByMutation({ transaction })
+                cancelCollectionJobByMutation(2, { transaction })
             ).rejects.toThrow('Could not find collection job with id 2');
         });
     });
 
     it('should restart a job', async () => {
         await dbCleaner(async transaction => {
-            await scheduleCollectionJobByMutation({ transaction });
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
             const { restartCollectionJob: collectionJob } =
-                await restartCollectionJobByMutation({ transaction });
+                await restartCollectionJobByMutation(job.id, { transaction });
             expect(collectionJob).not.toBe(undefined);
             expect(collectionJob).toEqual({
-                id: jobId,
+                id: job.id,
                 status: 'QUEUED'
             });
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob({ transaction });
-            expect(storedCollectionJob.id).toEqual(jobId);
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
             expect(storedCollectionJob.status).toEqual('QUEUED');
         });
     });
@@ -333,16 +333,17 @@ describe('Automation controller', () => {
     it('should gracefully reject restarting a job that does not exist', async () => {
         await dbCleaner(async transaction => {
             const { restartCollectionJob: res } =
-                await restartCollectionJobByMutation({ transaction });
+                await restartCollectionJobByMutation(2, { transaction });
             expect(res).toEqual(null);
         });
     });
 
     it('should not update a job status without verification', async () => {
         await dbCleaner(async transaction => {
-            await scheduleCollectionJobByMutation({ transaction });
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent.post(
-                `/api/jobs/${jobId}/update`
+                `/api/jobs/${job.id}/update`
             );
             expect(response.statusCode).toBe(403);
             expect(response.body).toEqual({
@@ -353,9 +354,10 @@ describe('Automation controller', () => {
 
     it('should fail to update a job status with invalid status', async () => {
         await dbCleaner(async transaction => {
-            await scheduleCollectionJobByMutation({ transaction });
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent
-                .post(`/api/jobs/${jobId}/update`)
+                .post(`/api/jobs/${job.id}/update`)
                 .send({ status: 'INVALID' })
                 .set(
                     'x-automation-secret',
@@ -370,7 +372,7 @@ describe('Automation controller', () => {
 
     it('should fail to update a job status for a non-existent jobId', async () => {
         const response = await sessionAgent
-            .post(`/api/jobs/${jobId}/update`)
+            .post(`/api/jobs/${444}/update`)
             .send({ status: 'RUNNING' })
             .set(
                 'x-automation-secret',
@@ -378,15 +380,16 @@ describe('Automation controller', () => {
             );
         expect(response.statusCode).toBe(404);
         expect(response.body).toEqual({
-            error: `Could not find job with jobId: ${jobId}`
+            error: `Could not find job with jobId: ${444}`
         });
     });
 
     it('should update a job status with verification', async () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
-            await scheduleCollectionJobByMutation({ transaction });
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent
-                .post(`/api/jobs/${jobId}/update`)
+                .post(`/api/jobs/${job.id}/update`)
                 .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
@@ -395,7 +398,7 @@ describe('Automation controller', () => {
                 .set('x-transaction-id', transaction.id);
             const { body } = response;
             expect(response.statusCode).toBe(200);
-            expect(body.id).toEqual(jobId);
+            expect(body.id).toEqual(parseInt(job.id));
             expect(body.status).toEqual('RUNNING');
             expect(body).toHaveProperty('testPlanRunId');
             expect(body.testPlanRun.testPlanReportId).toEqual(
@@ -403,8 +406,8 @@ describe('Automation controller', () => {
             );
 
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob({ transaction });
-            expect(storedCollectionJob.id).toEqual(jobId);
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
             expect(storedCollectionJob.status).toEqual('RUNNING');
             expect(storedCollectionJob.externalLogsUrl).toEqual(null);
             expect(storedCollectionJob.testPlanRun.testPlanReport.id).toEqual(
@@ -415,9 +418,10 @@ describe('Automation controller', () => {
 
     it('should update a job externalLogsUrl with verification', async () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
-            await scheduleCollectionJobByMutation({ transaction });
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent
-                .post(`/api/jobs/${jobId}/update`)
+                .post(`/api/jobs/${job.id}/update`)
                 .send({
                     status: 'CANCELLED',
                     externalLogsUrl: 'https://www.aol.com/'
@@ -429,7 +433,7 @@ describe('Automation controller', () => {
                 .set('x-transaction-id', transaction.id);
             const { body } = response;
             expect(response.statusCode).toBe(200);
-            expect(body.id).toEqual(jobId);
+            expect(body.id).toEqual(parseInt(job.id));
             expect(body.status).toEqual('CANCELLED');
             expect(body).toHaveProperty('testPlanRunId');
             expect(body.testPlanRun.testPlanReportId).toEqual(
@@ -437,8 +441,8 @@ describe('Automation controller', () => {
             );
 
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob({ transaction });
-            expect(storedCollectionJob.id).toEqual(jobId);
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
             expect(storedCollectionJob.status).toEqual('CANCELLED');
             expect(storedCollectionJob.externalLogsUrl).toEqual(
                 'https://www.aol.com/'
@@ -458,7 +462,7 @@ describe('Automation controller', () => {
                 transaction
             });
             await sessionAgent
-                .post(`/api/jobs/${jobId}/update`)
+                .post(`/api/jobs/${job.id}/update`)
                 .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
@@ -488,11 +492,15 @@ describe('Automation controller', () => {
                 scenario => scenario.atId === at.id
             ).length;
             const response = await sessionAgent
-                .post(`/api/jobs/${jobId}/result`)
+                .post(`/api/jobs/${job.id}/result`)
                 .send({
                     testCsvRow: selectedTestRowNumber,
-                    atVersionName: at.atVersions[0].name,
-                    browserVersionName: browser.browserVersions[0].name,
+                    capabilities: {
+                        atName: at.name,
+                        atVersion: at.atVersions[0].name,
+                        browserName: browser.name,
+                        browserVersion: browser.browserVersions[0].name
+                    },
                     responses: new Array(numberOfScenarios).fill(
                         automatedTestResponse
                     )
@@ -540,13 +548,20 @@ describe('Automation controller', () => {
 
     it('should copy assertion results when updating with results that match historical results', async () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
+            const context = getGraphQLContext({
+                req: {
+                    session: { user: { roles: [{ name: 'ADMIN' }] } },
+                    transaction
+                }
+            });
+
             // Start by getting historical results for comparing later
             // Test plan report used for test is in Draft so it
             // must be markedAsFinal to have historical results
             const finalizedTestPlanVersion = await markAsFinalResolver(
                 { parentContext: { id: testPlanReportId } },
                 null,
-                { user: { roles: [{ name: 'ADMIN' }] }, transaction }
+                context
             );
 
             const { testPlanReport } = await getTestPlanReport(
@@ -556,6 +571,7 @@ describe('Automation controller', () => {
             const selectedTestIndex = 0;
             const selectedTestRowNumber = 1;
 
+            const { at, browser } = testPlanReport;
             const historicalTestResult =
                 testPlanReport.finalizedTestResults[selectedTestIndex];
             expect(historicalTestResult).not.toEqual(undefined);
@@ -572,7 +588,7 @@ describe('Automation controller', () => {
                 transaction
             });
             await sessionAgent
-                .post(`/api/jobs/${jobId}/update`)
+                .post(`/api/jobs/${job.id}/update`)
                 .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
@@ -581,11 +597,15 @@ describe('Automation controller', () => {
                 .set('x-transaction-id', transaction.id);
 
             const response = await sessionAgent
-                .post(`/api/jobs/${jobId}/result`)
+                .post(`/api/jobs/${job.id}/result`)
                 .send({
                     testCsvRow: selectedTestRowNumber,
-                    atVersionName: atVersion.name,
-                    browserVersionName: browserVersion.name,
+                    capabilities: {
+                        atName: at.name,
+                        atVersion: atVersion.name,
+                        browserName: browser.name,
+                        browserVersion: browserVersion.name
+                    },
                     responses: historicalResponses
                 })
                 .set(
@@ -652,18 +672,21 @@ describe('Automation controller', () => {
 
     it('should delete a job', async () => {
         await dbCleaner(async transaction => {
-            await scheduleCollectionJobByMutation({ transaction });
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
             const { collectionJob: storedCollectionJob } =
-                await getTestCollectionJob({ transaction });
-            expect(storedCollectionJob.id).toEqual(jobId);
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
 
-            const res = await deleteCollectionJobByMutation({ transaction });
+            const res = await deleteCollectionJobByMutation(job.id, {
+                transaction
+            });
             expect(res).toEqual({
                 deleteCollectionJob: true
             });
 
             const { collectionJob: deletedCollectionJob } =
-                await getTestCollectionJob({ transaction });
+                await getTestCollectionJob(job.id, { transaction });
             expect(deletedCollectionJob).toEqual(null);
         });
     });
