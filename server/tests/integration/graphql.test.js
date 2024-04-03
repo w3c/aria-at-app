@@ -150,7 +150,6 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
-            ['TestPlanReportOperations', 'updateTestPlanReportTestPlanVersion'],
             ['TestPlanVersion', 'candidatePhaseReachedAt'],
             ['TestPlanVersion', 'recommendedPhaseReachedAt'],
             ['TestPlanVersion', 'recommendedPhaseTargetDate'],
@@ -589,7 +588,7 @@ describe('graphql', () => {
                         $browserVersionId: ID!
                     ) {
                         __typename
-                        findOrCreateTestPlanReport(
+                        createTestPlanReport(
                             input: {
                                 testPlanVersionId: 2
                                 atId: 2
@@ -597,12 +596,6 @@ describe('graphql', () => {
                             }
                         ) {
                             __typename
-                            populatedData {
-                                locationOfData
-                            }
-                            created {
-                                locationOfData
-                            }
                         }
                         testPlanReport(id: 1) {
                             __typename

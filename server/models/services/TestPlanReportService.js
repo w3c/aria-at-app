@@ -215,7 +215,14 @@ const getTestPlanReports = async ({
  * @returns {Promise<*>}
  */
 const createTestPlanReport = async ({
-    values: { testPlanVersionId, atId, browserId },
+    values: {
+        testPlanVersionId,
+        atId,
+        browserId,
+        exactAtVersionId,
+        minimumAtVersionId,
+        vendorReviewStatus
+    },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -234,6 +241,9 @@ const createTestPlanReport = async ({
             testPlanVersionId,
             atId,
             browserId,
+            exactAtVersionId,
+            minimumAtVersionId,
+            vendorReviewStatus,
             testPlanId: testPlanVersion.testPlanId
         },
         transaction
@@ -326,94 +336,11 @@ const removeTestPlanReportById = async ({
     });
 };
 
-/**
- * Gets one TestPlanReport, or creates it if it doesn't exist, and then optionally updates it. Supports nested / associated values.
- * @param {object} options
- * @param {*} options.where - These values will be used to find a matching record, or they will be used to create one
- * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} options.testPlanAttributes - TestPlan attributes to be returned in the result
- * @param {string[]} options.atAttributes - At attributes to be returned in the result
- * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
- * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<[*, [*]]>}
- */
-const getOrCreateTestPlanReport = async ({
-    where: { testPlanVersionId, atId, browserId },
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
-}) => {
-    const accumulatedResults = await ModelService.nestedGetOrCreate({
-        operations: [
-            {
-                get: getTestPlanReports,
-                create: createTestPlanReport,
-                values: { testPlanVersionId, atId, browserId },
-                returnAttributes: {
-                    testPlanReportAttributes,
-                    testPlanRunAttributes: [],
-                    testPlanVersionAttributes: [],
-                    testPlanAttributes: [],
-                    atAttributes: [],
-                    browserAttributes: [],
-                    userAttributes: []
-                }
-            }
-        ],
-        transaction
-    });
-
-    const [[{ id: testPlanReportId }, isNewTestPlanReport]] =
-        accumulatedResults;
-
-    const testPlanReport = await getTestPlanReportById({
-        id: testPlanReportId,
-        testPlanReportAttributes,
-        testPlanRunAttributes,
-        testPlanVersionAttributes,
-        testPlanAttributes,
-        atAttributes,
-        browserAttributes,
-        userAttributes,
-        transaction
-    });
-
-    // If a TestPlanReport is being intentionally created that was previously marked as final,
-    // This will allow it to be displayed in the Test Queue again to be worked on
-    if (!isNewTestPlanReport && testPlanReport.markedFinalAt) {
-        await updateTestPlanReportById({
-            id: testPlanReportId,
-            values: { markedFinalAt: null },
-            testPlanReportAttributes,
-            testPlanRunAttributes,
-            testPlanVersionAttributes,
-            testPlanAttributes,
-            atAttributes,
-            browserAttributes,
-            userAttributes,
-            transaction
-        });
-    }
-
-    const created = isNewTestPlanReport ? [{ testPlanReportId }] : [];
-
-    return [testPlanReport, created];
-};
-
 module.exports = {
     // Basic CRUD
     getTestPlanReportById,
     getTestPlanReports,
     createTestPlanReport,
     updateTestPlanReportById,
-    removeTestPlanReportById,
-    getOrCreateTestPlanReport
+    removeTestPlanReportById
 };

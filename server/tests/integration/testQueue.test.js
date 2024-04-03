@@ -279,56 +279,39 @@ describe('test queue', () => {
             const testPlanVersionId = '1';
             const atId = '1';
             const browserId = '1';
-            const mutationToTest = async () => {
-                const result = await mutate(
-                    gql`
-                        mutation {
-                            findOrCreateTestPlanReport(input: {
-                                testPlanVersionId: ${testPlanVersionId}
-                                atId: ${atId}
-                                browserId: ${browserId}
-                            }) {
-                                populatedData {
-                                    testPlanReport {
-                                        id
-                                        at {
-                                            id
-                                        }
-                                        browser {
-                                            id
-                                        }
-                                    }
-                                    testPlanVersion {
-                                        id
-                                        phase
-                                    }
-                                }
-                                created {
-                                    locationOfData
-                                }
-                            }
-                        }
-                    `,
-                    { transaction }
-                );
-                const {
-                    populatedData: { testPlanReport, testPlanVersion },
-                    created
-                } = result.findOrCreateTestPlanReport;
-
-                return {
-                    testPlanReport,
-                    testPlanVersion,
-                    created
-                };
-            };
 
             // A2
-            const first = await mutationToTest();
-            const second = await mutationToTest();
+            const result = await mutate(
+                gql`
+                    mutation {
+                        createTestPlanReport(input: {
+                            testPlanVersionId: ${testPlanVersionId}
+                            atId: ${atId}
+                            browserId: ${browserId}
+                        }) {
+                            testPlanReport {
+                                id
+                                at {
+                                    id
+                                }
+                                browser {
+                                    id
+                                }
+                            }
+                            testPlanVersion {
+                                id
+                                phase
+                            }
+                        }
+                    }
+                `,
+                { transaction }
+            );
+            const { testPlanReport, testPlanVersion } =
+                result.createTestPlanReport;
 
             // A3
-            expect(first.testPlanReport).toEqual(
+            expect(testPlanReport).toEqual(
                 expect.objectContaining({
                     id: expect.anything(),
                     at: expect.objectContaining({
@@ -339,25 +322,12 @@ describe('test queue', () => {
                     })
                 })
             );
-            expect(first.testPlanVersion).toEqual(
+            expect(testPlanVersion).toEqual(
                 expect.objectContaining({
                     id: testPlanVersionId,
                     phase: 'DRAFT'
                 })
             );
-            expect(first.created.length).toBe(1);
-
-            expect(second.testPlanReport).toEqual(
-                expect.objectContaining({
-                    id: first.testPlanReport.id
-                })
-            );
-            expect(second.testPlanVersion).toEqual(
-                expect.objectContaining({
-                    id: first.testPlanVersion.id
-                })
-            );
-            expect(second.created.length).toBe(0);
         });
     });
 

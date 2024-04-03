@@ -3,7 +3,7 @@ const {
 } = require('../../models/services/TestPlanVersionService');
 const {
     getTestPlanReports,
-    getOrCreateTestPlanReport,
+    createTestPlanReport,
     updateTestPlanReportById
 } = require('../../models/services/TestPlanReportService');
 const {
@@ -166,16 +166,14 @@ const processCopiedReports = async ({
                 }
 
                 if (Object.keys(newTestResultsToSaveByTestId).length) {
-                    const [newTestPlanReport] = await getOrCreateTestPlanReport(
-                        {
-                            where: {
-                                testPlanVersionId: newTestPlanVersionId,
-                                atId: oldTestPlanReport.atId,
-                                browserId: oldTestPlanReport.browserId
-                            },
-                            transaction
-                        }
-                    );
+                    const newTestPlanReport = await createTestPlanReport({
+                        values: {
+                            testPlanVersionId: newTestPlanVersionId,
+                            atId: oldTestPlanReport.atId,
+                            browserId: oldTestPlanReport.browserId
+                        },
+                        transaction
+                    });
 
                     newTestPlanReportIds.push(newTestPlanReport.id);
 

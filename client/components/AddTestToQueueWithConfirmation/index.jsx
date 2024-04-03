@@ -149,24 +149,29 @@ function AddTestToQueueWithConfirmation({
                 content={
                     'The report could not be created because an existing ' +
                     'report was found on the reports page with the same AT, ' +
-                    'browser and test plan version. Would you like to return ' +
-                    'the existing report back to the test queue?'
+                    'browser and test plan version. Work is currently ' +
+                    'underway to remove this limitation.'
                 }
                 closeLabel="Cancel"
                 staticBackdrop={true}
-                actions={[
-                    {
-                        label: 'Proceed',
-                        onClick: async () => {
-                            setErrorMessage(false);
-                            if (hasAutomationSupport) {
-                                setShowConfirmation(true);
-                            } else {
-                                await addTestToQueue();
-                            }
-                        }
-                    }
-                ]}
+                // The proceed button is disabled because it will now create
+                // duplicate testPlanReports, and support has not yet been
+                // implemented across the full frontend to account for
+                // duplicates.
+
+                // actions={[
+                //     {
+                //         label: 'Proceed',
+                //         onClick: async () => {
+                //             setErrorMessage(false);
+                //             if (hasAutomationSupport) {
+                //                 setShowConfirmation(true);
+                //             } else {
+                //                 await addTestToQueue();
+                //             }
+                //         }
+                //     }
+                // ]}
                 useOnHide
                 handleClose={async () => {
                     setErrorMessage(false);
@@ -186,8 +191,7 @@ function AddTestToQueueWithConfirmation({
                 }
             });
             const testPlanReport =
-                res?.data?.findOrCreateTestPlanReport?.populatedData
-                    ?.testPlanReport ?? null;
+                res?.data?.createTestPlanReport?.testPlanReport ?? null;
             tpr = testPlanReport;
         }, 'Adding Test Plan to Test Queue');
         setShowConfirmation(true);
