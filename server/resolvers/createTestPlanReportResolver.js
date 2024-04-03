@@ -19,10 +19,7 @@ const createTestPlanReportResolver = async (_, { input }, context) => {
     const locationOfData = { testPlanReportId: testPlanReport.id };
     const preloaded = { testPlanReport };
 
-    return populateData(locationOfData, {
-        preloaded,
-        context
-    });
+    return populateData(locationOfData, { preloaded, context });
 };
 
 module.exports = createTestPlanReportResolver;
