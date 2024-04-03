@@ -13,11 +13,11 @@ const findOrCreateTestPlanReportResolver = async (_, { input }, context) => {
     }
 
     // Pull back report from TestPlanVersion in advanced phase and run through processCopiedReports if not deprecated
-    const { testPlanVersionDataToIncludeId } = input;
+    const { copyResultsFromTestPlanReportId } = input;
 
-    if (testPlanVersionDataToIncludeId) {
+    if (copyResultsFromTestPlanReportId) {
         const { updatedTestPlanReports } = await processCopiedReports({
-            oldTestPlanVersionId: testPlanVersionDataToIncludeId,
+            oldTestPlanVersionId: copyResultsFromTestPlanReportId,
             newTestPlanVersionId: input.testPlanVersionId,
             newTestPlanReports: [],
             atBrowserCombinationsToInclude: [

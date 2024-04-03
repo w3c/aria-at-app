@@ -1016,7 +1016,7 @@ const graphqlSchema = gql`
         testPlanVersionId: ID!
         atId: ID!
         browserId: ID!
-        testPlanVersionDataToIncludeId: ID
+        copyResultsFromTestPlanReportId: ID
     }
 
     """

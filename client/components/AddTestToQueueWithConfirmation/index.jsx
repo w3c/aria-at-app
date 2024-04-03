@@ -23,7 +23,8 @@ function AddTestToQueueWithConfirmation({
     buttonText = 'Add to Test Queue',
     triggerUpdate = () => {}
 }) {
-    const [errorMessage, setErrorMessage] = useState(false);
+    const [showPreserveReportDataMessage, setShowPreserveReportDataMessage] =
+        useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [canUseOldResults, setCanUseOldResults] = useState(false);
     const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
@@ -134,7 +135,7 @@ function AddTestToQueueWithConfirmation({
                     await addTestToQueue(
                         canUseOldResults
                             ? {
-                                  testPlanVersionDataToIncludeId:
+                                  copyResultsFromTestPlanReportId:
                                       latestOldVersion.id
                               }
                             : {}
@@ -150,7 +151,7 @@ function AddTestToQueueWithConfirmation({
                         const testPlanReport = await addTestToQueue(
                             canUseOldResults
                                 ? {
-                                      testPlanVersionDataToIncludeId:
+                                      copyResultsFromTestPlanReportId:
                                           latestOldVersion.id
                                   }
                                 : {}
@@ -182,26 +183,10 @@ function AddTestToQueueWithConfirmation({
         );
     };
 
-    const renderErrorDialog = () => {
-        let title = 'Conflicting Report Found';
-        let content =
-            'The report could not be created because an existing ' +
-            'report was found on the reports page with the same AT, ' +
-            'browser and test plan version. Would you like to return ' +
-            'the existing report back to the test queue?';
-        let actions = [
-            {
-                label: 'Proceed',
-                onClick: async () => {
-                    setErrorMessage(false);
-                    if (hasAutomationSupport) {
-                        setShowConfirmation(true);
-                    } else {
-                        await addTestToQueue();
-                    }
-                }
-            }
-        ];
+    const renderPreserveReportDataDialog = () => {
+        let title;
+        let content;
+        let actions = [];
 
         if (oldReportToCopyResultsFrom) {
             title = 'Older Results Data Found';
@@ -212,9 +197,9 @@ function AddTestToQueueWithConfirmation({
                 'completely new report?';
             actions = [
                 {
-                    label: 'Create new report',
+                    label: 'Create empty report',
                     onClick: async () => {
-                        setErrorMessage(false);
+                        setShowPreserveReportDataMessage(false);
                         if (hasAutomationSupport) {
                             setShowConfirmation(true);
                         } else {
@@ -225,16 +210,36 @@ function AddTestToQueueWithConfirmation({
                 {
                     label: 'Copy older results',
                     onClick: async () => {
-                        setErrorMessage(false);
+                        setShowPreserveReportDataMessage(false);
                         setCanUseOldResults(true);
 
                         if (hasAutomationSupport) {
                             setShowConfirmation(true);
                         } else {
                             await addTestToQueue({
-                                testPlanVersionDataToIncludeId:
+                                copyResultsFromTestPlanReportId:
                                     latestOldVersion.id
                             });
+                        }
+                    }
+                }
+            ];
+        } else {
+            title = 'Conflicting Report Found';
+            content =
+                'The report could not be created because an existing ' +
+                'report was found on the reports page with the same AT, ' +
+                'browser and test plan version. Would you like to return ' +
+                'the existing report back to the test queue?';
+            actions = [
+                {
+                    label: 'Proceed',
+                    onClick: async () => {
+                        setShowPreserveReportDataMessage(false);
+                        if (hasAutomationSupport) {
+                            setShowConfirmation(true);
+                        } else {
+                            await addTestToQueue();
                         }
                     }
                 }
@@ -243,7 +248,7 @@ function AddTestToQueueWithConfirmation({
 
         return (
             <BasicModal
-                show={errorMessage}
+                show={showPreserveReportDataMessage}
                 title={title}
                 content={content}
                 closeLabel="Cancel"
@@ -251,13 +256,13 @@ function AddTestToQueueWithConfirmation({
                 actions={actions}
                 useOnHide
                 handleClose={async () => {
-                    setErrorMessage(false);
+                    setShowPreserveReportDataMessage(false);
                 }}
             />
         );
     };
 
-    const addTestToQueue = async ({ testPlanVersionDataToIncludeId } = {}) => {
+    const addTestToQueue = async ({ copyResultsFromTestPlanReportId } = {}) => {
         let tpr;
         await triggerLoad(async () => {
             const res = await addTestPlanReport({
@@ -265,7 +270,7 @@ function AddTestToQueueWithConfirmation({
                     testPlanVersionId: testPlanVersion.id,
                     atId: at.id,
                     browserId: browser.id,
-                    testPlanVersionDataToIncludeId
+                    copyResultsFromTestPlanReportId
                 }
             });
             const testPlanReport =
@@ -296,7 +301,7 @@ function AddTestToQueueWithConfirmation({
                 variant="secondary"
                 onClick={async () => {
                     if (conflictingReportExists || oldReportToCopyResultsFrom) {
-                        setErrorMessage(true);
+                        setShowPreserveReportDataMessage(true);
                     } else {
                         if (hasAutomationSupport) {
                             setShowConfirmation(true);
@@ -310,7 +315,7 @@ function AddTestToQueueWithConfirmation({
             >
                 {buttonText}
             </Button>
-            {renderErrorDialog()}
+            {renderPreserveReportDataDialog()}
             {renderConfirmation()}
         </LoadingStatus>
     );

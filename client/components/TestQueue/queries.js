@@ -222,14 +222,14 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
         $testPlanVersionId: ID!
         $atId: ID!
         $browserId: ID!
-        $testPlanVersionDataToIncludeId: ID
+        $copyResultsFromTestPlanReportId: ID
     ) {
         findOrCreateTestPlanReport(
             input: {
                 testPlanVersionId: $testPlanVersionId
                 atId: $atId
                 browserId: $browserId
-                testPlanVersionDataToIncludeId: $testPlanVersionDataToIncludeId
+                copyResultsFromTestPlanReportId: $copyResultsFromTestPlanReportId
             }
         ) {
             populatedData {
