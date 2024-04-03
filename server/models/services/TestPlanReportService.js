@@ -220,8 +220,7 @@ const createTestPlanReport = async ({
         atId,
         browserId,
         exactAtVersionId,
-        minimumAtVersionId,
-        vendorReviewStatus
+        minimumAtVersionId
     },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
