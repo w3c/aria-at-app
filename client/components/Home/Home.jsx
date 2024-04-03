@@ -178,9 +178,9 @@ const Home = () => {
                     <p>
                         Enabling AT interoperability is a large, ongoing
                         endeavor that requires industry-wide collaboration and
-                        support. The W3C ARIA-AT Community Group is currently
-                        focusing on a stable and mature test suite for five
-                        screen readers. In the future, we plan to test
+                        support. The W3C ARIA-AT Community Group is focusing on
+                        a stable and mature test suite for five screen readers
+                        by the end of 2023. In the future, we plan to test
                         additional screen readers and other kinds of assistive
                         technologies with a broader set of web design patterns
                         and test material.
