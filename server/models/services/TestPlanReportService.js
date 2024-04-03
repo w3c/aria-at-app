@@ -242,7 +242,6 @@ const createTestPlanReport = async ({
             browserId,
             exactAtVersionId,
             minimumAtVersionId,
-            vendorReviewStatus,
             testPlanId: testPlanVersion.testPlanId
         },
         transaction
