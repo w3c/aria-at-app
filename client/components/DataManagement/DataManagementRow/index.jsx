@@ -425,12 +425,55 @@ const DataManagementRow = ({
             return otherVersionsInProgress.length;
         };
 
-        if (recommendedTestPlanVersions.length) {
-            const { earliestVersion, earliestVersionDate } = getVersionData(
-                recommendedTestPlanVersions,
+        /**
+         * Uses the truthy state of defined dates for a TestPlanVersion to
+         * determine if the version was ever in that phase at any given point.
+         * Useful if the phase of the TestPlanVersion is currently DEPRECATED.
+         * @param {"RECOMMENDED"|"CANDIDATE"|"DRAFT"} phase
+         * @returns {TestPlanVersion[]}
+         */
+        const getVersionsThatReachedPhase = phase => {
+            switch (phase) {
+                case 'RECOMMENDED':
+                    return testPlanVersions.filter(
+                        ({ recommendedPhaseReachedAt }) =>
+                            !!recommendedPhaseReachedAt
+                    );
+                case 'CANDIDATE':
+                    return testPlanVersions.filter(
+                        ({
+                            candidatePhaseReachedAt,
+                            recommendedPhaseReachedAt
+                        }) =>
+                            !!candidatePhaseReachedAt &&
+                            !recommendedPhaseReachedAt
+                    );
+                case 'DRAFT':
+                    return testPlanVersions.filter(
+                        ({
+                            draftPhaseReachedAt,
+                            candidatePhaseReachedAt,
+                            recommendedPhaseReachedAt
+                        }) =>
+                            !!draftPhaseReachedAt &&
+                            !candidatePhaseReachedAt &&
+                            !recommendedPhaseReachedAt
+                    );
+            }
+        };
+
+        const versionsThatReachedRecommended =
+            getVersionsThatReachedPhase('RECOMMENDED');
+        const versionsThatReachedCandidate =
+            getVersionsThatReachedPhase('CANDIDATE');
+        const versionsThatReachedDraft = getVersionsThatReachedPhase('DRAFT');
+
+        if (versionsThatReachedRecommended.length) {
+            const { earliestVersionDate } = getVersionData(
+                versionsThatReachedRecommended,
                 'recommendedPhaseReachedAt'
             );
-            const { phase } = earliestVersion;
+            const phase = 'RECOMMENDED';
             const versionsInProgressCount = otherVersionsInProgressCount(phase);
 
             return (
@@ -441,13 +484,12 @@ const DataManagementRow = ({
             );
         }
 
-        if (candidateTestPlanVersions.length) {
-            const { earliestVersion, earliestVersionDate } = getVersionData(
-                candidateTestPlanVersions,
+        if (versionsThatReachedCandidate.length) {
+            const { earliestVersionDate } = getVersionData(
+                versionsThatReachedCandidate,
                 'candidatePhaseReachedAt'
             );
-            const { phase } = earliestVersion;
-
+            const phase = 'CANDIDATE';
             const versionsInProgressCount = otherVersionsInProgressCount(
                 phase,
                 ['RECOMMENDED']
@@ -461,13 +503,12 @@ const DataManagementRow = ({
             );
         }
 
-        if (draftTestPlanVersions.length) {
-            const { earliestVersion, earliestVersionDate } = getVersionData(
-                draftTestPlanVersions,
+        if (versionsThatReachedDraft.length) {
+            const { earliestVersionDate } = getVersionData(
+                versionsThatReachedDraft,
                 'draftPhaseReachedAt'
             );
-            const { phase } = earliestVersion;
-
+            const phase = 'DRAFT';
             const versionsInProgressCount = otherVersionsInProgressCount(
                 phase,
                 ['RECOMMENDED', 'CANDIDATE']

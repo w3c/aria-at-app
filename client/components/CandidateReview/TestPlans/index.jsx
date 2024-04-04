@@ -438,9 +438,7 @@ const TestPlans = ({ testPlanVersions }) => {
                         <thead>
                             <tr>
                                 <th>Candidate Test Plans</th>
-                                <CenteredTh>
-                                    Candidate Phase Start Date
-                                </CenteredTh>
+                                <CenteredTh>Last Updated</CenteredTh>
                                 <CenteredTh>Target Completion Date</CenteredTh>
                                 <CenteredTh>Review Status</CenteredTh>
                                 <CenteredTh>Results Summary</CenteredTh>
