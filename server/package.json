@@ -50,7 +50,7 @@
         "node-cache": "^5.1.2",
         "nodemon": "^2.0.7",
         "object-hash": "^3.0.0",
-        "pg": "^8.6.0",
+        "pg": "^8.11.5",
         "pg-hstore": "^2.3.3",
         "rawgit": "https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52",
         "sequelize": "^6.28.0",
