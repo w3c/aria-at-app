@@ -1222,8 +1222,11 @@ const graphqlSchema = gql`
         Updates the markedFinalAt date. This must be set before a TestPlanReport can
         be advanced to CANDIDATE. All conflicts must also be resolved.
         Only available to admins.
+
+        Also optionally set a "primary test plan run" so a specific tester's output
+        will be shown for on the report pages over another.
         """
-        markAsFinal: PopulatedData!
+        markAsFinal(primaryTestPlanRunId: ID): PopulatedData!
         """
         Remove the TestPlanReport's markedFinalAt date. This allows the TestPlanReport
         to be worked on in the Test Queue page again if was previously marked as final.
