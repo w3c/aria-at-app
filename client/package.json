@@ -35,7 +35,7 @@
     "graphql": "^16.6.0",
     "lodash": "^4.17.21",
     "moment": "^2.25.3",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^3.3.2",
     "object-hash": "^3.0.0",
     "octicons-react": "^1.0.4",
     "prop-types": "^15.7.2",
