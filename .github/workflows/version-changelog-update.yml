@@ -23,7 +23,7 @@ jobs:
           node-version: 18
           cache: npm
       - name: Conventional Changelog Action
-        uses: TriPSs/conventional-changelog-action@v3
+        uses: TriPSs/conventional-changelog-action@v5
         with:
           github-token: ${{ secrets.github_token }}
           git-user-name: github-actions[bot]
