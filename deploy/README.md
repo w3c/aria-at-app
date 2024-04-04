@@ -74,6 +74,7 @@ To deploy this project to  server:
     export PATH=$PATH:/Users/Luigi/Library/Python/3.9/bin
     ```
   - Run `source ~/.zshrc` to refresh your shell.
+  - Install `ansible.posix` to make use of the [ansible.posix.synchronize](https://docs.ansible.com/ansible/latest/collections/ansible/posix/synchronize_module.html#ansible-posix-synchronize-module-a-wrapper-around-rsync-to-make-common-tasks-in-your-playbooks-quick-and-easy) module: `ansible-galaxy collection install ansible.posix`
   - Run `ansible --version` to verify your ansible is on version 2.11.
 5. Execute the following command from the deploy directory:
    - Sandbox:
