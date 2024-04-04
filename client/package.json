@@ -50,7 +50,7 @@
     "react-router-dom": "^6.8.1",
     "shared": "1.0.0",
     "turndown": "^7.1.1",
-    "ua-parser-js": "1.0.33"
+    "ua-parser-js": "1.0.37"
   },
   "devDependencies": {
     "@babel/code-frame": "^7.8.3",
