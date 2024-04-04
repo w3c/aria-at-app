@@ -7,9 +7,9 @@
 
 ## Commits
 
-To easily facilitate CHANGELOG generation, automatic version bumps (using [SEMVER](https://semver.org) - X.Y.Z) and version tagging, commit messages MUST follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) practice, which is used in combination with the GitHub Workflow Action, [TriPSs/conventional-changelog-action](https://github.com/TriPSs/conventional-changelog-action).
+To facilitate CHANGELOG generation, automatic version bumps (using [SEMVER](https://semver.org) - X.Y.Z) and version tagging, commit messages MUST follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) practice, which is used in combination with the GitHub Workflow Action, [TriPSs/conventional-changelog-action](https://github.com/TriPSs/conventional-changelog-action).
 
-What this is means is commits intended to automatically update the [CHANGELOG.md](https://github.com/w3c/aria-at-app/blob/development/CHANGELOG.md) and version must be written in a specific format:
+What this means is commits intended to automatically update the [CHANGELOG.md](https://github.com/w3c/aria-at-app/blob/development/CHANGELOG.md) and bump the version must be written in a specific format:
 ```
 <type>[optional scope]: <description>
 

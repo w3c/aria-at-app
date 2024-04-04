@@ -40,7 +40,7 @@ The second maintainer who reviews is responsible for merging the pull request in
 
 Maintainers will periodically deploy the `main` and `development` branches to the [live environments](https://github.com/w3c/aria-at-app/wiki).
 
-Additional details on easily facilitating the release process can be found in [docs/release.md](https://github.com/w3c/aria-at-app/blob/main/docs/release.md)
+Additional details on facilitating the release process can be found in [docs/release.md](https://github.com/w3c/aria-at-app/blob/main/docs/release.md)
 
 ## Guidance on Testing
 
