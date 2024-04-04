@@ -9,7 +9,7 @@
 
 To easily facilitate CHANGELOG generation, automatic version bumps (using [SEMVER](https://semver.org) - X.Y.Z) and version tagging, commit messages MUST follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) practice, which is used in combination with the GitHub Workflow Action, [TriPSs/conventional-changelog-action](https://github.com/TriPSs/conventional-changelog-action).
 
-What this is means is that commits intended to automatically update the [CHANGELOG.md](https://github.com/w3c/aria-at-app/blob/development/CHANGELOG.md) and version must be written in a specific format:
+What this is means is commits intended to automatically update the [CHANGELOG.md](https://github.com/w3c/aria-at-app/blob/development/CHANGELOG.md) and version must be written in a specific format:
 ```
 <type>[optional scope]: <description>
 
@@ -26,7 +26,7 @@ Generally, commits in the following format will be sufficient:
 - `BREAKING CHANGE: OR '!' after any type/scope, eg. feat!: <description>` will increment **MAJOR** in **X**.Y.Z
   - NOTE: `zsh` users will have to surround commit messages with single quotes (`'<message>'`) instead of double quotes (`"<message>"`), as `!` is a special modifier for `zsh`
 
-**NOTE:** This doesn't mean is that ALL commits have to be written in this way, explained in [Merging Pull Request](#merging-pull-request).
+**NOTE:** This doesn't mean ALL commits have to be written this way, explained in [Merging Pull Request](#merging-pull-request).
 
 ## Creating Pull Request
 
