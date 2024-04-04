@@ -31,7 +31,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "bootstrap": "^5.2.3",
-    "core-js": "^3.8.0",
+    "core-js": "^3.36.1",
     "graphql": "^16.6.0",
     "lodash": "^4.17.21",
     "moment": "^2.25.3",
