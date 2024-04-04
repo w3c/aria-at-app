@@ -92,7 +92,7 @@
     "jest-environment-jsdom": "^29.3.1",
     "jest-enzyme": "^7.1.2",
     "moxios": "^0.4.0",
-    "prettier": "^2.8.4",
+    "prettier": "^3.2.5",
     "puppeteer": "^21.7.0",
     "storybook-addon-apollo-client": "^4.0.12",
     "storybook-react-router": "^1.0.8",
