@@ -41,6 +41,7 @@ const TestPlanRunOperations = require('./TestPlanRunOperations');
 const TestResultOperations = require('./TestResultOperations');
 const TestPlanVersionOperations = require('./TestPlanVersionOperations');
 const CollectionJobOperations = require('./CollectionJobOperations');
+const CollectionJob = require('./CollectionJob');
 const TestPlanRun = require('./TestPlanRun');
 const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
@@ -84,6 +85,7 @@ const resolvers = {
     AtOperations,
     AtVersionOperations,
     BrowserOperations,
+    CollectionJob,
     User,
     TestPlan,
     TestPlanVersion,

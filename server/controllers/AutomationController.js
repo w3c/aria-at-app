@@ -1,7 +1,8 @@
 const axios = require('axios');
 const {
     getCollectionJobById,
-    updateCollectionJobById
+    updateCollectionJobById,
+    updateCollectionJobTestStatusByQuery
 } = require('../models/services/CollectionJobService');
 const {
     findOrCreateTestResult
@@ -24,7 +25,7 @@ const {
 } = require('../models/services/TestResultReadService');
 const http = require('http');
 const { NO_OUTPUT_STRING } = require('../util/constants');
-const getTests = require('../models/services/TestsService');
+const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../graphql-context');
 const httpAgent = new http.Agent({ family: 4 });
 
@@ -99,6 +100,23 @@ const updateJobStatus = async (req, res) => {
         ...(externalLogsUrl != null && { externalLogsUrl })
     };
 
+    // When new status is 'COMPLETED' or 'ERROR' or 'CANCELLED'
+    // update any CollectionJobTestStatus children still 'QUEUED' to be 'CANCELLED'
+    if (
+        status === COLLECTION_JOB_STATUS.COMPLETED ||
+        status === COLLECTION_JOB_STATUS.CANCELLED ||
+        status === COLLECTION_JOB_STATUS.ERROR
+    ) {
+        await updateCollectionJobTestStatusByQuery({
+            where: {
+                collectionJobId: req.params.jobID,
+                status: COLLECTION_JOB_STATUS.QUEUED
+            },
+            values: { status: COLLECTION_JOB_STATUS.CANCELLED },
+            transaction: req.transaction
+        });
+    }
+
     const graphqlResponse = await updateCollectionJobById({
         id: req.params.jobID,
         values: updatePayload,
@@ -137,32 +155,29 @@ const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
     return getFinalizedTestResults({ testPlanReport, context });
 };
 
-const updateOrCreateTestResultWithResponses = async ({
+const getTestByRowIdentifer = async ({
+    testPlanRun,
     testRowIdentifier,
+    context
+}) => {
+    const tests = await runnableTestsResolver(
+        testPlanRun.testPlanReport,
+        null,
+        context
+    );
+    return tests.find(
+        test => parseInt(test.rowNumber, 10) === testRowIdentifier
+    );
+};
+
+const updateOrCreateTestResultWithResponses = async ({
+    testId,
     testPlanRun,
     responses,
     atVersionId,
     browserVersionId,
     context
 }) => {
-    const allTestsForTestPlanVersion = await getTests(
-        testPlanRun.testPlanReport.testPlanVersion
-    );
-
-    const isV2 =
-        testPlanRun.testPlanReport.testPlanVersion.metadata
-            .testFormatVersion === 2;
-
-    const testId = allTestsForTestPlanVersion.find(
-        test =>
-            (!isV2 || test.at?.name === 'NVDA') &&
-            parseInt(test.rowNumber, 10) === testRowIdentifier
-    )?.id;
-
-    if (testId === undefined) {
-        throwNoTestFoundError(testRowIdentifier);
-    }
-
     const { testResult } = await findOrCreateTestResult({
         testId,
         testPlanRunId: testPlanRun.id,
@@ -243,9 +258,12 @@ const updateJobResults = async (req, res) => {
     const context = getGraphQLContext({ req });
     const { transaction } = context;
     const {
+        // Old way - testCsvRow and presentationNumber can be removed
+        // once all requests from automation are using the new URL parameter
         testCsvRow,
         presentationNumber,
         responses,
+        status,
         capabilities: {
             atName,
             atVersion: atVersionName,
@@ -263,35 +281,69 @@ const updateJobResults = async (req, res) => {
             `Job with id ${id} is not running, cannot update results`
         );
     }
+    if (status && !Object.values(COLLECTION_JOB_STATUS).includes(status)) {
+        throw new HttpQueryError(400, `Invalid status: ${status}`, true);
+    }
+    const { testPlanRun } = job;
 
-    /* TODO: Change this to use a better key based lookup system after gh-958 */
-    const [at] = await getAts({ search: atName, transaction });
-    const [browser] = await getBrowsers({ search: browserName, transaction });
-
-    const [atVersion, browserVersion] = await Promise.all([
-        findOrCreateAtVersion({
-            where: { atId: at.id, name: atVersionName },
-            transaction
-        }),
-        findOrCreateBrowserVersion({
-            where: { browserId: browser.id, name: browserVersionName },
-            transaction
+    // New way: testRowNumber is now a URL request param
+    // Old way: v1 tests store testCsvRow in rowNumber, v2 tests store presentationNumber in rowNumber
+    const testRowIdentifier =
+        req.params.testRowNumber ?? presentationNumber ?? testCsvRow;
+    const testId = (
+        await getTestByRowIdentifer({
+            testPlanRun,
+            testRowIdentifier,
+            context
         })
-    ]);
+    )?.id;
 
-    const processedResponses = convertEmptyStringsToNoOutputMessages(responses);
+    if (testId === undefined) {
+        throwNoTestFoundError(testRowIdentifier);
+    }
 
-    // v1 tests store testCsvRow in rowNumber, v2 tests store presentationNumber in rowNumber
-    const testRowIdentifier = presentationNumber ?? testCsvRow;
+    // status only update, or responses were provided (default to complete)
+    if (status || responses) {
+        await updateCollectionJobTestStatusByQuery({
+            where: { collectionJobId: id, testId },
+            // default to completed if not specified (when results are present)
+            values: { status: status ?? COLLECTION_JOB_STATUS.COMPLETED },
+            transaction: req.transaction
+        });
+    }
 
-    await updateOrCreateTestResultWithResponses({
-        testRowIdentifier,
-        responses: processedResponses,
-        testPlanRun: job.testPlanRun,
-        atVersionId: atVersion.id,
-        browserVersionId: browserVersion.id,
-        context
-    });
+    // responses were provided
+    if (responses) {
+        /* TODO: Change this to use a better key based lookup system after gh-958 */
+        const [at] = await getAts({ search: atName, transaction });
+        const [browser] = await getBrowsers({
+            search: browserName,
+            transaction
+        });
+
+        const [atVersion, browserVersion] = await Promise.all([
+            findOrCreateAtVersion({
+                where: { atId: at.id, name: atVersionName },
+                transaction
+            }),
+            findOrCreateBrowserVersion({
+                where: { browserId: browser.id, name: browserVersionName },
+                transaction
+            })
+        ]);
+
+        const processedResponses =
+            convertEmptyStringsToNoOutputMessages(responses);
+
+        await updateOrCreateTestResultWithResponses({
+            testId,
+            responses: processedResponses,
+            testPlanRun,
+            atVersionId: atVersion.id,
+            browserVersionId: browserVersion.id,
+            context
+        });
+    }
 
     res.json({ success: true });
 };
