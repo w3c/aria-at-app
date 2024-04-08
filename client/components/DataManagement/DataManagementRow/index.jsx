@@ -572,18 +572,18 @@ const DataManagementRow = ({
                     }
                 }
 
-                // If there is an earlier version that is draft and that version has some test plan
+                // If there is an earlier version that is draft or higher, and that version has some test plan
                 // runs in the test queue, this button will run the process for updating existing
                 // reports and preserving data for tests that have not changed.
                 let testPlanVersionDataToInclude;
-                if (draftTestPlanVersions.length) {
+                if (otherTestPlanVersions.length) {
                     const {
-                        latestVersion: draftLatestVersion,
-                        latestVersionDate: draftLatestVersionDate
-                    } = getVersionData(draftTestPlanVersions);
+                        latestVersion: otherLatestVersion,
+                        latestVersionDate: otherLatestVersionDate
+                    } = getVersionData(otherTestPlanVersions);
 
-                    if (draftLatestVersionDate < latestVersionDate)
-                        testPlanVersionDataToInclude = draftLatestVersion;
+                    if (otherLatestVersionDate < latestVersionDate)
+                        testPlanVersionDataToInclude = otherLatestVersion;
                 }
 
                 // Otherwise, show VERSION_STRING link with a draft transition button. Phase is
@@ -688,20 +688,28 @@ const DataManagementRow = ({
                 // If required reports are complete and user is an admin, show "Advance to
                 // Candidate" button.
                 if (testPlanVersions.length) {
-                    // If there is an earlier version that is candidate and that version has some
+                    // If there is an earlier version that is candidate or higher and that version has some
                     // test plan runs in the test queue, this button will run the process for
                     // updating existing reports and preserving data for tests that have not
                     // changed.
                     let testPlanVersionDataToInclude;
-                    if (candidateTestPlanVersions.length) {
+                    const testPlanVersionsDataToInclude = [
+                        ...candidateTestPlanVersions,
+                        ...recommendedTestPlanVersions
+                    ];
+                    if (testPlanVersionsDataToInclude.length) {
                         const {
-                            latestVersion: candidateLatestVersion,
-                            latestVersionDate: candidateLatestVersionDate
-                        } = getVersionData(candidateTestPlanVersions);
+                            latestVersion: testPlanDataToIncludeLatestVersion,
+                            latestVersionDate:
+                                testPlanDataToIncludeLatestVersionDate
+                        } = getVersionData(testPlanVersionsDataToInclude);
 
-                        if (candidateLatestVersionDate < latestVersionDate)
+                        if (
+                            testPlanDataToIncludeLatestVersionDate <
+                            latestVersionDate
+                        )
                             testPlanVersionDataToInclude =
-                                candidateLatestVersion;
+                                testPlanDataToIncludeLatestVersion;
                     }
 
                     let coveredReports = [];

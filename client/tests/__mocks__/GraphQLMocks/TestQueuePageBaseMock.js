@@ -1,7 +1,4 @@
-export default (
-    testPlanReportAtBrowserQuery,
-    initiatedByAutomationRunQuery
-) => [
+export default (testPlanReportAtBrowserQuery, existingTestPlanReportsQuery) => [
     {
         request: {
             query: testPlanReportAtBrowserQuery,
@@ -73,14 +70,15 @@ export default (
     },
     {
         request: {
-            query: initiatedByAutomationRunQuery,
+            query: existingTestPlanReportsQuery,
             variables: {
-                testPlanVersionId: '1'
+                testPlanVersionId: '1',
+                directory: 'alert'
             }
         },
         result: {
             data: {
-                testPlanVersion: {
+                existingTestPlanVersion: {
                     id: '1',
                     testPlanReports: [
                         {
@@ -98,7 +96,8 @@ export default (
                             }
                         }
                     ]
-                }
+                },
+                oldTestPlanVersions: []
             }
         }
     }
