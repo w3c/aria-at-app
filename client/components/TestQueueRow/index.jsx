@@ -405,7 +405,7 @@ const TestQueueRow = ({
                     <>
                         When a tester&apos;s run is marked as primary, it means
                         that their output for collected results will be
-                        prioritised and shown on report pages.
+                        prioritized and shown on report pages.
                         <br />
                         A tester&apos;s run being marked as primary may also set
                         the minimum required Assistive Technology Version that
