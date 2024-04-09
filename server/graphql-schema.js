@@ -377,6 +377,18 @@ const graphqlSchema = gql`
         False value indicates to return the reports which have no markedFinalAt date.
         """
         testPlanReports(isFinal: Boolean): [TestPlanReport]!
+        """
+        The first required AT Version of a specified AT used to collect results
+        for this TestPlanVersion.
+
+        A first required AT Version is the earliest version used to collect
+        results for a test plan run marked as primary, and is a required report.
+
+        This should be used to prevent any older AT Versions from being used to
+        create subsequent reports after the Test Plan Version has reached
+        RECOMMENDED.
+        """
+        firstRequiredAtVersion(atId: ID!): AtVersion
     }
 
     """
