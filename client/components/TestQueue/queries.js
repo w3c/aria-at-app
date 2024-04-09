@@ -273,10 +273,13 @@ export const ASSIGN_TESTER_MUTATION = gql`
     }
 `;
 
-export const UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION = gql`
-    mutation UpdateTestPlanReportMarkedFinalAt($testReportId: ID!) {
+export const MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION = gql`
+    mutation MarkTestPlanReportAsFinal(
+        $testReportId: ID!
+        $primaryTestPlanRunId: ID!
+    ) {
         testPlanReport(id: $testReportId) {
-            markAsFinal {
+            markAsFinal(primaryTestPlanRunId: $primaryTestPlanRunId) {
                 testPlanReport {
                     markedFinalAt
                 }
