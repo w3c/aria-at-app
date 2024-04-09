@@ -151,10 +151,6 @@ describe('graphql', () => {
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
             ['TestPlanReportOperations', 'updateTestPlanReportTestPlanVersion'],
-            ['TestPlanVersion', 'candidatePhaseReachedAt'],
-            ['TestPlanVersion', 'recommendedPhaseReachedAt'],
-            ['TestPlanVersion', 'recommendedPhaseTargetDate'],
-            ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers'],
             ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
             ['CollectionJob', 'testPlanRun'],
@@ -367,6 +363,15 @@ describe('graphql', () => {
                         testPlan {
                             id
                             directory
+                        }
+                    }
+                    recommendedTestPlanVersion: testPlanVersion(id: 69) {
+                        __typename
+                        id
+                        firstRequiredAtVersion(atId: 1) {
+                            id
+                            name
+                            releasedAt
                         }
                     }
                     conflictTestPlanReport: testPlanReport(id: 2) {

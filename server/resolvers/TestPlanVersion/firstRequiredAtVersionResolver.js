@@ -14,7 +14,7 @@ const firstRequiredAtVersionResolver = async (
         return null;
     }
 
-    // To track the required reports for phase
+    // To track the required reports for RECOMMENDED phase
     const ats = await getAts({ transaction });
 
     let firstRequiredAtVersion = null;
