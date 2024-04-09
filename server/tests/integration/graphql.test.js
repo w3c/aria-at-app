@@ -368,6 +368,16 @@ describe('graphql', () => {
                     recommendedTestPlanVersion: testPlanVersion(id: 69) {
                         __typename
                         id
+                        testPlanReports {
+                            __typename
+                            id
+                            recommendedAtVersion {
+                                __typename
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
                         firstRequiredAtVersion(atId: 1) {
                             id
                             name

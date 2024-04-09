@@ -1,13 +1,18 @@
-const getTestPlanVersionTitle = testPlanVersion => {
-    return testPlanVersion.title || `"${testPlanVersion.testPlan.directory}"`;
+const getTestPlanVersionTitle = (
+    testPlanVersion,
+    { includeVersionString = false } = {}
+) => {
+    const title = `${
+        testPlanVersion.title || testPlanVersion.testPlan.directory
+    }`;
+
+    if (!includeVersionString) return title;
+    return `${title} ${testPlanVersion.versionString}`;
 };
 
-// const getTestPlanTargetTitle = ({ browser, browserVersion, at, atVersion }) => {
-//     return `${at.name} ${atVersion} and ${browser.name} ${browserVersion}`;
-// };
-
-const getTestPlanTargetTitle = ({ browser, at }) => {
-    return `${at.name} and ${browser.name}`;
+const getTestPlanTargetTitle = ({ at, browser, atVersion }) => {
+    if (!atVersion) return `${at.name} and ${browser.name}`;
+    return `${at.name} ${atVersion.name} and ${browser.name}`;
 };
 
 export { getTestPlanTargetTitle, getTestPlanVersionTitle };

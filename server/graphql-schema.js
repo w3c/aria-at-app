@@ -1019,6 +1019,12 @@ const graphqlSchema = gql`
         Indicated by TestPlanReport.markedFinalAt existence, after a report has been "marked as final".
         """
         isFinal: Boolean!
+        """
+        Uses firstRequiredAtVersion to show version used to create initial
+        RECOMMENDED reports. For subsequent reports, uses the latest used AT
+        Version.
+        """
+        recommendedAtVersion: AtVersion
     }
 
     """
