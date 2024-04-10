@@ -166,7 +166,7 @@ const getTestByRowIdentifer = async ({
         context
     );
     return tests.find(
-        test => parseInt(test.rowNumber, 10) === testRowIdentifier
+        test => parseInt(test.rowNumber, 10) === parseInt(testRowIdentifier, 10)
     );
 };
 

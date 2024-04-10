@@ -16,7 +16,11 @@ router.post('/:jobID/result', verifyAutomationScheduler, updateJobResults);
 
 // New way
 router.post('/:jobID', verifyAutomationScheduler, updateJobStatus);
-router.post('/:jobID/test/:testRowNumber', verifyAutomationScheduler, updateJobResults);
+router.post(
+    '/:jobID/test/:testRowNumber',
+    verifyAutomationScheduler,
+    updateJobResults
+);
 
 router.use(handleError);
 

@@ -12,6 +12,7 @@ const markAsFinalResolver = require('../../resolvers/TestPlanReportOperations/ma
 const AtLoader = require('../../models/loaders/AtLoader');
 const BrowserLoader = require('../../models/loaders/BrowserLoader');
 const getGraphQLContext = require('../../graphql-context');
+const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -138,6 +139,10 @@ const getTestCollectionJob = async (jobId, { transaction }) =>
                             }
                         }
                     }
+                    testStatus {
+                        test { id }
+                        status
+                    }
                 }
             }
         `,
@@ -165,6 +170,10 @@ const scheduleCollectionJobByMutation = async ({ transaction }) =>
                                 output
                             }
                         }
+                    }
+                    testStatus {
+                        test { id }
+                        status
                     }
                 }
             }
@@ -288,7 +297,7 @@ describe('Automation controller', () => {
         });
     });
 
-    it('should cancel a job', async () => {
+    it('should cancel a job and all remaining tests', async () => {
         await dbCleaner(async transaction => {
             const { scheduleCollectionJob: job } =
                 await scheduleCollectionJobByMutation({ transaction });
@@ -300,6 +309,9 @@ describe('Automation controller', () => {
             const { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob(job.id, { transaction });
             expect(storedCollectionJob.status).toEqual('CANCELLED');
+            for (const test of storedCollectionJob.testStatus) {
+                expect(test.status).toEqual('CANCELLED');
+            }
         });
     });
 
@@ -342,9 +354,7 @@ describe('Automation controller', () => {
         await dbCleaner(async transaction => {
             const { scheduleCollectionJob: job } =
                 await scheduleCollectionJobByMutation({ transaction });
-            const response = await sessionAgent.post(
-                `/api/jobs/${job.id}/update`
-            );
+            const response = await sessionAgent.post(`/api/jobs/${job.id}`);
             expect(response.statusCode).toBe(403);
             expect(response.body).toEqual({
                 error: 'Unauthorized'
@@ -357,7 +367,7 @@ describe('Automation controller', () => {
             const { scheduleCollectionJob: job } =
                 await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent
-                .post(`/api/jobs/${job.id}/update`)
+                .post(`/api/jobs/${job.id}`)
                 .send({ status: 'INVALID' })
                 .set(
                     'x-automation-secret',
@@ -372,7 +382,7 @@ describe('Automation controller', () => {
 
     it('should fail to update a job status for a non-existent jobId', async () => {
         const response = await sessionAgent
-            .post(`/api/jobs/${444}/update`)
+            .post(`/api/jobs/${444}`)
             .send({ status: 'RUNNING' })
             .set(
                 'x-automation-secret',
@@ -389,7 +399,7 @@ describe('Automation controller', () => {
             const { scheduleCollectionJob: job } =
                 await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent
-                .post(`/api/jobs/${job.id}/update`)
+                .post(`/api/jobs/${job.id}`)
                 .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
@@ -421,7 +431,7 @@ describe('Automation controller', () => {
             const { scheduleCollectionJob: job } =
                 await scheduleCollectionJobByMutation({ transaction });
             const response = await sessionAgent
-                .post(`/api/jobs/${job.id}/update`)
+                .post(`/api/jobs/${job.id}`)
                 .send({
                     status: 'CANCELLED',
                     externalLogsUrl: 'https://www.aol.com/'
@@ -462,7 +472,7 @@ describe('Automation controller', () => {
                 transaction
             });
             await sessionAgent
-                .post(`/api/jobs/${job.id}/update`)
+                .post(`/api/jobs/${job.id}`)
                 .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
@@ -492,9 +502,8 @@ describe('Automation controller', () => {
                 scenario => scenario.atId === at.id
             ).length;
             const response = await sessionAgent
-                .post(`/api/jobs/${job.id}/result`)
+                .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
                 .send({
-                    testCsvRow: selectedTestRowNumber,
                     capabilities: {
                         atName: at.name,
                         atVersion: at.atVersions[0].name,
@@ -543,6 +552,15 @@ describe('Automation controller', () => {
                     );
                 });
             });
+            // also marks status for test as COMPLETED
+            const { collectionJob: storedCollectionJob } =
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('RUNNING');
+            const testStatus = storedCollectionJob.testStatus.find(
+                status => status.test.id === selectedTest.id
+            );
+            expect(testStatus.status).toEqual(COLLECTION_JOB_STATUS.COMPLETED);
         });
     });
 
@@ -588,7 +606,7 @@ describe('Automation controller', () => {
                 transaction
             });
             await sessionAgent
-                .post(`/api/jobs/${job.id}/update`)
+                .post(`/api/jobs/${job.id}`)
                 .send({ status: 'RUNNING' })
                 .set(
                     'x-automation-secret',
@@ -597,9 +615,8 @@ describe('Automation controller', () => {
                 .set('x-transaction-id', transaction.id);
 
             const response = await sessionAgent
-                .post(`/api/jobs/${job.id}/result`)
+                .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
                 .send({
-                    testCsvRow: selectedTestRowNumber,
                     capabilities: {
                         atName: at.name,
                         atVersion: atVersion.name,
