@@ -116,6 +116,7 @@ const queryReports = async testPlanDirectory => {
 // As of now, a full query for the complete list of reports is needed to build
 // the embed for a single pattern. This caching allows that query to be reused
 // between pattern embeds.
+
 const queryReportsCached = staleWhileRevalidate(queryReports, {
     millisecondsUntilStale
 });
@@ -137,7 +138,7 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
     let testPlanVersionIds = new Set();
     const uniqueReports = [];
     let latestReports = [];
-    // section:
+
     testPlanReports.forEach(report => {
         allAts.add(report.at.name);
         allBrowsers.add(report.browser.name);
@@ -175,14 +176,7 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
 
         testPlanVersionIds.add(report.testPlanVersion.id);
     });
-    // section:
-    // const numberArray = allAts.map((at) => {
-    //     return allBrowsers.map((browser) => {
-    //         return {at, browser}
-    //     })
-    // })
-    // const numberArray =
-    // console.log(numberArray);
+
     uniqueReports.forEach(group => {
         if (group.length <= 1) {
             latestReports.push(group.pop());
@@ -196,7 +190,6 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
                 .pop();
 
             latestReports.push(latestReport);
-            // use latest reports for the loop for the table
         }
     });
 
@@ -223,15 +216,16 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
         allAtVersionsByAt,
         testPlanVersionIds,
         phase,
-        reportsByAt
-        // numberArray
+        reportsByAt,
+        latestReports
     };
 };
-
+const priorities = ['MUST', 'SHOULD'];
 const renderEmbed = ({
     ats,
     allTestPlanReports,
     queryTitle,
+    priorities,
     pattern,
     protocol,
     host
@@ -242,9 +236,9 @@ const renderEmbed = ({
         allAtVersionsByAt,
         testPlanVersionIds,
         phase,
-        reportsByAt
-        // numberArray
-    } = getLatestReportsForPattern({ pattern, allTestPlanReports });
+        reportsByAt,
+        latestReports
+    } = getLatestReportsForPattern({ allTestPlanReports, pattern });
     const allAtBrowserCombinations = Object.fromEntries(
         ats.map(at => {
             return [
@@ -262,12 +256,12 @@ const renderEmbed = ({
         allAtBrowserCombinations,
         title: queryTitle || title || 'Pattern Not Found',
         pattern,
+        priorities,
         phase,
         allBrowsers,
-        // section:
-        // numberArray: numberArray,
         allAtVersionsByAt,
         reportsByAt,
+        latestReports,
         completeReportLink: `${protocol}${host}/report/${testPlanVersionIds.join(
             ','
         )}`,
@@ -293,12 +287,14 @@ app.get('/reports/:pattern', async (req, res) => {
     const protocol = /dev|vagrant/.test(process.env.ENVIRONMENT)
         ? 'http://'
         : 'https://';
-    const { allTestPlanReports, reportsHashed, ats } =
-        await queryReportsCached();
+    const { allTestPlanReports, reportsHashed, ats } = await queryReportsCached(
+        pattern
+    );
     const embedRendered = await renderEmbedCached({
         ats,
         allTestPlanReports,
         reportsHashed,
+        priorities,
         queryTitle,
         pattern,
         protocol,

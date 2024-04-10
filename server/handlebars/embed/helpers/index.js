@@ -11,13 +11,22 @@ module.exports = {
         return value === 'CANDIDATE';
     },
     getAtVersion: function (object, key) {
-        // return object.allAtVersionsByAt[key].name;
         return object.allAtVersionsByAt[key].name;
     },
-    // getAtBrowserCombo: function (object, key) {
-    //     // console.log(object.allBrowsers);
-    //     return object[0].at.id;
-    // },
+    getMustSupportData: function (object) {
+        return Math.trunc(
+            (object.metrics.mustAssertionsPassedCount /
+                object.metrics.mustAssertionsCount) *
+                100
+        );
+    },
+    getShouldSupportData: function (object) {
+        return Math.trunc(
+            (object.metrics.shouldAssertionsPassedCount /
+                object.metrics.shouldAssertionsCount) *
+                100
+        );
+    },
     combinationExists: function (object, atName, browserName) {
         if (object.allAtBrowserCombinations[atName].includes(browserName)) {
             return true;
