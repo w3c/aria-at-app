@@ -46,7 +46,7 @@
                     {{log latestReports}}
                     {{#each latestReports}}
                         <tr>
-                            <th><b>{{this.at.name}} / {{this.browser.name}}</b></th>
+                            <th><b>{{this.at.name}}</b> <span style="font-weight: normal;">{{this.latestAtVersionReleasedAt.name}}</span> - <b>{{this.browser.name}}</b></th>
                             {{!-- {{#if (isApplicable this.metrics.mustFormatted)}} --}}
                             {{#if this.metrics.mustFormatted}}
                            <td>
