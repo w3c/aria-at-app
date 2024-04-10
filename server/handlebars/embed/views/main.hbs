@@ -47,8 +47,7 @@
                     {{#each latestReports}}
                         <tr>
                             <th><b>{{this.at.name}}</b> <span style="font-weight: normal;">{{this.latestAtVersionReleasedAt.name}}</span> - <b>{{this.browser.name}}</b></th>
-                            {{!-- {{#if (isApplicable this.metrics.mustFormatted)}} --}}
-                            {{#if this.metrics.mustFormatted}}
+                            {{#if (isMustAssertionPriority this)}}
                            <td>
                                <div class="meter" aria-hidden="true">
                                                     <span style="width: {{getMustSupportData this}}%;"></span>
@@ -58,7 +57,7 @@
                             {{else}}
                                 <td><span class="no-data-cell">Not Applicable</span></td>
                             {{/if}}
-                            {{#if this.metrics.shouldFormatted}}
+                            {{#if (isShouldAssertionPriority this)}}
                            <td>
                                <div class="meter" aria-hidden="true">
                                                     <span style="width: {{getShouldSupportData this}}%;"></span>

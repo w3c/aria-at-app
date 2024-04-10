@@ -20,6 +20,12 @@ module.exports = {
                 100
         );
     },
+    isMustAssertionPriority: function (object) {
+        return object.metrics.mustAssertionsCount > 0;
+    },
+    isShouldAssertionPriority: function (object) {
+        return object.metrics.shouldAssertionsCount > 0;
+    },
     getShouldSupportData: function (object) {
         return Math.trunc(
             (object.metrics.shouldAssertionsPassedCount /
