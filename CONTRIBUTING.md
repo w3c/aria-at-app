@@ -11,10 +11,10 @@ We use GitHub to host code, track issues and feature requests, and accept pull r
 ## Issues
 We use GitHub issues to track bugs, feature requests, and implementation proposals. Report a bug by [opening a new issue](https://github.com/w3c/aria-at-app/issues).
 
-If your issue relates to a specific ARIA-AT test plan or the behavior of the ARIA-AT test renderer, please open an issue in the [aria-at repo](https://github.com/w3c/aria-at/issues).
+If your issue relates to a specific ARIA-AT test plan or the behavior of the ARIA-AT test renderer, please open an issue in the [aria-at repository](https://github.com/w3c/aria-at/issues).
 
 ## Pull Requests
-Pull requests are the best way to propose changes to the codebase. We use [GitHub Flow](https://guides.github.com/introduction/flow/index.html) as a development methodology.
+Pull requests are the best way to propose changes to the codebase. We use [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow), and [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) as development methodologies.
 
 If the pull request is not a bug fix, an implementation proposal should first be submitted via a new issue, in order to reach consensus with the maintainers on scope, technical approach, and design implications.
 
@@ -24,7 +24,7 @@ Pull requests should be small and granular, ideally addressing one issue or feat
 
 In order to open a pull request:
 
-1. Fork the repo and create your branch from `main`.
+1. Fork the repository and create your branch from `development`.
 1. If you've added code that should be tested, add tests. See below for some additional guidance on testing.
 1. If you've changed APIs, update the documentation.
 1. Ensure the test suite passes.
@@ -36,9 +36,11 @@ Maintainers with write access to the repository will create branches directly wi
 ## Reviewing pull requests, merging, and deploying
 All pull requests, including pull requests opened by maintainers, require code review from two maintainers before merging.
 
-The second maintainer who reviews is responsible for merging the pull request into the protected `main` branch.
+The second maintainer who reviews is responsible for merging the pull request into the protected `development` branch.
 
-Maintainers will periodically deploy the `main` branch to the [staging environments](https://github.com/w3c/aria-at-app/wiki).
+Maintainers will periodically deploy the `main` and `development` branches to the [live environments](https://github.com/w3c/aria-at-app/wiki).
+
+Additional details on facilitating the release process can be found in [docs/release.md](https://github.com/w3c/aria-at-app/blob/main/docs/release.md)
 
 ## Guidance on Testing
 

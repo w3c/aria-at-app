@@ -367,14 +367,26 @@ const TestQueueRow = ({
                             <Button
                                 ref={updateTestPlanStatusButtonRef}
                                 variant="secondary"
-                                onClick={() => {
+                                onClick={async () => {
                                     focusButtonRef.current =
                                         updateTestPlanStatusButtonRef.current;
-                                    setPrimaryTestPlanRunId(
+
+                                    const primaryTestPlanRunId =
                                         primaryTestPlanRunOptions[0]
-                                            .testPlanRunId
-                                    );
-                                    setShowPrimaryTestPlanRunModal(true);
+                                            .testPlanRunId;
+
+                                    if (primaryTestPlanRunOptions.length > 1) {
+                                        setPrimaryTestPlanRunId(
+                                            primaryTestPlanRunId
+                                        );
+                                        setShowPrimaryTestPlanRunModal(true);
+                                    } else {
+                                        // Immediately mark as final with the
+                                        // only option
+                                        await updateReportMarkedFinal(
+                                            primaryTestPlanRunId
+                                        );
+                                    }
                                 }}
                             >
                                 Mark as Final
@@ -407,6 +419,7 @@ const TestQueueRow = ({
                         that their output for collected results will be
                         prioritized and shown on report pages.
                         <br />
+                        <br />
                         A tester&apos;s run being marked as primary may also set
                         the minimum required Assistive Technology Version that
                         can be used for subsequent reports with that Test Plan
@@ -435,7 +448,8 @@ const TestQueueRow = ({
                 actions={[
                     {
                         label: 'Confirm',
-                        onClick: async () => await updateReportMarkedFinal()
+                        onClick: async () =>
+                            await updateReportMarkedFinal(primaryTestPlanRunId)
                     }
                 ]}
                 useOnHide
@@ -447,7 +461,7 @@ const TestQueueRow = ({
         );
     };
 
-    const updateReportMarkedFinal = async () => {
+    const updateReportMarkedFinal = async primaryTestPlanRunId => {
         try {
             await triggerLoad(async () => {
                 await markTestPlanReportAsFinal({

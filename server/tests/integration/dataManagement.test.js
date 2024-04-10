@@ -332,27 +332,20 @@ describe('data management', () => {
         });
     });
 
-    it('updates test plan version and copies results from previous version reports', async () => {
+    it('updates test plan version and copies results from previous version reports even in advanced phase', async () => {
         await dbCleaner(async transaction => {
             const testPlanVersions = await testPlanVersionsQuery({
                 transaction
             });
 
             // This has reports for JAWS + Chrome, NVDA + Chrome, VO + Safari + additional
-            // non-required reports
+            // non-required reports in CANDIDATE
             const [oldModalDialogVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
                         e.testPlan.directory === 'modal-dialog' &&
                         e.phase === 'CANDIDATE'
                 );
-
-            // This version is in 'CANDIDATE' phase. Set it to DRAFT
-            // This will also remove the associated TestPlanReports markedFinalAt values
-            const oldTestPlanVersionId = oldModalDialogVersion.id;
-            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT', {
-                transaction
-            });
 
             const oldModalDialogVersionTestPlanReports =
                 oldModalDialogVersion.testPlanReports;
@@ -383,6 +376,7 @@ describe('data management', () => {
                     )
                 );
 
+            // Process new version coming in as RD
             const [newModalDialogVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
@@ -392,6 +386,8 @@ describe('data management', () => {
             const newModalDialogVersionTestPlanReportsInRDCount =
                 newModalDialogVersion.testPlanReports.length;
 
+            // Should still retrieve results from older CANDIDATE version since
+            // no DRAFT version was present
             const { testPlanVersion: newModalDialogVersionInDraft } =
                 await updateVersionToPhaseQuery(
                     newModalDialogVersion.id,
@@ -674,16 +670,29 @@ describe('data management', () => {
         });
     });
 
-    it('updates test plan version but removes marked as final for test plan report when new report has incomplete runs', async () => {
+    it('updates test plan version over another which had all test plan reports as final but removes final for all newly created test plan reports', async () => {
         await dbCleaner(async transaction => {
-            function markedFinalAtReduce(acc, curr) {
-                return acc + (curr.markedFinalAt ? 1 : 0);
+            function markedFinalAtFilter({ markedFinalAt }) {
+                return !!markedFinalAt;
+            }
+
+            function completedResultsCount(testPlanReports, atId) {
+                return (
+                    testPlanReports
+                        .find(({ at }) => at.id == atId)
+                        // 0 because only 1 tester for each already marked final
+                        // report matters during this test
+                        .draftTestPlanRuns[0].testResults.filter(
+                            ({ completedAt }) => !!completedAt
+                        ).length
+                );
             }
 
             const testPlanVersions = await testPlanVersionsQuery({
                 transaction
             });
 
+            // Process counts for old test plan version
             const [oldCommandButtonVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
@@ -691,13 +700,150 @@ describe('data management', () => {
                         e.phase === 'DRAFT' &&
                         e.metadata.testFormatVersion === 2
                 );
-
             const oldCommandButtonVersionMarkedFinalReportsCount =
-                oldCommandButtonVersion.testPlanReports.reduce(
-                    markedFinalAtReduce,
-                    0
+                oldCommandButtonVersion.testPlanReports.filter(
+                    markedFinalAtFilter
+                ).length;
+            const oldCommandButtonJawsCompletedTestResultsCount =
+                completedResultsCount(
+                    oldCommandButtonVersion.testPlanReports,
+                    1
+                );
+            const oldCommandButtonNvdaCompletedTestResultsCount =
+                completedResultsCount(
+                    oldCommandButtonVersion.testPlanReports,
+                    2
+                );
+            const oldCommandButtonSafariCompletedTestResultsCount =
+                completedResultsCount(
+                    oldCommandButtonVersion.testPlanReports,
+                    3
                 );
 
+            // Process counts for new test plan version
+            const [newCommandButtonVersion] =
+                testPlanVersions.testPlanVersions.filter(
+                    e =>
+                        e.testPlan.directory === 'command-button' &&
+                        e.phase === 'RD' &&
+                        e.metadata.testFormatVersion === 2
+                );
+            const { testPlanVersion: newCommandButtonVersionInDraft } =
+                await updateVersionToPhaseQuery(
+                    newCommandButtonVersion.id,
+                    'DRAFT',
+                    {
+                        testPlanVersionDataToIncludeId:
+                            oldCommandButtonVersion.id,
+                        transaction
+                    }
+                );
+            const newCommandButtonVersionInDraftMarkedFinalReportsCount =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.filter(
+                    markedFinalAtFilter
+                ).length;
+            const newCommandButtonJawsCompletedTestResultsCount =
+                completedResultsCount(
+                    newCommandButtonVersionInDraft.updatePhase.testPlanVersion
+                        .testPlanReports,
+                    1
+                );
+            const newCommandButtonNvdaCompletedTestResultsCount =
+                completedResultsCount(
+                    newCommandButtonVersionInDraft.updatePhase.testPlanVersion
+                        .testPlanReports,
+                    2
+                );
+            const newCommandButtonSafariCompletedTestResultsCount =
+                completedResultsCount(
+                    newCommandButtonVersionInDraft.updatePhase.testPlanVersion
+                        .testPlanReports,
+                    3
+                );
+
+            // The difference between them is that there have been updated settings for VoiceOver tests;
+            // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn'
+            //
+            // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
+            // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
+            // 'reqInfoAboutButton' should still match
+            //
+            // This means only 1 test plan report was affected results-wise, for VoiceOver, but they should all still be
+            // unmarked as final. The single JAWS and NVDA reports should have unaffected results but also unmarked as
+            // final.
+            expect(
+                oldCommandButtonVersionMarkedFinalReportsCount
+            ).toBeGreaterThan(0);
+            expect(
+                newCommandButtonVersionInDraftMarkedFinalReportsCount
+            ).toEqual(0);
+            expect(newCommandButtonJawsCompletedTestResultsCount).toEqual(
+                oldCommandButtonJawsCompletedTestResultsCount
+            );
+            expect(newCommandButtonNvdaCompletedTestResultsCount).toEqual(
+                oldCommandButtonNvdaCompletedTestResultsCount
+            );
+            expect(newCommandButtonSafariCompletedTestResultsCount).toEqual(
+                oldCommandButtonSafariCompletedTestResultsCount - 2
+            );
+        });
+    });
+
+    it('preserves results for copied report combinations where commands or assertions are unchanged', async () => {
+        await dbCleaner(async transaction => {
+            function countCollectedAssertionResults(run) {
+                return run.testResults.reduce((trSum, tr) => {
+                    return (
+                        trSum +
+                        tr.scenarioResults.reduce((srSum, sr) => {
+                            // Check if assertion has been collected; null
+                            // if not yet collected
+                            return (
+                                srSum +
+                                sr.assertionResults.filter(
+                                    ({ passed }) => passed != null
+                                ).length
+                            );
+                        }, 0)
+                    );
+                }, 0);
+            }
+
+            const testPlanVersions = await testPlanVersionsQuery({
+                transaction
+            });
+
+            // Process counts for old version
+            const oldCommandButtonVersion =
+                testPlanVersions.testPlanVersions.find(
+                    e =>
+                        e.testPlan.directory === 'command-button' &&
+                        e.phase === 'DRAFT' &&
+                        e.metadata.testFormatVersion === 2
+                );
+            const oldJAWSReport = oldCommandButtonVersion.testPlanReports.find(
+                ({ at }) => at.id == 1
+            );
+            const oldNVDAReport = oldCommandButtonVersion.testPlanReports.find(
+                ({ at }) => at.id == 2
+            );
+            const oldVOReport = oldCommandButtonVersion.testPlanReports.find(
+                ({ at }) => at.id == 3
+            );
+
+            // They're all marked as final so only one run matters for this test
+            const [oldJAWSRun] = oldJAWSReport.draftTestPlanRuns;
+            const [oldNVDARun] = oldNVDAReport.draftTestPlanRuns;
+            const [oldVORun] = oldVOReport.draftTestPlanRuns;
+
+            const oldJAWSAssertionsCollectedCount =
+                countCollectedAssertionResults(oldJAWSRun);
+            const oldNVDAAssertionsCollectedCount =
+                countCollectedAssertionResults(oldNVDARun);
+            const oldVOAssertionsCollectedCount =
+                countCollectedAssertionResults(oldVORun);
+
+            // Process counts for new version
             const [newCommandButtonVersion] =
                 testPlanVersions.testPlanVersions.filter(
                     e =>
@@ -716,27 +862,53 @@ describe('data management', () => {
                         transaction
                     }
                 );
-            const newCommandButtonVersionInDraftMarkedFinalReportsCount =
-                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.reduce(
-                    markedFinalAtReduce,
-                    0
+
+            const newJAWSReport =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+                    ({ at }) => at.id == 1
+                );
+            const newNVDAReport =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+                    ({ at }) => at.id == 2
+                );
+            const newVOReport =
+                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+                    ({ at }) => at.id == 3
                 );
 
+            // They're all marked as final so only one run matters for this test
+            const [newJAWSRun] = newJAWSReport.draftTestPlanRuns;
+            const [newNVDARun] = newNVDAReport.draftTestPlanRuns;
+            const [newVORun] = newVOReport.draftTestPlanRuns;
+
+            const newJAWSAssertionsCollectedCount =
+                countCollectedAssertionResults(newJAWSRun);
+            const newNVDAAssertionsCollectedCount =
+                countCollectedAssertionResults(newNVDARun);
+            const newVOAssertionsCollectedCount =
+                countCollectedAssertionResults(newVORun);
+
             // The difference between them is that there have been updated settings for VoiceOver tests;
-            // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn'
+            // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn' which means the tracked command
+            // has been changed.
             //
             // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
             // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
-            // 'reqInfoAboutButton' should still match
+            // 'reqInfoAboutButton' should still match.
             //
-            // This means only 1 test plan report should be affected, for VoiceOver and now unmarked as final.
-            // The single JAWS and NVDA reports should be unaffected
-            expect(
-                newCommandButtonVersionInDraftMarkedFinalReportsCount
-            ).toBeGreaterThan(1);
-            expect(
-                newCommandButtonVersionInDraftMarkedFinalReportsCount
-            ).toEqual(oldCommandButtonVersionMarkedFinalReportsCount - 1);
+            // This means only 1 test plan report should be affected, for VoiceOver for 2 tests,
+            // for 1 command, which carries 2 assertions. So 2 tests * 2 assertions = 4 assertions
+            // have been affected.
+            // The JAWS and NVDA reports should be unaffected.
+            expect(newJAWSAssertionsCollectedCount).toEqual(
+                oldJAWSAssertionsCollectedCount
+            );
+            expect(newNVDAAssertionsCollectedCount).toEqual(
+                oldNVDAAssertionsCollectedCount
+            );
+            expect(newVOAssertionsCollectedCount).toEqual(
+                oldVOAssertionsCollectedCount - 4
+            );
         });
     });
 });
