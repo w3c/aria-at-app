@@ -564,6 +564,59 @@ describe('Automation controller', () => {
         });
     });
 
+    it('should properly handle per-test status updates without capabilities present', async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
+            const collectionJob = await getCollectionJobById({
+                id: job.id,
+                transaction
+            });
+            // flag overall job as RUNNING
+            await sessionAgent
+                .post(`/api/jobs/${job.id}`)
+                .send({ status: 'RUNNING' })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+
+            const { tests } =
+                collectionJob.testPlanRun.testPlanReport.testPlanVersion;
+            const selectedTestIndex = 0;
+            const selectedTestRowNumber = 1;
+
+            const selectedTest = tests[selectedTestIndex];
+            const response = await sessionAgent
+                .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
+                .send({
+                    status: COLLECTION_JOB_STATUS.RUNNING
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+
+            const { collectionJob: storedCollectionJob } =
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('RUNNING');
+            let foundStatus = false;
+            for (const testStatus of storedCollectionJob.testStatus) {
+                let expectedStatus = COLLECTION_JOB_STATUS.QUEUED;
+                if (testStatus.test.id === selectedTest.id) {
+                    foundStatus = true;
+                    expectedStatus = COLLECTION_JOB_STATUS.RUNNING;
+                }
+                expect(testStatus.status).toEqual(expectedStatus);
+            }
+            expect(foundStatus).toEqual(true);
+        });
+    });
+
     it('should copy assertion results when updating with results that match historical results', async () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
             const context = getGraphQLContext({

@@ -269,7 +269,7 @@ const updateJobResults = async (req, res) => {
             atVersion: atVersionName,
             browserName,
             browserVersion: browserVersionName
-        }
+        } = {}
     } = req.body;
     const job = await getCollectionJobById({ id, transaction });
     if (!job) {
