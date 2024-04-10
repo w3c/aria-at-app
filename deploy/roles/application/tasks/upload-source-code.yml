@@ -35,7 +35,7 @@
 
 - name: Upload project source code
   block:
-    - name: Perform source code sychronization
+    - name: Perform source code synchronization
       synchronize:
         src: '{{playbook_dir}}/..'
         dest: '{{source_dir}}'

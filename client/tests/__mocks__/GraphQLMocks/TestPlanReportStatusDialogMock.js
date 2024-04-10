@@ -282,7 +282,7 @@ export const mockedTestPlanVersion = {
 export default (
     meQuery,
     testPlanReportStatusDialogQuery,
-    initiatedByAutomationQuery
+    existingTestPlanReportsQuery
 ) => [
     {
         request: {
@@ -386,14 +386,15 @@ export default (
     },
     {
         request: {
-            query: initiatedByAutomationQuery,
+            query: existingTestPlanReportsQuery,
             variables: {
-                testPlanVersionId: '7'
+                testPlanVersionId: '7',
+                directory: 'combobox-select-only'
             }
         },
         result: {
             data: {
-                testPlanVersion: {
+                existingTestPlanVersion: {
                     id: '7',
                     testPlanReports: [
                         {
@@ -411,7 +412,8 @@ export default (
                             }
                         }
                     ]
-                }
+                },
+                oldTestPlanVersions: []
             }
         }
     }
