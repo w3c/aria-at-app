@@ -573,9 +573,10 @@ describe('Automation controller', () => {
                 transaction
             });
             // flag overall job as RUNNING
+            const externalLogsUrl = 'https://example.com/test/log/url';
             await sessionAgent
                 .post(`/api/jobs/${job.id}`)
-                .send({ status: 'RUNNING' })
+                .send({ status: 'RUNNING', externalLogsUrl })
                 .set(
                     'x-automation-secret',
                     process.env.AUTOMATION_SCHEDULER_SECRET
@@ -586,9 +587,8 @@ describe('Automation controller', () => {
                 collectionJob.testPlanRun.testPlanReport.testPlanVersion;
             const selectedTestIndex = 0;
             const selectedTestRowNumber = 1;
-
             const selectedTest = tests[selectedTestIndex];
-            const response = await sessionAgent
+            let response = await sessionAgent
                 .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
                 .send({
                     status: COLLECTION_JOB_STATUS.RUNNING
@@ -600,16 +600,66 @@ describe('Automation controller', () => {
                 .set('x-transaction-id', transaction.id);
             expect(response.statusCode).toBe(200);
 
-            const { collectionJob: storedCollectionJob } =
+            let { collectionJob: storedCollectionJob } =
                 await getTestCollectionJob(job.id, { transaction });
             expect(storedCollectionJob.id).toEqual(job.id);
             expect(storedCollectionJob.status).toEqual('RUNNING');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                externalLogsUrl
+            );
             let foundStatus = false;
             for (const testStatus of storedCollectionJob.testStatus) {
                 let expectedStatus = COLLECTION_JOB_STATUS.QUEUED;
                 if (testStatus.test.id === selectedTest.id) {
                     foundStatus = true;
                     expectedStatus = COLLECTION_JOB_STATUS.RUNNING;
+                }
+                expect(testStatus.status).toEqual(expectedStatus);
+            }
+            expect(foundStatus).toEqual(true);
+
+            // check that putting this test into ERROR and sending an overall
+            // collection job ERROR will properly update things
+            response = await sessionAgent
+                .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
+                .send({
+                    status: COLLECTION_JOB_STATUS.ERROR
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+
+            response = await sessionAgent
+                .post(`/api/jobs/${job.id}`)
+                .send({
+                    // avoiding sending externalLogsUrl here to test that when
+                    // missing it is not overwritten/emptied.
+                    status: COLLECTION_JOB_STATUS.ERROR
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+
+            storedCollectionJob = (
+                await getTestCollectionJob(job.id, { transaction })
+            ).collectionJob;
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('ERROR');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                externalLogsUrl
+            );
+            foundStatus = false;
+            for (const testStatus of storedCollectionJob.testStatus) {
+                let expectedStatus = COLLECTION_JOB_STATUS.CANCELLED;
+                if (testStatus.test.id === selectedTest.id) {
+                    foundStatus = true;
+                    expectedStatus = COLLECTION_JOB_STATUS.ERROR;
                 }
                 expect(testStatus.status).toEqual(expectedStatus);
             }
