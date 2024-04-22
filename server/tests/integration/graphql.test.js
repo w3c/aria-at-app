@@ -368,7 +368,7 @@ describe('graphql', () => {
                     recommendedTestPlanVersion: testPlanVersion(id: 69) {
                         __typename
                         id
-                        firstRequiredAtVersion(atId: 1) {
+                        earliestAtVersion(atId: 1) {
                             id
                             name
                             releasedAt

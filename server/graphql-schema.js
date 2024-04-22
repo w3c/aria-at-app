@@ -383,7 +383,7 @@ const graphqlSchema = gql`
         the TestPlanVersion is updated to RECOMMENDED then by checking the
         testers' runs which have been marked as primary, the earliest found AT
         version for the respective ATs should be considered as the
-        first required AT version or "firstRequiredAtVersion".
+        first required AT version or "earliestAtVersion".
 
         The "earliest" is determined by comparing the recorded AtVersions'
         releasedAt value.
@@ -397,9 +397,9 @@ const graphqlSchema = gql`
         After this TestPlanVersion is updated to RECOMMENDED, this should be
         used to ensure subsequent reports created under the TestPlanVersion
         should only being capturing results for AT Versions which are the same
-        as or were released after the "firstRequiredAtVersion".
+        as or were released after the "earliestAtVersion".
         """
-        firstRequiredAtVersion(atId: ID!): AtVersion
+        earliestAtVersion(atId: ID!): AtVersion
     }
 
     """

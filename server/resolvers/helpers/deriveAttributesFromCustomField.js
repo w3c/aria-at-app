@@ -52,8 +52,7 @@ const deriveAttributesFromCustomField = (fieldName, customFields) => {
                 fields.includes('testPlan.directory')
             )
                 derived.push('directory');
-            if (fields.includes('firstRequiredAtVersion'))
-                derived.push('phase');
+            if (fields.includes('earliestAtVersion')) derived.push('phase');
             break;
         }
         case 'testPlanReport': {

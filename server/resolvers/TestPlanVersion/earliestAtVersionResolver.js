@@ -3,7 +3,7 @@ const {
     getTestPlanReports
 } = require('../../models/services/TestPlanReportService');
 
-const firstRequiredAtVersionResolver = async (
+const earliestAtVersionResolver = async (
     testPlanVersion,
     { atId },
     context
@@ -27,7 +27,7 @@ const firstRequiredAtVersionResolver = async (
     // To track the required reports for RECOMMENDED phase
     const ats = await getAts({ transaction });
 
-    let firstRequiredAtVersion = null;
+    let earliestAtVersion = null;
     for (const testPlanReport of reports.filter(
         testPlanReport => testPlanReport.atId == atId
     )) {
@@ -51,11 +51,11 @@ const firstRequiredAtVersionResolver = async (
             });
 
             if (
-                !firstRequiredAtVersion ||
+                !earliestAtVersion ||
                 new Date(atVersion.releasedAt) <
-                    new Date(firstRequiredAtVersion.releasedAt)
+                    new Date(earliestAtVersion.releasedAt)
             ) {
-                firstRequiredAtVersion = {
+                earliestAtVersion = {
                     id: atVersion.id,
                     name: atVersion.name,
                     releasedAt: atVersion.releasedAt
@@ -64,7 +64,7 @@ const firstRequiredAtVersionResolver = async (
         }
     }
 
-    return firstRequiredAtVersion;
+    return earliestAtVersion;
 };
 
-module.exports = firstRequiredAtVersionResolver;
+module.exports = earliestAtVersionResolver;
