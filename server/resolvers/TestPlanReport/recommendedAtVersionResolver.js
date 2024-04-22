@@ -1,15 +1,31 @@
 const {
     getUniqueAtVersionsForReport
 } = require('../../models/services/AtService');
+const {
+    getTestPlanVersionById
+} = require('../../models/services/TestPlanVersionService');
 
 const recommendedAtVersionResolver = async (testPlanReport, _, context) => {
     const { transaction } = context;
 
-    if (
-        testPlanReport.markedFinalAt &&
-        testPlanReport.testPlanVersion.phase !== 'RECOMMENDED'
-    )
-        return null;
+    let phase;
+    if (testPlanReport.testPlanVersion?.phase)
+        phase = testPlanReport.testPlanVersion.phase;
+    else {
+        const testPlanVersion = await getTestPlanVersionById({
+            id: testPlanReport.testPlanVersionId,
+            testPlanVersionAttributes: ['phase'],
+            testPlanReportAttributes: [],
+            testPlanRunAttributes: [],
+            atAttributes: [],
+            browserAttributes: [],
+            userAttributes: [],
+            transaction
+        });
+        phase = testPlanVersion.phase;
+    }
+
+    if (!testPlanReport.markedFinalAt || phase !== 'RECOMMENDED') return null;
 
     // Get all unique AT Versions used with the TestPlanReport
     const uniqueAtVersions = await getUniqueAtVersionsForReport(

@@ -2,9 +2,7 @@ const getTestPlanVersionTitle = (
     testPlanVersion,
     { includeVersionString = false } = {}
 ) => {
-    const title = `${
-        testPlanVersion.title || testPlanVersion.testPlan.directory
-    }`;
+    const title = testPlanVersion.title || testPlanVersion.testPlan.directory;
 
     if (!includeVersionString) return title;
     return `${title} ${testPlanVersion.versionString}`;

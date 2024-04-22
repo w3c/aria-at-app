@@ -1031,9 +1031,8 @@ const graphqlSchema = gql`
         """
         isFinal: Boolean!
         """
-        Uses firstRequiredAtVersion to show version used to create initial
-        RECOMMENDED reports. For subsequent reports, uses the latest used AT
-        Version.
+        Shows the latest released AtVersion used to record results for this
+        TestPlanReport when the TestPlanVersion has been updated to RECOMMENDED.
         """
         recommendedAtVersion: AtVersion
     }
