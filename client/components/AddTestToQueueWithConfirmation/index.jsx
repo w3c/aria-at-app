@@ -266,7 +266,11 @@ function AddTestToQueueWithConfirmation({
                     if (oldReportToCopyResultsFrom) {
                         setShowPreserveReportDataMessage(true);
                     } else {
-                        await addTestToQueue();
+                        if (hasAutomationSupport) {
+                            setShowConfirmation(true);
+                        } else {
+                            await addTestToQueue();
+                        }
                     }
                 }}
                 className="w-auto"
