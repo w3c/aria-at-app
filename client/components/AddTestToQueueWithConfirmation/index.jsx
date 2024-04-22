@@ -125,7 +125,7 @@ function AddTestToQueueWithConfirmation({
                     await addTestToQueue(
                         canUseOldResults
                             ? {
-                                  copyResultsFromTestPlanReportId:
+                                  copyResultsFromTestPlanVersionId:
                                       latestOldVersion.id
                               }
                             : {}
@@ -141,7 +141,7 @@ function AddTestToQueueWithConfirmation({
                         const testPlanReport = await addTestToQueue(
                             canUseOldResults
                                 ? {
-                                      copyResultsFromTestPlanReportId:
+                                      copyResultsFromTestPlanVersionId:
                                           latestOldVersion.id
                                   }
                                 : {}
@@ -208,7 +208,7 @@ function AddTestToQueueWithConfirmation({
                                 setShowConfirmation(true);
                             } else {
                                 await addTestToQueue({
-                                    copyResultsFromTestPlanReportId:
+                                    copyResultsFromTestPlanVersionId:
                                         latestOldVersion.id
                                 });
                             }
@@ -223,7 +223,9 @@ function AddTestToQueueWithConfirmation({
         );
     };
 
-    const addTestToQueue = async ({ copyResultsFromTestPlanReportId } = {}) => {
+    const addTestToQueue = async ({
+        copyResultsFromTestPlanVersionId
+    } = {}) => {
         let tpr;
         await triggerLoad(async () => {
             const res = await addTestPlanReport({
@@ -233,12 +235,11 @@ function AddTestToQueueWithConfirmation({
                     minimumAtVersionId: minimumAtVersion?.id,
                     exactAtVersionId: exactAtVersion?.id,
                     browserId: browser.id,
-                    copyResultsFromTestPlanReportId
+                    copyResultsFromTestPlanVersionId
                 }
             });
             const testPlanReport =
-                res?.data?.findOrCreateTestPlanReport?.populatedData
-                    ?.testPlanReport ?? null;
+                res?.data?.createTestPlanReport?.testPlanReport ?? null;
             tpr = testPlanReport;
         }, 'Adding Test Plan to Test Queue');
         setShowConfirmation(true);

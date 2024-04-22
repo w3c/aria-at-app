@@ -224,34 +224,29 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
         $exactAtVersionId: ID
         $minimumAtVersionId: ID
         $browserId: ID!
-        $copyResultsFromTestPlanReportId: ID
+        $copyResultsFromTestPlanVersionId: ID
     ) {
-        findOrCreateTestPlanReport(
+        createTestPlanReport(
             input: {
                 testPlanVersionId: $testPlanVersionId
                 atId: $atId
                 exactAtVersionId: $exactAtVersionId
                 minimumAtVersionId: $minimumAtVersionId
                 browserId: $browserId
-                copyResultsFromTestPlanReportId: $copyResultsFromTestPlanReportId
+                copyResultsFromTestPlanVersionId: $copyResultsFromTestPlanVersionId
             }
         ) {
-            populatedData {
-                testPlanReport {
+            testPlanReport {
+                id
+                at {
                     id
-                    at {
-                        id
-                    }
-                    browser {
-                        id
-                    }
                 }
-                testPlanVersion {
+                browser {
                     id
                 }
             }
-            created {
-                locationOfData
+            testPlanVersion {
+                id
             }
         }
     }

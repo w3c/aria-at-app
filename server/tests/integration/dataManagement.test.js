@@ -169,7 +169,7 @@ const updateVersionToPhaseQuery = (
     );
 };
 
-const findOrCreateTestPlanReportQuery = (
+const createTestPlanReportQuery = (
     testPlanVersionId,
     atId,
     minimumAtVersionId,
@@ -179,32 +179,27 @@ const findOrCreateTestPlanReportQuery = (
     return mutate(
         gql`
             mutation {
-                findOrCreateTestPlanReport(input: {
+                createTestPlanReport(input: {
                     testPlanVersionId: ${testPlanVersionId}
                     atId: ${atId}
                     minimumAtVersionId: ${minimumAtVersionId}
                     browserId: ${browserId}
                 }) {
-                    populatedData {
-                        testPlanReport {
+                    testPlanReport {
+                        id
+                        at {
                             id
-                            at {
-                                id
-                            }
-                            browser {
-                                id
-                            }
                         }
-                        testPlanVersion {
+                        browser {
                             id
-                            phase
-                            testPlanReports {
-                                id
-                            }
                         }
                     }
-                    created {
-                        locationOfData
+                    testPlanVersion {
+                        id
+                        phase
+                        testPlanReports {
+                            id
+                        }
                     }
                 }
             }
@@ -515,12 +510,10 @@ describe('data management', () => {
             });
 
             const {
-                findOrCreateTestPlanReport: {
-                    populatedData: {
-                        testPlanVersion: newModalDialogVersionInDraft
-                    }
+                createTestPlanReport: {
+                    testPlanVersion: newModalDialogVersionInDraft
                 }
-            } = await findOrCreateTestPlanReportQuery(
+            } = await createTestPlanReportQuery(
                 newModalDialogVersion.id,
                 3,
                 ats.find(at => at.id == 3).atVersions[0].id,
@@ -622,12 +615,10 @@ describe('data management', () => {
             });
 
             const {
-                findOrCreateTestPlanReport: {
-                    populatedData: {
-                        testPlanVersion: newModalDialogVersionInDraft
-                    }
+                createTestPlanReport: {
+                    testPlanVersion: newModalDialogVersionInDraft
                 }
-            } = await findOrCreateTestPlanReportQuery(
+            } = await createTestPlanReportQuery(
                 newModalDialogVersion.id,
                 3,
                 ats.find(at => at.id == 3).atVersions[0].id,
