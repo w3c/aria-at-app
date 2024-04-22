@@ -14,6 +14,12 @@ const testPlanVersionsQuery = ({ transaction }) => {
     return query(
         gql`
             query {
+                ats {
+                    id
+                    atVersions {
+                        id
+                    }
+                }
                 testPlanVersions(phases: [RD, DRAFT, CANDIDATE]) {
                     id
                     phase
@@ -166,6 +172,7 @@ const updateVersionToPhaseQuery = (
 const findOrCreateTestPlanReportQuery = (
     testPlanVersionId,
     atId,
+    minimumAtVersionId,
     browserId,
     { transaction }
 ) => {
@@ -175,6 +182,7 @@ const findOrCreateTestPlanReportQuery = (
                 findOrCreateTestPlanReport(input: {
                     testPlanVersionId: ${testPlanVersionId}
                     atId: ${atId}
+                    minimumAtVersionId: ${minimumAtVersionId}
                     browserId: ${browserId}
                 }) {
                     populatedData {
@@ -464,18 +472,17 @@ describe('data management', () => {
 
     it('updates test plan version and copies all but one report from previous version', async () => {
         await dbCleaner(async transaction => {
-            const testPlanVersions = await testPlanVersionsQuery({
+            const { testPlanVersions, ats } = await testPlanVersionsQuery({
                 transaction
             });
 
             // This has reports for JAWS + Chrome, NVDA + Chrome, VO + Safari + additional
             // non-required reports
-            const [oldModalDialogVersion] =
-                testPlanVersions.testPlanVersions.filter(
-                    e =>
-                        e.testPlan.directory === 'modal-dialog' &&
-                        e.phase === 'CANDIDATE'
-                );
+            const [oldModalDialogVersion] = testPlanVersions.filter(
+                e =>
+                    e.testPlan.directory === 'modal-dialog' &&
+                    e.phase === 'CANDIDATE'
+            );
 
             // This version is in 'CANDIDATE' phase. Set it to DRAFT
             // This will also remove the associated TestPlanReports markedFinalAt values
@@ -497,12 +504,9 @@ describe('data management', () => {
                     )
                 );
 
-            const [newModalDialogVersion] =
-                testPlanVersions.testPlanVersions.filter(
-                    e =>
-                        e.testPlan.directory === 'modal-dialog' &&
-                        e.phase === 'RD'
-                );
+            const [newModalDialogVersion] = testPlanVersions.filter(
+                e => e.testPlan.directory === 'modal-dialog' && e.phase === 'RD'
+            );
             const newModalDialogVersionTestPlanReportsInRDCount =
                 newModalDialogVersion.testPlanReports.length;
 
@@ -519,6 +523,7 @@ describe('data management', () => {
             } = await findOrCreateTestPlanReportQuery(
                 newModalDialogVersion.id,
                 3,
+                ats.find(at => at.id == 3).atVersions[0].id,
                 1,
                 { transaction }
             );
@@ -582,18 +587,17 @@ describe('data management', () => {
 
     it('updates test plan version but has new reports that are required and not yet marked as final', async () => {
         await dbCleaner(async transaction => {
-            const testPlanVersions = await testPlanVersionsQuery({
+            const { testPlanVersions, ats } = await testPlanVersionsQuery({
                 transaction
             });
 
             // This has reports for JAWS + Chrome, NVDA + Chrome, VO + Safari + additional
             // non-required reports
-            const [oldModalDialogVersion] =
-                testPlanVersions.testPlanVersions.filter(
-                    e =>
-                        e.testPlan.directory === 'modal-dialog' &&
-                        e.phase === 'CANDIDATE'
-                );
+            const [oldModalDialogVersion] = testPlanVersions.filter(
+                e =>
+                    e.testPlan.directory === 'modal-dialog' &&
+                    e.phase === 'CANDIDATE'
+            );
             const oldModalDialogVersionTestPlanReports =
                 oldModalDialogVersion.testPlanReports;
             const oldModalDialogVersionTestPlanReportsCount =
@@ -607,12 +611,9 @@ describe('data management', () => {
                     )
                 );
 
-            const [newModalDialogVersion] =
-                testPlanVersions.testPlanVersions.filter(
-                    e =>
-                        e.testPlan.directory === 'modal-dialog' &&
-                        e.phase === 'RD'
-                );
+            const [newModalDialogVersion] = testPlanVersions.filter(
+                e => e.testPlan.directory === 'modal-dialog' && e.phase === 'RD'
+            );
             const newModalDialogVersionTestPlanReportsInRDCount =
                 newModalDialogVersion.testPlanReports.length;
 
@@ -629,6 +630,7 @@ describe('data management', () => {
             } = await findOrCreateTestPlanReportQuery(
                 newModalDialogVersion.id,
                 3,
+                ats.find(at => at.id == 3).atVersions[0].id,
                 3,
                 { transaction }
             );

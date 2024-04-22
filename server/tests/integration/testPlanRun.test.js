@@ -45,6 +45,7 @@ const prepopulateTestPlanReport = async ({ transaction }) => {
                     input: {
                         testPlanVersionId: ${testPlanVersionId}
                         atId: 1
+                        minimumAtVersionId: 1
                         browserId: 1
                     }
                 ) {

@@ -1015,6 +1015,8 @@ const graphqlSchema = gql`
     input TestPlanReportInput {
         testPlanVersionId: ID!
         atId: ID!
+        exactAtVersionId: ID
+        minimumAtVersionId: ID
         browserId: ID!
         copyResultsFromTestPlanReportId: ID
     }

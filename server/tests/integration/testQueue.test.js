@@ -278,6 +278,7 @@ describe('test queue', () => {
             // A1
             const testPlanVersionId = '1';
             const atId = '1';
+            const minimumAtVersionId = '1';
             const browserId = '1';
             const mutationToTest = async () => {
                 const result = await mutate(
@@ -286,6 +287,7 @@ describe('test queue', () => {
                             findOrCreateTestPlanReport(input: {
                                 testPlanVersionId: ${testPlanVersionId}
                                 atId: ${atId}
+                                minimumAtVersionId: ${minimumAtVersionId}
                                 browserId: ${browserId}
                             }) {
                                 populatedData {

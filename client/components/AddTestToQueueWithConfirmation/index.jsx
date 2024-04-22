@@ -19,6 +19,8 @@ function AddTestToQueueWithConfirmation({
     testPlanVersion,
     browser,
     at,
+    exactAtVersion,
+    minimumAtVersion,
     disabled = false,
     buttonText = 'Add to Test Queue',
     triggerUpdate = () => {}
@@ -44,23 +46,11 @@ function AddTestToQueueWithConfirmation({
     const existingTestPlanReports =
         existingTestPlanReportsData?.existingTestPlanVersion?.testPlanReports;
 
-    const conflictingReportExists = existingTestPlanReports?.some(report => {
-        return (
-            report.at.id === at?.id &&
-            report.browser.id === browser?.id &&
-            report.isFinal
-        );
-    });
-
     let latestOldVersion;
     let oldReportToCopyResultsFrom;
 
-    // Prioritize a conflicting report for the current version, otherwise
-    // check if any results data available from a previous result
-    if (
-        !conflictingReportExists &&
-        existingTestPlanReportsData?.oldTestPlanVersions?.length
-    ) {
+    // Check if any results data available from a previous result
+    if (existingTestPlanReportsData?.oldTestPlanVersions?.length) {
         latestOldVersion =
             existingTestPlanReportsData?.oldTestPlanVersions?.reduce((a, b) =>
                 new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b
@@ -184,76 +174,47 @@ function AddTestToQueueWithConfirmation({
     };
 
     const renderPreserveReportDataDialog = () => {
-        let title;
-        let content;
-        let actions = [];
-
-        if (oldReportToCopyResultsFrom) {
-            title = 'Older Results Data Found';
-            content =
-                'Older results with the same AT, browser and test plan ' +
-                'were found for the report being created. Would you like ' +
-                'to copy the older results into the report or create a ' +
-                'completely new report?';
-            actions = [
-                {
-                    label: 'Create empty report',
-                    onClick: async () => {
-                        setShowPreserveReportDataMessage(false);
-                        if (hasAutomationSupport) {
-                            setShowConfirmation(true);
-                        } else {
-                            await addTestToQueue();
-                        }
-                    }
-                },
-                {
-                    label: 'Copy older results',
-                    onClick: async () => {
-                        setShowPreserveReportDataMessage(false);
-                        setCanUseOldResults(true);
-
-                        if (hasAutomationSupport) {
-                            setShowConfirmation(true);
-                        } else {
-                            await addTestToQueue({
-                                copyResultsFromTestPlanReportId:
-                                    latestOldVersion.id
-                            });
-                        }
-                    }
-                }
-            ];
-        } else {
-            title = 'Conflicting Report Found';
-            content =
-                'The report could not be created because an existing ' +
-                'report was found on the reports page with the same AT, ' +
-                'browser and test plan version. Would you like to return ' +
-                'the existing report back to the test queue?';
-            actions = [
-                {
-                    label: 'Proceed',
-                    onClick: async () => {
-                        setShowPreserveReportDataMessage(false);
-                        if (hasAutomationSupport) {
-                            setShowConfirmation(true);
-                        } else {
-                            await addTestToQueue();
-                        }
-                    }
-                }
-            ];
-        }
-
         return (
             <BasicModal
                 show={showPreserveReportDataMessage}
-                title={title}
-                content={content}
+                title={'Older Results Data Found'}
+                content={
+                    'Older results with the same AT, browser and test plan ' +
+                    'were found for the report being created. Would you like ' +
+                    'to copy the older results into the report or create a ' +
+                    'completely new report?'
+                }
                 closeLabel="Cancel"
                 staticBackdrop={true}
-                actions={actions}
+                actions={[
+                    {
+                        label: 'Create empty report',
+                        onClick: async () => {
+                            setShowPreserveReportDataMessage(false);
+                            if (hasAutomationSupport) {
+                                setShowConfirmation(true);
+                            } else {
+                                await addTestToQueue();
+                            }
+                        }
+                    },
+                    {
+                        label: 'Copy older results',
+                        onClick: async () => {
+                            setShowPreserveReportDataMessage(false);
+                            setCanUseOldResults(true);
+
+                            if (hasAutomationSupport) {
+                                setShowConfirmation(true);
+                            } else {
+                                await addTestToQueue({
+                                    copyResultsFromTestPlanReportId:
+                                        latestOldVersion.id
+                                });
+                            }
+                        }
+                    }
+                ]}
                 useOnHide
                 handleClose={async () => {
                     setShowPreserveReportDataMessage(false);
@@ -269,6 +230,8 @@ function AddTestToQueueWithConfirmation({
                 variables: {
                     testPlanVersionId: testPlanVersion.id,
                     atId: at.id,
+                    minimumAtVersionId: minimumAtVersion?.id,
+                    exactAtVersionId: exactAtVersion?.id,
                     browserId: browser.id,
                     copyResultsFromTestPlanReportId
                 }
@@ -300,14 +263,10 @@ function AddTestToQueueWithConfirmation({
                 disabled={disabled}
                 variant="secondary"
                 onClick={async () => {
-                    if (conflictingReportExists || oldReportToCopyResultsFrom) {
+                    if (oldReportToCopyResultsFrom) {
                         setShowPreserveReportDataMessage(true);
                     } else {
-                        if (hasAutomationSupport) {
-                            setShowConfirmation(true);
-                        } else {
-                            await addTestToQueue();
-                        }
+                        await addTestToQueue();
                     }
                 }}
                 className="w-auto"
@@ -325,6 +284,8 @@ AddTestToQueueWithConfirmation.propTypes = {
     testPlanVersion: PropTypes.object,
     browser: PropTypes.object,
     at: PropTypes.object,
+    exactAtVersion: PropTypes.object,
+    minimumAtVersion: PropTypes.object,
     buttonRef: PropTypes.object,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,

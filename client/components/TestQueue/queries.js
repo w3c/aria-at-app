@@ -221,6 +221,8 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
     mutation AddTestPlanReport(
         $testPlanVersionId: ID!
         $atId: ID!
+        $exactAtVersionId: ID
+        $minimumAtVersionId: ID
         $browserId: ID!
         $copyResultsFromTestPlanReportId: ID
     ) {
@@ -228,6 +230,8 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
             input: {
                 testPlanVersionId: $testPlanVersionId
                 atId: $atId
+                exactAtVersionId: $exactAtVersionId
+                minimumAtVersionId: $minimumAtVersionId
                 browserId: $browserId
                 copyResultsFromTestPlanReportId: $copyResultsFromTestPlanReportId
             }

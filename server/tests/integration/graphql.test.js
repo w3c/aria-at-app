@@ -593,6 +593,7 @@ describe('graphql', () => {
                             input: {
                                 testPlanVersionId: 2
                                 atId: 2
+                                minimumAtVersionId: 2
                                 browserId: 2
                             }
                         ) {
