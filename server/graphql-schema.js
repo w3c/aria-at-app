@@ -378,15 +378,26 @@ const graphqlSchema = gql`
         """
         testPlanReports(isFinal: Boolean): [TestPlanReport]!
         """
-        The first required AT Version of a specified AT used to collect results
-        for this TestPlanVersion.
+        For each report under this TestPlanVersion, if the report's combination
+        is indicated as required and the report is marked as final at the time
+        the TestPlanVersion is updated to RECOMMENDED then by checking the
+        testers' runs which have been marked as primary, the earliest found AT
+        version for the respective ATs should be considered as the
+        first required AT version or "firstRequiredAtVersion".
 
-        A first required AT Version is the earliest version used to collect
-        results for a test plan run marked as primary, and is a required report.
+        The "earliest" is determined by comparing the recorded AtVersions'
+        releasedAt value.
 
-        This should be used to prevent any older AT Versions from being used to
-        create subsequent reports after the Test Plan Version has reached
-        RECOMMENDED.
+        Required Reports definition and combinations are defined at
+        https://github.com/w3c/aria-at-app/wiki/Business-Logic-and-Processes#required-reports.
+
+        Primary Test Plan Run is defined at
+        https://github.com/w3c/aria-at-app/wiki/Business-Logic-and-Processes#primary-test-plan-run.
+
+        After this TestPlanVersion is updated to RECOMMENDED, this should be
+        used to ensure subsequent reports created under the TestPlanVersion
+        should only being capturing results for AT Versions which are the same
+        as or were released after the "firstRequiredAtVersion".
         """
         firstRequiredAtVersion(atId: ID!): AtVersion
     }
