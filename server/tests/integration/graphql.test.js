@@ -378,7 +378,7 @@ describe('graphql', () => {
                                 releasedAt
                             }
                         }
-                        firstRequiredAtVersion(atId: 1) {
+                        earliestAtVersion(atId: 1) {
                             id
                             name
                             releasedAt

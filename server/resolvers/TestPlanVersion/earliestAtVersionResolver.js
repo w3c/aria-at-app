@@ -1,24 +1,34 @@
 const { getAts, getAtVersionById } = require('../../models/services/AtService');
+const {
+    getTestPlanReports
+} = require('../../models/services/TestPlanReportService');
 
-const firstRequiredAtVersionResolver = async (
+const earliestAtVersionResolver = async (
     testPlanVersion,
     { atId },
     context
 ) => {
     const { transaction } = context;
 
-    if (
-        !testPlanVersion.testPlanReports.length ||
-        testPlanVersion.phase !== 'RECOMMENDED'
-    ) {
+    let reports = [];
+    if (testPlanVersion.testPlanReports) {
+        reports = [...testPlanVersion.testPlanReports];
+    } else {
+        reports = await getTestPlanReports({
+            where: { testPlanVersionId: testPlanVersion.id },
+            transaction
+        });
+    }
+
+    if (!reports.length || testPlanVersion.phase !== 'RECOMMENDED') {
         return null;
     }
 
     // To track the required reports for RECOMMENDED phase
     const ats = await getAts({ transaction });
 
-    let firstRequiredAtVersion = null;
-    for (const testPlanReport of testPlanVersion.testPlanReports.filter(
+    let earliestAtVersion = null;
+    for (const testPlanReport of reports.filter(
         testPlanReport => testPlanReport.atId == atId
     )) {
         const browserId = testPlanReport.browserId;
@@ -41,11 +51,11 @@ const firstRequiredAtVersionResolver = async (
             });
 
             if (
-                !firstRequiredAtVersion ||
+                !earliestAtVersion ||
                 new Date(atVersion.releasedAt) <
-                    new Date(firstRequiredAtVersion.releasedAt)
+                    new Date(earliestAtVersion.releasedAt)
             ) {
-                firstRequiredAtVersion = {
+                earliestAtVersion = {
                     id: atVersion.id,
                     name: atVersion.name,
                     releasedAt: atVersion.releasedAt
@@ -54,7 +64,7 @@ const firstRequiredAtVersionResolver = async (
         }
     }
 
-    return firstRequiredAtVersion;
+    return earliestAtVersion;
 };
 
-module.exports = firstRequiredAtVersionResolver;
+module.exports = earliestAtVersionResolver;

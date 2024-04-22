@@ -3,7 +3,7 @@ const gitMessage = require('./gitMessageResolver');
 const tests = require('./testsResolver');
 const testPlanReports = require('./testPlanReportsResolver');
 const recommendedPhaseTargetDate = require('./recommendedPhaseTargetDateResolver');
-const firstRequiredAtVersion = require('./firstRequiredAtVersionResolver');
+const earliestAtVersion = require('./earliestAtVersionResolver');
 
 const TestPlanVersion = {
     testPlan,
@@ -11,7 +11,7 @@ const TestPlanVersion = {
     tests,
     testPlanReports,
     recommendedPhaseTargetDate,
-    firstRequiredAtVersion
+    earliestAtVersion
 };
 
 module.exports = TestPlanVersion;
