@@ -17,6 +17,41 @@ module.exports = {
                 { type: Sequelize.DataTypes.INTEGER },
                 { transaction }
             );
+
+            const atVersions = await queryInterface.sequelize.query(
+                `
+                    SELECT
+                        id,
+                        "atId",
+                        "releasedAt"
+                    FROM
+                        "AtVersion"
+                    ORDER BY
+                        "releasedAt" ASC
+                `,
+                { type: Sequelize.QueryTypes.SELECT, transaction }
+            );
+
+            const oldAtVersions = {};
+            atVersions.forEach(atVersion => {
+                if (!oldAtVersions[atVersion.atId]) {
+                    oldAtVersions[atVersion.atId] = atVersion.id;
+                }
+            });
+
+            for (const [atId, atVersionId] of Object.entries(oldAtVersions)) {
+                await queryInterface.sequelize.query(
+                    `
+                        UPDATE
+                            "TestPlanReport"
+                        SET
+                            "minimumAtVersionId" = ?
+                        WHERE
+                            "atId" = ?
+                    `,
+                    { replacements: [atVersionId, atId], transaction }
+                );
+            }
         });
     },
 

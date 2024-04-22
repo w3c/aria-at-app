@@ -265,6 +265,76 @@ const createTestPlanReport = async ({
 };
 
 /**
+ * @param {object} options
+ * @param {number} options.id - unique id of the TestPlanReport model being to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced for {@param id}
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes - At attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const updateTestPlanReportById = async ({
+    id,
+    values: { metrics, testPlanVersionId, vendorReviewStatus, markedFinalAt },
+    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
+    userAttributes = USER_ATTRIBUTES,
+    transaction
+}) => {
+    await ModelService.update(TestPlanReport, {
+        where: { id },
+        values: {
+            metrics,
+            testPlanVersionId,
+            vendorReviewStatus,
+            markedFinalAt
+        },
+        transaction
+    });
+
+    // call custom this.getById if custom attributes are being accounted for
+    return getTestPlanReportById({
+        id,
+        testPlanReportAttributes,
+        testPlanRunAttributes,
+        testPlanVersionAttributes,
+        testPlanAttributes,
+        atAttributes,
+        browserAttributes,
+        userAttributes,
+        transaction
+    });
+};
+
+/**
+ * @param {object} options
+ * @param {string} options.id - id of the TestPlanReport record to be removed
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<boolean>}
+ */
+const removeTestPlanReportById = async ({
+    id,
+    truncate = false,
+    transaction
+}) => {
+    return ModelService.removeById(TestPlanReport, {
+        id,
+        truncate,
+        transaction
+    });
+};
+
+/**
  * Gets one TestPlanReport, or creates it if it doesn't exist, and then optionally updates it. Supports nested / associated values.
  * @param {object} options
  * @param {*} options.where - These values will be used to find a matching record, or they will be used to create one
@@ -358,82 +428,12 @@ const getOrCreateTestPlanReport = async ({
     return [testPlanReport, created];
 };
 
-/**
- * @param {object} options
- * @param {number} options.id - unique id of the TestPlanReport model being to be updated
- * @param {object} options.values - values to be used to update columns for the record being referenced for {@param id}
- * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
- * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
- * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} options.atAttributes - At attributes to be returned in the result
- * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
- * @param {string[]} options.userAttributes - User attributes to be returned in the result
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<*>}
- */
-const updateTestPlanReportById = async ({
-    id,
-    values: { metrics, testPlanVersionId, vendorReviewStatus, markedFinalAt },
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
-}) => {
-    await ModelService.update(TestPlanReport, {
-        where: { id },
-        values: {
-            metrics,
-            testPlanVersionId,
-            vendorReviewStatus,
-            markedFinalAt
-        },
-        transaction
-    });
-
-    // call custom this.getById if custom attributes are being accounted for
-    return getTestPlanReportById({
-        id,
-        testPlanReportAttributes,
-        testPlanRunAttributes,
-        testPlanVersionAttributes,
-        testPlanAttributes,
-        atAttributes,
-        browserAttributes,
-        userAttributes,
-        transaction
-    });
-};
-
-/**
- * @param {object} options
- * @param {string} options.id - id of the TestPlanReport record to be removed
- * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<boolean>}
- */
-const removeTestPlanReportById = async ({
-    id,
-    truncate = false,
-    transaction
-}) => {
-    return ModelService.removeById(TestPlanReport, {
-        id,
-        truncate,
-        transaction
-    });
-};
-
 module.exports = {
     // Basic CRUD
     getTestPlanReportById,
     getTestPlanReports,
     createTestPlanReport,
-    getOrCreateTestPlanReport,
     updateTestPlanReportById,
-    removeTestPlanReportById
+    removeTestPlanReportById,
+    getOrCreateTestPlanReport
 };
