@@ -9,7 +9,7 @@
     {{#unless dataEmpty}}
         {{#if (isCandidate phase)}}
         <details id="embed-report-phase-container">
-            <summary id="candidate-title"><span>Warning! Unapproved Report</span></summary>
+            <summary id="candidate-title"><span><span>Warning! Unapproved Report</span></span></summary>
             <div id="candidate-content-container">
                 The information in this report is generated from candidate tests developed and run by the <a href="http://aria-at.w3.org">ARIA-AT Project</a>.
                 Candidate ARIA-AT tests are in review by assistive technology developers and lack consensus regarding:
@@ -37,36 +37,78 @@
                 <thead>
                     <tr>
                         <td></td>
-                        {{#each priorities}}
+                        {{#each allBrowsers}}
                         <th>{{this}}</th>
                         {{/each}}
                     </tr>
                 </thead>
                 <tbody>
-                    {{log latestReports}}
-                    {{#each latestReports}}
+                    {{#each reportsByAt}}
                         <tr>
-                            <th><b>{{this.at.name}}</b> <span style="font-weight: normal;">{{this.latestAtVersionReleasedAt.name}}</span> - <b>{{this.browser.name}}</b></th>
-                            {{#if (isMustAssertionPriority this)}}
-                           <td>
-                               <div class="meter" aria-hidden="true">
-                                                    <span style="width: {{getMustSupportData this}}%;"></span>
+                            <th><b>{{@key}}</b> <span id="at-version">{{getAtVersion @../this @key}}</span></th>
+                            {{#each this}}
+                                {{#if (isBrowser "Chrome" this.browser.name)}}
+                                    {{#if (isInAllBrowsers "Chrome" @../../this) }}
+                                            <td>
+                                                <div class="meter" aria-hidden="true">
+                                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
                                                 </div>
-                                                <b>{{getMustSupportData this}}%</b> supported
-                            </td>
-                            {{else}}
-                                <td><span class="no-data-cell">Not Applicable</span></td>
-                            {{/if}}
-                            {{#if (isShouldAssertionPriority this)}}
-                           <td>
-                               <div class="meter" aria-hidden="true">
-                                                    <span style="width: {{getShouldSupportData this}}%;"></span>
+                                                <b>{{this.metrics.supportPercent}}%</b> supported
+                                            </td>
+                                    {{/if}}
+                                {{else}}
+                                    {{#if (isInAllBrowsers "Chrome" @../../this) }}
+                                        {{#unless (elementExists @../../this @../this this.at.name "Chrome" @last)}}
+                                            {{#if (combinationExists @../../this this.at.name "Chrome")}}
+                                                <td><span class="no-data-cell">Data Not Yet Available</span></td>
+                                            {{else}}
+                                                <td><span class="no-data-cell">Not Applicable</span></td>
+                                            {{/if}}
+                                        {{/unless}}
+                                    {{/if}}
+                                {{/if}}
+                                {{#if (isBrowser "Firefox" this.browser.name)}}
+                                    {{#if (isInAllBrowsers "Firefox" @../../this) }}
+                                            <td>
+                                                <div class="meter" aria-hidden="true">
+                                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
                                                 </div>
-                                                <b>{{getShouldSupportData this}}%</b> supported
-                            </td>
-                            {{else}}
-                                <td><span class="no-data-cell">Not Applicable</span></td>
-                            {{/if}}
+                                                <b>{{this.metrics.supportPercent}}%</b> supported
+                                            </td>
+                                    {{/if}}
+                                {{else}}
+                                    {{#if (isInAllBrowsers "Firefox" @../../this) }}
+                                        {{#unless (elementExists @../../this @../this this.at.name "Firefox" @last)}}
+                                            {{#if (combinationExists @../../this this.at.name "Firefox")}}
+                                                <td><span class="no-data-cell">Data Not Yet Available</span></td>
+                                            {{else}}
+                                                <td><span class="no-data-cell">Not Applicable</span></td>
+                                            {{/if}}
+                                        {{/unless}}
+                                    {{/if}}
+                                {{/if}}
+                                {{#if (isBrowser "Safari" this.browser.name)}}
+                                    {{#if (isInAllBrowsers "Safari" @../../this) }}
+                                            <td>
+                                                <div class="meter" aria-hidden="true">
+                                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
+                                                </div>
+                                                <b>{{this.metrics.supportPercent}}%</b> supported
+                                            </td>
+                                    {{/if}}
+                                {{else}}
+                                    {{#if (isInAllBrowsers "Safari" @../../this) }}
+                                        {{#unless (elementExists @../../this @../this this.at.name "Safari" @last)}}
+                                            {{#if (combinationExists @../../this this.at.name "Safari")}}
+                                                <td><span class="no-data-cell">Data Not Yet Available</span></td>
+                                            {{else}}
+                                                <td><span class="no-data-cell">Not Applicable</span></td>
+                                            {{/if}}
+                                        {{/unless}}
+                                    {{/if}}
+                                {{/if}}
+                            {{/each}}
+                            {{resetMap}}
                         </tr>
                     {{/each}}
                 </tbody>
