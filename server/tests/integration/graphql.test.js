@@ -150,7 +150,6 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
-            ['TestPlanReportOperations', 'updateTestPlanReportTestPlanVersion'],
             ['Test', 'viewers'],
             ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
             ['CollectionJob', 'testPlanRun'],
@@ -594,20 +593,15 @@ describe('graphql', () => {
                         $browserVersionId: ID!
                     ) {
                         __typename
-                        findOrCreateTestPlanReport(
+                        createTestPlanReport(
                             input: {
                                 testPlanVersionId: 2
                                 atId: 2
+                                minimumAtVersionId: 2
                                 browserId: 2
                             }
                         ) {
                             __typename
-                            populatedData {
-                                locationOfData
-                            }
-                            created {
-                                locationOfData
-                            }
                         }
                         testPlanReport(id: 1) {
                             __typename

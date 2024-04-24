@@ -215,7 +215,13 @@ const getTestPlanReports = async ({
  * @returns {Promise<*>}
  */
 const createTestPlanReport = async ({
-    values: { testPlanVersionId, atId, browserId },
+    values: {
+        testPlanVersionId,
+        atId,
+        exactAtVersionId,
+        minimumAtVersionId,
+        browserId
+    },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -234,6 +240,8 @@ const createTestPlanReport = async ({
             testPlanVersionId,
             atId,
             browserId,
+            exactAtVersionId,
+            minimumAtVersionId,
             testPlanId: testPlanVersion.testPlanId
         },
         transaction
@@ -341,7 +349,13 @@ const removeTestPlanReportById = async ({
  * @returns {Promise<[*, [*]]>}
  */
 const getOrCreateTestPlanReport = async ({
-    where: { testPlanVersionId, atId, browserId },
+    where: {
+        testPlanVersionId,
+        atId,
+        exactAtVersionId,
+        minimumAtVersionId,
+        browserId
+    },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -356,7 +370,13 @@ const getOrCreateTestPlanReport = async ({
             {
                 get: getTestPlanReports,
                 create: createTestPlanReport,
-                values: { testPlanVersionId, atId, browserId },
+                values: {
+                    testPlanVersionId,
+                    atId,
+                    ...(minimumAtVersionId ? { minimumAtVersionId } : {}),
+                    ...(exactAtVersionId ? { exactAtVersionId } : {}),
+                    browserId
+                },
                 returnAttributes: {
                     testPlanReportAttributes,
                     testPlanRunAttributes: [],
