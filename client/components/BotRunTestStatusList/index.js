@@ -86,6 +86,12 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
     }
     return (
         <BotRunTestStatusUnorderedList className="text-secondary fs-6">
+            {RUNNING > 0 && (
+                <li className="m-2">
+                    <ReportStatusDot className="tests-running" />
+                    {testCountString(RUNNING, 'Running')}
+                </li>
+            )}
             {ERROR > 0 && (
                 <li className="m-2">
                     <ReportStatusDot className="tests-error" />
@@ -96,26 +102,22 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
                 <ReportStatusDot className="tests-complete" />
                 {testCountString(COMPLETED, 'Completed')}
             </li>
-            {RUNNING > 0 && (
-                <li className="m-2">
-                    <ReportStatusDot className="tests-running" />
-                    {testCountString(RUNNING, 'Running')}
-                </li>
-            )}
             <li className="m-2">
                 <ReportStatusDot className="tests-queued" />
                 {testCountString(QUEUED, 'Queued')}
             </li>
-            <li className="m-2">
-                <ReportStatusDot className="tests-cancelled" />
-                {testCountString(CANCELLED, 'Cancelled')}
-            </li>
+            {CANCELLED > 0 && (
+                <li className="m-2">
+                    <ReportStatusDot className="tests-cancelled" />
+                    {testCountString(CANCELLED, 'Cancelled')}
+                </li>
+            )}
         </BotRunTestStatusUnorderedList>
     );
 };
 
 BotRunTestStatusList.propTypes = {
-    testPlanReportId: PropTypes.string.isRequired,
+    testPlanReportId: PropTypes.string.isRequired
 };
 
 export default BotRunTestStatusList;

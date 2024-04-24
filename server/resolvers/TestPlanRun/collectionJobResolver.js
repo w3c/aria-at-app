@@ -5,9 +5,13 @@ const collectionJobResolver = async (
     args, // eslint-disable-line no-unused-vars
     context // eslint-disable-line no-unused-vars
 ) => {
-    const collectionJob = await collectionJobByTestPlanRunIdResolver(null, { testPlanRunId: testPlanRun.id }, context);
+    const collectionJob = await collectionJobByTestPlanRunIdResolver(
+        null,
+        { testPlanRunId: testPlanRun.id },
+        context
+    );
     if (collectionJob) {
-        return {...collectionJob.dataValues, __testPlanRunChild: true};
+        return { ...collectionJob.dataValues, __testPlanRunChild: true };
     }
     return collectionJob;
 };
