@@ -1,2 +1,3 @@
 const testStatus = require('./testStatusResolver');
-module.exports = { testStatus };
+const testPlanRun = require('./testPlanRunResolver');
+module.exports = { testStatus, testPlanRun };

@@ -1,13 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import {
-    COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
-    TEST_PLAN_RUNS_TEST_RESULTS_QUERY
-} from './queries';
-import { useLazyQuery, useQuery } from '@apollo/client';
+import { TEST_PLAN_RUNS_TEST_RESULTS_QUERY } from './queries';
+import { useQuery } from '@apollo/client';
 import styled from '@emotion/styled';
 import ReportStatusDot from '../common/ReportStatusDot';
-import { isBot } from '../../utils/automation';
 
 const BotRunTestStatusUnorderedList = styled.ul`
     list-style-type: none;
@@ -35,7 +31,9 @@ const BotRunTestStatusUnorderedList = styled.ul`
 const testCountString = (count, status) =>
     `${count} Test${count === 1 ? '' : 's'} ${status}`;
 
-const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
+const pollInterval = 2000;
+
+const BotRunTestStatusList = ({ testPlanReportId }) => {
     const {
         data: testPlanRunsQueryResult,
         startPolling,
@@ -43,105 +41,74 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
     } = useQuery(TEST_PLAN_RUNS_TEST_RESULTS_QUERY, {
         variables: { testPlanReportId },
         fetchPolicy: 'cache-and-network',
-        pollInterval: 2000
+        pollInterval
     });
 
-    const [getCollectionJobStatus, { data: collectionJobStatusQueryResult }] =
-        useLazyQuery(COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY, {
-            fetchPolicy: 'cache-and-network'
-        });
-
-    const [collectedData, setCollectedData] = useState([]);
-    const requestedTestRunIds = useRef(new Set());
-
-    const botTestPlanRuns = useMemo(() => {
-        if (!testPlanRunsQueryResult?.testPlanRuns) {
-            return [];
-        }
-        return testPlanRunsQueryResult.testPlanRuns.filter(testPlanRun =>
-            isBot(testPlanRun.tester)
-        );
-    }, [testPlanRunsQueryResult?.testPlanRuns]);
-
-    useEffect(() => {
-        const ids = botTestPlanRuns.map(run => run.id);
-        for (const id of ids) {
-            if (!requestedTestRunIds.current.has(id)) {
-                requestedTestRunIds.current.add(id);
-                getCollectionJobStatus({
-                    variables: { testPlanRunId: id }
-                });
-            }
-        }
-    }, [botTestPlanRuns]);
-
-    useEffect(() => {
-        if (collectionJobStatusQueryResult?.collectionJobByTestPlanRunId) {
-            const { status } =
-                collectionJobStatusQueryResult.collectionJobByTestPlanRunId;
-            setCollectedData(prev => [...prev, status]);
-        }
-    }, [collectionJobStatusQueryResult?.collectionJobByTestPlanRunId]);
-
-    const [numTestsCompleted, numTestsQueued, numTestsCancelled] =
-        useMemo(() => {
-            const res = [0, 0, 0];
-            if (
-                botTestPlanRuns &&
-                botTestPlanRuns.length &&
-                collectedData.length === botTestPlanRuns.length
-            ) {
-                for (let i = 0; i < botTestPlanRuns.length; i++) {
-                    const status = collectedData[i];
-                    res[0] += botTestPlanRuns[i].testResults.length;
-                    switch (status) {
-                        case 'COMPLETED':
-                        case 'RUNNING':
-                        case 'QUEUED':
-                            res[1] +=
-                                runnableTestsLength -
-                                botTestPlanRuns[i].testResults.length;
-                            break;
-                        case 'CANCELLED':
-                            res[2] +=
-                                runnableTestsLength -
-                                botTestPlanRuns[i].testResults.length;
-                            break;
-                        default:
-                            break;
+    const { COMPLETED, ERROR, RUNNING, CANCELLED, QUEUED } = useMemo(() => {
+        const counter = {
+            COMPLETED: 0,
+            ERROR: 0,
+            RUNNING: 0,
+            CANCELLED: 0,
+            QUEUED: 0
+        };
+        let anyPossibleUpdates = false;
+        if (testPlanRunsQueryResult?.testPlanRuns) {
+            for (const {
+                collectionJob
+            } of testPlanRunsQueryResult.testPlanRuns) {
+                if (collectionJob?.testStatus) {
+                    for (const { status } of collectionJob.testStatus) {
+                        counter[status]++;
+                        if (status === 'QUEUED' || status === 'RUNNING') {
+                            anyPossibleUpdates = true;
+                        }
                     }
                 }
-                if (
-                    res[0] + res[2] ===
-                    runnableTestsLength * botTestPlanRuns.length
-                ) {
-                    stopPolling();
-                }
             }
-            return res;
-        }, [testPlanRunsQueryResult, collectedData, stopPolling, startPolling]);
+            // it's possible that we got incomplete data on first fetch and
+            // stopped the polling, so restart the polling if we detect any
+            // possible future updates, otherwise stop.
+            if (anyPossibleUpdates) {
+                startPolling(pollInterval);
+            } else {
+                stopPolling();
+            }
+        }
+        return counter;
+    }, [testPlanRunsQueryResult, stopPolling, startPolling]);
 
     if (
-        !botTestPlanRuns ||
-        botTestPlanRuns.length === 0 ||
-        !collectedData ||
-        !(collectedData.length === botTestPlanRuns.length)
+        !testPlanRunsQueryResult ||
+        testPlanRunsQueryResult.testPlanRuns.length === 0
     ) {
         return null;
     }
     return (
         <BotRunTestStatusUnorderedList className="text-secondary fs-6">
+            {ERROR > 0 && (
+                <li className="m-2">
+                    <ReportStatusDot className="tests-error" />
+                    {testCountString(ERROR, 'Error')}
+                </li>
+            )}
             <li className="m-2">
                 <ReportStatusDot className="tests-complete" />
-                {testCountString(numTestsCompleted, 'Completed')}
+                {testCountString(COMPLETED, 'Completed')}
             </li>
+            {RUNNING > 0 && (
+                <li className="m-2">
+                    <ReportStatusDot className="tests-running" />
+                    {testCountString(RUNNING, 'Running')}
+                </li>
+            )}
             <li className="m-2">
                 <ReportStatusDot className="tests-queued" />
-                {testCountString(numTestsQueued, 'Queued')}
+                {testCountString(QUEUED, 'Queued')}
             </li>
             <li className="m-2">
                 <ReportStatusDot className="tests-cancelled" />
-                {testCountString(numTestsCancelled, 'Cancelled')}
+                {testCountString(CANCELLED, 'Cancelled')}
             </li>
         </BotRunTestStatusUnorderedList>
     );
@@ -149,7 +116,6 @@ const BotRunTestStatusList = ({ testPlanReportId, runnableTestsLength }) => {
 
 BotRunTestStatusList.propTypes = {
     testPlanReportId: PropTypes.string.isRequired,
-    runnableTestsLength: PropTypes.number.isRequired
 };
 
 export default BotRunTestStatusList;
