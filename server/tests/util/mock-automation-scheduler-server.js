@@ -101,8 +101,6 @@ const setupMockAutomationSchedulerServer = async () => {
                     COLLECTION_JOB_STATUS.ERROR
                 );
             } else {
-                testResult[isV2 ? 'presentationNumber' : 'testCsvRow'] =
-                    currentTest.rowNumber;
                 await axios.post(
                     `${process.env.APP_SERVER}/api/jobs/${jobId}/test/${currentTest.rowNumber}`,
                     testResult,

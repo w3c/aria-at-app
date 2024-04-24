@@ -506,10 +506,11 @@ describe('graphql', () => {
                             releasedAt
                         }
                     }
-                    testPlanRun(id: 3) {
+                    testPlanRun(id: 1) {
                         __typename
                         id
                         initiatedByAutomation
+                        collectionJob { id }
                         testPlanReport {
                             id
                         }
