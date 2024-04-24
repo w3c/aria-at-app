@@ -1014,6 +1014,9 @@ const TestRun = () => {
             ];
         }
 
+        const externalLogsUrl =
+            collectionJobQuery?.collectionJobByTestPlanRunId?.externalLogsUrl;
+
         const menuRightOfContent = (
             <div role="complementary">
                 <h2 id="test-options-heading">Test Options</h2>
@@ -1034,17 +1037,12 @@ const TestRun = () => {
                             href={issueLink}
                         />
                     </li>
-                    {isBot(openAsUser) &&
-                    collectionJobQuery?.collectionJobByTestPlanRunId
-                        ?.externalLogsUrl ? (
+                    {isBot(openAsUser) && externalLogsUrl ? (
                         <li>
                             <OptionButton
                                 text="View Log"
                                 target="_blank"
-                                href={
-                                    collectionJobQuery?.collectionJob
-                                        ?.externalLogsUrl
-                                }
+                                href={externalLogsUrl}
                             />
                         </li>
                     ) : (

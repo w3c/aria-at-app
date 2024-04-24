@@ -14,6 +14,14 @@ module.exports = function (sequelize, DataTypes) {
             testPlanId: { type: DataTypes.INTEGER },
             atId: { type: DataTypes.INTEGER },
             browserId: { type: DataTypes.INTEGER },
+            exactAtVersionId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
+            minimumAtVersionId: {
+                type: DataTypes.INTEGER,
+                allowNull: true
+            },
             createdAt: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW

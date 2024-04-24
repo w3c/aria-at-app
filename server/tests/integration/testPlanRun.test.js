@@ -41,19 +41,18 @@ const prepopulateTestPlanReport = async ({ transaction }) => {
     const mutationResult = await mutate(
         gql`
             mutation {
-                findOrCreateTestPlanReport(
+                createTestPlanReport(
                     input: {
                         testPlanVersionId: ${testPlanVersionId}
                         atId: 1
+                        minimumAtVersionId: 1
                         browserId: 1
                     }
                 ) {
-                    populatedData {
-                        testPlanReport {
+                    testPlanReport {
+                        id
+                        runnableTests {
                             id
-                            runnableTests {
-                                id
-                            }
                         }
                     }
                 }
@@ -61,8 +60,7 @@ const prepopulateTestPlanReport = async ({ transaction }) => {
         `,
         { transaction }
     );
-    const { testPlanReport } =
-        mutationResult.findOrCreateTestPlanReport.populatedData;
+    const { testPlanReport } = mutationResult.createTestPlanReport;
     testPlanReportId = testPlanReport.id;
     testId = testPlanReport.runnableTests[1].id;
 };

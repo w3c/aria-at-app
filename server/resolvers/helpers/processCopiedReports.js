@@ -3,8 +3,8 @@ const {
 } = require('../../models/services/TestPlanVersionService');
 const {
     getTestPlanReports,
-    getOrCreateTestPlanReport,
-    updateTestPlanReportById
+    updateTestPlanReportById,
+    getOrCreateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const { hashTest } = require('../../util/aria');
 const {
@@ -342,6 +342,8 @@ const processCopiedReports = async ({
                 where: {
                     testPlanVersionId: newTestPlanVersionId,
                     atId: oldTestPlanReport.atId,
+                    minimumAtVersionId: oldTestPlanReport.minimumAtVersionId,
+                    exactAtVersionId: oldTestPlanReport.exactAtVersionId,
                     browserId: oldTestPlanReport.browserId
                 },
                 transaction
