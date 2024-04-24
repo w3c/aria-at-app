@@ -784,6 +784,31 @@ describe('graphql', () => {
             );
         });
 
+        // esure recursive query of collectionJob<>testPlanRun fails at some depth
+        await expect(
+            typeAwareQuery(
+                gql`
+                    query {
+                        collectionJob(id: 1) {
+                            id
+                            testPlanRun {
+                                id
+                                collectionJob {
+                                    id
+                                    testPlanRun {
+                                        id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                {
+                    transaction: false
+                }
+            )
+        ).rejects.toBeDefined();
+
         expect(() => {
             const missingTypes = checkForMissingTypes();
             if (missingTypes.length) {
