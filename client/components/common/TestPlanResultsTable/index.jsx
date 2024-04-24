@@ -9,7 +9,10 @@ const renderAssertionRow = (assertionResult, priorityString) => {
     return (
         <tr key={`${assertionResult.id}__${nextId()}`}>
             <td>{priorityString}</td>
-            <td>{assertionResult.assertion.text}</td>
+            <td>
+                {assertionResult.assertion.phrase ??
+                    assertionResult.assertion.text}
+            </td>
             <td>{assertionResult.passed ? 'Passed' : 'Failed'}</td>
         </tr>
     );

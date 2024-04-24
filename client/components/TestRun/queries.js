@@ -33,24 +33,28 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         id
                         assertion {
                             text
+                            phrase
                         }
                         passed
                     }
                     mustAssertionResults: assertionResults(priority: MUST) {
                         assertion {
                             text
+                            phrase
                         }
                         passed
                     }
                     shouldAssertionResults: assertionResults(priority: SHOULD) {
                         assertion {
                             text
+                            phrase
                         }
                         passed
                     }
                     mayAssertionResults: assertionResults(priority: MAY) {
                         assertion {
                             text
+                            phrase
                         }
                         passed
                     }
@@ -88,6 +92,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
                         assertion {
                             id
                             text
+                            phrase
                         }
                     }
                     conflictingResults {
@@ -198,6 +203,8 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                     assertion {
                         id
                         text
+                        phrase
+                        phrase
                     }
                 }
                 conflictingResults {
@@ -323,6 +330,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 id
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -331,6 +339,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             ) {
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -339,6 +348,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             ) {
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -347,6 +357,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             ) {
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -384,6 +395,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                                 assertion {
                                     id
                                     text
+                                    phrase
                                 }
                             }
                             conflictingResults {
@@ -480,6 +492,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             assertion {
                                 id
                                 text
+                                phrase
                             }
                         }
                         conflictingResults {
@@ -609,6 +622,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 id
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -617,6 +631,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             ) {
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -625,6 +640,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             ) {
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -633,6 +649,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             ) {
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -670,6 +687,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                                 assertion {
                                     id
                                     text
+                                    phrase
                                 }
                             }
                             conflictingResults {
@@ -766,6 +784,8 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             assertion {
                                 id
                                 text
+                                phrase
+                                phrase
                             }
                         }
                         conflictingResults {
@@ -895,6 +915,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 id
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -903,6 +924,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             ) {
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -911,6 +933,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             ) {
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -919,6 +942,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             ) {
                                 assertion {
                                     text
+                                    phrase
                                 }
                                 passed
                             }
@@ -956,6 +980,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                                 assertion {
                                     id
                                     text
+                                    phrase
                                 }
                             }
                             conflictingResults {
@@ -1052,6 +1077,7 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             assertion {
                                 id
                                 text
+                                phrase
                             }
                         }
                         conflictingResults {
