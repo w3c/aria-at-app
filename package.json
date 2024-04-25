@@ -1,6 +1,6 @@
 {
-  "name": "aria-at-report",
-  "version": "1.0.0",
+  "name": "aria-at-app",
+  "version": "1.1.0",
   "description": "Run ARIA-AT tests and report results",
   "main": "server/index.js",
   "private": true,
@@ -25,21 +25,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bocoup/aria-at-report.git"
+    "url": "git+https://github.com/w3c/aria-at-app.git"
   },
   "author": "",
   "license": "SEE LICENSE IN LICENSE.md",
   "bugs": {
-    "url": "https://github.com/bocoup/aria-at-report/issues"
+    "url": "https://github.com/w3c/aria-at-app/issues"
   },
-  "homepage": "https://github.com/bocoup/aria-at-report#readme",
+  "homepage": "https://github.com/w3c/aria-at-app#readme",
   "dependencies": {
     "patch-package": "^6.5.1",
     "postinstall-postinstall": "^2.1.0"
   },
   "workspaces": [
     "client",
-    "server"
+    "server",
+    "shared"
   ],
   "devDependencies": {
     "npm-run-all": "^4.1.5"

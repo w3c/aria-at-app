@@ -1,13 +1,10 @@
 const ModelService = require('./ModelService');
-
 const {
     AT_ATTRIBUTES,
     AT_VERSION_ATTRIBUTES,
-    AT_MODE_ATTRIBUTES,
     BROWSER_ATTRIBUTES
 } = require('./helpers');
-const { Sequelize, At, AtVersion, AtMode } = require('../');
-const { clearCachedAts } = require('../loaders/utils');
+const { Sequelize, At, AtVersion } = require('../');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -31,15 +28,6 @@ const atVersionAssociation = atVersionAttributes => ({
 });
 
 /**
- * @param atModeAttributes - AtMode attributes
- * @returns {{association: string, attributes: string[]}}
- */
-const atModeAssociation = atModeAttributes => ({
-    association: 'modes',
-    attributes: atModeAttributes
-});
-
-/**
  * @param browserAttributes - Browser attributes
  * @returns {{association: string, attributes: string[]}}
  */
@@ -52,149 +40,139 @@ const browserAssociation = browserAttributes => ({
 
 /**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
- * @param {number} id - unique id of the At model being queried
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {number} options.id - unique id of the At model being queried
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getAtById = async (
+const getAtById = async ({
     id,
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
-    atModeAttributes = AT_MODE_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    options = {}
-) => {
-    return ModelService.getById(
-        At,
+    transaction
+}) => {
+    return ModelService.getById(At, {
         id,
-        atAttributes,
-        [
+        attributes: atAttributes,
+        include: [
             atVersionAssociation(atVersionAttributes),
-            atModeAssociation(atModeAttributes),
             browserAssociation(browserAttributes)
         ],
-        options
-    );
+        transaction
+    });
 };
 
 /**
- * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
- * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {string|any} options.search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
+ * @param {object} options.pagination - pagination options for query
+ * @param {number} options.pagination.page - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} options.pagination.order - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getAts = async (
+const getAts = async ({
     search,
-    filter = {},
+    where = {},
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
-    atModeAttributes = AT_MODE_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     pagination = {},
-    options = {}
-) => {
+    transaction
+}) => {
     // search and filtering options
-    let where = { ...filter };
     const searchQuery = search ? `%${search}%` : '';
     if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
-    return await ModelService.get(
-        At,
+    return ModelService.get(At, {
         where,
-        atAttributes,
-        [
+        attributes: atAttributes,
+        include: [
             atVersionAssociation(atVersionAttributes),
-            atModeAssociation(atModeAttributes),
             browserAssociation(browserAttributes)
         ],
         pagination,
-        options
-    );
+        transaction
+    });
 };
 
 /**
- * @param {object} createParams - values to be used to create the At record
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.values - values to be used to create the At record
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const createAt = async (
-    { name },
+const createAt = async ({
+    values: { name },
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
-    atModeAttributes = AT_MODE_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    options = {}
-) => {
-    const atResult = await ModelService.create(At, { name });
+    transaction
+}) => {
+    const atResult = await ModelService.create(At, {
+        values: { name },
+        transaction
+    });
     const { id } = atResult;
 
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await ModelService.getById(
-        At,
+    return ModelService.getById(At, {
         id,
-        atAttributes,
-        [
+        attributes: atAttributes,
+        include: [
             atVersionAssociation(atVersionAttributes),
-            atModeAssociation(atModeAttributes),
             browserAssociation(browserAttributes)
         ],
-        options
-    );
+        transaction
+    });
 };
 
 /**
- * @param {number} id - id of the At record to be updated
- * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param id}
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {string[]} browserAttributes  - Browser attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {number} options.id - id of the At record to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced for {@param id}
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.browserAttributes  - Browser attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const updateAt = async (
+const updateAtById = async ({
     id,
-    { name },
+    values: { name },
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
-    atModeAttributes = AT_MODE_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.update(At, { id }, { name }, options);
+    transaction
+}) => {
+    await ModelService.update(At, {
+        where: { id },
+        values: { name },
+        transaction
+    });
 
-    return await ModelService.getById(
-        At,
+    return ModelService.getById(At, {
         id,
-        atAttributes,
-        [
+        attributes: atAttributes,
+        include: [
             atVersionAssociation(atVersionAttributes),
-            atModeAssociation(atModeAttributes),
             browserAssociation(browserAttributes)
         ],
-        options
-    );
+        transaction
+    });
 };
 
 /**
@@ -202,343 +180,222 @@ const updateAt = async (
  * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
  * @returns {Promise<boolean>}
  */
-const removeAt = async (id, deleteOptions = { truncate: false }) => {
-    clearCachedAts();
-    return await ModelService.removeById(At, id, deleteOptions);
+const removeAtById = async ({ id, truncate = false, transaction }) => {
+    return ModelService.removeById(At, { id, truncate, transaction });
 };
 
 // AtVersion
 
 /**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
- * @param {number} id - unique id of the AtVersion model being queried
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {number} options.id - unique id of the AtVersion model being queried
+ * @param {object} options
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getAtVersionById = async (
+const getAtVersionById = async ({
     id,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    return ModelService.getById(
-        AtVersion,
+    transaction
+}) => {
+    return ModelService.getById(AtVersion, {
         id,
-        atVersionAttributes,
-        [atAssociation(atAttributes)],
-        options
-    );
+        attributes: atVersionAttributes,
+        include: [atAssociation(atAttributes)],
+        transaction
+    });
 };
 
 /**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
- * @param {object} queryParams - unique values of the AtVersion model being queried
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.where - unique values of the AtVersion model being queried
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getAtVersionByQuery = async (
-    { atId, name, releasedAt },
+const getAtVersionByQuery = async ({
+    where: { atId, name, releasedAt },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    return ModelService.getByQuery(
-        AtVersion,
-        { atId, ...(name && { name }), ...(releasedAt && { releasedAt }) },
-        atVersionAttributes,
-        [atAssociation(atAttributes)],
-        options
-    );
+    transaction
+}) => {
+    return ModelService.getByQuery(AtVersion, {
+        where: {
+            atId,
+            ...(name && { name }),
+            ...(releasedAt && { releasedAt })
+        },
+        attributes: atVersionAttributes,
+        include: [atAssociation(atAttributes)],
+        transaction
+    });
 };
 
 /**
- * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
- * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {string|any} options.search - use this to combine with {@param filter} to be passed to Sequelize's where clause
+ * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
+ * @param {object} options.pagination - pagination options for query
+ * @param {number} options.pagination.page - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const getAtVersions = async (
+const getAtVersions = async ({
     search,
-    filter = {},
+    where = {},
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     pagination = {},
-    options = {}
-) => {
+    transaction
+}) => {
     // search and filtering options
-    let where = { ...filter };
     const searchQuery = search ? `%${search}%` : '';
     if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
-    return await ModelService.get(
-        AtVersion,
+    return ModelService.get(AtVersion, {
         where,
-        atVersionAttributes,
-        [atAssociation(atAttributes)],
+        attributes: atVersionAttributes,
+        include: [atAssociation(atAttributes)],
         pagination,
-        options
-    );
+        transaction
+    });
 };
 
 /**
- * @param {object} createParams - values to be used to create the AtVersion record
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.createParams - values to be used to create the AtVersion record
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const createAtVersion = async (
-    { atId, name, releasedAt },
+const createAtVersion = async ({
+    values: { atId, name, releasedAt },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.create(AtVersion, { atId, name, releasedAt }, options);
-    clearCachedAts();
+    transaction
+}) => {
+    await ModelService.create(AtVersion, {
+        values: { atId, name, releasedAt },
+        transaction
+    });
     // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await ModelService.getByQuery(
-        AtVersion,
-        { atId, name },
-        atVersionAttributes,
-        [atAssociation(atAttributes)],
-        options
-    );
+    return ModelService.getByQuery(AtVersion, {
+        where: { atId, name },
+        attributes: atVersionAttributes,
+        include: [atAssociation(atAttributes)],
+        transaction
+    });
 };
 
 /**
- * @param {object} queryParams - values of the AtVersion record to be updated
- * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.where - values of the AtVersion record to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const updateAtVersionByQuery = async (
-    { atId, name, releasedAt },
-    updateParams = {},
+const updateAtVersionByQuery = async ({
+    where: { atId, name, releasedAt },
+    values = {},
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.update(
-        AtVersion,
-        { atId, name, releasedAt },
-        updateParams
-    );
-    clearCachedAts();
-    return await ModelService.getByQuery(
-        AtVersion,
-        { atId, name: updateParams.name || name, releasedAt },
-        atVersionAttributes,
-        [atAssociation(atAttributes)],
-        options
-    );
+    transaction
+}) => {
+    await ModelService.update(AtVersion, {
+        where: { atId, name, releasedAt },
+        values,
+        transaction
+    });
+    return ModelService.getByQuery(AtVersion, {
+        where: { atId, name: values.name || name, releasedAt },
+        attributes: atVersionAttributes,
+        include: [atAssociation(atAttributes)],
+        transaction
+    });
 };
 
 /**
- * @param {number} id - id of the AtVersion record to be updated
- * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {number} options.id - id of the AtVersion record to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
-const updateAtVersionById = async (
+const updateAtVersionById = async ({
     id,
-    updateParams = {},
+    values = {},
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.update(AtVersion, { id }, updateParams);
-    clearCachedAts();
-    return await ModelService.getById(
-        AtVersion,
+    transaction
+}) => {
+    await ModelService.update(AtVersion, {
+        where: { id },
+        values,
+        transaction
+    });
+    return ModelService.getById(AtVersion, {
         id,
-        atVersionAttributes,
-        [atAssociation(atAttributes)],
-        options
-    );
+        attributes: atVersionAttributes,
+        include: [atAssociation(atAttributes)],
+        transaction
+    });
 };
 
 /**
- * @param {object} queryParams - values of the AtVersion record to be removed
- * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @param {object} options
+ * @param {object} options.where - values of the AtVersion record to be removed
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeAtVersionByQuery = async (
-    { atId, name, releasedAt },
-    deleteOptions = { truncate: false }
-) => {
-    clearCachedAts();
-    return await ModelService.removeByQuery(
-        AtVersion,
-        { atId, name, releasedAt },
-        deleteOptions
-    );
+const removeAtVersionByQuery = async ({
+    where: { atId, name, releasedAt },
+    truncate = false,
+    transaction
+}) => {
+    return ModelService.removeByQuery(AtVersion, {
+        where: { atId, name, releasedAt },
+        truncate,
+        transaction
+    });
 };
 
 /**
- * @param {number} id - id of the AtVersion record to be removed
- * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
+ * @param {object} options
+ * @param {number} options.id - id of the AtVersion record to be removed
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<boolean>}
  */
-const removeAtVersionById = async (id, deleteOptions = { truncate: false }) => {
-    clearCachedAts();
-    return await ModelService.removeById(AtVersion, id, deleteOptions);
+const removeAtVersionById = async ({ id, truncate = false, transaction }) => {
+    return ModelService.removeById(AtVersion, {
+        id,
+        truncate,
+        transaction
+    });
 };
 
-// AtMode
-
-/**
- * You can pass any of the attribute arrays as '[]' to exclude that related association
- * @param {object} queryParams - unique values of the AtMode model being queried
- * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<*>}
- */
-const getAtModeByQuery = async (
-    { atId, name },
-    atModeAttributes = AT_MODE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    options = {}
+const getUniqueAtVersionsForReport = async (
+    testPlanReportId,
+    { transaction }
 ) => {
-    return ModelService.getByQuery(
-        AtMode,
-        { atId, name },
-        atModeAttributes,
-        [atAssociation(atAttributes)],
-        options
-    );
-};
-
-/**
- * @param {string|any} search - use this to combine with {@param filter} to be passed to Sequelize's where clause
- * @param {object} filter - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
- * @param {string[]} atAttributes - At attributes to be returned in the result
- * @param {object} pagination - pagination options for query
- * @param {number} [pagination.page=0] - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
- * @param {number} [pagination.limit=10] - amount of results to be returned per page (affected by {@param pagination.enablePagination})
- * @param {string[][]} [pagination.order=[]] - expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} [pagination.enablePagination=false] - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<*>}
- */
-const getAtModes = async (
-    search,
-    filter = {},
-    atModeAttributes = AT_MODE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    pagination = {},
-    options = {}
-) => {
-    // search and filtering options
-    let where = { ...filter };
-    const searchQuery = search ? `%${search}%` : '';
-    if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
-
-    return await ModelService.get(
-        AtMode,
-        where,
-        atModeAttributes,
-        [atAssociation(atAttributes)],
-        pagination,
-        options
-    );
-};
-
-/**
- * @param {object} createParams - values to be used to create the AtMode record
- * @param {string[]} atModeAttributes  - AtMode attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<*>}
- */
-const createAtMode = async (
-    { atId, name, screenText, instructions },
-    atModeAttributes = AT_MODE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.create(AtMode, { atId, name, screenText, instructions });
-
-    // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return await ModelService.getByQuery(
-        AtMode,
-        { atId, name },
-        atModeAttributes,
-        [atAssociation(atAttributes)],
-        options
-    );
-};
-
-/**
- * @param {object} queryParams - values of the AtMode record to be updated
- * @param {object} updateParams - values to be used to update columns for the record being referenced for {@param queryParams}
- * @param {string[]} atModeAttributes - AtMode attributes to be returned in the result
- * @param {string[]} atAttributes - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<*>}
- */
-const updateAtModeByQuery = async (
-    { atId, name },
-    updateParams = {},
-    atModeAttributes = AT_MODE_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    await ModelService.update(AtMode, { atId, name }, updateParams);
-
-    return await ModelService.getByQuery(
-        AtMode,
-        { atId, name: updateParams.name || name },
-        atModeAttributes,
-        [atAssociation(atAttributes)],
-        options
-    );
-};
-
-/**
- * @param {object} queryParams - values of the AtMode record to be removed
- * @param {object} deleteOptions - Sequelize specific deletion options that could be passed
- * @returns {Promise<boolean>}
- */
-const removeAtModeByQuery = async (
-    { atId, name },
-    deleteOptions = { truncate: false }
-) => {
-    return await ModelService.removeByQuery(
-        AtMode,
-        { atId, name },
-        deleteOptions
-    );
-};
-
-const getUniqueAtVersionsForReport = async testPlanReportId => {
-    const results = await ModelService.rawQuery(`
+    const results = await ModelService.rawQuery(
+        `
         select "atVersionId", name, "releasedAt", "testPlanReportId", "testerUserId", "testPlanRunId"
         from ( select distinct "TestPlanReport".id                                              as "testPlanReportId",
                                "TestPlanRun".id                                                 as "testPlanRunId",
@@ -549,7 +406,9 @@ const getUniqueAtVersionsForReport = async testPlanReportId => {
                where "testPlanReportId" = ${testPlanReportId}
                group by "TestPlanReport".id, "TestPlanRun".id ) as atVersionResults
                  join "AtVersion" on "AtVersion".id = atVersionResults."atVersionId";
-    `);
+        `,
+        { transaction }
+    );
 
     // Sort in descending order of releasedAt date
     results.sort((a, b) => new Date(b.releasedAt) - new Date(a.releasedAt));
@@ -558,34 +417,34 @@ const getUniqueAtVersionsForReport = async testPlanReportId => {
 };
 
 /**
- * @param {object} params - values to be used to create or find the AtVersion record
- * @param {string[]} atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} atAttributes  - At attributes to be returned in the result
- * @param {object} options - Generic options for Sequelize
+ * @param {object} options
+ * @param {object} options.where - values to be used to create or find the AtVersion record
+ * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
+ * @param {string[]} options.atAttributes  - At attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {BrowserVersion}
  */
-const findOrCreateAtVersion = async (
-    { atId, name, releasedAt },
+const findOrCreateAtVersion = async ({
+    where: { atId, name, releasedAt },
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
-    options = {}
-) => {
-    let version = await getAtVersionByQuery(
-        { atId, name },
+    transaction
+}) => {
+    let version = await getAtVersionByQuery({
+        where: { atId, name },
         atVersionAttributes,
         atAttributes,
-        options
-    );
+        transaction
+    });
 
     if (!version) {
         /* TODO: releasedAt manually entered by users submitting new version, support actual dates in automation */
-        version = await createAtVersion(
-            { atId, name, releasedAt: releasedAt ?? new Date() },
+        version = await createAtVersion({
+            values: { atId, name, releasedAt: releasedAt ?? new Date() },
             atVersionAttributes,
             atAttributes,
-            options
-        );
+            transaction
+        });
     }
 
     return version;
@@ -596,8 +455,8 @@ module.exports = {
     getAtById,
     getAts,
     createAt,
-    updateAt,
-    removeAt,
+    updateAtById,
+    removeAtById,
 
     // Basic CRUD [AtVersion]
     getAtVersionById,
@@ -608,13 +467,6 @@ module.exports = {
     updateAtVersionByQuery,
     removeAtVersionByQuery,
     removeAtVersionById,
-
-    // Basic CRUD [AtMode]
-    getAtModeByQuery,
-    getAtModes,
-    createAtMode,
-    updateAtModeByQuery,
-    removeAtModeByQuery,
 
     // Custom Methods
     getUniqueAtVersionsForReport,

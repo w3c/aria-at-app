@@ -1,18 +1,19 @@
-const { pick } = require('lodash');
+const { pick, omit } = require('lodash');
 const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
 
-const conflictsResolver = async testPlanReport => {
+const conflictsResolver = async (testPlanReport, _, context) => {
     let testPlanReportData = {};
 
     // Used in cases where the testPlanRuns to evaluate the conflicts doesn't
     // exist for `testPlanReport`, such as this function being called from
     // `conflictsLengthResolver.js`
     if (testPlanReport.testPlanRuns.some(t => !t.testResults)) {
-        const { testPlanReport: _testPlanReport } = await populateData({
-            testPlanReportId: testPlanReport.id
-        });
+        const { testPlanReport: _testPlanReport } = await populateData(
+            { testPlanReportId: testPlanReport.id },
+            { context }
+        );
         testPlanReportData = _testPlanReport;
     } else testPlanReportData = testPlanReport;
 
@@ -21,7 +22,11 @@ const conflictsResolver = async testPlanReport => {
     const testResultsByTestId = {};
     for (const testPlanRun of testPlanReportData.testPlanRuns) {
         testPlanRun.testPlanReport = testPlanReportData; // TODO: remove hacky fix
-        const testResults = await testResultsResolver(testPlanRun);
+        const testResults = await testResultsResolver(
+            testPlanRun,
+            null,
+            context
+        );
         testResults
             .filter(testResult => testResult.completedAt)
             .forEach(testResult => {
@@ -63,9 +68,16 @@ const conflictsResolver = async testPlanReport => {
         for (let i = 0; i < testResults[0].scenarioResults.length; i += 1) {
             const scenarioResultComparisons = testResults.map(testResult => {
                 // Note that output is not considered
-                return pick(testResult.scenarioResults[i], [
+                let picked = pick(testResult.scenarioResults[i], [
                     'unexpectedBehaviors'
                 ]);
+
+                // Ignore unexpectedBehavior details text during comparison of conflicts
+                picked.unexpectedBehaviors = picked.unexpectedBehaviors.map(
+                    unexpectedBehavior => omit(unexpectedBehavior, ['details'])
+                );
+
+                return picked;
             });
             if (!allEqual(scenarioResultComparisons)) {
                 conflictDetected({ i });
@@ -92,10 +104,10 @@ const conflictsResolver = async testPlanReport => {
 
     return Promise.all(
         conflicts.map(async ({ source, conflictingResults }) => ({
-            source: await populateData(source, { preloaded }),
+            source: await populateData(source, { preloaded, context }),
             conflictingResults: await Promise.all(
                 conflictingResults.map(conflictingResult =>
-                    populateData(conflictingResult, { preloaded })
+                    populateData(conflictingResult, { preloaded, context })
                 )
             )
         }))

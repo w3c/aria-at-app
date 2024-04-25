@@ -8,6 +8,10 @@ const getTests = require('../../models/services/TestsService');
  * default atId for child fields as in the `renderableContent(atId: ID)` field.
  * @returns {array[*]} - An array of resolved tests.
  */
-const testsResolver = parentRecord => getTests(parentRecord);
+const testsResolver = (
+    parentRecord,
+    args, // eslint-disable-line no-unused-vars
+    context // eslint-disable-line no-unused-vars
+) => getTests(parentRecord);
 
 module.exports = testsResolver;

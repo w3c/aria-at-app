@@ -1,15 +1,20 @@
 'use strict';
-const { updateTestPlanRun } = require('../models/services/TestPlanRunService');
 const {
-    updateTestPlanReport,
+    updateTestPlanRunById
+} = require('../models/services/TestPlanRunService');
+const {
+    updateTestPlanReportById,
     getTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 const conflictsResolver = require('../resolvers/TestPlanReport/conflictsResolver');
 const { TEST_PLAN_REPORT_ATTRIBUTES } = require('../models/services/helpers');
+const getGraphQLContext = require('../graphql-context');
 
 module.exports = {
     up: queryInterface => {
         return queryInterface.sequelize.transaction(async transaction => {
+            const context = getGraphQLContext({ req: { transaction } });
+
             const testPlanRunQuery = await queryInterface.sequelize.query(
                 `SELECT id, "testResults" FROM "TestPlanRun"`,
                 {
@@ -124,14 +129,11 @@ module.exports = {
                     console.info(
                         `=== Fixing unexpectedBehavior results for TestPlanRun:${testPlanRunId} ===`
                     );
-                    await updateTestPlanRun(
-                        testPlanRunId,
-                        updateParams,
-                        null,
-                        [],
-                        [],
-                        []
-                    );
+                    await updateTestPlanRunById({
+                        id: testPlanRunId,
+                        values: updateParams,
+                        transaction
+                    });
                 }
             }
 
@@ -146,14 +148,18 @@ module.exports = {
                 const status = testPlanReportsData[i].status;
                 if (status === 'DRAFT') {
                     let updateParams = {};
-                    const testPlanReport = await getTestPlanReportById(
-                        testPlanReportId,
+                    const testPlanReport = await getTestPlanReportById({
+                        id: testPlanReportId,
                         testPlanReportAttributes,
-                        null,
-                        ['id', 'tests']
-                    );
+                        testPlanVersionAttributes: ['id', 'tests'],
+                        transaction
+                    });
 
-                    const conflicts = await conflictsResolver(testPlanReport);
+                    const conflicts = await conflictsResolver(
+                        testPlanReport,
+                        null,
+                        context
+                    );
 
                     updateParams = {
                         metrics: {
@@ -161,13 +167,11 @@ module.exports = {
                         }
                     };
 
-                    await updateTestPlanReport(
-                        testPlanReport.id,
-                        updateParams,
-                        [],
-                        [],
-                        []
-                    );
+                    await updateTestPlanReportById({
+                        id: testPlanReport.id,
+                        values: updateParams,
+                        transaction
+                    });
                 }
             }
         });

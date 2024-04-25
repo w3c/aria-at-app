@@ -1,7 +1,7 @@
 const { AuthenticationError } = require('apollo-server');
 const populateData = require('../../services/PopulatedData/populateData');
 const {
-    updateTestPlanVersion
+    updateTestPlanVersionById
 } = require('../../models/services/TestPlanVersionService');
 
 const updateRecommendedPhaseTargetDateResolver = async (
@@ -9,16 +9,19 @@ const updateRecommendedPhaseTargetDateResolver = async (
     { recommendedPhaseTargetDate },
     context
 ) => {
-    const { user } = context;
+    const { user, transaction } = context;
+
     if (!user?.roles.find(role => role.name === 'ADMIN')) {
         throw new AuthenticationError();
     }
 
-    await updateTestPlanVersion(testPlanVersionId, {
-        recommendedPhaseTargetDate
+    await updateTestPlanVersionById({
+        id: testPlanVersionId,
+        values: { recommendedPhaseTargetDate },
+        transaction
     });
 
-    return populateData({ testPlanVersionId });
+    return populateData({ testPlanVersionId }, { context });
 };
 
 module.exports = updateRecommendedPhaseTargetDateResolver;

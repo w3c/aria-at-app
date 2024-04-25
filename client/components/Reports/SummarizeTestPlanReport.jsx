@@ -10,14 +10,14 @@ import {
     faExternalLinkAlt,
     faHome
 } from '@fortawesome/free-solid-svg-icons';
+import styled from '@emotion/styled';
+import { getMetrics } from 'shared';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
-import { calculateAssertionsCount } from '../common/TestPlanResultsTable/utils';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
-import styled from '@emotion/styled';
 
 const ResultsContainer = styled.div`
     padding: 1em 1.75em;
@@ -200,16 +200,16 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     'https://aria-at.netlify.app'
                 );
 
-                const { passedAssertionsCount, failedAssertionsCount } =
-                    calculateAssertionsCount(testResult);
+                const { assertionsPassedCount, assertionsFailedCount } =
+                    getMetrics({ testResult });
 
                 return (
                     <Fragment key={testResult.id}>
                         <div className="test-result-heading">
                             <h2 id={`result-${testResult.id}`} tabIndex="-1">
                                 Test {index + 1}: {test.title}&nbsp;(
-                                {passedAssertionsCount}
-                                &nbsp;passed, {failedAssertionsCount} failed)
+                                {assertionsPassedCount}
+                                &nbsp;passed, {assertionsFailedCount} failed)
                                 <DisclaimerInfo phase={testPlanVersion.phase} />
                             </h2>
                             <div className="test-result-buttons">
@@ -307,8 +307,8 @@ SummarizeTestPlanReport.propTypes = {
                                 PropTypes.shape({
                                     id: PropTypes.string.isRequired,
                                     text: PropTypes.string.isRequired,
-                                    otherUnexpectedBehaviorText:
-                                        PropTypes.string
+                                    impact: PropTypes.string.isRequired,
+                                    details: PropTypes.string.isRequired
                                 }).isRequired
                             ).isRequired
                         }).isRequired

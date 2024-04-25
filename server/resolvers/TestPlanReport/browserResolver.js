@@ -1,8 +1,7 @@
-const BrowserLoader = require('../../models/loaders/BrowserLoader');
+const browserResolver = async (testPlanReport, _, context) => {
+    const { transaction, browserLoader } = context;
 
-const browserResolver = async testPlanReport => {
-    const browserLoader = BrowserLoader();
-    const browsers = await browserLoader.getAll();
+    const browsers = await browserLoader.getAll({ transaction });
 
     return browsers.find(browser => browser.id === testPlanReport.browser.id);
 };

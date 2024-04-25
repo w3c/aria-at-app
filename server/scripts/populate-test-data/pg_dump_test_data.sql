@@ -20,24 +20,12 @@ BEGIN
   SELECT id INTO test_plan_version_id
   FROM "TestPlanVersion"
   WHERE "TestPlanVersion".title = testPlanVersionTitle
-    AND (
-      testFormatNumber IS NULL OR
-      ("TestPlanVersion".metadata->'testFormatVersion' IS NOT NULL AND "TestPlanVersion".metadata->>'testFormatVersion' = testFormatNumber)
-    );
+    AND "TestPlanVersion".metadata->>'testFormatVersion' = testFormatNumber
+  ORDER BY id
+  LIMIT 1;
   RETURN test_plan_version_id;
 END;
 $$;
-
-
---
--- Data for Name: AtMode; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-INSERT INTO "AtMode" ("atId", name) VALUES (1, 'READING');
-INSERT INTO "AtMode" ("atId", name) VALUES (1, 'INTERACTION');
-INSERT INTO "AtMode" ("atId", name) VALUES (2, 'READING');
-INSERT INTO "AtMode" ("atId", name) VALUES (2, 'INTERACTION');
-INSERT INTO "AtMode" ("atId", name) VALUES (3, 'INTERACTION');
 
 --
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
@@ -72,31 +60,35 @@ INSERT INTO "AtMode" ("atId", name) VALUES (3, 'INTERACTION');
 -- Data for Name: TestPlanReport; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (1, get_test_plan_version_id(text 'Toggle Button', null), '2021-05-14 14:18:23.602-05', 1, 2);
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (2, get_test_plan_version_id(text 'Select Only Combobox Example', null), '2021-05-14 14:18:23.602-05', 2, 1);
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (3, get_test_plan_version_id(text 'Modal Dialog Example', null), '2021-05-14 14:18:23.602-05', '2022-07-06', 1, 2, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (4, get_test_plan_version_id(text 'Modal Dialog Example', null), '2021-05-14 14:18:23.602-05', '2022-07-06', 2, 2, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (5, get_test_plan_version_id(text 'Modal Dialog Example', null), '2021-05-14 14:18:23.602-05', '2022-07-06', 3, 3, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (6, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', null), '2021-05-14 14:18:23.602-05', '2022-07-06', 3, 3, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (7, get_test_plan_version_id(text 'Alert Example', null), '2021-05-14 14:18:23.602-05', 3, 1);
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (8, get_test_plan_version_id(text 'Modal Dialog Example', null), '2021-05-14 14:18:23.602-05', 1, 1, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (9, get_test_plan_version_id(text 'Modal Dialog Example', null), '2021-05-14 14:18:23.602-05', 2, 1, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (10, get_test_plan_version_id(text 'Modal Dialog Example', null), '2021-05-14 14:18:23.602-05', 3, 1, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (11, get_test_plan_version_id(text 'Modal Dialog Example', null), '2021-05-14 14:18:23.602-05', 3, 2, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (12, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', null), '2021-05-14 14:18:23.602-05', '2022-07-06', 1, 2, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (13, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', null), '2021-05-14 14:18:23.602-05', '2022-07-07', 2, 2, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (14, get_test_plan_version_id(text 'Toggle Button', null), '2021-05-14 14:18:23.602-05', '2022-07-07', 2, 2, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (15, get_test_plan_version_id(text 'Toggle Button', null), '2021-05-14 14:18:23.602-05', '2022-07-07', 3, 3, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (1, get_test_plan_version_id(text 'Toggle Button', '1'), '2021-05-14 14:18:23.602-05', 1, 2);
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (2, get_test_plan_version_id(text 'Select Only Combobox Example', '1'), '2021-05-14 14:18:23.602-05', 2, 1);
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (3, get_test_plan_version_id(text 'Modal Dialog Example', '1'), '2021-05-14 14:18:23.602-05', '2022-07-06', 1, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (4, get_test_plan_version_id(text 'Modal Dialog Example', '1'), '2021-05-14 14:18:23.602-05', '2022-07-06', 2, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (5, get_test_plan_version_id(text 'Modal Dialog Example', '1'), '2021-05-14 14:18:23.602-05', '2022-07-06', 3, 3, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (6, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', '1'), '2021-05-14 14:18:23.602-05', '2022-07-06', 3, 3, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId") VALUES (7, get_test_plan_version_id(text 'Alert Example', '1'), '2021-05-14 14:18:23.602-05', 3, 1);
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (8, get_test_plan_version_id(text 'Modal Dialog Example', '1'), '2021-05-14 14:18:23.602-05', 1, 1, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (9, get_test_plan_version_id(text 'Modal Dialog Example', '1'), '2021-05-14 14:18:23.602-05', 2, 1, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (10, get_test_plan_version_id(text 'Modal Dialog Example', '1'), '2021-05-14 14:18:23.602-05', 3, 1, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "browserId", "vendorReviewStatus") VALUES (11, get_test_plan_version_id(text 'Modal Dialog Example', '1'), '2021-05-14 14:18:23.602-05', 3, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (12, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', '1'), '2021-05-14 14:18:23.602-05', '2022-07-06', 1, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (13, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', '1'), '2021-05-14 14:18:23.602-05', '2022-07-07', 2, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (14, get_test_plan_version_id(text 'Toggle Button', '1'), '2021-05-14 14:18:23.602-05', '2022-07-07', 2, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (15, get_test_plan_version_id(text 'Toggle Button', '1'), '2021-05-14 14:18:23.602-05', '2022-07-07', 3, 3, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (16, get_test_plan_version_id(text 'Command Button Example', '2'), '2023-12-13 14:18:23.602-05', '2023-12-14', 1, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (17, get_test_plan_version_id(text 'Command Button Example', '2'), '2023-12-13 14:18:23.602-05', '2023-12-14', 2, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "browserId", "vendorReviewStatus") VALUES (18, get_test_plan_version_id(text 'Command Button Example', '2'), '2023-12-13 14:18:23.602-05', '2023-12-14', 3, 3, 'READY');
 
 --
 -- Data for Name: TestPlanVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Toggle Button', null);
-UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Select Only Combobox Example', null);
-UPDATE "TestPlanVersion" SET "phase" = 'CANDIDATE', "draftPhaseReachedAt" = '2022-07-06', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02' WHERE id = get_test_plan_version_id(text 'Modal Dialog Example', null);
-UPDATE "TestPlanVersion" SET "phase" = 'RECOMMENDED', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02', "recommendedPhaseReachedAt" = '2023-01-03' WHERE id = get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', null);
-UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Alert Example', null);
+UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Toggle Button', '1');
+UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Select Only Combobox Example', '1');
+UPDATE "TestPlanVersion" SET "phase" = 'CANDIDATE', "draftPhaseReachedAt" = '2022-07-06', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02' WHERE id = get_test_plan_version_id(text 'Modal Dialog Example', '1');
+UPDATE "TestPlanVersion" SET "phase" = 'RECOMMENDED', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02', "recommendedPhaseReachedAt" = '2023-01-03' WHERE id = get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', '1');
+UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Alert Example', '1');
+UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2023-12-14' WHERE id = get_test_plan_version_id(text 'Command Button Example', '2');
 
 --
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: atr
@@ -131,6 +123,9 @@ INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults"
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (13, 1, 13, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (14, 1, 14, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (15, 1, 15, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (16, 1, 16, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (17, 1, 17, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (18, 1, 18, '[]');
 
 --
 -- Data for Name: CollectionJob; Type: TABLE DATA; Schema: public; Owner: atr

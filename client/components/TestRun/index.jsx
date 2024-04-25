@@ -50,7 +50,7 @@ const TestRun = () => {
     const routerQuery = useRouterQuery();
 
     // Detect UA information
-    const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
+    const { uaBrowser, uaMajor } = useDetectUa();
 
     const titleRef = useRef();
     // To prevent default AT/Browser versions being set before initial
@@ -223,12 +223,18 @@ const TestRun = () => {
             ) ||
             'N/A';
 
-        const currentBrowserVersion =
+        let currentBrowserVersion =
             currentTest.testResult?.browserVersion ||
             testPlanReport.browser.browserVersions.find(
                 item => item.id === currentTestBrowserVersionId
             ) ||
             'N/A';
+
+        // Only show major version of browser
+        currentBrowserVersion = {
+            id: currentAtVersion.id,
+            name: currentBrowserVersion.name.split('.')[0]
+        };
 
         // Auto batch the states
         setUsers(users);
@@ -264,10 +270,10 @@ const TestRun = () => {
         if (titleRef.current) titleRef.current.focus();
     };
 
-    const updateLocalState = (testPlanRun, testPlanReport) => {
-        const { conflicts, runnableTests } = testPlanReport;
+    const updateLocalState = (updatedTestPlanRun, updatedTestPlanReport) => {
+        const { conflicts, runnableTests } = updatedTestPlanReport;
 
-        const testResults = testPlanRun.testResults;
+        const testResults = updatedTestPlanRun.testResults;
         const tests = runnableTests.map((test, index) => ({
             ...test,
             index,
@@ -279,6 +285,7 @@ const TestRun = () => {
         setTests(tests);
         setTestResults(testResults);
         setCurrentTest(tests[currentTestIndex]);
+        setTestPlanReport({ ...testPlanReport, conflicts });
     };
 
     if (error) {
@@ -392,6 +399,15 @@ const TestRun = () => {
             );
         }
 
+        const UnexpectedBehaviorsArray = [
+            'EXCESSIVELY_VERBOSE',
+            'UNEXPECTED_CURSOR_POSITION',
+            'SLUGGISH',
+            'AT_CRASHED',
+            'BROWSER_CRASHED',
+            'OTHER'
+        ];
+
         for (let i = 0; i < commands.length; i++) {
             let scenarioResult = { ...scenarioResults[i] };
             let assertionResults = [];
@@ -402,9 +418,12 @@ const TestRun = () => {
 
             // process assertion results
             for (let j = 0; j < assertions.length; j++) {
-                const { result, highlightRequired } = assertions[j];
+                const { description, result, highlightRequired } =
+                    assertions[j];
                 const assertionResult = {
-                    ...scenarioResult.assertionResults[j],
+                    ...scenarioResult.assertionResults.find(
+                        ({ assertion: { text } }) => text === description
+                    ),
                     passed: result === 'pass'
                 };
                 assertionResults.push(
@@ -429,35 +448,15 @@ const TestRun = () => {
                 for (let i = 0; i < behaviors.length; i++) {
                     const behavior = behaviors[i];
                     if (behavior.checked) {
-                        if (i === 0)
-                            unexpectedBehaviors.push({
-                                id: 'EXCESSIVELY_VERBOSE'
-                            });
-                        if (i === 1)
-                            unexpectedBehaviors.push({
-                                id: 'UNEXPECTED_CURSOR_POSITION'
-                            });
-                        if (i === 2)
-                            unexpectedBehaviors.push({ id: 'SLUGGISH' });
-                        if (i === 3)
-                            unexpectedBehaviors.push({ id: 'AT_CRASHED' });
-                        if (i === 4)
-                            unexpectedBehaviors.push({ id: 'BROWSER_CRASHED' });
-                        if (i === 5) {
-                            const moreResult = {
-                                id: 'OTHER',
-                                otherUnexpectedBehaviorText: behavior.more.value
-                            };
-                            unexpectedBehaviors.push(
-                                captureHighlightRequired
-                                    ? {
-                                          ...moreResult,
-                                          highlightRequired:
-                                              behavior.more.highlightRequired
-                                      }
-                                    : moreResult
-                            );
-                        }
+                        unexpectedBehaviors.push({
+                            id: UnexpectedBehaviorsArray[i],
+                            text: behavior.description,
+                            details: behavior.more.value,
+                            impact: behavior.impact.toUpperCase(),
+                            highlightRequired: captureHighlightRequired
+                                ? behavior.more.highlightRequired
+                                : false
+                        });
                     }
                 }
             } else if (hasUnexpected === 'doesNotHaveUnexpected')
@@ -504,6 +503,9 @@ const TestRun = () => {
             forceSave = false,
             forceEdit = false
         ) => {
+            if (updateMessageComponent) {
+                setUpdateMessageComponent(null);
+            }
             try {
                 if (forceEdit) setIsTestEditClicked(true);
                 else setIsTestEditClicked(false);
@@ -648,18 +650,39 @@ const TestRun = () => {
          * ....},
          * ....other assertionResults,
          * ..],
-         * ..unexpectedBehaviors: []
+         * ..unexpectedBehaviors: [
+         * ....{
+         * ......id
+         * ......impact
+         * ......details
+         * ....},
+         * ....other unexpectedBehaviors,
+         * ..]
          * }
          * */
         const formattedScenarioResults = scenarioResults.map(
             ({ assertionResults, id, output, unexpectedBehaviors }) => ({
                 id,
                 output: output,
-                unexpectedBehaviors: unexpectedBehaviors,
-                assertionResults: assertionResults.map(({ id, passed }) => ({
-                    id,
-                    passed
-                }))
+                unexpectedBehaviors: unexpectedBehaviors?.map(
+                    ({ id, impact, details }) => ({
+                        id,
+                        impact,
+                        details
+                    })
+                ),
+                assertionResults: assertionResults
+                    // All assertions are always being passed from the TestRenderer results, but
+                    // when there is a 0-priority assertion exception, an id won't be provided,
+                    // so do not include that result.
+                    // This is due to the TestRenderer still requiring the position of the
+                    // excluded assertion, but it can be removed at this point before being passed
+                    // to the server
+                    .filter(el => !!el.id)
+                    .map(({ id, passed }) => ({
+                        id,
+                        passed
+                    }))
             })
         );
 
@@ -698,7 +721,7 @@ const TestRun = () => {
                     <>
                         You are currently using{' '}
                         <b>
-                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                            {uaBrowser} {uaMajor}
                         </b>
                         , but are trying to edit a test result that was
                         submitted with{' '}
@@ -761,7 +784,7 @@ const TestRun = () => {
 
             if (
                 !adminReviewerOriginalTestRef.current.testResult?.browserVersion?.name.includes(
-                    `${uaMajor}.${uaMinor}.${uaPatch}`
+                    `${uaMajor}`
                 )
             ) {
                 setThemedModalTitle(
@@ -771,7 +794,7 @@ const TestRun = () => {
                     <>
                         You are currently using{' '}
                         <b>
-                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                            {uaBrowser} {uaMajor}
                         </b>
                         , but are trying to edit a test result that was
                         submitted with{' '}
@@ -828,6 +851,12 @@ const TestRun = () => {
                 createBrowserVersionResult.data?.browser
                     ?.findOrCreateBrowserVersion;
         }
+
+        // Only show major browser version
+        browserVersion = {
+            id: browserVersion.id,
+            name: browserVersion.name.split('.')[0]
+        };
 
         const updateMessageComponent = updateMessage ? (
             <>
@@ -985,6 +1014,9 @@ const TestRun = () => {
             ];
         }
 
+        const externalLogsUrl =
+            collectionJobQuery?.collectionJobByTestPlanRunId?.externalLogsUrl;
+
         const menuRightOfContent = (
             <div role="complementary">
                 <h2 id="test-options-heading">Test Options</h2>
@@ -1005,17 +1037,12 @@ const TestRun = () => {
                             href={issueLink}
                         />
                     </li>
-                    {isBot(openAsUser) &&
-                    collectionJobQuery?.collectionJobByTestPlanRunId
-                        ?.externalLogsUrl ? (
+                    {isBot(openAsUser) && externalLogsUrl ? (
                         <li>
                             <OptionButton
                                 text="View Log"
                                 target="_blank"
-                                href={
-                                    collectionJobQuery?.collectionJob
-                                        ?.externalLogsUrl
-                                }
+                                href={externalLogsUrl}
                             />
                         </li>
                     ) : (

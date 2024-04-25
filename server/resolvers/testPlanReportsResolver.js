@@ -20,6 +20,8 @@ const testPlanReportsResolver = async (
     context,
     info
 ) => {
+    const { transaction } = context;
+
     const where = {};
     if (testPlanVersionId) where.testPlanVersionId = testPlanVersionId;
     if (testPlanVersionIds) where.testPlanVersionId = testPlanVersionIds;
@@ -60,17 +62,14 @@ const testPlanReportsResolver = async (
     )
         testPlanVersionAttributes.push('phase');
 
-    let testPlanReports = await getTestPlanReports(
-        null,
+    let testPlanReports = await getTestPlanReports({
         where,
         testPlanReportAttributes,
         testPlanRunAttributes,
         testPlanVersionAttributes,
-        null,
-        null,
-        null,
-        { order: [['createdAt', 'desc']] }
-    );
+        pagination: { order: [['createdAt', 'desc']] },
+        transaction
+    });
 
     if (isFinal === undefined) {
         // Do nothing

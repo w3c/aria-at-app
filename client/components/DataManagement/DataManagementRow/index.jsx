@@ -425,12 +425,55 @@ const DataManagementRow = ({
             return otherVersionsInProgress.length;
         };
 
-        if (recommendedTestPlanVersions.length) {
-            const { earliestVersion, earliestVersionDate } = getVersionData(
-                recommendedTestPlanVersions,
+        /**
+         * Uses the truthy state of defined dates for a TestPlanVersion to
+         * determine if the version was ever in that phase at any given point.
+         * Useful if the phase of the TestPlanVersion is currently DEPRECATED.
+         * @param {"RECOMMENDED"|"CANDIDATE"|"DRAFT"} phase
+         * @returns {TestPlanVersion[]}
+         */
+        const getVersionsThatReachedPhase = phase => {
+            switch (phase) {
+                case 'RECOMMENDED':
+                    return testPlanVersions.filter(
+                        ({ recommendedPhaseReachedAt }) =>
+                            !!recommendedPhaseReachedAt
+                    );
+                case 'CANDIDATE':
+                    return testPlanVersions.filter(
+                        ({
+                            candidatePhaseReachedAt,
+                            recommendedPhaseReachedAt
+                        }) =>
+                            !!candidatePhaseReachedAt &&
+                            !recommendedPhaseReachedAt
+                    );
+                case 'DRAFT':
+                    return testPlanVersions.filter(
+                        ({
+                            draftPhaseReachedAt,
+                            candidatePhaseReachedAt,
+                            recommendedPhaseReachedAt
+                        }) =>
+                            !!draftPhaseReachedAt &&
+                            !candidatePhaseReachedAt &&
+                            !recommendedPhaseReachedAt
+                    );
+            }
+        };
+
+        const versionsThatReachedRecommended =
+            getVersionsThatReachedPhase('RECOMMENDED');
+        const versionsThatReachedCandidate =
+            getVersionsThatReachedPhase('CANDIDATE');
+        const versionsThatReachedDraft = getVersionsThatReachedPhase('DRAFT');
+
+        if (versionsThatReachedRecommended.length) {
+            const { earliestVersionDate } = getVersionData(
+                versionsThatReachedRecommended,
                 'recommendedPhaseReachedAt'
             );
-            const { phase } = earliestVersion;
+            const phase = 'RECOMMENDED';
             const versionsInProgressCount = otherVersionsInProgressCount(phase);
 
             return (
@@ -441,13 +484,12 @@ const DataManagementRow = ({
             );
         }
 
-        if (candidateTestPlanVersions.length) {
-            const { earliestVersion, earliestVersionDate } = getVersionData(
-                candidateTestPlanVersions,
+        if (versionsThatReachedCandidate.length) {
+            const { earliestVersionDate } = getVersionData(
+                versionsThatReachedCandidate,
                 'candidatePhaseReachedAt'
             );
-            const { phase } = earliestVersion;
-
+            const phase = 'CANDIDATE';
             const versionsInProgressCount = otherVersionsInProgressCount(
                 phase,
                 ['RECOMMENDED']
@@ -461,13 +503,12 @@ const DataManagementRow = ({
             );
         }
 
-        if (draftTestPlanVersions.length) {
-            const { earliestVersion, earliestVersionDate } = getVersionData(
-                draftTestPlanVersions,
+        if (versionsThatReachedDraft.length) {
+            const { earliestVersionDate } = getVersionData(
+                versionsThatReachedDraft,
                 'draftPhaseReachedAt'
             );
-            const { phase } = earliestVersion;
-
+            const phase = 'DRAFT';
             const versionsInProgressCount = otherVersionsInProgressCount(
                 phase,
                 ['RECOMMENDED', 'CANDIDATE']
@@ -507,12 +548,6 @@ const DataManagementRow = ({
             }
         };
 
-        // TODO: Remove this testFormatVersion check when #745 is implemented
-        const getLinkHref = version =>
-            version.metadata?.testFormatVersion === 2
-                ? null
-                : `/test-review/${version.id}`;
-
         switch (phase) {
             case 'RD': {
                 // If the latest version of the plan is in the draft, candidate, or recommended
@@ -537,32 +572,30 @@ const DataManagementRow = ({
                     }
                 }
 
-                // If there is an earlier version that is draft and that version has some test plan
+                // If there is an earlier version that is draft or higher, and that version has some test plan
                 // runs in the test queue, this button will run the process for updating existing
                 // reports and preserving data for tests that have not changed.
                 let testPlanVersionDataToInclude;
-                if (draftTestPlanVersions.length) {
+                if (otherTestPlanVersions.length) {
                     const {
-                        latestVersion: draftLatestVersion,
-                        latestVersionDate: draftLatestVersionDate
-                    } = getVersionData(draftTestPlanVersions);
+                        latestVersion: otherLatestVersion,
+                        latestVersionDate: otherLatestVersionDate
+                    } = getVersionData(otherTestPlanVersions);
 
-                    if (draftLatestVersionDate < latestVersionDate)
-                        testPlanVersionDataToInclude = draftLatestVersion;
+                    if (otherLatestVersionDate < latestVersionDate)
+                        testPlanVersionDataToInclude = otherLatestVersion;
                 }
 
                 // Otherwise, show VERSION_STRING link with a draft transition button. Phase is
                 // "active"
                 insertActivePhaseForTestPlan(latestVersion);
 
-                // TODO: Remove this testFormatVersion check when #745 is implemented
-                const linkHref = getLinkHref(latestVersion);
                 return (
                     <PhaseCell role="list" aria-setsize={isAdmin ? 2 : 1}>
                         <VersionString
                             role="listitem"
                             iconColor="#2BA51C"
-                            linkHref={linkHref}
+                            linkHref={`/test-review/${latestVersion.id}`}
                         >
                             {latestVersion.versionString}
                         </VersionString>
@@ -655,20 +688,28 @@ const DataManagementRow = ({
                 // If required reports are complete and user is an admin, show "Advance to
                 // Candidate" button.
                 if (testPlanVersions.length) {
-                    // If there is an earlier version that is candidate and that version has some
+                    // If there is an earlier version that is candidate or higher and that version has some
                     // test plan runs in the test queue, this button will run the process for
                     // updating existing reports and preserving data for tests that have not
                     // changed.
                     let testPlanVersionDataToInclude;
-                    if (candidateTestPlanVersions.length) {
+                    const testPlanVersionsDataToInclude = [
+                        ...candidateTestPlanVersions,
+                        ...recommendedTestPlanVersions
+                    ];
+                    if (testPlanVersionsDataToInclude.length) {
                         const {
-                            latestVersion: candidateLatestVersion,
-                            latestVersionDate: candidateLatestVersionDate
-                        } = getVersionData(candidateTestPlanVersions);
+                            latestVersion: testPlanDataToIncludeLatestVersion,
+                            latestVersionDate:
+                                testPlanDataToIncludeLatestVersionDate
+                        } = getVersionData(testPlanVersionsDataToInclude);
 
-                        if (candidateLatestVersionDate < latestVersionDate)
+                        if (
+                            testPlanDataToIncludeLatestVersionDate <
+                            latestVersionDate
+                        )
                             testPlanVersionDataToInclude =
-                                candidateLatestVersion;
+                                testPlanDataToIncludeLatestVersion;
                     }
 
                     let coveredReports = [];
@@ -685,15 +726,13 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
 
-                    // TODO: Remove this testFormatVersion check when #745 is implemented
-                    const linkHref = getLinkHref(latestVersion);
                     return (
                         <PhaseCell role="list" aria-setsize={isAdmin ? 3 : 2}>
                             <VersionString
                                 role="listitem"
                                 iconColor="#2BA51C"
                                 linkRef={draftVersionStringRef}
-                                linkHref={linkHref}
+                                linkHref={`/test-review/${latestVersion.id}`}
                             >
                                 {latestVersion.versionString}
                             </VersionString>
@@ -728,6 +767,7 @@ const DataManagementRow = ({
                                 )}
                             <span role="listitem">
                                 <TestPlanReportStatusDialogWithButton
+                                    ats={ats}
                                     testPlanVersionId={latestVersion.id}
                                 />
                             </span>
@@ -887,15 +927,13 @@ const DataManagementRow = ({
                     // Phase is "active"
                     insertActivePhaseForTestPlan(latestVersion);
 
-                    // TODO: Remove this testFormatVersion check when #745 is implemented
-                    const linkHref = getLinkHref(latestVersion);
                     return (
                         <PhaseCell role="list" aria-setsize={isAdmin ? 5 : 4}>
                             <VersionString
                                 role="listitem"
                                 iconColor="#2BA51C"
                                 linkRef={candidateVersionStringRef}
-                                linkHref={linkHref}
+                                linkHref={`/test-review/${latestVersion.id}`}
                             >
                                 {latestVersion.versionString}
                             </VersionString>
@@ -933,6 +971,7 @@ const DataManagementRow = ({
                             )}
                             <span role="listitem">
                                 <TestPlanReportStatusDialogWithButton
+                                    ats={ats}
                                     testPlanVersionId={latestVersion.id}
                                 />
                             </span>
@@ -1009,20 +1048,19 @@ const DataManagementRow = ({
                 // Phase is "active"
                 insertActivePhaseForTestPlan(latestVersion);
 
-                // TODO: Remove this testFormatVersion check when #745 is implemented
-                const linkHref = getLinkHref(latestVersion);
                 return (
                     <PhaseCell role="list">
                         <VersionString
                             role="listitem"
                             iconColor="#2BA51C"
                             linkRef={recommendedVersionStringRef}
-                            linkHref={linkHref}
+                            linkHref={`/test-review/${latestVersion.id}`}
                         >
                             {latestVersion.versionString}
                         </VersionString>
                         <span role="listitem">
                             <TestPlanReportStatusDialogWithButton
+                                ats={ats}
                                 testPlanVersionId={latestVersion.id}
                             />
                         </span>

@@ -1,10 +1,4 @@
 {
     "presets": ["@babel/env", "@babel/preset-react"],
-    "plugins": ["lodash"],
-    "env": {
-        "test": {
-          "plugins":
-          ["@babel/plugin-transform-runtime"]
-        }
-      }
+    "plugins": ["lodash"]
 }

@@ -44,7 +44,10 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             }
             updatedAt
         }
-        testPlanReports(isFinal: false) {
+        testPlanReports(
+            isFinal: false
+            testPlanVersionPhases: [DRAFT, CANDIDATE, RECOMMENDED]
+        ) {
             id
             conflictsLength
             runnableTestsLength
@@ -219,12 +222,14 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
         $testPlanVersionId: ID!
         $atId: ID!
         $browserId: ID!
+        $copyResultsFromTestPlanReportId: ID
     ) {
         findOrCreateTestPlanReport(
             input: {
                 testPlanVersionId: $testPlanVersionId
                 atId: $atId
                 browserId: $browserId
+                copyResultsFromTestPlanReportId: $copyResultsFromTestPlanReportId
             }
         ) {
             populatedData {

@@ -24,7 +24,9 @@ const getTests = require('../../models/services/TestsService');
  * and no database queries will be run by this function.
  * @returns
  */
-const populateData = async (locationOfData, { preloaded } = {}) => {
+const populateData = async (locationOfData, { context, preloaded } = {}) => {
+    const { transaction } = context;
+
     let {
         testPlanId,
         testPlanVersionId,
@@ -76,7 +78,10 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
             testPlanRun = preloaded.testPlanRun;
             testPlanReport = testPlanRun.testPlanReport;
         } else {
-            testPlanRun = await getTestPlanRunById(testPlanRunId);
+            testPlanRun = await getTestPlanRunById({
+                id: testPlanRunId,
+                transaction
+            });
             testPlanReport = testPlanRun?.testPlanReport;
         }
         testPlanVersion = testPlanReport?.testPlanVersion;
@@ -84,7 +89,10 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         if (preloaded?.testPlanReport) {
             testPlanReport = preloaded.testPlanReport;
         } else {
-            testPlanReport = await getTestPlanReportById(testPlanReportId);
+            testPlanReport = await getTestPlanReportById({
+                id: testPlanReportId,
+                transaction
+            });
         }
         testPlanVersion = testPlanReport.testPlanVersion;
     } else if (testPlanVersionId) {
@@ -93,13 +101,16 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
         } else if (preloaded?.testPlanVersion) {
             testPlanVersion = preloaded.testPlanVersion;
         } else {
-            testPlanVersion = await getTestPlanVersionById(testPlanVersionId);
+            testPlanVersion = await getTestPlanVersionById({
+                id: testPlanVersionId,
+                transaction
+            });
         }
     } else if (testPlanId) {
         if (preloaded?.testPlan) {
             testPlan = preloaded.testPlan;
         } else {
-            testPlan = await getTestPlanById(testPlanId);
+            testPlan = await getTestPlanById({ id: testPlanId, transaction });
         }
     }
 
@@ -117,7 +128,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
 
     testPlan =
         testPlanVersion && !testPlan
-            ? testPlanVersionTestPlanResolver(testPlanVersion)
+            ? testPlanVersionTestPlanResolver(testPlanVersion, null, context)
             : null;
 
     // Populate data originating in the JSON part of the database
@@ -132,7 +143,7 @@ const populateData = async (locationOfData, { preloaded } = {}) => {
     let browserVersion;
 
     if (testResultId) {
-        const testResults = await getTestResults(testPlanRun);
+        const testResults = await getTestResults({ testPlanRun, context });
         testResult = testResults.find(each => each.id === testResultId);
         if (!testResult) {
             throw new Error(
