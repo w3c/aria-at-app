@@ -2,10 +2,10 @@ const getTestPlanVersionTitle = (
     testPlanVersion,
     { includeVersionString = false } = {}
 ) => {
-    const title = testPlanVersion.title || testPlanVersion.testPlan.directory;
-
-    if (!includeVersionString) return title;
-    return `${title} ${testPlanVersion.versionString}`;
+    let title = testPlanVersion.title || testPlanVersion.testPlan?.directory;
+    if (includeVersionString && testPlanVersion.versionString)
+        title = `${title} ${testPlanVersion.versionString}`;
+    return title;
 };
 
 const getTestPlanTargetTitle = ({ at, browser, atVersion }) => {

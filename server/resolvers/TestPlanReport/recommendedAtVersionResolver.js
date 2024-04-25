@@ -34,7 +34,7 @@ const recommendedAtVersionResolver = async (testPlanReport, _, context) => {
         });
     }
 
-    // Otherwise return the earliest At version
+    // Otherwise return the earliest At version used to record results
     return earliestAtVersionResolver(
         testPlanVersion,
         { atId: testPlanReport.atId },
