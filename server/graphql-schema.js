@@ -1031,8 +1031,12 @@ const graphqlSchema = gql`
         """
         isFinal: Boolean!
         """
-        Shows the latest released AtVersion used to record results for this
-        TestPlanReport when the TestPlanVersion has been updated to RECOMMENDED.
+        The AtVersion to display for a TestPlanReport only when the
+        TestPlanVersion is RECOMMENDED.
+
+        If this TestPlanReport was created with an "exactAtVersionId" being set,
+        it will use the matching AtVersion, otherwise it will use the
+        TestPlanVersion.earliestAtVersion as a default.
         """
         recommendedAtVersion: AtVersion
     }
