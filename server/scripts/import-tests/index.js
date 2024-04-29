@@ -74,6 +74,8 @@ const importTestPlanVersions = async transaction => {
     });
     console.log('`npm run build` output', buildOutput.stdout.toString());
 
+    importHarness();
+
     const { support } = await updateJsons();
 
     const ats = await At.findAll();
@@ -251,6 +253,38 @@ const readDirectoryGitInfo = directoryPath => {
     return { gitSha, gitMessage, gitCommitDate };
 };
 
+const importHarness = () => {
+    const sourceFolder = path.resolve(`${testsDirectory}/resources`);
+    const targetFolder = path.resolve('../', 'client/resources');
+    console.info('Clearing harness directory ...');
+    fse.rmSync(targetFolder, { recursive: true, force: true });
+
+    // Copy source folder
+    console.info('Importing harness ...');
+    fse.copySync(sourceFolder, targetFolder, { filter: (src) => {
+            if (fse.lstatSync(src).isDirectory()) {
+                return true;
+            }
+            if (!src.includes('.html')) {
+                return true;
+            }
+        },
+    });
+
+    // Copy files
+    const commandsJson = 'commands.json';
+    const supportJson = 'support.json';
+    fse.copyFileSync(
+        `${testsDirectory}/${commandsJson}`,
+        `${targetFolder}/${commandsJson}`
+    );
+    fse.copyFileSync(
+        `${testsDirectory}/${supportJson}`,
+        `${targetFolder}/${supportJson}`
+    );
+    console.info('Import harness complete.');
+};
+
 const getAppUrl = (directoryRelativePath, { gitSha, directoryPath }) => {
     return path.join(
         '/',
@@ -318,7 +352,7 @@ const updateJsons = async () => {
 
     // Write commands for v1 format
     await fse.writeFile(
-        path.resolve(__dirname, '../../resources/commands.json'),
+        path.resolve(__dirname, '../../resources/commandsV1.json'),
         JSON.stringify(commands, null, 4)
     );
 

@@ -1455,7 +1455,7 @@ export class TestRunInputOutput {
         output: command.atOutput.value,
         assertionResults: command.assertions.map(assertion => ({
           assertion: {
-            priority: assertion.priority === 1 ? 'MUST' : 'SHOULD',
+            priority: assertion.priority === 1 ? 'REQUIRED' : 'OPTIONAL',
             text: assertion.description,
           },
           passed: assertion.result === 'pass',

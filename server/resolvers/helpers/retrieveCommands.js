@@ -1,4 +1,4 @@
-const commands = require('../../resources/commands.json');
+const commands = require('../../resources/commandsV1.json');
 const commandsV2 = require('../../resources/commandsV2.json');
 
 function findValueByKey(keyMappings, keyToFindText) {
