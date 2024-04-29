@@ -159,7 +159,6 @@ describe('graphql', () => {
             ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
             ['CollectionJob', 'testPlanRun'],
             ['CollectionJob', 'externalLogsUrl'],
-            // ['Assertion', 'phrase'],
             // These interact with Response Scheduler API
             // which is mocked in other tests.
             ['Mutation', 'scheduleCollectionJob'],
