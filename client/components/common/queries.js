@@ -33,7 +33,8 @@ export const TEST_PLAN_REPORT_FIELDS = gql`
                     output
                     unexpectedBehaviors {
                         text
-                        otherUnexpectedBehaviorText
+                        impact
+                        details
                     }
                 }
                 assertionResult {
@@ -77,7 +78,6 @@ export const TEST_PLAN_REPORT_FIELDS = gql`
                 id
                 name
             }
-            atMode
             renderedUrl
             scenarios {
                 id
@@ -99,18 +99,7 @@ export const TEST_PLAN_REPORT_FIELDS = gql`
     }
 `;
 
-export const ASSERTION_RESULT_FIELDS = gql`
-    fragment AssertionResultFields on AssertionResult {
-        __typename
-        assertion {
-            text
-        }
-        passed
-    }
-`;
-
 export const SCENARIO_RESULT_FIELDS = gql`
-    ${ASSERTION_RESULT_FIELDS}
     fragment ScenarioResultFields on ScenarioResult {
         __typename
         id
@@ -123,21 +112,34 @@ export const SCENARIO_RESULT_FIELDS = gql`
         output
         assertionResults {
             id
-            ...AssertionResultFields
+            assertion {
+                text
+            }
+            passed
         }
-        requiredAssertionResults: assertionResults(priority: REQUIRED) {
-            ...AssertionResultFields
+        mustAssertionResults: assertionResults(priority: MUST) {
+            assertion {
+                text
+            }
+            passed
         }
-        optionalAssertionResults: assertionResults(priority: OPTIONAL) {
-            ...AssertionResultFields
+        shouldAssertionResults: assertionResults(priority: SHOULD) {
+            assertion {
+                text
+            }
+            passed
         }
         mayAssertionResults: assertionResults(priority: MAY) {
-            ...AssertionResultFields
+            assertion {
+                text
+            }
+            passed
         }
         unexpectedBehaviors {
             id
             text
-            otherUnexpectedBehaviorText
+            impact
+            details
         }
     }
 `;
