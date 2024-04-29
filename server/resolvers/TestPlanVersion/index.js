@@ -4,6 +4,7 @@ const tests = require('./testsResolver');
 const testPlanReports = require('./testPlanReportsResolver');
 const recommendedPhaseTargetDate = require('./recommendedPhaseTargetDateResolver');
 const earliestAtVersion = require('./earliestAtVersionResolver');
+const trendReports = require('./trendReportsResolver');
 
 const TestPlanVersion = {
     testPlan,
@@ -11,7 +12,8 @@ const TestPlanVersion = {
     tests,
     testPlanReports,
     recommendedPhaseTargetDate,
-    earliestAtVersion
+    earliestAtVersion,
+    trendReports
 };
 
 module.exports = TestPlanVersion;
