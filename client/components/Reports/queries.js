@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import { SCENARIO_RESULT_FIELDS } from '../common/queries';
 
 export const REPORTS_PAGE_QUERY = gql`
     query ReportsPageQuery {
@@ -29,6 +30,7 @@ export const REPORTS_PAGE_QUERY = gql`
 `;
 
 export const REPORT_PAGE_QUERY = gql`
+    ${SCENARIO_RESULT_FIELDS}
     query ReportPageQuery($testPlanVersionId: ID) {
         testPlanVersion(id: $testPlanVersionId) {
             id
@@ -66,47 +68,7 @@ export const REPORT_PAGE_QUERY = gql`
                         renderedUrl
                     }
                     scenarioResults {
-                        id
-                        scenario {
-                            commands {
-                                id
-                                text
-                            }
-                        }
-                        output
-                        assertionResults {
-                            id
-                            assertion {
-                                text
-                            }
-                            passed
-                        }
-                        mustAssertionResults: assertionResults(priority: MUST) {
-                            assertion {
-                                text
-                            }
-                            passed
-                        }
-                        shouldAssertionResults: assertionResults(
-                            priority: SHOULD
-                        ) {
-                            assertion {
-                                text
-                            }
-                            passed
-                        }
-                        mayAssertionResults: assertionResults(priority: MAY) {
-                            assertion {
-                                text
-                            }
-                            passed
-                        }
-                        unexpectedBehaviors {
-                            id
-                            text
-                            impact
-                            details
-                        }
+                        ...ScenarioResultFields
                     }
                     atVersion {
                         name

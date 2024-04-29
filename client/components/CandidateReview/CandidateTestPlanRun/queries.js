@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import { SCENARIO_RESULT_FIELDS } from '../../common/queries';
 
 export const ADD_VIEWER_MUTATION = gql`
     mutation AddViewerMutation($testPlanVersionId: ID!, $testId: ID!) {
@@ -25,6 +26,7 @@ export const PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION = gql`
 `;
 
 export const CANDIDATE_REPORTS_QUERY = gql`
+    ${SCENARIO_RESULT_FIELDS}
     query CandidateReportsQuery(
         $atId: ID!
         $testPlanVersionId: ID
@@ -100,45 +102,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
                     renderableContent
                 }
                 scenarioResults {
-                    id
-                    scenario {
-                        commands {
-                            id
-                            text
-                        }
-                    }
-                    output
-                    assertionResults {
-                        id
-                        assertion {
-                            text
-                        }
-                        passed
-                    }
-                    mustAssertionResults: assertionResults(priority: MUST) {
-                        assertion {
-                            text
-                        }
-                        passed
-                    }
-                    shouldAssertionResults: assertionResults(priority: SHOULD) {
-                        assertion {
-                            text
-                        }
-                        passed
-                    }
-                    mayAssertionResults: assertionResults(priority: MAY) {
-                        assertion {
-                            text
-                        }
-                        passed
-                    }
-                    unexpectedBehaviors {
-                        id
-                        text
-                        impact
-                        details
-                    }
+                    ...ScenarioResultFields
                 }
             }
             draftTestPlanRuns {
