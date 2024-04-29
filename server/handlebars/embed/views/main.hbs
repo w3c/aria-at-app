@@ -37,78 +37,35 @@
                 <thead>
                     <tr>
                         <td></td>
-                        {{#each allBrowsers}}
+                        {{#each priorities}}
                         <th>{{this}}</th>
                         {{/each}}
                     </tr>
                 </thead>
                 <tbody>
-                    {{#each reportsByAt}}
+                    {{#each latestReports}}
                         <tr>
-                            <th><b>{{@key}}</b> <span id="at-version">{{getAtVersion @../this @key}}</span></th>
-                            {{#each this}}
-                                {{#if (isBrowser "Chrome" this.browser.name)}}
-                                    {{#if (isInAllBrowsers "Chrome" @../../this) }}
-                                            <td>
-                                                <div class="meter" aria-hidden="true">
-                                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
+                            <th><b>{{this.at.name}}</b> <span style="font-weight: normal;">{{this.latestAtVersionReleasedAt.name}}</span> - <b>{{this.browser.name}}</b></th>
+                            {{#if (isMustAssertionPriority this)}}
+                           <td>
+                               <div class="meter" aria-hidden="true">
+                                                    <span style="width: {{getMustSupportData this}}%;"></span>
                                                 </div>
-                                                <b>{{this.metrics.supportPercent}}%</b> supported
-                                            </td>
-                                    {{/if}}
-                                {{else}}
-                                    {{#if (isInAllBrowsers "Chrome" @../../this) }}
-                                        {{#unless (elementExists @../../this @../this this.at.name "Chrome" @last)}}
-                                            {{#if (combinationExists @../../this this.at.name "Chrome")}}
-                                                <td><span class="no-data-cell">Data Not Yet Available</span></td>
-                                            {{else}}
-                                                <td><span class="no-data-cell">Not Applicable</span></td>
-                                            {{/if}}
-                                        {{/unless}}
-                                    {{/if}}
-                                {{/if}}
-                                {{#if (isBrowser "Firefox" this.browser.name)}}
-                                    {{#if (isInAllBrowsers "Firefox" @../../this) }}
-                                            <td>
-                                                <div class="meter" aria-hidden="true">
-                                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
+                                                <b>{{getMustSupportData this}}%</b> supported
+                            </td>
+                            {{else}}
+                                <td><span class="no-data-cell">Not Applicable</span></td>
+                            {{/if}}
+                            {{#if (isShouldAssertionPriority this)}}
+                           <td>
+                               <div class="meter" aria-hidden="true">
+                                                    <span style="width: {{getShouldSupportData this}}%;"></span>
                                                 </div>
-                                                <b>{{this.metrics.supportPercent}}%</b> supported
-                                            </td>
-                                    {{/if}}
-                                {{else}}
-                                    {{#if (isInAllBrowsers "Firefox" @../../this) }}
-                                        {{#unless (elementExists @../../this @../this this.at.name "Firefox" @last)}}
-                                            {{#if (combinationExists @../../this this.at.name "Firefox")}}
-                                                <td><span class="no-data-cell">Data Not Yet Available</span></td>
-                                            {{else}}
-                                                <td><span class="no-data-cell">Not Applicable</span></td>
-                                            {{/if}}
-                                        {{/unless}}
-                                    {{/if}}
-                                {{/if}}
-                                {{#if (isBrowser "Safari" this.browser.name)}}
-                                    {{#if (isInAllBrowsers "Safari" @../../this) }}
-                                            <td>
-                                                <div class="meter" aria-hidden="true">
-                                                    <span style="width: {{this.metrics.supportPercent}}%;"></span>
-                                                </div>
-                                                <b>{{this.metrics.supportPercent}}%</b> supported
-                                            </td>
-                                    {{/if}}
-                                {{else}}
-                                    {{#if (isInAllBrowsers "Safari" @../../this) }}
-                                        {{#unless (elementExists @../../this @../this this.at.name "Safari" @last)}}
-                                            {{#if (combinationExists @../../this this.at.name "Safari")}}
-                                                <td><span class="no-data-cell">Data Not Yet Available</span></td>
-                                            {{else}}
-                                                <td><span class="no-data-cell">Not Applicable</span></td>
-                                            {{/if}}
-                                        {{/unless}}
-                                    {{/if}}
-                                {{/if}}
-                            {{/each}}
-                            {{resetMap}}
+                                                <b>{{getShouldSupportData this}}%</b> supported
+                            </td>
+                            {{else}}
+                                <td><span class="no-data-cell">Not Applicable</span></td>
+                            {{/if}}
                         </tr>
                     {{/each}}
                 </tbody>
