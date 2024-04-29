@@ -66,35 +66,35 @@ const queryReports = async testPlanDirectory => {
                         }
                     }
                 }
-                testPlanReports(
-                    testPlanVersionPhases: [CANDIDATE, RECOMMENDED]
-                    isFinal: true
-                ) {
-                    id
-                    metrics
-                    at {
-                        id
-                        name
-                    }
-                    browser {
-                        id
-                        name
-                    }
-                    latestAtVersionReleasedAt {
-                        id
-                        name
-                        releasedAt
-                    }
-                    testPlanVersion {
-                        id
-                        title
-                        phase
-                        updatedAt
-                        testPlan {
-                            id
-                        }
-                    }
-                }
+                # testPlanReports(
+                #     testPlanVersionPhases: [CANDIDATE, RECOMMENDED]
+                #     isFinal: true
+                # ) {
+                #     id
+                #     metrics
+                #     at {
+                #         id
+                #         name
+                #     }
+                #     browser {
+                #         id
+                #         name
+                #     }
+                #     latestAtVersionReleasedAt {
+                #         id
+                #         name
+                #         releasedAt
+                #     }
+                #     testPlanVersion {
+                #         id
+                #         title
+                #         phase
+                #         updatedAt
+                #         testPlan {
+                #             id
+                #         }
+                #     }
+                # }
             }
         `,
         variables: { testPlanDirectory }
@@ -104,11 +104,11 @@ const queryReports = async testPlanDirectory => {
         throw new Error(errors);
     }
 
-    const reportsHashed = hash(data.testPlanReports);
+    // const reportsHashed = hash(data.testPlanReports);
 
     return {
         allTestPlanReports: data.testPlanReports,
-        reportsHashed,
+        // reportsHashed,
         ats: data.ats
     };
 };
