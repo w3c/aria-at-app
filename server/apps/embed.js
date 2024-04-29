@@ -220,7 +220,7 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
         latestReports
     };
 };
-const priorities = ['MUST', 'SHOULD'];
+const priorities = ['"Must" Assertion Priority', '"Should" Assertion Priority'];
 const renderEmbed = ({
     ats,
     allTestPlanReports,
