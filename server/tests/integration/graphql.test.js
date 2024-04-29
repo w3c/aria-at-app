@@ -159,7 +159,7 @@ describe('graphql', () => {
             ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
             ['CollectionJob', 'testPlanRun'],
             ['CollectionJob', 'externalLogsUrl'],
-            ['Assertion', 'phrase'],
+            // ['Assertion', 'phrase'],
             // These interact with Response Scheduler API
             // which is mocked in other tests.
             ['Mutation', 'scheduleCollectionJob'],
@@ -274,55 +274,18 @@ describe('graphql', () => {
                         id
                         status
                     }
-                    # testPlan1: testPlan(id: "command-button") {
-                    #     __typename
-                    #     id
-                    #     directory
-                    #     title
-                    #     latestTestPlanVersion {
-                    #         __typename
-                    #         id
-                    #         title
-                    #         updatedAt
-                    #         gitSha
-                    #         gitMessage
-                    #         updatedAt
-                    #         testPageUrl
-                    #         metadata
-                    #         tests {
-                    #             __typename
-                    #             id
-                    #             rowNumber
-                    #             title
-                    #             ats {
-                    #                 id
-                    #             }
-                    #             scenarios {
-                    #                 __typename
-                    #                 id
-                    #                 at {
-                    #                     id
-                    #                 }
-                    #                 commands {
-                    #                     __typename
-                    #                     id
-                    #                     text
-                    #                     atOperatingMode
-                    #                 }
-                    #             }
-                    #             assertions {
-                    #                 __typename
-                    #                 id
-                    #                 priority
-                    #                 phrase
-                    #             }
-                    #             testFormatVersion
-                    #         }
-                    #     }
-                    #     testPlanVersions {
-                    #         id
-                    #     }
-                    # }
+                    v2TestPlanVersion: testPlanVersion(id: 133) {
+                        __typename
+                        id
+                        metadata
+                        tests {
+                            __typename
+                            assertions {
+                                __typename
+                                phrase
+                            }
+                        }
+                    }
                     testPlan(id: "checkbox") {
                         __typename
                         id
