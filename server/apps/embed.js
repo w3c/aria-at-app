@@ -66,35 +66,35 @@ const queryReports = async testPlanDirectory => {
                         }
                     }
                 }
-                # testPlanReports(
-                #     testPlanVersionPhases: [CANDIDATE, RECOMMENDED]
-                #     isFinal: true
-                # ) {
-                #     id
-                #     metrics
-                #     at {
-                #         id
-                #         name
-                #     }
-                #     browser {
-                #         id
-                #         name
-                #     }
-                #     latestAtVersionReleasedAt {
-                #         id
-                #         name
-                #         releasedAt
-                #     }
-                #     testPlanVersion {
-                #         id
-                #         title
-                #         phase
-                #         updatedAt
-                #         testPlan {
-                #             id
-                #         }
-                #     }
-                # }
+                testPlanReports(
+                    testPlanVersionPhases: [CANDIDATE, RECOMMENDED]
+                    isFinal: true
+                ) {
+                    id
+                    metrics
+                    at {
+                        id
+                        name
+                    }
+                    browser {
+                        id
+                        name
+                    }
+                    latestAtVersionReleasedAt {
+                        id
+                        name
+                        releasedAt
+                    }
+                    testPlanVersion {
+                        id
+                        title
+                        phase
+                        updatedAt
+                        testPlan {
+                            id
+                        }
+                    }
+                }
             }
         `,
         variables: { testPlanDirectory }
@@ -104,11 +104,11 @@ const queryReports = async testPlanDirectory => {
         throw new Error(errors);
     }
 
-    // const reportsHashed = hash(data.testPlanReports);
+    const reportsHashed = hash(data.testPlanReports);
 
     return {
         allTestPlanReports: data.testPlanReports,
-        // reportsHashed,
+        reportsHashed,
         ats: data.ats
     };
 };
@@ -182,11 +182,12 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
             latestReports.push(group.pop());
         } else {
             const latestReport = group
-                .sort(
-                    (a, b) =>
+                .sort((a, b) => {
+                    return (
                         new Date(a.latestAtVersionReleasedAt.releasedAt) -
                         new Date(b.latestAtVersionReleasedAt.releasedAt)
-                )
+                    );
+                })
                 .pop();
 
             latestReports.push(latestReport);
@@ -217,10 +218,21 @@ const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
         testPlanVersionIds,
         phase,
         reportsByAt,
-        latestReports
+        latestReports: latestReports.sort((a, b) => {
+            if (a.at.name !== b.at.name) {
+                return a.at.name.localeCompare(b.at.name);
+            }
+            if (a.browser.name !== b.browser.name) {
+                return a.browser.name.localeCompare(b.browser.name);
+            }
+            return (
+                new Date(b.latestAtVersionReleasedAt.releasedAt) -
+                new Date(a.latestAtVersionReleasedAt.releasedAt)
+            );
+        })
     };
 };
-const priorities = ['"Must" Assertion Priority', '"Should" Assertion Priority'];
+const priorities = ['MUST HAVE Behaviors', 'SHOULD HAVE Behaviors'];
 const renderEmbed = ({
     ats,
     allTestPlanReports,
