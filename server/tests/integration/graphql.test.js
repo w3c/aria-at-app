@@ -368,6 +368,28 @@ describe('graphql', () => {
                             directory
                         }
                     }
+                    recommendedTestPlanVersion: testPlanVersion(id: 69) {
+                        __typename
+                        testPlanReportStatuses {
+                            __typename
+                            isRequired
+                            at {
+                                id
+                            }
+                            exactAtVersion {
+                                id
+                            }
+                            minimumAtVersion {
+                                id
+                            }
+                            browser {
+                                id
+                            }
+                            testPlanReport {
+                                id
+                            }
+                        }
+                    }
                     conflictTestPlanReport: testPlanReport(id: 2) {
                         __typename
                         id
@@ -489,6 +511,15 @@ describe('graphql', () => {
                             releasedAt
                         }
                         markedFinalAt
+                        minimumAtVersion {
+                            id
+                        }
+                    }
+                    recommendedPhaseTestPlanReport: testPlanReport(id: 12) {
+                        __typename
+                        exactAtVersion {
+                            id
+                        }
                     }
                     testPlanReports {
                         id
