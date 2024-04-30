@@ -241,7 +241,10 @@ const TestQueueRow = ({
                     {draftTestPlanRuns
                         .slice() // because array was frozen
                         .sort((a, b) =>
-                            a.tester.username < b.tester.username ? -1 : 1
+                            a.tester.username.toLowerCase() <
+                            b.tester.username.toLowerCase()
+                                ? -1
+                                : 1
                         )
                         .map(({ tester }) => {
                             return (
