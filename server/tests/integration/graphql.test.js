@@ -150,10 +150,6 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
-            ['TestPlanVersion', 'candidatePhaseReachedAt'],
-            ['TestPlanVersion', 'recommendedPhaseReachedAt'],
-            ['TestPlanVersion', 'recommendedPhaseTargetDate'],
-            ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers'],
             ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
             ['CollectionJob', 'testPlanRun'],
@@ -370,6 +366,12 @@ describe('graphql', () => {
                     }
                     recommendedTestPlanVersion: testPlanVersion(id: 69) {
                         __typename
+                        id
+                        earliestAtVersion(atId: 1) {
+                            id
+                            name
+                            releasedAt
+                        }
                         testPlanReportStatuses {
                             __typename
                             isRequired

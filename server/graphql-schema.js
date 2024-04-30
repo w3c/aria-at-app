@@ -380,6 +380,29 @@ const graphqlSchema = gql`
         A list of existing or missing TestPlanReports that may be collected.
         """
         testPlanReportStatuses: [TestPlanReportStatus]!
+        """
+        For each report under this TestPlanVersion, if the report's combination
+        is indicated as required and the report is marked as final at the time
+        the TestPlanVersion is updated to RECOMMENDED then by checking the
+        testers' runs which have been marked as primary, the earliest found AT
+        version for the respective ATs should be considered as the
+        first required AT version or "earliestAtVersion".
+
+        The "earliest" is determined by comparing the recorded AtVersions'
+        releasedAt value.
+
+        Required Reports definition and combinations are defined at
+        https://github.com/w3c/aria-at-app/wiki/Business-Logic-and-Processes#required-reports.
+
+        Primary Test Plan Run is defined at
+        https://github.com/w3c/aria-at-app/wiki/Business-Logic-and-Processes#primary-test-plan-run.
+
+        After this TestPlanVersion is updated to RECOMMENDED, this should be
+        used to ensure subsequent reports created under the TestPlanVersion
+        should only being capturing results for AT Versions which are the same
+        as or were released after the "earliestAtVersion".
+        """
+        earliestAtVersion(atId: ID!): AtVersion
     }
 
     """
@@ -1283,8 +1306,11 @@ const graphqlSchema = gql`
         Updates the markedFinalAt date. This must be set before a TestPlanReport can
         be advanced to CANDIDATE. All conflicts must also be resolved.
         Only available to admins.
+
+        Also optionally set a "primary test plan run" so a specific tester's output
+        will be shown for on the report pages over another.
         """
-        markAsFinal: PopulatedData!
+        markAsFinal(primaryTestPlanRunId: ID): PopulatedData!
         """
         Remove the TestPlanReport's markedFinalAt date. This allows the TestPlanReport
         to be worked on in the Test Queue page again if was previously marked as final.

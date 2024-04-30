@@ -4,16 +4,17 @@ import { useApolloClient, useMutation } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
-import { Button, Dropdown } from 'react-bootstrap';
+import { Form, Button, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import {
     TEST_PLAN_REPORT_QUERY,
     ASSIGN_TESTER_MUTATION,
-    UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION,
+    MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION,
     REMOVE_TEST_PLAN_REPORT_MUTATION,
     REMOVE_TESTER_MUTATION,
     REMOVE_TESTER_RESULTS_MUTATION
 } from '../TestQueue/queries';
+import BasicModal from '../common/BasicModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
@@ -45,14 +46,16 @@ const TestQueueRow = ({
 
     const setAlertMessage = useAriaLiveRegion();
 
+    const [showPrimaryTestPlanRunModal, setShowPrimaryTestPlanRunModal] =
+        useState(false);
     const [showThemedModal, setShowThemedModal] = useState(false);
     const [themedModalType, setThemedModalType] = useState('warning');
     const [themedModalTitle, setThemedModalTitle] = useState('');
     const [themedModalContent, setThemedModalContent] = useState(<></>);
 
     const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
-    const [updateTestPlanMarkedFinalAt] = useMutation(
-        UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION
+    const [markTestPlanReportAsFinal] = useMutation(
+        MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION
     );
     const [removeTestPlanReport] = useMutation(
         REMOVE_TEST_PLAN_REPORT_MUTATION
@@ -61,6 +64,7 @@ const TestQueueRow = ({
     const [removeTesterResults] = useMutation(REMOVE_TESTER_RESULTS_MUTATION);
 
     const [testPlanReport, setTestPlanReport] = useState(testPlanReportData);
+    const [primaryTestPlanRunId, setPrimaryTestPlanRunId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const { id, isAdmin, isTester, isVendor, username } = user;
@@ -90,6 +94,19 @@ const TestQueueRow = ({
     const testPlanRunsWithResults = draftTestPlanRuns.filter(
         ({ testResultsLength = 0 }) => testResultsLength > 0
     );
+
+    const primaryTestPlanRunOptions = draftTestPlanRuns
+        .slice()
+        .sort((a, b) =>
+            a.tester.username.toLowerCase() < b.tester.username.toLowerCase()
+                ? -1
+                : 1
+        )
+        .map(run => ({
+            testPlanRunId: run.id,
+            ...run.tester
+        }))
+        .filter(tester => !isBot(tester));
 
     const getTestPlanRunIdByUserId = userId => {
         return draftTestPlanRuns.find(({ tester }) => tester.id === userId).id;
@@ -353,7 +370,23 @@ const TestQueueRow = ({
                                 onClick={async () => {
                                     focusButtonRef.current =
                                         updateTestPlanStatusButtonRef.current;
-                                    await updateReportStatus();
+
+                                    const primaryTestPlanRunId =
+                                        primaryTestPlanRunOptions[0]
+                                            .testPlanRunId;
+
+                                    if (primaryTestPlanRunOptions.length > 1) {
+                                        setPrimaryTestPlanRunId(
+                                            primaryTestPlanRunId
+                                        );
+                                        setShowPrimaryTestPlanRunModal(true);
+                                    } else {
+                                        // Immediately mark as final with the
+                                        // only option
+                                        await updateReportMarkedFinal(
+                                            primaryTestPlanRunId
+                                        );
+                                    }
                                 }}
                             >
                                 Mark as Final
@@ -370,12 +403,71 @@ const TestQueueRow = ({
         }
     };
 
-    const updateReportStatus = async () => {
+    const handlePrimaryTestRunChange = e => {
+        const value = e.target.value;
+        setPrimaryTestPlanRunId(value);
+    };
+
+    const renderPrimaryRunSelectionDialog = testers => {
+        return (
+            <BasicModal
+                show={showPrimaryTestPlanRunModal}
+                title="Select Primary Test Plan Run"
+                content={
+                    <>
+                        When a tester&apos;s run is marked as primary, it means
+                        that their output for collected results will be
+                        prioritized and shown on report pages.
+                        <br />
+                        <br />
+                        A tester&apos;s run being marked as primary may also set
+                        the minimum required Assistive Technology Version that
+                        can be used for subsequent reports with that Test Plan
+                        Version and Assistive Technology combination.
+                        <br />
+                        <br />
+                        <Form.Select
+                            className="primary-test-run-select"
+                            defaultValue={primaryTestPlanRunId}
+                            onChange={handlePrimaryTestRunChange}
+                            htmlSize={testers.length}
+                        >
+                            {testers.map(tester => (
+                                <option
+                                    key={`${testPlanReport.id}-${tester.id}`}
+                                    value={tester.testPlanRunId}
+                                >
+                                    {tester.username}
+                                </option>
+                            ))}
+                        </Form.Select>
+                    </>
+                }
+                closeLabel="Cancel"
+                staticBackdrop={true}
+                actions={[
+                    {
+                        label: 'Confirm',
+                        onClick: async () =>
+                            await updateReportMarkedFinal(primaryTestPlanRunId)
+                    }
+                ]}
+                useOnHide
+                handleClose={() => {
+                    setPrimaryTestPlanRunId(null);
+                    setShowPrimaryTestPlanRunModal(false);
+                }}
+            />
+        );
+    };
+
+    const updateReportMarkedFinal = async primaryTestPlanRunId => {
         try {
             await triggerLoad(async () => {
-                await updateTestPlanMarkedFinalAt({
+                await markTestPlanReportAsFinal({
                     variables: {
-                        testReportId: testPlanReport.id
+                        testReportId: testPlanReport.id,
+                        primaryTestPlanRunId
                     }
                 });
                 await triggerPageUpdate();
@@ -600,6 +692,8 @@ const TestQueueRow = ({
                     showCloseAction={false}
                 />
             )}
+            {showPrimaryTestPlanRunModal &&
+                renderPrimaryRunSelectionDialog(primaryTestPlanRunOptions)}
         </LoadingStatus>
     );
 };
