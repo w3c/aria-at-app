@@ -506,10 +506,11 @@ describe('graphql', () => {
                             releasedAt
                         }
                     }
-                    testPlanRun(id: 3) {
+                    testPlanRun(id: 1) {
                         __typename
                         id
                         initiatedByAutomation
+                        collectionJob { id }
                         testPlanReport {
                             id
                         }
@@ -782,6 +783,31 @@ describe('graphql', () => {
                 }
             );
         });
+
+        // esure recursive query of collectionJob<>testPlanRun fails at some depth
+        await expect(
+            typeAwareQuery(
+                gql`
+                    query {
+                        collectionJob(id: 1) {
+                            id
+                            testPlanRun {
+                                id
+                                collectionJob {
+                                    id
+                                    testPlanRun {
+                                        id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                {
+                    transaction: false
+                }
+            )
+        ).rejects.toBeDefined();
 
         expect(() => {
             const missingTypes = checkForMissingTypes();

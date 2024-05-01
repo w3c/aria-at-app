@@ -846,6 +846,10 @@ const graphqlSchema = gql`
         Whether the TestPlanRun was initiated by the Response Collection System
         """
         initiatedByAutomation: Boolean!
+        """
+        The CollectionJob related to this testPlanRun
+        """
+        collectionJob: CollectionJob
     }
 
     """
