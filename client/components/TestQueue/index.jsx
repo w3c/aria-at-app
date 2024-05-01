@@ -48,6 +48,7 @@ const TestQueue = () => {
                 testPlanReports = [],
                 testPlans = []
             } = data;
+            // section:
             setTesters(
                 users.filter(
                     tester =>
@@ -114,7 +115,9 @@ const TestQueue = () => {
                                 <TestQueueRow
                                     key={key}
                                     user={auth}
-                                    testers={testers}
+                                    testers={testers.sort((a, b) =>
+                                        a.username.localeCompare(b.username)
+                                    )}
                                     testPlanReportData={testPlanReport}
                                     latestTestPlanVersions={
                                         latestTestPlanVersions
