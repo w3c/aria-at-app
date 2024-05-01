@@ -256,11 +256,11 @@ const readDirectoryGitInfo = directoryPath => {
 const importHarness = () => {
     const sourceFolder = path.resolve(`${testsDirectory}/resources`);
     const targetFolder = path.resolve('../', 'client/resources');
-    console.info('Clearing harness directory ...');
+    console.info(`Updating harness directory, ${targetFolder} ...`);
     fse.rmSync(targetFolder, { recursive: true, force: true });
 
     // Copy source folder
-    console.info('Importing harness ...');
+    console.info('Importing latest harness files ...');
     fse.copySync(sourceFolder, targetFolder, {
         filter: src => {
             if (fse.lstatSync(src).isDirectory()) {
@@ -285,7 +285,7 @@ const importHarness = () => {
         `${testsDirectory}/${supportJson}`,
         `${targetFolder}/${supportJson}`
     );
-    console.info('Import harness complete.');
+    console.info('Harness files update complete.');
 };
 
 const getAppUrl = (directoryRelativePath, { gitSha, directoryPath }) => {
