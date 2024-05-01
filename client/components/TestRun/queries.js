@@ -204,7 +204,6 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                         id
                         text
                         phrase
-                        phrase
                     }
                 }
                 conflictingResults {
@@ -784,7 +783,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             assertion {
                                 id
                                 text
-                                phrase
                                 phrase
                             }
                         }
