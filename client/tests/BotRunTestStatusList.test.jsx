@@ -64,7 +64,6 @@ test('correctly ignores test results from a human-submitted test plan run', asyn
                 status: COLLECTION_JOB_STATUS.COMPLETED,
                 testStatus: [
                     { status: COLLECTION_JOB_STATUS.COMPLETED },
-                    { status: COLLECTION_JOB_STATUS.COMPLETED },
                     { status: COLLECTION_JOB_STATUS.COMPLETED }
                 ]
             }
