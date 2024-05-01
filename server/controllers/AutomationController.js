@@ -157,7 +157,9 @@ const getTestByRowNumber = async ({ testPlanRun, testRowNumber, context }) => {
         null,
         context
     );
-    return tests.find(test => test.rowNumber === parseInt(testRowNumber, 10));
+    return tests.find(
+        test => parseInt(test.rowNumber, 10) === parseInt(testRowNumber, 10)
+    );
 };
 
 const updateOrCreateTestResultWithResponses = async ({
@@ -244,7 +246,7 @@ const updateOrCreateTestResultWithResponses = async ({
 };
 
 const updateJobResults = async (req, res) => {
-    const id = req.params.jobID;
+    const { jobID: id, testRowNumber } = req.params;
     const context = getGraphQLContext({ req });
     const { transaction } = context;
     const {
@@ -257,14 +259,6 @@ const updateJobResults = async (req, res) => {
             browserVersion: browserVersionName
         } = {}
     } = req.body;
-
-    // The testRowNumber is now a URL request param, previously it was passed
-    // in the request body as `testCsvRow` for v1 tests, `presentationNumber`
-    // for v2 tests.
-    const testRowNumber =
-        req.params.testRowNumber ??
-        req.body.presentationNumber ??
-        req.body.testCsvRow;
 
     const job = await getCollectionJobById({ id, transaction });
     if (!job) {
