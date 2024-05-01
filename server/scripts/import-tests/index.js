@@ -261,23 +261,26 @@ const importHarness = () => {
 
     // Copy source folder
     console.info('Importing harness ...');
-    fse.copySync(sourceFolder, targetFolder, { filter: (src) => {
+    fse.copySync(sourceFolder, targetFolder, {
+        filter: src => {
             if (fse.lstatSync(src).isDirectory()) {
                 return true;
             }
             if (!src.includes('.html')) {
                 return true;
             }
-        },
+        }
     });
 
     // Copy files
     const commandsJson = 'commands.json';
     const supportJson = 'support.json';
-    fse.copyFileSync(
-        `${testsDirectory}/${commandsJson}`,
-        `${targetFolder}/${commandsJson}`
-    );
+    if (fse.existsSync(`${testsDirectory}/${commandsJson}`)) {
+        fse.copyFileSync(
+            `${testsDirectory}/${commandsJson}`,
+            `${targetFolder}/${commandsJson}`
+        );
+    }
     fse.copyFileSync(
         `${testsDirectory}/${supportJson}`,
         `${targetFolder}/${supportJson}`
