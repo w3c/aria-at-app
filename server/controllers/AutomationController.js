@@ -18,7 +18,7 @@ const {
     findOrCreateBrowserVersion
 } = require('../models/services/BrowserService');
 const { HttpQueryError } = require('apollo-server-core');
-const { COLLECTION_JOB_STATUS } = require('../util/enums');
+const { COLLECTION_JOB_STATUS, isJobStatusFinal } = require('../util/enums');
 const populateData = require('../services/PopulatedData/populateData');
 const {
     getFinalizedTestResults
@@ -100,13 +100,9 @@ const updateJobStatus = async (req, res) => {
         ...(externalLogsUrl != null && { externalLogsUrl })
     };
 
-    // When new status is 'COMPLETED' or 'ERROR' or 'CANCELLED'
+    // When new status is considered "final" ('COMPLETED' or 'ERROR' or 'CANCELLED')
     // update any CollectionJobTestStatus children still 'QUEUED' to be 'CANCELLED'
-    if (
-        status === COLLECTION_JOB_STATUS.COMPLETED ||
-        status === COLLECTION_JOB_STATUS.CANCELLED ||
-        status === COLLECTION_JOB_STATUS.ERROR
-    ) {
+    if (isJobStatusFinal(status)) {
         await updateCollectionJobTestStatusByQuery({
             where: {
                 collectionJobId: req.params.jobID,
@@ -155,19 +151,13 @@ const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
     return getFinalizedTestResults({ testPlanReport, context });
 };
 
-const getTestByRowIdentifer = async ({
-    testPlanRun,
-    testRowIdentifier,
-    context
-}) => {
+const getTestByRowNumber = async ({ testPlanRun, testRowNumber, context }) => {
     const tests = await runnableTestsResolver(
         testPlanRun.testPlanReport,
         null,
         context
     );
-    return tests.find(
-        test => parseInt(test.rowNumber, 10) === parseInt(testRowIdentifier, 10)
-    );
+    return tests.find(test => test.rowNumber === parseInt(testRowNumber, 10));
 };
 
 const updateOrCreateTestResultWithResponses = async ({
@@ -258,10 +248,6 @@ const updateJobResults = async (req, res) => {
     const context = getGraphQLContext({ req });
     const { transaction } = context;
     const {
-        // Old way - testCsvRow and presentationNumber can be removed
-        // once all requests from automation are using the new URL parameter
-        testCsvRow,
-        presentationNumber,
         responses,
         status,
         capabilities: {
@@ -271,6 +257,15 @@ const updateJobResults = async (req, res) => {
             browserVersion: browserVersionName
         } = {}
     } = req.body;
+
+    // The testRowNumber is now a URL request param, previously it was passed
+    // in the request body as `testCsvRow` for v1 tests, `presentationNumber`
+    // for v2 tests.
+    const testRowNumber =
+        req.params.testRowNumber ??
+        req.body.presentationNumber ??
+        req.body.testCsvRow;
+
     const job = await getCollectionJobById({ id, transaction });
     if (!job) {
         throwNoJobFoundError(id);
@@ -286,20 +281,16 @@ const updateJobResults = async (req, res) => {
     }
     const { testPlanRun } = job;
 
-    // New way: testRowNumber is now a URL request param
-    // Old way: v1 tests store testCsvRow in rowNumber, v2 tests store presentationNumber in rowNumber
-    const testRowIdentifier =
-        req.params.testRowNumber ?? presentationNumber ?? testCsvRow;
     const testId = (
-        await getTestByRowIdentifer({
+        await getTestByRowNumber({
             testPlanRun,
-            testRowIdentifier,
+            testRowNumber,
             context
         })
     )?.id;
 
     if (testId === undefined) {
-        throwNoTestFoundError(testRowIdentifier);
+        throwNoTestFoundError(testRowNumber);
     }
 
     // status only update, or responses were provided (default to complete)
