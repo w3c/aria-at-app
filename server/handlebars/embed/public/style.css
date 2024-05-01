@@ -61,7 +61,7 @@ body {
     background-repeat: no-repeat;
     position: absolute;
     right: 0.5em;
-    top: 0.5em;
+    top: 1.5em;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='6.861' viewBox='0 0 12 6.861'%3E%3Cpath id='Icon_ionic-ios-arrow-down' data-name='Icon ionic-ios-arrow-down' d='M12.19,16.039,16.727,11.5a.854.854,0,0,1,1.211,0,.865.865,0,0,1,0,1.215L12.8,17.858a.856.856,0,0,1-1.183.025L6.438,12.717A.858.858,0,1,1,7.649,11.5Z' transform='translate(18.188 18.108) rotate(180)' fill='%2360470c'/%3E%3C/svg%3E%0A");
     background-color: #fce1a4;
     transform: rotate(180deg);
