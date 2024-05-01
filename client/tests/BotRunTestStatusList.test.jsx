@@ -54,113 +54,121 @@ test('correctly displays statuses for single COMPLETED test run', async () => {
     });
 });
 
-// test('correctly ignores test results from a human-submitted test plan run', async () => {
-//     const testPlanRuns = [
-//         {
-//             id: '0',
-//             testResults: new Array(2).fill(null),
-//             tester: { username: 'bot' }
-//         },
-//         {
-//             id: '1',
-//             testResults: new Array(2).fill(null),
-//             tester: { username: 'human' }
-//         }
-//     ];
+test('correctly ignores test results from a human-submitted test plan run', async () => {
+    const testPlanRuns = [
+        {
+            id: '0',
+            testResults: new Array(2).fill(null),
+            tester: { username: 'bot' },
+            collectionJob: {
+                status: COLLECTION_JOB_STATUS.COMPLETED,
+                testStatus: [
+                    { status: COLLECTION_JOB_STATUS.COMPLETED },
+                    { status: COLLECTION_JOB_STATUS.COMPLETED },
+                    { status: COLLECTION_JOB_STATUS.COMPLETED }
+                ]
+            }
+        },
+        {
+            id: '1',
+            testResults: new Array(2).fill(null),
+            tester: { username: 'human' },
+            collectionJob: null
+        }
+    ];
 
-//     const collectionJobStatuses = ['COMPLETED', 'COMPLETED'];
+    const mocks = getMocks(testPlanRuns);
 
-//     const mocks = getMocks(testPlanRuns, collectionJobStatuses);
+    const { getByText } = render(
+        <MockedProvider mocks={mocks} addTypename={false}>
+            <BotRunTestStatusList testPlanReportId="1" />
+        </MockedProvider>
+    );
 
-//     const { getByText } = render(
-//         <MockedProvider mocks={mocks} addTypename={false}>
-//             <BotRunTestStatusList
-//                 testPlanReportId="1"
-//                 runnableTestsLength={2}
-//             />
-//         </MockedProvider>
-//     );
+    await waitFor(async () => {
+        expect(getByText('2 Tests Completed')).toBeInTheDocument();
+        expect(getByText('0 Tests Queued')).toBeInTheDocument();
+    });
+});
 
-//     await waitFor(async () => {
-//         expect(getByText('2 Tests Completed')).toBeInTheDocument();
-//         expect(getByText('0 Tests Queued')).toBeInTheDocument();
-//         expect(getByText('0 Tests Cancelled')).toBeInTheDocument();
-//     });
-// });
+test('correctly displays statuses for CANCELLED test run', async () => {
+    const testPlanRuns = [
+        {
+            id: '0',
+            testResults: new Array(2).fill(null),
+            tester: { username: 'bot' },
+            collectionJob: {
+                status: COLLECTION_JOB_STATUS.CANCELLED,
+                testStatus: [
+                    { status: COLLECTION_JOB_STATUS.COMPLETED },
+                    { status: COLLECTION_JOB_STATUS.COMPLETED },
+                    { status: COLLECTION_JOB_STATUS.CANCELLED }
+                ]
+            }
+        }
+    ];
 
-// test('correctly displays statuses for CANCELLED test run', async () => {
-//     const testPlanRuns = [
-//         {
-//             id: '0',
-//             testResults: new Array(2).fill(null),
-//             tester: { username: 'bot' }
-//         }
-//     ];
+    const mocks = getMocks(testPlanRuns);
 
-//     const collectionJobStatuses = ['CANCELLED'];
+    const { getByText } = render(
+        <MockedProvider mocks={mocks} addTypename={false}>
+            <BotRunTestStatusList testPlanReportId="1" />
+        </MockedProvider>
+    );
 
-//     const mocks = getMocks(testPlanRuns, collectionJobStatuses);
+    await waitFor(() => {
+        expect(getByText('2 Tests Completed')).toBeInTheDocument();
+        expect(getByText('0 Tests Queued')).toBeInTheDocument();
+        expect(getByText('1 Test Cancelled')).toBeInTheDocument();
+    });
+});
 
-//     const { getByText } = render(
-//         <MockedProvider mocks={mocks} addTypename={false}>
-//             <BotRunTestStatusList
-//                 testPlanReportId="1"
-//                 runnableTestsLength={3}
-//             />
-//         </MockedProvider>
-//     );
+test('correctly displays statuses for multiple RUNNING and QUEUED test runs', async () => {
+    const testPlanRuns = [
+        {
+            id: '0',
+            testResults: new Array(2).fill(null),
+            tester: { username: 'bot' },
+            collectionJob: {
+                status: COLLECTION_JOB_STATUS.RUNNING,
+                testStatus: [
+                    { status: COLLECTION_JOB_STATUS.RUNNING },
+                    { status: COLLECTION_JOB_STATUS.COMPLETED },
+                    { status: COLLECTION_JOB_STATUS.QUEUED }
+                ]
+            }
+        },
+        {
+            id: '1',
+            testResults: new Array(2).fill(null),
+            tester: { username: 'bot' },
+            collectionJob: {
+                status: COLLECTION_JOB_STATUS.CANCELLED,
+                testStatus: [
+                    { status: COLLECTION_JOB_STATUS.CANCELLED },
+                    { status: COLLECTION_JOB_STATUS.COMPLETED },
+                    { status: COLLECTION_JOB_STATUS.CANCELLED }
+                ]
+            }
+        }
+    ];
 
-//     await waitFor(() => {
-//         expect(getByText('2 Tests Completed')).toBeInTheDocument();
-//         expect(getByText('0 Tests Queued')).toBeInTheDocument();
-//         expect(getByText('1 Test Cancelled')).toBeInTheDocument();
-//     });
-// });
+    const mocks = getMocks(testPlanRuns);
 
-// test('correctly displays statuses for multiple RUNNING and QUEUED test runs', async () => {
-//     const testPlanRuns = [
-//         {
-//             id: '0',
-//             testResults: new Array(2).fill(null),
-//             tester: { username: 'bot' }
-//         },
-//         {
-//             id: '1',
-//             testResults: new Array(2).fill(null),
-//             tester: { username: 'bot' }
-//         },
-//         {
-//             id: '2',
-//             testResults: [null],
-//             tester: { username: 'bot' }
-//         },
-//         {
-//             id: '3',
-//             testResults: new Array(2).fill(null),
-//             tester: { username: 'human' }
-//         }
-//     ];
+    const { getByText } = render(
+        <MockedProvider mocks={mocks} addTypename={false}>
+            <BotRunTestStatusList testPlanReportId="1" />
+        </MockedProvider>
+    );
 
-//     const collectionJobStatuses = ['RUNNING', 'RUNNING', 'CANCELLED'];
-
-//     const mocks = getMocks(testPlanRuns, collectionJobStatuses);
-
-//     const { getByText } = render(
-//         <MockedProvider mocks={mocks} addTypename={false}>
-//             <BotRunTestStatusList
-//                 testPlanReportId="1"
-//                 runnableTestsLength={3}
-//             />
-//         </MockedProvider>
-//     );
-
-//     await waitFor(async () => {
-//         // Wait for the component to update
-//         // Imperfect but prevents needing to detect loading removal
-//         await setTimeout(() => {
-//             expect(getByText('2 Tests Completed')).toBeInTheDocument();
-//             expect(getByText('1 Test Queued')).toBeInTheDocument();
-//             expect(getByText('1 Test Cancelled')).toBeInTheDocument();
-//         }, 500);
-//     });
-// });
+    await waitFor(async () => {
+        // Wait for the component to update
+        // Imperfect but prevents needing to detect loading removal
+        await setTimeout(() => {
+            expect(getByText('1 Test Running')).toBeInTheDocument();
+            expect(getByText('2 Tests Completed')).toBeInTheDocument();
+            expect(getByText('1 Test Queued')).toBeInTheDocument();
+            expect(getByText('2 Tests Cancelled')).toBeInTheDocument();
+        }, 500);
+    });
+});
