@@ -749,18 +749,13 @@ const ManageTestQueue = ({
                                                 </option>
                                             ))}
                                     </Form.Select>
-                                    {showMinimumAtVersionErrorMessage ? (
+                                    {showMinimumAtVersionErrorMessage &&
+                                    selectedTestPlanVersion?.phase ===
+                                        'RECOMMENDED' ? (
                                         <div role="alert">
-                                            {selectedTestPlanVersion?.phase ===
-                                            'RECOMMENDED' ? (
-                                                <p>
-                                                    The selected test plan
-                                                    version is in the
-                                                    recommended phase and only
-                                                    exact versions can be
-                                                    chosen.
-                                                </p>
-                                            ) : null}
+                                            The selected test plan version is in
+                                            the recommended phase and only exact
+                                            versions can be chosen.
                                         </div>
                                     ) : null}
                                 </div>
