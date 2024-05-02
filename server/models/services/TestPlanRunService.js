@@ -316,7 +316,7 @@ const createTestPlanRun = async ({
  */
 const updateTestPlanRunById = async ({
     id,
-    values: { testerUserId, testResults },
+    values: { testerUserId, testResults, isPrimary },
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
@@ -329,7 +329,7 @@ const updateTestPlanRunById = async ({
 }) => {
     await ModelService.update(TestPlanRun, {
         where: { id },
-        values: { testResults, testerUserId },
+        values: { testResults, testerUserId, isPrimary },
         transaction
     });
     return ModelService.getById(TestPlanRun, {
