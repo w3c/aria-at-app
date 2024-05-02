@@ -29,7 +29,8 @@ const earliestAtVersionResolver = async (
 
     let earliestAtVersion = null;
     for (const testPlanReport of reports.filter(
-        testPlanReport => testPlanReport.atId == atId
+        testPlanReport =>
+            testPlanReport.atId == atId && testPlanReport.markedFinalAt
     )) {
         const browserId = testPlanReport.browserId;
 
