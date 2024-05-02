@@ -1,4 +1,16 @@
-## 1.1.0 (2024-04-08)
+## [1.2.0](https://github.com/w3c/aria-at-app/compare/v1.1.0...v1.2.0) (2024-04-29)
+
+
+### Features
+
+* Enhance copy results functionality ([#967](https://github.com/w3c/aria-at-app/issues/967)) ([3a4d3c8](https://github.com/w3c/aria-at-app/commit/3a4d3c8d8f36b0808385a16d58b8083f2e0494ec)), closes [#935](https://github.com/w3c/aria-at-app/issues/935)
+
+
+### Bug Fixes
+
+* Fix view log button on test run ([#1054](https://github.com/w3c/aria-at-app/issues/1054)) ([8b46827](https://github.com/w3c/aria-at-app/commit/8b46827288eaea1a72c583199f6303c47933d0ff))
+
+## [1.1.0](https://github.com/w3c/aria-at-app/compare/f11234e4565d8009af0ff06ea039a84384693bd7...v1.1.0) (2024-04-08)
 
 
 ### Features
