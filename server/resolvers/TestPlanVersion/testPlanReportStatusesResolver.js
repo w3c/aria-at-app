@@ -164,7 +164,7 @@ const indexTestPlanReports = async (unpopulatedTestPlanReports, context) => {
         const atVersion = minimumAtVersion ?? exactAtVersion;
 
         if (!indexedTestPlanReports[at.id][browser.id][atVersion.id]) {
-            // Must be an array to accomodate duplicates, which are allowed
+            // Must be an array to accommodate duplicates, which are allowed
             indexedTestPlanReports[at.id][browser.id][atVersion.id] = [];
         }
 
