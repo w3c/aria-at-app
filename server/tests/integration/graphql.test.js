@@ -268,6 +268,18 @@ describe('graphql', () => {
                         id
                         status
                     }
+                    v2TestPlanVersion: testPlanVersion(id: 133) {
+                        __typename
+                        id
+                        metadata
+                        tests {
+                            __typename
+                            assertions {
+                                __typename
+                                phrase
+                            }
+                        }
+                    }
                     testPlan(id: "checkbox") {
                         __typename
                         id
@@ -994,3 +1006,7 @@ const getMutationInputs = async () => {
         browserVersionId: browserVersion.id
     };
 };
+
+/* Add the phrase to the assertion query. It will not work unless phrase is returned.
+Find a test plan version that does have a phrase (V2).
+*/

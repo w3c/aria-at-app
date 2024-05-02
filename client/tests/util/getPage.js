@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer');
 const path = require('path');
 const spawn = require('cross-spawn');
 const treeKill = require('tree-kill');
+const stripAnsi = require('./stripAnsi');
 
 const isDebugMode = process.argv.some(arg => arg.startsWith('--testTimeout'));
 
@@ -47,7 +48,7 @@ const startServer = async serverOrClient => {
         };
 
         server.stdout.on('data', data => {
-            const output = data.toString();
+            const output = stripAnsi(data.toString());
             console.info(output); // eslint-disable-line no-console
 
             if (
