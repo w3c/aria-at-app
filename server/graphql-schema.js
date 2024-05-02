@@ -1001,11 +1001,19 @@ const graphqlSchema = gql`
         """
         at: At!
         """
-        Either a minimumAtVersion or exactAtVersion will be available. The minimumAtVersion, when defined, is the oldest version of the AT that testers are allowed to use when collecting results.
+        Either a minimumAtVersion or exactAtVersion will be available. The
+        minimumAtVersion, when defined, is the oldest version of the AT that
+        testers are allowed to use when collecting results.
         """
         minimumAtVersion: AtVersion
         """
-        Either a minimumAtVersion or exactAtVersion will be available. The exactAtVersion, when defined, is the only version of the AT that testers are allowed to use when collecting results. Note that when a TestPlanVersion reaches the recommended stage, all its reports will automatically switch from having a minimumAtVersion to an exactAtVersion. See the earliestAtVersion field of TestPlanVersion for more information.
+        Either a minimumAtVersion or exactAtVersion will be available. The
+        exactAtVersion, when defined, is the only version of the AT that
+        testers are allowed to use when collecting results. Note that when a
+        TestPlanVersion reaches the recommended stage, all its reports will
+        automatically switch from having a minimumAtVersion to an
+        exactAtVersion. See the earliestAtVersion field of TestPlanVersion for
+        more information.
         """
         exactAtVersion: AtVersion
         """

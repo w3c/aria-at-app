@@ -143,9 +143,10 @@ const TestPlanReportStatusDialog = ({
 
         if (isRequired) requiredReports += 1;
 
-        const key = `${at.name}-${browser.name}-${
-            testPlanReport?.id ?? 'missing'
-        }`;
+        const key =
+            `${at.name}-${browser.name}-` +
+            `${minimumAtVersion?.id ?? exactAtVersion?.id}-` +
+            `${testPlanReport?.id ?? 'missing'}`;
 
         const atVersionFormatted = minimumAtVersion
             ? `${minimumAtVersion.name} or later`

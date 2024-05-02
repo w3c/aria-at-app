@@ -7,9 +7,17 @@ const { createAtVersion } = require('../../models/services/AtService');
 
 describe('testPlanReportStatusesResolver', () => {
     const getFakeTestPlanReport = values => {
-        const fake = { ...values };
-        fake.dataValues = values;
-        return values;
+        const atVersionId =
+            values.exactAtVersionId ?? values.minimumAtVersionId;
+
+        const fake = {
+            ...values,
+            testPlanRuns: [{ isPrimary: true, testResults: [{ atVersionId }] }]
+        };
+
+        fake.dataValues = fake;
+
+        return fake;
     };
 
     let context;
@@ -55,9 +63,9 @@ describe('testPlanReportStatusesResolver', () => {
         expect(atsInOrder).toEqual(['JAWS', 'NVDA', 'VoiceOver for macOS']);
         expect(jawsBrowsersInOrder).toEqual(['Chrome', 'Firefox']);
         expect(voiceoverBrowsersInOrder).toEqual([
-            'Safari',
             'Chrome',
-            'Firefox'
+            'Firefox',
+            'Safari'
         ]);
         expect(exactAtVersions).toEqual([]);
         expect(requiredStatuses.length).toBe(3);

@@ -2,6 +2,7 @@ const atResolver = require('../TestPlanReport/atResolver');
 const browserResolver = require('../TestPlanReport/browserResolver');
 const exactAtVersionResolver = require('../TestPlanReport/exactAtVersionResolver');
 const minimumAtVersionResolver = require('../TestPlanReport/minimumAtVersionResolver');
+const earliestAtVersionResolver = require('./earliestAtVersionResolver');
 
 const testPlanReportStatusesResolver = async (testPlanVersion, _, context) => {
     const { transaction, atLoader } = context;
@@ -21,8 +22,8 @@ const testPlanReportStatusesResolver = async (testPlanVersion, _, context) => {
 
     const unsortedStatuses = [];
 
-    ats.forEach(at => {
-        at.browsers.forEach(browser => {
+    for (const at of ats) {
+        for (const browser of at.browsers) {
             let isRequiredAtBrowser = false;
             if (phase === 'DRAFT' || phase === 'CANDIDATE') {
                 isRequiredAtBrowser = at.candidateBrowsers.some(
@@ -34,32 +35,68 @@ const testPlanReportStatusesResolver = async (testPlanVersion, _, context) => {
                 );
             }
 
+            const atVersions = at.atVersions.sort((a, b) => {
+                return new Date(a.releasedAt) - new Date(b.releasedAt);
+            });
+
             const hasNoReports =
                 Object.keys(indexedTestPlanReports?.[at.id]?.[browser.id] ?? {})
                     .length === 0;
 
             if (hasNoReports) {
-                const earliestAtVersion = at.atVersions[0];
+                if (phase !== 'RECOMMENDED') {
+                    const earliestAtVersion = at.atVersions[0];
 
-                unsortedStatuses.push({
-                    isRequired: isRequiredAtBrowser,
-                    at,
-                    browser,
-                    minimumAtVersion: earliestAtVersion,
-                    exactAtVersion: null,
-                    testPlanReport: null
+                    unsortedStatuses.push({
+                        isRequired: isRequiredAtBrowser,
+                        at,
+                        browser,
+                        minimumAtVersion: earliestAtVersion,
+                        exactAtVersion: null,
+                        testPlanReport: null
+                    });
+
+                    continue;
+                }
+
+                const earliestAtVersion = await earliestAtVersionResolver(
+                    testPlanVersion,
+                    { atId: at.id },
+                    context
+                );
+
+                let isFirstInstance = true;
+                atVersions.forEach(atVersion => {
+                    if (
+                        !earliestAtVersion ||
+                        new Date(atVersion.releasedAt) <
+                            new Date(earliestAtVersion.releasedAt)
+                    ) {
+                        return;
+                    }
+
+                    let isRequired = false;
+                    if (isFirstInstance) {
+                        isRequired = true;
+                        isFirstInstance = false;
+                    }
+
+                    unsortedStatuses.push({
+                        isRequired,
+                        at,
+                        browser,
+                        minimumAtVersion: null,
+                        exactAtVersion: atVersion,
+                        testPlanReport: null
+                    });
                 });
 
-                return;
+                continue;
             }
 
             let isFirstAtBrowserInstance = true;
             let firstTestPlanReportFound = false;
             let minimumAtVersionFound = false;
-
-            const atVersions = at.atVersions.sort((a, b) => {
-                return new Date(a.releasedAt) - new Date(b.releasedAt);
-            });
 
             atVersions.forEach(atVersion => {
                 const testPlanReports =
@@ -103,15 +140,15 @@ const testPlanReportStatusesResolver = async (testPlanVersion, _, context) => {
                     });
                 }
             });
-        });
-    });
+        }
+    }
 
     const statuses = unsortedStatuses.sort((a, b) => {
         if (a.at.name !== b.at.name) return a.at.name.localeCompare(b.at.name);
-        if (a.isRequired !== b.isRequired) return a.isRequired ? -1 : 1;
         if (a.browser.name !== b.browser.name) {
             return a.browser.name.localeCompare(b.browser.name);
         }
+        if (a.isRequired !== b.isRequired) return a.isRequired ? -1 : 1;
         const dateA = (a.minimumAtVersion ?? a.exactAtVersion).releasedAt;
         const dateB = (b.minimumAtVersion ?? b.exactAtVersion).releasedAt;
         return new Date(dateA) - new Date(dateB);
