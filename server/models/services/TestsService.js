@@ -50,7 +50,8 @@ const getTests = parentRecord => {
         }),
         assertions: test.assertions.map(assertion => ({
             ...assertion,
-            text: isV2 ? assertion.assertionStatement : assertion.text
+            text: isV2 ? assertion.assertionStatement : assertion.text,
+            phrase: isV2 ? assertion.assertionPhrase : null
         }))
     }));
 };
