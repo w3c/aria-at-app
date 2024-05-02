@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,300;0,600;0,800;1,700&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Roboto:wght@100;400&display=swap');
+
 body {
     margin: 0;
     /* Parent should use the posted message and set an explicit height */
@@ -77,7 +79,7 @@ body {
   }
   
   #candidate-title {
-    background-color: #fdefce;
+    background-color:#fcebc3;
     border: 1.5px solid #fce1a4;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
@@ -87,23 +89,16 @@ body {
     --left-right-padding: 55px;
   }
   
-  /* #candidate-title > * {
-    padding-left: var(--left-right-padding);
-    padding-right: var(--left-right-padding);
-  } */
   #candidate-title > span {
+    position: relative;
     padding-left: var(--left-right-padding);
     padding-right: var(--left-right-padding);
   }
   
   #candidate-title > span > h4 {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-    background-color: #d9ae4e;
-    padding: 8px 14px;
-    border-radius: 15px;
+    font-size: 1em;
+    color: #60470C;
     display: inline-block;
   }
   
@@ -116,17 +111,16 @@ body {
   }
   
   #candidate-content-container {
-    border-left: 1.5px solid #c0c0c0;
-    border-right: 1.5px solid #c0c0c0;
-    border-bottom: 1.5px solid #c0c0c0;
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     padding: 1em 0.5em 0.5em 1em;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    color: #60470d;
+    font-family: Noto Sans, Trebuchet MS, Helvetica Neue, Arial, sans-serif;
+    font-size: 1rem;
+    color: #60470C;
     background-color: #fdefce;
-    border: 1.5px solid #fce1a4;
+    border-left: 1px solid #fce1a4;
+    border-right: 1px solid #fce1a4;
+    border-bottom: 1px solid #fce1a4;
   }
   
   #candidate-content-container > ol > li:not(:last-child) {
@@ -138,11 +132,10 @@ body {
     height: 32px;
     display: block;
     content: '';
-    background-position: center center;
     background-repeat: no-repeat;
     position: absolute;
-    left: 2em;
-    top: 1.5em;
+    left: 5px;
+    top: -7px;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='31' viewBox='0 0 30 31'%3E%3Cg id='Group_1' data-name='Group 1' transform='translate(-11 -292)'%3E%3Cellipse id='Ellipse_1' data-name='Ellipse 1' cx='15' cy='15.5' rx='15' ry='15.5' transform='translate(11 292)' fill='%23d9ae4d'/%3E%3Cpath id='Path_3' data-name='Path 3' d='M4.524-17.368a4.507,4.507,0,0,0-1.56.312.278.278,0,0,0-.13.286V-14.9c0,2.184.416,8.294.468,9.022a.172.172,0,0,0,.182.156h2.08c.156,0,.182-.078.182-.156.078-.78.52-6.916.52-9.1v-1.872a.326.326,0,0,0-.156-.286A5.112,5.112,0,0,0,4.524-17.368Zm0,17.576A1.7,1.7,0,0,0,6.4-1.534,1.741,1.741,0,0,0,4.524-3.328,1.77,1.77,0,0,0,2.652-1.534,1.7,1.7,0,0,0,4.524.208Z' transform='translate(22 316)' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E%0A");
   }
   
