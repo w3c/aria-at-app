@@ -4,7 +4,6 @@ const markAsFinal = require('./markAsFinalResolver');
 const unmarkAsFinal = require('./unmarkAsFinalResolver');
 const deleteTestPlanReport = require('./deleteTestPlanReportResolver');
 const promoteVendorReviewStatus = require('./promoteVendorReviewStatusResolver');
-const updateTestPlanReportTestPlanVersion = require('./updateTestPlanReportTestPlanVersionResolver');
 
 module.exports = {
     assignTester,
@@ -12,6 +11,5 @@ module.exports = {
     markAsFinal,
     unmarkAsFinal,
     deleteTestPlanReport,
-    promoteVendorReviewStatus,
-    updateTestPlanReportTestPlanVersion
+    promoteVendorReviewStatus
 };

@@ -6,10 +6,10 @@ describe('AT Version UI', () => {
         await getPage({ role: 'admin', url: '/test-queue' }, async page => {
             const openTrayIfClosed = async () => {
                 await page.waitForSelector('button ::-p-text(Manage Assistive Technology Versions)');
-                const isTrayClosed = !!(await page.$('::-p-text(Select an Assistive Technology and manage its versions)'));
+                const isTrayClosed = !!(await page.$('::-p-text(Select an assistive technology and manage its versions)'));
                 if (isTrayClosed) {
                     await page.click('button ::-p-text(Manage Assistive Technology Versions)');
-                    await page.waitForSelector('::-p-text(Select an Assistive Technology and manage its versions)');
+                    await page.waitForSelector('::-p-text(Select an assistive technology and manage its versions)');
                 }
             };
             await openTrayIfClosed();

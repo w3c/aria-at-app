@@ -1022,8 +1022,10 @@ const graphqlSchema = gql`
     input TestPlanReportInput {
         testPlanVersionId: ID!
         atId: ID!
+        exactAtVersionId: ID
+        minimumAtVersionId: ID
         browserId: ID!
-        copyResultsFromTestPlanReportId: ID
+        copyResultsFromTestPlanVersionId: ID
     }
 
     """
@@ -1241,15 +1243,6 @@ const graphqlSchema = gql`
         """
         unmarkAsFinal: PopulatedData!
         """
-        Update the report to a specific TestPlanVersion id.
-        """
-        updateTestPlanReportTestPlanVersion(
-            """
-            The TestPlanReport to update.
-            """
-            input: TestPlanReportInput!
-        ): PopulatedData!
-        """
         Move the vendor review status from READY to IN PROGRESS
         or IN PROGRESS to APPROVED
         """
@@ -1342,25 +1335,6 @@ const graphqlSchema = gql`
         retryCanceledCollections: CollectionJob!
     }
 
-    """
-    Generic response to findOrCreate mutations, which allow you to dictate an
-    expectation of what you want to exist, and it will be made so. It allows you
-    to check whether new database records were created.
-    """
-    type FindOrCreateResult {
-        """
-        The data that was found or created, as well as any implicit
-        associations. For example, if you find or create a TestPlanReport, this
-        will include the TestPlanReport as well as the TestPlanVersion and
-        TestPlan.
-        """
-        populatedData: PopulatedData!
-        """
-        There will be one array item per database record created.
-        """
-        created: [PopulatedData]!
-    }
-
     type Mutation {
         """
         Get the available mutations for the given AT.
@@ -1375,17 +1349,18 @@ const graphqlSchema = gql`
         """
         browser(id: ID!): BrowserOperations!
         """
-        Adds a report with the given TestPlanVersion, AT and Browser, and a
-        state of "DRAFT", resulting in the report appearing in the Test Queue.
-        In the case an identical report already exists, it will be returned
-        without changes and without affecting existing results.
+        Adds an empty report to the test queue, a container for related test
+        results. Each report must be scoped to a specific TestPlanVersion, AT
+        and Browser. Optionally, either a minimum or exact AT version
+        requirement can be included to constrain the versions testers are
+        allowed to use to run the tests.
         """
-        findOrCreateTestPlanReport(
+        createTestPlanReport(
             """
-            The TestPlanReport to find or create.
+            The TestPlanReport to create.
             """
             input: TestPlanReportInput!
-        ): FindOrCreateResult!
+        ): PopulatedData!
         """
         Get the available mutations for the given TestPlanReport.
         """

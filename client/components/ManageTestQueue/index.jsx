@@ -18,6 +18,7 @@ import { convertStringToDate } from '../../utils/formatter';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
+import RadioBox from '../common/RadioBox';
 
 const DisclosureContainer = styled.div`
     // Following directives are related to the ManageTestQueue component
@@ -28,11 +29,8 @@ const DisclosureContainer = styled.div`
 
     // Add Test Plan to Test Queue button
     > button {
-        display: flex;
         padding: 0.5rem 1rem;
         margin-top: 1rem;
-        margin-left: auto;
-        margin-right: 0;
     }
 
     .disclosure-row-manage-ats {
@@ -78,9 +76,38 @@ const DisclosureContainer = styled.div`
 
     .disclosure-row-test-plans {
         display: grid;
-        grid-auto-flow: column;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        grid-gap: 1rem;
+        grid-template-columns: 1fr;
+        row-gap: 0.5rem;
+
+        & > :nth-of-type(2) {
+            display: none;
+        }
+        & > :nth-of-type(5) {
+            grid-column: span 2;
+        }
+
+        @media (min-width: 768px) {
+            grid-template-columns: 2fr 2fr 1fr;
+            column-gap: 2rem;
+
+            & > :nth-of-type(2) {
+                display: block;
+            }
+        }
+    }
+
+    .form-group-at-version {
+        display: flex;
+        flex-wrap: wrap;
+        column-gap: 1rem;
+        row-gap: 0.75rem;
+
+        select {
+            width: inherit;
+            @media (max-width: 767px) {
+                flex-grow: 1;
+            }
+        }
     }
 
     .disclosure-form-label {
@@ -139,6 +166,10 @@ const ManageTestQueue = ({
 
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
+    const [selectAtVersionExactOrMinimum, setSelectedAtVersionExactOrMinimum] =
+        useState('Exact Version');
+    const [selectedReportAtVersionId, setSelectedReportAtVersionId] =
+        useState(null);
 
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
@@ -307,11 +338,17 @@ const ManageTestQueue = ({
     const onAtChange = e => {
         const { value } = e.target;
         setSelectedAtId(value);
+        setSelectedReportAtVersionId(null);
     };
 
     const onBrowserChange = e => {
         const { value } = e.target;
         setSelectedBrowserId(value);
+    };
+
+    const onReportAtVersionIdChange = e => {
+        const { value } = e.target;
+        setSelectedReportAtVersionId(value);
     };
 
     const onTestPlanVersionChange = e => {
@@ -466,6 +503,10 @@ const ManageTestQueue = ({
         setShowThemedModal(true);
     };
 
+    const exactOrMinimumAtVersion = ats
+        .find(item => item.id === selectedAtId)
+        ?.atVersions.find(item => item.id === selectedReportAtVersionId);
+
     return (
         <LoadingStatus message={loadingMessage}>
             <DisclosureComponent
@@ -477,7 +518,7 @@ const ManageTestQueue = ({
                 disclosureContainerView={[
                     <DisclosureContainer key={`manage-test-queue-at-section`}>
                         <span>
-                            Select an Assistive Technology and manage its
+                            Select an assistive technology and manage its
                             versions in the ARIA-AT App
                         </span>
                         <div className="disclosure-row-manage-ats">
@@ -551,8 +592,8 @@ const ManageTestQueue = ({
                         key={`manage-test-queue-add-test-plans-section`}
                     >
                         <span>
-                            Select a Test Plan and version and an Assistive
-                            Technology and Browser to add it to the Test Queue
+                            Select a test plan, assistive technology and browser
+                            to add a new test plan report to the test queue.
                         </span>
                         <div className="disclosure-row-test-plans">
                             <Form.Group className="form-group">
@@ -616,6 +657,7 @@ const ManageTestQueue = ({
                                     )}
                                 </Form.Select>
                             </Form.Group>
+                            <div>{/* blank grid cell */}</div>
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
                                     Assistive Technology
@@ -639,11 +681,53 @@ const ManageTestQueue = ({
                             </Form.Group>
                             <Form.Group className="form-group">
                                 <Form.Label className="disclosure-form-label">
+                                    Assistive Technology Version
+                                </Form.Label>
+                                <div className="form-group-at-version">
+                                    <RadioBox
+                                        name="atVersion"
+                                        labels={[
+                                            'Exact Version',
+                                            'Minimum Version'
+                                        ]}
+                                        selectedLabel={
+                                            selectAtVersionExactOrMinimum
+                                        }
+                                        onSelect={exactOrMinimum =>
+                                            setSelectedAtVersionExactOrMinimum(
+                                                exactOrMinimum
+                                            )
+                                        }
+                                    />
+                                    <Form.Select
+                                        value={selectedReportAtVersionId ?? ''}
+                                        onChange={onReportAtVersionIdChange}
+                                        disabled={!selectedAtId}
+                                    >
+                                        <option value={''} disabled>
+                                            Select AT Version
+                                        </option>
+                                        {ats
+                                            .find(at => at.id === selectedAtId)
+                                            ?.atVersions.map(item => (
+                                                <option
+                                                    key={`${item.name}-${item.id}`}
+                                                    value={item.id}
+                                                >
+                                                    {item.name}
+                                                </option>
+                                            ))}
+                                    </Form.Select>
+                                </div>
+                            </Form.Group>
+                            <Form.Group className="form-group">
+                                <Form.Label className="disclosure-form-label">
                                     Browser
                                 </Form.Label>
                                 <Form.Select
                                     value={selectedBrowserId}
                                     onChange={onBrowserChange}
+                                    disabled={!selectedAtId}
                                 >
                                     <option value={''} disabled>
                                         Select a Browser
@@ -666,6 +750,18 @@ const ManageTestQueue = ({
                                 item => item.id === selectedTestPlanVersionId
                             )}
                             at={ats.find(item => item.id === selectedAtId)}
+                            exactAtVersion={
+                                selectAtVersionExactOrMinimum ===
+                                'Exact Version'
+                                    ? exactOrMinimumAtVersion
+                                    : null
+                            }
+                            minimumAtVersion={
+                                selectAtVersionExactOrMinimum ===
+                                'Minimum Version'
+                                    ? exactOrMinimumAtVersion
+                                    : null
+                            }
                             browser={ats
                                 .find(at => at.id === selectedAtId)
                                 ?.browsers.find(
@@ -675,6 +771,7 @@ const ManageTestQueue = ({
                             disabled={
                                 !selectedTestPlanVersionId ||
                                 !selectedAtId ||
+                                !selectedReportAtVersionId ||
                                 !selectedBrowserId
                             }
                         />
