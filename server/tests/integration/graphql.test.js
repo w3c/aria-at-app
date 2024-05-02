@@ -150,10 +150,6 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
-            ['TestPlanVersion', 'candidatePhaseReachedAt'],
-            ['TestPlanVersion', 'recommendedPhaseReachedAt'],
-            ['TestPlanVersion', 'recommendedPhaseTargetDate'],
-            ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers'],
             ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
             ['CollectionJob', 'testPlanRun'],
@@ -272,6 +268,18 @@ describe('graphql', () => {
                         id
                         status
                     }
+                    v2TestPlanVersion: testPlanVersion(id: 133) {
+                        __typename
+                        id
+                        metadata
+                        tests {
+                            __typename
+                            assertions {
+                                __typename
+                                phrase
+                            }
+                        }
+                    }
                     testPlan(id: "checkbox") {
                         __typename
                         id
@@ -370,6 +378,12 @@ describe('graphql', () => {
                     }
                     recommendedTestPlanVersion: testPlanVersion(id: 69) {
                         __typename
+                        id
+                        earliestAtVersion(atId: 1) {
+                            id
+                            name
+                            releasedAt
+                        }
                         testPlanReportStatuses {
                             __typename
                             isRequired
@@ -992,3 +1006,7 @@ const getMutationInputs = async () => {
         browserVersionId: browserVersion.id
     };
 };
+
+/* Add the phrase to the assertion query. It will not work unless phrase is returned.
+Find a test plan version that does have a phrase (V2).
+*/
