@@ -37,13 +37,12 @@
                 <thead>
                     <tr>
                         <td></td>
-                        {{#each priorities}}
-                        <th>{{this}}</th>
-                        {{/each}}
+                        <th>MUST HAVE Behaviors</th>
+                        <th>SHOULD HAVE Behaviors</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {{#each latestReports}}
+                    {{#each testPlanReports}}
                         <tr>
                             <th><b>{{this.at.name}}</b> <span style="font-weight: normal;">{{this.latestAtVersionReleasedAt.name}}</span> - <b>{{this.browser.name}}</b></th>
                             {{#if (isMustAssertionPriority this)}}

@@ -4,13 +4,11 @@ const { create } = require('express-handlebars');
 const { gql } = require('apollo-server-core');
 const apolloServer = require('../graphql-server');
 const staleWhileRevalidate = require('../util/staleWhileRevalidate');
-// const hash = require('object-hash');
 
 const app = express();
 
 const handlebarsPath = path.resolve(__dirname, '../handlebars/embed');
 
-// handlebars
 const hbs = create({
     layoutsDir: path.resolve(handlebarsPath, 'views/layouts'),
     extname: 'hbs',
@@ -30,217 +28,8 @@ app.set('views', path.resolve(handlebarsPath, 'views'));
 // stale data for however long it takes for the query to complete.
 const millisecondsUntilStale = 5000;
 
-// const queryReports = async testPlanDirectory => {
-//     const { data, errors } = await apolloServer.executeOperation({
-//         query: gql`
-//             query TestPlanQuery($testPlanDirectory: ID!) {
-//                 ats {
-//                     id
-//                     name
-//                     browsers {
-//                         id
-//                         name
-//                     }
-//                 }
-//                 testPlan(id: $testPlanDirectory) {
-//                     testPlanVersions {
-//                         id
-//                         title
-//                         phase
-//                         testPlanReports(isFinal: true) {
-//                             id
-//                             metrics
-//                             at {
-//                                 id
-//                                 name
-//                             }
-//                             browser {
-//                                 id
-//                                 name
-//                             }
-//                             latestAtVersionReleasedAt {
-//                                 id
-//                                 name
-//                                 releasedAt
-//                             }
-//                         }
-//                     }
-//                 }
-//                 # testPlanReports(
-//                 #     testPlanVersionPhases: [CANDIDATE, RECOMMENDED]
-//                 #     isFinal: true
-//                 # ) {
-//                 #     id
-//                 #     metrics
-//                 #     at {
-//                 #         id
-//                 #         name
-//                 #     }
-//                 #     browser {
-//                 #         id
-//                 #         name
-//                 #     }
-//                 #     latestAtVersionReleasedAt {
-//                 #         id
-//                 #         name
-//                 #         releasedAt
-//                 #     }
-//                 #     testPlanVersion {
-//                 #         id
-//                 #         title
-//                 #         phase
-//                 #         updatedAt
-//                 #         testPlan {
-//                 #             id
-//                 #         }
-//                 #     }
-//                 # }
-//             }
-//         `,
-//         variables: { testPlanDirectory }
-//     });
-
-//     if (errors) {
-//         throw new Error(errors);
-//     }
-
-//     // const reportsHashed = hash(data.testPlanReports ?? {});
-
-//     return {
-//         // allTestPlanReports: data.testPlanReports,
-//         // reportsHashed,
-//         // ats: data.ats,
-//         testPlan: data.testPlan
-//     };
-// };
-
-// staleWhileRevalidate() caching allows this page to handle very high traffic like
-// it will see on the APG website. It works by immediately serving a recent
-// version of the page and checks for updates in the background.
-
-// const queryReportsCached = staleWhileRevalidate(queryReports, {
-//     millisecondsUntilStale
-// });
-
-// const getLatestReportsForPattern = ({ allTestPlanReports, pattern }) => {
-//     let title;
-
-//     const testPlanReports = allTestPlanReports.filter(report => {
-//         if (report.testPlanVersion.testPlan.id === pattern) {
-//             title = report.testPlanVersion.title;
-//             return true;
-//         }
-//     });
-
-//     let allAts = new Set();
-//     let allBrowsers = new Set();
-//     let allAtVersionsByAt = {};
-//     let reportsByAt = {};
-//     let testPlanVersionIds = new Set();
-//     const uniqueReports = [];
-//     let latestReports = [];
-
-//     testPlanReports.forEach(report => {
-//         allAts.add(report.at.name);
-//         allBrowsers.add(report.browser.name);
-
-//         if (!allAtVersionsByAt[report.at.name])
-//             allAtVersionsByAt[report.at.name] =
-//                 report.latestAtVersionReleasedAt;
-//         else if (
-//             new Date(report.latestAtVersionReleasedAt.releasedAt) >
-//             new Date(allAtVersionsByAt[report.at.name].releasedAt)
-//         ) {
-//             allAtVersionsByAt[report.at.name] =
-//                 report.latestAtVersionReleasedAt;
-//         }
-
-//         const sameAtAndBrowserReports = testPlanReports.filter(
-//             r =>
-//                 r.at.name === report.at.name &&
-//                 r.browser.name === report.browser.name
-//         );
-
-//         // Only add a group of reports with same
-//         // AT and browser once
-//         if (
-//             !uniqueReports.find(group =>
-//                 group.some(
-//                     g =>
-//                         g.at.name === report.at.name &&
-//                         g.browser.name === report.browser.name
-//                 )
-//             )
-//         ) {
-//             uniqueReports.push(sameAtAndBrowserReports);
-//         }
-
-//         testPlanVersionIds.add(report.testPlanVersion.id);
-//     });
-
-//     uniqueReports.forEach(group => {
-//         if (group.length <= 1) {
-//             latestReports.push(group.pop());
-//         } else {
-//             const latestReport = group
-//                 .sort((a, b) => {
-//                     return (
-//                         new Date(a.latestAtVersionReleasedAt.releasedAt) -
-//                         new Date(b.latestAtVersionReleasedAt.releasedAt)
-//                     );
-//                 })
-//                 .pop();
-
-//             latestReports.push(latestReport);
-//         }
-//     });
-
-//     allBrowsers = Array.from(allBrowsers).sort();
-//     testPlanVersionIds = Array.from(testPlanVersionIds);
-
-//     const allAtsAlphabetical = Array.from(allAts).sort((a, b) =>
-//         a.localeCompare(b)
-//     );
-//     allAtsAlphabetical.forEach(at => {
-//         reportsByAt[at] = latestReports
-//             .filter(report => report.at.name === at)
-//             .sort((a, b) => a.browser.name.localeCompare(b.browser.name));
-//     });
-
-//     const hasAnyCandidateReports = Object.values(reportsByAt).find(atReports =>
-//         atReports.some(report => report.testPlanVersion.phase === 'CANDIDATE')
-//     );
-//     let phase = hasAnyCandidateReports ? 'CANDIDATE' : 'RECOMMENDED';
-
-//     return {
-//         title,
-//         allBrowsers,
-//         allAtVersionsByAt,
-//         testPlanVersionIds,
-//         phase,
-//         reportsByAt,
-//         latestReports: latestReports.sort((a, b) => {
-//             if (a.at.name !== b.at.name) {
-//                 return a.at.name.localeCompare(b.at.name);
-//             }
-//             if (a.browser.name !== b.browser.name) {
-//                 return a.browser.name.localeCompare(b.browser.name);
-//             }
-//             return (
-//                 new Date(b.latestAtVersionReleasedAt.releasedAt) -
-//                 new Date(a.latestAtVersionReleasedAt.releasedAt)
-//             );
-//         })
-//     };
-// };
-
-const priorities = ['MUST HAVE Behaviors', 'SHOULD HAVE Behaviors'];
-
 const renderEmbed = async ({
-    // ats,
-    // allTestPlanReports,
     queryTitle,
-    priorities,
     testPlanDirectory,
     protocol,
     host
@@ -289,52 +78,36 @@ const renderEmbed = async ({
         throw new Error(errors);
     }
 
-    let hasCandidateData = '';
+    let testPlanVersion;
 
-    const latestReports = [];
-    // const {
-    //     title,
-    //     allBrowsers,
-    //     allAtVersionsByAt,
-    //     testPlanVersionIds,
-    //     phase,
-    //     reportsByAt,
-    //     latestReports
-    // } = getLatestReportsForPattern({ allTestPlanReports, pattern });
-    const allAtBrowserCombinations = Object.fromEntries(
-        ats.map(at => {
-            return [
-                at.name,
-                at.browsers.map(browser => {
-                    return browser.name;
-                })
-            ];
-        })
+    const recommendedTestPlanVersion = data.testPlan.testPlanVersions.find(
+        testPlanVersion => testPlanVersion.phase === 'RECOMMENDED'
     );
+
+    if (recommendedTestPlanVersion) {
+        testPlanVersion = recommendedTestPlanVersion;
+    } else {
+        testPlanVersion = data.testPlan.testPlanVersions.find(
+            testPlanVersion => testPlanVersion.phase === 'CANDIDATE'
+        );
+    }
 
     return hbs.renderView(path.resolve(handlebarsPath, 'views/main.hbs'), {
         layout: 'index',
-        dataEmpty: Object.keys(reportsByAt).length === 0,
-        allAtBrowserCombinations,
-        title: queryTitle || title || 'Pattern Not Found',
-        pattern,
-        priorities,
-        phase,
-        allBrowsers,
-        allAtVersionsByAt,
-        reportsByAt,
-        latestReports,
-        completeReportLink: `${protocol}${host}/report/${testPlanVersionIds.join(
-            ','
-        )}`,
-        embedLink: `${protocol}${host}/embed/reports/${pattern}`
+        dataEmpty: !testPlanVersion?.testPlanReports.length,
+        title: queryTitle || testPlanVersion.title || 'Pattern Not Found',
+        phase: testPlanVersion.phase,
+        testPlanReports: testPlanVersion?.testPlanReports ?? [],
+        completeReportLink: `${protocol}${host}/report/${testPlanVersion?.id}`,
+        embedLink: `${protocol}${host}/embed/reports/${testPlanDirectory}`
     });
 };
 
-// Limit the number of times the template is rendered
+// staleWhileRevalidate() caching allows this page to handle very high traffic like
+// it will see on the APG website. It works by immediately serving a recent
+// version of the page and checks for updates in the background.
 const renderEmbedCached = staleWhileRevalidate(renderEmbed, {
-    getCacheKeyFromArguments: ({ reportsHashed, pattern }) =>
-        reportsHashed + pattern,
+    getCacheKeyFromArguments: ({ testPlanDirectory }) => testPlanDirectory,
     millisecondsUntilStale
 });
 
@@ -349,14 +122,7 @@ app.get('/reports/:testPlanDirectory', async (req, res) => {
     const protocol = /dev|vagrant/.test(process.env.ENVIRONMENT)
         ? 'http://'
         : 'https://';
-    // const { allTestPlanReports, reportsHashed, ats } = await queryReportsCached(
-    //     testPlanDirectory
-    // );
     const embedRendered = await renderEmbedCached({
-        // ats,
-        // allTestPlanReports,
-        // reportsHashed,
-        priorities,
         queryTitle,
         testPlanDirectory,
         protocol,
