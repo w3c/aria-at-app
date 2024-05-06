@@ -228,7 +228,7 @@ const TestQueueRow = ({
 
     const renderOpenAsDropdown = () => {
         return (
-            <Dropdown className="open-run-as">
+            <Dropdown className="open-run-as" focusFirstItemOnShow>
                 <Dropdown.Toggle
                     id={nextId()}
                     variant="secondary"
@@ -265,7 +265,10 @@ const TestQueueRow = ({
         if (testPlanRunsWithResults.length) {
             return (
                 <>
-                    <Dropdown aria-label="Delete results menu">
+                    <Dropdown
+                        aria-label="Delete results menu"
+                        focusFirstItemOnShow
+                    >
                         <Dropdown.Toggle
                             ref={dropdownDeleteTesterResultsButtonRef}
                             variant="danger"
