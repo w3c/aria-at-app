@@ -48,7 +48,6 @@ const TestQueue = () => {
                 testPlanReports = [],
                 testPlans = []
             } = data;
-            // section:
             setTesters(
                 users.filter(
                     tester =>
