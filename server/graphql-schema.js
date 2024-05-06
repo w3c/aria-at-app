@@ -393,8 +393,11 @@ const graphqlSchema = gql`
         """
         Since each TestPlan originates from a CSV, this number corresponds to
         the row within the CSV where this test originated.
+
+        Float type because presentationNumber fields from the source *.csv
+        files use decimal numbers in the v2 format.
         """
-        rowNumber: Int!
+        rowNumber: Float!
         """
         A human-readable sentence describing the function of the test.
         """
@@ -565,12 +568,19 @@ const graphqlSchema = gql`
         Whether this assertion contributes to the test failing or not.
         """
         priority: AssertionPriority!
-        # TODO: consider adding a automatedAssertion field which uses regex or
-        # similar to automatically determine pass or fail.
         """
-        A human-readable version of the assertion.
+        A human-readable version of the assertion, like "Role 'radio button' is
+        conveyed".
         """
         text: String!
+        """
+        For TestPlanVersions that use the V2 test format, this field contains
+        text like "convey role 'radio button'".
+
+        See the link for more information:
+        https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#assertionphrase
+        """
+        phrase: String
     }
 
     """
