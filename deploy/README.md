@@ -47,7 +47,7 @@ can view logging from ansible with `sudo -i cat /var/log/messages`.
 
 ## Deployment
 
-To deploy this project to  server:
+To deploy this project to server:
 
 1. Merge from development to the releases branch as detailed in [docs/release.md](../docs/release.md).
 1. Obtain an authorized key and add it to your keychain. This is needed for deploys to Staging and Production. 
