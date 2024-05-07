@@ -1,6 +1,6 @@
-const iframeClass = `support-levels-${document
-    .querySelector('script[pattern]')
-    .getAttribute('pattern')}`;
+const iframeClass = `support-levels-${
+    document.location.href.match(/([^/]+)\/?$/)?.[1]
+}`;
 
 const iframeCode = link =>
     `<iframe
@@ -30,11 +30,14 @@ const announceCopied = link => {
     }, 5000);
 };
 
-const postHeightAndClass = () =>
+const postHeightAndClass = () => {
+    console.log('posting height', document.body.scrollHeight);
+    console.log('iframeClass', iframeClass);
     window.parent.postMessage(
         { height: document.body.scrollHeight, iframe: iframeClass },
         '*'
     );
+};
 
 window.onresize = postHeightAndClass;
 document
