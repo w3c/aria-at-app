@@ -139,7 +139,13 @@ table tbody tr td {
     text-align: center;
 }
 
+.meter-container {
+    gap: 0.5em;
+    display: flex;
+}
+
 .meter {
+    flex-grow: 1;
     box-sizing: content-box;
     height: 15px; /* Can be anything */
     position: relative;
@@ -156,6 +162,11 @@ table tbody tr td {
     background-color: #175a6a;
     border-radius: 25px;
     position: relative;
+}
+
+.meter-container > b {
+    position: relative;
+    bottom: 2px;
 }
 
 .button {
