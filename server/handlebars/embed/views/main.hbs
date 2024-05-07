@@ -1,12 +1,13 @@
 <div id='main'>
-    {{#if dataEmpty}}
+    {{!-- {{log testPlanReports}} --}}
+    {{#if (dataEmpty testPlanReports)}}
         <div id='no-data-container'>
             <div id='no-data-content-container'>
                 There is no data for this pattern.
             </div>
         </div>
     {{/if}}
-    {{#unless dataEmpty}}
+    {{#unless (dataEmpty testPlanReports)}}
         {{#if (isCandidate phase)}}
             <details id='embed-report-phase-container'>
                 <summary id='candidate-title'><span>Warning! Unapproved Report</span></summary>

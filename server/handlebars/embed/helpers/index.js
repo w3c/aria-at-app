@@ -1,4 +1,8 @@
 module.exports = {
+    dataEmpty: function (object) {
+        return object.length === 0;
+    },
+
     isCandidate: function (value) {
         return value === 'CANDIDATE';
     },
