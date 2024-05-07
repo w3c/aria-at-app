@@ -92,12 +92,29 @@ const renderEmbed = async ({
         );
     }
 
+    // const allAtsAlphabetical = Array.from(allAts).sort((a, b) =>
+    //     a.localeCompare(b)
+    // );
+    // allAtsAlphabetical.forEach(at => {
+    //     reportsByAt[at] = latestReports
+    //         .filter(report => report.at.name === at)
+    //         .sort((a, b) => a.browser.name.localeCompare(b.browser.name));
+    // });
+    const testPlanReports = (testPlanVersion?.testPlanReports ?? []).sort(
+        (a, b) => {
+            if (a.at.name !== b.at.name) {
+                return a.at.name.localeCompare(b.at.name);
+            }
+            return a.browser.name.localeCompare(b.browser.name);
+        }
+    );
+
     return hbs.renderView(path.resolve(handlebarsPath, 'views/main.hbs'), {
         layout: 'index',
         dataEmpty: !testPlanVersion?.testPlanReports.length,
         title: queryTitle || testPlanVersion.title || 'Pattern Not Found',
         phase: testPlanVersion.phase,
-        testPlanReports: testPlanVersion?.testPlanReports ?? [],
+        testPlanReports,
         completeReportLink: `${protocol}${host}/report/${testPlanVersion?.id}`,
         embedLink: `${protocol}${host}/embed/reports/${testPlanDirectory}`
     });
