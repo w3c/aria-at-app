@@ -80,13 +80,13 @@ const renderEmbed = async ({
 
     let testPlanVersion;
 
-    const recommendedTestPlanVersion = data.testPlan.testPlanVersions.find(
+    const recommendedTestPlanVersion = data.testPlan?.testPlanVersions.find(
         testPlanVersion => testPlanVersion.phase === 'RECOMMENDED'
     );
 
-    if (recommendedTestPlanVersion) {
+    if (data.testPlan && recommendedTestPlanVersion) {
         testPlanVersion = recommendedTestPlanVersion;
-    } else {
+    } else if (data.testPlan) {
         testPlanVersion = data.testPlan.testPlanVersions.find(
             testPlanVersion => testPlanVersion.phase === 'CANDIDATE'
         );
@@ -104,8 +104,8 @@ const renderEmbed = async ({
     return hbs.renderView(path.resolve(handlebarsPath, 'views/main.hbs'), {
         layout: 'index',
         dataEmpty: !testPlanVersion?.testPlanReports.length,
-        title: queryTitle || testPlanVersion.title || 'Pattern Not Found',
-        phase: testPlanVersion.phase,
+        title: queryTitle || testPlanVersion?.title || 'Pattern Not Found',
+        phase: testPlanVersion?.phase,
         testPlanReports,
         completeReportLink: `${protocol}${host}/report/${testPlanVersion?.id}`,
         embedLink: `${protocol}${host}/embed/reports/${testPlanDirectory}`
