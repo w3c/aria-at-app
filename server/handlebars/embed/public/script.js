@@ -31,8 +31,6 @@ const announceCopied = link => {
 };
 
 const postHeightAndClass = () => {
-    console.log('posting height', document.body.scrollHeight);
-    console.log('iframeClass', iframeClass);
     window.parent.postMessage(
         { height: document.body.scrollHeight, iframe: iframeClass },
         '*'
