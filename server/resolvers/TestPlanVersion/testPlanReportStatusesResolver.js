@@ -2,7 +2,6 @@ const atResolver = require('../TestPlanReport/atResolver');
 const browserResolver = require('../TestPlanReport/browserResolver');
 const exactAtVersionResolver = require('../TestPlanReport/exactAtVersionResolver');
 const minimumAtVersionResolver = require('../TestPlanReport/minimumAtVersionResolver');
-const earliestAtVersionResolver = require('./earliestAtVersionResolver');
 
 const testPlanReportStatusesResolver = async (testPlanVersion, _, context) => {
     const { transaction, atLoader } = context;
@@ -59,62 +58,35 @@ const testPlanReportStatusesResolver = async (testPlanVersion, _, context) => {
                     continue;
                 }
 
-                const earliestAtVersion = await earliestAtVersionResolver(
-                    testPlanVersion,
-                    { atId: at.id },
-                    context
-                );
+                const latestAtVersion = atVersions[atVersions.length - 1];
 
-                let isFirstInstance = true;
-                atVersions.forEach(atVersion => {
-                    if (
-                        !earliestAtVersion ||
-                        new Date(atVersion.releasedAt) <
-                            new Date(earliestAtVersion.releasedAt)
-                    ) {
-                        return;
-                    }
-
-                    let isRequired = false;
-                    if (isFirstInstance) {
-                        isRequired = true;
-                        isFirstInstance = false;
-                    }
-
-                    unsortedStatuses.push({
-                        isRequired,
-                        at,
-                        browser,
-                        minimumAtVersion: null,
-                        exactAtVersion: atVersion,
-                        testPlanReport: null
-                    });
+                unsortedStatuses.push({
+                    isRequired: true,
+                    at,
+                    browser,
+                    exactAtVersion: latestAtVersion,
+                    testPlanReport: null
                 });
 
                 continue;
             }
 
             let isFirstAtBrowserInstance = true;
-            let firstTestPlanReportFound = false;
             let minimumAtVersionFound = false;
 
-            atVersions.forEach(atVersion => {
-                const testPlanReports =
-                    indexedTestPlanReports?.[at.id]?.[browser.id]?.[
-                        atVersion.id
-                    ] ?? [];
-
-                if (testPlanReports.length) {
-                    firstTestPlanReportFound = true;
+            Object.values(indexedTestPlanReports[at.id][browser.id]).forEach(
+                testPlanReports => {
                     testPlanReports.forEach(testPlanReport => {
                         let isRequired = false;
                         if (isRequiredAtBrowser && isFirstAtBrowserInstance) {
                             isFirstAtBrowserInstance = false;
                             isRequired = true;
                         }
+
                         if (testPlanReport.minimumAtVersion) {
                             minimumAtVersionFound = true;
                         }
+
                         unsortedStatuses.push({
                             isRequired,
                             at,
@@ -125,21 +97,24 @@ const testPlanReportStatusesResolver = async (testPlanVersion, _, context) => {
                                 populateTestPlanVersion(testPlanReport)
                         });
                     });
-
-                    return;
                 }
+            );
 
-                if (firstTestPlanReportFound && !minimumAtVersionFound) {
-                    unsortedStatuses.push({
-                        isRequired: false,
-                        at,
-                        browser,
-                        minimumAtVersion: null,
-                        exactAtVersion: atVersion,
-                        testPlanReport: null
-                    });
-                }
-            });
+            const latestAtVersion = atVersions[atVersions.length - 1];
+
+            if (
+                !minimumAtVersionFound &&
+                !indexedTestPlanReports[at.id][browser.id][latestAtVersion.id]
+            ) {
+                unsortedStatuses.push({
+                    isRequired: false,
+                    at,
+                    browser,
+                    minimumAtVersion: null,
+                    exactAtVersion: latestAtVersion,
+                    testPlanReport: null
+                });
+            }
         }
     }
 
