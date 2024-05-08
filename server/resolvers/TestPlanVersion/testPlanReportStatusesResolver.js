@@ -61,7 +61,7 @@ const testPlanReportStatusesResolver = async (testPlanVersion, _, context) => {
                 const latestAtVersion = atVersions[atVersions.length - 1];
 
                 unsortedStatuses.push({
-                    isRequired: true,
+                    isRequired: isRequiredAtBrowser,
                     at,
                     browser,
                     exactAtVersion: latestAtVersion,
