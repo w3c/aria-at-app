@@ -52,6 +52,16 @@ const testPlanReportsResolver = async (
     if (testPlanReportRawAttributes.includes('conflictsLength'))
         testPlanReportAttributes.push('metrics');
 
+    if (testPlanReportRawAttributes.includes('minimumAtVersion')) {
+        testPlanReportAttributes.push('atId');
+        testPlanReportAttributes.push('minimumAtVersionId');
+    }
+
+    if (testPlanReportRawAttributes.includes('exactAtVersion')) {
+        testPlanReportAttributes.push('atId');
+        testPlanReportAttributes.push('exactAtVersionId');
+    }
+
     if (isFinal === undefined) {
         // Do nothing
     } else testPlanReportAttributes.push('markedFinalAt');

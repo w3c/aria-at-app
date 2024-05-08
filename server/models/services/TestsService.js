@@ -5,12 +5,20 @@ const {
 } = require('../../resolvers/helpers/retrieveCommands');
 
 const getTests = parentRecord => {
-    const isTestPlanVersion = !!parentRecord.tests;
-    const testPlanReport = isTestPlanVersion ? null : parentRecord;
-    const testPlanVersion = isTestPlanVersion
-        ? parentRecord
-        : testPlanReport.testPlanVersion;
+    let testPlanVersion;
+    let testPlanReport;
+    if (parentRecord.tests) {
+        testPlanVersion = parentRecord;
+    } else if (parentRecord.testPlanRuns) {
+        testPlanReport = parentRecord;
+        testPlanVersion = parentRecord.testPlanVersion;
+    } else if (parentRecord.testResults) {
+        testPlanReport = parentRecord.testPlanReport;
+        testPlanVersion = parentRecord.testPlanReport.testPlanVersion;
+    }
+
     const inferredAtId = testPlanReport?.atId;
+
     const isV2 = testPlanVersion.metadata?.testFormatVersion === 2;
 
     // Populate nested At and Command fields
@@ -50,7 +58,8 @@ const getTests = parentRecord => {
         }),
         assertions: test.assertions.map(assertion => ({
             ...assertion,
-            text: isV2 ? assertion.assertionStatement : assertion.text
+            text: isV2 ? assertion.assertionStatement : assertion.text,
+            phrase: isV2 ? assertion.assertionPhrase : null
         }))
     }));
 };

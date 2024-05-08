@@ -268,6 +268,18 @@ describe('graphql', () => {
                         id
                         status
                     }
+                    v2TestPlanVersion: testPlanVersion(id: 133) {
+                        __typename
+                        id
+                        metadata
+                        tests {
+                            __typename
+                            assertions {
+                                __typename
+                                phrase
+                            }
+                        }
+                    }
                     testPlan(id: "checkbox") {
                         __typename
                         id
@@ -381,6 +393,25 @@ describe('graphql', () => {
                             id
                             name
                             releasedAt
+                        }
+                        testPlanReportStatuses {
+                            __typename
+                            isRequired
+                            at {
+                                id
+                            }
+                            exactAtVersion {
+                                id
+                            }
+                            minimumAtVersion {
+                                id
+                            }
+                            browser {
+                                id
+                            }
+                            testPlanReport {
+                                id
+                            }
                         }
                     }
                     conflictTestPlanReport: testPlanReport(id: 2) {
@@ -504,6 +535,15 @@ describe('graphql', () => {
                             releasedAt
                         }
                         markedFinalAt
+                        minimumAtVersion {
+                            id
+                        }
+                    }
+                    recommendedPhaseTestPlanReport: testPlanReport(id: 12) {
+                        __typename
+                        exactAtVersion {
+                            id
+                        }
                     }
                     testPlanReports {
                         id

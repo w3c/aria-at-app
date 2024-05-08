@@ -177,7 +177,7 @@ function AddTestToQueueWithConfirmation({
         return (
             <BasicModal
                 show={showPreserveReportDataMessage}
-                title={'Older Results Data Found'}
+                title="Older Results Data Found"
                 content={
                     'Older results with the same AT, browser and test plan ' +
                     'were found for the report being created. Would you like ' +

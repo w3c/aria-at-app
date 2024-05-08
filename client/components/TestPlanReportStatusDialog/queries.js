@@ -16,11 +16,8 @@ export const TEST_PLAN_REPORT_STATUS_DIALOG_QUERY = gql`
             testPlan {
                 directory
             }
-            testPlanReports {
-                id
-                metrics
-                isFinal
-                markedFinalAt
+            testPlanReportStatuses {
+                isRequired
                 at {
                     id
                     name
@@ -29,31 +26,45 @@ export const TEST_PLAN_REPORT_STATUS_DIALOG_QUERY = gql`
                     id
                     name
                 }
-                issues {
-                    link
-                    isOpen
-                    feedbackType
+                minimumAtVersion {
+                    id
+                    name
                 }
-                draftTestPlanRuns {
-                    tester {
-                        username
+                exactAtVersion {
+                    id
+                    name
+                }
+                testPlanReport {
+                    id
+                    metrics
+                    isFinal
+                    markedFinalAt
+                    issues {
+                        link
+                        isOpen
+                        feedbackType
                     }
-                    testPlanReport {
-                        id
-                    }
-                    testResults {
-                        test {
+                    draftTestPlanRuns {
+                        tester {
+                            username
+                        }
+                        testPlanReport {
                             id
                         }
-                        atVersion {
-                            id
-                            name
+                        testResults {
+                            test {
+                                id
+                            }
+                            atVersion {
+                                id
+                                name
+                            }
+                            browserVersion {
+                                id
+                                name
+                            }
+                            completedAt
                         }
-                        browserVersion {
-                            id
-                            name
-                        }
-                        completedAt
                     }
                 }
             }
