@@ -106,7 +106,10 @@ const renderEmbed = async ({
         dataEmpty: !testPlanVersion?.testPlanReports.length,
         title: queryTitle || testPlanVersion?.title || 'Pattern Not Found',
         phase: testPlanVersion?.phase,
+        testPlanVersionId: testPlanVersion?.id,
         testPlanReports,
+        protocol,
+        host,
         completeReportLink: `${protocol}${host}/report/${testPlanVersion?.id}`,
         embedLink: `${protocol}${host}/embed/reports/${testPlanDirectory}`
     });

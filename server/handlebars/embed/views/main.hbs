@@ -53,12 +53,22 @@
                 <tbody>
                     {{#each testPlanReports}}
                         <tr>
-                            <th><b>{{this.at.name}}</b>
-                                <span
-                                    style='font-weight: normal;'
-                                >{{this.latestAtVersionReleasedAt.name}}</span>
-                                -
-                                <b>{{this.browser.name}}</b></th>
+                            <th>
+                                <a
+                                    href="{{../protocol}}{{../host}}/report/{{../testPlanVersionId}}/targets/{{this.id}}" 
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <b>{{this.at.name}}</b>
+                                    <span
+                                        style='font-weight: normal;'
+                                    >
+                                        {{this.latestAtVersionReleasedAt.name}}
+                                    </span>
+                                    -
+                                    <b>{{this.browser.name}}</b>
+                                </a>
+                            </th>
                             {{#if (isMustAssertionPriority this)}}
                                 <td>
                                     <div class='meter-container'>
