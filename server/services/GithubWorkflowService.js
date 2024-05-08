@@ -128,8 +128,8 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
     );
     const browser = job.testPlanRun.testPlanReport.browser.name.toLowerCase();
     const inputs = {
-        callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/result`,
-        status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/update`,
+        callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/test/:testRowNumber`,
+        status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}`,
         callback_header: `x-automation-secret:${process.env.AUTOMATION_SCHEDULER_SECRET}`,
         work_dir: `tests/${directory}`,
         test_pattern: '{reference/**,test-*-nvda.*}',

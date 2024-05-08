@@ -17,6 +17,15 @@ const ReportStatusDot = styled.span`
         background: #7c7c7c;
     }
 
+    &.tests-running {
+        border: 2px solid #1e8f37;
+        background: #d2d5d9;
+    }
+
+    &.tests-error {
+        background: #e3261f;
+    }
+
     &.tests-queued,
     &.reports-in-progress {
         background: #3876e8;
@@ -27,7 +36,9 @@ const ReportStatusDot = styled.span`
         background: #2ba51c;
     }
 
-    &.tests-cancelled,
+    &.tests-cancelled {
+        background: #a231ff;
+    }
     &.reports-missing {
         background: #ce1b4c;
     }
