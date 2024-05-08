@@ -31,6 +31,8 @@ const client = new ApolloClient({
         typePolicies: {
             Query: {
                 fields: {
+                    testPlanVersion: { merge: true },
+                    testPlanVersions: { merge: false },
                     testPlanReport: { merge: true },
                     testPlanReports: { merge: false },
                     collectionJobByTestPlanRunId: {
@@ -43,7 +45,8 @@ const client = new ApolloClient({
             Mutation: {
                 fields: {
                     testPlanReport: { merge: false },
-                    testPlanRun: { merge: false }
+                    testPlanRun: { merge: false },
+                    testPlanVersion: { merge: false }
                 }
             }
         }
