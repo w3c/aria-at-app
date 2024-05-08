@@ -379,6 +379,16 @@ describe('graphql', () => {
                     recommendedTestPlanVersion: testPlanVersion(id: 69) {
                         __typename
                         id
+                        testPlanReports {
+                            __typename
+                            id
+                            recommendedAtVersion {
+                                __typename
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
                         earliestAtVersion(atId: 1) {
                             id
                             name
@@ -1006,7 +1016,3 @@ const getMutationInputs = async () => {
         browserVersionId: browserVersion.id
     };
 };
-
-/* Add the phrase to the assertion query. It will not work unless phrase is returned.
-Find a test plan version that does have a phrase (V2).
-*/

@@ -1100,6 +1100,15 @@ const graphqlSchema = gql`
         Indicated by TestPlanReport.markedFinalAt existence, after a report has been "marked as final".
         """
         isFinal: Boolean!
+        """
+        The AtVersion to display for a TestPlanReport only when the
+        TestPlanVersion is RECOMMENDED.
+
+        If this TestPlanReport was created with an "exactAtVersionId" being set,
+        it will use the matching AtVersion, otherwise it will use the
+        TestPlanVersion.earliestAtVersion as a default.
+        """
+        recommendedAtVersion: AtVersion
     }
 
     """

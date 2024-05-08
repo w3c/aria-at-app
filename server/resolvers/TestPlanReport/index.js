@@ -9,6 +9,7 @@ const atVersions = require('./atVersionsResolver');
 const at = require('./atResolver');
 const browser = require('./browserResolver');
 const latestAtVersionReleasedAt = require('./latestAtVersionReleasedAtResolver');
+const recommendedAtVersion = require('./recommendedAtVersionResolver');
 const isFinal = require('./isFinalResolver');
 const exactAtVersion = require('./exactAtVersionResolver');
 const minimumAtVersion = require('./minimumAtVersionResolver');
@@ -27,5 +28,6 @@ module.exports = {
     minimumAtVersion,
     browser,
     latestAtVersionReleasedAt,
+    recommendedAtVersion,
     isFinal
 };
