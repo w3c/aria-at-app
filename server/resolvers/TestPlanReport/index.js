@@ -11,6 +11,8 @@ const browser = require('./browserResolver');
 const latestAtVersionReleasedAt = require('./latestAtVersionReleasedAtResolver');
 const recommendedAtVersion = require('./recommendedAtVersionResolver');
 const isFinal = require('./isFinalResolver');
+const exactAtVersion = require('./exactAtVersionResolver');
+const minimumAtVersion = require('./minimumAtVersionResolver');
 
 module.exports = {
     runnableTests,
@@ -22,6 +24,8 @@ module.exports = {
     issues,
     atVersions,
     at,
+    exactAtVersion,
+    minimumAtVersion,
     browser,
     latestAtVersionReleasedAt,
     recommendedAtVersion,

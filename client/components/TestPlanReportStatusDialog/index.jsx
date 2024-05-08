@@ -16,10 +16,30 @@ const IncompleteStatusReport = styled.span`
     display: inline-block;
 `;
 
+const AtInner = styled.div`
+    display: inline-block;
+    flex-wrap: wrap;
+    background: #f5f5f5;
+    border-radius: 4px;
+    padding: 0 5px;
+    font-weight: bold;
+
+    & :last-of-type {
+        margin-left: 6px;
+        font-weight: initial;
+    }
+`;
+
+const VersionBox = styled.span`
+    /* font-size: 15px;
+    color: #4a4a4a;
+    top: 1px;
+    position: relative; */
+`;
+
 const TestPlanReportStatusDialog = ({
     testPlanVersion,
     show,
-    ats,
     handleHide = () => {},
     triggerUpdate = () => {}
 }) => {
@@ -27,7 +47,7 @@ const TestPlanReportStatusDialog = ({
         fetchPolicy: 'cache-and-network'
     });
 
-    const { testPlanReports } = testPlanVersion;
+    const { testPlanReportStatuses } = testPlanVersion;
 
     const auth = evaluateAuth(me ?? {});
     const { isSignedIn, isAdmin } = auth;
@@ -77,13 +97,19 @@ const TestPlanReportStatusDialog = ({
         }
     };
 
-    const renderReportStatus = ({ report, at, browser }) => {
-        if (report) {
-            const { markedFinalAt } = report;
+    const renderReportStatus = ({
+        testPlanReport,
+        at,
+        browser,
+        minimumAtVersion,
+        exactAtVersion
+    }) => {
+        if (testPlanReport) {
+            const { markedFinalAt } = testPlanReport;
             if (markedFinalAt) {
-                return renderCompleteReportStatus(report);
+                return renderCompleteReportStatus(testPlanReport);
             } else {
-                return renderPartialCompleteReportStatus(report);
+                return renderPartialCompleteReportStatus(testPlanReport);
             }
         }
         return (
@@ -92,6 +118,8 @@ const TestPlanReportStatusDialog = ({
                 {isSignedIn && isAdmin ? (
                     <AddTestToQueueWithConfirmation
                         at={at}
+                        minimumAtVersion={minimumAtVersion}
+                        exactAtVersion={exactAtVersion}
                         browser={browser}
                         testPlanVersion={testPlanVersion}
                         triggerUpdate={triggerUpdate}
@@ -102,58 +130,46 @@ const TestPlanReportStatusDialog = ({
     };
 
     let requiredReports = 0;
-    const rowData = [];
 
-    ats.forEach(at => {
-        // DRAFT as well because those reports are required to be promoted to CANDIDATE
-        if (
-            testPlanVersion.phase === 'DRAFT' ||
-            testPlanVersion.phase === 'CANDIDATE'
-        ) {
-            requiredReports += at.candidateBrowsers.length;
-        }
-        if (testPlanVersion.phase === 'RECOMMENDED') {
-            requiredReports += at.recommendedBrowsers.length;
-        }
+    const tableRows = testPlanReportStatuses.map(status => {
+        const {
+            isRequired,
+            at,
+            browser,
+            minimumAtVersion,
+            exactAtVersion,
+            testPlanReport
+        } = status;
 
-        at.browsers.forEach(browser => {
-            const report = testPlanReports.find(eachReport => {
-                return (
-                    eachReport.at.id === at.id &&
-                    eachReport.browser.id === browser.id
-                );
-            });
+        if (isRequired) requiredReports += 1;
 
-            let isRequired = false;
-            if (
-                testPlanVersion.phase === 'DRAFT' ||
-                testPlanVersion.phase === 'CANDIDATE'
-            ) {
-                isRequired = at.candidateBrowsers.some(candidateBrowser => {
-                    return candidateBrowser.id === browser.id;
-                });
-            } else if (testPlanVersion.phase === 'RECOMMENDED') {
-                isRequired = at.recommendedBrowsers.some(recommendedBrowser => {
-                    return recommendedBrowser.id === browser.id;
-                });
-            }
-            rowData.push({ report, at, browser, isRequired });
-        });
-    });
+        const key = `${at.name}-${browser.name}-${
+            testPlanReport?.id ?? 'missing'
+        }`;
 
-    // Sort by required then AT then browser
-    rowData.sort((a, b) => {
-        if (a.isRequired !== b.isRequired) return a.isRequired ? -1 : 1;
-        if (a.at.name !== b.at.name) return a.at.name.localeCompare(b.at.name);
-        return a.browser.name.localeCompare(b.browser.name);
-    });
-    const tableRows = rowData.map(({ report, at, browser, isRequired }) => {
+        const atVersionFormatted = minimumAtVersion
+            ? `${minimumAtVersion.name} or later`
+            : exactAtVersion.name;
+
         return (
-            <tr key={`${at.name}-${browser.name}`}>
+            <tr key={key}>
                 <td>{isRequired ? 'Yes' : 'No'}</td>
-                <td>{at.name}</td>
+                <td>
+                    <AtInner>
+                        {at.name}
+                        <VersionBox>{atVersionFormatted}</VersionBox>
+                    </AtInner>
+                </td>
                 <td>{browser.name}</td>
-                <td>{renderReportStatus({ report, at, browser })}</td>
+                <td>
+                    {renderReportStatus({
+                        testPlanReport,
+                        at,
+                        browser,
+                        minimumAtVersion,
+                        exactAtVersion
+                    })}
+                </td>
             </tr>
         );
     });
@@ -237,12 +253,8 @@ TestPlanReportStatusDialog.propTypes = {
         id: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
         phase: PropTypes.string.isRequired,
-        testPlanReports: PropTypes.arrayOf(
+        testPlanReportStatuses: PropTypes.arrayOf(
             PropTypes.shape({
-                id: PropTypes.string.isRequired,
-                status: PropTypes.string,
-                runnableTests: PropTypes.arrayOf(PropTypes.object),
-                finalizedTestResults: PropTypes.arrayOf(PropTypes.object),
                 at: PropTypes.shape({
                     id: PropTypes.string.isRequired,
                     name: PropTypes.string.isRequired
@@ -250,32 +262,27 @@ TestPlanReportStatusDialog.propTypes = {
                 browser: PropTypes.shape({
                     id: PropTypes.string.isRequired,
                     name: PropTypes.string.isRequired
-                }).isRequired
+                }).isRequired,
+                minimumAtVersion: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    name: PropTypes.string.isRequired
+                }),
+                exactAtVersion: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    name: PropTypes.string.isRequired
+                }),
+                testPlanReport: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    status: PropTypes.string,
+                    runnableTests: PropTypes.arrayOf(PropTypes.object),
+                    finalizedTestResults: PropTypes.arrayOf(PropTypes.object)
+                })
             }).isRequired
         ).isRequired
     }).isRequired,
     handleHide: PropTypes.func.isRequired,
     triggerUpdate: PropTypes.func,
-    show: PropTypes.bool.isRequired,
-    ats: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
-            browsers: PropTypes.arrayOf(
-                PropTypes.shape({ id: PropTypes.string.isRequired }).isRequired
-            ).isRequired,
-            candidateBrowsers: PropTypes.arrayOf(
-                PropTypes.shape({
-                    id: PropTypes.string.isRequired
-                }).isRequired
-            ).isRequired,
-            recommendedBrowsers: PropTypes.arrayOf(
-                PropTypes.shape({
-                    id: PropTypes.string.isRequired
-                }).isRequired
-            ).isRequired
-        }).isRequired
-    ).isRequired
+    show: PropTypes.bool.isRequired
 };
 
 export default TestPlanReportStatusDialog;

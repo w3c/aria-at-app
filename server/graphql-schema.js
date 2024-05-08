@@ -334,11 +334,11 @@ const graphqlSchema = gql`
         version was imported from the ARIA-AT repo. Used to version the test
         plan over time.
         """
-        gitSha: String! # TODO: remove if using version labels
+        gitSha: String!
         """
         Git commit message corresponding to the git sha's commit.
         """
-        gitMessage: String! # TODO: remove if using version labels
+        gitMessage: String!
         """
         The date (originating in Git) corresponding to the Git sha's commit.
         This can also be considered as the time for when R & D was complete
@@ -367,8 +367,7 @@ const graphqlSchema = gql`
         """
         tests: [Test]!
         """
-        The TestPlanReports attached to the TestPlanVersion. There will always
-        be a unique combination of AT + Browser + TestPlanVersion.
+        The TestPlanReports attached to the TestPlanVersion.
 
         isFinal is used to check if a TestPlanReport has been "Marked as Final",
         indicated by TestPlanReport.markedFinalAt existence.
@@ -377,6 +376,10 @@ const graphqlSchema = gql`
         False value indicates to return the reports which have no markedFinalAt date.
         """
         testPlanReports(isFinal: Boolean): [TestPlanReport]!
+        """
+        A list of existing or missing TestPlanReports that may be collected.
+        """
+        testPlanReportStatuses: [TestPlanReportStatus]!
         """
         For each report under this TestPlanVersion, if the report's combination
         is indicated as required and the report is marked as final at the time
@@ -400,6 +403,50 @@ const graphqlSchema = gql`
         as or were released after the "earliestAtVersion".
         """
         earliestAtVersion(atId: ID!): AtVersion
+    }
+
+    """
+    An existing or missing TestPlanReport that can be collected for a given
+    TestPlanVersion.
+    """
+    type TestPlanReportStatus {
+        """
+        Whether the TestPlanReport is actually required during the given
+        TestPlanVersion phase.
+        """
+        isRequired: Boolean!
+        """
+        The report's AT, which will be populated even if the TestPlanReport is
+        missing.
+        """
+        at: At!
+        """
+        The version of the AT that should be used for the report will be
+        specified either as an exactAtVersion or minimumAtVersion and will be
+        populated even if the TestPlanReport is missing.
+
+        During the TestPlanVersion's draft and candidate phases, the looser
+        requirement of minimumAtVersion will be used to reduce the amount of
+        data collected before consensus is achieved.
+
+        During the recommended phase all reports will be associated with an
+        exactAtVersion, enabling large-scale data collection for all versions
+        of the AT as they are released.
+        """
+        exactAtVersion: AtVersion
+        """
+        See exactAtVersion for more information.
+        """
+        minimumAtVersion: AtVersion
+        """
+        The report's browser, which will be populated even if the
+        TestPlanReport is missing.
+        """
+        browser: Browser!
+        """
+        The TestPlanReport, which may not currently exist.
+        """
+        testPlanReport: TestPlanReport
     }
 
     """
@@ -588,12 +635,19 @@ const graphqlSchema = gql`
         Whether this assertion contributes to the test failing or not.
         """
         priority: AssertionPriority!
-        # TODO: consider adding a automatedAssertion field which uses regex or
-        # similar to automatically determine pass or fail.
         """
-        A human-readable version of the assertion.
+        A human-readable version of the assertion, like "Role 'radio button' is
+        conveyed".
         """
         text: String!
+        """
+        For TestPlanVersions that use the V2 test format, this field contains
+        text like "convey role 'radio button'".
+
+        See the link for more information:
+        https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#assertionphrase
+        """
+        phrase: String
     }
 
     """
@@ -953,6 +1007,14 @@ const graphqlSchema = gql`
         The AT used when collecting results.
         """
         at: At!
+        """
+        Either a minimumAtVersion or exactAtVersion will be available. The minimumAtVersion, when defined, is the oldest version of the AT that testers are allowed to use when collecting results.
+        """
+        minimumAtVersion: AtVersion
+        """
+        Either a minimumAtVersion or exactAtVersion will be available. The exactAtVersion, when defined, is the only version of the AT that testers are allowed to use when collecting results. Note that when a TestPlanVersion reaches the recommended stage, all its reports will automatically switch from having a minimumAtVersion to an exactAtVersion. See the earliestAtVersion field of TestPlanVersion for more information.
+        """
+        exactAtVersion: AtVersion
         """
         The unique AT Versions used when collecting results for this report.
         """
