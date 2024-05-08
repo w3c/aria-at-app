@@ -84,13 +84,14 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 if (testPlanReport.status === 'DRAFT') return null;
                 const overallMetrics = getMetrics({ testPlanReport });
 
-                const { at, browser } = testPlanReport;
+                const { at, browser, recommendedAtVersion } = testPlanReport;
 
                 // Construct testPlanTarget
                 const testPlanTarget = {
                     id: `${at.id}${browser.id}`,
                     at,
-                    browser
+                    browser,
+                    atVersion: recommendedAtVersion
                 };
 
                 return (

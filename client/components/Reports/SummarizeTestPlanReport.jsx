@@ -90,13 +90,14 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     );
     if (!testPlanReport) return <Navigate to="/404" />;
 
-    const { at, browser } = testPlanReport;
+    const { at, browser, recommendedAtVersion } = testPlanReport;
 
     // Construct testPlanTarget
     const testPlanTarget = {
         id: `${at.id}${browser.id}`,
         at,
-        browser
+        browser,
+        atVersion: recommendedAtVersion
     };
 
     return (
