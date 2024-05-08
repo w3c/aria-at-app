@@ -78,12 +78,14 @@ export const REPORT_PAGE_QUERY = gql`
                             id
                             assertion {
                                 text
+                                phrase
                             }
                             passed
                         }
                         mustAssertionResults: assertionResults(priority: MUST) {
                             assertion {
                                 text
+                                phrase
                             }
                             passed
                         }
@@ -92,12 +94,14 @@ export const REPORT_PAGE_QUERY = gql`
                         ) {
                             assertion {
                                 text
+                                phrase
                             }
                             passed
                         }
                         mayAssertionResults: assertionResults(priority: MAY) {
                             assertion {
                                 text
+                                phrase
                             }
                             passed
                         }

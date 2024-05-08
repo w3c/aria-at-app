@@ -279,17 +279,21 @@ const updatePhaseResolver = async (
             deprecatedAt: null
         };
     else if (phase === 'CANDIDATE') {
-        // Preserve candidate phase related dates from older TestPlanVersion since not yet gone to
-        // recommended
-        const {
-            candidatePhaseReachedAt: oldCandidatePhaseReachedAtDate,
-            recommendedPhaseTargetDate: oldRecommendedPhaseTargetDate
-        } = oldTestPlanVersion || {};
+        // Preserve candidate target date for updated since not yet gone to
+        // recommended so technically newer candidate versions would still be
+        // in the same candidate review 'window'.
+        //
+        // When a candidate version eventually goes to recommended, this will
+        // implicitly create a new window so there won't be an 'older' version's
+        // data to copy
+        let oldRecommendedPhaseTargetDate;
+        if (oldTestPlanVersion && oldTestPlanVersion.phase === 'CANDIDATE') {
+            oldRecommendedPhaseTargetDate =
+                oldTestPlanVersion.recommendedPhaseTargetDate;
+        }
 
         const candidatePhaseReachedAtValue =
-            oldCandidatePhaseReachedAtDate ||
-            candidatePhaseReachedAt ||
-            new Date();
+            candidatePhaseReachedAt || new Date();
         const recommendedPhaseTargetDateValue =
             oldRecommendedPhaseTargetDate ||
             recommendedPhaseTargetDate ||
@@ -312,14 +316,15 @@ const updatePhaseResolver = async (
             deprecatedAt: null
         };
 
-    // If testPlanVersionDataToIncludeId's results are being used to update this earlier version,
-    // deprecate it
-    if (testPlanVersionDataToIncludeId)
+    // If oldTestPlanVersion's results are being used to update this earlier
+    // version, deprecate it (if the same phase)
+    if (oldTestPlanVersion && phase === oldTestPlanVersion.phase) {
         await updateTestPlanVersionById({
-            id: testPlanVersionDataToIncludeId,
+            id: oldTestPlanVersion.id, // same as testPlanVersionDataToIncludeId
             values: { phase: 'DEPRECATED', deprecatedAt: new Date() },
             transaction
         });
+    }
 
     await updateTestPlanVersionById({
         id: testPlanVersionId,

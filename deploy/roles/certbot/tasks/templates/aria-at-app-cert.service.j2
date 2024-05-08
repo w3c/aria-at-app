@@ -4,7 +4,7 @@ After=nginx.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/certbot renew --no-self-upgrade --force-renewal --deploy-hook "/bin/systemctl restart nginx"
+ExecStart=/usr/bin/certbot renew --no-self-upgrade --deploy-hook "/bin/systemctl restart nginx"
 KillMode=control-group
 
 [Install]

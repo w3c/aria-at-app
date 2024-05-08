@@ -31,6 +31,8 @@ const DataManagement = () => {
     const [ats, setAts] = useState([]);
     const [testPlans, setTestPlans] = useState([]);
     const [testPlanVersions, setTestPlanVersions] = useState([]);
+    const [deprecatedTestPlanVersions, setDeprecatedTestPlanVersions] =
+        useState([]);
     const [filter, setFilter] = useState(
         DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.ALL
     );
@@ -40,10 +42,16 @@ const DataManagement = () => {
 
     useEffect(() => {
         if (data) {
-            const { ats = [], testPlanVersions = [], testPlans = [] } = data;
+            const {
+                ats = [],
+                testPlanVersions = [],
+                deprecatedTestPlanVersions = [],
+                testPlans = []
+            } = data;
             setAts(ats);
             setTestPlans(testPlans);
             setTestPlanVersions(testPlanVersions);
+            setDeprecatedTestPlanVersions(deprecatedTestPlanVersions);
             setPageReady(true);
         }
     }, [data]);
@@ -212,7 +220,10 @@ const DataManagement = () => {
                                 isAdmin={isAdmin}
                                 ats={ats}
                                 testPlan={testPlan}
-                                testPlanVersions={testPlanVersions.filter(
+                                testPlanVersions={[
+                                    ...deprecatedTestPlanVersions,
+                                    ...testPlanVersions
+                                ].filter(
                                     testPlanVersion =>
                                         testPlanVersion.testPlan.directory ===
                                         testPlan.directory

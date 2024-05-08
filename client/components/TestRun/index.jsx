@@ -50,7 +50,7 @@ const TestRun = () => {
     const routerQuery = useRouterQuery();
 
     // Detect UA information
-    const { uaBrowser, uaMajor, uaMinor, uaPatch } = useDetectUa();
+    const { uaBrowser, uaMajor } = useDetectUa();
 
     const titleRef = useRef();
     // To prevent default AT/Browser versions being set before initial
@@ -223,12 +223,18 @@ const TestRun = () => {
             ) ||
             'N/A';
 
-        const currentBrowserVersion =
+        let currentBrowserVersion =
             currentTest.testResult?.browserVersion ||
             testPlanReport.browser.browserVersions.find(
                 item => item.id === currentTestBrowserVersionId
             ) ||
             'N/A';
+
+        // Only show major version of browser
+        currentBrowserVersion = {
+            id: currentAtVersion.id,
+            name: currentBrowserVersion.name.split('.')[0]
+        };
 
         // Auto batch the states
         setUsers(users);
@@ -715,7 +721,7 @@ const TestRun = () => {
                     <>
                         You are currently using{' '}
                         <b>
-                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                            {uaBrowser} {uaMajor}
                         </b>
                         , but are trying to edit a test result that was
                         submitted with{' '}
@@ -778,7 +784,7 @@ const TestRun = () => {
 
             if (
                 !adminReviewerOriginalTestRef.current.testResult?.browserVersion?.name.includes(
-                    `${uaMajor}.${uaMinor}.${uaPatch}`
+                    `${uaMajor}`
                 )
             ) {
                 setThemedModalTitle(
@@ -788,7 +794,7 @@ const TestRun = () => {
                     <>
                         You are currently using{' '}
                         <b>
-                            {uaBrowser} {uaMajor}.{uaMinor}.{uaPatch}
+                            {uaBrowser} {uaMajor}
                         </b>
                         , but are trying to edit a test result that was
                         submitted with{' '}
@@ -845,6 +851,12 @@ const TestRun = () => {
                 createBrowserVersionResult.data?.browser
                     ?.findOrCreateBrowserVersion;
         }
+
+        // Only show major browser version
+        browserVersion = {
+            id: browserVersion.id,
+            name: browserVersion.name.split('.')[0]
+        };
 
         const updateMessageComponent = updateMessage ? (
             <>
@@ -1002,6 +1014,9 @@ const TestRun = () => {
             ];
         }
 
+        const externalLogsUrl =
+            collectionJobQuery?.collectionJobByTestPlanRunId?.externalLogsUrl;
+
         const menuRightOfContent = (
             <div role="complementary">
                 <h2 id="test-options-heading">Test Options</h2>
@@ -1022,17 +1037,12 @@ const TestRun = () => {
                             href={issueLink}
                         />
                     </li>
-                    {isBot(openAsUser) &&
-                    collectionJobQuery?.collectionJobByTestPlanRunId
-                        ?.externalLogsUrl ? (
+                    {isBot(openAsUser) && externalLogsUrl ? (
                         <li>
                             <OptionButton
                                 text="View Log"
                                 target="_blank"
-                                href={
-                                    collectionJobQuery?.collectionJob
-                                        ?.externalLogsUrl
-                                }
+                                href={externalLogsUrl}
                             />
                         </li>
                     ) : (

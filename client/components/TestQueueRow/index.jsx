@@ -228,7 +228,7 @@ const TestQueueRow = ({
 
     const renderOpenAsDropdown = () => {
         return (
-            <Dropdown className="open-run-as">
+            <Dropdown className="open-run-as" focusFirstItemOnShow>
                 <Dropdown.Toggle
                     id={nextId()}
                     variant="secondary"
@@ -241,7 +241,7 @@ const TestQueueRow = ({
                     {draftTestPlanRuns
                         .slice() // because array was frozen
                         .sort((a, b) =>
-                            a.tester.username < b.tester.username ? -1 : 1
+                            a.tester.username.localeCompare(b.tester.username)
                         )
                         .map(({ tester }) => {
                             return (
@@ -265,7 +265,10 @@ const TestQueueRow = ({
         if (testPlanRunsWithResults.length) {
             return (
                 <>
-                    <Dropdown aria-label="Delete results menu">
+                    <Dropdown
+                        aria-label="Delete results menu"
+                        focusFirstItemOnShow
+                    >
                         <Dropdown.Toggle
                             ref={dropdownDeleteTesterResultsButtonRef}
                             variant="danger"

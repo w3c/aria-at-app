@@ -115,7 +115,7 @@ const AssignTesterDropdown = ({
     };
     return (
         <LoadingStatus message={loadingMessage}>
-            <Dropdown aria-label="Assign testers menu">
+            <Dropdown focusFirstItemOnShow aria-label="Assign testers menu">
                 <Dropdown.Toggle
                     ref={dropdownAssignTesterButtonRef}
                     aria-label="Assign testers"
