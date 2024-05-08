@@ -342,8 +342,8 @@ const ManageTestQueue = ({
     };
 
     const onAtChange = e => {
-        setShowMinimumAtVersionErrorMessage(false);
         const { value } = e.target;
+        setShowMinimumAtVersionErrorMessage(false);
         setSelectedAtId(value);
         setSelectedReportAtVersionId(null);
     };
@@ -714,7 +714,7 @@ const ManageTestQueue = ({
                                         }
                                         onSelect={exactOrMinimum => {
                                             if (
-                                                selectedTestPlanVersion.phase ===
+                                                selectedTestPlanVersion?.phase ===
                                                     'RECOMMENDED' &&
                                                 exactOrMinimum ===
                                                     'Minimum Version'
