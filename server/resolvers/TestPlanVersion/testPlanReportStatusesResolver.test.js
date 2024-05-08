@@ -228,7 +228,7 @@ describe('testPlanReportStatusesResolver', () => {
                 transaction
             });
 
-            const v3 = await createAtVersion({
+            await createAtVersion({
                 values: { atId: 1, name: 'v3', releasedAt: getDate(-15) },
                 transaction
             });
