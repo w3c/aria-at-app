@@ -105,6 +105,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     const renderVersionsSummaryTable = () => {
         if (testPlanVersion.phase !== 'RECOMMENDED') return null;
 
+        const title = `${testPlanTarget.at.name} Versions Summary`;
         const testPlanReportsForTarget = testPlanVersion.testPlanReports.filter(
             testPlanReport =>
                 testPlanReport.at.id === at.id &&
@@ -118,7 +119,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
 
         return (
             <>
-                <h2>{testPlanTarget.at.name} Versions Summary</h2>
+                <h2>{title}</h2>
                 <p>
                     The following table displays a summary of data for all
                     versions of {testPlanTarget.at.name} that have been tested.
@@ -174,9 +175,10 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     };
 
     const renderResultsForTargetTable = () => {
+        const title = `Results for ${getTestPlanTargetTitle(testPlanTarget)}`;
         return (
             <>
-                <h2>Results for {getTestPlanTargetTitle(testPlanTarget)}</h2>
+                <h2>{title}</h2>
                 <Table
                     bordered
                     responsive
