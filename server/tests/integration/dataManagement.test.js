@@ -112,6 +112,12 @@ const updateVersionToPhaseQuery = (
                                 at {
                                     id
                                 }
+                                minimumAtVersion {
+                                    id
+                                }
+                                exactAtVersion {
+                                    id
+                                }
                                 browser {
                                     id
                                 }

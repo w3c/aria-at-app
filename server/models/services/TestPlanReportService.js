@@ -280,7 +280,14 @@ const createTestPlanReport = async ({
  */
 const updateTestPlanReportById = async ({
     id,
-    values: { metrics, testPlanVersionId, vendorReviewStatus, markedFinalAt },
+    values: {
+        metrics,
+        testPlanVersionId,
+        vendorReviewStatus,
+        minimumAtVersionId,
+        exactAtVersionId,
+        markedFinalAt
+    },
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -296,6 +303,8 @@ const updateTestPlanReportById = async ({
             metrics,
             testPlanVersionId,
             vendorReviewStatus,
+            minimumAtVersionId,
+            exactAtVersionId,
             markedFinalAt
         },
         transaction

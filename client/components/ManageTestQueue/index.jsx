@@ -166,10 +166,16 @@ const ManageTestQueue = ({
 
     const [selectedAtId, setSelectedAtId] = useState('');
     const [selectedBrowserId, setSelectedBrowserId] = useState('');
-    const [selectAtVersionExactOrMinimum, setSelectedAtVersionExactOrMinimum] =
-        useState('Exact Version');
+    const [
+        selectedAtVersionExactOrMinimum,
+        setSelectedAtVersionExactOrMinimum
+    ] = useState('Exact Version');
     const [selectedReportAtVersionId, setSelectedReportAtVersionId] =
         useState(null);
+    const [
+        showMinimumAtVersionErrorMessage,
+        setShowMinimumAtVersionErrorMessage
+    ] = useState(false);
 
     const [addAtVersion] = useMutation(ADD_AT_VERSION_MUTATION);
     const [editAtVersion] = useMutation(EDIT_AT_VERSION_MUTATION);
@@ -337,6 +343,7 @@ const ManageTestQueue = ({
 
     const onAtChange = e => {
         const { value } = e.target;
+        setShowMinimumAtVersionErrorMessage(false);
         setSelectedAtId(value);
         setSelectedReportAtVersionId(null);
     };
@@ -353,6 +360,8 @@ const ManageTestQueue = ({
 
     const onTestPlanVersionChange = e => {
         const { value } = e.target;
+        setShowMinimumAtVersionErrorMessage(false);
+        setSelectedAtVersionExactOrMinimum('Exact Version');
         setSelectedTestPlanVersionId(value);
     };
 
@@ -507,6 +516,10 @@ const ManageTestQueue = ({
         .find(item => item.id === selectedAtId)
         ?.atVersions.find(item => item.id === selectedReportAtVersionId);
 
+    const selectedTestPlanVersion = allTestPlanVersions.find(
+        ({ id }) => id === selectedTestPlanVersionId
+    );
+
     return (
         <LoadingStatus message={loadingMessage}>
             <DisclosureComponent
@@ -603,6 +616,12 @@ const ManageTestQueue = ({
                                 <Form.Select
                                     onChange={e => {
                                         const { value } = e.target;
+                                        setShowMinimumAtVersionErrorMessage(
+                                            false
+                                        );
+                                        setSelectedAtVersionExactOrMinimum(
+                                            'Exact Version'
+                                        );
                                         updateMatchingTestPlanVersions(
                                             value,
                                             allTestPlanVersions
@@ -691,13 +710,25 @@ const ManageTestQueue = ({
                                             'Minimum Version'
                                         ]}
                                         selectedLabel={
-                                            selectAtVersionExactOrMinimum
+                                            selectedAtVersionExactOrMinimum
                                         }
-                                        onSelect={exactOrMinimum =>
+                                        onSelect={exactOrMinimum => {
+                                            if (
+                                                selectedTestPlanVersion?.phase ===
+                                                    'RECOMMENDED' &&
+                                                exactOrMinimum ===
+                                                    'Minimum Version'
+                                            ) {
+                                                setShowMinimumAtVersionErrorMessage(
+                                                    true
+                                                );
+                                                return;
+                                            }
+
                                             setSelectedAtVersionExactOrMinimum(
                                                 exactOrMinimum
-                                            )
-                                        }
+                                            );
+                                        }}
                                     />
                                     <Form.Select
                                         value={selectedReportAtVersionId ?? ''}
@@ -718,6 +749,15 @@ const ManageTestQueue = ({
                                                 </option>
                                             ))}
                                     </Form.Select>
+                                    {showMinimumAtVersionErrorMessage &&
+                                    selectedTestPlanVersion?.phase ===
+                                        'RECOMMENDED' ? (
+                                        <div role="alert">
+                                            The selected test plan version is in
+                                            the recommended phase and only exact
+                                            versions can be chosen.
+                                        </div>
+                                    ) : null}
                                 </div>
                             </Form.Group>
                             <Form.Group className="form-group">
@@ -751,13 +791,13 @@ const ManageTestQueue = ({
                             )}
                             at={ats.find(item => item.id === selectedAtId)}
                             exactAtVersion={
-                                selectAtVersionExactOrMinimum ===
+                                selectedAtVersionExactOrMinimum ===
                                 'Exact Version'
                                     ? exactOrMinimumAtVersion
                                     : null
                             }
                             minimumAtVersion={
-                                selectAtVersionExactOrMinimum ===
+                                selectedAtVersionExactOrMinimum ===
                                 'Minimum Version'
                                     ? exactOrMinimumAtVersion
                                     : null

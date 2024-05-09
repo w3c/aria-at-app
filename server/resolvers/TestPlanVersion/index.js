@@ -11,8 +11,8 @@ const TestPlanVersion = {
     testPlan,
     gitMessage,
     tests,
-    testPlanReports,
     recommendedPhaseTargetDate,
+    testPlanReports,
     testPlanReportStatuses,
     earliestAtVersion,
     trendReports
