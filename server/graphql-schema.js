@@ -282,10 +282,6 @@ const graphqlSchema = gql`
         DEPRECATED
     }
 
-#    type TrendReport {
-#        supportPercent
-#    }
-
     """
     A snapshot of time for a test plan, containing all the test plan data,
     including the actual executable tests.
@@ -407,7 +403,6 @@ const graphqlSchema = gql`
         as or were released after the "earliestAtVersion".
         """
         earliestAtVersion(atId: ID!): AtVersion
-        trendReports(atId: ID!, browserId: ID!): [TestPlanReport]
     }
 
     """

@@ -127,9 +127,9 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                             <thead>
                                 <tr>
                                     <th>Test Name</th>
-                                    <th>MUST HAVE Behaviors</th>
-                                    <th>SHOULD HAVE Behaviors</th>
-                                    <th>MAY HAVE Behaviors</th>
+                                    <th>Must-Have Behaviors</th>
+                                    <th>Should-Have Behaviors</th>
+                                    <th>May-Have Behaviors</th>
                                 </tr>
                             </thead>
                             <tbody>

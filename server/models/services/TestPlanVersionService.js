@@ -328,56 +328,10 @@ const updateTestPlanVersionById = async ({
     });
 };
 
-const getTrendReportDataForTarget = async ({
-    testPlanVersionId,
-    atId,
-    browserId,
-    transaction
-}) => {
-    const results = await ModelService.rawQuery(
-        `
-            select "TestPlanReport".id          as "testPlanReportId",
-                   title,
-                   "versionString",
-                   at.name                      as "atName",
-                   browser.name                 as "browserName",
-                   metrics -> 'supportPercent'  as "supportPercent",
-                   metrics -> 'mustFormatted'   as "mustFormatted",
-                   metrics -> 'shouldFormatted' as "shouldFormatted",
-                   metrics -> 'mayFormatted'    as "mayFormatted",
-                   "recommendedPhaseReachedAt"
-            from "TestPlanReport"
-                     join public."TestPlanVersion" testPlanVersion on testPlanVersion.id = "TestPlanReport"."testPlanVersionId"
-                     join public."At" at on "TestPlanReport"."atId" = at.id
-                     join public."Browser" browser on "TestPlanReport"."browserId" = browser.id
-            where phase = 'RECOMMENDED'
-              and "markedFinalAt" is not null
-              and "testPlanVersionId" = ${testPlanVersionId}
-              and "atId" = ${atId}
-              and "browserId" = ${browserId}
-            group by "testPlanReportId", title, "versionString", "atName", "browserName", "supportPercent", "mustFormatted",
-                     "shouldFormatted", "mayFormatted", "recommendedPhaseReachedAt";
-        `,
-        { transaction }
-    );
-
-    // Sort in descending order of recommendedPhaseReachedAt date
-    results.sort(
-        (a, b) =>
-            new Date(b.recommendedPhaseReachedAt) -
-            new Date(a.recommendedPhaseReachedAt)
-    );
-
-    return results;
-};
-
 module.exports = {
     // Basic CRUD
     getTestPlanVersionById,
     getTestPlanVersions,
     createTestPlanVersion,
-    updateTestPlanVersionById,
-
-    // Custom functions
-    getTrendReportDataForTarget
+    updateTestPlanVersionById
 };

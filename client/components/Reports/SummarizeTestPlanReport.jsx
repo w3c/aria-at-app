@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
-import { Breadcrumb, Button, Container } from 'react-bootstrap';
+import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -12,11 +12,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import { getMetrics } from 'shared';
+import { none } from './None';
 import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
-import { Navigate, useLocation, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
 
 const ResultsContainer = styled.div`
@@ -91,6 +92,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     if (!testPlanReport) return <Navigate to="/404" />;
 
     const { at, browser, recommendedAtVersion } = testPlanReport;
+    const overallMetrics = getMetrics({ testPlanReport });
 
     // Construct testPlanTarget
     const testPlanTarget = {
@@ -98,6 +100,118 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         at,
         browser,
         atVersion: recommendedAtVersion
+    };
+
+    const renderVersionsSummaryTable = () => {
+        if (testPlanVersion.phase !== 'RECOMMENDED') return null;
+
+        const testPlanReportsForTarget = testPlanVersion.testPlanReports.filter(
+            report => report.at.id === at.id && report.browser.id === browser.id
+        );
+        testPlanReportsForTarget.sort(
+            (a, b) =>
+                new Date(b.recommendedAtVersion.releasedAt) -
+                new Date(a.recommendedAtVersion.releasedAt)
+        );
+
+        return (
+            <>
+                <h2>{testPlanTarget.at.name} Versions Summary</h2>
+                <p>
+                    The following table displays a summary of data for all
+                    versions of {testPlanTarget.at.name} that have been tested.
+                </p>
+                <Table bordered responsive>
+                    <thead>
+                        <tr>
+                            <th>Versions</th>
+                            <th>Must-Have Behaviors</th>
+                            <th>Should-Have Behaviors</th>
+                            <th>May-Have Behaviors</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {testPlanReportsForTarget.map(report => {
+                            const { id, recommendedAtVersion, metrics } =
+                                report;
+                            const {
+                                mustFormatted,
+                                shouldFormatted,
+                                mayFormatted
+                            } = metrics;
+
+                            return (
+                                <tr key={`VersionsSummaryRow_${id}`}>
+                                    <td>{recommendedAtVersion.name}</td>
+                                    <td>{mustFormatted || none}</td>
+                                    <td>{shouldFormatted || none}</td>
+                                    <td>{mayFormatted || none}</td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </Table>
+            </>
+        );
+    };
+
+    const renderResultsForTargetTable = () => {
+        return (
+            <>
+                <h2>Results for {getTestPlanTargetTitle(testPlanTarget)}</h2>
+                <Table
+                    bordered
+                    responsive
+                    aria-label={`Results for ${getTestPlanTargetTitle(
+                        testPlanTarget
+                    )}`}
+                >
+                    <thead>
+                        <tr>
+                            <th>Test Name</th>
+                            <th>Must-Have Behaviors</th>
+                            <th>Should-Have Behaviors</th>
+                            <th>May-Have Behaviors</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {testPlanReport.finalizedTestResults.map(testResult => {
+                            const {
+                                mustFormatted,
+                                shouldFormatted,
+                                mayFormatted
+                            } = getMetrics({
+                                testResult
+                            });
+                            return (
+                                <tr key={testResult.id}>
+                                    <td>
+                                        <Link
+                                            to={
+                                                `/report/${testPlanVersion.id}` +
+                                                `/targets/${testPlanReport.id}` +
+                                                `#result-${testResult.id}`
+                                            }
+                                        >
+                                            {testResult.test.title}
+                                        </Link>
+                                    </td>
+                                    <td>{mustFormatted || none}</td>
+                                    <td>{shouldFormatted || none}</td>
+                                    <td>{mayFormatted || none}</td>
+                                </tr>
+                            );
+                        })}
+                        <tr>
+                            <td>All Tests</td>
+                            <td>{overallMetrics.mustFormatted || none}</td>
+                            <td>{overallMetrics.shouldFormatted || none}</td>
+                            <td>{overallMetrics.mayFormatted || none}</td>
+                        </tr>
+                    </tbody>
+                </Table>
+            </>
+        );
     };
 
     return (
@@ -177,6 +291,10 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     </li>
                 ) : null}
             </ul>
+
+            {renderVersionsSummaryTable()}
+            {renderResultsForTargetTable()}
+
             {testPlanReport.finalizedTestResults.map((testResult, index) => {
                 const test = testResult.test;
 
