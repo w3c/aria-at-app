@@ -16,10 +16,7 @@ import {
 import { useMutation, useQuery } from '@apollo/client';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
-import {
-    isBot,
-    isSupportedByResponseCollector
-} from '../../../utils/automation';
+import { isSupportedByResponseCollector } from '../../../utils/automation';
 
 import './AssignTesterDropdown.css';
 
@@ -77,7 +74,7 @@ const AssignTesterDropdown = ({
                 });
             }, `Updating Test Plan Assignees. Deleting Test Plan Run for ${tester.username}`);
         } else {
-            if (isBot(tester)) {
+            if (tester.isBot) {
                 await triggerLoad(async () => {
                     await scheduleCollection({
                         variables: {
@@ -131,12 +128,12 @@ const AssignTesterDropdown = ({
                             const testerIsAssigned = isTesterAssigned(username);
                             const classname = [
                                 testerIsAssigned ? 'assigned' : 'not-assigned',
-                                isBot(tester) ? 'bot' : 'human'
+                                tester.isBot ? 'bot' : 'human'
                             ].join(' ');
                             let icon;
                             if (testerIsAssigned) {
                                 icon = faCheck;
-                            } else if (isBot(tester)) {
+                            } else if (tester.isBot) {
                                 const supportedByBot =
                                     isSupportedByResponseCollector(
                                         testPlanReportAtBrowserQuery?.testPlanReport

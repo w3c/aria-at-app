@@ -19,7 +19,6 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
 import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListItem';
-import { isBot } from '../../utils/automation';
 import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
 import BotRunTestStatusList from '../BotRunTestStatusList';
 import ManageBotRunDialogWithButton from '../ManageBotRunDialog/WithButton';
@@ -315,8 +314,8 @@ const TestQueueRow = ({
     };
 
     const renderSecondaryActions = () => {
-        const botTestPlanRun = draftTestPlanRuns.find(({ tester }) =>
-            isBot(tester)
+        const botTestPlanRun = draftTestPlanRuns.find(
+            ({ tester: { isBot } }) => isBot
         );
 
         if (isAdmin && !isLoading) {

@@ -8,6 +8,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
             tester {
                 id
                 username
+                isBot
             }
             testResults {
                 id
@@ -179,6 +180,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
         users {
             id
             username
+            isBot
         }
     }
 `;
@@ -211,6 +213,7 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
                         id
                         tester {
                             username
+                            isBot
                         }
                     }
                     scenarioResult {
@@ -304,6 +307,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                     tester {
                         id
                         username
+                        isBot
                     }
                     testResults {
                         id
@@ -498,6 +502,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             testPlanRun {
                                 id
                                 tester {
+                                    isBot
                                     username
                                 }
                             }
@@ -596,6 +601,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                     tester {
                         id
                         username
+                        isBot
                     }
                     testResults {
                         id
