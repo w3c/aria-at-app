@@ -101,14 +101,27 @@ const updateJobStatus = async (req, res) => {
     };
 
     // When new status is considered "final" ('COMPLETED' or 'ERROR' or 'CANCELLED')
-    // update any CollectionJobTestStatus children still 'QUEUED' to be 'CANCELLED'
     if (isJobStatusFinal(status)) {
+        // update any CollectionJobTestStatus children still 'QUEUED' to be 'CANCELLED'
         await updateCollectionJobTestStatusByQuery({
             where: {
                 collectionJobId: req.params.jobID,
                 status: COLLECTION_JOB_STATUS.QUEUED
             },
             values: { status: COLLECTION_JOB_STATUS.CANCELLED },
+            transaction: req.transaction
+        });
+        // update any CollectionJobTestStatus children still 'RUNNING' to be 'ERROR' or 'CANCELLED'
+        let runningTestNewStatus =
+            status === COLLECTION_JOB_STATUS.ERROR
+                ? COLLECTION_JOB_STATUS.ERROR
+                : COLLECTION_JOB_STATUS.CANCELLED;
+        await updateCollectionJobTestStatusByQuery({
+            where: {
+                collectionJobId: req.params.jobID,
+                status: COLLECTION_JOB_STATUS.RUNNING
+            },
+            values: { status: runningTestNewStatus },
             transaction: req.transaction
         });
     }

@@ -667,6 +667,274 @@ describe('Automation controller', () => {
         });
     });
 
+    it('should convert RUNNING test status to ERROR when job state becomes ERROR', async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
+            const collectionJob = await getCollectionJobById({
+                id: job.id,
+                transaction
+            });
+            // flag overall job as RUNNING
+            const externalLogsUrl = 'https://example.com/test/log/url';
+            await sessionAgent
+                .post(`/api/jobs/${job.id}`)
+                .send({ status: 'RUNNING', externalLogsUrl })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+
+            const { tests } =
+                collectionJob.testPlanRun.testPlanReport.testPlanVersion;
+            const selectedTestIndex = 0;
+            const selectedTestRowNumber = 1;
+            const selectedTest = tests[selectedTestIndex];
+            let response = await sessionAgent
+                .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
+                .send({
+                    status: COLLECTION_JOB_STATUS.RUNNING
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+
+            let { collectionJob: storedCollectionJob } =
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('RUNNING');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                externalLogsUrl
+            );
+            let foundStatus = false;
+            for (const testStatus of storedCollectionJob.testStatus) {
+                let expectedStatus = COLLECTION_JOB_STATUS.QUEUED;
+                if (testStatus.test.id === selectedTest.id) {
+                    foundStatus = true;
+                    expectedStatus = COLLECTION_JOB_STATUS.RUNNING;
+                }
+                expect(testStatus.status).toEqual(expectedStatus);
+            }
+            expect(foundStatus).toEqual(true);
+
+            // Leave our test RUNNING but ERROR the job
+
+            response = await sessionAgent
+                .post(`/api/jobs/${job.id}`)
+                .send({
+                    // avoiding sending externalLogsUrl here to test that when
+                    // missing it is not overwritten/emptied.
+                    status: COLLECTION_JOB_STATUS.ERROR
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+
+            storedCollectionJob = (
+                await getTestCollectionJob(job.id, { transaction })
+            ).collectionJob;
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('ERROR');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                externalLogsUrl
+            );
+            foundStatus = false;
+            for (const testStatus of storedCollectionJob.testStatus) {
+                let expectedStatus = COLLECTION_JOB_STATUS.CANCELLED;
+                if (testStatus.test.id === selectedTest.id) {
+                    foundStatus = true;
+                    expectedStatus = COLLECTION_JOB_STATUS.ERROR;
+                }
+                expect(testStatus.status).toEqual(expectedStatus);
+            }
+            expect(foundStatus).toEqual(true);
+        });
+    });
+
+    it('should convert RUNNING test status to CANCELLED when job state becomes CANCELLED', async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
+            const collectionJob = await getCollectionJobById({
+                id: job.id,
+                transaction
+            });
+            // flag overall job as RUNNING
+            const externalLogsUrl = 'https://example.com/test/log/url';
+            await sessionAgent
+                .post(`/api/jobs/${job.id}`)
+                .send({ status: 'RUNNING', externalLogsUrl })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+
+            const { tests } =
+                collectionJob.testPlanRun.testPlanReport.testPlanVersion;
+            const selectedTestIndex = 0;
+            const selectedTestRowNumber = 1;
+            const selectedTest = tests[selectedTestIndex];
+            let response = await sessionAgent
+                .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
+                .send({
+                    status: COLLECTION_JOB_STATUS.RUNNING
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+
+            let { collectionJob: storedCollectionJob } =
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('RUNNING');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                externalLogsUrl
+            );
+            let foundStatus = false;
+            for (const testStatus of storedCollectionJob.testStatus) {
+                let expectedStatus = COLLECTION_JOB_STATUS.QUEUED;
+                if (testStatus.test.id === selectedTest.id) {
+                    foundStatus = true;
+                    expectedStatus = COLLECTION_JOB_STATUS.RUNNING;
+                }
+                expect(testStatus.status).toEqual(expectedStatus);
+            }
+            expect(foundStatus).toEqual(true);
+
+            // Leave our test RUNNING but CANCELLED the job
+
+            response = await sessionAgent
+                .post(`/api/jobs/${job.id}`)
+                .send({
+                    // avoiding sending externalLogsUrl here to test that when
+                    // missing it is not overwritten/emptied.
+                    status: COLLECTION_JOB_STATUS.CANCELLED
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+
+            storedCollectionJob = (
+                await getTestCollectionJob(job.id, { transaction })
+            ).collectionJob;
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('CANCELLED');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                externalLogsUrl
+            );
+            for (const testStatus of storedCollectionJob.testStatus) {
+                expect(testStatus.status).toEqual(
+                    COLLECTION_JOB_STATUS.CANCELLED
+                );
+            }
+        });
+    });
+
+    it('should convert RUNNING test status to CANCELLED when job state becomes COMPLETED', async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({ transaction });
+            const collectionJob = await getCollectionJobById({
+                id: job.id,
+                transaction
+            });
+            // flag overall job as RUNNING
+            const externalLogsUrl = 'https://example.com/test/log/url';
+            await sessionAgent
+                .post(`/api/jobs/${job.id}`)
+                .send({ status: 'RUNNING', externalLogsUrl })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+
+            const { tests } =
+                collectionJob.testPlanRun.testPlanReport.testPlanVersion;
+            const selectedTestIndex = 0;
+            const selectedTestRowNumber = 1;
+            const selectedTest = tests[selectedTestIndex];
+            let response = await sessionAgent
+                .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
+                .send({
+                    status: COLLECTION_JOB_STATUS.RUNNING
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+
+            let { collectionJob: storedCollectionJob } =
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('RUNNING');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                externalLogsUrl
+            );
+            let foundStatus = false;
+            for (const testStatus of storedCollectionJob.testStatus) {
+                let expectedStatus = COLLECTION_JOB_STATUS.QUEUED;
+                if (testStatus.test.id === selectedTest.id) {
+                    foundStatus = true;
+                    expectedStatus = COLLECTION_JOB_STATUS.RUNNING;
+                }
+                expect(testStatus.status).toEqual(expectedStatus);
+            }
+            expect(foundStatus).toEqual(true);
+
+            // Leave our test RUNNING but ERROR the job
+
+            response = await sessionAgent
+                .post(`/api/jobs/${job.id}`)
+                .send({
+                    // avoiding sending externalLogsUrl here to test that when
+                    // missing it is not overwritten/emptied.
+                    status: COLLECTION_JOB_STATUS.COMPLETED
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+
+            storedCollectionJob = (
+                await getTestCollectionJob(job.id, { transaction })
+            ).collectionJob;
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('COMPLETED');
+            expect(storedCollectionJob.externalLogsUrl).toEqual(
+                externalLogsUrl
+            );
+            foundStatus = false;
+            for (const testStatus of storedCollectionJob.testStatus) {
+                let expectedStatus = COLLECTION_JOB_STATUS.CANCELLED;
+                if (testStatus.test.id === selectedTest.id) {
+                    foundStatus = true;
+                    expectedStatus = COLLECTION_JOB_STATUS.CANCELLED;
+                }
+                expect(testStatus.status).toEqual(expectedStatus);
+            }
+            expect(foundStatus).toEqual(true);
+        });
+    });
+
     it('should copy assertion results when updating with results that match historical results', async () => {
         await apiServer.sessionAgentDbCleaner(async transaction => {
             const context = getGraphQLContext({
