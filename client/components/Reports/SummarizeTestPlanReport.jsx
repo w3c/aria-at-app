@@ -106,7 +106,9 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         if (testPlanVersion.phase !== 'RECOMMENDED') return null;
 
         const testPlanReportsForTarget = testPlanVersion.testPlanReports.filter(
-            report => report.at.id === at.id && report.browser.id === browser.id
+            testPlanReport =>
+                testPlanReport.at.id === at.id &&
+                testPlanReport.browser.id === browser.id
         );
         testPlanReportsForTarget.sort(
             (a, b) =>
@@ -131,9 +133,9 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {testPlanReportsForTarget.map(report => {
-                            const { id, recommendedAtVersion, metrics } =
-                                report;
+                        {testPlanReportsForTarget.map(testPlanReport => {
+                            const { recommendedAtVersion, metrics } =
+                                testPlanReport;
                             const {
                                 mustFormatted,
                                 shouldFormatted,
@@ -141,8 +143,24 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                             } = metrics;
 
                             return (
-                                <tr key={`VersionsSummaryRow_${id}`}>
-                                    <td>{recommendedAtVersion.name}</td>
+                                <tr
+                                    key={`VersionsSummaryRow_${testPlanReport.id}`}
+                                >
+                                    <td>
+                                        {testPlanReportId ===
+                                        testPlanReport.id ? (
+                                            <>{recommendedAtVersion.name}</>
+                                        ) : (
+                                            <Link
+                                                to={
+                                                    `/report/${testPlanVersion.id}` +
+                                                    `/targets/${testPlanReport.id}`
+                                                }
+                                            >
+                                                {recommendedAtVersion.name}
+                                            </Link>
+                                        )}
+                                    </td>
                                     <td>{mustFormatted || none}</td>
                                     <td>{shouldFormatted || none}</td>
                                     <td>{mayFormatted || none}</td>
