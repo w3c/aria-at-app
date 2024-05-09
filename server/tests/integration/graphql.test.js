@@ -246,6 +246,7 @@ describe('graphql', () => {
                         __typename
                         username
                         roles
+                        isBot
                     }
                     me {
                         __typename
