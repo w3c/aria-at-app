@@ -150,19 +150,3 @@ export const REPORT_PAGE_QUERY = gql`
         }
     }
 `;
-
-export const TREND_REPORTS = gql`
-    query TrendReportsQuery($testPlanVersionId: ID, $atId: ID, $browserId: ID) {
-        testPlanVersion(id: $testPlanVersionId) {
-            id
-            trendReports(atId: $atId, browserId: $browserId) {
-                id
-                recommendedAtVersion {
-                    id
-                    name
-                }
-                metrics
-            }
-        }
-    }
-`;
