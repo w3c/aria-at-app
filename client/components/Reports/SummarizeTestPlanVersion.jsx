@@ -188,7 +188,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
 SummarizeTestPlanVersion.propTypes = {
     testPlanVersion: PropTypes.shape({
         gitSha: PropTypes.string,
-        testPlan: PropTypes.string,
+        testPlan: PropTypes.object,
         directory: PropTypes.string,
         versionString: PropTypes.string,
         id: PropTypes.string.isRequired,
