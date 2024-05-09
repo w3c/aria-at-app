@@ -55,6 +55,7 @@ export const REPORT_PAGE_QUERY = gql`
                 recommendedAtVersion {
                     id
                     name
+                    releasedAt
                 }
                 runnableTests {
                     id
