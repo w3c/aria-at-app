@@ -9,7 +9,7 @@
     {{#unless dataEmpty}}
         {{#if (isCandidate phase)}}
         <details id="embed-report-phase-container">
-            <summary id="candidate-title"><span>Warning! Unapproved Report</span></summary>
+            <summary id="candidate-title"><span><h4>Warning! Unapproved Report</h4></span></summary>
             <div id="candidate-content-container">
                 The information in this report is generated from candidate tests developed and run by the <a href="http://aria-at.w3.org">ARIA-AT Project</a>.
                 Candidate ARIA-AT tests are in review by assistive technology developers and lack consensus regarding:
@@ -20,9 +20,9 @@
             </div>
         </details>
         {{else}}
-        <details id="embed-report-phase-container">
-            <summary id="candidate-title" class="recommended"><span>Recommended Report</span></summary>
-            <div id="candidate-content-container">
+            <details id="embed-report-phase-container-recommended">
+            <summary id="candidate-title-recommended" class="recommended"><span>Recommended Report</span></summary>
+            <div id="candidate-content-container-recommended">
                 The information in this report is generated from recommended tests.
                 Recommended ARIA-AT tests have been reviewed by assistive technology developers and represent consensus regarding:
                 <ol>
