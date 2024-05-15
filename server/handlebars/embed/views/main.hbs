@@ -9,7 +9,7 @@
     {{#unless (dataEmpty testPlanReports)}}
         {{#if (isCandidate phase)}}
             <details id='embed-report-phase-container'>
-                <summary id='candidate-title'><span>Warning! Unapproved Report</span></summary>
+                <summary id='candidate-title'><span><h4>Warning! Unapproved Report</h4></span></summary>
                 <div id='candidate-content-container'>
                     The information in this report is generated from candidate
                     tests developed and run by the
@@ -23,20 +23,17 @@
                 </div>
             </details>
         {{else}}
-            <details id='embed-report-phase-container'>
-                <summary id='candidate-title' class='recommended'><span
-                    >Recommended Report</span></summary>
-                <div id='candidate-content-container'>
-                    The information in this report is generated from recommended
-                    tests. Recommended ARIA-AT tests have been reviewed by
-                    assistive technology developers and represent consensus
-                    regarding:
-                    <ol>
-                        <li>applicability and validity of the tests, and</li>
-                        <li>accuracy of test results.</li>
-                    </ol>
-                </div>
-            </details>
+            <details id="embed-report-phase-container-recommended">
+            <summary id="candidate-title-recommended" class="recommended"><span>Recommended Report</span></summary>
+            <div id="candidate-content-container-recommended">
+                The information in this report is generated from recommended tests.
+                Recommended ARIA-AT tests have been reviewed by assistive technology developers and represent consensus regarding:
+                <ol>
+                    <li>applicability and validity of the tests, and</li>
+                    <li>accuracy of test results.</li>
+                </ol>
+            </div>
+        </details>
         {{/if}}
         <div class='responsive-table'>
             <table
