@@ -1,3 +1,11 @@
+### [1.2.1](https://github.com/w3c/aria-at-app/compare/v1.2.0...v1.2.1) (2024-05-06)
+
+
+### Bug Fixes
+
+* Improve Windows support by to stripping ansi colors ([#1084](https://github.com/w3c/aria-at-app/issues/1084)) ([3edc15e](https://github.com/w3c/aria-at-app/commit/3edc15e2aa54dcbde78c69853645755f01e8421a))
+* Make sorting tests easier by supporting decimal presentation numbers  - Address [#1085](https://github.com/w3c/aria-at-app/issues/1085) ([#1086](https://github.com/w3c/aria-at-app/issues/1086)) ([761e4aa](https://github.com/w3c/aria-at-app/commit/761e4aaae0a589c5ca679699921c6eac1df57f27))
+
 ## [1.2.0](https://github.com/w3c/aria-at-app/compare/v1.1.0...v1.2.0) (2024-04-29)
 
 
