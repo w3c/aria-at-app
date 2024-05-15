@@ -898,7 +898,7 @@ describe('Automation controller', () => {
             }
             expect(foundStatus).toEqual(true);
 
-            // Leave our test RUNNING but ERROR the job
+            // Leave our test RUNNING but COMPLETED the job
 
             response = await sessionAgent
                 .post(`/api/jobs/${job.id}`)
