@@ -102,6 +102,25 @@ const graphqlSchema = gql`
         The URL where the logs for the job can be found.
         """
         externalLogsUrl: String
+        """
+        An array of individual test status for every runnable test in the Job.
+        """
+        testStatus: [CollectionJobTestStatus]
+    }
+
+    """
+    A status for a specific Test on a specific CollectionJob.
+    """
+    type CollectionJobTestStatus {
+        """
+        The test this status reflects.
+        """
+        test: Test!
+        """
+        The status of the test, which can be "QUEUED", "RUNNING", "COMPLETED",
+        "ERROR", or "CANCELLED"
+        """
+        status: CollectionJobStatus!
     }
 
     type Browser {
@@ -837,6 +856,10 @@ const graphqlSchema = gql`
         Whether the TestPlanRun was initiated by the Response Collection System
         """
         initiatedByAutomation: Boolean!
+        """
+        The CollectionJob related to this testPlanRun
+        """
+        collectionJob: CollectionJob
     }
 
     """

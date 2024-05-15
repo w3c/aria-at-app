@@ -1,5 +1,5 @@
 const ModelService = require('./ModelService');
-const { CollectionJob } = require('../');
+const { CollectionJob, CollectionJobTestStatus } = require('../');
 const {
     COLLECTION_JOB_ATTRIBUTES,
     TEST_PLAN_ATTRIBUTES,
@@ -8,7 +8,8 @@ const {
     TEST_PLAN_VERSION_ATTRIBUTES,
     AT_ATTRIBUTES,
     BROWSER_ATTRIBUTES,
-    USER_ATTRIBUTES
+    USER_ATTRIBUTES,
+    COLLECTION_JOB_TEST_STATUS_ATTRIBUTES
 } = require('./helpers');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const { Op } = require('sequelize');
@@ -176,9 +177,20 @@ const userAssociation = userAttributes => ({
 });
 
 /**
+ * @param {string[]} collectionJobTestStatusAttributes - attributes to be returned in the result
+ * @returns {{association: string, attributes: string[]}}
+ */
+const collectionJobTestStatusAssociation =
+    collectionJobTestStatusAttributes => ({
+        association: 'testStatus',
+        attributes: collectionJobTestStatusAttributes
+    });
+
+/**
  * @param {object} options
  * @param {object} options.values - CollectionJob to be created
- * @param {string[]} options.collectionJobAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.collectionJobAttributes - CollectionJob attributes to be returned in the result
+ * @param {string[]} options.collectionJobTestStatusAttributes - CollectionJobTestStatus attributes to be returned in the result
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
@@ -195,6 +207,7 @@ const createCollectionJob = async ({
         testPlanReportId
     },
     collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+    collectionJobTestStatusAttributes = COLLECTION_JOB_TEST_STATUS_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -222,10 +235,29 @@ const createCollectionJob = async ({
         transaction
     });
 
+    // create QUEUED status entries for each test in the test plan run
+    const context = getGraphQLContext({ req: { transaction } });
+    const tests = await runnableTestsResolver(
+        testPlanRun.testPlanReport,
+        null,
+        context
+    );
+    await ModelService.bulkCreate(CollectionJobTestStatus, {
+        valuesList: tests.map(test => ({
+            testId: test.id,
+            collectionJobId: collectionJobResult.id,
+            status: COLLECTION_JOB_STATUS.QUEUED
+        })),
+        transaction
+    });
+
     return ModelService.getById(CollectionJob, {
         id: collectionJobResult.id,
         attributes: collectionJobAttributes,
         include: [
+            collectionJobTestStatusAssociation(
+                collectionJobTestStatusAttributes
+            ),
             testPlanRunAssociation(
                 testPlanRunAttributes,
                 userAttributes,
@@ -243,7 +275,8 @@ const createCollectionJob = async ({
 /**
  * @param {object} options
  * @param {string} options.id - id for the CollectionJob
- * @param {string[]} options.collectionJobAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.collectionJobAttributes - CollectionJob attributes to be returned in the result
+ * @param {string[]} options.collectionJobTestStatusAttributes - CollectionJobTestStatus attributes to be returned in the result
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
@@ -256,6 +289,7 @@ const createCollectionJob = async ({
 const getCollectionJobById = async ({
     id,
     collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+    collectionJobTestStatusAttributes = COLLECTION_JOB_TEST_STATUS_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -269,6 +303,9 @@ const getCollectionJobById = async ({
         id,
         attributes: collectionJobAttributes,
         include: [
+            collectionJobTestStatusAssociation(
+                collectionJobTestStatusAttributes
+            ),
             testPlanRunAssociation(
                 testPlanRunAttributes,
                 userAttributes,
@@ -287,7 +324,8 @@ const getCollectionJobById = async ({
  * @param {object} options
  * @param {string|any} options.search - use this to combine with {@param filter} to be passed to Sequelize's where clause
  * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} options.collectionJobAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} options.collectionJobAttributes  - CollectionJob attributes to be returned in the result
+ * @param {string[]} options.collectionJobTestStatusAttributes  - CollectionJobTestStatus attributes to be returned in the result
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
@@ -306,6 +344,7 @@ const getCollectionJobs = async ({
     search,
     where = {},
     collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+    collectionJobTestStatusAttributes = COLLECTION_JOB_TEST_STATUS_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -324,6 +363,9 @@ const getCollectionJobs = async ({
         where,
         attributes: collectionJobAttributes,
         include: [
+            collectionJobTestStatusAssociation(
+                collectionJobTestStatusAttributes
+            ),
             testPlanRunAssociation(
                 testPlanRunAttributes,
                 userAttributes,
@@ -382,7 +424,8 @@ const triggerWorkflow = async (job, testIds, { transaction }) => {
  * @param {object} options
  * @param {string} options.id - id of the CollectionJob to be updated
  * @param {object} options.values - values to be used to update columns for the record being referenced for {@param id}
- * @param {string[]} options.collectionJobAttributes  - Browser attributes to be returned in the result
+ * @param {string[]} options.collectionJobAttributes  - CollectionJob attributes to be returned in the result
+ * @param {string[]} options.collectionJobTestStatusAttributes  - CollectionJobTestStatus attributes to be returned in the result
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
  * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
@@ -396,6 +439,7 @@ const updateCollectionJobById = async ({
     id,
     values = {},
     collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
+    collectionJobTestStatusAttributes = COLLECTION_JOB_TEST_STATUS_ATTRIBUTES,
     testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
     testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
     testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -415,6 +459,9 @@ const updateCollectionJobById = async ({
         id,
         attributes: collectionJobAttributes,
         include: [
+            collectionJobTestStatusAssociation(
+                collectionJobTestStatusAttributes
+            ),
             testPlanRunAssociation(
                 testPlanRunAttributes,
                 userAttributes,
@@ -592,6 +639,30 @@ const restartCollectionJob = async ({ id }, { transaction }) => {
     return triggerWorkflow(job, [], { transaction });
 };
 
+/**
+ * CollectionJobTestStatus updates
+ */
+
+/**
+ * Update CollectionJobTestStatus entries in bulk via query.
+ * @param {object} options
+ * @param {object} options.where - values of the CollectionJobTestStatus record to be updated
+ * @param {object} options.values - values to be used to update columns for the record being referenced
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const updateCollectionJobTestStatusByQuery = ({
+    where,
+    values = {},
+    transaction
+}) => {
+    return ModelService.update(CollectionJobTestStatus, {
+        values,
+        where,
+        transaction
+    });
+};
+
 module.exports = {
     // Basic CRUD
     createCollectionJob,
@@ -603,5 +674,7 @@ module.exports = {
     scheduleCollectionJob,
     restartCollectionJob,
     cancelCollectionJob,
-    retryCanceledCollections
+    retryCanceledCollections,
+    // Basic CRUD for CollectionJobTestStatus
+    updateCollectionJobTestStatusByQuery
 };

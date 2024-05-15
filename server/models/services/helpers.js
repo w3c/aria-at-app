@@ -11,7 +11,8 @@ const {
     User,
     UserRoles,
     UserAts,
-    CollectionJob
+    CollectionJob,
+    CollectionJobTestStatus
 } = require('../index');
 
 /**
@@ -39,5 +40,8 @@ module.exports = {
     USER_ATTRIBUTES: getSequelizeModelAttributes(User),
     USER_ROLES_ATTRIBUTES: getSequelizeModelAttributes(UserRoles),
     USER_ATS_ATTRIBUTES: getSequelizeModelAttributes(UserAts),
-    COLLECTION_JOB_ATTRIBUTES: getSequelizeModelAttributes(CollectionJob)
+    COLLECTION_JOB_ATTRIBUTES: getSequelizeModelAttributes(CollectionJob),
+    COLLECTION_JOB_TEST_STATUS_ATTRIBUTES: getSequelizeModelAttributes(
+        CollectionJobTestStatus
+    )
 };
