@@ -9,7 +9,7 @@
     {{#unless (dataEmpty testPlanReports)}}
         {{#if (isCandidate phase)}}
             <details class="details">
-                <summary><span><h4>Warning! Unapproved Report</h4></span></summary>
+                <summary><h4>Warning! Unapproved Report</h4></summary>
                 <div class='content-container'>
                     The information in this report is generated from candidate
                     tests developed and run by the
@@ -24,7 +24,7 @@
             </details>
         {{else}}
             <details class="details">
-            <summary class="recommended"><span><h4>Recommended Report</h4></span></summary>
+            <summary class="recommended"><h4>Recommended Report</h4></summary>
             <div class="content-container recommended">
                 The information in this report is generated from recommended tests.
                 Recommended ARIA-AT tests have been reviewed by assistive technology developers and represent consensus regarding:
