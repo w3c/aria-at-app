@@ -8,9 +8,9 @@
     {{/if}}
     {{#unless (dataEmpty testPlanReports)}}
         {{#if (isCandidate phase)}}
-            <details id='embed-report-phase-container'>
-                <summary id='candidate-title'><span><h4>Warning! Unapproved Report</h4></span></summary>
-                <div id='candidate-content-container'>
+            <details class="details">
+                <summary><span><h4>Warning! Unapproved Report</h4></span></summary>
+                <div class='content-container'>
                     The information in this report is generated from candidate
                     tests developed and run by the
                     <a href='http://aria-at.w3.org'>ARIA-AT Project</a>.
@@ -23,9 +23,9 @@
                 </div>
             </details>
         {{else}}
-            <details id="embed-report-phase-container-recommended">
-            <summary id="candidate-title-recommended" class="recommended"><span>Recommended Report</span></summary>
-            <div id="candidate-content-container-recommended">
+            <details class="details">
+            <summary class="recommended"><span><h4>Recommended Report</h4></span></summary>
+            <div class="content-container recommended">
                 The information in this report is generated from recommended tests.
                 Recommended ARIA-AT tests have been reviewed by assistive technology developers and represent consensus regarding:
                 <ol>
