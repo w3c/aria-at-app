@@ -149,6 +149,9 @@ const AssignTesterDropdown = ({
                                     variant="secondary"
                                     as="button"
                                     key={`tpr-${testPlanReportId}-assign-tester-${username}`}
+                                    aria-checked={
+                                        testerIsAssigned ? true : false
+                                    }
                                     onClick={async () => {
                                         const updatedIsAssigned =
                                             !testerIsAssigned;
@@ -165,11 +168,6 @@ const AssignTesterDropdown = ({
                                     }}
                                 >
                                     {icon && <FontAwesomeIcon icon={icon} />}
-                                    <span className="sr-only">{`${username} ${
-                                        testerIsAssigned
-                                            ? 'checked'
-                                            : 'unchecked'
-                                    }`}</span>
                                     <span
                                         aria-hidden="true"
                                         className={classname}
