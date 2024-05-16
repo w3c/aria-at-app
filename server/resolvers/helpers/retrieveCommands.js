@@ -1,4 +1,4 @@
-const commands = require('../../resources/commands.json');
+const commandsV1 = require('../../resources/commandsV1.json');
 const commandsV2 = require('../../resources/commandsV2.json');
 
 function findValueByKey(keyMappings, keyToFindText) {
@@ -110,7 +110,7 @@ function findValuesByKeys(commandsMapping, keysToFind = []) {
 }
 
 const getCommandV1 = commandId => {
-    return commands.find(command => command.id === commandId);
+    return commandsV1.find(command => command.id === commandId);
 };
 
 const getCommandV2 = commandId => {
