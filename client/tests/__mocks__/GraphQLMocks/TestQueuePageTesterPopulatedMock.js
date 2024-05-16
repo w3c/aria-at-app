@@ -307,7 +307,8 @@ export default testQueuePageQuery => [
                                 id: '20',
                                 tester: {
                                     id: '5',
-                                    username: 'boo-far'
+                                    username: 'boo-far',
+                                    isBot: false
                                 },
                                 testResultsLength: 0,
                                 initiatedByAutomation: false
