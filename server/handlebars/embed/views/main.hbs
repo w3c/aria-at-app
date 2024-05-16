@@ -8,7 +8,7 @@
     {{/if}}
     {{#unless (dataEmpty testPlanReports)}}
         {{#if (isCandidate phase)}}
-            <details class="details">
+            <details>
                 <summary><h4>Warning! Unapproved Report</h4></summary>
                 <div class='content-container'>
                     The information in this report is generated from candidate
@@ -23,7 +23,7 @@
                 </div>
             </details>
         {{else}}
-            <details class="details">
+            <details >
             <summary class="recommended"><h4>Recommended Report</h4></summary>
             <div class="content-container recommended">
                 The information in this report is generated from recommended tests.
