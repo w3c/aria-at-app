@@ -116,7 +116,7 @@ const AssignTesterDropdown = ({
 
     const handleKeyDown = event => {
         const { key } = event;
-        if (key.match(/[a-z]/)) {
+        if (key.match(/[0-9a-zA-Z]/)) {
             const container = event.target.closest('[role=menu]');
             const matchingMenuItem = Array.from(container.children).find(
                 menuItem => {
