@@ -1,15 +1,13 @@
-import { calculateTestPlanReportCompletionPercentage } from '../components/TestPlanReportStatusDialog/calculateTestPlanReportCompletionPercentage';
+import { calculatePercentComplete } from '../components/TestPlanReportStatusDialog/calculatePercentComplete';
 
-describe('calculateTestPlanReportCompletionPercentage', () => {
+describe('calculatePercentComplete', () => {
     const testResult = (id, completedAt = null) => ({ id, completedAt });
 
     test('returns 0 when metrics or draftTestPlanRuns is not defined', () => {
-        expect(calculateTestPlanReportCompletionPercentage({})).toBe(0);
+        expect(calculatePercentComplete({})).toBe(0);
+        expect(calculatePercentComplete({ metrics: {} })).toBe(0);
         expect(
-            calculateTestPlanReportCompletionPercentage({ metrics: {} })
-        ).toBe(0);
-        expect(
-            calculateTestPlanReportCompletionPercentage({
+            calculatePercentComplete({
                 draftTestPlanRuns: []
             })
         ).toBe(0);
@@ -17,7 +15,7 @@ describe('calculateTestPlanReportCompletionPercentage', () => {
 
     test('returns 0 when draftTestPlanRuns is empty', () => {
         expect(
-            calculateTestPlanReportCompletionPercentage({
+            calculatePercentComplete({
                 metrics: { testsCount: 5 },
                 draftTestPlanRuns: []
             })
@@ -38,7 +36,7 @@ describe('calculateTestPlanReportCompletionPercentage', () => {
         ];
 
         expect(
-            calculateTestPlanReportCompletionPercentage({
+            calculatePercentComplete({
                 metrics,
                 draftTestPlanRuns
             })
@@ -61,7 +59,7 @@ describe('calculateTestPlanReportCompletionPercentage', () => {
         // (NUMBER_COMPLETED_TESTS_BY_ALL_TESTERS / (NUMBER_ASSIGNED_TESTERS * NUMBER_TESTS_IN_PLAN)) * 100
         // (5 / (2 * 5)) * 100 = 50
         expect(
-            calculateTestPlanReportCompletionPercentage({
+            calculatePercentComplete({
                 metrics,
                 draftTestPlanRuns
             })

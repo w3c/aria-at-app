@@ -1228,7 +1228,7 @@ const graphqlSchema = gql`
         """
         Get all TestPlans.
         """
-        testPlans: [TestPlan]!
+        testPlans(testPlanVersionPhases: [TestPlanVersionPhase]): [TestPlan]!
         """
         Load a particular TestPlan by ID.
         """

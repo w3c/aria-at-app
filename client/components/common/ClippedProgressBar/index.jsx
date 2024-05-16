@@ -2,7 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './ClippedProgressBar.css';
 
-const ProgressBar = ({ progress = 0, label = '', clipped = true }) => {
+const ProgressBar = ({
+    progress = 0,
+    label = '',
+    clipped = true,
+    decorative
+}) => {
     return (
         <>
             {clipped ? (
@@ -13,9 +18,11 @@ const ProgressBar = ({ progress = 0, label = '', clipped = true }) => {
                             clipPath: `inset(0 0 0 ${progress}%)`
                         }}
                     >
-                        {progress}%
+                        {decorative ? null : `${progress}%`}
                     </div>
-                    <div className="back">{progress}%</div>
+                    <div className="back">
+                        {decorative ? null : `${progress}%`}
+                    </div>
                 </div>
             ) : (
                 <div className="progress" aria-label={label}>
@@ -25,7 +32,7 @@ const ProgressBar = ({ progress = 0, label = '', clipped = true }) => {
                             width: `${progress}%`
                         }}
                     >
-                        {progress}%
+                        {decorative ? null : `${progress}%`}
                     </div>
                 </div>
             )}
@@ -36,7 +43,8 @@ const ProgressBar = ({ progress = 0, label = '', clipped = true }) => {
 ProgressBar.propTypes = {
     progress: PropTypes.number,
     label: PropTypes.string,
-    clipped: PropTypes.bool
+    clipped: PropTypes.bool,
+    decorative: PropTypes.bool
 };
 
 export default ProgressBar;

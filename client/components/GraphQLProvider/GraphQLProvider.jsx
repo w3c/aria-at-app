@@ -31,6 +31,7 @@ const client = new ApolloClient({
         typePolicies: {
             Query: {
                 fields: {
+                    me: { merge: true },
                     testPlanVersion: { merge: true },
                     testPlanVersions: { merge: false },
                     testPlanReport: { merge: true },

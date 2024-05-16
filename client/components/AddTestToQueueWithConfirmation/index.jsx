@@ -14,6 +14,9 @@ import {
     SCHEDULE_COLLECTION_JOB_MUTATION,
     EXISTING_TEST_PLAN_REPORTS
 } from './queries';
+import { TEST_QUEUE_PAGE_QUERY } from '../TestQueue2/queries';
+import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
+import { ME_QUERY } from '../App/queries';
 
 function AddTestToQueueWithConfirmation({
     testPlanVersion,
@@ -25,12 +28,37 @@ function AddTestToQueueWithConfirmation({
     buttonText = 'Add to Test Queue',
     triggerUpdate = () => {}
 }) {
+    if (testPlanVersion?.title.startsWith('Radio Group')) {
+        console.log(
+            'AddTestToQueueWithConfirmation showConfirmation',
+            showConfirmation
+        );
+    }
     const [showPreserveReportDataMessage, setShowPreserveReportDataMessage] =
         useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [canUseOldResults, setCanUseOldResults] = useState(false);
-    const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
-    const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION);
+
+    const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION, {
+        refetchQueries: [
+            ME_QUERY,
+            EXISTING_TEST_PLAN_REPORTS,
+            TEST_QUEUE_PAGE_QUERY,
+            TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
+        ],
+        awaitRefetchQueries: true
+    });
+
+    const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION, {
+        refetchQueries: [
+            ME_QUERY,
+            EXISTING_TEST_PLAN_REPORTS,
+            TEST_QUEUE_PAGE_QUERY,
+            TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
+        ],
+        awaitRefetchQueries: true
+    });
+
     const { data: existingTestPlanReportsData } = useQuery(
         EXISTING_TEST_PLAN_REPORTS,
         {
@@ -130,7 +158,7 @@ function AddTestToQueueWithConfirmation({
                               }
                             : {}
                     );
-                    await closeWithUpdate();
+                    // await closeWithUpdate();
                 }
             });
 
