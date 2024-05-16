@@ -123,7 +123,7 @@ const AssignTesterDropdown = ({
                     return menuItem.innerText
                         .trim()
                         .toLowerCase()
-                        .startsWith(key);
+                        .startsWith(key.toLowerCase());
                 }
             );
 
