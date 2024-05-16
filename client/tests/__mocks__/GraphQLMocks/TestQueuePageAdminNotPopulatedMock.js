@@ -17,17 +17,20 @@ export default testQueuePageQuery => [
                     {
                         id: '1',
                         username: 'foo-bar',
-                        roles: ['ADMIN', 'TESTER']
+                        roles: ['ADMIN', 'TESTER'],
+                        isBot: false
                     },
                     {
                         id: '4',
                         username: 'bar-foo',
-                        roles: ['TESTER']
+                        roles: ['TESTER'],
+                        isBot: false
                     },
                     {
                         id: '5',
                         username: 'boo-far',
-                        roles: ['TESTER']
+                        roles: ['TESTER'],
+                        isBot: false
                     }
                 ],
                 testPlanVersions: [],

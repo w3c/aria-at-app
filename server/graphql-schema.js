@@ -50,6 +50,10 @@ const graphqlSchema = gql`
         List of types of actions the user can complete.
         """
         roles: [Role]!
+        """
+        Whether the user is an automation bot user.
+        """
+        isBot: Boolean!
         # TODO: Either use the recorded data somewhere or eliminate the field.
         """
         The ATs the user has indicated they are able to test.

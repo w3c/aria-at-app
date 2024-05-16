@@ -10,7 +10,6 @@ import {
 } from './queries';
 import DeleteButton from '../common/DeleteButton';
 import BotRunTestStatusList from '../BotRunTestStatusList';
-import { isBot } from '../../utils/automation';
 
 import './ManageBotRunDialog.css';
 import MarkBotRunFinishedButton from './MarkBotRunFinishedButton';
@@ -59,7 +58,7 @@ const ManageBotRunDialog = ({
         () =>
             testers.filter(
                 t =>
-                    !isBot(t) &&
+                    !t.isBot &&
                     !testPlanReportAssignedTestersQuery?.testPlanReport.draftTestPlanRuns.some(
                         d => d.tester.id === t.id
                     )

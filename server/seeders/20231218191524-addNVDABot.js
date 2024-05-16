@@ -10,6 +10,7 @@ module.exports = {
                 {
                     id: responseCollectionUser.id, // Specified ID for NVDA Bot
                     username: responseCollectionUser.username,
+                    isBot: responseCollectionUser.isBot,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 }

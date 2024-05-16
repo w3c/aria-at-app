@@ -8,7 +8,8 @@ export default testQueuePageQuery => [
                 me: {
                     id: '101',
                     username: 'alflennik',
-                    roles: ['ADMIN', 'TESTER']
+                    roles: ['ADMIN', 'TESTER'],
+                    isBot: false
                 },
                 ats: [
                     {
@@ -173,13 +174,20 @@ export default testQueuePageQuery => [
                     {
                         id: '1',
                         username: 'esmeralda-baggins',
-                        roles: ['TESTER', 'ADMIN']
+                        roles: ['TESTER', 'ADMIN'],
+                        isBot: false
                     },
-                    { id: '2', username: 'tom-proudfeet', roles: ['TESTER'] },
+                    {
+                        id: '2',
+                        username: 'tom-proudfeet',
+                        roles: ['TESTER'],
+                        isBot: false
+                    },
                     {
                         id: '101',
                         username: 'alflennik',
-                        roles: ['TESTER', 'ADMIN']
+                        roles: ['TESTER', 'ADMIN'],
+                        isBot: false
                     }
                 ],
                 testPlanVersions: [
@@ -243,7 +251,8 @@ export default testQueuePageQuery => [
                                 id: '1',
                                 tester: {
                                     id: '1',
-                                    username: 'esmeralda-baggins'
+                                    username: 'esmeralda-baggins',
+                                    isBot: false
                                 },
                                 testResultsLength: 0,
                                 initiatedByAutomation: false
@@ -272,7 +281,8 @@ export default testQueuePageQuery => [
                                 id: '1',
                                 tester: {
                                     id: '1',
-                                    username: 'esmeralda-baggins'
+                                    username: 'esmeralda-baggins',
+                                    isBot: false
                                 },
                                 testResultsLength: 0,
                                 initiatedByAutomation: false
@@ -299,13 +309,21 @@ export default testQueuePageQuery => [
                         draftTestPlanRuns: [
                             {
                                 id: '3',
-                                tester: { id: '2', username: 'tom-proudfeet' },
+                                tester: {
+                                    id: '2',
+                                    username: 'tom-proudfeet',
+                                    isBot: false
+                                },
                                 testResultsLength: 3,
                                 initiatedByAutomation: false
                             },
                             {
                                 id: '101',
-                                tester: { id: '101', username: 'alflennik' },
+                                tester: {
+                                    id: '101',
+                                    username: 'alflennik',
+                                    isBot: false
+                                },
                                 testResultsLength: 1,
                                 initiatedByAutomation: false
                             },
@@ -313,7 +331,8 @@ export default testQueuePageQuery => [
                                 id: '2',
                                 tester: {
                                     id: '1',
-                                    username: 'esmeralda-baggins'
+                                    username: 'esmeralda-baggins',
+                                    isBot: false
                                 },
                                 testResultsLength: 3,
                                 initiatedByAutomation: false

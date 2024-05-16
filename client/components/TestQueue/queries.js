@@ -11,6 +11,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             id
             username
             roles
+            isBot
         }
         ats {
             id
@@ -77,6 +78,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 tester {
                     id
                     username
+                    isBot
                 }
                 testResultsLength
             }
@@ -128,6 +130,7 @@ export const TEST_PLAN_REPORT_QUERY = gql`
                 tester {
                     id
                     username
+                    isBot
                 }
                 testResults {
                     id
@@ -267,6 +270,7 @@ export const ASSIGN_TESTER_MUTATION = gql`
                         tester {
                             id
                             username
+                            isBot
                         }
                     }
                 }
@@ -304,6 +308,7 @@ export const REMOVE_TESTER_MUTATION = gql`
                         tester {
                             id
                             username
+                            isBot
                         }
                     }
                 }

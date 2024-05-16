@@ -174,17 +174,20 @@ export default testQueuePageQuery => [
                     {
                         id: '1',
                         username: 'foo-bar',
-                        roles: ['ADMIN', 'TESTER']
+                        roles: ['ADMIN', 'TESTER'],
+                        isBot: false
                     },
                     {
                         id: '4',
                         username: 'bar-foo',
-                        roles: ['TESTER']
+                        roles: ['TESTER'],
+                        isBot: false
                     },
                     {
                         id: '5',
                         username: 'boo-far',
-                        roles: ['TESTER']
+                        roles: ['TESTER'],
+                        isBot: false
                     }
                 ],
                 testPlanVersions: [
@@ -256,7 +259,8 @@ export default testQueuePageQuery => [
                                 id: '18',
                                 tester: {
                                     id: '1',
-                                    username: 'foo-bar'
+                                    username: 'foo-bar',
+                                    isBot: false
                                 },
                                 testResultsLength: 0,
                                 initiatedByAutomation: false
@@ -265,7 +269,8 @@ export default testQueuePageQuery => [
                                 id: '19',
                                 tester: {
                                     id: '4',
-                                    username: 'bar-foo'
+                                    username: 'bar-foo',
+                                    isBot: false
                                 },
                                 testResultsLength: 0,
                                 initiatedByAutomation: false
@@ -302,7 +307,8 @@ export default testQueuePageQuery => [
                                 id: '20',
                                 tester: {
                                     id: '5',
-                                    username: 'boo-far'
+                                    username: 'boo-far',
+                                    isBot: false
                                 },
                                 testResultsLength: 0,
                                 initiatedByAutomation: false
