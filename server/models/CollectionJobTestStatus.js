@@ -1,6 +1,6 @@
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
 
-const MODEL_NAME = 'CollectionJob';
+const MODEL_NAME = 'CollectionJobTestStatus';
 
 module.exports = function (sequelize, DataTypes) {
     const Model = sequelize.define(
@@ -12,25 +12,22 @@ module.exports = function (sequelize, DataTypes) {
                 primaryKey: true,
                 autoIncrement: true
             },
+            collectionJobId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'CollectionJob',
+                    key: 'id'
+                }
+            },
+            testId: {
+                type: DataTypes.STRING,
+                allowNull: null
+            },
             status: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 defaultValue: COLLECTION_JOB_STATUS.QUEUED
-            },
-            externalLogsUrl: {
-                type: DataTypes.STRING,
-                allowNull: true,
-                defaultValue: null
-            },
-            testPlanRunId: {
-                type: DataTypes.INTEGER,
-                references: {
-                    model: 'TestPlanRun',
-                    key: 'id'
-                },
-                onDelete: 'SET NULL',
-                allowNull: true,
-                unique: true
             }
         },
         {
@@ -40,16 +37,12 @@ module.exports = function (sequelize, DataTypes) {
     );
 
     Model.associate = function (models) {
-        Model.hasOne(models.TestPlanRun, {
-            foreignKey: 'id',
-            sourceKey: 'testPlanRunId',
-            as: 'testPlanRun'
-        });
-
-        Model.hasMany(models.CollectionJobTestStatus, {
-            as: 'testStatus',
+        Model.belongsTo(models.CollectionJob, {
             foreignKey: 'collectionJobId',
-            sourceKey: 'id'
+            targetKey: 'id',
+            as: 'collectionJob',
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE'
         });
     };
 

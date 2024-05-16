@@ -19,7 +19,7 @@ describe('UserModel Schema Checks', () => {
 
     describe('properties', () => {
         // A3
-        ['username', 'createdAt', 'updatedAt'].forEach(
+        ['username', 'isBot', 'createdAt', 'updatedAt'].forEach(
             checkPropertyExists(modelInstance)
         );
     });

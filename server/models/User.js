@@ -15,6 +15,11 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false,
                 unique: true
             },
+            isBot: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false
+            },
             createdAt: { type: DataTypes.DATE },
             updatedAt: { type: DataTypes.DATE }
         },

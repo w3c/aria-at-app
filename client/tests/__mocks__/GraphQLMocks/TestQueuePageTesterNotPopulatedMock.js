@@ -18,18 +18,21 @@ export default testQueuePageQuery => [
                         id: '1',
                         username: 'foo-bar',
                         roles: ['ADMIN', 'TESTER'],
+                        isBot: false,
                         __typename: 'User'
                     },
                     {
                         id: '4',
                         username: 'bar-foo',
                         roles: ['TESTER'],
+                        isBot: false,
                         __typename: 'User'
                     },
                     {
                         id: '5',
                         username: 'boo-far',
                         roles: ['TESTER'],
+                        isBot: false,
                         __typename: 'User'
                     }
                 ],

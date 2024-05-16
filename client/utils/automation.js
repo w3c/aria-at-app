@@ -8,8 +8,6 @@ export const isSupportedByResponseCollector = ctx => {
     );
 };
 
-export const isBot = user => user?.username?.toLowerCase().slice(-3) === 'bot';
-
 // TODO: Stub, support for more bot users should be added
 export const getBotUsernameFromAtBrowser = (at, browser) => {
     if (at?.name === 'NVDA' && browser?.name === 'Chrome') {
