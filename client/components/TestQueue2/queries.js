@@ -10,6 +10,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         users {
             id
             username
+            isBot
             roles
         }
         ats {

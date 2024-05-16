@@ -43,6 +43,7 @@ const MetadataContainer = styled.div`
     gap: 1.25em;
     margin: 0.5rem 1.25rem;
     align-items: center;
+    min-height: 40px; /* temp because the status dialog button keeps disappearing */
 
     & button {
         margin-bottom: 0;
@@ -168,7 +169,7 @@ const TestQueue = () => {
         return [...testPlanVersions]
             .filter(testPlanVersion => testPlanVersion.testPlanReports.length)
             .sort((a, b) => {
-                return a.versionString.localeCompare(b.versionString);
+                return b.versionString.localeCompare(a.versionString);
             })
             .map(testPlanVersion => {
                 return {

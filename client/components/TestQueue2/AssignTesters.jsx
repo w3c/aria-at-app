@@ -4,7 +4,6 @@ import styled from '@emotion/styled';
 import { Button, Dropdown } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faRobot, faUser } from '@fortawesome/free-solid-svg-icons';
-import { isBot } from '../../utils/automation';
 import useConfirmationModal from '../../hooks/useConfirmationModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
@@ -224,7 +223,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
         let icon;
         if (isAssigned) {
             icon = faCheck;
-        } else if (isBot(tester)) {
+        } else if (tester.isBot) {
             icon = faRobot;
         }
 
@@ -290,7 +289,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
                     const { username } = tester;
 
                     let userLink;
-                    if (isBot(tester)) {
+                    if (tester.isBot) {
                         userLink = (
                             <span>
                                 <FontAwesomeIcon icon={faRobot} />
