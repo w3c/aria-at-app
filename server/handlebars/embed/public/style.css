@@ -77,13 +77,6 @@ details > summary.recommended {
   background-color: #e9fbe9;
 }
 
-div.recommended {
-  border-bottom: 1.5px solid #7ac498;
-  border-left: 1.5px solid #7ac498;
-  border-right: 1.5px solid #7ac498;
-  background-color: #e9fbe9;
-}
-
 details > summary > ::before {
     width: 32px;
     height: 32px;
@@ -111,6 +104,10 @@ details > summary > h4 {
   display: inline-block;
 }
 
+details > summary.recommended > h4 {
+  color: #384338;
+}
+
 .content-container {
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
@@ -126,6 +123,14 @@ details > summary > h4 {
 
 .content-container > ol > li:not(:last-child) {
     margin-bottom: 3px;
+}
+
+div.recommended {
+  border-bottom: 1.5px solid #7ac498;
+  border-left: 1.5px solid #7ac498;
+  border-right: 1.5px solid #7ac498;
+  background-color: #e9fbe9;
+  color: #384338;
 }
 
 .no-data-cell {
