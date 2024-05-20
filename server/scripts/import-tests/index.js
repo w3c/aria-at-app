@@ -53,10 +53,18 @@ const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
 
 const gitRun = (args, cwd = gitCloneDirectory) => {
-    return spawn
-        .sync('git', args.split(' '), { cwd })
-        .stdout.toString()
-        .trimEnd();
+    const gitRunOutput = spawn.sync('git', args.split(' '), { cwd });
+
+    if (gitRunOutput.error) {
+        console.info(
+            `'git ${args.split(' ')} ${cwd}' failed with error ${
+                gitRunOutput.error
+            }`
+        );
+        process.exit(1);
+    }
+
+    return gitRunOutput.stdout.toString().trimEnd();
 };
 
 const importTestPlanVersions = async transaction => {
@@ -66,12 +74,27 @@ const importTestPlanVersions = async transaction => {
     const installOutput = spawn.sync('npm', ['install'], {
         cwd: gitCloneDirectory
     });
+
+    if (installOutput.error) {
+        console.info(
+            `'npm install ${gitCloneDirectory}' failed with error ${installOutput.error}`
+        );
+        process.exit(1);
+    }
     console.log('`npm install` output', installOutput.stdout.toString());
 
     console.log('Running `npm run build` ...\n');
     const buildOutput = spawn.sync('npm', ['run', 'build'], {
         cwd: gitCloneDirectory
     });
+
+    if (buildOutput.error) {
+        console.info(
+            `'npm run build ${gitCloneDirectory}' failed with error ${buildOutput.error}`
+        );
+        process.exit(1);
+    }
+
     console.log('`npm run build` output', buildOutput.stdout.toString());
 
     importHarness();
@@ -233,7 +256,18 @@ const readRepo = async () => {
     fse.ensureDirSync(gitCloneDirectory);
 
     console.info('Cloning aria-at repo ...');
-    spawn.sync('git', ['clone', ariaAtRepo, gitCloneDirectory]);
+    const cloneOutput = spawn.sync('git', [
+        'clone',
+        ariaAtRepo,
+        gitCloneDirectory
+    ]);
+
+    if (cloneOutput.error) {
+        console.info(
+            `git clone ${ariaAtRepo} ${gitCloneDirectory} failed with error ${cloneOutput.error}`
+        );
+        process.exit(1);
+    }
     console.info('Cloning aria-at repo complete.');
 
     gitRun(`checkout ${args.commit ?? ariaAtDefaultBranch}`);

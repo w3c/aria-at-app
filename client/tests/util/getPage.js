@@ -38,6 +38,20 @@ const startServer = async serverOrClient => {
             }
         );
 
+        server.on('error', error => {
+            console.info(`Error found in startServer process: ${error}`); // eslint-disable-line no-console
+        });
+
+        server.on('exit', (code, signal) => {
+            if (code) {
+                console.error('startServer exited with code', code);
+            } else if (signal) {
+                console.error('startServer was killed with signal', signal);
+            } else {
+                console.info('startServer exited with no errors.'); // eslint-disable-line no-console
+            }
+        });
+
         const killServer = async () => {
             await new Promise((resolve, reject) => {
                 treeKill(server.pid, error => {
