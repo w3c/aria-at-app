@@ -85,9 +85,9 @@
     chdir: '{{source_dir}}'
 
 - name: Import latest tests and harness from w3c/aria-at
-  shell: ./deploy/scripts/export-and-exec.sh {{environment_config.dest}} node ./server/scripts/import-tests/index.js
+  shell: ../deploy/scripts/export-and-exec.sh {{environment_config.dest}} node ./scripts/import-tests/index.js
   args:
-    chdir: '{{source_dir}}'
+    chdir: '{{source_dir}}/server'
 
 - name: Build front end package
   command: ./deploy/scripts/export-and-exec.sh {{environment_config.dest}} yarn workspace client build
