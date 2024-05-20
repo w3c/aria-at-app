@@ -116,6 +116,14 @@ export const TEST_PLAN_REPORT_QUERY = gql`
                 id
                 name
             }
+            minimumAtVersion {
+                id
+                name
+            }
+            exactAtVersion {
+                id
+                name
+            }
             browser {
                 id
                 name
