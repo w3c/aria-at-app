@@ -57,6 +57,14 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 id
                 name
             }
+            minimumAtVersion {
+                id
+                name
+            }
+            exactAtVersion {
+                id
+                name
+            }
             browser {
                 id
                 name
@@ -105,6 +113,14 @@ export const TEST_PLAN_REPORT_QUERY = gql`
             }
             runnableTestsLength
             at {
+                id
+                name
+            }
+            minimumAtVersion {
+                id
+                name
+            }
+            exactAtVersion {
                 id
                 name
             }

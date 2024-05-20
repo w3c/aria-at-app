@@ -105,7 +105,7 @@ const TestQueueRow = ({
             testPlanRunId: run.id,
             ...run.tester
         }))
-        .filter(tester => !isBot(tester));
+        .filter(tester => !tester.isBot);
 
     const getTestPlanRunIdByUserId = userId => {
         return draftTestPlanRuns.find(({ tester }) => tester.id === userId).id;
@@ -530,6 +530,11 @@ const TestQueueRow = ({
         <LoadingStatus message={loadingMessage}>
             <tr className="test-queue-run-row">
                 <th>{renderAssignedUserToTestPlan()}</th>
+                <td style={{ padding: '0.75rem' }}>
+                    {testPlanReport.minimumAtVersion
+                        ? `${testPlanReport.minimumAtVersion.name} or later`
+                        : testPlanReport.exactAtVersion.name}
+                </td>
                 <td>
                     {isSignedIn && isTester && (
                         <div className="testers-wrapper">
