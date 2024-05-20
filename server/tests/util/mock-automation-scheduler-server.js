@@ -12,6 +12,9 @@ const {
 } = require('../../middleware/transactionMiddleware');
 const { query } = require('../util/graphql-test-utilities');
 
+// 0 = no chance of test errors, 1 = always errors
+const TEST_ERROR_CHANCE = 0;
+
 const setupMockAutomationSchedulerServer = async () => {
     const app = express();
     app.use(express.json());
@@ -26,9 +29,22 @@ const setupMockAutomationSchedulerServer = async () => {
         shutdownManager = new GracefulShutdownManager(listener);
     });
 
+    const timeout = ms =>
+        new Promise(resolve => setTimeout(() => resolve(), ms));
+
     const simulateJobStatusUpdate = async (jobId, newStatus) => {
         await axios.post(
-            `${process.env.APP_SERVER}/api/jobs/${jobId}/update`,
+            `${process.env.APP_SERVER}/api/jobs/${jobId}`,
+            {
+                status: newStatus
+            },
+            axiosConfig
+        );
+    };
+
+    const simulateTestStatusUpdate = async (jobId, testId, newStatus) => {
+        await axios.post(
+            `${process.env.APP_SERVER}/api/jobs/${jobId}/test/${testId}`,
             {
                 status: newStatus
             },
@@ -66,22 +82,35 @@ const setupMockAutomationSchedulerServer = async () => {
             responses
         };
 
-        testResult[isV2 ? 'presentationNumber' : 'testCsvRow'] =
-            currentTest.rowNumber;
         try {
-            await axios.post(
-                `${process.env.APP_SERVER}/api/jobs/${jobId}/result`,
-                testResult,
-                axiosConfig
+            await simulateTestStatusUpdate(
+                jobId,
+                currentTest.rowNumber,
+                COLLECTION_JOB_STATUS.RUNNING
             );
-        } catch (e) {
-            // Likely just means the test was cancelled
-            return;
-        }
+            await timeout(Math.random() * 2000);
 
-        if (currentTestIndex < tests.length - 1) {
-            setTimeout(() => {
-                simulateResultCompletion(
+            if (Math.random() < TEST_ERROR_CHANCE) {
+                await simulateTestStatusUpdate(
+                    jobId,
+                    currentTest.rowNumber,
+                    COLLECTION_JOB_STATUS.ERROR
+                );
+                return simulateJobStatusUpdate(
+                    jobId,
+                    COLLECTION_JOB_STATUS.ERROR
+                );
+            } else {
+                await axios.post(
+                    `${process.env.APP_SERVER}/api/jobs/${jobId}/test/${currentTest.rowNumber}`,
+                    testResult,
+                    axiosConfig
+                );
+            }
+
+            if (currentTestIndex < tests.length - 1) {
+                await timeout(Math.random() * 5000);
+                return simulateResultCompletion(
                     tests,
                     atName,
                     atVersionName,
@@ -91,19 +120,12 @@ const setupMockAutomationSchedulerServer = async () => {
                     currentTestIndex + 1,
                     isV2
                 );
-            }, Math.random() * 5000);
-        } else {
-            setTimeout(
-                () =>
-                    simulateJobStatusUpdate(
-                        jobId,
-                        COLLECTION_JOB_STATUS.COMPLETED
-                    ),
-                1000
-            );
+            } else {
+                simulateJobStatusUpdate(jobId, COLLECTION_JOB_STATUS.COMPLETED);
+            }
+        } catch (error) {
+            console.error('Error simulating collection job', error);
         }
-
-        return testResult;
     };
 
     app.post('/jobs/new', async (req, res) => {

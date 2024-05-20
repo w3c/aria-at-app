@@ -102,6 +102,7 @@ const TestQueue = () => {
                     <thead>
                         <tr>
                             <th className="test-plan">Test Plan</th>
+                            <th className="test-plan">AT Version Requirements</th>
                             <th className="testers">Testers</th>
                             <th className="report-status">Report Status</th>
                             <th className="actions">Actions</th>
@@ -114,7 +115,9 @@ const TestQueue = () => {
                                 <TestQueueRow
                                     key={key}
                                     user={auth}
-                                    testers={testers}
+                                    testers={testers.sort((a, b) =>
+                                        a.username.localeCompare(b.username)
+                                    )}
                                     testPlanReportData={testPlanReport}
                                     latestTestPlanVersions={
                                         latestTestPlanVersions

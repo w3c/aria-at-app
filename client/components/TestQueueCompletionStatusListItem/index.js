@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import BotTestCompletionStatus from './BotTestCompletionStatus';
-import { isBot } from '../../utils/automation';
 import PreviouslyAutomatedTestCompletionStatus from './PreviouslyAutomatedTestCompletionStatus';
 
 const TestQueueCompletionStatusListItem = ({
@@ -12,14 +11,13 @@ const TestQueueCompletionStatusListItem = ({
     id
 }) => {
     const { testResultsLength, tester } = testPlanRun;
-    const testerIsBot = useMemo(() => isBot(tester), [tester]);
     const testPlanRunPreviouslyAutomated = useMemo(
         () => testPlanRun.initiatedByAutomation,
         [testPlanRun]
     );
 
     const renderTesterInfo = () => {
-        if (testerIsBot) {
+        if (tester.isBot) {
             return (
                 <span aria-describedby={id}>
                     <FontAwesomeIcon icon={faRobot} />
@@ -44,7 +42,7 @@ const TestQueueCompletionStatusListItem = ({
     };
 
     const renderTestCompletionStatus = () => {
-        if (testerIsBot) {
+        if (tester.isBot) {
             return (
                 <BotTestCompletionStatus
                     id={id}
@@ -84,7 +82,8 @@ TestQueueCompletionStatusListItem.propTypes = {
         testResultsLength: PropTypes.number.isRequired,
         initiatedByAutomation: PropTypes.bool.isRequired,
         tester: PropTypes.shape({
-            username: PropTypes.string.isRequired
+            username: PropTypes.string.isRequired,
+            isBot: PropTypes.bool.isRequired
         }).isRequired
     }).isRequired,
     id: PropTypes.string.isRequired

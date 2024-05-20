@@ -28,9 +28,9 @@ jest.mock('@apollo/client', () => {
 });
 
 const mockPossibleTesters = [
-    { id: '1', username: 'bee' },
-    { id: '2', username: 'puppy' },
-    { id: '3', username: 'NVDA Bot' }
+    { id: '1', username: 'bee', isBot: false },
+    { id: '2', username: 'puppy', isBot: false },
+    { id: '3', username: 'NVDA Bot', isBot: true }
 ];
 
 const mockProps = {

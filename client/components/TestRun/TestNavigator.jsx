@@ -8,7 +8,6 @@ import {
 import { Col } from 'react-bootstrap';
 import React, { useMemo } from 'react';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { isBot } from '../../utils/automation';
 import { COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY } from './queries';
 import { useQuery } from '@apollo/client';
 
@@ -24,7 +23,7 @@ const TestNavigator = ({
     handleTestClick = () => {},
     testPlanRun = null
 }) => {
-    const isBotCompletedTest = isBot(testPlanRun?.tester);
+    const isBotCompletedTest = testPlanRun?.tester?.isBot;
 
     const { data: collectionJobQuery } = useQuery(
         COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,

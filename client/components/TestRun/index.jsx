@@ -42,7 +42,6 @@ import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
 import { convertDateToString } from '../../utils/formatter';
-import { isBot } from '../../utils/automation';
 
 const TestRun = () => {
     const params = useParams();
@@ -895,7 +894,7 @@ const TestRun = () => {
     const renderTestsCompletedInfoBox = () => {
         let isReviewingBot = false;
         if (openAsUserId) {
-            isReviewingBot = isBot(openAsUser);
+            isReviewingBot = openAsUser.isBot;
         }
 
         let content;
@@ -1037,7 +1036,7 @@ const TestRun = () => {
                             href={issueLink}
                         />
                     </li>
-                    {isBot(openAsUser) && externalLogsUrl ? (
+                    {openAsUser?.isBot && externalLogsUrl ? (
                         <li>
                             <OptionButton
                                 text="View Log"
@@ -1125,7 +1124,7 @@ const TestRun = () => {
                                     submitButtonRef={
                                         testRendererSubmitButtonRef
                                     }
-                                    isReviewingBot={isBot(openAsUser)}
+                                    isReviewingBot={openAsUser?.isBot}
                                     isSubmitted={isTestSubmitClicked}
                                     isEdit={isTestEditClicked}
                                     setIsRendererReady={setIsRendererReady}
@@ -1222,7 +1221,7 @@ const TestRun = () => {
     let openAsUserHeading = null;
 
     if (openAsUserId) {
-        if (isBot(openAsUser)) {
+        if (openAsUser.isBot) {
             openAsUserHeading = (
                 <div className="test-info-entity reviewing-as bot">
                     Reviewing tests of{' '}

@@ -50,6 +50,10 @@ const graphqlSchema = gql`
         List of types of actions the user can complete.
         """
         roles: [Role]!
+        """
+        Whether the user is an automation bot user.
+        """
+        isBot: Boolean!
         # TODO: Either use the recorded data somewhere or eliminate the field.
         """
         The ATs the user has indicated they are able to test.
@@ -102,6 +106,25 @@ const graphqlSchema = gql`
         The URL where the logs for the job can be found.
         """
         externalLogsUrl: String
+        """
+        An array of individual test status for every runnable test in the Job.
+        """
+        testStatus: [CollectionJobTestStatus]
+    }
+
+    """
+    A status for a specific Test on a specific CollectionJob.
+    """
+    type CollectionJobTestStatus {
+        """
+        The test this status reflects.
+        """
+        test: Test!
+        """
+        The status of the test, which can be "QUEUED", "RUNNING", "COMPLETED",
+        "ERROR", or "CANCELLED"
+        """
+        status: CollectionJobStatus!
     }
 
     type Browser {
@@ -463,8 +486,11 @@ const graphqlSchema = gql`
         """
         Since each TestPlan originates from a CSV, this number corresponds to
         the row within the CSV where this test originated.
+
+        Float type because presentationNumber fields from the source *.csv
+        files use decimal numbers in the v2 format.
         """
-        rowNumber: Int!
+        rowNumber: Float!
         """
         A human-readable sentence describing the function of the test.
         """
@@ -904,6 +930,10 @@ const graphqlSchema = gql`
         Whether the TestPlanRun was initiated by the Response Collection System
         """
         initiatedByAutomation: Boolean!
+        """
+        The CollectionJob related to this testPlanRun
+        """
+        collectionJob: CollectionJob
     }
 
     """

@@ -16,15 +16,12 @@ export const TEST_PLAN_RUNS_TEST_RESULTS_QUERY = gql`
                     }
                 }
             }
-        }
-    }
-`;
-
-export const COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY = gql`
-    query CollectionJobStatusByTestPlanRunId($testPlanRunId: ID!) {
-        collectionJobByTestPlanRunId(testPlanRunId: $testPlanRunId) {
-            id
-            status
+            collectionJob {
+                status
+                testStatus {
+                    status
+                }
+            }
         }
     }
 `;
