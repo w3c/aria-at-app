@@ -71,7 +71,7 @@ const getById = async (
  */
 const getByQuery = async (
     model,
-    { where, attributes = [], include = [], transaction }
+    { where, attributes = [], include = [], logging, transaction }
 ) => {
     if (!model) throw new Error('Model not defined');
 
@@ -87,7 +87,8 @@ const getByQuery = async (
         where: { ...where },
         attributes,
         include,
-        transaction
+        transaction,
+        logging
     });
 };
 

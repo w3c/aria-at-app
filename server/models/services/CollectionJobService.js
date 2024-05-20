@@ -17,7 +17,6 @@ const {
     createTestPlanRun,
     removeTestPlanRunById
 } = require('./TestPlanRunService');
-const responseCollectionUserIDs = require('../../util/responseCollectionUserIDs');
 const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { default: axios } = require('axios');
@@ -27,6 +26,7 @@ const {
 } = require('../../services/GithubWorkflowService');
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../../graphql-context');
+const { getBotUserByAtId } = require('./UserService');
 
 const axiosConfig = {
     headers: {
@@ -543,7 +543,14 @@ const scheduleCollectionJob = async (
     const tests = await runnableTestsResolver(report, null, context);
     const { directory } = report.testPlanVersion.testPlan;
     const { gitSha } = report.testPlanVersion;
-    const testerUserId = responseCollectionUserIDs['NVDA Bot'];
+    const testerUser = await getBotUserByAtId({
+        atId: report.at.id,
+        transaction
+    });
+    if (!testerUser) {
+        throw new Error(`No bot user found for AT ${report.at.name}`);
+    }
+    const testerUserId = testerUser.id;
 
     if (!tests || tests.length === 0) {
         throw new Error(

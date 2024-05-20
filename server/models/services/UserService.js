@@ -150,7 +150,24 @@ const getUsers = async ({
 
 /**
  */
-const getBotByAt = async ({ transaction }) => {};
+const getBotUserByAtId = async ({
+    atId,
+    userAttributes = USER_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    transaction
+}) => {
+    return ModelService.getByQuery(User, {
+        where: { isBot: true },
+        attributes: userAttributes,
+        include: [
+            {
+                ...atAssociation(atAttributes),
+                where: { id: atId }
+            }
+        ],
+        transaction
+    });
+};
 
 /**
  * @param {object} options
@@ -468,7 +485,7 @@ module.exports = {
     getUserById,
     getUserByUsername,
     getUsers,
-    getBotByAt,
+    getBotUserByAtId,
     getUserRoles,
     getUserAts,
     createUser,

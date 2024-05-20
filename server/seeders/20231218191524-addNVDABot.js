@@ -24,6 +24,9 @@ module.exports = {
                 roleName: 'TESTER'
             }
         ]);
+
+        // note to someone copying this seeder to add JAWS, we now need to also
+        // link to the UserAts table - see 20240520125142-addBotAts.js
     },
 
     async down(queryInterface) {
