@@ -102,6 +102,7 @@ details > summary > h4 {
   font-size: 1em;
   color: #60470c;
   display: inline-block;
+  margin-left: -23px;
 }
 
 details > summary.recommended > h4 {
