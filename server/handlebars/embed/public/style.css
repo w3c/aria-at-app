@@ -15,22 +15,6 @@ a:focus-visible {
     outline: 2px solid #3a86d1;
 }
 
-h3#report-title {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
-
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 18px;
-}
-
-#copied-message {
-    align-self: center;
-}
-
-#at-version {
-    font-weight: lighter;
-}
-
 #no-data-content-container {
     border-left: 1.5px solid #c0c0c0;
     border-right: 1.5px solid #c0c0c0;
@@ -43,55 +27,114 @@ h3#report-title {
     text-align: center;
 }
 
-#embed-report-phase-container {
+details {
     margin-bottom: 1em;
 }
-#embed-report-phase-container summary:focus-visible {
+details summary:focus-visible {
     outline-offset: -2px;
     outline: 2px solid #3a86d1;
 }
 
-#candidate-title {
-    border: 1.5px solid #ffc4a2;
+details summary::after {
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    display: block;
+    content: '';
+    background-position: center center;
+    background-repeat: no-repeat;
+    position: absolute;
+    right: 0.5em;
+    top: 1.5em;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='6.861' viewBox='0 0 12 6.861'%3E%3Cpath id='Icon_ionic-ios-arrow-down' data-name='Icon ionic-ios-arrow-down' d='M12.19,16.039,16.727,11.5a.854.854,0,0,1,1.211,0,.865.865,0,0,1,0,1.215L12.8,17.858a.856.856,0,0,1-1.183.025L6.438,12.717A.858.858,0,1,1,7.649,11.5Z' transform='translate(18.188 18.108) rotate(180)' fill='%2360470c'/%3E%3C/svg%3E%0A");
+    background-color: #fce1a4;
+    transform: rotate(180deg);
+}
+
+details > summary.recommended::after {
+  background-color: #115b11;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='6.861' viewBox='0 0 12 6.861'%3E%3Cpath id='Icon_ionic-ios-arrow-down' data-name='Icon ionic-ios-arrow-down' d='M12.19,16.039,16.727,11.5a.854.854,0,0,1,1.211,0,.865.865,0,0,1,0,1.215L12.8,17.858a.856.856,0,0,1-1.183.025L6.438,12.717A.858.858,0,1,1,7.649,11.5Z' transform='translate(18.188 18.108) rotate(180)' fill='rgb(233, 251, 233)'/%3E%3C/svg%3E%0A");
+}
+
+details[open] summary::after {
+    transform: rotate(0deg);
+}
+
+details > summary {
+    background-color: #fcebc3;
+    border: 1.5px solid #fce1a4;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
-    background-color: #ffd8c1;
     padding: 0.5em 0.5em 0.5em 1em;
     cursor: pointer;
+    --space-between-elements: 1em;
+    --left-right-padding: 55px;
+    display: block;
 }
 
-#candidate-title > span {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-    background-color: #c25401;
-    padding: 8px 14px;
-    border-radius: 15px;
-    display: inline-block;
+details > summary.recommended {
+  border: 1.5px solid #7ac498;
+  background-color: #e9fbe9;
 }
 
-#candidate-title.recommended {
-    border: 1.5px solid #7ac498;
-    background-color: #e9fbe9;
-}
-#candidate-title.recommended > span {
-    background-color: #115b11;
+details > summary > ::before {
+    width: 32px;
+    height: 32px;
+    display: block;
+    content: '';
+    background-repeat: no-repeat;
+    position: absolute;
+    left: 5px;
+    top: -7px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='31' viewBox='0 0 30 31'%3E%3Cg id='Group_1' data-name='Group 1' transform='translate(-11 -292)'%3E%3Cellipse id='Ellipse_1' data-name='Ellipse 1' cx='15' cy='15.5' rx='15' ry='15.5' transform='translate(11 292)' fill='%23d9ae4d'/%3E%3Cpath id='Path_3' data-name='Path 3' d='M4.524-17.368a4.507,4.507,0,0,0-1.56.312.278.278,0,0,0-.13.286V-14.9c0,2.184.416,8.294.468,9.022a.172.172,0,0,0,.182.156h2.08c.156,0,.182-.078.182-.156.078-.78.52-6.916.52-9.1v-1.872a.326.326,0,0,0-.156-.286A5.112,5.112,0,0,0,4.524-17.368Zm0,17.576A1.7,1.7,0,0,0,6.4-1.534,1.741,1.741,0,0,0,4.524-3.328,1.77,1.77,0,0,0,2.652-1.534,1.7,1.7,0,0,0,4.524.208Z' transform='translate(22 316)' fill='%23fff'/%3E%3C/g%3E%3C/svg%3E%0A");
 }
 
-#candidate-content-container {
-    border-left: 1.5px solid #c0c0c0;
-    border-right: 1.5px solid #c0c0c0;
-    border-bottom: 1.5px solid #c0c0c0;
+details > summary.recommended ::before {
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8IS0tIUZvbnQgQXdlc29tZSBGcmVlIDYuNS4yIGJ5IEBmb250YXdlc29tZSAtIGh0dHBzOi8vZm9udGF3ZXNvbWUuY29tIExpY2Vuc2UgLSBodHRwczovL2ZvbnRhd2Vzb21lLmNvbS9saWNlbnNlL2ZyZWUgQ29weXJpZ2h0IDIwMjQgRm9udGljb25zLCBJbmMuLS0+CiAgPHBhdGgKICBmaWxsPSIjMTE1YjExIgogICAgZD0iTTI1NiA1MTJBMjU2IDI1NiAwIDEgMCAyNTYgMGEyNTYgMjU2IDAgMSAwIDAgNTEyek0yMTYgMzM2aDI0VjI3MkgyMTZjLTEzLjMgMC0yNC0xMC43LTI0LTI0czEwLjctMjQgMjQtMjRoNDhjMTMuMyAwIDI0IDEwLjcgMjQgMjR2ODhoOGMxMy4zIDAgMjQgMTAuNyAyNCAyNHMtMTAuNyAyNC0yNCAyNEgyMTZjLTEzLjMgMC0yNC0xMC43LTI0LTI0czEwLjctMjQgMjQtMjR6bTQwLTIwOGEzMiAzMiAwIDEgMSAwIDY0IDMyIDMyIDAgMSAxIDAtNjR6IgogIC8+Cjwvc3ZnPgo=');
+}
+
+details > summary > h4 {
+  position: relative;
+  padding-left: var(--left-right-padding);
+  padding-right: var(--left-right-padding);
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
+  color: #60470c;
+  display: inline-block;
+}
+
+details > summary.recommended > h4 {
+  color: #384338;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+.content-container {
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     padding: 1em 0.5em 0.5em 1em;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
+    font-family: Noto Sans, Trebuchet MS, Helvetica Neue, Arial, sans-serif;
+    font-size: 1rem;
+    color: #60470c;
+    background-color: #fdefce;
+    border-left: 1px solid #fce1a4;
+    border-right: 1px solid #fce1a4;
+    border-bottom: 1px solid #fce1a4;
 }
 
-#candidate-content-container > ol > li:not(:last-child) {
+.content-container > ol > li:not(:last-child) {
     margin-bottom: 3px;
+}
+
+div.recommended {
+  border-bottom: 1.5px solid #7ac498;
+  border-left: 1.5px solid #7ac498;
+  border-right: 1.5px solid #7ac498;
+  background-color: #e9fbe9;
+  color: #384338;
 }
 
 .no-data-cell {
@@ -232,6 +275,7 @@ table tbody tr td {
 }
 
 #copied-message {
+    align-self: center;
     font-family: Arial, Helvetica, sans-serif;
     margin: 5px;
     display: inline-block;
