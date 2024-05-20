@@ -12,10 +12,15 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             username
             roles
             isBot
+            ats {
+                id
+                key
+            }
         }
         ats {
             id
             name
+            key
             atVersions {
                 id
                 name
@@ -55,10 +60,12 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             markedFinalAt
             at {
                 id
+                key
                 name
             }
             browser {
                 id
+                key
                 name
             }
             testPlanVersion {
@@ -106,10 +113,12 @@ export const TEST_PLAN_REPORT_QUERY = gql`
             runnableTestsLength
             at {
                 id
+                key
                 name
             }
             browser {
                 id
+                key
                 name
             }
             testPlanVersion {
@@ -151,10 +160,12 @@ export const TEST_PLAN_REPORT_AT_BROWSER_QUERY = gql`
             id
             at {
                 id
+                key
                 name
             }
             browser {
                 id
+                key
                 name
             }
         }

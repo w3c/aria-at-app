@@ -31,6 +31,7 @@ export default (
                 ats: [
                     {
                         id: '1',
+                        key: 'jaws',
                         name: 'JAWS',
                         atVersions: [
                             {
@@ -54,6 +55,7 @@ export default (
                     },
                     {
                         id: '2',
+                        key: 'nvda',
                         name: 'NVDA',
                         atVersions: [
                             {
@@ -77,6 +79,7 @@ export default (
                     },
                     {
                         id: '3',
+                        key: 'voiceover_macos',
                         name: 'VoiceOver for macOS',
                         atVersions: [
                             {
@@ -401,10 +404,12 @@ export default (
                                 isFinal: false,
                                 at: {
                                     id: '3',
+                                    key: 'voiceover_macos',
                                     name: 'VoiceOver for macOS'
                                 },
                                 browser: {
                                     id: '1',
+                                    key: 'firefox',
                                     name: 'Firefox'
                                 },
                                 issues: [],
@@ -568,10 +573,12 @@ export default (
                                 isFinal: false,
                                 at: {
                                     id: '1',
+                                    key: 'jaws',
                                     name: 'JAWS'
                                 },
                                 browser: {
                                     id: '2',
+                                    key: 'chrome',
                                     name: 'Chrome'
                                 },
                                 issues: [],
@@ -1406,10 +1413,12 @@ export default (
                                 isFinal: true,
                                 at: {
                                     id: '3',
+                                    key: 'voiceover_macos',
                                     name: 'VoiceOver for macOS'
                                 },
                                 browser: {
                                     id: '3',
+                                    key: 'safari',
                                     name: 'Safari'
                                 },
                                 issues: [],

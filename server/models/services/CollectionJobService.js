@@ -415,7 +415,13 @@ const triggerWorkflow = async (job, testIds, { transaction }) => {
             );
         }
     } catch (error) {
+        console.error(error);
         // TODO: What to do with the actual error (could be nice to have an additional "string" status field?)
+        await updateCollectionJobTestStatusByQuery({
+            where: { collectionJobId: job.id },
+            values: { status: COLLECTION_JOB_STATUS.ERROR },
+            transaction
+        });
         return updateCollectionJobById({
             id: job.id,
             values: { status: COLLECTION_JOB_STATUS.ERROR },

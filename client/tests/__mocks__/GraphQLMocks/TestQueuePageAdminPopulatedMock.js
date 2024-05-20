@@ -15,6 +15,7 @@ export default testQueuePageQuery => [
                     {
                         id: '1',
                         name: 'JAWS',
+                        key: 'jaws',
                         atVersions: [
                             {
                                 id: '1',
@@ -55,6 +56,7 @@ export default testQueuePageQuery => [
                     },
                     {
                         id: '2',
+                        key: 'nvda',
                         name: 'NVDA',
                         atVersions: [
                             {
@@ -116,6 +118,7 @@ export default testQueuePageQuery => [
                     },
                     {
                         id: '3',
+                        key: 'voiceover_macos',
                         name: 'VoiceOver for macOS',
                         atVersions: [
                             {
@@ -159,14 +162,17 @@ export default testQueuePageQuery => [
                 browsers: [
                     {
                         id: '2',
+                        key: 'chrome',
                         name: 'Chrome'
                     },
                     {
                         id: '1',
+                        key: 'firefox',
                         name: 'Firefox'
                     },
                     {
                         id: '3',
+                        key: 'safari_macos',
                         name: 'Safari'
                     }
                 ],
@@ -175,19 +181,22 @@ export default testQueuePageQuery => [
                         id: '1',
                         username: 'esmeralda-baggins',
                         roles: ['TESTER', 'ADMIN'],
-                        isBot: false
+                        isBot: false,
+                        ats: []
                     },
                     {
                         id: '2',
                         username: 'tom-proudfeet',
                         roles: ['TESTER'],
-                        isBot: false
+                        isBot: false,
+                        ats: []
                     },
                     {
                         id: '101',
                         username: 'alflennik',
                         roles: ['TESTER', 'ADMIN'],
-                        isBot: false
+                        isBot: false,
+                        ats: []
                     }
                 ],
                 testPlanVersions: [
@@ -235,8 +244,8 @@ export default testQueuePageQuery => [
                         conflictsLength: 0,
                         runnableTestsLength: 17,
                         markedFinalAt: null,
-                        at: { id: '1', name: 'JAWS' },
-                        browser: { id: '2', name: 'Chrome' },
+                        at: { id: '1', name: 'JAWS', key: 'jaws' },
+                        browser: { id: '2', name: 'Chrome', key: 'chrome' },
                         testPlanVersion: {
                             id: '1',
                             title: 'Checkbox Example (Two State)',
@@ -265,8 +274,16 @@ export default testQueuePageQuery => [
                         conflictsLength: 0,
                         runnableTestsLength: 17,
                         markedFinalAt: null,
-                        at: { id: '3', name: 'VoiceOver for macOS' },
-                        browser: { id: '3', name: 'Safari' },
+                        at: {
+                            id: '3',
+                            name: 'VoiceOver for macOS',
+                            key: 'voiceover_macos'
+                        },
+                        browser: {
+                            id: '3',
+                            name: 'Safari',
+                            key: 'safari_macos'
+                        },
                         testPlanVersion: {
                             id: '1',
                             title: 'Checkbox Example (Two State)',
@@ -295,8 +312,8 @@ export default testQueuePageQuery => [
                         conflictsLength: 3,
                         runnableTestsLength: 17,
                         markedFinalAt: null,
-                        at: { id: '2', name: 'NVDA' },
-                        browser: { id: '1', name: 'Firefox' },
+                        at: { id: '2', name: 'NVDA', key: 'nvda' },
+                        browser: { id: '1', name: 'Firefox', key: 'firefox' },
                         testPlanVersion: {
                             id: '1',
                             title: 'Checkbox Example (Two State)',
