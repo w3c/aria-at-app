@@ -97,7 +97,7 @@ describe('AtModel Data Checks', () => {
 
             // A2 - create at
             const at = await AtService.createAt({
-                values: { name: _name },
+                values: { name: _name, key: _name },
                 transaction
             });
             const { id, name } = at;
@@ -123,7 +123,7 @@ describe('AtModel Data Checks', () => {
 
             // A2 - create at
             const at = await AtService.createAt({
-                values: { name: _name },
+                values: { name: _name, key: _name },
                 transaction
             });
             const { id, name } = at;
