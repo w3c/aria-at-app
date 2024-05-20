@@ -318,14 +318,52 @@ const updatePhaseResolver = async (
 
     // If oldTestPlanVersion's results are being used to update this earlier
     // version, deprecate it (if the same phase)
+
+    // const deprecated =
+    //     updateParams.draftPhaseReachedAt.setTime(
+    //         updateParams.draftPhaseReachedAt.getTime() - 10000
+    //     ) ||
+    //     updateParams.candidatePhaseReachedAt.setTime(
+    //         updateParams.candidatePhaseReachedAt.getTime() - 10000
+    //     ) ||
+    //     updateParams.recommendedPhaseReachedAt.setTime(
+    //         updateParams.recommendedPhaseReachedAt.getTime() - 10000
+    //     );
+    const deprecated1 = updateParams.draftPhaseReachedAt;
+    console.log('deprecated1', deprecated1);
+    const converted = updateParams.draftPhaseReachedAt.getTime() - 20000;
+    const deprecated2 = updateParams.draftPhaseReachedAt.setTime(converted);
+    const deprecated3 = updateParams.draftPhaseReachedAt;
+    // console.log('deprecated2', deprecated2);
+    // console.log('deprecated3', deprecated3);
     if (oldTestPlanVersion && phase === oldTestPlanVersion.phase) {
+        console.log("IT RAN");
+        let changeSeconds;
+        if (updateParams.draftPhaseReachedAt) {
+            changeSeconds = updateParams.draftPhaseReachedAt.getTime() - 20000;
+            updateParams.draftPhaseReachedAt.setTime(changeSeconds);
+        } else if (updateParams.candidatePhaseReachedAt) {
+            changeSeconds =
+                updateParams.candidatePhaseReachedAt.getTime() - 20000;
+            updateParams.candidatePhaseReachedAt.setTime(changeSeconds);
+        } else {
+            changeSeconds =
+                updateParams.recommendedPhaseReachedAt.getTime() - 20000;
+            updateParams.recommendedPhaseReachedAt.setTime(changeSeconds);
+        }
+        console.log(updateParams.draftPhaseReachedAt);
         await updateTestPlanVersionById({
             id: oldTestPlanVersion.id, // same as testPlanVersionDataToIncludeId
-            values: { phase: 'DEPRECATED', deprecatedAt: new Date() },
+            values: {
+                phase: 'DEPRECATED',
+                deprecatedAt:
+                    updateParams.draftPhaseReachedAt ||
+                    updateParams.candidatePhaseReachedAt ||
+                    updateParams.recommendedPhaseReachedAt
+            },
             transaction
         });
     }
-
     await updateTestPlanVersionById({
         id: testPlanVersionId,
         values: updateParams,
