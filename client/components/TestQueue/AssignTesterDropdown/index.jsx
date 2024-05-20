@@ -110,9 +110,33 @@ const AssignTesterDropdown = ({
     const clearAriaLiveRegion = () => {
         setAlertMessage('');
     };
+
+    const handleKeyDown = event => {
+        const { key } = event;
+        if (key.match(/[0-9a-zA-Z]/)) {
+            const container = event.target.closest('[role=menu]');
+            const matchingMenuItem = Array.from(container.children).find(
+                menuItem => {
+                    return menuItem.innerText
+                        .trim()
+                        .toLowerCase()
+                        .startsWith(key.toLowerCase());
+                }
+            );
+
+            if (matchingMenuItem) {
+                matchingMenuItem.focus();
+            }
+        }
+    };
+
     return (
         <LoadingStatus message={loadingMessage}>
-            <Dropdown focusFirstItemOnShow aria-label="Assign testers menu">
+            <Dropdown
+                focusFirstItemOnShow
+                aria-label="Assign testers menu"
+                onKeyDown={handleKeyDown}
+            >
                 <Dropdown.Toggle
                     ref={dropdownAssignTesterButtonRef}
                     aria-label="Assign testers"
