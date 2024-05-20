@@ -149,6 +149,10 @@ const getUsers = async ({
 };
 
 /**
+ */
+const getBotByAt = async ({ transaction }) => {};
+
+/**
  * @param {object} options
  * @param {string|any} options.search - use this to combine with {@param filter} to be passed to Sequelize's where clause
  * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
@@ -464,6 +468,7 @@ module.exports = {
     getUserById,
     getUserByUsername,
     getUsers,
+    getBotByAt,
     getUserRoles,
     getUserAts,
     createUser,

@@ -17,7 +17,7 @@ const {
     createTestPlanRun,
     removeTestPlanRunById
 } = require('./TestPlanRunService');
-const responseCollectionUser = require('../../util/responseCollectionUser');
+const responseCollectionUserIDs = require('../../util/responseCollectionUserIDs');
 const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { default: axios } = require('axios');
@@ -188,7 +188,11 @@ const collectionJobTestStatusAssociation =
 
 /**
  * @param {object} options
- * @param {object} options.values - CollectionJob to be created
+ * @param {object} options.values
+ * @param {string} options.values.status - Status of CollectionJob to be created
+ * @param {number} options.values.testerUserId - ID of the Tester to which the CollectionJob should be assigned
+ * @param {object} options.values.testPlanReportId - ID of the TestPlan with which the CollectionJob should be associated
+ * @param {object} [options.values.testPlanRun] - TestPlan with wich the CollectionJob should be associated (if not provided, a new TestPlan will be created)
  * @param {string[]} options.collectionJobAttributes - CollectionJob attributes to be returned in the result
  * @param {string[]} options.collectionJobTestStatusAttributes - CollectionJobTestStatus attributes to be returned in the result
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
@@ -203,6 +207,7 @@ const collectionJobTestStatusAssociation =
 const createCollectionJob = async ({
     values: {
         status = COLLECTION_JOB_STATUS.QUEUED,
+        testerUserId,
         testPlanRun,
         testPlanReportId
     },
@@ -220,7 +225,7 @@ const createCollectionJob = async ({
     if (!testPlanRun) {
         testPlanRun = await createTestPlanRun({
             values: {
-                testerUserId: responseCollectionUser.id,
+                testerUserId,
                 testPlanReportId: testPlanReportId,
                 isAutomated: true
             },
@@ -538,6 +543,7 @@ const scheduleCollectionJob = async (
     const tests = await runnableTestsResolver(report, null, context);
     const { directory } = report.testPlanVersion.testPlan;
     const { gitSha } = report.testPlanVersion;
+    const testerUserId = responseCollectionUserIDs['NVDA Bot'];
 
     if (!tests || tests.length === 0) {
         throw new Error(
@@ -560,6 +566,7 @@ const scheduleCollectionJob = async (
     const job = await createCollectionJob({
         values: {
             status: COLLECTION_JOB_STATUS.QUEUED,
+            testerUserId,
             testPlanReportId
         },
         transaction

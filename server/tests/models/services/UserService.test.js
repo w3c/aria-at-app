@@ -334,4 +334,8 @@ describe('UserModel Data Checks', () => {
         expect(user1Ats[0].userId).toBe(_userId);
         expect(user1Ats[0].atId).toBeTruthy();
     });
+
+    describe('getBotByAt', () => {
+        it('should do things', async () => {});
+    });
 });

@@ -8,8 +8,8 @@ module.exports = {
             'User',
             [
                 {
-                    id: responseCollectionUserIDs['NVDA Bot'],
-                    username: 'NVDA Bot',
+                    id: responseCollectionUserIDs['VoiceOver Bot'],
+                    username: 'VoiceOver Bot',
                     isBot: true,
                     createdAt: new Date(),
                     updatedAt: new Date()
@@ -28,7 +28,7 @@ module.exports = {
 
     async down(queryInterface) {
         await queryInterface.bulkDelete('User', {
-            id: responseCollectionUserIDs['NVDA Bot']
+            id: responseCollectionUserIDs['VoiceOver Bot']
         });
     }
 };
