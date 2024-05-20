@@ -145,7 +145,7 @@ const AssignTesterDropdown = ({
                             }
                             return (
                                 <Dropdown.Item
-                                    role="menuitem"
+                                    role="menuitemcheckbox"
                                     variant="secondary"
                                     as="button"
                                     key={`tpr-${testPlanReportId}-assign-tester-${username}`}
@@ -168,10 +168,7 @@ const AssignTesterDropdown = ({
                                     }}
                                 >
                                     {icon && <FontAwesomeIcon icon={icon} />}
-                                    <span
-                                        aria-hidden="true"
-                                        className={classname}
-                                    >
+                                    <span className={classname}>
                                         {`${tester.username}`}
                                     </span>
                                 </Dropdown.Item>
