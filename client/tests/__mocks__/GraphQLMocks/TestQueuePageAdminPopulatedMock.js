@@ -236,6 +236,8 @@ export default testQueuePageQuery => [
                         runnableTestsLength: 17,
                         markedFinalAt: null,
                         at: { id: '1', name: 'JAWS' },
+                        minimumAtVersion: { id: '1', name: '2024.3321.1' },
+                        exactAtVersion: null,
                         browser: { id: '2', name: 'Chrome' },
                         testPlanVersion: {
                             id: '1',
@@ -266,6 +268,8 @@ export default testQueuePageQuery => [
                         runnableTestsLength: 17,
                         markedFinalAt: null,
                         at: { id: '3', name: 'VoiceOver for macOS' },
+                        minimumAtVersion: { id: '3', name: '14.5' },
+                        exactAtVersion: null,
                         browser: { id: '3', name: 'Safari' },
                         testPlanVersion: {
                             id: '1',
@@ -296,6 +300,8 @@ export default testQueuePageQuery => [
                         runnableTestsLength: 17,
                         markedFinalAt: null,
                         at: { id: '2', name: 'NVDA' },
+                        minimumAtVersion: null,
+                        exactAtVersion: { id: '2', name: '2024.2' },
                         browser: { id: '1', name: 'Firefox' },
                         testPlanVersion: {
                             id: '1',
