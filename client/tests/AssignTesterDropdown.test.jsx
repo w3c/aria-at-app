@@ -228,7 +228,7 @@ describe('AssignTesterDropdown', () => {
         fireEvent.click(button);
 
         const items = await screen.findAllByText(/bee/);
-        expect(items.length).toBe(2); // One for display, one for sr-only
+        expect(items.length).toBe(1);
         fireEvent.click(items[0]);
 
         await waitFor(async () => {
@@ -257,7 +257,7 @@ describe('AssignTesterDropdown', () => {
         fireEvent.click(button);
 
         const items = await screen.findAllByText(/NVDA Bot/);
-        expect(items.length).toBe(2); // One for display, one for sr-only
+        expect(items.length).toBe(1);
         fireEvent.click(items[0]);
 
         await waitFor(() => {
