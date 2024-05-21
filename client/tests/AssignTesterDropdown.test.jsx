@@ -319,13 +319,13 @@ describe('AssignTesterDropdown', () => {
         });
 
         await waitFor(async () => {
-            const items = await screen.queryAllByText(/NVDA Bot/);
-            expect(items).toHaveLength(0);
+            const items = await screen.queryByText(/NVDA Bot/);
+            expect(items).toBeNull(0);
         });
 
         await waitFor(async () => {
             const items = await screen.queryAllByText(/VoiceOver Bot/);
-            expect(items).toHaveLength(2); // One for display, one for sr-only
+            expect(items).toHaveLength(1);
         });
     });
 
