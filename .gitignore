@@ -125,3 +125,5 @@ server/migrations/test_plan_target_id.csv
 
 # Private Key files (installed by deploy)
 jwt-signing-key.pem
+
+client/resources
