@@ -26,14 +26,17 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
+                                key: 'safari',
                                 name: 'Safari'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             }
                         ],
@@ -88,14 +91,17 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
+                                key: 'safari',
                                 name: 'Safari'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             }
                         ],
@@ -130,14 +136,17 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
+                                key: 'safari',
                                 name: 'Safari'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             }
                         ],

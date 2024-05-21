@@ -43,10 +43,12 @@ export default (
                         browsers: [
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             }
                         ],
@@ -67,10 +69,12 @@ export default (
                         browsers: [
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             }
                         ],
@@ -91,14 +95,17 @@ export default (
                         browsers: [
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             {
                                 id: '3',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             }
                         ],
@@ -1078,10 +1085,12 @@ export default (
                                 isFinal: false,
                                 at: {
                                     id: '2',
+                                    key: 'nvda',
                                     name: 'NVDA'
                                 },
                                 browser: {
                                     id: '1',
+                                    key: 'firefox',
                                     name: 'Firefox'
                                 },
                                 issues: [],
@@ -1564,10 +1573,12 @@ export default (
                                 isFinal: false,
                                 at: {
                                     id: '1',
+                                    key: 'jaws',
                                     name: 'JAWS'
                                 },
                                 browser: {
                                     id: '2',
+                                    key: 'chrome',
                                     name: 'Chrome'
                                 },
                                 issues: [],
@@ -1653,10 +1664,12 @@ export default (
                                 isFinal: false,
                                 at: {
                                     id: '2',
+                                    key: 'nvda',
                                     name: 'NVDA'
                                 },
                                 browser: {
                                     id: '2',
+                                    key: 'chrome',
                                     name: 'Chrome'
                                 },
                                 issues: [],
@@ -1762,10 +1775,12 @@ export default (
                                 isFinal: false,
                                 at: {
                                     id: '3',
+                                    key: 'voiceover_macos',
                                     name: 'VoiceOver for macOS'
                                 },
                                 browser: {
                                     id: '1',
+                                    key: 'firefox',
                                     name: 'Firefox'
                                 },
                                 issues: [],
@@ -1851,10 +1866,12 @@ export default (
                                 isFinal: false,
                                 at: {
                                     id: '2',
+                                    key: 'nvda',
                                     name: 'NVDA'
                                 },
                                 browser: {
                                     id: '1',
+                                    key: 'firefox',
                                     name: 'Firefox'
                                 },
                                 issues: [],
@@ -1940,10 +1957,12 @@ export default (
                                 isFinal: true,
                                 at: {
                                     id: '1',
+                                    key: 'jaws',
                                     name: 'JAWS'
                                 },
                                 browser: {
                                     id: '2',
+                                    key: 'chrome',
                                     name: 'Chrome'
                                 },
                                 issues: [],
@@ -2059,10 +2078,12 @@ export default (
                                 isFinal: false,
                                 at: {
                                     id: '3',
+                                    key: 'voiceover_macos',
                                     name: 'VoiceOver for macOS'
                                 },
                                 browser: {
                                     id: '2',
+                                    key: 'chrome',
                                     name: 'Chrome'
                                 },
                                 issues: [],
@@ -2148,10 +2169,12 @@ export default (
                                 isFinal: true,
                                 at: {
                                     id: '2',
+                                    key: 'nvda',
                                     name: 'NVDA'
                                 },
                                 browser: {
                                     id: '2',
+                                    key: 'chrome',
                                     name: 'Chrome'
                                 },
                                 issues: [],
@@ -2297,10 +2320,12 @@ export default (
                                 isFinal: true,
                                 at: {
                                     id: '3',
+                                    key: 'voiceover_macos',
                                     name: 'VoiceOver for macOS'
                                 },
                                 browser: {
                                     id: '3',
+                                    key: 'safari',
                                     name: 'Safari'
                                 },
                                 issues: [],
@@ -2431,10 +2456,12 @@ export default (
                                 isFinal: false,
                                 at: {
                                     id: '1',
+                                    key: 'jaws',
                                     name: 'JAWS'
                                 },
                                 browser: {
                                     id: '1',
+                                    key: 'firefox',
                                     name: 'Firefox'
                                 },
                                 issues: [],
@@ -2534,10 +2561,12 @@ export default (
                             isFinal: false,
                             at: {
                                 id: '3',
+                                key: 'voiceover_macos',
                                 name: 'VoiceOver for macOS'
                             },
                             browser: {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             issues: [],
@@ -2744,10 +2773,12 @@ export default (
                             isFinal: true,
                             at: {
                                 id: '1',
+                                key: 'jaws',
                                 name: 'JAWS'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             issues: [],
@@ -2833,10 +2864,12 @@ export default (
                             isFinal: true,
                             at: {
                                 id: '2',
+                                key: 'nvda',
                                 name: 'NVDA'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             issues: [],
@@ -2951,10 +2984,12 @@ export default (
                             isFinal: false,
                             at: {
                                 id: '2',
+                                key: 'nvda',
                                 name: 'NVDA'
                             },
                             browser: {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             issues: [],
@@ -3257,10 +3292,12 @@ export default (
                             isFinal: false,
                             at: {
                                 id: '3',
+                                key: 'voiceover_macos',
                                 name: 'VoiceOver for macOS'
                             },
                             browser: {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             issues: [],
@@ -3346,10 +3383,12 @@ export default (
                             isFinal: false,
                             at: {
                                 id: '2',
+                                key: 'nvda',
                                 name: 'NVDA'
                             },
                             browser: {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             issues: [],
@@ -3435,10 +3474,12 @@ export default (
                             isFinal: true,
                             at: {
                                 id: '1',
+                                key: 'jaws',
                                 name: 'JAWS'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             issues: [],
@@ -3554,10 +3595,12 @@ export default (
                             isFinal: false,
                             at: {
                                 id: '3',
+                                key: 'voiceover_macos',
                                 name: 'VoiceOver for macOS'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             issues: [],
@@ -3643,10 +3686,12 @@ export default (
                             isFinal: true,
                             at: {
                                 id: '2',
+                                key: 'nvda',
                                 name: 'NVDA'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             issues: [],
@@ -3926,10 +3971,12 @@ export default (
                             isFinal: false,
                             at: {
                                 id: '1',
+                                key: 'jaws',
                                 name: 'JAWS'
                             },
                             browser: {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             issues: [],
@@ -4044,10 +4091,12 @@ export default (
                             isFinal: false,
                             at: {
                                 id: '1',
+                                key: 'jaws',
                                 name: 'JAWS'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             issues: [],

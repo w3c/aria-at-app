@@ -320,10 +320,12 @@ export default (
                         browsers: [
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             }
                         ],
@@ -343,10 +345,12 @@ export default (
                         browsers: [
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             }
                         ],
@@ -366,14 +370,17 @@ export default (
                         browsers: [
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             {
                                 id: '3',
+                                key: 'safari',
                                 name: 'Safari'
                             }
                         ],

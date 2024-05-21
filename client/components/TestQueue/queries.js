@@ -28,6 +28,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             }
             browsers {
                 id
+                key
                 name
             }
             candidateBrowsers {

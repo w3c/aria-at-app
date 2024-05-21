@@ -738,7 +738,20 @@ const ManageTestQueue = ({
 };
 
 ManageTestQueue.propTypes = {
-    ats: PropTypes.array,
+    ats: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            key: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            browsers: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    key: PropTypes.string.isRequired,
+                    name: PropTypes.string.isRequired
+                })
+            ).isRequired
+        })
+    ).isRequired,
     testPlanVersions: PropTypes.array,
     triggerUpdate: PropTypes.func
 };
