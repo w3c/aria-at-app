@@ -2624,10 +2624,12 @@ export default (
                             isFinal: true,
                             at: {
                                 id: '3',
+                                key: 'voiceover_macos',
                                 name: 'VoiceOver for macOS'
                             },
                             browser: {
                                 id: '3',
+                                key: 'safari',
                                 name: 'Safari'
                             },
                             issues: [],
