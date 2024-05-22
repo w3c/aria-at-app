@@ -158,7 +158,7 @@ const getTestByRowNumber = async ({ testPlanRun, testRowNumber, context }) => {
         context
     );
     return tests.find(
-        test => parseInt(test.rowNumber, 10) === parseInt(testRowNumber, 10)
+        test => String(test.rowNumber) === String(testRowNumber)
     );
 };
 
