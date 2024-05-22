@@ -12,10 +12,12 @@ export default (testPlanReportAtBrowserQuery, existingTestPlanReportsQuery) => [
                     id: '3',
                     at: {
                         id: '1',
+                        key: 'jaws',
                         name: 'JAWS'
                     },
                     browser: {
                         id: '2',
+                        key: 'chrome',
                         name: 'Chrome'
                     }
                 }
@@ -35,10 +37,12 @@ export default (testPlanReportAtBrowserQuery, existingTestPlanReportsQuery) => [
                     id: '2',
                     at: {
                         id: '2',
+                        key: 'nvda',
                         name: 'NVDA'
                     },
                     browser: {
                         id: '1',
+                        key: 'firefox',
                         name: 'Firefox'
                     }
                 }
@@ -58,10 +62,12 @@ export default (testPlanReportAtBrowserQuery, existingTestPlanReportsQuery) => [
                     id: '1',
                     at: {
                         id: '1',
+                        key: 'jaws',
                         name: 'JAWS'
                     },
                     browser: {
                         id: '2',
+                        key: 'chrome',
                         name: 'Chrome'
                     }
                 }
@@ -89,10 +95,12 @@ export default (testPlanReportAtBrowserQuery, existingTestPlanReportsQuery) => [
                                 initiatedByAutomation: true
                             },
                             at: {
-                                id: '1'
+                                id: '1',
+                                key: 'jaws'
                             },
                             browser: {
-                                id: '2'
+                                id: '2',
+                                key: 'chrome'
                             }
                         }
                     ]

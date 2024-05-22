@@ -14,6 +14,7 @@ export default testQueuePageQuery => [
                 ats: [
                     {
                         id: '1',
+                        key: 'jaws',
                         name: 'JAWS',
                         atVersions: [
                             {
@@ -25,14 +26,17 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
+                                key: 'safari',
                                 name: 'Safari'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             }
                         ],
@@ -55,6 +59,7 @@ export default testQueuePageQuery => [
                     },
                     {
                         id: '2',
+                        key: 'nvda',
                         name: 'NVDA',
                         atVersions: [
                             {
@@ -86,14 +91,17 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
+                                key: 'safari',
                                 name: 'Safari'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             }
                         ],
@@ -116,6 +124,7 @@ export default testQueuePageQuery => [
                     },
                     {
                         id: '3',
+                        key: 'voiceover_macos',
                         name: 'VoiceOver for macOS',
                         atVersions: [
                             {
@@ -127,14 +136,17 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
+                                key: 'safari',
                                 name: 'Safari'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             }
                         ],
@@ -159,14 +171,17 @@ export default testQueuePageQuery => [
                 browsers: [
                     {
                         id: '2',
+                        key: 'chrome',
                         name: 'Chrome'
                     },
                     {
                         id: '1',
+                        key: 'firefox',
                         name: 'Firefox'
                     },
                     {
                         id: '3',
+                        key: 'safari_macos',
                         name: 'Safari'
                     }
                 ],
@@ -175,19 +190,22 @@ export default testQueuePageQuery => [
                         id: '1',
                         username: 'foo-bar',
                         roles: ['ADMIN', 'TESTER'],
-                        isBot: false
+                        isBot: false,
+                        ats: []
                     },
                     {
                         id: '4',
                         username: 'bar-foo',
                         roles: ['TESTER'],
-                        isBot: false
+                        isBot: false,
+                        ats: []
                     },
                     {
                         id: '5',
                         username: 'boo-far',
                         roles: ['TESTER'],
-                        isBot: false
+                        isBot: false,
+                        ats: []
                     }
                 ],
                 testPlanVersions: [
@@ -237,10 +255,12 @@ export default testQueuePageQuery => [
                         markedFinalAt: null,
                         at: {
                             id: '2',
+                            key: 'nvda',
                             name: 'NVDA'
                         },
                         browser: {
                             id: '1',
+                            key: 'firefox',
                             name: 'Firefox'
                         },
                         testPlanVersion: {
@@ -285,10 +305,12 @@ export default testQueuePageQuery => [
                         markedFinalAt: null,
                         at: {
                             id: '2',
+                            key: 'jaws',
                             name: 'JAWS'
                         },
                         browser: {
                             id: '1',
+                            key: 'firefox',
                             name: 'Firefox'
                         },
                         testPlanVersion: {
@@ -323,10 +345,12 @@ export default testQueuePageQuery => [
                         markedFinalAt: null,
                         at: {
                             id: '3',
+                            key: 'voiceover_macos',
                             name: 'VoiceOver for macOS'
                         },
                         browser: {
                             id: '1',
+                            key: 'firefox',
                             name: 'Firefox'
                         },
                         testPlanVersion: {

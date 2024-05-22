@@ -36,10 +36,12 @@ export const mockedTestPlanVersion = {
             markedFinalAt: null,
             at: {
                 id: '2',
+                key: 'nvda',
                 name: 'NVDA'
             },
             browser: {
                 id: '1',
+                key: 'firefox',
                 name: 'Firefox'
             },
             issues: [],
@@ -309,6 +311,7 @@ export default (
                 ats: [
                     {
                         id: '1',
+                        key: 'jaws',
                         name: 'JAWS',
                         atVersions: [
                             {
@@ -320,10 +323,12 @@ export default (
                         browsers: [
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             }
                         ],
@@ -332,6 +337,7 @@ export default (
                     },
                     {
                         id: '2',
+                        key: 'nvda',
                         name: 'NVDA',
                         atVersions: [
                             {
@@ -343,10 +349,12 @@ export default (
                         browsers: [
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             }
                         ],
@@ -355,6 +363,7 @@ export default (
                     },
                     {
                         id: '3',
+                        key: 'voiceover_macos',
                         name: 'VoiceOver for macOS',
                         atVersions: [
                             {
@@ -366,14 +375,17 @@ export default (
                         browsers: [
                             {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             {
                                 id: '3',
+                                key: 'safari',
                                 name: 'Safari'
                             }
                         ],
@@ -405,10 +417,14 @@ export default (
                                 initiatedByAutomation: true
                             },
                             at: {
-                                id: '1'
+                                id: '1',
+                                key: 'jaws',
+                                name: 'JAWS'
                             },
                             browser: {
-                                id: '2'
+                                id: '2',
+                                key: 'firefox',
+                                name: 'Firefox'
                             }
                         }
                     ]
