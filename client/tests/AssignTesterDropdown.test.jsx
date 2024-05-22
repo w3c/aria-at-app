@@ -320,7 +320,7 @@ describe('AssignTesterDropdown', () => {
 
         await waitFor(async () => {
             const items = await screen.queryByText(/NVDA Bot/);
-            expect(items).toBeNull(0);
+            expect(items).toBeNull();
         });
 
         await waitFor(async () => {
