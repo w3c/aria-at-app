@@ -35,10 +35,7 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). The 
     ```
 4. Import the most recent tests from the [aria-at repository](https://github.com/w3c/aria-at):
     ```
-    yarn db-import-tests:dev -c 5fe7afd82fe51c185b8661276105190a59d47322;
-    yarn db-import-tests:dev -c 1aa3b74d24d340362e9f511eae33788d55487d12;
-    yarn db-import-tests:dev -c ab77d47ab19db71c635c9bb459ba5c34182e1400;
-    yarn db-import-tests:dev -c d34eddbb8e751f07bd28d952de15fa7fe5f07353;
+    yarn db-import-tests:dev -c "5fe7afd82fe51c185b8661276105190a59d47322 1aa3b74d24d340362e9f511eae33788d55487d12 ab77d47ab19db71c635c9bb459ba5c34182e1400 d34eddbb8e751f07bd28d952de15fa7fe5f07353";
     yarn db-import-tests:dev;
     ```
 
@@ -54,10 +51,7 @@ fi;
 
 yarn sequelize db:migrate;
 yarn sequelize db:seed:all;
-yarn db-import-tests:dev -c 5fe7afd82fe51c185b8661276105190a59d47322;
-yarn db-import-tests:dev -c 1aa3b74d24d340362e9f511eae33788d55487d12;
-yarn db-import-tests:dev -c ab77d47ab19db71c635c9bb459ba5c34182e1400;
-yarn db-import-tests:dev -c d34eddbb8e751f07bd28d952de15fa7fe5f07353;
+yarn db-import-tests:dev -c "5fe7afd82fe51c185b8661276105190a59d47322 1aa3b74d24d340362e9f511eae33788d55487d12 ab77d47ab19db71c635c9bb459ba5c34182e1400 d34eddbb8e751f07bd28d952de15fa7fe5f07353";
 yarn db-import-tests:dev;
 ```
 
@@ -100,10 +94,7 @@ The instructions are similar for the test database, with one extra step:
 yarn db-init:test;
 yarn sequelize:test db:migrate;
 yarn sequelize:test db:seed:all;
-yarn workspace server db-import-tests:test -c 5fe7afd82fe51c185b8661276105190a59d47322;
-yarn workspace server db-import-tests:test -c 1aa3b74d24d340362e9f511eae33788d55487d12;
-yarn workspace server db-import-tests:test -c ab77d47ab19db71c635c9bb459ba5c34182e1400;
-yarn workspace server db-import-tests:test -c d34eddbb8e751f07bd28d952de15fa7fe5f07353;
+yarn workspace server db-import-tests:test -c "5fe7afd82fe51c185b8661276105190a59d47322 1aa3b74d24d340362e9f511eae33788d55487d12 ab77d47ab19db71c635c9bb459ba5c34182e1400 d34eddbb8e751f07bd28d952de15fa7fe5f07353";
 yarn workspace server db-populate-sample-data:test;
 ```
 
