@@ -56,11 +56,7 @@ const gitRun = (args, cwd = gitCloneDirectory) => {
     const gitRunOutput = spawn.sync('git', args.split(' '), { cwd });
 
     if (gitRunOutput.error) {
-        console.info(
-            `'git ${args.split(' ')} ${cwd}' failed with error ${
-                gitRunOutput.error
-            }`
-        );
+        console.info(`'git ${args}' failed with error ${gitRunOutput.error}`);
         process.exit(1);
     }
 
@@ -76,9 +72,7 @@ const importTestPlanVersions = async transaction => {
     });
 
     if (installOutput.error) {
-        console.info(
-            `'npm install ${gitCloneDirectory}' failed with error ${installOutput.error}`
-        );
+        console.info(`'npm install' failed with error ${installOutput.error}`);
         process.exit(1);
     }
     console.log('`npm install` output', installOutput.stdout.toString());
@@ -89,9 +83,7 @@ const importTestPlanVersions = async transaction => {
     });
 
     if (buildOutput.error) {
-        console.info(
-            `'npm run build ${gitCloneDirectory}' failed with error ${buildOutput.error}`
-        );
+        console.info(`'npm run build' failed with error ${buildOutput.error}`);
         process.exit(1);
     }
 

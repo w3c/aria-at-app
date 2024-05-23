@@ -40,6 +40,7 @@ const startServer = async serverOrClient => {
 
         server.on('error', error => {
             console.info(`Error found in startServer process: ${error}`); // eslint-disable-line no-console
+            process.exit(1);
         });
 
         server.on('exit', (code, signal) => {
