@@ -95,6 +95,7 @@ yarn db-init:test;
 yarn sequelize:test db:migrate;
 yarn sequelize:test db:seed:all;
 yarn workspace server db-import-tests:test -c "5fe7afd82fe51c185b8661276105190a59d47322 1aa3b74d24d340362e9f511eae33788d55487d12 ab77d47ab19db71c635c9bb459ba5c34182e1400 d34eddbb8e751f07bd28d952de15fa7fe5f07353";
+yarn workspace server db-import-tests:test;
 yarn workspace server db-populate-sample-data:test;
 ```
 
