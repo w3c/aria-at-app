@@ -47,8 +47,9 @@ can view logging from ansible with `sudo -i cat /var/log/messages`.
 
 ## Deployment
 
-To deploy this project to  server:
+To deploy this project to server:
 
+1. Merge from development to the releases branch as detailed in [docs/release.md](../docs/release.md).
 1. Obtain an authorized key and add it to your keychain. This is needed for deploys to Staging and Production. 
   - The shared key is named `aria-at-bocoup`.
   - Place it in the ~/.ssh directory.
@@ -63,11 +64,11 @@ To deploy this project to  server:
   - Run `ssh root@bestla.w3.internal` (aria-at-staging.w3.org's server) and `ssh root@fenrir.w3.internal` (aria-at.w3.org's server) to verify that you can connect to the servers.
     - The RSA key fingerprint for `bestla.w3.internal` is `SHA256:F16aX2Wx4e39jbHhqEkeH8iRgY41C3WgxvAgvh7PQZ0`.
     - The RSA key fingerprint for `fenrir.w3.internal` is `SHA256:cF6u/K00P2ELEVbIazVVqqMz5q+Sbh4+Jog/VmXZomg`.
-2. Bocoup maintains its own instance of the app on its internal infrastructure for quick and easy testing. Note that you must be a Bocouper to deploy to this environment. Follow the steps below to verify you are able to connect.
+1. Bocoup maintains its own instance of the app on its internal infrastructure for quick and easy testing. Note that you must be a Bocouper to deploy to this environment. Follow the steps below to verify you are able to connect.
   - Run `ssh aria-at-app-sandbox.bocoup.com` and confirm you can connect.
   - Confirm that `sudo su` successfully switches you to the root user. You will need to enter the sudo password you chose during your Bocoup onboarding. This password will be required when deploying to the Sandbox.
-3. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the directory which contains this document.
-4. Install [Ansible](https://www.ansible.com/) version 2.11. Instructions for macOS are as follows:
+1. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the directory which contains this document.
+1. Install [Ansible](https://www.ansible.com/) version 2.11. Instructions for macOS are as follows:
   - Install Ansible at the specific 2.11 version: `python3 -m pip install --user ansible-core==2.11.1`
   - Add the following line to your `~/.zshrc` file, changing the path below to match where Python installs Ansible for you:
     ```
@@ -76,7 +77,7 @@ To deploy this project to  server:
   - Run `source ~/.zshrc` to refresh your shell.
   - Install `ansible.posix` to make use of the [ansible.posix.synchronize](https://docs.ansible.com/ansible/latest/collections/ansible/posix/synchronize_module.html#ansible-posix-synchronize-module-a-wrapper-around-rsync-to-make-common-tasks-in-your-playbooks-quick-and-easy) module: `ansible-galaxy collection install ansible.posix`
   - Run `ansible --version` to verify your ansible is on version 2.11.
-5. Execute the following command from the deploy directory:
+1. Execute the following command from the deploy directory:
    - Sandbox:
     ```
     ansible-playbook provision.yml --inventory inventory/sandbox.yml

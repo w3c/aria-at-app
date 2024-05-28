@@ -35,10 +35,12 @@ const mockTestPlanReportsQueryResult = {
                 },
                 isFinal: false,
                 at: {
-                    id: '1'
+                    id: '1',
+                    key: 'jaws'
                 },
                 browser: {
-                    id: '2'
+                    id: '2',
+                    key: 'firefox'
                 }
             }
         ]
@@ -64,8 +66,8 @@ const setup = (props, mockMutation) => {
 
 const commonSetup = mockMutation => {
     mockTestPlanVersion = { id: 5 };
-    mockBrowser = { id: 2 };
-    mockAt = { id: 3 };
+    mockBrowser = { id: '2', key: 'firefox', name: 'Firefox' };
+    mockAt = { id: '3', key: 'voiceover_macos', name: 'VoiceOver' };
     mockButtonText = 'Add to Test Queue';
 
     const renderResult = setup(

@@ -140,7 +140,8 @@ describe('graphql', () => {
             // 'TestResult'
             'Issue',
             'Vendor',
-            'scheduleCollectionJob'
+            'scheduleCollectionJob',
+            'CollectionJobTestStatus'
         ];
         const excludedTypeNameAndField = [
             // Items formatted like this:
@@ -159,6 +160,7 @@ describe('graphql', () => {
             ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
             ['CollectionJob', 'testPlanRun'],
             ['CollectionJob', 'externalLogsUrl'],
+            ['CollectionJob', 'testStatus'],
             // These interact with Response Scheduler API
             // which is mocked in other tests.
             ['Mutation', 'scheduleCollectionJob'],
@@ -192,6 +194,7 @@ describe('graphql', () => {
                     browsers {
                         __typename
                         id
+                        key
                         name
                         ats {
                             __typename
@@ -217,6 +220,7 @@ describe('graphql', () => {
                     ats {
                         __typename
                         id
+                        key
                         name
                         browsers {
                             __typename
@@ -244,6 +248,7 @@ describe('graphql', () => {
                         __typename
                         username
                         roles
+                        isBot
                     }
                     me {
                         __typename
@@ -516,10 +521,11 @@ describe('graphql', () => {
                             releasedAt
                         }
                     }
-                    testPlanRun(id: 3) {
+                    testPlanRun(id: 1) {
                         __typename
                         id
                         initiatedByAutomation
+                        collectionJob { id }
                         testPlanReport {
                             id
                         }
@@ -792,6 +798,31 @@ describe('graphql', () => {
                 }
             );
         });
+
+        // esure recursive query of collectionJob<>testPlanRun fails at some depth
+        await expect(
+            typeAwareQuery(
+                gql`
+                    query {
+                        collectionJob(id: 1) {
+                            id
+                            testPlanRun {
+                                id
+                                collectionJob {
+                                    id
+                                    testPlanRun {
+                                        id
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                {
+                    transaction: false
+                }
+            )
+        ).rejects.toBeDefined();
 
         expect(() => {
             const missingTypes = checkForMissingTypes();

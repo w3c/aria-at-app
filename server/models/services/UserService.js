@@ -149,6 +149,27 @@ const getUsers = async ({
 };
 
 /**
+ */
+const getBotUserByAtId = async ({
+    atId,
+    userAttributes = USER_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    transaction
+}) => {
+    return ModelService.getByQuery(User, {
+        where: { isBot: true },
+        attributes: userAttributes,
+        include: [
+            {
+                ...atAssociation(atAttributes),
+                where: { id: atId }
+            }
+        ],
+        transaction
+    });
+};
+
+/**
  * @param {object} options
  * @param {string|any} options.search - use this to combine with {@param filter} to be passed to Sequelize's where clause
  * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
@@ -464,6 +485,7 @@ module.exports = {
     getUserById,
     getUserByUsername,
     getUsers,
+    getBotUserByAtId,
     getUserRoles,
     getUserAts,
     createUser,

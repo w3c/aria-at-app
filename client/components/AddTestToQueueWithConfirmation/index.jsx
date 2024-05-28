@@ -323,8 +323,16 @@ function AddTestToQueueWithConfirmation({
 
 AddTestToQueueWithConfirmation.propTypes = {
     testPlanVersion: PropTypes.object,
-    browser: PropTypes.object,
-    at: PropTypes.object,
+    browser: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        key: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired
+    }),
+    at: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        key: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired
+    }),
     buttonRef: PropTypes.object,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
