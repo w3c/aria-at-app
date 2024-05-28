@@ -276,20 +276,27 @@ const getTestableTestPlanVersions = async ({
     let newTestPlanVersion = testPlanVersions.testPlanVersions.find(
         e =>
             e.phase === expectedNewVersionPhase &&
+            e.testPlan.directory === directory &&
             (useV2Format ? e.metadata.testFormatVersion === 2 : true)
     );
 
-    if (newTestPlanVersion.gitSha !== newVersionSha) {
+    if (newTestPlanVersion) {
+        if (newTestPlanVersion.gitSha === newVersionSha)
+            return [oldTestPlanVersion, newTestPlanVersion];
+
         // To prevent any oddities when using the intended version to be in RD,
         // remove any newer version that deprecated it
         await rawQuery(
-            `delete from "TestPlanVersion" where id = ${newTestPlanVersion.id}`,
+            `
+                    delete from "TestPlanReport" where "testPlanVersionId" = ${newTestPlanVersion.id};
+                    delete from "TestPlanVersion" where id = ${newTestPlanVersion.id};`,
             { transaction }
         );
 
         newTestPlanVersion = testPlanVersions.testPlanVersions.find(
             e =>
                 e.gitSha === newVersionSha &&
+                e.testPlan.directory === directory &&
                 (useV2Format ? e.metadata.testFormatVersion === 2 : true)
         );
 
@@ -297,9 +304,13 @@ const getTestableTestPlanVersions = async ({
             testPlanVersion: {
                 updatePhase: { testPlanVersion: updatedTestPlanVersion }
             }
-        } = await updateVersionToPhaseQuery(newTestPlanVersion.id, 'RD', {
-            transaction
-        });
+        } = await updateVersionToPhaseQuery(
+            newTestPlanVersion.id,
+            expectedNewVersionPhase,
+            {
+                transaction
+            }
+        );
 
         newTestPlanVersion = updatedTestPlanVersion;
     }
@@ -313,12 +324,14 @@ const getTestableModalDialogVersions = async transaction => {
     // There are no changes for the VO tests
     const directory = 'modal-dialog';
     const expectedOldVersionPhase = 'CANDIDATE';
+    const expectedNewVersionPhase = 'DRAFT';
     const oldVersionSha = '5fe7afd82fe51c185b8661276105190a59d47322';
     const newVersionSha = 'd0e16b42179de6f6c070da2310e99de837c71215';
 
     return getTestableTestPlanVersions({
         directory,
         expectedOldVersionPhase,
+        expectedNewVersionPhase,
         oldVersionSha,
         newVersionSha,
         transaction
