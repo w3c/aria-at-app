@@ -116,14 +116,14 @@ const getAts = async ({
  * @returns {Promise<*>}
  */
 const createAt = async ({
-    values: { name },
+    values: { name, key },
     atAttributes = AT_ATTRIBUTES,
     atVersionAttributes = AT_VERSION_ATTRIBUTES,
     browserAttributes = BROWSER_ATTRIBUTES,
     transaction
 }) => {
     const atResult = await ModelService.create(At, {
-        values: { name },
+        values: { name, key },
         transaction
     });
     const { id } = atResult;

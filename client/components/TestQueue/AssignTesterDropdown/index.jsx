@@ -16,10 +16,7 @@ import {
 import { useMutation, useQuery } from '@apollo/client';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
-import {
-    isBot,
-    isSupportedByResponseCollector
-} from '../../../utils/automation';
+import { isSupportedByResponseCollector } from '../../../utils/automation';
 
 import './AssignTesterDropdown.css';
 
@@ -77,7 +74,7 @@ const AssignTesterDropdown = ({
                 });
             }, `Updating Test Plan Assignees. Deleting Test Plan Run for ${tester.username}`);
         } else {
-            if (isBot(tester)) {
+            if (tester.isBot) {
                 await triggerLoad(async () => {
                     await scheduleCollection({
                         variables: {
@@ -113,9 +110,33 @@ const AssignTesterDropdown = ({
     const clearAriaLiveRegion = () => {
         setAlertMessage('');
     };
+
+    const handleKeyDown = event => {
+        const { key } = event;
+        if (key.match(/[0-9a-zA-Z]/)) {
+            const container = event.target.closest('[role=menu]');
+            const matchingMenuItem = Array.from(container.children).find(
+                menuItem => {
+                    return menuItem.innerText
+                        .trim()
+                        .toLowerCase()
+                        .startsWith(key.toLowerCase());
+                }
+            );
+
+            if (matchingMenuItem) {
+                matchingMenuItem.focus();
+            }
+        }
+    };
+
     return (
         <LoadingStatus message={loadingMessage}>
-            <Dropdown aria-label="Assign testers menu">
+            <Dropdown
+                focusFirstItemOnShow
+                aria-label="Assign testers menu"
+                onKeyDown={handleKeyDown}
+            >
                 <Dropdown.Toggle
                     ref={dropdownAssignTesterButtonRef}
                     aria-label="Assign testers"
@@ -127,16 +148,28 @@ const AssignTesterDropdown = ({
                 <Dropdown.Menu role="menu" className="assign-menu">
                     {possibleTesters?.length ? (
                         possibleTesters.map(tester => {
-                            const { username } = tester;
+                            const { username, isBot, ats } = tester;
                             const testerIsAssigned = isTesterAssigned(username);
                             const classname = [
                                 testerIsAssigned ? 'assigned' : 'not-assigned',
-                                isBot(tester) ? 'bot' : 'human'
+                                isBot ? 'bot' : 'human'
                             ].join(' ');
                             let icon;
                             if (testerIsAssigned) {
                                 icon = faCheck;
-                            } else if (isBot(tester)) {
+                            } else if (isBot) {
+                                // if our bot doesn't have a link to the at - hide it from the list
+                                if (
+                                    !ats.find(
+                                        ({ id }) =>
+                                            id ===
+                                            testPlanReportAtBrowserQuery
+                                                ?.testPlanReport.at.id
+                                    )
+                                ) {
+                                    return null;
+                                }
+
                                 const supportedByBot =
                                     isSupportedByResponseCollector(
                                         testPlanReportAtBrowserQuery?.testPlanReport
@@ -148,10 +181,13 @@ const AssignTesterDropdown = ({
                             }
                             return (
                                 <Dropdown.Item
-                                    role="menuitem"
+                                    role="menuitemcheckbox"
                                     variant="secondary"
                                     as="button"
                                     key={`tpr-${testPlanReportId}-assign-tester-${username}`}
+                                    aria-checked={
+                                        testerIsAssigned ? true : false
+                                    }
                                     onClick={async () => {
                                         const updatedIsAssigned =
                                             !testerIsAssigned;
@@ -168,15 +204,7 @@ const AssignTesterDropdown = ({
                                     }}
                                 >
                                     {icon && <FontAwesomeIcon icon={icon} />}
-                                    <span className="sr-only">{`${username} ${
-                                        testerIsAssigned
-                                            ? 'checked'
-                                            : 'unchecked'
-                                    }`}</span>
-                                    <span
-                                        aria-hidden="true"
-                                        className={classname}
-                                    >
+                                    <span className={classname}>
                                         {`${tester.username}`}
                                     </span>
                                 </Dropdown.Item>
@@ -195,7 +223,19 @@ const AssignTesterDropdown = ({
 
 AssignTesterDropdown.propTypes = {
     testPlanReportId: PropTypes.string.isRequired,
-    possibleTesters: PropTypes.array.isRequired,
+    possibleTesters: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            username: PropTypes.string.isRequired,
+            isBot: PropTypes.bool.isRequired,
+            ats: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    key: PropTypes.string.isRequired
+                })
+            )
+        })
+    ).isRequired,
     onChange: PropTypes.func.isRequired,
     testPlanRun: PropTypes.object,
     label: PropTypes.string,

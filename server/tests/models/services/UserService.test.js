@@ -3,6 +3,7 @@ const { sequelize } = require('../../../models');
 const UserService = require('../../../models/services/UserService');
 const randomStringGenerator = require('../../util/random-character-generator');
 const dbCleaner = require('../../util/db-cleaner');
+const responseCollectionUserIDs = require('../../../util/responseCollectionUserIDs');
 
 describe('UserModel Data Checks', () => {
     afterAll(async () => {
@@ -333,5 +334,17 @@ describe('UserModel Data Checks', () => {
         expect(user1Ats.length).toBeGreaterThanOrEqual(1);
         expect(user1Ats[0].userId).toBe(_userId);
         expect(user1Ats[0].atId).toBeTruthy();
+    });
+
+    describe('getBotUserByAtId', () => {
+        it('should find nvda bot user', async () => {
+            const user = await UserService.getBotUserByAtId({
+                atId: 2,
+                transaction: false
+            });
+            expect(user).toBeDefined();
+            expect(user.id).toEqual(responseCollectionUserIDs['NVDA Bot']);
+            expect(user.username).toEqual('NVDA Bot');
+        });
     });
 });

@@ -28,6 +28,14 @@
   when: deployment_mode != 'development'
   notify: "restart server"
 
+- name: Make client resources folder writable for import harness
+  file:
+    path: '{{source_dir}}/client/resources'
+    mode: '0777'
+    recurse: yes
+  when: deployment_mode != 'development'
+  notify: "restart server"
+
 - name: Link application code
   file:
     dest: '{{source_dir}}'
@@ -75,6 +83,11 @@
   shell: DOTENV_CONFIG_PATH={{environment_config.dest}} node -r ./node_modules/dotenv/config ./node_modules/.bin/sequelize-cli db:seed:all --config ./config/config.js --seeders-path ./server/seeders/
   args:
     chdir: '{{source_dir}}'
+
+- name: Import latest tests and harness from w3c/aria-at
+  shell: ../deploy/scripts/export-and-exec.sh {{environment_config.dest}} node ./scripts/import-tests/index.js
+  args:
+    chdir: '{{source_dir}}/server'
 
 - name: Build front end package
   command: ./deploy/scripts/export-and-exec.sh {{environment_config.dest}} yarn workspace client build

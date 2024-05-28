@@ -2,7 +2,8 @@ const { AuthenticationError } = require('apollo-server');
 
 const {
     updateCollectionJobById,
-    getCollectionJobById
+    getCollectionJobById,
+    updateCollectionJobTestStatusByQuery
 } = require('../../models/services/CollectionJobService');
 
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
@@ -36,6 +37,16 @@ const cancelCollectionJobResolver = async (
     if (collectionJob.status === COLLECTION_JOB_STATUS.COMPLETED) {
         return collectionJob;
     } else {
+        await updateCollectionJobTestStatusByQuery({
+            where: { collectionJobId, status: COLLECTION_JOB_STATUS.QUEUED },
+            values: { status: COLLECTION_JOB_STATUS.CANCELLED },
+            transaction
+        });
+        await updateCollectionJobTestStatusByQuery({
+            where: { collectionJobId, status: COLLECTION_JOB_STATUS.RUNNING },
+            values: { status: COLLECTION_JOB_STATUS.CANCELLED },
+            transaction
+        });
         return updateCollectionJobById({
             id: collectionJobId,
             values: { status: COLLECTION_JOB_STATUS.CANCELLED },

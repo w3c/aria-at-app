@@ -114,7 +114,9 @@ const TestQueue = () => {
                                 <TestQueueRow
                                     key={key}
                                     user={auth}
-                                    testers={testers}
+                                    testers={testers.sort((a, b) =>
+                                        a.username.localeCompare(b.username)
+                                    )}
                                     testPlanReportData={testPlanReport}
                                     latestTestPlanVersions={
                                         latestTestPlanVersions
