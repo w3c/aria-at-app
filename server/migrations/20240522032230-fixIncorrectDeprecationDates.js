@@ -39,155 +39,81 @@ module.exports = {
                 "draftPhaseReachedAt" IS NOT NULL
                 OR "candidatePhaseReachedAt" IS NOT NULL
                 OR "recommendedPhaseReachedAt" IS NOT NULL;
-            `
+            `,
+                { type: queryInterface.sequelize.QueryTypes.SELECT },
+                {
+                    transaction
+                }
             );
 
-            for (let record of deprecatedRecords) {
-                const startRange = new Date(
-                    new Date(record.deprecatedAt.getTime()) - 10 * 60000
-                );
-                const endRange = new Date(
-                    new Date(record.deprecatedAt.getTime()) + 10 * 60000
-                );
-                // console.log('startRange', startRange);
-                // console.log('record.deprecatedAt', record.deprecatedAt);
-                // console.log('endRange', endRange);
-                // console.log(versionsInRange[0]);
+            const versionAndRangeCheck = async (
+                record,
+                version,
+                startRange,
+                endRange
+            ) => {
+                const versionPhaseDates = [
+                    version.updatedAt,
+                    version.draftPhaseReachedAt,
+                    version.candidatePhaseReachedAt,
+                    version.recommendedPhaseReachedAt
+                ];
 
-                for (let version of versionsInRange[0]) {
-                    if (version.updatedAt) {
-                        if (
-                            version.directory === record.directory &&
-                            version.updatedAt >= startRange &&
-                            version.updatedAt <= endRange
-                        ) {
-                            const newDeprecatedAt = new Date(
-                                new Date(version.updatedAt.getTime()) - 2000
-                            );
+                for (let versionPhaseDate of versionPhaseDates) {
+                    if (
+                        versionPhaseDate &&
+                        version.id !== record.id &&
+                        version.directory === record.directory &&
+                        versionPhaseDate >= startRange &&
+                        versionPhaseDate <= endRange
+                    ) {
+                        const newDeprecatedAt = new Date(
+                            new Date(versionPhaseDate.getTime() - 2000)
+                        );
 
-                            await queryInterface.sequelize.query(
-                                `update "TestPlanVersion"
-                          set "deprecatedAt" = '${newDeprecatedAt.toISOString()}'
-                       where id = ${record.id}
-                         and "gitSha" = '${record.gitSha}'
-                         and directory = '${record.directory}'`,
-                                {
-                                    transaction
-                                }
-                            );
+                        await queryInterface.sequelize.query(
+                            `
+                              update "TestPlanVersion"
+                              set "deprecatedAt" = '${newDeprecatedAt.toISOString()}'
+                              where id = ${record.id}
+                              and "gitSha" = '${record.gitSha}'
+                              and directory = '${record.directory}'
+                            `,
+                            {
+                                transaction
+                            }
+                        );
 
-                            // await queryInterface.bulkUpdate(
-                            //     'TestPlanVersion',
-                            //     { deprecatedAt: newDeprecatedAt },
-                            //     { id: record.id },
-                            //     { transaction }
-                            // );
-                        }
-                    }
-                    if (version.draftPhaseReachedAt) {
-                        if (
-                            version.directory === record.directory &&
-                            version.draftPhaseReachedAt >= startRange &&
-                            version.draftPhaseReachedAt <= endRange
-                        ) {
-                            const newDeprecatedAt = new Date(
-                                new Date(
-                                    version.draftPhaseReachedAt.getTime()
-                                ) - 2000
-                            );
-                            console.log('version.directory', newDeprecatedAt);
-                            console.log('record.directory', version.draftPhaseReachedAt);
-                            // throw new Error('THIS ERROR RAN');
-
-                            await queryInterface.sequelize.query(
-                                `update "TestPlanVersion"
-                               set "deprecatedAt" = '${newDeprecatedAt.toISOString()}'
-                               where id = ${record.id}
-                                 and "gitSha" = '${record.gitSha}'
-                                 and directory = '${record.directory}'`,
-                                {
-                                    transaction
-                                }
-                            );
-                            // console.log(2)
-                            // await queryInterface.bulkUpdate(
-                            //     'TestPlanVersion',
-                            //     { deprecatedAt: newDeprecatedAt },
-                            //     { id: record.id },
-                            //     { transaction }
-                            // );
-                            // console.log(version.draftPhaseReachedAt)
-                        }
-                    }
-                    if (version.candidatePhaseReachedAt) {
-                        if (
-                          version.directory === record.directory &&
-                            version.candidatePhaseReachedAt >= startRange &&
-                            version.candidatePhaseReachedAt <= endRange
-                        ) {
-                            const newDeprecatedAt = new Date(
-                                new Date(
-                                    version.candidatePhaseReachedAt.getTime()
-                                ) - 2000
-                            );
-                            await queryInterface.sequelize.query(
-                                `update "TestPlanVersion"
-                                set "deprecatedAt" = '${newDeprecatedAt.toISOString()}'
-                             where id = ${record.id}
-                               and "gitSha" = '${record.gitSha}'
-                               and directory = '${record.directory}'`,
-                                {
-                                    transaction
-                                }
-                            );
-
-                            // await queryInterface.bulkUpdate(
-                            //     'TestPlanVersion',
-                            //     { deprecatedAt: newDeprecatedAt },
-                            //     { id: record.id },
-                            //     { transaction }
-                            // );
-                        }
-                    }
-                    if (version.recommendedPhaseReachedAt) {
-                        if (
-                          version.directory === record.directory &&
-                            version.recommendedPhaseReachedAt >= startRange &&
-                            version.recommendedPhaseReachedAt <= endRange
-                        ) {
-                            const newDeprecatedAt = new Date(
-                                new Date(
-                                    version.recommendedPhaseReachedAt.getTime()
-                                ) - 2000
-                            );
-
-                            await queryInterface.sequelize.query(
-                                `update "TestPlanVersion"
-                                set "deprecatedAt" = '${newDeprecatedAt.toISOString()}'
-                             where id = ${record.id}
-                               and "gitSha" = '${record.gitSha}'
-                               and directory = '${record.directory}'`,
-                                {
-                                    transaction
-                                }
-                            );
-
-                            // await queryInterface.bulkUpdate(
-                            //     'TestPlanVersion',
-                            //     { deprecatedAt: newDeprecatedAt },
-                            //     { id: record.id },
-                            //     { transaction }
-                            // );
-                        }
+                        // await queryInterface.bulkUpdate(
+                        //     'TestPlanVersion',
+                        //     { deprecatedAt: newDeprecatedAt },
+                        //     { id: record.id },
+                        //     { transaction }
+                        // );
                     }
                 }
-            }
+            };
 
-            // console.log('versionsInRange', versionsInRange[0]);
-            // console.log('deprecatedRecords', deprecatedRecords);
-            // console.log('check', check);
-            // console.log("date2", date2);
-            // throw new Error('THIS ERROR RAN');
+            for (let record of deprecatedRecords) {
+                const deprecatedAtDate = new Date(record.deprecatedAt);
+
+                const startRange = new Date(
+                    deprecatedAtDate.getTime() - 10 * 60000
+                );
+                const endRange = new Date(
+                    deprecatedAtDate.getTime() + 10 * 60000
+                );
+
+                for (let version of versionsInRange) {
+                    await versionAndRangeCheck(
+                        record,
+                        version,
+                        startRange,
+                        endRange
+                    );
+                }
+                // throw new Error('THIS ERROR RAN');
+            }
         });
     }
     // async down(queryInterface) {
