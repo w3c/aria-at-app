@@ -17,23 +17,6 @@ module.exports = {
                   WHERE
                     "deprecatedAt" IS NOT NULL
                 `,
-                //   `
-                //   SELECT
-                //   "title",
-                //   "phase",
-                //   "testPlanId",
-                //   "deprecatedAt",
-                //   "draftPhaseReachedAt",
-                //   "candidatePhaseReachedAt",
-                //   "recommendedPhaseReachedAt",
-                //   "deprecatedAt",
-                //   "versionString"
-                // FROM
-                //   "TestPlanVersion"
-                // WHERE
-                //   "deprecatedAt" IS NOT NULL
-                //   AND "title" = 'Command Button Example'
-                //   `,
                 { type: queryInterface.sequelize.QueryTypes.SELECT },
                 {
                     transaction
@@ -47,6 +30,7 @@ module.exports = {
                 "draftPhaseReachedAt",
                 "candidatePhaseReachedAt",
                 "recommendedPhaseReachedAt",
+                "updatedAt",
                 "gitSha",
                 directory
               FROM
@@ -71,8 +55,38 @@ module.exports = {
                 // console.log(versionsInRange[0]);
 
                 for (let version of versionsInRange[0]) {
+                    if (version.updatedAt) {
+                        if (
+                            version.directory === record.directory &&
+                            version.updatedAt >= startRange &&
+                            version.updatedAt <= endRange
+                        ) {
+                            const newDeprecatedAt = new Date(
+                                new Date(version.updatedAt.getTime()) - 2000
+                            );
+
+                            await queryInterface.sequelize.query(
+                                `update "TestPlanVersion"
+                          set "deprecatedAt" = '${newDeprecatedAt.toISOString()}'
+                       where id = ${record.id}
+                         and "gitSha" = '${record.gitSha}'
+                         and directory = '${record.directory}'`,
+                                {
+                                    transaction
+                                }
+                            );
+
+                            // await queryInterface.bulkUpdate(
+                            //     'TestPlanVersion',
+                            //     { deprecatedAt: newDeprecatedAt },
+                            //     { id: record.id },
+                            //     { transaction }
+                            // );
+                        }
+                    }
                     if (version.draftPhaseReachedAt) {
                         if (
+                            version.directory === record.directory &&
                             version.draftPhaseReachedAt >= startRange &&
                             version.draftPhaseReachedAt <= endRange
                         ) {
@@ -81,28 +95,10 @@ module.exports = {
                                     version.draftPhaseReachedAt.getTime()
                                 ) - 2000
                             );
-                            console.log('newDeprecatedAt', newDeprecatedAt);
-                            console.log(
-                                'version.draftPhaseReachedAt',
-                                version.draftPhaseReachedAt
-                            );
+                            console.log('version.directory', newDeprecatedAt);
+                            console.log('record.directory', version.draftPhaseReachedAt);
                             // throw new Error('THIS ERROR RAN');
-                            // console.log(newDeprecatedAt.toISOString())
-                            //     await queryInterface.sequelize.query(
-                            //         `update "TestPlanVersion"
-                            //  set "versionString" = 'GOT IT'
-                            //  where id = 62353
-                            //    and "gitSha" = '565a87b4111acebdb883d187b581e82c42a73844'
-                            //    and directory = 'command-button'`,
-                            //         {
-                            //             transaction
-                            //         }
-                            //     );
-                            // console.log(record);
-                            // console.log('record.id', record.id);
-                            // console.log('record.gitSha', record.gitSha);
-                            // console.log('record.directory', record.directory);
-                            // throw new Error('THIS ERROR RAN');
+
                             await queryInterface.sequelize.query(
                                 `update "TestPlanVersion"
                                set "deprecatedAt" = '${newDeprecatedAt.toISOString()}'
@@ -125,6 +121,7 @@ module.exports = {
                     }
                     if (version.candidatePhaseReachedAt) {
                         if (
+                          version.directory === record.directory &&
                             version.candidatePhaseReachedAt >= startRange &&
                             version.candidatePhaseReachedAt <= endRange
                         ) {
@@ -154,6 +151,7 @@ module.exports = {
                     }
                     if (version.recommendedPhaseReachedAt) {
                         if (
+                          version.directory === record.directory &&
                             version.recommendedPhaseReachedAt >= startRange &&
                             version.recommendedPhaseReachedAt <= endRange
                         ) {
