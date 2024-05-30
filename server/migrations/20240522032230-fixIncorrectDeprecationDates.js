@@ -24,22 +24,35 @@ module.exports = {
             );
 
             const versionsInRange = await queryInterface.sequelize.query(
+                //     `
+                //   SELECT
+                //     id,
+                //     "draftPhaseReachedAt",
+                //     "candidatePhaseReachedAt",
+                //     "recommendedPhaseReachedAt",
+                //     "updatedAt",
+                //     "gitSha",
+                //     directory
+                //   FROM
+                //     "TestPlanVersion"
+                //   WHERE
+                //     "draftPhaseReachedAt" IS NOT NULL
+                //     OR "candidatePhaseReachedAt" IS NOT NULL
+                //     OR "recommendedPhaseReachedAt" IS NOT NULL;
+                // `,
+
                 `
-              SELECT
-                id,
-                "draftPhaseReachedAt",
-                "candidatePhaseReachedAt",
-                "recommendedPhaseReachedAt",
-                "updatedAt",
-                "gitSha",
-                directory
-              FROM
-                "TestPlanVersion"
-              WHERE
-                "draftPhaseReachedAt" IS NOT NULL
-                OR "candidatePhaseReachedAt" IS NOT NULL
-                OR "recommendedPhaseReachedAt" IS NOT NULL;
-            `,
+                  SELECT
+                    id,
+                    "draftPhaseReachedAt",
+                    "candidatePhaseReachedAt",
+                    "recommendedPhaseReachedAt",
+                    "updatedAt",
+                    "gitSha",
+                    directory
+                  FROM
+                    "TestPlanVersion"
+                `,
                 { type: queryInterface.sequelize.QueryTypes.SELECT },
                 {
                     transaction
@@ -58,8 +71,19 @@ module.exports = {
                     version.candidatePhaseReachedAt,
                     version.recommendedPhaseReachedAt
                 ];
+                // const versionPhaseDate =
+                //     version.recommendedPhaseReachedAt ??
+                //     version.candidatePhaseReachedAt ??
+                //     version.draftPhaseReachedAt ??
+                //     version.updatedAt;
 
                 for (let versionPhaseDate of versionPhaseDates) {
+                    if (
+                        record.draftPhaseReachedAt === null &&
+                        versionPhaseDate !== version.updatedAt
+                    ) {
+                        continue;
+                    }
                     if (
                         versionPhaseDate &&
                         version.id !== record.id &&
@@ -93,15 +117,15 @@ module.exports = {
                     }
                 }
             };
-
+            // throw new Error('Stop Running!');
             for (let record of deprecatedRecords) {
                 const deprecatedAtDate = new Date(record.deprecatedAt);
 
                 const startRange = new Date(
-                    deprecatedAtDate.getTime() - 10 * 60000
+                    deprecatedAtDate.getTime() - 5 * 60000
                 );
                 const endRange = new Date(
-                    deprecatedAtDate.getTime() + 10 * 60000
+                    deprecatedAtDate.getTime() + 5 * 60000
                 );
 
                 for (let version of versionsInRange) {
