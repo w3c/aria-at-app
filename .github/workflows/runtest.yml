@@ -36,12 +36,10 @@ jobs:
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${PGDATABASE} to ${PGUSER};"
           yarn sequelize:test db:migrate
           yarn sequelize:test db:seed:all
-          yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_1}
-          yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_2}
-          yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_3}
-          yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_4}
+          yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
+          yarn workspace server db-import-tests:test
           yarn workspace server db-populate-sample-data:test
-      # yarn test would run all of these in serial, however we split this up to allow it continue
+      # yarn test would run all of these in serial, however we split this up to allow it to continue
       # in case of errors - all tests will still run even if lint fails for instance.
       - run: yarn workspace shared prettier
         if: always()

@@ -2,15 +2,31 @@ export const isSupportedByResponseCollector = ctx => {
     if (!ctx || !ctx.at || !ctx.browser) {
         return false;
     }
+    const {
+        at: { key: atKey },
+        browser: { key: browserKey }
+    } = ctx;
     return (
-        ctx.at.name === 'NVDA' &&
-        (ctx.browser.name === 'Chrome' || ctx.browser.name === 'Firefox')
+        (atKey === 'nvda' &&
+            (browserKey === 'chrome' || browserKey === 'firefox')) ||
+        (atKey === 'voiceover_macos' && browserKey === 'safari_macos')
     );
 };
 
-// TODO: Stub, support for more bot users should be added
+/**
+ * @param {} [at]
+ * @param {} [browser]
+ *
+ * @returns {string|undefined}
+ */
 export const getBotUsernameFromAtBrowser = (at, browser) => {
-    if (at?.name === 'NVDA' && browser?.name === 'Chrome') {
+    if (
+        at?.key === 'nvda' &&
+        (browser?.key === 'chrome' || browser?.key === 'firefox')
+    ) {
         return 'NVDA Bot';
+    }
+    if (at?.key === 'voiceover_macos' && browser?.key === 'safari_macos') {
+        return 'VoiceOver Bot';
     }
 };

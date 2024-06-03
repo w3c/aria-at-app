@@ -21,7 +21,6 @@ const ALGORITHM = 'RS256';
 // > the workflow file is on the default branch.
 //
 // https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
-const WORKFLOW_FILE_NAME = 'nvda-test.yml';
 const WORKFLOW_REPO = 'bocoup/aria-at-gh-actions-helper';
 
 // Generated from the GitHub.com UI
@@ -126,19 +125,32 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
         jsonWebToken,
         GITHUB_APP_INSTALLATION_ID
     );
+
+    const atKey = job.testPlanRun.testPlanReport.at.key;
+    const workflowFilename = {
+        nvda: 'nvda-test.yml',
+        voiceover_macos: 'voiceover-test.yml'
+    }[atKey];
+
+    if (!workflowFilename) {
+        throw new Error(`Unsupported AT workflow for ${atKey}`);
+    }
+
     const browser = job.testPlanRun.testPlanReport.browser.name.toLowerCase();
     const inputs = {
         callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/test/:testRowNumber`,
         status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}`,
         callback_header: `x-automation-secret:${process.env.AUTOMATION_SCHEDULER_SECRET}`,
         work_dir: `tests/${directory}`,
-        test_pattern: '{reference/**,test-*-nvda.*}',
-        aria_at_ref: gitSha,
-        browser
+        aria_at_ref: gitSha
     };
+    if (atKey === 'nvda') {
+        inputs.test_pattern = '{reference/**,test-*-nvda.*}';
+        inputs.browser = browser;
+    }
     const axiosConfig = {
         method: 'POST',
-        url: `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${WORKFLOW_FILE_NAME}/dispatches`,
+        url: `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${workflowFilename}/dispatches`,
 
         headers: {
             Accept: 'application/vnd.github+json',
@@ -154,7 +166,11 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
     };
     const response = await axios(axiosConfig);
     if (response.status < 200 || response.status >= 300) {
-        throw new Error(response.data ?? 'Unable to initiate workflow');
+        throw new Error(
+            response.data
+                ? JSON.stringify(response.data)
+                : 'Unable to initiate workflow'
+        );
     }
 
     return true;
