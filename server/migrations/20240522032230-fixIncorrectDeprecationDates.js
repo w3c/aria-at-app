@@ -24,23 +24,6 @@ module.exports = {
             );
 
             const versionsInRange = await queryInterface.sequelize.query(
-                //     `
-                //   SELECT
-                //     id,
-                //     "draftPhaseReachedAt",
-                //     "candidatePhaseReachedAt",
-                //     "recommendedPhaseReachedAt",
-                //     "updatedAt",
-                //     "gitSha",
-                //     directory
-                //   FROM
-                //     "TestPlanVersion"
-                //   WHERE
-                //     "draftPhaseReachedAt" IS NOT NULL
-                //     OR "candidatePhaseReachedAt" IS NOT NULL
-                //     OR "recommendedPhaseReachedAt" IS NOT NULL;
-                // `,
-
                 `
                   SELECT
                     id,
@@ -71,11 +54,6 @@ module.exports = {
                     version.candidatePhaseReachedAt,
                     version.recommendedPhaseReachedAt
                 ];
-                // const versionPhaseDate =
-                //     version.recommendedPhaseReachedAt ??
-                //     version.candidatePhaseReachedAt ??
-                //     version.draftPhaseReachedAt ??
-                //     version.updatedAt;
 
                 for (let versionPhaseDate of versionPhaseDates) {
                     if (
@@ -107,17 +85,10 @@ module.exports = {
                                 transaction
                             }
                         );
-
-                        // await queryInterface.bulkUpdate(
-                        //     'TestPlanVersion',
-                        //     { deprecatedAt: newDeprecatedAt },
-                        //     { id: record.id },
-                        //     { transaction }
-                        // );
                     }
                 }
             };
-            // throw new Error('Stop Running!');
+
             for (let record of deprecatedRecords) {
                 const deprecatedAtDate = new Date(record.deprecatedAt);
 
@@ -136,22 +107,7 @@ module.exports = {
                         endRange
                     );
                 }
-                // throw new Error('THIS ERROR RAN');
             }
         });
     }
-    // async down(queryInterface) {
-    //     return queryInterface.sequelize.transaction(async transaction => {
-    //         await queryInterface.sequelize.query(
-    //             `update "TestPlanVersion"
-    //              set "deprecatedAt" = '2023-12-13 22:19:04.298000 +00:00'
-    //              where id = 56298
-    //                and "gitSha" = 'd9a19f815d0f21194023b1c5919eb3b04d5c1ab7'
-    //                and directory = 'command-button'`,
-    //             {
-    //                 transaction
-    //             }
-    //         );
-    //     });
-    // }
 };
