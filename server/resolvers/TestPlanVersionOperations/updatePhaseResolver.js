@@ -319,7 +319,6 @@ const updatePhaseResolver = async (
     // If oldTestPlanVersion's results are being used to update this earlier
     // version, deprecate it (if the same phase)
 
-    // MAKE A FUNCTION FOR THIS
     if (oldTestPlanVersion && phase === oldTestPlanVersion.phase) {
         let deprecationDate;
         if (updateParams.draftPhaseReachedAt) {
