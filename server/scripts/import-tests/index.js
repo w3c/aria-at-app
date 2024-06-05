@@ -203,7 +203,7 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
                     // Deprecations happen slightly before update during normal app operations.
                     // This is to maintain correctness and any app sorts issues
                     const deprecatedAt = new Date(updatedAt);
-                    deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 60);
+                    deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 120);
                     await updateTestPlanVersionById({
                         id: testPlanVersionToDeprecate.id,
                         values: { phase: 'DEPRECATED', deprecatedAt },
