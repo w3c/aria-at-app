@@ -8,6 +8,7 @@ import { Reports, Report } from '@components/Reports';
 import CandidateReview from '@components/CandidateReview';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
+import TestQueue2 from '@components/TestQueue2';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
 import CandidateTestPlanRun from '@components/CandidateReview/CandidateTestPlanRun';
@@ -42,6 +43,7 @@ export default () => (
             }
         />
         <Route exact path="/test-queue" element={<TestQueue />} />
+        <Route exact path="/test-queue-2" element={<TestQueue2 />} />
         <Route
             exact
             path="/test-plan-report/:testPlanReportId"

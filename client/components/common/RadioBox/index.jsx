@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 
 const ContainerDiv = styled.div`
-    width: max-content;
     display: flex;
 `;
 

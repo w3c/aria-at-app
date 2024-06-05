@@ -105,7 +105,7 @@ const TestQueueRow = ({
             testPlanRunId: run.id,
             ...run.tester
         }))
-        .filter(tester => !isBot(tester));
+        .filter(tester => !tester.isBot);
 
     const getTestPlanRunIdByUserId = userId => {
         return draftTestPlanRuns.find(({ tester }) => tester.id === userId).id;

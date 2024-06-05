@@ -76,22 +76,25 @@ const DisclosureContainer = styled.div`
 
     .disclosure-row-test-plans {
         display: grid;
-        grid-template-columns: 1fr;
         row-gap: 0.5rem;
+        grid-template-columns: 2fr 2fr 1fr;
+        column-gap: 2rem;
 
-        & > :nth-of-type(2) {
-            display: none;
+        & > :nth-of-type(3) {
+            display: block;
         }
         & > :nth-of-type(5) {
             grid-column: span 2;
         }
 
-        @media (min-width: 768px) {
-            grid-template-columns: 2fr 2fr 1fr;
-            column-gap: 2rem;
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
 
-            & > :nth-of-type(2) {
-                display: block;
+            & > :nth-of-type(3) {
+                display: none;
+            }
+            & > :nth-of-type(5) {
+                grid-column: initial;
             }
         }
     }
