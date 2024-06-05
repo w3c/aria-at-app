@@ -7,7 +7,8 @@
         "assertionTokens": {
             "screenReader": "JAWS",
             "interactionMode": "PC cursor active",
-            "readingMode": "virtual cursor active"
+            "readingMode": "virtual cursor active",
+            "readingCursor": "virtual cursor"
         },
         "settings": {
             "virtualCursor": {
