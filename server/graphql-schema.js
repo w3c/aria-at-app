@@ -137,6 +137,10 @@ const graphqlSchema = gql`
         """
         name: String!
         """
+        Consistent key name for browser like "chrome" or "safari_macos"
+        """
+        key: String!
+        """
         A fully-qualified version like "99.0.4844.84"
         """
         browserVersions: [BrowserVersion]!
@@ -191,6 +195,13 @@ const graphqlSchema = gql`
         Human-readable name for the AT, such as "NVDA".
         """
         name: String!
+        """
+        Consistent key value for lookups.
+        """
+        key: String!
+        """
+        Recorded version numbers
+        """
         atVersions: [AtVersion]!
         """
         The browsers which can run the At, for example, Safari can run VoiceOver but not Jaws because Jaws is Windows only.

@@ -28,9 +28,20 @@ jest.mock('@apollo/client', () => {
 });
 
 const mockPossibleTesters = [
-    { id: '1', username: 'bee', isBot: false },
-    { id: '2', username: 'puppy', isBot: false },
-    { id: '3', username: 'NVDA Bot', isBot: true }
+    { id: '1', username: 'bee', isBot: false, ats: [] },
+    { id: '2', username: 'puppy', isBot: false, ats: [] },
+    {
+        id: '9999',
+        username: 'NVDA Bot',
+        isBot: true,
+        ats: [{ id: '2', key: 'nvda' }]
+    },
+    {
+        id: '9998',
+        username: 'VoiceOver Bot',
+        isBot: true,
+        ats: [{ id: '3', key: 'voiceover_macos' }]
+    }
 ];
 
 const mockProps = {
@@ -62,95 +73,130 @@ useMutation.mockImplementation(mutation => {
 });
 
 // Mocked GraphQL responses
-const mocks = [
-    {
-        request: {
-            query: ASSIGN_TESTER_MUTATION,
-            variables: {
-                testReportId: 'report1',
-                testerId: '1'
-            }
+const getMocks = (atKey, browserKey) => {
+    const at = {
+        nvda: {
+            id: '2',
+            name: 'NVDA',
+            key: 'nvda'
         },
-        result: {
-            data: {
-                testPlanReport: {
-                    assignTester: {
-                        testPlanReport: {
-                            draftTestPlanRuns: [
-                                {
-                                    initiatedByAutomation: false,
-                                    tester: {
-                                        id: '1',
-                                        username: 'bee'
+        jaws: {
+            id: '1',
+            name: 'JAWS',
+            key: 'jaws'
+        },
+        voiceover_macos: {
+            id: '3',
+            name: 'VoiceOver for MacOS',
+            key: 'voiceover_macos'
+        }
+    }[atKey];
+
+    const browser = {
+        chrome: {
+            id: '2',
+            name: 'Chrome',
+            key: 'chrome'
+        },
+        safari_macos: {
+            id: '3',
+            name: 'Safari for MacOS',
+            key: 'safari_macos'
+        },
+        voiceover_macos: {
+            id: '3',
+            name: 'VoiceOver for MacOS',
+            key: 'voiceover_macos'
+        }
+    }[browserKey];
+
+    if (!at) throw new Error('Unsupported AT key for mocks');
+    if (!browser) throw new Error('Unsupported browser key for mocks');
+
+    return [
+        {
+            request: {
+                query: ASSIGN_TESTER_MUTATION,
+                variables: {
+                    testReportId: 'report1',
+                    testerId: '1'
+                }
+            },
+            result: {
+                data: {
+                    testPlanReport: {
+                        assignTester: {
+                            testPlanReport: {
+                                draftTestPlanRuns: [
+                                    {
+                                        initiatedByAutomation: false,
+                                        tester: {
+                                            id: '1',
+                                            username: 'bee'
+                                        }
                                     }
-                                }
-                            ]
+                                ]
+                            }
                         }
                     }
                 }
             }
-        }
-    },
-    {
-        request: {
-            query: REMOVE_TESTER_MUTATION,
-            variables: {
-                testReportId: 'report1',
-                testerId: '1'
-            }
         },
-        result: {
-            data: {
-                testPlanReport: {
-                    deleteTestPlanRun: {
-                        testPlanReport: {
-                            draftTestPlanRuns: []
+        {
+            request: {
+                query: REMOVE_TESTER_MUTATION,
+                variables: {
+                    testReportId: 'report1',
+                    testerId: '1'
+                }
+            },
+            result: {
+                data: {
+                    testPlanReport: {
+                        deleteTestPlanRun: {
+                            testPlanReport: {
+                                draftTestPlanRuns: []
+                            }
                         }
                     }
                 }
             }
-        }
-    },
-    {
-        request: {
-            query: SCHEDULE_COLLECTION_JOB_MUTATION,
-            variables: {
-                testPlanReportId: 'report1'
-            }
         },
-        result: {
-            data: {
-                scheduleCollectionJob: {
-                    id: 'some-job-id',
-                    status: 'pending'
+        {
+            request: {
+                query: SCHEDULE_COLLECTION_JOB_MUTATION,
+                variables: {
+                    testPlanReportId: 'report1'
+                }
+            },
+            result: {
+                data: {
+                    scheduleCollectionJob: {
+                        id: 'some-job-id',
+                        status: 'pending'
+                    }
                 }
             }
-        }
-    },
-    {
-        request: {
-            query: TEST_PLAN_REPORT_AT_BROWSER_QUERY,
-            variables: {
-                testPlanReportId: 'report1'
-            }
         },
-        result: {
-            data: {
-                testPlanReport: {
-                    id: 'report1',
-                    at: {
-                        id: 2,
-                        name: 'NVDA'
-                    },
-                    browser: {
-                        id: 1,
-                        name: 'Chrome'
+        {
+            request: {
+                query: TEST_PLAN_REPORT_AT_BROWSER_QUERY,
+                variables: {
+                    testPlanReportId: 'report1'
+                }
+            },
+            result: {
+                data: {
+                    testPlanReport: {
+                        id: 'report1',
+                        at,
+                        browser
                     }
                 }
             }
         }
-    }
-];
+    ];
+};
 
 describe('AssignTesterDropdown', () => {
     beforeEach(() => {
@@ -159,7 +205,7 @@ describe('AssignTesterDropdown', () => {
 
     it('renders without crashing', () => {
         render(
-            <MockedProvider mocks={mocks}>
+            <MockedProvider mocks={getMocks('nvda', 'chrome')}>
                 <AssignTesterDropdown {...mockProps} />
             </MockedProvider>
         );
@@ -168,7 +214,10 @@ describe('AssignTesterDropdown', () => {
 
     it('assigns tester correctly and calls assignTester mutation', async () => {
         render(
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider
+                mocks={getMocks('nvda', 'chrome')}
+                addTypename={false}
+            >
                 <AssignTesterDropdown {...mockProps} />
             </MockedProvider>
         );
@@ -194,7 +243,10 @@ describe('AssignTesterDropdown', () => {
 
     it('assigns bot correctly and calls scheduleCollection mutation', async () => {
         render(
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider
+                mocks={getMocks('nvda', 'chrome')}
+                addTypename={false}
+            >
                 <AssignTesterDropdown {...mockProps} />
             </MockedProvider>
         );
@@ -218,11 +270,11 @@ describe('AssignTesterDropdown', () => {
 
     it('does not list bot when run does not support automation', async () => {
         await act(async () => {
-            const jawsMock = [...mocks];
-            jawsMock[3].result.data.testPlanReport.at.name = 'JAWS';
-
             render(
-                <MockedProvider mocks={jawsMock} addTypename={false}>
+                <MockedProvider
+                    mocks={getMocks('jaws', 'chrome')}
+                    addTypename={false}
+                >
                     <AssignTesterDropdown {...mockProps} />
                 </MockedProvider>
             );
@@ -244,6 +296,39 @@ describe('AssignTesterDropdown', () => {
         });
     });
 
+    it('only lists supported bot', async () => {
+        await act(async () => {
+            render(
+                <MockedProvider
+                    mocks={getMocks('voiceover_macos', 'safari_macos')}
+                    addTypename={false}
+                >
+                    <AssignTesterDropdown {...mockProps} />
+                </MockedProvider>
+            );
+        });
+        let button;
+        await waitFor(async () => {
+            button = await screen.getByRole('button', {
+                name: /assign testers/i
+            });
+        });
+
+        await act(async () => {
+            fireEvent.click(button);
+        });
+
+        await waitFor(async () => {
+            const items = await screen.queryByText(/NVDA Bot/);
+            expect(items).toBeNull();
+        });
+
+        await waitFor(async () => {
+            const items = await screen.queryAllByText(/VoiceOver Bot/);
+            expect(items).toHaveLength(1);
+        });
+    });
+
     it('removes tester correctly and calls removeTester mutation', async () => {
         mockProps.draftTestPlanRuns = [
             {
@@ -256,7 +341,10 @@ describe('AssignTesterDropdown', () => {
         ];
 
         render(
-            <MockedProvider mocks={mocks} addTypename={false}>
+            <MockedProvider
+                mocks={getMocks('nvda', 'chrome')}
+                addTypename={false}
+            >
                 <AssignTesterDropdown {...mockProps} />
             </MockedProvider>
         );

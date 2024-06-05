@@ -109,7 +109,7 @@ describe('BrowserModel Data Checks', () => {
 
             // A2
             const browser = await BrowserService.createBrowser({
-                values: { name: _name },
+                values: { name: _name, key: _name },
                 transaction
             });
             const { id, name } = browser;
@@ -138,7 +138,7 @@ describe('BrowserModel Data Checks', () => {
 
             // A2
             const browser = await BrowserService.createBrowser({
-                values: { name: _name },
+                values: { name: _name, key: _name },
                 transaction
             });
             const { id, name } = browser;

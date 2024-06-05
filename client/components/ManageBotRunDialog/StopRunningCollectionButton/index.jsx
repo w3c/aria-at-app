@@ -52,7 +52,7 @@ StopRunningCollectionButton.propTypes = {
             'CANCELLED',
             'COMPLETED',
             'ERROR'
-        ])
+        ]).isRequired
     }),
     onClick: PropTypes.func
 };
