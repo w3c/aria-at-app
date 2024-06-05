@@ -687,10 +687,12 @@ export const mockedTestPlanVersion = {
             isRequired: true,
             at: {
                 id: '3',
+                key: 'voiceover_macos',
                 name: 'VoiceOver for macOS'
             },
             browser: {
                 id: '3',
+                key: 'safari_macos',
                 name: 'Safari'
             },
             minimumAtVersion: {
@@ -704,10 +706,12 @@ export const mockedTestPlanVersion = {
             isRequired: false,
             at: {
                 id: '3',
+                key: 'voiceover_macos',
                 name: 'VoiceOver for macOS'
             },
             browser: {
                 id: '2',
+                key: 'chrome',
                 name: 'Chrome'
             },
             minimumAtVersion: {
@@ -721,10 +725,12 @@ export const mockedTestPlanVersion = {
             isRequired: false,
             at: {
                 id: '3',
+                key: 'voiceover_macos',
                 name: 'VoiceOver for macOS'
             },
             browser: {
                 id: '1',
+                key: 'firefox',
                 name: 'Firefox'
             },
             minimumAtVersion: {
@@ -763,92 +769,7 @@ export default (
         },
         result: {
             data: {
-                testPlanVersion: mockedTestPlanVersion,
-                ats: [
-                    {
-                        id: '1',
-                        key: 'jaws',
-                        name: 'JAWS',
-                        atVersions: [
-                            {
-                                id: '1',
-                                name: '2021.2111.13',
-                                releasedAt: '2021-11-01T04:00:00.000Z'
-                            }
-                        ],
-                        browsers: [
-                            {
-                                id: '2',
-                                key: 'chrome',
-                                name: 'Chrome'
-                            },
-                            {
-                                id: '1',
-                                key: 'firefox',
-                                name: 'Firefox'
-                            }
-                        ],
-                        candidateBrowsers: [{ id: '2' }],
-                        recommendedBrowsers: [{ id: '1' }, { id: '2' }]
-                    },
-                    {
-                        id: '2',
-                        key: 'nvda',
-                        name: 'NVDA',
-                        atVersions: [
-                            {
-                                id: '2',
-                                name: '2020.4',
-                                releasedAt: '2021-02-19T05:00:00.000Z'
-                            }
-                        ],
-                        browsers: [
-                            {
-                                id: '2',
-                                key: 'chrome',
-                                name: 'Chrome'
-                            },
-                            {
-                                id: '1',
-                                key: 'firefox',
-                                name: 'Firefox'
-                            }
-                        ],
-                        candidateBrowsers: [{ id: '2' }],
-                        recommendedBrowsers: [{ id: '1' }, { id: '2' }]
-                    },
-                    {
-                        id: '3',
-                        key: 'voiceover_macos',
-                        name: 'VoiceOver for macOS',
-                        atVersions: [
-                            {
-                                id: '3',
-                                name: '11.6 (20G165)',
-                                releasedAt: '2019-09-01T04:00:00.000Z'
-                            }
-                        ],
-                        browsers: [
-                            {
-                                id: '2',
-                                key: 'chrome',
-                                name: 'Chrome'
-                            },
-                            {
-                                id: '1',
-                                key: 'firefox',
-                                name: 'Firefox'
-                            },
-                            {
-                                id: '3',
-                                key: 'safari',
-                                name: 'Safari'
-                            }
-                        ],
-                        candidateBrowsers: [{ id: '3' }],
-                        recommendedBrowsers: [{ id: '2' }, { id: '3' }]
-                    }
-                ]
+                testPlanVersion: mockedTestPlanVersion
             }
         }
     },

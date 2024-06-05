@@ -20,10 +20,12 @@ export const TEST_PLAN_REPORT_STATUS_DIALOG_QUERY = gql`
                 isRequired
                 at {
                     id
+                    key
                     name
                 }
                 browser {
                     id
+                    key
                     name
                 }
                 minimumAtVersion {

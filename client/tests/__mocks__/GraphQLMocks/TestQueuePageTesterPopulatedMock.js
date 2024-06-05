@@ -26,7 +26,7 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             {
@@ -91,7 +91,7 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             {
@@ -136,7 +136,7 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             {

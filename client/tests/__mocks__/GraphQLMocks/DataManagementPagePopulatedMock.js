@@ -1427,7 +1427,7 @@ export default (
                                 },
                                 browser: {
                                     id: '3',
-                                    key: 'safari',
+                                    key: 'safari_macos',
                                     name: 'Safari'
                                 },
                                 issues: [],
@@ -2325,7 +2325,7 @@ export default (
                                 },
                                 browser: {
                                     id: '3',
-                                    key: 'safari',
+                                    key: 'safari_macos',
                                     name: 'Safari'
                                 },
                                 issues: [],
@@ -2557,10 +2557,12 @@ export default (
                             isRequired: true,
                             at: {
                                 id: '1',
+                                key: 'jaws',
                                 name: 'JAWS'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             minimumAtVersion: {
@@ -2581,10 +2583,12 @@ export default (
                             isRequired: false,
                             at: {
                                 id: '1',
+                                key: 'jaws',
                                 name: 'JAWS'
                             },
                             browser: {
                                 id: '1',
+                                key: 'chrome',
                                 name: 'Firefox'
                             },
                             minimumAtVersion: {
@@ -2598,10 +2602,12 @@ export default (
                             isRequired: true,
                             at: {
                                 id: '2',
+                                key: 'nvda',
                                 name: 'NVDA'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             minimumAtVersion: {
@@ -2615,10 +2621,12 @@ export default (
                             isRequired: false,
                             at: {
                                 id: '2',
+                                key: 'nvda',
                                 name: 'NVDA'
                             },
                             browser: {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             minimumAtVersion: {
@@ -2632,10 +2640,12 @@ export default (
                             isRequired: true,
                             at: {
                                 id: '3',
+                                key: 'voiceover_macos',
                                 name: 'VoiceOver for macOS'
                             },
                             browser: {
                                 id: '3',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             minimumAtVersion: {
@@ -2649,10 +2659,12 @@ export default (
                             isRequired: false,
                             at: {
                                 id: '3',
+                                key: 'voiceover_macos',
                                 name: 'VoiceOver for macOS'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             minimumAtVersion: {
@@ -2994,10 +3006,12 @@ export default (
                             isRequired: true,
                             at: {
                                 id: '1',
+                                key: 'jaws',
                                 name: 'JAWS'
                             },
                             browser: {
                                 id: '1',
+                                key: 'firefox',
                                 name: 'Firefox'
                             },
                             minimumAtVersion: {
@@ -3329,7 +3343,7 @@ export default (
                             },
                             browser: {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             minimumAtVersion: {
@@ -3541,10 +3555,12 @@ export default (
                             isRequired: true,
                             at: {
                                 id: '1',
+                                key: 'jaws',
                                 name: 'JAWS'
                             },
                             browser: {
                                 id: '2',
+                                key: 'chrome',
                                 name: 'Chrome'
                             },
                             minimumAtVersion: {
@@ -4245,10 +4261,12 @@ export default (
                             isRequired: true,
                             at: {
                                 id: '3',
+                                key: 'voiceover_macos',
                                 name: 'VoiceOver for macOS'
                             },
                             browser: {
                                 id: '3',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             minimumAtVersion: {
@@ -5698,7 +5716,7 @@ export default (
                             },
                             browser: {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             minimumAtVersion: {
@@ -7046,7 +7064,7 @@ export default (
                             },
                             browser: {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             minimumAtVersion: {
