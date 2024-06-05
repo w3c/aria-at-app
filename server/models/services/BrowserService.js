@@ -116,14 +116,14 @@ const getBrowsers = async ({
  * @returns {Promise<*>}
  */
 const createBrowser = async ({
-    values: { name },
+    values: { name, key },
     browserAttributes = BROWSER_ATTRIBUTES,
     browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
     atAttributes = AT_ATTRIBUTES,
     transaction
 }) => {
     const browserResult = await ModelService.create(Browser, {
-        values: { name },
+        values: { name, key },
         transaction
     });
     const { id } = browserResult;

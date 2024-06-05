@@ -9,9 +9,11 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
         }
         ats {
             id
+            key
             name
             browsers {
                 id
+                key
                 name
             }
             atVersions {
@@ -66,10 +68,12 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
                 markedFinalAt
                 at {
                     id
+                    key
                     name
                 }
                 browser {
                     id
+                    key
                     name
                 }
                 issues {
@@ -135,10 +139,12 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
                         id
                         at {
                             id
+                            key
                             name
                         }
                         browser {
                             id
+                            key
                             name
                         }
                         issues {
@@ -182,10 +188,12 @@ export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE = gql`
                         id
                         at {
                             id
+                            key
                             name
                         }
                         browser {
                             id
+                            key
                             name
                         }
                         issues {

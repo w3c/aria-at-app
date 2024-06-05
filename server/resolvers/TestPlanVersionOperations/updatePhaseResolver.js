@@ -320,9 +320,21 @@ const updatePhaseResolver = async (
     // If oldTestPlanVersion's results are being used to update this earlier
     // version, deprecate it (if the same phase)
     if (oldTestPlanVersion && phase === oldTestPlanVersion.phase) {
+        // Set deprecation date to happen 2 minutes before the new version being
+        // updated
+        let deprecatedAt;
+        if (updateParams.draftPhaseReachedAt)
+            deprecatedAt = new Date(updateParams.draftPhaseReachedAt);
+        else if (updateParams.candidatePhaseReachedAt)
+            deprecatedAt = new Date(updateParams.candidatePhaseReachedAt);
+        else deprecatedAt = new Date(updateParams.recommendedPhaseReachedAt);
+
+        if (deprecatedAt)
+            deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 120);
+
         await updateTestPlanVersionById({
             id: oldTestPlanVersion.id, // same as testPlanVersionDataToIncludeId
-            values: { phase: 'DEPRECATED', deprecatedAt: new Date() },
+            values: { phase: 'DEPRECATED', deprecatedAt },
             transaction
         });
     }
@@ -345,7 +357,7 @@ const updatePhaseResolver = async (
                 context
             );
 
-            updateTestPlanReportById({
+            await updateTestPlanReportById({
                 id: testPlanReport.id,
                 values: {
                     minimumAtVersionId: null,

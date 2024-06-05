@@ -17,7 +17,6 @@ const {
     createTestPlanRun,
     removeTestPlanRunById
 } = require('./TestPlanRunService');
-const responseCollectionUser = require('../../util/responseCollectionUser');
 const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 const { default: axios } = require('axios');
@@ -27,6 +26,7 @@ const {
 } = require('../../services/GithubWorkflowService');
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../../graphql-context');
+const { getBotUserByAtId } = require('./UserService');
 
 const axiosConfig = {
     headers: {
@@ -188,7 +188,11 @@ const collectionJobTestStatusAssociation =
 
 /**
  * @param {object} options
- * @param {object} options.values - CollectionJob to be created
+ * @param {object} options.values
+ * @param {string} options.values.status - Status of CollectionJob to be created
+ * @param {number} options.values.testerUserId - ID of the Tester to which the CollectionJob should be assigned
+ * @param {object} options.values.testPlanReportId - ID of the TestPlan with which the CollectionJob should be associated
+ * @param {object} [options.values.testPlanRun] - TestPlan with wich the CollectionJob should be associated (if not provided, a new TestPlan will be created)
  * @param {string[]} options.collectionJobAttributes - CollectionJob attributes to be returned in the result
  * @param {string[]} options.collectionJobTestStatusAttributes - CollectionJobTestStatus attributes to be returned in the result
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
@@ -203,6 +207,7 @@ const collectionJobTestStatusAssociation =
 const createCollectionJob = async ({
     values: {
         status = COLLECTION_JOB_STATUS.QUEUED,
+        testerUserId,
         testPlanRun,
         testPlanReportId
     },
@@ -220,7 +225,7 @@ const createCollectionJob = async ({
     if (!testPlanRun) {
         testPlanRun = await createTestPlanRun({
             values: {
-                testerUserId: responseCollectionUser.id,
+                testerUserId,
                 testPlanReportId: testPlanReportId,
                 isAutomated: true
             },
@@ -410,7 +415,13 @@ const triggerWorkflow = async (job, testIds, { transaction }) => {
             );
         }
     } catch (error) {
+        console.error(error);
         // TODO: What to do with the actual error (could be nice to have an additional "string" status field?)
+        await updateCollectionJobTestStatusByQuery({
+            where: { collectionJobId: job.id },
+            values: { status: COLLECTION_JOB_STATUS.ERROR },
+            transaction
+        });
         return updateCollectionJobById({
             id: job.id,
             values: { status: COLLECTION_JOB_STATUS.ERROR },
@@ -538,6 +549,14 @@ const scheduleCollectionJob = async (
     const tests = await runnableTestsResolver(report, null, context);
     const { directory } = report.testPlanVersion.testPlan;
     const { gitSha } = report.testPlanVersion;
+    const testerUser = await getBotUserByAtId({
+        atId: report.at.id,
+        transaction
+    });
+    if (!testerUser) {
+        throw new Error(`No bot user found for AT ${report.at.name}`);
+    }
+    const testerUserId = testerUser.id;
 
     if (!tests || tests.length === 0) {
         throw new Error(
@@ -560,6 +579,7 @@ const scheduleCollectionJob = async (
     const job = await createCollectionJob({
         values: {
             status: COLLECTION_JOB_STATUS.QUEUED,
+            testerUserId,
             testPlanReportId
         },
         transaction

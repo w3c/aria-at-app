@@ -17,10 +17,12 @@ export const mockedTestPlanVersion = {
             isRequired: true,
             at: {
                 id: '1',
+                key: 'jaws',
                 name: 'JAWS'
             },
             browser: {
                 id: '2',
+                key: 'chrome',
                 name: 'Chrome'
             },
             minimumAtVersion: {
@@ -34,10 +36,12 @@ export const mockedTestPlanVersion = {
             isRequired: false,
             at: {
                 id: '1',
+                key: 'jaws',
                 name: 'JAWS'
             },
             browser: {
                 id: '1',
+                key: 'firefox',
                 name: 'Firefox'
             },
             minimumAtVersion: {
@@ -51,10 +55,12 @@ export const mockedTestPlanVersion = {
             isRequired: true,
             at: {
                 id: '2',
+                key: 'nvda',
                 name: 'NVDA'
             },
             browser: {
                 id: '2',
+                key: 'chrome',
                 name: 'Chrome'
             },
             minimumAtVersion: {
@@ -68,10 +74,12 @@ export const mockedTestPlanVersion = {
             isRequired: false,
             at: {
                 id: '2',
+                key: 'nvda',
                 name: 'NVDA'
             },
             browser: {
                 id: '1',
+                key: 'firefox',
                 name: 'Firefox'
             },
             minimumAtVersion: {
@@ -679,10 +687,12 @@ export const mockedTestPlanVersion = {
             isRequired: true,
             at: {
                 id: '3',
+                key: 'voiceover_macos',
                 name: 'VoiceOver for macOS'
             },
             browser: {
                 id: '3',
+                key: 'safari_macos',
                 name: 'Safari'
             },
             minimumAtVersion: {
@@ -696,10 +706,12 @@ export const mockedTestPlanVersion = {
             isRequired: false,
             at: {
                 id: '3',
+                key: 'voiceover_macos',
                 name: 'VoiceOver for macOS'
             },
             browser: {
                 id: '2',
+                key: 'chrome',
                 name: 'Chrome'
             },
             minimumAtVersion: {
@@ -713,10 +725,12 @@ export const mockedTestPlanVersion = {
             isRequired: false,
             at: {
                 id: '3',
+                key: 'voiceover_macos',
                 name: 'VoiceOver for macOS'
             },
             browser: {
                 id: '1',
+                key: 'firefox',
                 name: 'Firefox'
             },
             minimumAtVersion: {
@@ -780,10 +794,14 @@ export default (
                                 initiatedByAutomation: true
                             },
                             at: {
-                                id: '1'
+                                id: '1',
+                                key: 'jaws',
+                                name: 'JAWS'
                             },
                             browser: {
-                                id: '2'
+                                id: '2',
+                                key: 'firefox',
+                                name: 'Firefox'
                             }
                         }
                     ]

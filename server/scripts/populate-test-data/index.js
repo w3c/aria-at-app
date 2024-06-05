@@ -227,6 +227,14 @@ const populateTestDatabase = async transaction => {
         transaction
     });
 
+    await populateFakeTestResults(
+        19,
+        new Array(12).fill('completeAndPassing'),
+        {
+            transaction
+        }
+    );
+
     console.info(
         'Successfully populated. Please wait a moment for the process to close.'
     );

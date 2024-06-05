@@ -170,9 +170,7 @@ const getTestByRowNumber = async ({ testPlanRun, testRowNumber, context }) => {
         null,
         context
     );
-    return tests.find(
-        test => parseInt(test.rowNumber, 10) === parseInt(testRowNumber, 10)
-    );
+    return tests.find(test => String(test.rowNumber) === String(testRowNumber));
 };
 
 const updateOrCreateTestResultWithResponses = async ({

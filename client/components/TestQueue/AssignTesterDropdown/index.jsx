@@ -148,16 +148,28 @@ const AssignTesterDropdown = ({
                 <Dropdown.Menu role="menu" className="assign-menu">
                     {possibleTesters?.length ? (
                         possibleTesters.map(tester => {
-                            const { username } = tester;
+                            const { username, isBot, ats } = tester;
                             const testerIsAssigned = isTesterAssigned(username);
                             const classname = [
                                 testerIsAssigned ? 'assigned' : 'not-assigned',
-                                tester.isBot ? 'bot' : 'human'
+                                isBot ? 'bot' : 'human'
                             ].join(' ');
                             let icon;
                             if (testerIsAssigned) {
                                 icon = faCheck;
-                            } else if (tester.isBot) {
+                            } else if (isBot) {
+                                // if our bot doesn't have a link to the at - hide it from the list
+                                if (
+                                    !ats.find(
+                                        ({ id }) =>
+                                            id ===
+                                            testPlanReportAtBrowserQuery
+                                                ?.testPlanReport.at.id
+                                    )
+                                ) {
+                                    return null;
+                                }
+
                                 const supportedByBot =
                                     isSupportedByResponseCollector(
                                         testPlanReportAtBrowserQuery?.testPlanReport
@@ -211,7 +223,19 @@ const AssignTesterDropdown = ({
 
 AssignTesterDropdown.propTypes = {
     testPlanReportId: PropTypes.string.isRequired,
-    possibleTesters: PropTypes.array.isRequired,
+    possibleTesters: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            username: PropTypes.string.isRequired,
+            isBot: PropTypes.bool.isRequired,
+            ats: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    key: PropTypes.string.isRequired
+                })
+            )
+        })
+    ).isRequired,
     onChange: PropTypes.func.isRequired,
     testPlanRun: PropTypes.object,
     label: PropTypes.string,

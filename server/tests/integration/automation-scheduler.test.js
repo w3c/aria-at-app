@@ -149,11 +149,14 @@ const getTestCollectionJob = async (jobId, { transaction }) =>
         { transaction }
     );
 
-const scheduleCollectionJobByMutation = async ({ transaction }) =>
+const scheduleCollectionJobByMutation = async ({
+    transaction,
+    reportId = testPlanReportId
+}) =>
     await mutate(
         `
             mutation {
-                scheduleCollectionJob(testPlanReportId: "${testPlanReportId}") {
+                scheduleCollectionJob(testPlanReportId: "${reportId}") {
                     id
                     status
                     testPlanRun {
@@ -503,6 +506,112 @@ describe('Automation controller', () => {
             ).length;
             const response = await sessionAgent
                 .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
+                .send({
+                    capabilities: {
+                        atName: at.name,
+                        atVersion: at.atVersions[0].name,
+                        browserName: browser.name,
+                        browserVersion: browser.browserVersions[0].name
+                    },
+                    responses: new Array(numberOfScenarios).fill(
+                        automatedTestResponse
+                    )
+                })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            expect(response.statusCode).toBe(200);
+            const storedTestPlanRun = await getTestPlanRun(
+                collectionJob.testPlanRun.id,
+                { transaction }
+            );
+            const { testResults } = storedTestPlanRun.testPlanRun;
+            expect(testResults.length).toEqual(testResultsNumber + 1);
+            testResults.forEach(testResult => {
+                expect(testResult.test.id).toEqual(selectedTest.id);
+                expect(testResult.atVersion.name).toEqual(
+                    at.atVersions[0].name
+                );
+                expect(testResult.browserVersion.name).toEqual(
+                    browser.browserVersions[0].name
+                );
+                testResult.scenarioResults.forEach(scenarioResult => {
+                    expect(scenarioResult.output).toEqual(
+                        automatedTestResponse
+                    );
+                    scenarioResult.assertionResults.forEach(assertionResult => {
+                        expect(assertionResult.passed).toEqual(false);
+                        expect(assertionResult.failedReason).toEqual(
+                            'AUTOMATED_OUTPUT'
+                        );
+                    });
+                    scenarioResult.unexpectedBehaviors?.forEach(
+                        unexpectedBehavior => {
+                            expect(unexpectedBehavior.id).toEqual('OTHER');
+                            expect(unexpectedBehavior.details).toEqual(null);
+                        }
+                    );
+                });
+            });
+            // also marks status for test as COMPLETED
+            const { collectionJob: storedCollectionJob } =
+                await getTestCollectionJob(job.id, { transaction });
+            expect(storedCollectionJob.id).toEqual(job.id);
+            expect(storedCollectionJob.status).toEqual('RUNNING');
+            const testStatus = storedCollectionJob.testStatus.find(
+                status => status.test.id === selectedTest.id
+            );
+            expect(testStatus.status).toEqual(COLLECTION_JOB_STATUS.COMPLETED);
+        });
+    });
+
+    it('should update job results with decimal presentationNumber', async () => {
+        await apiServer.sessionAgentDbCleaner(async transaction => {
+            const { scheduleCollectionJob: job } =
+                await scheduleCollectionJobByMutation({
+                    transaction,
+                    reportId: '19'
+                });
+            const collectionJob = await getCollectionJobById({
+                id: job.id,
+                transaction
+            });
+            await sessionAgent
+                .post(`/api/jobs/${job.id}`)
+                .send({ status: 'RUNNING' })
+                .set(
+                    'x-automation-secret',
+                    process.env.AUTOMATION_SCHEDULER_SECRET
+                )
+                .set('x-transaction-id', transaction.id);
+            const automatedTestResponse = 'AUTOMATED TEST RESPONSE';
+            const ats = await AtLoader().getAll({ transaction });
+            const browsers = await BrowserLoader().getAll({ transaction });
+            const at = ats.find(
+                at => at.id === collectionJob.testPlanRun.testPlanReport.at.id
+            );
+            const browser = browsers.find(
+                browser =>
+                    browser.id ===
+                    collectionJob.testPlanRun.testPlanReport.browser.id
+            );
+            const { tests } =
+                collectionJob.testPlanRun.testPlanReport.testPlanVersion;
+            const testResultsNumber =
+                collectionJob.testPlanRun.testResults.length;
+            const selectedTest = tests.find(
+                test => test.rowNumber === 14.1 && test.at.key === 'nvda'
+            );
+            expect(selectedTest).toBeDefined();
+
+            const numberOfScenarios = selectedTest.scenarios.filter(
+                scenario => scenario.atId === at.id
+            ).length;
+
+            const response = await sessionAgent
+                .post(`/api/jobs/${job.id}/test/${selectedTest.rowNumber}`)
                 .send({
                     capabilities: {
                         atName: at.name,
