@@ -77,10 +77,10 @@ const TestNavigator = ({
                                     resultStatus = 'Queued by Bot';
                                 } else if (status === 'RUNNING') {
                                     resultClassName = 'bot-running';
-                                    resultStatus = 'Queued by Bot';
+                                    resultStatus = 'Running with Bot';
                                 } else if (status === 'ERROR') {
                                     resultClassName = 'bot-error';
-                                    resultStatus = 'Error collecting by Bot';
+                                    resultStatus = 'Error collecting with Bot';
                                 } else if (status === 'CANCELLED') {
                                     resultClassName = 'bot-cancelled';
                                     resultStatus = 'Cancelled by Bot';
