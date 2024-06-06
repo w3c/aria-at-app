@@ -176,8 +176,8 @@ button.test-navigator-toggle:focus {
     color: white;
     font-size: 10px;
     position: relative;
-    top: -3px;
-    left: 4px;
+    top: -4px;
+    left: 3px;
 }
 .test-name-wrapper.bot-queued .progress-indicator {
     background: #295fa6;
