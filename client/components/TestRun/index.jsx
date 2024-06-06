@@ -1229,11 +1229,17 @@ const TestRun = () => {
 
     if (openAsUserId) {
         if (openAsUser.isBot) {
+            const status = testPlanRun.collectionJob.status;
             openAsUserHeading = (
                 <div className="test-info-entity reviewing-as bot">
                     Reviewing tests of{' '}
                     <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
                     <b>{`${openAsUser.username}`}.</b>
+                    {( status === 'QUEUED' || status === 'RUNNING') && (
+                        <>
+                            <br />The collection bot is still updating information on this page.  Changes may be lost when updates arrive.
+                        </>
+                    )}
                 </div>
             );
         } else {

@@ -23,7 +23,7 @@ const TestNavigator = ({
 }) => {
     const isBotCompletedTest = testPlanRun?.tester?.isBot;
 
-    const { status, testStatus } = testPlanRun?.collectionJob ?? {};
+    const testStatus = testPlanRun?.collectionJob?.testStatus;
 
     return (
         <Col className="test-navigator" md={show ? 3 : 12}>
