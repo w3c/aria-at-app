@@ -28,7 +28,6 @@ import { useDetectUa } from '../../hooks/useDetectUa';
 import DisplayNone from '../../utils/DisplayNone';
 import { navigateTests } from '../../utils/navigateTests';
 import {
-    COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
     DELETE_TEST_RESULT_MUTATION,
     FIND_OR_CREATE_BROWSER_VERSION_MUTATION,
     FIND_OR_CREATE_TEST_RESULT_MUTATION,
@@ -42,6 +41,7 @@ import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
 import { convertDateToString } from '../../utils/formatter';
+const pollInterval = 2000;
 
 const TestRun = () => {
     const params = useParams();
@@ -68,21 +68,26 @@ const TestRun = () => {
 
     const { runId: testPlanRunId, testPlanReportId } = params;
 
-    const { loading, data, error } = useQuery(
+    const { loading, data, error, startPolling, stopPolling } = useQuery(
         testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
         {
             fetchPolicy: 'cache-and-network',
-            variables: { testPlanRunId, testPlanReportId }
+            variables: { testPlanRunId, testPlanReportId },
+            pollInterval
         }
     );
 
-    const { data: collectionJobQuery } = useQuery(
-        COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
-        {
-            variables: { testPlanRunId },
-            fetchPolicy: 'cache-and-network'
+    // control the data flow, turn on polling if this is a collection job report
+    // that still has possible updates.
+    useEffect(() => {
+        const status = data?.testPlanRun?.collectionJob?.status;
+        if (status === 'QUEUED' || status === 'RUNNING') {
+            startPolling(pollInterval);
+        } else {
+            stopPolling();
         }
-    );
+        if (data) setup(data);
+    }, [data]);
 
     const [createTestResult, { loading: createTestResultLoading }] =
         useMutation(FIND_OR_CREATE_TEST_RESULT_MUTATION);
@@ -147,10 +152,6 @@ const TestRun = () => {
     const testerId = openAsUserId || userId;
     const isAdminReviewer = !!(isAdmin && openAsUserId);
     const openAsUser = users?.find(user => user.id === openAsUserId);
-
-    useEffect(() => {
-        if (data) setup(data);
-    }, [data]);
 
     useEffect(() => {
         reset();
@@ -903,16 +904,22 @@ const TestRun = () => {
         if (isReviewingBot) {
             content = (
                 <>
-                    <b>{`${testResults.reduce(
-                        (acc, { scenarioResults }) =>
-                            acc +
-                            (scenarioResults &&
-                            scenarioResults.every(({ output }) => !!output)
-                                ? 1
-                                : 0),
-                        0
-                    )} of ${tests.length}`}</b>{' '}
-                    responses collected.
+                    <p>
+                        <b>{`${testResults.reduce(
+                            (acc, { scenarioResults }) =>
+                                acc +
+                                (scenarioResults &&
+                                scenarioResults.every(({ output }) => !!output)
+                                    ? 1
+                                    : 0),
+                            0
+                        )} of ${tests.length}`}</b>{' '}
+                        responses collected.
+                    </p>
+                    <p>
+                        Collection Job Status:{' '}
+                        <b>{testPlanRun.collectionJob.status}</b>
+                    </p>
                 </>
             );
         } else if (!isSignedIn) {
@@ -1014,8 +1021,7 @@ const TestRun = () => {
             ];
         }
 
-        const externalLogsUrl =
-            collectionJobQuery?.collectionJobByTestPlanRunId?.externalLogsUrl;
+        const externalLogsUrl = testPlanRun.collectionJob?.externalLogsUrl;
 
         const menuRightOfContent = (
             <div role="complementary">

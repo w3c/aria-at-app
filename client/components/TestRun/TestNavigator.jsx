@@ -6,10 +6,8 @@ import {
     faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import { Col } from 'react-bootstrap';
-import React, { useMemo } from 'react';
+import React from 'react';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY } from './queries';
-import { useQuery } from '@apollo/client';
 
 const TestNavigator = ({
     show = true,
@@ -25,18 +23,7 @@ const TestNavigator = ({
 }) => {
     const isBotCompletedTest = testPlanRun?.tester?.isBot;
 
-    const { data: collectionJobQuery } = useQuery(
-        COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY,
-        {
-            variables: {
-                testPlanRunId: testPlanRun?.id
-            }
-        }
-    );
-
-    const status = useMemo(() => {
-        return collectionJobQuery?.collectionJobByTestPlanRunId?.status;
-    }, [collectionJobQuery]);
+    const { status, testStatus } = testPlanRun?.collectionJob ?? {};
 
     return (
         <Col className="test-navigator" md={show ? 3 : 12}>
@@ -78,17 +65,23 @@ const TestNavigator = ({
 
                         if (test) {
                             if (isBotCompletedTest) {
-                                if (
-                                    test.testResult?.scenarioResults.some(
-                                        s => s.output
-                                    )
-                                ) {
+                                const { status } =
+                                    testStatus.find(
+                                        ts => ts.test.id === test.id
+                                    ) ?? {};
+                                if (status === 'COMPLETED') {
                                     resultClassName = 'bot-complete';
                                     resultStatus = 'Completed by Bot';
-                                } else if (status !== 'CANCELLED') {
+                                } else if (status === 'QUEUED') {
                                     resultClassName = 'bot-queued';
-                                    resultStatus = 'In Progress by Bot';
-                                } else {
+                                    resultStatus = 'Queued by Bot';
+                                } else if (status === 'RUNNING') {
+                                    resultClassName = 'bot-running';
+                                    resultStatus = 'Queued by Bot';
+                                } else if (status === 'ERROR') {
+                                    resultClassName = 'bot-error';
+                                    resultStatus = 'Error collecting by Bot';
+                                } else if (status === 'CANCELLED') {
                                     resultClassName = 'bot-cancelled';
                                     resultStatus = 'Cancelled by Bot';
                                 }

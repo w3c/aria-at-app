@@ -5,6 +5,17 @@ export const TEST_RUN_PAGE_QUERY = gql`
         testPlanRun(id: $testPlanRunId) {
             id
             initiatedByAutomation
+            collectionJob {
+                id
+                status
+                externalLogsUrl
+                testStatus {
+                    test {
+                        id
+                    }
+                    status
+                }
+            }
             tester {
                 id
                 username
@@ -1254,16 +1265,6 @@ export const FIND_OR_CREATE_BROWSER_VERSION_MUTATION = gql`
                 id
                 name
             }
-        }
-    }
-`;
-
-export const COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY = gql`
-    query CollectionJobIdByTestPlanRunId($testPlanRunId: ID!) {
-        collectionJobByTestPlanRunId(testPlanRunId: $testPlanRunId) {
-            id
-            status
-            externalLogsUrl
         }
     }
 `;

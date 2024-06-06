@@ -158,6 +158,27 @@ button.test-navigator-toggle:focus {
     left: 4px;
 }
 
+.test-name-wrapper.bot-running .progress-indicator {
+    background: #d2d5d9;
+    border: 2px solid #1e8f37;
+}
+
+.test-name-wrapper.bot-error .progress-indicator {
+    background: #e3261f;
+}
+.test-name-wrapper.bot-error .progress-indicator:before {
+    display: inline-block;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    content: '\f071';
+    color: white;
+    font-size: 10px;
+    position: relative;
+    top: -3px;
+    left: 4px;
+}
 .test-name-wrapper.bot-queued .progress-indicator {
     background: #295fa6;
 }
