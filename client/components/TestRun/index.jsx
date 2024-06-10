@@ -367,7 +367,7 @@ const TestRun = () => {
                 'YY.MM.DD'
             )}`,
             testTitle: currentTest.title,
-            testRowNumber: currentTest.rowNumber,
+            testSequenceNumber: currentTest.seq,
             testRenderedUrl: currentTest.renderedUrl,
             atName: testPlanReport.at.name,
             browserName: testPlanReport.browser.name,

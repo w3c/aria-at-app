@@ -16,6 +16,7 @@ const createIssueLink = ({
     testPlanTitle,
     versionString,
     testTitle = null,
+    testSequenceNumber = null,
     testRowNumber = null,
     testRenderedUrl = null,
     atName,
@@ -29,7 +30,12 @@ const createIssueLink = ({
         throw new Error('Cannot create issue link due to missing parameters');
     }
 
-    const hasTest = !!(testTitle && testRowNumber && testRenderedUrl);
+    const hasTest = !!(
+        testTitle &&
+        testSequenceNumber &&
+        testRowNumber &&
+        testRenderedUrl
+    );
 
     let title;
     if (hasTest) {
@@ -44,7 +50,7 @@ const createIssueLink = ({
 
         title =
             `${titleStart}: "${testTitle}" (${testPlanTitle}, ` +
-            `Test ${testRowNumber}, ${versionString})`;
+            `Test ${testSequenceNumber}, ${versionString})`;
     } else {
         title = `${atName} General Feedback: ${testPlanTitle} ${versionString}`;
     }
@@ -99,6 +105,7 @@ const createIssueLink = ({
         atName,
         browserName,
         testRowNumber,
+        testSequenceNumber,
         isCandidateReview,
         isCandidateReviewChangesRequested
     });

@@ -186,6 +186,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                     versionString: testPlanVersion.versionString,
                     testTitle: test.title,
                     testRowNumber: test.rowNumber,
+                    testSequenceNumber: test.seq,
                     testRenderedUrl: test.renderedUrl,
                     atName: testPlanReport.at.name,
                     atVersionName: testResult.atVersion.name,
