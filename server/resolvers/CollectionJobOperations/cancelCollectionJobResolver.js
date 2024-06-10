@@ -42,6 +42,11 @@ const cancelCollectionJobResolver = async (
             values: { status: COLLECTION_JOB_STATUS.CANCELLED },
             transaction
         });
+        await updateCollectionJobTestStatusByQuery({
+            where: { collectionJobId, status: COLLECTION_JOB_STATUS.RUNNING },
+            values: { status: COLLECTION_JOB_STATUS.CANCELLED },
+            transaction
+        });
         return updateCollectionJobById({
             id: collectionJobId,
             values: { status: COLLECTION_JOB_STATUS.CANCELLED },

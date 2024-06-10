@@ -19,6 +19,7 @@ export default testQueuePageQuery => [
                         username: 'foo-bar',
                         roles: ['ADMIN', 'TESTER'],
                         isBot: false,
+                        ats: [],
                         __typename: 'User'
                     },
                     {
@@ -26,6 +27,7 @@ export default testQueuePageQuery => [
                         username: 'bar-foo',
                         roles: ['TESTER'],
                         isBot: false,
+                        ats: [],
                         __typename: 'User'
                     },
                     {
@@ -33,6 +35,7 @@ export default testQueuePageQuery => [
                         username: 'boo-far',
                         roles: ['TESTER'],
                         isBot: false,
+                        ats: [],
                         __typename: 'User'
                     }
                 ],
