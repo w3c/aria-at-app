@@ -343,6 +343,7 @@ const TestQueue = () => {
                         <ReportStatusSummary
                             testPlanVersion={testPlanVersion}
                             testPlanReport={testPlanReport}
+                            fromTestQueue
                         />
                     </StatusContainer>
                 </td>

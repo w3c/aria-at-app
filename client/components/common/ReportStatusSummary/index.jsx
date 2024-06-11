@@ -9,7 +9,11 @@ const IncompleteStatusReport = styled.span`
     display: inline-block;
 `;
 
-const ReportStatusSummary = ({ testPlanVersion, testPlanReport }) => {
+const ReportStatusSummary = ({
+    testPlanVersion,
+    testPlanReport,
+    fromTestQueue = false
+}) => {
     const renderCompleteReportStatus = testPlanReport => {
         const formattedDate = convertDateToString(
             testPlanReport.markedFinalAt,
@@ -31,7 +35,11 @@ const ReportStatusSummary = ({ testPlanVersion, testPlanReport }) => {
             calculatePercentComplete(testPlanReport);
         switch (draftTestPlanRuns?.length) {
             case 0:
-                return <span>In test queue with no testers assigned.</span>;
+                return fromTestQueue ? (
+                    <span>No testers assigned</span>
+                ) : (
+                    <span>In test queue with no testers assigned</span>
+                );
             case 1:
                 return (
                     <span>
