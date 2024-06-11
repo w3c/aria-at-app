@@ -253,7 +253,7 @@ const TestQueue = () => {
                 )}
                 expanded={testPlan.testPlanVersions.map(
                     testPlanVersion =>
-                        openDisclosuresRef.current[testPlanVersion.id]
+                        openDisclosuresRef.current[testPlanVersion.id] || false
                 )}
                 disclosureContainerView={testPlan.testPlanVersions.map(
                     testPlanVersion =>
