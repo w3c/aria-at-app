@@ -16,11 +16,13 @@ import {
     MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION,
     REMOVE_TEST_PLAN_REPORT_MUTATION,
     TEST_QUEUE_PAGE_QUERY
+    // TEST_PLAN_REPORT_QUERY
 } from './queries';
 import useForceUpdate from '../../hooks/useForceUpdate';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
+import ManageBotRunDialogWithButton from '@components/ManageBotRunDialog/WithButton';
 
 const ActionContainer = styled.div`
     display: flex;
@@ -28,7 +30,13 @@ const ActionContainer = styled.div`
     gap: 0.5rem;
 `;
 
-const Actions = ({ me, testPlan, testPlanReport }) => {
+const Actions = ({
+    me,
+    testPlan,
+    testPlanReport,
+    testers = [],
+    triggerUpdate = () => {}
+}) => {
     const primaryRunIdRef = useRef({});
 
     const { showConfirmationModal, hideConfirmationModal } =
@@ -57,7 +65,12 @@ const Actions = ({ me, testPlan, testPlanReport }) => {
             testPlanRun.testResultsLength === testPlanReport.runnableTestsLength
     );
 
+    const assignedBotRun = testPlanReport.draftTestPlanRuns.find(
+        testPlanRun => testPlanRun.tester.isBot
+    );
+
     const canMarkAsFinal =
+        !assignedBotRun &&
         !testPlanReport.conflictsLength &&
         testPlanReport.draftTestPlanRuns.length > 0 &&
         testPlanReport.draftTestPlanRuns[0].testResultsLength > 0 &&
@@ -187,6 +200,18 @@ const Actions = ({ me, testPlan, testPlanReport }) => {
         );
     };
 
+    // const refetchTestPlanReport = async (
+    //     testPlanReportId = testPlanReport.id
+    // ) => {
+    //     await triggerLoad(async () => {
+    //         const { data } = await client.query({
+    //             query: TEST_PLAN_REPORT_QUERY,
+    //             variables: { testPlanReportId },
+    //             fetchPolicy: 'network-only'
+    //         });
+    //     }, 'Updating ...');
+    // };
+
     return (
         <LoadingStatus message={loadingMessage}>
             <ActionContainer>
@@ -235,6 +260,16 @@ const Actions = ({ me, testPlan, testPlanReport }) => {
                         </Dropdown.Menu>
                     </Dropdown>
                 )}
+                {isAdmin && assignedBotRun && (
+                    <ManageBotRunDialogWithButton
+                        testPlanRun={assignedBotRun}
+                        testPlanReportId={testPlanReport.id}
+                        runnableTestsLength={testPlanReport.runnableTestsLength}
+                        testers={testers}
+                        onChange={triggerUpdate}
+                        includeIcon
+                    />
+                )}
                 {isAdmin && (
                     <Button
                         disabled={!canMarkAsFinal}
@@ -274,7 +309,21 @@ Actions.propTypes = {
                 testResultsLength: PropTypes.number.isRequired
             })
         ).isRequired
-    }).isRequired
+    }).isRequired,
+    testers: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.string.isRequired,
+            username: PropTypes.string.isRequired,
+            isBot: PropTypes.bool.isRequired,
+            ats: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    key: PropTypes.string.isRequired
+                })
+            )
+        })
+    ).isRequired,
+    triggerUpdate: PropTypes.func.isRequired
 };
 
 export default Actions;

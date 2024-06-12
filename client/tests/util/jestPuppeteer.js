@@ -18,7 +18,6 @@ class PuppeteerEnvironment extends NodeEnvironment {
     async setup() {
         await super.setup();
         // get the wsEndpoint
-        console.log('breakpoint2');
         const wsEndpoint = await readFile(path.join(DIR, 'wsEndpoint'), 'utf8');
         if (!wsEndpoint) {
             throw new Error('wsEndpoint not found');

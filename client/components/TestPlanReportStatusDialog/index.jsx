@@ -16,10 +16,6 @@ const TestPlanReportStatusDialog = ({
     handleHide = () => {},
     triggerUpdate = () => {}
 }) => {
-    if (testPlanVersion?.title.startsWith('Radio Group')) {
-        console.log('TestPlanReportStatusDialog show', show);
-    }
-
     const { data: { me } = {} } = useQuery(ME_QUERY, {
         fetchPolicy: 'cache-and-network'
     });

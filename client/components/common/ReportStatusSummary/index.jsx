@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { convertDateToString } from '../../../utils/formatter';
 import styled from '@emotion/styled';
+import { convertDateToString } from '../../../utils/formatter';
 import { calculatePercentComplete } from '../../../utils/calculatePercentComplete';
 
 const IncompleteStatusReport = styled.span`
@@ -30,9 +30,9 @@ const ReportStatusSummary = ({
 
     const renderPartialCompleteReportStatus = testPlanReport => {
         const { metrics, draftTestPlanRuns } = testPlanReport;
+
         const conflictsCount = metrics.conflictsCount ?? 0;
-        const percentComplete =
-            calculatePercentComplete(testPlanReport);
+        const percentComplete = calculatePercentComplete(testPlanReport);
         switch (draftTestPlanRuns?.length) {
             case 0:
                 return fromTestQueue ? (
@@ -90,7 +90,8 @@ ReportStatusSummary.propTypes = {
                 }).isRequired
             })
         ).isRequired
-    })
+    }),
+    fromTestQueue: PropTypes.bool
 };
 
 export default ReportStatusSummary;

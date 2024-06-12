@@ -1,20 +1,23 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { Button, Dropdown } from 'react-bootstrap';
+import { useApolloClient } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faRobot, faUser } from '@fortawesome/free-solid-svg-icons';
+import { Button, Dropdown } from 'react-bootstrap';
+import CompletionStatusListItem from './CompletionStatusListItem';
 import useConfirmationModal from '../../hooks/useConfirmationModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import { useApolloClient } from '@apollo/client';
+import { isSupportedByResponseCollector } from '../../utils/automation';
 import {
     ASSIGN_TESTER_MUTATION,
     DELETE_TEST_PLAN_RUN,
     TEST_QUEUE_PAGE_QUERY
 } from './queries';
+import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../AddTestToQueueWithConfirmation/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
 
 const AssignTestersContainer = styled.div`
@@ -82,7 +85,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
             if (!isShown) return;
             document
                 .querySelector(
-                    `#assign-testers-${testPlanReport.id} [role="menuitem"]`
+                    `#assign-testers-${testPlanReport.id} [role="menuitemcheckbox"]`
                 )
                 .focus();
         }, 1);
@@ -90,14 +93,14 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
 
     const onKeyDown = event => {
         const { key } = event;
-        if (key.match(/[a-z]/)) {
+        if (key.match(/[0-9a-zA-Z]/)) {
             const container = event.target.closest('[role=menu]');
             const matchingMenuItem = Array.from(container.children).find(
                 menuItem => {
                     return menuItem.innerText
                         .trim()
                         .toLowerCase()
-                        .startsWith(key);
+                        .startsWith(key.toLowerCase());
                 }
             );
 
@@ -165,18 +168,32 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
         }
 
         await triggerLoad(async () => {
-            await client.mutate({
-                mutation: ASSIGN_TESTER_MUTATION,
-                refetchQueries: [
-                    TEST_QUEUE_PAGE_QUERY,
-                    TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
-                ],
-                awaitRefetchQueries: true,
-                variables: {
-                    testReportId: testPlanReport.id,
-                    testerId: tester.id
-                }
-            });
+            if (tester.isBot) {
+                await client.mutate({
+                    mutation: SCHEDULE_COLLECTION_JOB_MUTATION,
+                    refetchQueries: [
+                        TEST_QUEUE_PAGE_QUERY,
+                        TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
+                    ],
+                    awaitRefetchQueries: true,
+                    variables: {
+                        testPlanReportId: testPlanReport.id
+                    }
+                });
+            } else {
+                await client.mutate({
+                    mutation: ASSIGN_TESTER_MUTATION,
+                    refetchQueries: [
+                        TEST_QUEUE_PAGE_QUERY,
+                        TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
+                    ],
+                    awaitRefetchQueries: true,
+                    variables: {
+                        testReportId: testPlanReport.id,
+                        testerId: tester.id
+                    }
+                });
+            }
         }, 'Assigning...');
 
         await unassignedCallback?.({ tester });
@@ -216,32 +233,42 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
     };
 
     const renderDropdownItem = ({ tester }) => {
+        const { id, username, isBot, ats } = tester;
+
+        if (isBot) {
+            const foundAtForBot = ats.find(
+                ({ id }) => id === testPlanReport.at?.id
+            );
+            const supportedByResponseCollector = isSupportedByResponseCollector(
+                {
+                    id: testPlanReport.id,
+                    at: testPlanReport.at,
+                    browser: testPlanReport.browser
+                }
+            );
+            if (!foundAtForBot || !supportedByResponseCollector) return null;
+        }
+
         const isAssigned = testPlanReport.draftTestPlanRuns.some(
-            testPlanRun => testPlanRun.tester.username === tester.username
+            testPlanRun => testPlanRun.tester.username === username
         );
 
         let icon;
-        if (isAssigned) {
-            icon = faCheck;
-        } else if (tester.isBot) {
-            icon = faRobot;
-        }
+        if (isAssigned) icon = faCheck;
+        else if (isBot) icon = faRobot;
 
         return (
             <Dropdown.Item
-                key={tester.id}
-                eventKey={tester.id}
-                role="menuitem"
-                variant="secondary"
+                key={id}
+                eventKey={id}
                 as="button"
-                onClick={async () => {}}
+                role="menuitemcheckbox"
+                variant="secondary"
+                aria-checked={isAssigned}
             >
-                <span className="sr-only">{`${tester.username} ${
-                    isAssigned ? 'assigned' : 'unassigned'
-                }`}</span>
-                <span aria-hidden="true">
+                <span>
                     {icon && <FontAwesomeIcon icon={icon} />}
-                    {`${tester.username}`}
+                    {`${username}`}
                 </span>
             </Dropdown.Item>
         );
@@ -284,36 +311,30 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
                 )}
             </AssignTestersContainer>
             <AssignedTestersUl>
-                {testPlanReport.draftTestPlanRuns.map(testPlanRun => {
-                    const tester = testPlanRun.tester;
-                    const { username } = tester;
-
-                    let userLink;
-                    if (tester.isBot) {
-                        userLink = (
-                            <span>
-                                <FontAwesomeIcon icon={faRobot} />
-                                {username}
-                            </span>
+                {testPlanReport.draftTestPlanRuns
+                    .slice()
+                    .sort((a, b) =>
+                        a.tester.username.localeCompare(b.tester.username)
+                    )
+                    .map((testPlanRun, index) => {
+                        const tester = testPlanRun.tester;
+                        const rowId = `plan-${testPlanReport.id}-assignee-${tester.id}-run-${testPlanRun.id}`;
+                        return (
+                            <React.Fragment key={rowId}>
+                                <CompletionStatusListItem
+                                    rowId={rowId}
+                                    testPlanReport={testPlanReport}
+                                    testPlanRun={testPlanRun}
+                                    tester={tester}
+                                />
+                                {index ===
+                                testPlanReport.draftTestPlanRuns.length -
+                                    1 ? null : (
+                                    <br />
+                                )}
+                            </React.Fragment>
                         );
-                    } else {
-                        userLink = (
-                            <a href={`https://github.com/${username}`}>
-                                {username}
-                            </a>
-                        );
-                    }
-
-                    return (
-                        <li key={testPlanRun.id}>
-                            {userLink}
-                            <em>
-                                {`${testPlanRun.testResultsLength} of ` +
-                                    `${testPlanReport.runnableTestsLength} tests complete`}
-                            </em>
-                        </li>
-                    );
-                })}
+                    })}
             </AssignedTestersUl>
         </LoadingStatus>
     );
@@ -326,7 +347,14 @@ AssignTesters.propTypes = {
     testers: PropTypes.arrayOf(
         PropTypes.shape({
             id: PropTypes.string.isRequired,
-            username: PropTypes.string.isRequired
+            username: PropTypes.string.isRequired,
+            isBot: PropTypes.bool.isRequired,
+            ats: PropTypes.arrayOf(
+                PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    key: PropTypes.string.isRequired
+                })
+            )
         })
     ).isRequired,
     testPlanReport: PropTypes.shape({
@@ -339,10 +367,14 @@ AssignTesters.propTypes = {
             })
         ).isRequired,
         at: PropTypes.shape({
-            name: PropTypes.string.isRequired
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            key: PropTypes.string.isRequired
         }).isRequired,
         browser: PropTypes.shape({
-            name: PropTypes.string.isRequired
+            id: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+            key: PropTypes.string.isRequired
         }).isRequired
     }).isRequired
 };

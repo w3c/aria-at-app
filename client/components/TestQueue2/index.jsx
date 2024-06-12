@@ -1,5 +1,5 @@
 import React, { Fragment, useRef } from 'react';
-import { useQuery } from '@apollo/client';
+import { useApolloClient, useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { Container, Table as BootstrapTable } from 'react-bootstrap';
@@ -20,10 +20,9 @@ import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
 import ProgressBar from '../common/ClippedProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
+import BotRunTestStatusList from './BotRunTestStatusList';
 
 const DisclosureComponent = styled(DisclosureComponentUnstyled)`
-    /* margin-top: 2em; */
-
     h3 {
         font-size: 1rem;
 
@@ -120,6 +119,7 @@ const StatusContainer = styled.div`
 `;
 
 const TestQueue = () => {
+    const client = useApolloClient();
     const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
         fetchPolicy: 'cache-and-network'
     });
@@ -164,7 +164,6 @@ const TestQueue = () => {
     });
 
     // Remove any test plans or test plan versions without reports and sort
-
     const sortTestPlanVersions = testPlanVersions => {
         return [...testPlanVersions]
             .filter(testPlanVersion => testPlanVersion.testPlanReports.length)
@@ -225,8 +224,8 @@ const TestQueue = () => {
         return (
             // TODO: fix the aria-label of this
             <DisclosureComponent
-                componentId={testPlan.directory}
                 stacked
+                componentId={testPlan.directory}
                 title={testPlan.testPlanVersions.map(testPlanVersion => (
                     <>
                         <VersionString
@@ -317,6 +316,9 @@ const TestQueue = () => {
 
     const renderRow = ({ testPlan, testPlanVersion, testPlanReport }) => {
         const percentComplete = calculatePercentComplete(testPlanReport);
+        const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
+            ({ tester }) => tester.isBot
+        );
 
         return (
             <tr key={testPlanReport.id}>
@@ -345,13 +347,31 @@ const TestQueue = () => {
                             testPlanReport={testPlanReport}
                             fromTestQueue
                         />
+                        {hasBotRun ? (
+                            <BotRunTestStatusList
+                                testPlanReportId={testPlanReport.id}
+                            />
+                        ) : null}
                     </StatusContainer>
                 </td>
                 <td>
                     <Actions
                         me={data.me}
-                        testPlanReport={testPlanReport}
+                        testers={testers}
                         testPlan={testPlan}
+                        testPlanReport={testPlanReport}
+                        triggerUpdate={async () => {
+                            await client.refetchQueries({
+                                include: [
+                                    'TestQueuePage',
+                                    'TestPlanReportStatusDialog'
+                                ]
+                            });
+
+                            // Refocus on testers assignment dropdown button
+                            const selector = `#assign-testers-${testPlanReport.id} button`;
+                            document.querySelector(selector).focus();
+                        }}
                     />
                 </td>
             </tr>

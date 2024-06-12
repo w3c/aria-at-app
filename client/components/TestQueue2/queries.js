@@ -10,11 +10,16 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         users {
             id
             username
-            isBot
             roles
+            isBot
+            ats {
+                id
+                key
+            }
         }
         ats {
             id
+            key
             name
             atVersions {
                 id
@@ -22,6 +27,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             }
             browsers {
                 id
+                key
                 name
             }
         }
@@ -40,10 +46,12 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     id
                     at {
                         id
+                        key
                         name
                     }
                     browser {
                         id
+                        key
                         name
                     }
                     minimumAtVersion {
@@ -60,9 +68,11 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                     draftTestPlanRuns {
                         id
                         testResultsLength
+                        initiatedByAutomation
                         tester {
                             id
                             username
+                            isBot
                         }
                         testResults {
                             completedAt
@@ -97,6 +107,48 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
     }
 `;
 
+// export const TEST_PLAN_REPORT_QUERY = gql`
+//     query TestPlanReport($testPlanReportId: ID!) {
+//         testPlanReport(id: $testPlanReportId) {
+//             id
+//             at {
+//                 id
+//                 key
+//                 name
+//             }
+//             browser {
+//                 id
+//                 key
+//                 name
+//             }
+//             minimumAtVersion {
+//                 id
+//                 name
+//             }
+//             exactAtVersion {
+//                 id
+//                 name
+//             }
+//             runnableTestsLength
+//             conflictsLength
+//             metrics
+//             draftTestPlanRuns {
+//                 id
+//                 testResultsLength
+//                 initiatedByAutomation
+//                 tester {
+//                     id
+//                     username
+//                     isBot
+//                 }
+//                 testResults {
+//                     completedAt
+//                 }
+//             }
+//         }
+//     }
+// `;
+
 export const ASSIGN_TESTER_MUTATION = gql`
     mutation AssignTester(
         $testReportId: ID!
@@ -111,6 +163,7 @@ export const ASSIGN_TESTER_MUTATION = gql`
                         tester {
                             id
                             username
+                            isBot
                         }
                     }
                 }
@@ -130,6 +183,7 @@ export const DELETE_TEST_PLAN_RUN = gql`
                         tester {
                             id
                             username
+                            isBot
                         }
                     }
                 }

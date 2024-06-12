@@ -43,13 +43,6 @@ const TestPlanReportStatusDialogWithButton = ({
     const [showDialog, setShowDialog] = useState(false);
     const { testPlanReportStatuses } = testPlanVersion ?? {};
 
-    if (testPlanVersion?.title.startsWith('Radio Group')) {
-        console.log(
-            'TestPlanReportStatusDialogWithButton showDialog',
-            showDialog
-        );
-    }
-
     const buttonLabel = useMemo(() => {
         if (!testPlanReportStatuses) return;
 

@@ -14,11 +14,10 @@ module.exports = async () => {
     // this global is only available in the teardown but not in TestEnvironments
     global.browser = browser;
 
-    // if (!isDebugMode) {
-    // use the file system to expose the wsEndpoint for TestEnvironments
-    const DIR = path.join(os.tmpdir(), 'jest_puppeteer_global_setup');
-    await mkdir(DIR, { recursive: true });
-    console.log('breakpoint1');
-    await writeFile(path.join(DIR, 'wsEndpoint'), browser.wsEndpoint());
-    // }
+    if (!isDebugMode) {
+        // use the file system to expose the wsEndpoint for TestEnvironments
+        const DIR = path.join(os.tmpdir(), 'jest_puppeteer_global_setup');
+        await mkdir(DIR, { recursive: true });
+        await writeFile(path.join(DIR, 'wsEndpoint'), browser.wsEndpoint());
+    }
 };
