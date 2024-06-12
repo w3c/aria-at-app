@@ -60,7 +60,26 @@ const gitRun = (args, cwd = gitCloneDirectory) => {
 };
 
 const importTestPlanVersions = async transaction => {
-    const { gitCommitDate } = await readRepo();
+    await cloneRepo();
+
+    // Get list of commits when multiple passed in as
+    // `<import_cmd> -c "commit1 commit2 commitN ..."`
+    const commits = args.commit
+        ? args.commit
+              .trim()
+              .split(' ')
+              .filter(el => !!el)
+        : [];
+
+    if (commits.length) {
+        for (const commit of commits) {
+            await buildTestsAndCreateTestPlanVersions(commit, { transaction });
+        }
+    } else await buildTestsAndCreateTestPlanVersions(null, { transaction });
+};
+
+const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
+    const { gitCommitDate } = await readCommit(commit);
 
     console.log('Running `npm install` ...\n');
     const installOutput = spawn.sync('npm', ['install'], {
@@ -184,7 +203,7 @@ const importTestPlanVersions = async transaction => {
                     // Deprecations happen slightly before update during normal app operations.
                     // This is to maintain correctness and any app sorts issues
                     const deprecatedAt = new Date(updatedAt);
-                    deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 60);
+                    deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 120);
                     await updateTestPlanVersionById({
                         id: testPlanVersionToDeprecate.id,
                         values: { phase: 'DEPRECATED', deprecatedAt },
@@ -227,17 +246,26 @@ const importTestPlanVersions = async transaction => {
             transaction
         });
     }
+
+    // To ensure build folder is clean when multiple commits are being processed
+    // to prevent `EPERM` errors
+    console.log('Running `npm run cleanup` ...\n');
+    const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
+        cwd: gitCloneDirectory
+    });
+    console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
 };
 
-const readRepo = async () => {
+const cloneRepo = async () => {
     fse.ensureDirSync(gitCloneDirectory);
 
     console.info('Cloning aria-at repo ...');
     spawn.sync('git', ['clone', ariaAtRepo, gitCloneDirectory]);
     console.info('Cloning aria-at repo complete.');
+};
 
-    gitRun(`checkout ${args.commit ?? ariaAtDefaultBranch}`);
-
+const readCommit = async commit => {
+    gitRun(`checkout ${commit ?? ariaAtDefaultBranch}`);
     const gitCommitDate = new Date(gitRun(`log --format=%aI -n 1`));
 
     return { gitCommitDate };
