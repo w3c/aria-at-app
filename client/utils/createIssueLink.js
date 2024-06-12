@@ -9,6 +9,28 @@ const atLabelMap = {
     NVDA: 'nvda'
 };
 
+/**
+ * Creates a link to open a new issue on the GitHub repository.
+ *
+ * @param {Object} options - Options for creating the issue link
+ * @param {boolean} [options.isCandidateReview=false] - Whether this is a candidate review
+ * @param {boolean} [options.isCandidateReviewChangesRequested=false] - Whether changes are requested for a candidate review
+ * @param {string} [options.testPlanDirectory] - The directory of the test plan
+ * @param {string} [options.testPlanTitle] - The title of the test plan
+ * @param {string} [options.versionString] - The version string
+ * @param {string|null} [options.testTitle=null] - The title of the test
+ * @param {number|null} [options.testSequenceNumber=null] - The sequence number of the test. This is the number displayed to test runners
+ * @param {number|null} [options.testRowNumber=null] - The row number of the test in aria-at
+ * @param {string|null} [options.testRenderedUrl=null] - The rendered URL of the test
+ * @param {string} options.atName - The name of the assistive technology
+ * @param {string|null} [options.atVersionName=null] - The version name of the assistive technology
+ * @param {string|null} [options.browserName=null] - The name of the browser
+ * @param {string|null} [options.browserVersionName=null] - The version name of the browser
+ * @param {string|null} [options.conflictMarkdown=null] - The conflict markdown
+ * @param {string|null} [options.reportLink=null] - The link to the report
+ * @returns {string} The URL for creating a new issue on the GitHub repository
+ * @throws {Error} If required parameters are missing
+ */
 const createIssueLink = ({
     isCandidateReview = false,
     isCandidateReviewChangesRequested = false,
@@ -128,6 +150,19 @@ const createIssueLink = ({
     );
 };
 
+/**
+ * Returns a link to search for existing issues on the GitHub repository based on the provided parameters.
+ *
+ * @param {Object} options - Options for generating the issue search link
+ * @param {boolean} [options.isCandidateReview=false] - Whether this is a candidate review
+ * @param {boolean} [options.isCandidateReviewChangesRequested=false] - Whether changes are requested for a candidate review
+ * @param {string|null} [options.username=null] - The username of the author
+ * @param {string} options.atName - The name of the assistive technology
+ * @param {string} options.testPlanTitle - The title of the test plan
+ * @param {string} options.versionString - The version string
+ * @param {number|null} [options.testSequenceNumber=null] - The sequence number of the test, this is the test number displayed to test runners
+ * @returns {string} The URL for searching issues on the GitHub repository
+ */
 export const getIssueSearchLink = ({
     isCandidateReview = false,
     isCandidateReviewChangesRequested = false,
