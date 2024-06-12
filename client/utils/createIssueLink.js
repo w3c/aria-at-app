@@ -135,7 +135,7 @@ export const getIssueSearchLink = ({
     atName,
     testPlanTitle,
     versionString,
-    testRowNumber = null
+    testSequenceNumber = null
 }) => {
     let atKey;
     if (atName === 'JAWS' || atName === 'NVDA') {
@@ -153,7 +153,7 @@ export const getIssueSearchLink = ({
         username ? `author:${username}` : '',
         `label:${atKey}`,
         `"${testPlanTitle}"`,
-        testRowNumber ? `Test ${testRowNumber}` : '',
+        testSequenceNumber ? `Test ${testSequenceNumber}` : '',
         versionString
     ]
         .filter(str => str)
