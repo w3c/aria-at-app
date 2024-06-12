@@ -28,12 +28,6 @@ function AddTestToQueueWithConfirmation({
     buttonText = 'Add to Test Queue',
     triggerUpdate = () => {}
 }) {
-    if (testPlanVersion?.title.startsWith('Radio Group')) {
-        console.log(
-            'AddTestToQueueWithConfirmation showConfirmation',
-            showConfirmation
-        );
-    }
     const [showPreserveReportDataMessage, setShowPreserveReportDataMessage] =
         useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
@@ -77,13 +71,23 @@ function AddTestToQueueWithConfirmation({
     let latestOldVersion;
     let oldReportToCopyResultsFrom;
 
-    // Check if any results data available from a previous result
-    if (existingTestPlanReportsData?.oldTestPlanVersions?.length) {
-        latestOldVersion =
-            existingTestPlanReportsData?.oldTestPlanVersions?.reduce((a, b) =>
-                new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b
-            );
+    // Check if any results data available from a previous result using the
+    // same testFormatVersion
+    const oldTestPlanVersions =
+        existingTestPlanReportsData?.oldTestPlanVersions?.filter(
+            ({ metadata }) => {
+                return (
+                    metadata.testFormatVersion ===
+                    existingTestPlanReportsData?.existingTestPlanVersion
+                        ?.metadata.testFormatVersion
+                );
+            }
+        ) || [];
 
+    if (oldTestPlanVersions?.length) {
+        latestOldVersion = oldTestPlanVersions?.reduce((a, b) =>
+            new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b
+        );
         if (
             new Date(latestOldVersion?.updatedAt) <
             new Date(testPlanVersion?.updatedAt)
@@ -150,23 +154,8 @@ function AddTestToQueueWithConfirmation({
             actions.push({
                 label: 'Add and run later',
                 onClick: async () => {
-                    await addTestToQueue(
-                        canUseOldResults
-                            ? {
-                                  copyResultsFromTestPlanVersionId:
-                                      latestOldVersion.id
-                              }
-                            : {}
-                    );
-                    // await closeWithUpdate();
-                }
-            });
-
-            if (!alreadyHasBotInTestPlanReport) {
-                actions.push({
-                    label: 'Add and run with bot',
-                    onClick: async () => {
-                        const testPlanReport = await addTestToQueue(
+                    try {
+                        await addTestToQueue(
                             canUseOldResults
                                 ? {
                                       copyResultsFromTestPlanVersionId:
@@ -174,8 +163,31 @@ function AddTestToQueueWithConfirmation({
                                   }
                                 : {}
                         );
-                        await scheduleCollectionJob(testPlanReport);
                         await closeWithUpdate();
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            });
+
+            if (!alreadyHasBotInTestPlanReport) {
+                actions.push({
+                    label: 'Add and run with bot',
+                    onClick: async () => {
+                        try {
+                            const testPlanReport = await addTestToQueue(
+                                canUseOldResults
+                                    ? {
+                                          copyResultsFromTestPlanVersionId:
+                                              latestOldVersion.id
+                                      }
+                                    : {}
+                            );
+                            await scheduleCollectionJob(testPlanReport);
+                            await closeWithUpdate();
+                        } catch (e) {
+                            console.error(e);
+                        }
                     }
                 });
             }
