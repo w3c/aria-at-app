@@ -24,6 +24,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             atVersions {
                 id
                 name
+                releasedAt
             }
             browsers {
                 id
