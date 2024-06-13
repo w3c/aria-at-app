@@ -804,7 +804,12 @@ export default (
                                 name: 'Firefox'
                             }
                         }
-                    ]
+                    ],
+                    metadata: {
+                        exampleUrl: 'https://fakeurl.com/exampleUrl',
+                        designPatternUrl: 'https://fakeurl.com/designPattern',
+                        testFormatVersion: 1
+                    }
                 },
                 oldTestPlanVersions: []
             }

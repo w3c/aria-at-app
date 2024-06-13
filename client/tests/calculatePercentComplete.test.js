@@ -1,4 +1,4 @@
-import { calculatePercentComplete } from '../components/TestPlanReportStatusDialog/calculatePercentComplete';
+import { calculatePercentComplete } from '../utils/calculatePercentComplete';
 
 describe('calculatePercentComplete', () => {
     const testResult = (id, completedAt = null) => ({ id, completedAt });
