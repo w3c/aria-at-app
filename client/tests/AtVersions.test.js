@@ -3,7 +3,7 @@ import getPage from './util/getPage';
 describe('AT Version UI', () => {
     test('should add, edit, then remove an AtVersion', async () => {
         /* prettier-ignore */
-        await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+        await getPage({ role: 'admin', url: '/test-queue-old' }, async page => {
             const openTrayIfClosed = async () => {
                 await page.waitForSelector('button ::-p-text(Manage Assistive Technology Versions)');
                 const isTrayClosed = !!(await page.$('::-p-text(Select an assistive technology and manage its versions)'));
