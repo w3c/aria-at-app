@@ -108,48 +108,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
     }
 `;
 
-// export const TEST_PLAN_REPORT_QUERY = gql`
-//     query TestPlanReport($testPlanReportId: ID!) {
-//         testPlanReport(id: $testPlanReportId) {
-//             id
-//             at {
-//                 id
-//                 key
-//                 name
-//             }
-//             browser {
-//                 id
-//                 key
-//                 name
-//             }
-//             minimumAtVersion {
-//                 id
-//                 name
-//             }
-//             exactAtVersion {
-//                 id
-//                 name
-//             }
-//             runnableTestsLength
-//             conflictsLength
-//             metrics
-//             draftTestPlanRuns {
-//                 id
-//                 testResultsLength
-//                 initiatedByAutomation
-//                 tester {
-//                     id
-//                     username
-//                     isBot
-//                 }
-//                 testResults {
-//                     completedAt
-//                 }
-//             }
-//         }
-//     }
-// `;
-
 export const ASSIGN_TESTER_MUTATION = gql`
     mutation AssignTester(
         $testReportId: ID!

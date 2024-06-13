@@ -42,8 +42,9 @@ export default () => (
                 </ConfirmAuth>
             }
         />
-        <Route exact path="/test-queue" element={<TestQueue />} />
-        <Route exact path="/test-queue-2" element={<TestQueue2 />} />
+        {/* TODO: Deprecate and remove */}
+        <Route exact path="/test-queue-old" element={<TestQueue />} />
+        <Route exact path="/test-queue" element={<TestQueue2 />} />
         <Route
             exact
             path="/test-plan-report/:testPlanReportId"

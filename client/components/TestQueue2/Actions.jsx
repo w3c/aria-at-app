@@ -56,9 +56,9 @@ const Actions = ({
             testPlanRun => testPlanRun.tester.id === me.id
         );
 
-    const nonSelfAssignedRuns = testPlanReport.draftTestPlanRuns.filter(
-        testPlanRun => testPlanRun.tester.id !== me?.id
-    );
+    const nonSelfAssignedRuns = testPlanReport.draftTestPlanRuns
+        .filter(testPlanRun => testPlanRun.tester.id !== me?.id)
+        .sort((a, b) => a.tester.username.localeCompare(b.tester.username));
 
     const completedAllTests = testPlanReport.draftTestPlanRuns.every(
         testPlanRun =>
@@ -199,18 +199,6 @@ const Actions = ({
             />
         );
     };
-
-    // const refetchTestPlanReport = async (
-    //     testPlanReportId = testPlanReport.id
-    // ) => {
-    //     await triggerLoad(async () => {
-    //         const { data } = await client.query({
-    //             query: TEST_PLAN_REPORT_QUERY,
-    //             variables: { testPlanReportId },
-    //             fetchPolicy: 'network-only'
-    //         });
-    //     }, 'Updating ...');
-    // };
 
     return (
         <LoadingStatus message={loadingMessage}>
