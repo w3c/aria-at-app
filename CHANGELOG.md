@@ -1,3 +1,12 @@
+### [1.3.1](https://github.com/w3c/aria-at-app/compare/v1.3.0...v1.3.1) (2024-06-12)
+
+
+### Bug Fixes
+
+* add test for decimal rowNumber test automation ([#1114](https://github.com/w3c/aria-at-app/issues/1114)) ([347bf07](https://github.com/w3c/aria-at-app/commit/347bf07261d4cc3606b05b04742a2388cb1a1add)), closes [#1106](https://github.com/w3c/aria-at-app/issues/1106)
+* Include the latest w3c/aria-at data imports in tests and update sample data ([#1111](https://github.com/w3c/aria-at-app/issues/1111)) ([ae90bce](https://github.com/w3c/aria-at-app/commit/ae90bce0ce56e00d0b4d9b0c8b823f62e5618bbf))
+* Update incorrectly set deprecation dates for test plan versions ([#1122](https://github.com/w3c/aria-at-app/issues/1122)) ([d077bb5](https://github.com/w3c/aria-at-app/commit/d077bb54c2be8a0ce1ea93992d69ea7ff1543eeb)), closes [#966](https://github.com/w3c/aria-at-app/issues/966)
+
 ## [1.3.0](https://github.com/w3c/aria-at-app/compare/v1.2.1...v1.3.0) (2024-05-28)
 
 
