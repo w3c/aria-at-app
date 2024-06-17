@@ -40,7 +40,6 @@ describe('AT Version UI', () => {
             await page.waitForSelector('.modal-title ::-p-text(Remove JAWS Version 99.0.99)');
             await page.click('.modal-footer button ::-p-text(Remove)');
             await page.waitForNetworkIdle();
-            await page.click('.modal-footer button ::-p-text(Ok)');
             const option = await page.$('.at-versions-container option ::-p-text(99.0.99)');
             expect(option).toBeNull();
         });
