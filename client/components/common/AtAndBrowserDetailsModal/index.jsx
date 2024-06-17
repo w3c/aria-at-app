@@ -51,6 +51,7 @@ const AtAndBrowserDetailsModal = ({
     browserVersion = '',
     patternName = '', // admin related prop
     testerName = '', // admin related prop
+    exactAtVersion = null,
     handleAction = () => {},
     handleClose = () => {}
 }) => {
@@ -69,8 +70,9 @@ const AtAndBrowserDetailsModal = ({
 
     const [showExitModal, setShowExitModal] = useState(false);
     const [isFirstLoad, setIsFirstLoad] = useState(true);
-    const [updatedAtVersion, setUpdatedAtVersion] =
-        useState('Select a Version');
+    const [updatedAtVersion, setUpdatedAtVersion] = useState(
+        exactAtVersion ? exactAtVersion.name : 'Select a Version'
+    );
     const [updatedBrowserVersion, setUpdatedBrowserVersion] = useState('');
 
     const [isAtVersionError, setIsAtVersionError] = useState(false);
@@ -316,6 +318,27 @@ const AtAndBrowserDetailsModal = ({
                                             </span>
                                         </Alert>
                                     )}
+                                {exactAtVersion ? (
+                                    <Alert
+                                        variant="warning"
+                                        className="at-browser-details-modal-alert"
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={faExclamationTriangle}
+                                        />
+                                        <span>
+                                            Results collected for this test plan
+                                            require{' '}
+                                            <b>
+                                                {atName} {updatedAtVersion}
+                                            </b>
+                                            . By continuing, you confirm that
+                                            your results are being recorded
+                                            using the specified version of the
+                                            Assistive Technology.
+                                        </span>
+                                    </Alert>
+                                ) : null}
                                 <Form.Group className="form-group">
                                     <Form.Label>
                                         Assistive Technology Name
@@ -326,42 +349,59 @@ const AtAndBrowserDetailsModal = ({
                                         value={atName}
                                     />
                                 </Form.Group>
-
                                 <Form.Group className="form-group">
-                                    <Form.Label>
-                                        Assistive Technology Version
-                                        <Required aria-hidden />
-                                    </Form.Label>
-                                    <Form.Select
-                                        ref={updatedAtVersionDropdownRef}
-                                        value={updatedAtVersion}
-                                        onChange={handleAtVersionChange}
-                                        isInvalid={isAtVersionError}
-                                        required
-                                    >
-                                        {[
-                                            'Select a Version',
-                                            ...atVersions
-                                        ].map(item => (
-                                            <option
-                                                key={`atVersionKey-${item}`}
-                                                value={item}
-                                                disabled={
-                                                    item === 'Select a Version'
+                                    {exactAtVersion ? (
+                                        <>
+                                            <Form.Label>
+                                                Assistive Technology Version
+                                            </Form.Label>
+                                            <Form.Control
+                                                disabled
+                                                type="text"
+                                                value={exactAtVersion.name}
+                                            />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Form.Label>
+                                                Assistive Technology Version
+                                                <Required aria-hidden />
+                                            </Form.Label>
+                                            <Form.Select
+                                                ref={
+                                                    updatedAtVersionDropdownRef
                                                 }
+                                                value={updatedAtVersion}
+                                                onChange={handleAtVersionChange}
+                                                isInvalid={isAtVersionError}
+                                                required
                                             >
-                                                {item}
-                                            </option>
-                                        ))}
-                                    </Form.Select>
-                                    {isAtVersionError && (
-                                        <Form.Control.Feedback
-                                            style={{ display: 'block' }}
-                                            type="invalid"
-                                        >
-                                            Please select an Assistive
-                                            Technology Version.
-                                        </Form.Control.Feedback>
+                                                {[
+                                                    'Select a Version',
+                                                    ...atVersions
+                                                ].map(item => (
+                                                    <option
+                                                        key={`atVersionKey-${item}`}
+                                                        value={item}
+                                                        disabled={
+                                                            item ===
+                                                            'Select a Version'
+                                                        }
+                                                    >
+                                                        {item}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                            {isAtVersionError && (
+                                                <Form.Control.Feedback
+                                                    style={{ display: 'block' }}
+                                                    type="invalid"
+                                                >
+                                                    Please select an Assistive
+                                                    Technology Version.
+                                                </Form.Control.Feedback>
+                                            )}
+                                        </>
                                     )}
                                 </Form.Group>
                             </FieldsetRow>
@@ -638,6 +678,10 @@ AtAndBrowserDetailsModal.propTypes = {
     browserVersions: PropTypes.arrayOf(PropTypes.string),
     patternName: PropTypes.string,
     testerName: PropTypes.string,
+    exactAtVersion: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired
+    }),
     handleClose: PropTypes.func,
     handleAction: PropTypes.func
 };
