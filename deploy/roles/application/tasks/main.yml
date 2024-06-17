@@ -17,6 +17,7 @@
     path: '{{source_dir}}/server/scripts'
     mode: '0777'
     recurse: yes
+  become: yes
   when: deployment_mode != 'development'
   notify: "restart server"
 
@@ -25,6 +26,7 @@
     path: '{{source_dir}}/server/resources'
     mode: '0777'
     recurse: yes
+  become: yes
   when: deployment_mode != 'development'
   notify: "restart server"
 
@@ -33,6 +35,7 @@
     path: '{{source_dir}}/client/resources'
     mode: '0777'
     recurse: yes
+  become: yes
   when: deployment_mode != 'development'
   notify: "restart server"
 
@@ -86,6 +89,7 @@
 
 - name: Import latest tests and harness from w3c/aria-at
   shell: ../deploy/scripts/export-and-exec.sh {{environment_config.dest}} node ./scripts/import-tests/index.js
+  become: yes
   args:
     chdir: '{{source_dir}}/server'
 
