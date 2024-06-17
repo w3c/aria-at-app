@@ -41,6 +41,7 @@ import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
 import { convertDateToString } from '../../utils/formatter';
+import { isJobStatusFinal } from '../../utils/collectionJobStatus';
 const pollInterval = 2000;
 
 const TestRun = () => {
@@ -81,7 +82,7 @@ const TestRun = () => {
     // that still has possible updates.
     useEffect(() => {
         const status = data?.testPlanRun?.collectionJob?.status;
-        if (status === 'QUEUED' || status === 'RUNNING') {
+        if (!isJobStatusFinal(status)) {
             startPolling(pollInterval);
         } else {
             stopPolling();
@@ -1235,9 +1236,11 @@ const TestRun = () => {
                     Reviewing tests of{' '}
                     <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
                     <b>{`${openAsUser.username}`}.</b>
-                    {( status === 'QUEUED' || status === 'RUNNING') && (
+                    {!isJobStatusFinal(status) && (
                         <>
-                            <br />The collection bot is still updating information on this page.  Changes may be lost when updates arrive.
+                            <br />
+                            The collection bot is still updating information on
+                            this page. Changes may be lost when updates arrive.
                         </>
                     )}
                 </div>
