@@ -1,39 +1,66 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import {
+    ApolloClient,
+    InMemoryCache,
+    ApolloProvider,
+    ApolloLink,
+    HttpLink,
+    concat
+} from '@apollo/client';
 
-const client = new ApolloClient({
-  uri: '/api/graphql',
-  cache: new InMemoryCache({
-    addTypename: false,
-    typePolicies: {
-      Query: {
-        fields: {
-          testPlanReport: { merge: true },
-          testPlanReports: { merge: false },
-          collectionJobByTestPlanRunId: {
-            merge(existing, incoming) {
-              return { ...existing, ...incoming };
+// Dynamically set GraphQL request headers
+// See https://www.apollographql.com/docs/react/networking/advanced-http-networking#customizing-request-logic
+const headerMiddleware = new ApolloLink((operation, forward) => {
+    const currentTransactionId = sessionStorage.getItem('currentTransactionId');
+    if (currentTransactionId) {
+        operation.setContext(({ headers = {} }) => ({
+            headers: {
+                ...headers,
+                'x-transaction-id': currentTransactionId
             }
-          }
-        }
-      },
-      Mutation: {
-        fields: {
-          testPlanReport: { merge: false },
-          testPlanRun: { merge: false }
-        }
-      }
+        }));
     }
-  })
+    return forward(operation);
 });
 
+const client = new ApolloClient({
+    link: concat(headerMiddleware, new HttpLink({ uri: '/api/graphql' })),
+    cache: new InMemoryCache({
+        addTypename: false,
+        typePolicies: {
+            Query: {
+                fields: {
+                    testPlanReport: { merge: true },
+                    testPlanReports: { merge: false },
+                    collectionJobByTestPlanRunId: {
+                        merge(existing, incoming) {
+                            return { ...existing, ...incoming };
+                        }
+                    }
+                }
+            },
+            Mutation: {
+                fields: {
+                    testPlanReport: { merge: false },
+                    testPlanRun: { merge: false }
+                }
+            }
+        }
+    })
+});
+
+const resetCache = async () => {
+    await client.clearStore();
+};
+
 const GraphQLProvider = ({ children }) => {
-  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+    return <ApolloProvider client={client}>{children}</ApolloProvider>;
 };
 
 GraphQLProvider.propTypes = {
-  children: PropTypes.node.isRequired
+    children: PropTypes.node.isRequired
 };
 
+export { resetCache };
 export default GraphQLProvider;

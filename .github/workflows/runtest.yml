@@ -36,14 +36,31 @@ jobs:
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${PGDATABASE} to ${PGUSER};"
           yarn sequelize:test db:migrate
           yarn sequelize:test db:seed:all
-          yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_1}
-          yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_2}
-          yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_3}
-          yarn workspace server db-import-tests:test -c ${IMPORT_ARIA_AT_TESTS_COMMIT_4}
+          yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
+          yarn workspace server db-import-tests:test
           yarn workspace server db-populate-sample-data:test
-      - name: test
-        run: yarn test
+      # yarn test would run all of these in serial, however we split this up to allow it to continue
+      # in case of errors - all tests will still run even if lint fails for instance.
+      - run: yarn workspace shared prettier
+        if: always()
+      - run: yarn workspace client prettier
+        if: always()
+      - run: yarn workspace server prettier
+        if: always()
+      - run: yarn workspace shared lint
+        if: always()
+      - run: yarn workspace client lint
+        if: always()
+      - run: yarn workspace server lint
+        if: always()
+      - run: yarn workspace shared jest
+        if: always()
+      - run: yarn workspace client jest
+        if: always()
+      - run: yarn workspace server jest
+        if: always()
       - name: lighthouseci
+        if: always()
         run: |
           npm install -g @lhci/cli@0.11.0
           yarn workspace client lighthouse

@@ -17,6 +17,8 @@
     yarn install
     ```
 2. Set up local database using the instructions provided in [database.md](database.md).
+    - Note: You must run `yarn db-import-tests:dev` after setting up your database to import the latest test harness into
+      your project.
 3. Run the server
     ```
     yarn dev
@@ -51,15 +53,37 @@ This functionality is available in development environments where the ALLOW_FAKE
 
 ## Debugging
 
-Instead of running `yarn dev` to start the local environment run `yarn run dev-debug`.
+### Debugging the Client
 
-This will add [express debugging](https://expressjs.com/en/guide/debugging.html)
-to information about routes, middleware and the request response cycle.
+Follow the below steps to debug the client:
 
-Additionally it adds the ability for you use Chrome DevTools and a
-`debugger` to step through code via Node's built-in
-[inspector](https://nodejs.org/en/docs/guides/debugging-getting-started/). Navigate to [chrome://inspect/#devices](chrome://inspect/#devices) and open the
-dedicated DevTools for Node.
+- Insert a `debugger` statement at the line you wish to debug.
+- Open DevTools in Chrome.
+- Use the app until you trigger the line of code with the debugger statement. The app will pause on the given line.
+
+### Debugging the Server
+
+Follow the below steps to debug the server:
+
+- Instead of running `yarn dev` to start the local environment, run `yarn run dev-debug`.
+- Using VSCode, add a breakpoint to a line of code you wish to debug.
+- Open the command pallete and choose the "Attach to Node process" command, and from the menu choose the `yarn dev-debug` process.
+- Use the app until the given line of code runs, and the app will pause on the breakpoint.
+
+### Debugging Unit and Integration Tests
+
+- Using VSCode, set a breakpoint.
+- Open the test suite file you wish to debug and *make sure the file is the active tab*.
+- Open the "Run and Debug" sidebar.
+- Choose "Jest Client Debug Current Test" if you wish to debug a client test, or "Jest Server Debug Current Test" if you wish to debug a server test.
+- The debugger will trigger when it hits the line with a breakpoint.
+
+### Debugging End-To-End Tests
+
+- In order to debug the test code, follow the instructions for debugging unit tests.
+- To debug client code, insert a debugger statement at the desired location, then follow the instructions for debugging unit tests. A test browser app will open. Run the test until you trigger the desired line.
+- To debug server code, add two breakpoints, one to the server code you wish to debug and one to the first line of the desired test. When the debugger pauses on the first line of the test, open the command palette and choose "Attach to Node process" and choose the `dev-debug` process.
+- Hit play and the debugger will pause on your breakpoint.
 
 ## GraphQL Playground
 
@@ -67,9 +91,11 @@ To use the GraphQL playground, go to `/api/graphql` while the dev server is runn
 
 ## Testing
 
-### Running all tests
+Please see CONTRIBUTING.md for some additional information regarding the expectations around testing.
 
-Setup the test database by running the commands in [database.md](./database.md).
+### Running All Tests
+
+Set up the test database by running the commands in [database.md](./database.md).
 
 The following command runs the linter, formatter and Jest tests, all at once.
 
@@ -77,7 +103,7 @@ The following command runs the linter, formatter and Jest tests, all at once.
 yarn test
 ```
 
-### Linting and formatting
+### Linting and Formatting
 
 Code linting is performed by **ESLint**. To manually run ESLint:
 
@@ -91,7 +117,7 @@ Code formatting is performed by **Prettier**. To manually run Prettier:
 yarn prettier
 ```
 
-### Unit tests
+### Unit Tests
 
 * React application tests are located in `client/tests`.
 * Express server tests are located in `server/tests`.
@@ -114,6 +140,10 @@ yarn workspace client jest --watchAll
 # Run all server tests and watch from changes
 yarn workspace server jest --watchAll
 ```
+
+### End-To-End Tests
+
+Like unit tests, end-to-end tests are run by Jest, and the commands which run Jest tests should be used to run end-to-end tests as well.
 
 ### Previewing components with Storybook
 Storybook is a tool for building out UI components. To start the Storybook server, run:

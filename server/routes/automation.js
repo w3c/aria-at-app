@@ -10,9 +10,12 @@ const { handleError } = require('../middleware/handleError');
 
 const router = Router();
 
-router.post('/:jobID/update', verifyAutomationScheduler, updateJobStatus);
-
-router.post('/:jobID/result', verifyAutomationScheduler, updateJobResults);
+router.post('/:jobID', verifyAutomationScheduler, updateJobStatus);
+router.post(
+    '/:jobID/test/:testRowNumber',
+    verifyAutomationScheduler,
+    updateJobResults
+);
 
 router.use(handleError);
 

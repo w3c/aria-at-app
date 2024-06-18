@@ -1,9 +1,7 @@
 const populateData = require('../services/PopulatedData/populateData');
 
 const populateDataResolver = async (_, { locationOfData }, context) => {
-  const { transaction } = context;
-
-  return populateData(locationOfData, { transaction });
+    return populateData(locationOfData, { context });
 };
 
 module.exports = populateDataResolver;

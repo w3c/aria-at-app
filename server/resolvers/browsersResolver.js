@@ -1,10 +1,7 @@
-const BrowserLoader = require('../models/loaders/BrowserLoader');
-
 const browsersResolver = async (_, __, context) => {
-  const { transaction } = context;
+    const { transaction, browserLoader } = context;
 
-  const browserLoader = BrowserLoader();
-  return browserLoader.getAll({ transaction });
+    return browserLoader.getAll({ transaction });
 };
 
 module.exports = browsersResolver;

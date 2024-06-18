@@ -17,57 +17,61 @@ const transactions = {};
  * end-to-end tests)
  */
 const middleware = async (req, res, next) => {
-  const transactionId = req.headers['x-transaction-id'];
-  const isPersistentTransaction = !!transactionId;
+    const transactionId = req.headers['x-transaction-id'];
+    const isPersistentTransaction = !!transactionId;
 
-  let transaction;
-  if (transactionId && transactions[transactionId]) {
-    transaction = transactions[transactionId];
-  } else if (transactionId) {
-    transaction = await sequelize.transaction();
-    transactions[transactionId] = transaction;
-  } else {
-    transaction = await sequelize.transaction();
-  }
-
-  req.transaction = transaction;
-
-  res.once('finish', async () => {
-    if (!isPersistentTransaction && req.transaction) {
-      await req.transaction.commit();
-      delete req.transaction;
+    let transaction;
+    if (transactionId && transactions[transactionId]) {
+        transaction = transactions[transactionId];
+    } else {
+        transaction = await sequelize.transaction();
+        transactions[transaction.id] = transaction;
     }
-  });
+    req.transaction = transaction;
 
-  return next();
+    res.once('finish', async () => {
+        if (!isPersistentTransaction && req.transaction) {
+            await req.transaction.commit();
+            delete req.transaction;
+            delete transactions[transaction.id];
+        }
+    });
+
+    return next();
 };
 
 const errorware = async (error, req, res, next) => {
-  const transactionId = req.headers['x-transaction-id'];
-  const isPersistentTransaction = !!transactionId;
+    const transactionId = req.headers['x-transaction-id'];
+    const isPersistentTransaction = !!transactionId;
 
-  if (error) {
-    if (!isPersistentTransaction && req.transaction) {
-      await req.transaction.rollback();
-      delete req.transaction;
+    if (error) {
+        if (!isPersistentTransaction && req.transaction) {
+            await req.transaction.rollback();
+            delete req.transaction;
+        }
     }
-  }
 
-  return next(error);
+    return next(error);
 };
 
 const forTestingPopulateTransaction = transaction => {
-  transactions[transaction.id] = transaction;
+    transactions[transaction.id] = transaction;
 };
 
-const forTestingRollBackTransaction = async transaction => {
-  await transaction.rollback();
-  delete transactions[transaction.id];
+const forTestingRollBackTransaction = async transactionId => {
+    const transaction = transactions[transactionId];
+    await transaction.rollback();
+    delete transactions[transactionId];
+};
+
+const getTransactionById = id => {
+    return transactions[id];
 };
 
 module.exports = {
-  middleware,
-  errorware,
-  forTestingPopulateTransaction,
-  forTestingRollBackTransaction
+    middleware,
+    errorware,
+    getTransactionById,
+    forTestingPopulateTransaction,
+    forTestingRollBackTransaction
 };

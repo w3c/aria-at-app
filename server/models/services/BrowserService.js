@@ -1,11 +1,10 @@
 const ModelService = require('./ModelService');
 const {
-  BROWSER_ATTRIBUTES,
-  BROWSER_VERSION_ATTRIBUTES,
-  AT_ATTRIBUTES
+    BROWSER_ATTRIBUTES,
+    BROWSER_VERSION_ATTRIBUTES,
+    AT_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, Browser, BrowserVersion } = require('../');
-const { clearCachedBrowsers } = require('../loaders/utils');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -15,8 +14,8 @@ const { Op } = Sequelize;
  * @returns {{association: string, attributes: string[]}}
  */
 const browserAssociation = browserAttributes => ({
-  association: 'browser',
-  attributes: browserAttributes
+    association: 'browser',
+    attributes: browserAttributes
 });
 
 /**
@@ -24,8 +23,8 @@ const browserAssociation = browserAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const browserVersionAssociation = browserVersionAttributes => ({
-  association: 'browserVersions',
-  attributes: browserVersionAttributes
+    association: 'browserVersions',
+    attributes: browserVersionAttributes
 });
 
 /**
@@ -33,8 +32,8 @@ const browserVersionAssociation = browserVersionAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const atAssociation = atAttributes => ({
-  association: 'ats',
-  attributes: atAttributes
+    association: 'ats',
+    attributes: atAttributes
 });
 
 // Browser
@@ -50,21 +49,21 @@ const atAssociation = atAttributes => ({
  * @returns {Promise<*>}
  */
 const getBrowserById = async ({
-  id,
-  browserAttributes = BROWSER_ATTRIBUTES,
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  atAttributes = AT_ATTRIBUTES,
-  transaction
-}) => {
-  return ModelService.getById(Browser, {
     id,
-    attributes: browserAttributes,
-    include: [
-      browserVersionAssociation(browserVersionAttributes),
-      atAssociation(atAttributes)
-    ],
+    browserAttributes = BROWSER_ATTRIBUTES,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     transaction
-  });
+}) => {
+    return ModelService.getById(Browser, {
+        id,
+        attributes: browserAttributes,
+        include: [
+            browserVersionAssociation(browserVersionAttributes),
+            atAssociation(atAttributes)
+        ],
+        transaction
+    });
 };
 
 /**
@@ -83,28 +82,28 @@ const getBrowserById = async ({
  * @returns {Promise<*>}
  */
 const getBrowsers = async ({
-  search,
-  where = {},
-  browserAttributes = BROWSER_ATTRIBUTES,
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  atAttributes = AT_ATTRIBUTES,
-  pagination = {},
-  transaction
-}) => {
-  // search and filtering options
-  const searchQuery = search ? `%${search}%` : '';
-  if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
-
-  return ModelService.get(Browser, {
-    where,
-    attributes: browserAttributes,
-    include: [
-      browserVersionAssociation(browserVersionAttributes),
-      atAssociation(atAttributes)
-    ],
-    pagination,
+    search,
+    where = {},
+    browserAttributes = BROWSER_ATTRIBUTES,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    pagination = {},
     transaction
-  });
+}) => {
+    // search and filtering options
+    const searchQuery = search ? `%${search}%` : '';
+    if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
+
+    return ModelService.get(Browser, {
+        where,
+        attributes: browserAttributes,
+        include: [
+            browserVersionAssociation(browserVersionAttributes),
+            atAssociation(atAttributes)
+        ],
+        pagination,
+        transaction
+    });
 };
 
 /**
@@ -117,28 +116,28 @@ const getBrowsers = async ({
  * @returns {Promise<*>}
  */
 const createBrowser = async ({
-  values: { name },
-  browserAttributes = BROWSER_ATTRIBUTES,
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  atAttributes = AT_ATTRIBUTES,
-  transaction
+    values: { name, key },
+    browserAttributes = BROWSER_ATTRIBUTES,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
+    transaction
 }) => {
-  const browserResult = await ModelService.create(Browser, {
-    values: { name },
-    transaction
-  });
-  const { id } = browserResult;
+    const browserResult = await ModelService.create(Browser, {
+        values: { name, key },
+        transaction
+    });
+    const { id } = browserResult;
 
-  // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-  return ModelService.getById(Browser, {
-    id,
-    attributes: browserAttributes,
-    include: [
-      browserVersionAssociation(browserVersionAttributes),
-      atAssociation(atAttributes)
-    ],
-    transaction
-  });
+    // to ensure the structure being returned matches what we expect for simple queries and can be controlled
+    return ModelService.getById(Browser, {
+        id,
+        attributes: browserAttributes,
+        include: [
+            browserVersionAssociation(browserVersionAttributes),
+            atAssociation(atAttributes)
+        ],
+        transaction
+    });
 };
 
 /**
@@ -152,28 +151,28 @@ const createBrowser = async ({
  * @returns {Promise<*>}
  */
 const updateBrowserById = async ({
-  id,
-  values: { name },
-  browserAttributes = BROWSER_ATTRIBUTES,
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  atAttributes = AT_ATTRIBUTES,
-  transaction
-}) => {
-  await ModelService.update(Browser, {
-    where: { id },
-    values: { name },
-    transaction
-  });
-
-  return ModelService.getById(Browser, {
     id,
-    attributes: browserAttributes,
-    include: [
-      browserVersionAssociation(browserVersionAttributes),
-      atAssociation(atAttributes)
-    ],
+    values: { name },
+    browserAttributes = BROWSER_ATTRIBUTES,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    atAttributes = AT_ATTRIBUTES,
     transaction
-  });
+}) => {
+    await ModelService.update(Browser, {
+        where: { id },
+        values: { name },
+        transaction
+    });
+
+    return ModelService.getById(Browser, {
+        id,
+        attributes: browserAttributes,
+        include: [
+            browserVersionAssociation(browserVersionAttributes),
+            atAssociation(atAttributes)
+        ],
+        transaction
+    });
 };
 
 /**
@@ -184,13 +183,12 @@ const updateBrowserById = async ({
  * @returns {Promise<boolean>}
  */
 const removeBrowserById = async ({ id, truncate = false, transaction }) => {
-  const result = await ModelService.removeById(Browser, {
-    id,
-    truncate,
-    transaction
-  });
-  clearCachedBrowsers();
-  return result;
+    const result = await ModelService.removeById(Browser, {
+        id,
+        truncate,
+        transaction
+    });
+    return result;
 };
 
 // BrowserVersion
@@ -205,17 +203,17 @@ const removeBrowserById = async ({ id, truncate = false, transaction }) => {
  * @returns {Promise<*>}
  */
 const getBrowserVersionByQuery = async ({
-  where: { browserId, name },
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  browserAttributes = BROWSER_ATTRIBUTES,
-  transaction
-}) => {
-  return ModelService.getByQuery(BrowserVersion, {
-    where: { browserId, ...(name && { name }) },
-    attributes: browserVersionAttributes,
-    include: [browserAssociation(browserAttributes)],
+    where: { browserId, name },
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
     transaction
-  });
+}) => {
+    return ModelService.getByQuery(BrowserVersion, {
+        where: { browserId, ...(name && { name }) },
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
+        transaction
+    });
 };
 
 /**
@@ -233,24 +231,24 @@ const getBrowserVersionByQuery = async ({
  * @returns {Promise<*>}
  */
 const getBrowserVersions = async ({
-  search,
-  where = {},
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  browserAttributes = BROWSER_ATTRIBUTES,
-  pagination = {},
-  transaction
-}) => {
-  // search and filtering options
-  const searchQuery = search ? `%${search}%` : '';
-  if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
-
-  return ModelService.get(BrowserVersion, {
-    where,
-    attributes: browserVersionAttributes,
-    include: [browserAssociation(browserAttributes)],
-    pagination,
+    search,
+    where = {},
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
+    pagination = {},
     transaction
-  });
+}) => {
+    // search and filtering options
+    const searchQuery = search ? `%${search}%` : '';
+    if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
+
+    return ModelService.get(BrowserVersion, {
+        where,
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
+        pagination,
+        transaction
+    });
 };
 
 /**
@@ -262,23 +260,22 @@ const getBrowserVersions = async ({
  * @returns {Promise<*>}
  */
 const createBrowserVersion = async ({
-  values: { browserId, name },
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  browserAttributes = BROWSER_ATTRIBUTES,
-  transaction
-}) => {
-  await ModelService.create(BrowserVersion, {
     values: { browserId, name },
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
     transaction
-  });
-  clearCachedBrowsers();
-  // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-  return ModelService.getByQuery(BrowserVersion, {
-    where: { browserId, name },
-    attributes: browserVersionAttributes,
-    include: [browserAssociation(browserAttributes)],
-    transaction
-  });
+}) => {
+    await ModelService.create(BrowserVersion, {
+        values: { browserId, name },
+        transaction
+    });
+    // to ensure the structure being returned matches what we expect for simple queries and can be controlled
+    return ModelService.getByQuery(BrowserVersion, {
+        where: { browserId, name },
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
+        transaction
+    });
 };
 
 /**
@@ -291,27 +288,26 @@ const createBrowserVersion = async ({
  * @returns {Promise<*>}
  */
 const updateBrowserVersionByQuery = async ({
-  where: { browserId, name },
-  values = {},
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  browserAttributes = BROWSER_ATTRIBUTES,
-  transaction
-}) => {
-  await ModelService.update(BrowserVersion, {
     where: { browserId, name },
-    values,
+    values = {},
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
     transaction
-  });
-  clearCachedBrowsers();
-  return ModelService.getByQuery(BrowserVersion, {
-    where: {
-      browserId,
-      name: values.name || name
-    },
-    attributes: browserVersionAttributes,
-    include: [browserAssociation(browserAttributes)],
-    transaction
-  });
+}) => {
+    await ModelService.update(BrowserVersion, {
+        where: { browserId, name },
+        values,
+        transaction
+    });
+    return ModelService.getByQuery(BrowserVersion, {
+        where: {
+            browserId,
+            name: values.name || name
+        },
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
+        transaction
+    });
 };
 
 /**
@@ -324,24 +320,23 @@ const updateBrowserVersionByQuery = async ({
  * @returns {Promise<*>}
  */
 const updateBrowserVersionById = async ({
-  id,
-  values = {},
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  browserAttributes = BROWSER_ATTRIBUTES,
-  transaction
-}) => {
-  await ModelService.update(BrowserVersion, {
-    where: { id },
-    values,
-    transaction
-  });
-  clearCachedBrowsers();
-  return ModelService.getById(BrowserVersion, {
     id,
-    attributes: browserVersionAttributes,
-    include: [browserAssociation(browserAttributes)],
+    values = {},
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
     transaction
-  });
+}) => {
+    await ModelService.update(BrowserVersion, {
+        where: { id },
+        values,
+        transaction
+    });
+    return ModelService.getById(BrowserVersion, {
+        id,
+        attributes: browserVersionAttributes,
+        include: [browserAssociation(browserAttributes)],
+        transaction
+    });
 };
 
 /**
@@ -352,17 +347,15 @@ const updateBrowserVersionById = async ({
  * @returns {Promise<boolean>}
  */
 const removeBrowserVersionByQuery = async ({
-  where: { browserId, name },
-  truncate = false,
-  transaction
-}) => {
-  const result = await ModelService.removeByQuery(BrowserVersion, {
     where: { browserId, name },
-    truncate,
+    truncate = false,
     transaction
-  });
-  clearCachedBrowsers();
-  return result;
+}) => {
+    return ModelService.removeByQuery(BrowserVersion, {
+        where: { browserId, name },
+        truncate,
+        transaction
+    });
 };
 
 /**
@@ -373,17 +366,15 @@ const removeBrowserVersionByQuery = async ({
  * @returns {Promise<boolean>}
  */
 const removeBrowserVersionById = async ({
-  id,
-  truncate = false,
-  transaction
-}) => {
-  const result = await ModelService.removeById(BrowserVersion, {
     id,
-    truncate,
+    truncate = false,
     transaction
-  });
-  clearCachedBrowsers();
-  return result;
+}) => {
+    return ModelService.removeById(BrowserVersion, {
+        id,
+        truncate,
+        transaction
+    });
 };
 
 /**
@@ -395,45 +386,45 @@ const removeBrowserVersionById = async ({
  * @returns {BrowserVersion}
  */
 const findOrCreateBrowserVersion = async ({
-  where: { browserId, name },
-  browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
-  browserAttributes = BROWSER_ATTRIBUTES,
-  transaction
-}) => {
-  let version = await getBrowserVersionByQuery({
     where: { browserId, name },
-    browserVersionAttributes,
-    browserAttributes,
+    browserVersionAttributes = BROWSER_VERSION_ATTRIBUTES,
+    browserAttributes = BROWSER_ATTRIBUTES,
     transaction
-  });
-
-  if (!version) {
-    version = await createBrowserVersion({
-      values: { browserId, name },
-      transaction
+}) => {
+    let version = await getBrowserVersionByQuery({
+        where: { browserId, name },
+        browserVersionAttributes,
+        browserAttributes,
+        transaction
     });
-  }
 
-  return version;
+    if (!version) {
+        version = await createBrowserVersion({
+            values: { browserId, name },
+            transaction
+        });
+    }
+
+    return version;
 };
 
 module.exports = {
-  // Basic CRUD [Browser]
-  getBrowserById,
-  getBrowsers,
-  createBrowser,
-  updateBrowserById,
-  removeBrowserById,
+    // Basic CRUD [Browser]
+    getBrowserById,
+    getBrowsers,
+    createBrowser,
+    updateBrowserById,
+    removeBrowserById,
 
-  // Basic CRUD [BrowserVersion]
-  getBrowserVersionByQuery,
-  getBrowserVersions,
-  createBrowserVersion,
-  updateBrowserVersionByQuery,
-  updateBrowserVersionById,
-  removeBrowserVersionByQuery,
-  removeBrowserVersionById,
+    // Basic CRUD [BrowserVersion]
+    getBrowserVersionByQuery,
+    getBrowserVersions,
+    createBrowserVersion,
+    updateBrowserVersionByQuery,
+    updateBrowserVersionById,
+    removeBrowserVersionByQuery,
+    removeBrowserVersionById,
 
-  // Custom [BrowserVersion]
-  findOrCreateBrowserVersion
+    // Custom [BrowserVersion]
+    findOrCreateBrowserVersion
 };

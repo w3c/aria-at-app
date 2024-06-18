@@ -1,33 +1,37 @@
 'use strict';
 
-const responseCollectionUser = require('../util/responseCollectionUser');
+const responseCollectionUserIDs = require('../util/responseCollectionUserIDs');
 
 module.exports = {
-  async up(queryInterface) {
-    const user = await queryInterface.bulkInsert(
-      'User',
-      [
-        {
-          id: responseCollectionUser.id, // Specified ID for NVDA Bot
-          username: responseCollectionUser.username,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ],
-      { returning: true }
-    );
+    async up(queryInterface) {
+        const user = await queryInterface.bulkInsert(
+            'User',
+            [
+                {
+                    id: responseCollectionUserIDs['NVDA Bot'],
+                    username: 'NVDA Bot',
+                    isBot: true,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                }
+            ],
+            { returning: true }
+        );
 
-    await queryInterface.bulkInsert('UserRoles', [
-      {
-        userId: user[0].id,
-        roleName: 'TESTER'
-      }
-    ]);
-  },
+        await queryInterface.bulkInsert('UserRoles', [
+            {
+                userId: user[0].id,
+                roleName: 'TESTER'
+            }
+        ]);
 
-  async down(queryInterface) {
-    await queryInterface.bulkDelete('User', {
-      id: responseCollectionUser.id
-    });
-  }
+        // note to someone copying this seeder to add JAWS, we now need to also
+        // link to the UserAts table - see 20240520125142-addBotAts.js
+    },
+
+    async down(queryInterface) {
+        await queryInterface.bulkDelete('User', {
+            id: responseCollectionUserIDs['NVDA Bot']
+        });
+    }
 };

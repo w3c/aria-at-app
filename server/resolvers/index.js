@@ -24,7 +24,6 @@ const updateMe = require('./updateMe');
 const populateData = require('./populateDataResolver');
 const collectionJob = require('./collectionJobResolver');
 const collectionJobs = require('./collectionJobsResolver');
-const findOrCreateCollectionJob = require('./findOrCreateCollectionJobResolver');
 const updateCollectionJob = require('./updateCollectionJobResolver');
 const deleteCollectionJob = require('./deleteCollectionJobResolver');
 const scheduleCollectionJob = require('./scheduleCollectionJobResolver');
@@ -42,62 +41,63 @@ const TestPlanRunOperations = require('./TestPlanRunOperations');
 const TestResultOperations = require('./TestResultOperations');
 const TestPlanVersionOperations = require('./TestPlanVersionOperations');
 const CollectionJobOperations = require('./CollectionJobOperations');
+const CollectionJob = require('./CollectionJob');
 const TestPlanRun = require('./TestPlanRun');
 const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
 
 const resolvers = {
-  Query: {
-    me,
-    users,
-    ats,
-    browsers,
-    testPlan,
-    testPlans,
-    testPlanVersion,
-    testPlanVersions,
-    testPlanReport,
-    testPlanReports,
-    testPlanRun,
-    testPlanRuns,
-    populateData,
-    collectionJob,
-    collectionJobs,
-    collectionJobByTestPlanRunId
-  },
-  Mutation: {
-    at: mutateAt,
-    atVersion: mutateAtVersion,
-    browser: mutateBrowser,
-    testPlanReport: mutateTestPlanReport,
-    testPlanRun: mutateTestPlanRun,
-    testResult: mutateTestResult,
-    testPlanVersion: mutateTestPlanVersion,
-    collectionJob: mutateCollectionJob,
-    findOrCreateTestPlanReport,
-    updateMe,
-    addViewer,
-    findOrCreateCollectionJob,
-    updateCollectionJob,
-    deleteCollectionJob,
-    scheduleCollectionJob,
-    restartCollectionJob
-  },
-  AtOperations,
-  AtVersionOperations,
-  BrowserOperations,
-  User,
-  TestPlan,
-  TestPlanVersion,
-  TestPlanReport,
-  TestPlanRun,
-  Test,
-  ScenarioResult,
-  TestPlanReportOperations,
-  TestPlanRunOperations,
-  TestResultOperations,
-  TestPlanVersionOperations,
-  CollectionJobOperations
+    Query: {
+        me,
+        users,
+        ats,
+        browsers,
+        testPlan,
+        testPlans,
+        testPlanVersion,
+        testPlanVersions,
+        testPlanReport,
+        testPlanReports,
+        testPlanRun,
+        testPlanRuns,
+        populateData,
+        collectionJob,
+        collectionJobs,
+        collectionJobByTestPlanRunId
+    },
+    Mutation: {
+        at: mutateAt,
+        atVersion: mutateAtVersion,
+        browser: mutateBrowser,
+        testPlanReport: mutateTestPlanReport,
+        testPlanRun: mutateTestPlanRun,
+        testResult: mutateTestResult,
+        testPlanVersion: mutateTestPlanVersion,
+        collectionJob: mutateCollectionJob,
+        findOrCreateTestPlanReport,
+        updateMe,
+        addViewer,
+        updateCollectionJob,
+        deleteCollectionJob,
+        scheduleCollectionJob,
+        restartCollectionJob
+    },
+    AtOperations,
+    AtVersionOperations,
+    BrowserOperations,
+    CollectionJob,
+    User,
+    TestPlan,
+    TestPlanVersion,
+    TestPlanReport,
+    TestPlanRun,
+    Test,
+    ScenarioResult,
+    TestPlanReportOperations,
+    TestPlanRunOperations,
+    TestResultOperations,
+    TestPlanVersionOperations,
+    CollectionJobOperations
 };
 
 module.exports = resolvers;

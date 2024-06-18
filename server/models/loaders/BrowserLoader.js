@@ -1,45 +1,38 @@
 const { getBrowsers } = require('../services/BrowserService');
 
-let singletonInstance = null;
-
 const BrowserLoader = () => {
-  if (singletonInstance) {
-    return singletonInstance;
-  }
+    let browsers;
+    let activePromise;
 
-  let browsers;
-  let activePromise;
+    return {
+        getAll: async ({ transaction }) => {
+            if (browsers) {
+                return browsers;
+            }
 
-  singletonInstance = {
-    getAll: async ({ transaction }) => {
-      if (browsers) {
-        return browsers;
-      }
+            if (activePromise) {
+                return activePromise;
+            }
 
-      if (activePromise) {
-        return activePromise;
-      }
+            activePromise = getBrowsers({ transaction }).then(browsers => {
+                browsers = browsers.map(browser => ({
+                    ...browser.dataValues,
+                    candidateAts: browser.ats.filter(
+                        at => at.AtBrowsers.isCandidate
+                    ),
+                    recommendedAts: browser.ats.filter(
+                        at => at.AtBrowsers.isRecommended
+                    )
+                }));
 
-      activePromise = getBrowsers({ transaction }).then(browsers => {
-        browsers = browsers.map(browser => ({
-          ...browser.dataValues,
-          candidateAts: browser.ats.filter(at => at.AtBrowsers.isCandidate),
-          recommendedAts: browser.ats.filter(at => at.AtBrowsers.isRecommended)
-        }));
+                return browsers;
+            });
 
-        return browsers;
-      });
+            browsers = await activePromise;
 
-      browsers = await activePromise;
-
-      return browsers;
-    },
-    clearCache: () => {
-      browsers = null;
-      activePromise = null;
-    }
-  };
-  return singletonInstance;
+            return browsers;
+        }
+    };
 };
 
 module.exports = BrowserLoader;

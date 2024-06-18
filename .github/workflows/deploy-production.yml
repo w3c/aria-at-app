@@ -1,0 +1,30 @@
+name: Deploy to production (aria-at.w3.org)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install SSH key for deploying
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.DEPLOY_KNOWN_HOSTS_PRODUCTION }}
+          config: ${{ secrets.DEPLOY_SSH_CONFIG }}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install ansible and deploy to production
+        run: |
+          python -m pip install --user ansible-core==2.11.1
+          cd deploy
+          echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }} > ansible-vault-password.txt
+          ansible-vault view --vault-password-file ansible-vault-password.txt files/jwt-signing-key.pem.enc > ../jwt-signing-key.pem
+          ansible-galaxy collection install ansible.posix
+          ansible-playbook provision.yml -e ansible_python_interpreter=/usr/bin/python3 --inventory inventory/production.yml

@@ -10,66 +10,68 @@ const transactionMiddleware = require('../../middleware/transactionMiddleware');
 const { sequelize } = require('../../models');
 
 const startSupertestServer = async ({
-  graphql = false,
-  applyMiddleware,
-  applyErrorware,
-  pathToRoutes = []
+    graphql = false,
+    applyMiddleware,
+    applyErrorware,
+    pathToRoutes = []
 }) => {
-  const expressApp = express();
+    const expressApp = express();
 
-  expressApp.use(bodyParser.json());
-  expressApp.use(
-    session({
-      secret: 'test environment',
-      resave: false,
-      saveUninitialized: true,
-      cookie: { maxAge: 500000 } // Required
-    })
-  );
-  expressApp.use(transactionMiddleware.middleware);
-  if (applyMiddleware) applyMiddleware(expressApp);
+    expressApp.use(bodyParser.json());
+    expressApp.use(
+        session({
+            secret: 'test environment',
+            resave: false,
+            saveUninitialized: true,
+            cookie: { maxAge: 500000 } // Required
+        })
+    );
+    expressApp.use(transactionMiddleware.middleware);
+    if (applyMiddleware) applyMiddleware(expressApp);
 
-  let apolloServer;
-  if (graphql) {
-    apolloServer = new ApolloServer({
-      typeDefs,
-      context: getGraphQLContext,
-      resolvers
+    let apolloServer;
+    if (graphql) {
+        apolloServer = new ApolloServer({
+            typeDefs,
+            context: getGraphQLContext,
+            resolvers
+        });
+
+        await apolloServer.start();
+        apolloServer.applyMiddleware({ app: expressApp, path: '/api/graphql' });
+    }
+
+    pathToRoutes.forEach(([path, routes]) => {
+        expressApp.use(path, routes);
     });
 
-    await apolloServer.start();
-    apolloServer.applyMiddleware({ app: expressApp, path: '/api/graphql' });
-  }
+    expressApp.use(transactionMiddleware.errorware);
+    if (applyErrorware) applyErrorware(expressApp);
 
-  pathToRoutes.forEach(([path, routes]) => {
-    expressApp.use(path, routes);
-  });
+    // Error handling must be the last middleware
+    expressApp.use((error, req, res, next) => {
+        console.error(error);
+        next(error);
+    });
 
-  expressApp.use(transactionMiddleware.errorware);
-  if (applyErrorware) applyErrorware(expressApp);
+    const sessionAgent = getSessionAgent(expressApp);
 
-  // Error handling must be the last middleware
-  expressApp.use((error, req, res, next) => {
-    console.error(error);
-    next(error);
-  });
+    const sessionAgentDbCleaner = async callback => {
+        const transaction = await sequelize.transaction();
+        transactionMiddleware.forTestingPopulateTransaction(transaction);
+        await callback(transaction);
+        await transactionMiddleware.forTestingRollBackTransaction(
+            transaction.id
+        );
+    };
 
-  const sessionAgent = getSessionAgent(expressApp);
+    const tearDown = async () => {
+        if (graphql) {
+            await apolloServer.stop();
+        }
+    };
 
-  const sessionAgentDbCleaner = async callback => {
-    const transaction = await sequelize.transaction();
-    transactionMiddleware.forTestingPopulateTransaction(transaction);
-    await callback(transaction);
-    await transactionMiddleware.forTestingRollBackTransaction(transaction);
-  };
-
-  const tearDown = async () => {
-    if (graphql) {
-      await apolloServer.stop();
-    }
-  };
-
-  return { sessionAgent, sessionAgentDbCleaner, tearDown };
+    return { sessionAgent, sessionAgentDbCleaner, tearDown };
 };
 
 module.exports = startSupertestServer;
