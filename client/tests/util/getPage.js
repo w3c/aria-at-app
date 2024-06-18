@@ -39,8 +39,9 @@ const startServer = async serverOrClient => {
         );
 
         server.on('error', error => {
-            console.info(`Error found in startServer process: ${error}`); // eslint-disable-line no-console
-            process.exit(1);
+            throw new Error('Error raised by startServer process', {
+                cause: error
+            });
         });
 
         server.on('exit', (code, signal) => {
