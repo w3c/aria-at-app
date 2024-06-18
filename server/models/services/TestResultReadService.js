@@ -15,52 +15,50 @@ const deepCustomMerge = require('../../util/deepCustomMerge');
  * @returns {Promise<Object[]>}
  */
 const getTestResults = async ({ testPlanRun, context }) => {
-    const { atLoader, browserLoader, transaction } = context;
+  const { atLoader, browserLoader, transaction } = context;
 
-    const { testPlanReport } = testPlanRun;
-    const tests = getTests(testPlanReport);
-    const ats = await atLoader.getAll({ transaction });
-    const browsers = await browserLoader.getAll({ transaction });
+  const { testPlanReport } = testPlanRun;
+  const tests = getTests(testPlanReport);
+  const ats = await atLoader.getAll({ transaction });
+  const browsers = await browserLoader.getAll({ transaction });
 
-    // Populate nested test, atVersion, browserVersion, scenario, assertion and
-    // unexpectedBehavior fields
-    return testPlanRun.testResults.map(testResult => {
-        const test = tests.find(each => each.id === testResult.testId);
-        return {
-            ...testResult,
-            test,
-            atVersion: ats
-                .find(at => at.id === testPlanReport.at.id)
-                .atVersions.find(each => each.id == testResult.atVersionId),
-            browserVersion: browsers
-                .find(browser => browser.id === testPlanReport.browser.id)
-                .browserVersions.find(
-                    each => each.id == testResult.browserVersionId
-                ),
-            scenarioResults: testResult.scenarioResults.map(scenarioResult => ({
-                ...scenarioResult,
-                scenario: test.scenarios.find(
-                    each => each.id === scenarioResult.scenarioId
-                ),
-                assertionResults: scenarioResult.assertionResults.map(
-                    assertionResult => ({
-                        ...assertionResult,
-                        assertion: test.assertions.find(
-                            each => each.id === assertionResult.assertionId
-                        )
-                    })
-                ),
-                unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
-                    unexpectedBehavior => ({
-                        ...unexpectedBehavior,
-                        text: unexpectedBehaviorsJson.find(
-                            each => each.id === unexpectedBehavior.id
-                        ).text
-                    })
-                )
-            }))
-        };
-    });
+  // Populate nested test, atVersion, browserVersion, scenario, assertion and
+  // unexpectedBehavior fields
+  return testPlanRun.testResults.map(testResult => {
+    const test = tests.find(each => each.id === testResult.testId);
+    return {
+      ...testResult,
+      test,
+      atVersion: ats
+        .find(at => at.id === testPlanReport.at.id)
+        .atVersions.find(each => each.id == testResult.atVersionId),
+      browserVersion: browsers
+        .find(browser => browser.id === testPlanReport.browser.id)
+        .browserVersions.find(each => each.id == testResult.browserVersionId),
+      scenarioResults: testResult.scenarioResults.map(scenarioResult => ({
+        ...scenarioResult,
+        scenario: test.scenarios.find(
+          each => each.id === scenarioResult.scenarioId
+        ),
+        assertionResults: scenarioResult.assertionResults.map(
+          assertionResult => ({
+            ...assertionResult,
+            assertion: test.assertions.find(
+              each => each.id === assertionResult.assertionId
+            )
+          })
+        ),
+        unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
+          unexpectedBehavior => ({
+            ...unexpectedBehavior,
+            text: unexpectedBehaviorsJson.find(
+              each => each.id === unexpectedBehavior.id
+            ).text
+          })
+        )
+      }))
+    };
+  });
 };
 
 /**
@@ -72,31 +70,31 @@ const getTestResults = async ({ testPlanRun, context }) => {
  * @returns {Promise<Object[]>}
  */
 const getFinalizedTestResults = ({ testPlanReport, context }) => {
-    if (!testPlanReport.testPlanRuns.length) {
-        return null;
-    }
+  if (!testPlanReport.testPlanRuns.length) {
+    return null;
+  }
 
-    let merged = [];
+  let merged = [];
 
-    for (let i = 0; i < testPlanReport.testPlanRuns.length; i += 1) {
-        merged = deepCustomMerge(
-            merged,
-            testPlanReport.testPlanRuns[i].testResults.filter(
-                testResult => !!testResult.completedAt
-            ),
-            {
-                identifyArrayItem: item =>
-                    item.testId ?? item.scenarioId ?? item.assertionId
-            }
-        );
-    }
-    return getTestResults({
-        testPlanRun: { testPlanReport, testResults: merged },
-        context
-    });
+  for (let i = 0; i < testPlanReport.testPlanRuns.length; i += 1) {
+    merged = deepCustomMerge(
+      merged,
+      testPlanReport.testPlanRuns[i].testResults.filter(
+        testResult => !!testResult.completedAt
+      ),
+      {
+        identifyArrayItem: item =>
+          item.testId ?? item.scenarioId ?? item.assertionId
+      }
+    );
+  }
+  return getTestResults({
+    testPlanRun: { testPlanReport, testResults: merged },
+    context
+  });
 };
 
 module.exports = {
-    getTestResults,
-    getFinalizedTestResults
+  getTestResults,
+  getFinalizedTestResults
 };

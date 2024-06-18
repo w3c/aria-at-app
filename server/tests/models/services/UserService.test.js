@@ -6,345 +6,340 @@ const dbCleaner = require('../../util/db-cleaner');
 const responseCollectionUserIDs = require('../../../util/responseCollectionUserIDs');
 
 describe('UserModel Data Checks', () => {
-    afterAll(async () => {
-        await sequelize.close();
+  afterAll(async () => {
+    await sequelize.close();
+  });
+
+  it('should return valid user for id query with all associations', async () => {
+    const _id = 1;
+
+    const user = await UserService.getUserById({
+      id: _id,
+      transaction: false
+    });
+    const { id, username, createdAt, updatedAt } = user;
+
+    expect(id).toEqual(_id);
+    expect(username).toEqual('esmeralda-baggins');
+    expect(createdAt).toBeTruthy();
+    expect(updatedAt).toBeTruthy();
+    expect(user).toHaveProperty('roles');
+    expect(user).toHaveProperty('testPlanRuns');
+  });
+
+  it('should return valid user for id query with no associations', async () => {
+    const _id = 1;
+
+    const user = await UserService.getUserById({
+      id: _id,
+      roleAttributes: [],
+      atAttributes: [],
+      testPlanRunAttributes: [],
+      transaction: false
+    });
+    const { id, username, createdAt, updatedAt } = user;
+
+    expect(id).toEqual(_id);
+    expect(username).toEqual('esmeralda-baggins');
+    expect(createdAt).toBeTruthy();
+    expect(updatedAt).toBeTruthy();
+    expect(user).not.toHaveProperty('roles');
+    expect(user).not.toHaveProperty('testPlanRuns');
+  });
+
+  it('should return valid user for username query', async () => {
+    const _id = 1;
+    const _username = 'esmeralda-baggins';
+
+    const user = await UserService.getUserByUsername({
+      username: _username,
+      transaction: false
+    });
+    const { id, username, createdAt, updatedAt } = user;
+
+    expect(id).toEqual(_id);
+    expect(username).toEqual(_username);
+    expect(createdAt).toBeTruthy();
+    expect(updatedAt).toBeTruthy();
+  });
+
+  it('should not be valid user query', async () => {
+    const _id = 53935;
+
+    const user = await UserService.getUserById({
+      id: _id,
+      transaction: false
+    });
+    expect(user).toBeNull();
+  });
+
+  it('should contain valid user with roles array', async () => {
+    const _id = 1;
+
+    const user = await UserService.getUserById({
+      id: _id,
+      transaction: false
+    });
+    const { roles } = user;
+
+    expect(user).toHaveProperty('roles');
+    expect(roles).toBeInstanceOf(Array);
+    expect(roles.length).toBeGreaterThanOrEqual(1);
+    expect(roles).toContainEqual(expect.objectContaining({ name: 'ADMIN' }));
+    expect(roles).toContainEqual(expect.objectContaining({ name: 'TESTER' }));
+  });
+
+  it('should contain valid user with testPlanRuns array', async () => {
+    const _id = 1;
+
+    const user = await UserService.getUserById({
+      id: _id,
+      transaction: false
     });
 
-    it('should return valid user for id query with all associations', async () => {
-        const _id = 1;
+    const { testPlanRuns } = user;
 
-        const user = await UserService.getUserById({
-            id: _id,
-            transaction: false
-        });
-        const { id, username, createdAt, updatedAt } = user;
+    expect(user).toHaveProperty('testPlanRuns');
+    expect(testPlanRuns.length).toBeGreaterThanOrEqual(0);
+    expect(testPlanRuns).toContainEqual(expect.objectContaining({ id: 1 }));
+  });
 
-        expect(id).toEqual(_id);
-        expect(username).toEqual('esmeralda-baggins');
-        expect(createdAt).toBeTruthy();
-        expect(updatedAt).toBeTruthy();
-        expect(user).toHaveProperty('roles');
-        expect(user).toHaveProperty('testPlanRuns');
+  it('should create, add role to, remove role from and remove a new user', async () => {
+    await dbCleaner(async transaction => {
+      // A1
+      const _username = randomStringGenerator();
+      const _role1 = 'ADMIN';
+      const _role2 = 'TESTER';
+
+      // A2
+      const [newUser, isNew1] = await UserService.getOrCreateUser({
+        where: { username: _username },
+        values: { roles: [{ name: _role1 }] },
+        transaction
+      });
+      const { id, username, createdAt, updatedAt, roles } = newUser;
+
+      // A2
+      const [updatedUser, isNew2] = await UserService.getOrCreateUser({
+        where: { username: _username },
+        values: { roles: [{ name: _role2 }] },
+        transaction
+      });
+
+      // A2
+      await UserService.removeUserById({ id, transaction });
+      const deletedUser = await UserService.getUserById({
+        id,
+        transaction
+      });
+
+      // after user created and role added
+      expect(isNew1).toBe(true);
+      expect(id).toBeTruthy();
+      expect(username).toEqual(_username);
+      expect(createdAt).toBeTruthy();
+      expect(updatedAt).toBeTruthy();
+      expect(roles).toHaveLength(1);
+      expect(roles[0].name).toEqual('ADMIN');
+
+      // after role removed
+      expect(isNew2).toBe(false);
+      expect(updatedUser.roles[0].name).toBe('TESTER');
+
+      // after user removed
+      expect(deletedUser).toBeNull();
+    });
+  });
+
+  it('should create and update a new user', async () => {
+    await dbCleaner(async transaction => {
+      // A1
+      const _username = randomStringGenerator();
+      const _updatedUsername = randomStringGenerator();
+
+      // A2
+      const user = await UserService.createUser({
+        values: { username: _username },
+        transaction
+      });
+      const { id, username, createdAt, updatedAt } = user;
+
+      // A2
+      const updatedUser = await UserService.updateUserById({
+        id,
+        values: { username: _updatedUsername },
+        transaction
+      });
+      const updatedUsername = updatedUser.get('username');
+
+      // after user created
+      expect(id).toBeTruthy();
+      expect(username).toEqual(_username);
+      expect(createdAt).toBeTruthy();
+      expect(updatedAt).toBeTruthy();
+
+      // after user updated
+      expect(_username).not.toEqual(_updatedUsername);
+      expect(username).not.toEqual(updatedUsername);
+      expect(updatedUsername).toEqual(_updatedUsername);
+    });
+  });
+
+  it('should return collection of users', async () => {
+    const result = await UserService.getUsers({ transaction: false });
+    expect(result.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('should return collection of users for username query', async () => {
+    const search = 't';
+
+    const result = await UserService.getUsers({
+      search,
+      transaction: false
     });
 
-    it('should return valid user for id query with no associations', async () => {
-        const _id = 1;
+    expect(result).toBeInstanceOf(Array);
+    expect(result.length).toBeGreaterThanOrEqual(1);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: expect.any(Number),
+          username: expect.stringMatching(/t/gi)
+        })
+      ])
+    );
+  });
 
-        const user = await UserService.getUserById({
-            id: _id,
-            roleAttributes: [],
-            atAttributes: [],
-            testPlanRunAttributes: [],
-            transaction: false
-        });
-        const { id, username, createdAt, updatedAt } = user;
-
-        expect(id).toEqual(_id);
-        expect(username).toEqual('esmeralda-baggins');
-        expect(createdAt).toBeTruthy();
-        expect(updatedAt).toBeTruthy();
-        expect(user).not.toHaveProperty('roles');
-        expect(user).not.toHaveProperty('testPlanRuns');
+  it('should return collection of users with paginated structure', async () => {
+    const result = await UserService.getUsers({
+      roleAttributes: [],
+      atAttributes: [],
+      testPlanRunAttributes: [],
+      pagination: { enablePagination: true },
+      transaction: false
     });
 
-    it('should return valid user for username query', async () => {
-        const _id = 1;
-        const _username = 'esmeralda-baggins';
+    expect(result.data.length).toBeGreaterThanOrEqual(1);
+    expect(result).toEqual(
+      expect.objectContaining({
+        page: 1,
+        pageSize: expect.any(Number),
+        resultsCount: expect.any(Number),
+        totalResultsCount: expect.any(Number),
+        pagesCount: expect.any(Number),
+        data: expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(Number)
+          })
+        ])
+      })
+    );
+  });
 
-        const user = await UserService.getUserByUsername({
-            username: _username,
-            transaction: false
-        });
-        const { id, username, createdAt, updatedAt } = user;
+  it('should bulkGetOrReplace UserRoles', async () => {
+    await dbCleaner(async transaction => {
+      // A1
+      const adminUserId = 1;
 
-        expect(id).toEqual(_id);
-        expect(username).toEqual(_username);
-        expect(createdAt).toBeTruthy();
-        expect(updatedAt).toBeTruthy();
-    });
-
-    it('should not be valid user query', async () => {
-        const _id = 53935;
-
-        const user = await UserService.getUserById({
-            id: _id,
-            transaction: false
-        });
-        expect(user).toBeNull();
-    });
-
-    it('should contain valid user with roles array', async () => {
-        const _id = 1;
-
-        const user = await UserService.getUserById({
-            id: _id,
-            transaction: false
-        });
-        const { roles } = user;
-
-        expect(user).toHaveProperty('roles');
-        expect(roles).toBeInstanceOf(Array);
-        expect(roles.length).toBeGreaterThanOrEqual(1);
-        expect(roles).toContainEqual(
-            expect.objectContaining({ name: 'ADMIN' })
-        );
-        expect(roles).toContainEqual(
-            expect.objectContaining({ name: 'TESTER' })
-        );
-    });
-
-    it('should contain valid user with testPlanRuns array', async () => {
-        const _id = 1;
-
-        const user = await UserService.getUserById({
-            id: _id,
-            transaction: false
-        });
-
-        const { testPlanRuns } = user;
-
-        expect(user).toHaveProperty('testPlanRuns');
-        expect(testPlanRuns.length).toBeGreaterThanOrEqual(0);
-        expect(testPlanRuns).toContainEqual(expect.objectContaining({ id: 1 }));
-    });
-
-    it('should create, add role to, remove role from and remove a new user', async () => {
-        await dbCleaner(async transaction => {
-            // A1
-            const _username = randomStringGenerator();
-            const _role1 = 'ADMIN';
-            const _role2 = 'TESTER';
-
-            // A2
-            const [newUser, isNew1] = await UserService.getOrCreateUser({
-                where: { username: _username },
-                values: { roles: [{ name: _role1 }] },
-                transaction
-            });
-            const { id, username, createdAt, updatedAt, roles } = newUser;
-
-            // A2
-            const [updatedUser, isNew2] = await UserService.getOrCreateUser({
-                where: { username: _username },
-                values: { roles: [{ name: _role2 }] },
-                transaction
-            });
-
-            // A2
-            await UserService.removeUserById({ id, transaction });
-            const deletedUser = await UserService.getUserById({
-                id,
-                transaction
-            });
-
-            // after user created and role added
-            expect(isNew1).toBe(true);
-            expect(id).toBeTruthy();
-            expect(username).toEqual(_username);
-            expect(createdAt).toBeTruthy();
-            expect(updatedAt).toBeTruthy();
-            expect(roles).toHaveLength(1);
-            expect(roles[0].name).toEqual('ADMIN');
-
-            // after role removed
-            expect(isNew2).toBe(false);
-            expect(updatedUser.roles[0].name).toBe('TESTER');
-
-            // after user removed
-            expect(deletedUser).toBeNull();
-        });
-    });
-
-    it('should create and update a new user', async () => {
-        await dbCleaner(async transaction => {
-            // A1
-            const _username = randomStringGenerator();
-            const _updatedUsername = randomStringGenerator();
-
-            // A2
-            const user = await UserService.createUser({
-                values: { username: _username },
-                transaction
-            });
-            const { id, username, createdAt, updatedAt } = user;
-
-            // A2
-            const updatedUser = await UserService.updateUserById({
-                id,
-                values: { username: _updatedUsername },
-                transaction
-            });
-            const updatedUsername = updatedUser.get('username');
-
-            // after user created
-            expect(id).toBeTruthy();
-            expect(username).toEqual(_username);
-            expect(createdAt).toBeTruthy();
-            expect(updatedAt).toBeTruthy();
-
-            // after user updated
-            expect(_username).not.toEqual(_updatedUsername);
-            expect(username).not.toEqual(updatedUsername);
-            expect(updatedUsername).toEqual(_updatedUsername);
-        });
-    });
-
-    it('should return collection of users', async () => {
-        const result = await UserService.getUsers({ transaction: false });
-        expect(result.length).toBeGreaterThanOrEqual(1);
-    });
-
-    it('should return collection of users for username query', async () => {
-        const search = 't';
-
-        const result = await UserService.getUsers({
-            search,
-            transaction: false
-        });
-
-        expect(result).toBeInstanceOf(Array);
-        expect(result.length).toBeGreaterThanOrEqual(1);
-        expect(result).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    id: expect.any(Number),
-                    username: expect.stringMatching(/t/gi)
-                })
-            ])
-        );
-    });
-
-    it('should return collection of users with paginated structure', async () => {
-        const result = await UserService.getUsers({
-            roleAttributes: [],
-            atAttributes: [],
-            testPlanRunAttributes: [],
-            pagination: { enablePagination: true },
-            transaction: false
-        });
-
-        expect(result.data.length).toBeGreaterThanOrEqual(1);
-        expect(result).toEqual(
-            expect.objectContaining({
-                page: 1,
-                pageSize: expect.any(Number),
-                resultsCount: expect.any(Number),
-                totalResultsCount: expect.any(Number),
-                pagesCount: expect.any(Number),
-                data: expect.arrayContaining([
-                    expect.objectContaining({
-                        id: expect.any(Number)
-                    })
-                ])
-            })
-        );
-    });
-
-    it('should bulkGetOrReplace UserRoles', async () => {
-        await dbCleaner(async transaction => {
-            // A1
-            const adminUserId = 1;
-
-            // A2
-            const [originalUserRoles, isUpdated1] =
-                await UserService.bulkGetOrReplaceUserRoles({
-                    where: { userId: adminUserId },
-                    valuesList: [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
-                    userRolesAttributes: ['roleName'],
-                    transaction
-                });
-
-            const [updatedUserRoles, isUpdated2] =
-                await UserService.bulkGetOrReplaceUserRoles({
-                    where: { userId: adminUserId },
-                    valuesList: [{ roleName: 'TESTER' }],
-                    userRolesAttributes: ['roleName'],
-                    transaction
-                });
-
-            // A3
-            expect(isUpdated1).toBe(false);
-            expect(originalUserRoles.length).toBe(2);
-            expect(
-                originalUserRoles.map(each => pick(each, ['roleName']))
-            ).toEqual([{ roleName: 'ADMIN' }, { roleName: 'TESTER' }]);
-
-            expect(isUpdated2).toBe(true);
-            expect(updatedUserRoles.length).toBe(1);
-            expect(
-                updatedUserRoles.map(each => pick(each, ['roleName']))
-            ).toEqual([{ roleName: 'TESTER' }]);
-        });
-    });
-
-    it('should return collection of UserRoles', async () => {
-        const _userId = 1;
-
-        const user1Roles = await UserService.getUserRoles({
-            where: { userId: _userId },
-            transaction: false
+      // A2
+      const [originalUserRoles, isUpdated1] =
+        await UserService.bulkGetOrReplaceUserRoles({
+          where: { userId: adminUserId },
+          valuesList: [{ roleName: 'TESTER' }, { roleName: 'ADMIN' }],
+          userRolesAttributes: ['roleName'],
+          transaction
         });
 
-        expect(user1Roles.length).toBeGreaterThanOrEqual(1);
-        expect(user1Roles[0].userId).toBe(_userId);
-        expect(user1Roles[0].roleName).toBeTruthy();
-    });
-
-    it('should bulkGetOrReplace UserAts', async () => {
-        await dbCleaner(async transaction => {
-            // A1
-            const _userId = 1;
-
-            // A2
-            const [originalUserAts, isUpdated1] =
-                await UserService.bulkGetOrReplaceUserAts({
-                    where: { userId: _userId },
-                    valuesList: [{ atId: 1 }, { atId: 2 }],
-                    transaction
-                });
-
-            const [updatedUserAts, isUpdated2] =
-                await UserService.bulkGetOrReplaceUserAts({
-                    where: { userId: _userId },
-                    valuesList: [{ atId: 1 }],
-                    transaction
-                });
-
-            // A3
-            expect(isUpdated1).toBe(false);
-            expect(originalUserAts.length).toBe(2);
-            expect(originalUserAts.map(each => each.atId).sort()).toEqual([
-                1, 2
-            ]);
-
-            expect(isUpdated2).toBe(true);
-            expect(updatedUserAts.length).toBe(1);
-            expect(updatedUserAts[0].atId).toBe(1);
-        });
-    });
-
-    it('should return collection of UserAts', async () => {
-        const _userId = 1;
-
-        const user1Ats = await UserService.getUserAts({
-            where: { userId: _userId },
-            transaction: false
+      const [updatedUserRoles, isUpdated2] =
+        await UserService.bulkGetOrReplaceUserRoles({
+          where: { userId: adminUserId },
+          valuesList: [{ roleName: 'TESTER' }],
+          userRolesAttributes: ['roleName'],
+          transaction
         });
 
-        expect(user1Ats.length).toBeGreaterThanOrEqual(1);
-        expect(user1Ats[0].userId).toBe(_userId);
-        expect(user1Ats[0].atId).toBeTruthy();
+      // A3
+      expect(isUpdated1).toBe(false);
+      expect(originalUserRoles.length).toBe(2);
+      expect(originalUserRoles.map(each => pick(each, ['roleName']))).toEqual([
+        { roleName: 'ADMIN' },
+        { roleName: 'TESTER' }
+      ]);
+
+      expect(isUpdated2).toBe(true);
+      expect(updatedUserRoles.length).toBe(1);
+      expect(updatedUserRoles.map(each => pick(each, ['roleName']))).toEqual([
+        { roleName: 'TESTER' }
+      ]);
+    });
+  });
+
+  it('should return collection of UserRoles', async () => {
+    const _userId = 1;
+
+    const user1Roles = await UserService.getUserRoles({
+      where: { userId: _userId },
+      transaction: false
     });
 
-    describe('getBotUserByAtId', () => {
-        it('should find nvda bot user', async () => {
-            const user = await UserService.getBotUserByAtId({
-                atId: 2,
-                transaction: false
-            });
-            expect(user).toBeDefined();
-            expect(user.id).toEqual(responseCollectionUserIDs['NVDA Bot']);
-            expect(user.username).toEqual('NVDA Bot');
+    expect(user1Roles.length).toBeGreaterThanOrEqual(1);
+    expect(user1Roles[0].userId).toBe(_userId);
+    expect(user1Roles[0].roleName).toBeTruthy();
+  });
+
+  it('should bulkGetOrReplace UserAts', async () => {
+    await dbCleaner(async transaction => {
+      // A1
+      const _userId = 1;
+
+      // A2
+      const [originalUserAts, isUpdated1] =
+        await UserService.bulkGetOrReplaceUserAts({
+          where: { userId: _userId },
+          valuesList: [{ atId: 1 }, { atId: 2 }],
+          transaction
         });
+
+      const [updatedUserAts, isUpdated2] =
+        await UserService.bulkGetOrReplaceUserAts({
+          where: { userId: _userId },
+          valuesList: [{ atId: 1 }],
+          transaction
+        });
+
+      // A3
+      expect(isUpdated1).toBe(false);
+      expect(originalUserAts.length).toBe(2);
+      expect(originalUserAts.map(each => each.atId).sort()).toEqual([1, 2]);
+
+      expect(isUpdated2).toBe(true);
+      expect(updatedUserAts.length).toBe(1);
+      expect(updatedUserAts[0].atId).toBe(1);
     });
+  });
+
+  it('should return collection of UserAts', async () => {
+    const _userId = 1;
+
+    const user1Ats = await UserService.getUserAts({
+      where: { userId: _userId },
+      transaction: false
+    });
+
+    expect(user1Ats.length).toBeGreaterThanOrEqual(1);
+    expect(user1Ats[0].userId).toBe(_userId);
+    expect(user1Ats[0].atId).toBeTruthy();
+  });
+
+  describe('getBotUserByAtId', () => {
+    it('should find nvda bot user', async () => {
+      const user = await UserService.getBotUserByAtId({
+        atId: 2,
+        transaction: false
+      });
+      expect(user).toBeDefined();
+      expect(user.id).toEqual(responseCollectionUserIDs['NVDA Bot']);
+      expect(user.username).toEqual('NVDA Bot');
+    });
+  });
 });

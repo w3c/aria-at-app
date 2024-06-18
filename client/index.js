@@ -51,19 +51,19 @@ window.signMeInAsVendor = username => {
 };
 
 window.startTestTransaction = async () => {
-    const response = await fetch('/api/transactions', { method: 'POST' });
-    const { transactionId } = await response.json();
-    sessionStorage.setItem('currentTransactionId', transactionId);
+  const response = await fetch('/api/transactions', { method: 'POST' });
+  const { transactionId } = await response.json();
+  sessionStorage.setItem('currentTransactionId', transactionId);
 };
 
 window.endTestTransaction = async () => {
-    const currentTransactionId = sessionStorage.getItem('currentTransactionId');
-    if (!currentTransactionId) throw new Error('Nothing to roll back');
-    await fetch('/api/transactions', {
-        method: 'DELETE',
-        headers: { 'x-transaction-id': currentTransactionId }
-    });
-    sessionStorage.removeItem('currentTransactionId');
-    await resetCache();
-    location.reload();
+  const currentTransactionId = sessionStorage.getItem('currentTransactionId');
+  if (!currentTransactionId) throw new Error('Nothing to roll back');
+  await fetch('/api/transactions', {
+    method: 'DELETE',
+    headers: { 'x-transaction-id': currentTransactionId }
+  });
+  sessionStorage.removeItem('currentTransactionId');
+  await resetCache();
+  location.reload();
 };

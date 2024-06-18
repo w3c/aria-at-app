@@ -1,43 +1,43 @@
 const { getAts } = require('../services/AtService');
 
 const AtLoader = () => {
-    let ats;
-    let activePromise;
+  let ats;
+  let activePromise;
 
-    return {
-        getAll: async ({ transaction }) => {
-            if (ats) {
-                return ats;
-            }
+  return {
+    getAll: async ({ transaction }) => {
+      if (ats) {
+        return ats;
+      }
 
-            if (activePromise) {
-                return activePromise;
-            }
+      if (activePromise) {
+        return activePromise;
+      }
 
-            activePromise = getAts({ transaction }).then(ats => {
-                // Sort date of atVersions subarray in desc order by releasedAt date
-                ats.forEach(item =>
-                    item.atVersions.sort((a, b) => b.releasedAt - a.releasedAt)
-                );
+      activePromise = getAts({ transaction }).then(ats => {
+        // Sort date of atVersions subarray in desc order by releasedAt date
+        ats.forEach(item =>
+          item.atVersions.sort((a, b) => b.releasedAt - a.releasedAt)
+        );
 
-                ats = ats.map(at => ({
-                    ...at.dataValues,
-                    candidateBrowsers: at.browsers.filter(
-                        browser => browser.AtBrowsers.isCandidate
-                    ),
-                    recommendedBrowsers: at.browsers.filter(
-                        browser => browser.AtBrowsers.isRecommended
-                    )
-                }));
+        ats = ats.map(at => ({
+          ...at.dataValues,
+          candidateBrowsers: at.browsers.filter(
+            browser => browser.AtBrowsers.isCandidate
+          ),
+          recommendedBrowsers: at.browsers.filter(
+            browser => browser.AtBrowsers.isRecommended
+          )
+        }));
 
-                return ats;
-            });
+        return ats;
+      });
 
-            ats = await activePromise;
+      ats = await activePromise;
 
-            return ats;
-        }
-    };
+      return ats;
+    }
+  };
 };
 
 module.exports = AtLoader;

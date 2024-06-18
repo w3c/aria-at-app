@@ -1,8 +1,8 @@
 'use strict';
 
 module.exports = {
-    async up(queryInterface) {
-        await queryInterface.sequelize.query(`
+  async up(queryInterface) {
+    await queryInterface.sequelize.query(`
           UPDATE
             "At"
           SET
@@ -14,7 +14,7 @@ module.exports = {
             END;
         `);
 
-        await queryInterface.sequelize.query(`
+    await queryInterface.sequelize.query(`
           UPDATE
             "Browser"
           SET
@@ -25,10 +25,10 @@ module.exports = {
               ELSE null
             END;
         `);
-    },
+  },
 
-    async down(queryInterface) {
-        await queryInterface.bulkUpdate('At', { key: null });
-        await queryInterface.bulkUpdate('Browser', { key: null });
-    }
+  async down(queryInterface) {
+    await queryInterface.bulkUpdate('At', { key: null });
+    await queryInterface.bulkUpdate('Browser', { key: null });
+  }
 };

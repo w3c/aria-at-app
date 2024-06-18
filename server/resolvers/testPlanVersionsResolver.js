@@ -1,45 +1,45 @@
 const {
-    getTestPlanVersions
+  getTestPlanVersions
 } = require('../models/services/TestPlanVersionService');
 const retrieveAttributes = require('./helpers/retrieveAttributes');
 const { TEST_PLAN_VERSION_ATTRIBUTES } = require('../models/services/helpers');
 
 const testPlanVersionsResolver = async (
-    _,
-    { phases, directory },
-    context,
-    info
+  _,
+  { phases, directory },
+  context,
+  info
 ) => {
-    const { transaction } = context;
+  const { transaction } = context;
 
-    const where = {};
-    if (phases) where.phase = phases;
-    if (directory) where.directory = directory;
+  const where = {};
+  if (phases) where.phase = phases;
+  if (directory) where.directory = directory;
 
-    const { attributes: testPlanVersionAttributes } = retrieveAttributes(
-        'testPlanVersion',
-        TEST_PLAN_VERSION_ATTRIBUTES,
-        info
-    );
+  const { attributes: testPlanVersionAttributes } = retrieveAttributes(
+    'testPlanVersion',
+    TEST_PLAN_VERSION_ATTRIBUTES,
+    info
+  );
 
-    return getTestPlanVersions({
-        where,
-        testPlanVersionAttributes,
-        testPlanReportAttributes: [],
-        atAttributes: [],
-        browserAttributes: [],
-        testPlanRunAttributes: [],
-        userAttribute: [],
-        pagination: {
-            order: [
-                ['candidatePhaseReachedAt', 'desc'],
-                ['updatedAt', 'desc'],
-                ['title', 'asc'],
-                ['directory', 'asc']
-            ]
-        },
-        transaction
-    });
+  return getTestPlanVersions({
+    where,
+    testPlanVersionAttributes,
+    testPlanReportAttributes: [],
+    atAttributes: [],
+    browserAttributes: [],
+    testPlanRunAttributes: [],
+    userAttribute: [],
+    pagination: {
+      order: [
+        ['candidatePhaseReachedAt', 'desc'],
+        ['updatedAt', 'desc'],
+        ['title', 'asc'],
+        ['directory', 'asc']
+      ]
+    },
+    transaction
+  });
 };
 
 module.exports = testPlanVersionsResolver;

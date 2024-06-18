@@ -12,9 +12,9 @@ const router = Router();
 
 router.post('/:jobID', verifyAutomationScheduler, updateJobStatus);
 router.post(
-    '/:jobID/test/:testRowNumber',
-    verifyAutomationScheduler,
-    updateJobResults
+  '/:jobID/test/:testRowNumber',
+  verifyAutomationScheduler,
+  updateJobResults
 );
 
 router.use(handleError);

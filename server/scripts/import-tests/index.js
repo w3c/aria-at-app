@@ -6,18 +6,18 @@ const { pathToFileURL } = require('url');
 const spawn = require('cross-spawn');
 const { At, sequelize } = require('../../models');
 const {
-    createTestPlanVersion,
-    getTestPlanVersions,
-    updateTestPlanVersionById
+  createTestPlanVersion,
+  getTestPlanVersions,
+  updateTestPlanVersionById
 } = require('../../models/services/TestPlanVersionService');
 const {
-    getTestPlans,
-    createTestPlan
+  getTestPlans,
+  createTestPlan
 } = require('../../models/services/TestPlanService');
 const {
-    createTestId,
-    createScenarioId,
-    createAssertionId
+  createTestId,
+  createScenarioId,
+  createAssertionId
 } = require('../../services/PopulatedData/locationOfDataId');
 const deepPickEqual = require('../../util/deepPickEqual');
 const { hashTests } = require('../../util/aria');
@@ -25,14 +25,14 @@ const convertDateToString = require('../../util/convertDateToString');
 const { convertAssertionPriority } = require('shared');
 
 const args = require('minimist')(process.argv.slice(2), {
-    alias: {
-        h: 'help',
-        c: 'commit'
-    }
+  alias: {
+    h: 'help',
+    c: 'commit'
+  }
 });
 
 if (args.help) {
-    console.log(`
+  console.log(`
 Default use:
   No arguments:
     Fetch most recent aria-at tests to update database. By default, the latest commit on the default branch.
@@ -43,7 +43,7 @@ Default use:
        Import tests at the specified git commit
 
 `);
-    process.exit();
+  process.exit();
 }
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
@@ -53,708 +53,672 @@ const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
 
 const gitRun = (args, cwd = gitCloneDirectory) => {
-    const gitRunOutput = spawn.sync('git', args.split(' '), { cwd });
+  const gitRunOutput = spawn.sync('git', args.split(' '), { cwd });
 
-    if (gitRunOutput.error) {
-        console.info(`'git ${args}' failed with error ${gitRunOutput.error}`);
-        process.exit(1);
-    }
+  if (gitRunOutput.error) {
+    console.info(`'git ${args}' failed with error ${gitRunOutput.error}`);
+    process.exit(1);
+  }
 
-    return gitRunOutput.stdout.toString().trimEnd();
+  return gitRunOutput.stdout.toString().trimEnd();
 };
 
 const importTestPlanVersions = async transaction => {
-    await cloneRepo();
+  await cloneRepo();
 
-    // Get list of commits when multiple passed in as
-    // `<import_cmd> -c "commit1 commit2 commitN ..."`
-    const commits = args.commit
-        ? args.commit
-              .trim()
-              .split(' ')
-              .filter(el => !!el)
-        : [];
+  // Get list of commits when multiple passed in as
+  // `<import_cmd> -c "commit1 commit2 commitN ..."`
+  const commits = args.commit
+    ? args.commit
+        .trim()
+        .split(' ')
+        .filter(el => !!el)
+    : [];
 
-    if (commits.length) {
-        for (const commit of commits) {
-            await buildTestsAndCreateTestPlanVersions(commit, { transaction });
-        }
-    } else await buildTestsAndCreateTestPlanVersions(null, { transaction });
+  if (commits.length) {
+    for (const commit of commits) {
+      await buildTestsAndCreateTestPlanVersions(commit, { transaction });
+    }
+  } else await buildTestsAndCreateTestPlanVersions(null, { transaction });
 };
 
 const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
-    const { gitCommitDate } = await readCommit(commit);
+  const { gitCommitDate } = await readCommit(commit);
 
-    console.log('Running `npm install` ...\n');
-    const installOutput = spawn.sync('npm', ['install'], {
-        cwd: gitCloneDirectory
-    });
+  console.log('Running `npm install` ...\n');
+  const installOutput = spawn.sync('npm', ['install'], {
+    cwd: gitCloneDirectory
+  });
 
-    if (installOutput.error) {
-        console.info(`'npm install' failed with error ${installOutput.error}`);
-        process.exit(1);
+  if (installOutput.error) {
+    console.info(`'npm install' failed with error ${installOutput.error}`);
+    process.exit(1);
+  }
+  console.log('`npm install` output', installOutput.stdout.toString());
+
+  console.log('Running `npm run build` ...\n');
+  const buildOutput = spawn.sync('npm', ['run', 'build'], {
+    cwd: gitCloneDirectory
+  });
+
+  if (buildOutput.error) {
+    console.info(`'npm run build' failed with error ${buildOutput.error}`);
+    process.exit(1);
+  }
+
+  console.log('`npm run build` output', buildOutput.stdout.toString());
+
+  importHarness();
+
+  const { support } = await updateJsons();
+
+  const ats = await At.findAll();
+  await updateAtsJson({ ats, supportAts: support.ats });
+
+  for (const directory of fse.readdirSync(builtTestsDirectory)) {
+    if (directory === 'resources') continue;
+
+    const builtDirectoryPath = path.join(builtTestsDirectory, directory);
+    const sourceDirectoryPath = path.join(testsDirectory, directory);
+
+    // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
+    // This is the date of the last commit before the build folder removal.
+    // Meant to support backward compatability until the existing tests can
+    // be updated to the current structure
+    const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
+    const useBuildInAppAppUrlPath =
+      gitCommitDate.getTime() <= buildRemovalDate.getTime();
+
+    if (
+      !(
+        fse.existsSync(sourceDirectoryPath) &&
+        fse.statSync(builtDirectoryPath).isDirectory()
+      )
+    ) {
+      continue;
     }
-    console.log('`npm install` output', installOutput.stdout.toString());
 
-    console.log('Running `npm run build` ...\n');
-    const buildOutput = spawn.sync('npm', ['run', 'build'], {
-        cwd: gitCloneDirectory
-    });
-
-    if (buildOutput.error) {
-        console.info(`'npm run build' failed with error ${buildOutput.error}`);
-        process.exit(1);
-    }
-
-    console.log('`npm run build` output', buildOutput.stdout.toString());
-
-    importHarness();
-
-    const { support } = await updateJsons();
-
-    const ats = await At.findAll();
-    await updateAtsJson({ ats, supportAts: support.ats });
-
-    for (const directory of fse.readdirSync(builtTestsDirectory)) {
-        if (directory === 'resources') continue;
-
-        const builtDirectoryPath = path.join(builtTestsDirectory, directory);
-        const sourceDirectoryPath = path.join(testsDirectory, directory);
-
-        // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
-        // This is the date of the last commit before the build folder removal.
-        // Meant to support backward compatability until the existing tests can
-        // be updated to the current structure
-        const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
-        const useBuildInAppAppUrlPath =
-            gitCommitDate.getTime() <= buildRemovalDate.getTime();
-
-        if (
-            !(
-                fse.existsSync(sourceDirectoryPath) &&
-                fse.statSync(builtDirectoryPath).isDirectory()
-            )
-        ) {
-            continue;
-        }
-
-        // Gets the next ID and increments the ID counter in Postgres
-        // Needed to create the testIds - see LocationOfDataId.js for more info
-        const [testPlanVersionIdResult] = await sequelize.query(
-            `SELECT nextval(
+    // Gets the next ID and increments the ID counter in Postgres
+    // Needed to create the testIds - see LocationOfDataId.js for more info
+    const [testPlanVersionIdResult] = await sequelize.query(
+      `SELECT nextval(
                 pg_get_serial_sequence('"TestPlanVersion"', 'id')
             )`,
-            { transaction }
-        );
-        const testPlanVersionIdResultRow = testPlanVersionIdResult[0];
-        const testPlanVersionId = testPlanVersionIdResultRow.nextval;
+      { transaction }
+    );
+    const testPlanVersionIdResultRow = testPlanVersionIdResult[0];
+    const testPlanVersionId = testPlanVersionIdResultRow.nextval;
 
-        // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
-        // actually last changed
-        const {
-            gitSha,
-            gitMessage,
-            gitCommitDate: updatedAt
-        } = readDirectoryGitInfo(sourceDirectoryPath);
+    // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
+    // actually last changed
+    const {
+      gitSha,
+      gitMessage,
+      gitCommitDate: updatedAt
+    } = readDirectoryGitInfo(sourceDirectoryPath);
 
-        // Use existence of assertions.csv to determine if v2 format files exist
-        const assertionsCsvPath = path.join(
-            sourceDirectoryPath,
-            'data',
-            'assertions.csv'
-        );
-        const isV2 = fse.existsSync(assertionsCsvPath);
+    // Use existence of assertions.csv to determine if v2 format files exist
+    const assertionsCsvPath = path.join(
+      sourceDirectoryPath,
+      'data',
+      'assertions.csv'
+    );
+    const isV2 = fse.existsSync(assertionsCsvPath);
 
-        const tests = getTests({
-            builtDirectoryPath,
-            testPlanVersionId,
-            ats,
-            gitSha,
-            isV2
-        });
+    const tests = getTests({
+      builtDirectoryPath,
+      testPlanVersionId,
+      ats,
+      gitSha,
+      isV2
+    });
 
-        const hashedTests = hashTests(tests);
+    const hashedTests = hashTests(tests);
 
-        const existing = await getTestPlanVersions({
-            where: { hashedTests },
-            transaction
-        });
+    const existing = await getTestPlanVersions({
+      where: { hashedTests },
+      transaction
+    });
 
-        if (existing.length) continue;
+    if (existing.length) continue;
 
-        const { title, exampleUrl, designPatternUrl, testPageUrl } = readCsv({
-            sourceDirectoryPath,
-            isV2
-        });
+    const { title, exampleUrl, designPatternUrl, testPageUrl } = readCsv({
+      sourceDirectoryPath,
+      isV2
+    });
 
-        let testPlanId = null;
-        const associatedTestPlans = await getTestPlans({
-            where: { directory },
-            transaction
-        });
+    let testPlanId = null;
+    const associatedTestPlans = await getTestPlans({
+      where: { directory },
+      transaction
+    });
 
-        if (associatedTestPlans.length) {
-            testPlanId = associatedTestPlans[0].dataValues.id;
-        } else {
-            const newTestPlan = await createTestPlan({
-                values: { title, directory },
-                transaction
-            });
-            testPlanId = newTestPlan.dataValues.id;
-        }
-
-        // Check if any TestPlanVersions exist for the directory and is currently in RD, and set it
-        // to DEPRECATED
-        const testPlanVersionsToDeprecate = await getTestPlanVersions({
-            where: { phase: 'RD', directory },
-            transaction
-        });
-        if (testPlanVersionsToDeprecate.length) {
-            for (const testPlanVersionToDeprecate of testPlanVersionsToDeprecate) {
-                if (
-                    new Date(testPlanVersionToDeprecate.updatedAt) < updatedAt
-                ) {
-                    // Set the deprecatedAt time to a couple seconds less than the updatedAt date.
-                    // Deprecations happen slightly before update during normal app operations.
-                    // This is to maintain correctness and any app sorts issues
-                    const deprecatedAt = new Date(updatedAt);
-                    deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 120);
-                    await updateTestPlanVersionById({
-                        id: testPlanVersionToDeprecate.id,
-                        values: { phase: 'DEPRECATED', deprecatedAt },
-                        transaction
-                    });
-                }
-            }
-        }
-
-        const versionString = await getVersionString({
-            updatedAt,
-            directory,
-            transaction
-        });
-
-        await createTestPlanVersion({
-            values: {
-                id: testPlanVersionId,
-                title,
-                directory,
-                testPageUrl: getAppUrl(testPageUrl, {
-                    gitSha,
-                    directoryPath: useBuildInAppAppUrlPath
-                        ? builtDirectoryPath
-                        : sourceDirectoryPath
-                }),
-                gitSha,
-                gitMessage,
-                hashedTests,
-                updatedAt,
-                versionString,
-                metadata: {
-                    designPatternUrl,
-                    exampleUrl,
-                    testFormatVersion: isV2 ? 2 : 1
-                },
-                tests,
-                testPlanId
-            },
-            transaction
-        });
+    if (associatedTestPlans.length) {
+      testPlanId = associatedTestPlans[0].dataValues.id;
+    } else {
+      const newTestPlan = await createTestPlan({
+        values: { title, directory },
+        transaction
+      });
+      testPlanId = newTestPlan.dataValues.id;
     }
 
-    // To ensure build folder is clean when multiple commits are being processed
-    // to prevent `EPERM` errors
-    console.log('Running `npm run cleanup` ...\n');
-    const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
-        cwd: gitCloneDirectory
+    // Check if any TestPlanVersions exist for the directory and is currently in RD, and set it
+    // to DEPRECATED
+    const testPlanVersionsToDeprecate = await getTestPlanVersions({
+      where: { phase: 'RD', directory },
+      transaction
     });
-    console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
+    if (testPlanVersionsToDeprecate.length) {
+      for (const testPlanVersionToDeprecate of testPlanVersionsToDeprecate) {
+        if (new Date(testPlanVersionToDeprecate.updatedAt) < updatedAt) {
+          // Set the deprecatedAt time to a couple seconds less than the updatedAt date.
+          // Deprecations happen slightly before update during normal app operations.
+          // This is to maintain correctness and any app sorts issues
+          const deprecatedAt = new Date(updatedAt);
+          deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 120);
+          await updateTestPlanVersionById({
+            id: testPlanVersionToDeprecate.id,
+            values: { phase: 'DEPRECATED', deprecatedAt },
+            transaction
+          });
+        }
+      }
+    }
+
+    const versionString = await getVersionString({
+      updatedAt,
+      directory,
+      transaction
+    });
+
+    await createTestPlanVersion({
+      values: {
+        id: testPlanVersionId,
+        title,
+        directory,
+        testPageUrl: getAppUrl(testPageUrl, {
+          gitSha,
+          directoryPath: useBuildInAppAppUrlPath
+            ? builtDirectoryPath
+            : sourceDirectoryPath
+        }),
+        gitSha,
+        gitMessage,
+        hashedTests,
+        updatedAt,
+        versionString,
+        metadata: {
+          designPatternUrl,
+          exampleUrl,
+          testFormatVersion: isV2 ? 2 : 1
+        },
+        tests,
+        testPlanId
+      },
+      transaction
+    });
+  }
+
+  // To ensure build folder is clean when multiple commits are being processed
+  // to prevent `EPERM` errors
+  console.log('Running `npm run cleanup` ...\n');
+  const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
+    cwd: gitCloneDirectory
+  });
+  console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
 };
 
 const cloneRepo = async () => {
-    fse.ensureDirSync(gitCloneDirectory);
+  fse.ensureDirSync(gitCloneDirectory);
 
-    console.info('Cloning aria-at repo ...');
-    const cloneOutput = spawn.sync('git', [
-        'clone',
-        ariaAtRepo,
-        gitCloneDirectory
-    ]);
+  console.info('Cloning aria-at repo ...');
+  const cloneOutput = spawn.sync('git', [
+    'clone',
+    ariaAtRepo,
+    gitCloneDirectory
+  ]);
 
-    if (cloneOutput.error) {
-        console.info(
-            `git clone ${ariaAtRepo} ${gitCloneDirectory} failed with error ${cloneOutput.error}`
-        );
-        process.exit(1);
-    }
-    console.info('Cloning aria-at repo complete.');
+  if (cloneOutput.error) {
+    console.info(
+      `git clone ${ariaAtRepo} ${gitCloneDirectory} failed with error ${cloneOutput.error}`
+    );
+    process.exit(1);
+  }
+  console.info('Cloning aria-at repo complete.');
 };
 
 const readCommit = async commit => {
-    gitRun(`checkout ${commit ?? ariaAtDefaultBranch}`);
-    const gitCommitDate = new Date(gitRun(`log --format=%aI -n 1`));
+  gitRun(`checkout ${commit ?? ariaAtDefaultBranch}`);
+  const gitCommitDate = new Date(gitRun(`log --format=%aI -n 1`));
 
-    return { gitCommitDate };
+  return { gitCommitDate };
 };
 
 const readDirectoryGitInfo = directoryPath => {
-    const gitSha = gitRun(`log -1 --format=%H -- .`, directoryPath);
-    const gitMessage = gitRun(`log -1 --format=%s -- .`, directoryPath);
-    const gitCommitDate = new Date(
-        gitRun(`log -1 --format=%aI -- .`, directoryPath)
-    );
+  const gitSha = gitRun(`log -1 --format=%H -- .`, directoryPath);
+  const gitMessage = gitRun(`log -1 --format=%s -- .`, directoryPath);
+  const gitCommitDate = new Date(
+    gitRun(`log -1 --format=%aI -- .`, directoryPath)
+  );
 
-    return { gitSha, gitMessage, gitCommitDate };
+  return { gitSha, gitMessage, gitCommitDate };
 };
 
 const importHarness = () => {
-    const sourceFolder = path.resolve(`${testsDirectory}/resources`);
-    const targetFolder = path.resolve('../', 'client/resources');
-    console.info(`Updating harness directory, ${targetFolder} ...`);
-    fse.rmSync(targetFolder, { recursive: true, force: true });
+  const sourceFolder = path.resolve(`${testsDirectory}/resources`);
+  const targetFolder = path.resolve('../', 'client/resources');
+  console.info(`Updating harness directory, ${targetFolder} ...`);
+  fse.rmSync(targetFolder, { recursive: true, force: true });
 
-    // Copy source folder
-    console.info('Importing latest harness files ...');
-    fse.copySync(sourceFolder, targetFolder, {
-        filter: src => {
-            if (fse.lstatSync(src).isDirectory()) {
-                return true;
-            }
-            if (!src.includes('.html')) {
-                return true;
-            }
-        }
-    });
-
-    // Copy files
-    const commandsJson = 'commands.json';
-    const supportJson = 'support.json';
-    if (fse.existsSync(`${testsDirectory}/${commandsJson}`)) {
-        fse.copyFileSync(
-            `${testsDirectory}/${commandsJson}`,
-            `${targetFolder}/${commandsJson}`
-        );
+  // Copy source folder
+  console.info('Importing latest harness files ...');
+  fse.copySync(sourceFolder, targetFolder, {
+    filter: src => {
+      if (fse.lstatSync(src).isDirectory()) {
+        return true;
+      }
+      if (!src.includes('.html')) {
+        return true;
+      }
     }
+  });
+
+  // Copy files
+  const commandsJson = 'commands.json';
+  const supportJson = 'support.json';
+  if (fse.existsSync(`${testsDirectory}/${commandsJson}`)) {
     fse.copyFileSync(
-        `${testsDirectory}/${supportJson}`,
-        `${targetFolder}/${supportJson}`
+      `${testsDirectory}/${commandsJson}`,
+      `${targetFolder}/${commandsJson}`
     );
-    console.info('Harness files update complete.');
+  }
+  fse.copyFileSync(
+    `${testsDirectory}/${supportJson}`,
+    `${targetFolder}/${supportJson}`
+  );
+  console.info('Harness files update complete.');
 };
 
 const getAppUrl = (directoryRelativePath, { gitSha, directoryPath }) => {
-    return path.join(
-        '/',
-        'aria-at', // The app's proxy to the ARIA-AT repo
-        gitSha,
-        path.relative(
-            gitCloneDirectory,
-            path.join(directoryPath, directoryRelativePath)
-        )
-    );
+  return path.join(
+    '/',
+    'aria-at', // The app's proxy to the ARIA-AT repo
+    gitSha,
+    path.relative(
+      gitCloneDirectory,
+      path.join(directoryPath, directoryRelativePath)
+    )
+  );
 };
 
 const readCsv = ({ sourceDirectoryPath, isV2 }) => {
-    // 'references.csv' only exists in <root>/tests/<directory>/data/references.csv
-    // doesn't exist in <root>/build/tests/<directory>/data/references.csv
-    const referencesCsvPath = path.join(
-        sourceDirectoryPath,
-        'data',
-        'references.csv'
-    );
+  // 'references.csv' only exists in <root>/tests/<directory>/data/references.csv
+  // doesn't exist in <root>/build/tests/<directory>/data/references.csv
+  const referencesCsvPath = path.join(
+    sourceDirectoryPath,
+    'data',
+    'references.csv'
+  );
 
-    const referencesCsv = fse.readFileSync(referencesCsvPath, {
-        encoding: 'utf-8'
-    });
+  const referencesCsv = fse.readFileSync(referencesCsvPath, {
+    encoding: 'utf-8'
+  });
 
-    const getCsvValue = refId => {
-        const line = referencesCsv
-            .split('\n')
-            .find(line => line.includes(refId));
-        const columns = line?.split(',');
-        return columns?.[isV2 ? 2 : 1];
-    };
+  const getCsvValue = refId => {
+    const line = referencesCsv.split('\n').find(line => line.includes(refId));
+    const columns = line?.split(',');
+    return columns?.[isV2 ? 2 : 1];
+  };
 
-    return {
-        title: getCsvValue('title'),
-        exampleUrl: getCsvValue('example'),
-        designPatternUrl: getCsvValue('designPattern'),
-        testPageUrl: getCsvValue('reference')
-    };
+  return {
+    title: getCsvValue('title'),
+    exampleUrl: getCsvValue('example'),
+    designPatternUrl: getCsvValue('designPattern'),
+    testPageUrl: getCsvValue('reference')
+  };
 };
 
 const flattenObject = (obj, parentKey = '') => {
-    const flattened = {};
+  const flattened = {};
 
-    for (const key in obj) {
-        if (typeof obj[key] === 'object' && obj[key] !== null) {
-            const subObject = flattenObject(obj[key], parentKey + key + '.');
-            Object.assign(flattened, subObject);
-        } else {
-            flattened[parentKey + key] = obj[key];
-        }
+  for (const key in obj) {
+    if (typeof obj[key] === 'object' && obj[key] !== null) {
+      const subObject = flattenObject(obj[key], parentKey + key + '.');
+      Object.assign(flattened, subObject);
+    } else {
+      flattened[parentKey + key] = obj[key];
     }
+  }
 
-    return flattened;
+  return flattened;
 };
 
 const updateJsons = async () => {
-    // Commands path info for v1 format
-    const keysMjsPath = pathToFileURL(
-        path.join(testsDirectory, 'resources', 'keys.mjs')
-    );
-    const commands = Object.entries(await import(keysMjsPath)).map(
-        ([id, text]) => ({ id, text })
-    );
+  // Commands path info for v1 format
+  const keysMjsPath = pathToFileURL(
+    path.join(testsDirectory, 'resources', 'keys.mjs')
+  );
+  const commands = Object.entries(await import(keysMjsPath)).map(
+    ([id, text]) => ({ id, text })
+  );
 
-    // Write commands for v1 format
+  // Write commands for v1 format
+  await fse.writeFile(
+    path.resolve(__dirname, '../../resources/commandsV1.json'),
+    JSON.stringify(commands, null, 4)
+  );
+
+  try {
+    // Commands path info for v2 format
+    const commandsV2Path = pathToFileURL(
+      path.join(testsDirectory, 'commands.json')
+    );
+    const commandsV2PathString = fse.readFileSync(commandsV2Path, 'utf8');
+    const commandsV2Parsed = JSON.parse(commandsV2PathString);
+
+    // Write commands for v2 format
     await fse.writeFile(
-        path.resolve(__dirname, '../../resources/commandsV1.json'),
-        JSON.stringify(commands, null, 4)
+      path.resolve(__dirname, '../../resources/commandsV2.json'),
+      JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
     );
+  } catch (error) {
+    console.error('commands.json for v2 test format may not exist');
+  }
 
-    try {
-        // Commands path info for v2 format
-        const commandsV2Path = pathToFileURL(
-            path.join(testsDirectory, 'commands.json')
-        );
-        const commandsV2PathString = fse.readFileSync(commandsV2Path, 'utf8');
-        const commandsV2Parsed = JSON.parse(commandsV2PathString);
+  // Path info for support.json
+  const supportPath = pathToFileURL(path.join(testsDirectory, 'support.json'));
+  const supportPathString = fse.readFileSync(supportPath, 'utf8');
+  const supportParsed = JSON.parse(supportPathString);
 
-        // Write commands for v2 format
-        await fse.writeFile(
-            path.resolve(__dirname, '../../resources/commandsV2.json'),
-            JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
-        );
-    } catch (error) {
-        console.error('commands.json for v2 test format may not exist');
-    }
-
-    // Path info for support.json
-    const supportPath = pathToFileURL(
-        path.join(testsDirectory, 'support.json')
-    );
-    const supportPathString = fse.readFileSync(supportPath, 'utf8');
-    const supportParsed = JSON.parse(supportPathString);
-
-    return { support: supportParsed };
+  return { support: supportParsed };
 };
 
 const updateAtsJson = async ({ ats, supportAts }) => {
-    const atsResult = ats.map(at => ({
-        ...at.dataValues,
-        ...supportAts.find(supportAt => supportAt.name === at.dataValues.name)
-    }));
+  const atsResult = ats.map(at => ({
+    ...at.dataValues,
+    ...supportAts.find(supportAt => supportAt.name === at.dataValues.name)
+  }));
 
-    await fse.writeFile(
-        path.resolve(__dirname, '../../resources/ats.json'),
-        JSON.stringify(atsResult, null, 4)
-    );
+  await fse.writeFile(
+    path.resolve(__dirname, '../../resources/ats.json'),
+    JSON.stringify(atsResult, null, 4)
+  );
 };
 
 const getVersionString = async ({ directory, updatedAt, transaction }) => {
-    const versionStringBase = `V${convertDateToString(updatedAt, 'YY.MM.DD')}`;
-    const result = await sequelize.query(
-        `
+  const versionStringBase = `V${convertDateToString(updatedAt, 'YY.MM.DD')}`;
+  const result = await sequelize.query(
+    `
             SELECT "versionString" FROM "TestPlanVersion"
             WHERE directory = ? AND "versionString" LIKE ?
             ORDER BY "versionString" DESC;
         `,
-        { replacements: [directory, `${versionStringBase}%`], transaction }
-    );
+    { replacements: [directory, `${versionStringBase}%`], transaction }
+  );
 
-    let versionString = result[0][0]?.versionString;
+  let versionString = result[0][0]?.versionString;
 
-    if (!versionString) return versionStringBase;
+  if (!versionString) return versionStringBase;
 
-    const currentCount = versionString.match(/V\d\d\.\d\d\.\d\d-(\d+)/);
-    let duplicateCount = currentCount ? Number(currentCount[1]) + 1 : 1;
+  const currentCount = versionString.match(/V\d\d\.\d\d\.\d\d-(\d+)/);
+  let duplicateCount = currentCount ? Number(currentCount[1]) + 1 : 1;
 
-    return `${versionStringBase}-${duplicateCount}`;
+  return `${versionStringBase}-${duplicateCount}`;
 };
 
 const getTests = ({
-    builtDirectoryPath,
-    testPlanVersionId,
-    ats,
-    gitSha,
-    isV2
+  builtDirectoryPath,
+  testPlanVersionId,
+  ats,
+  gitSha,
+  isV2
 }) => {
-    const tests = [];
-    const renderedUrlsById = {};
-    const allCollectedById = {};
+  const tests = [];
+  const renderedUrlsById = {};
+  const allCollectedById = {};
 
-    fse.readdirSync(builtDirectoryPath).forEach(filePath => {
-        if (!filePath.endsWith('.collected.json')) return;
-        const jsonPath = path.join(builtDirectoryPath, filePath);
-        const jsonString = fse.readFileSync(jsonPath, 'utf8');
-        const collected = JSON.parse(jsonString);
-        const renderedUrl = filePath.replace(/\.json$/, '.html');
-        if (!allCollectedById[collected.info.testId]) {
-            allCollectedById[collected.info.testId] = [];
-            renderedUrlsById[collected.info.testId] = [];
-        }
-        allCollectedById[collected.info.testId].push(collected);
-        renderedUrlsById[collected.info.testId].push(renderedUrl);
-    });
+  fse.readdirSync(builtDirectoryPath).forEach(filePath => {
+    if (!filePath.endsWith('.collected.json')) return;
+    const jsonPath = path.join(builtDirectoryPath, filePath);
+    const jsonString = fse.readFileSync(jsonPath, 'utf8');
+    const collected = JSON.parse(jsonString);
+    const renderedUrl = filePath.replace(/\.json$/, '.html');
+    if (!allCollectedById[collected.info.testId]) {
+      allCollectedById[collected.info.testId] = [];
+      renderedUrlsById[collected.info.testId] = [];
+    }
+    allCollectedById[collected.info.testId].push(collected);
+    renderedUrlsById[collected.info.testId].push(renderedUrl);
+  });
 
-    /**
-     * Creates tests to be included in [TestPlanVersion.tests]
-     * @param {object} allCollected Generated tests coming from aria-at through test-{number}-{at}-collected.json files.
-     * @param {string|number} rawTestId Numeric id for tests in v1 format, string id for tests in v2 format. Comes directly from `tests.csv` files.
-     * @param {string[]} renderedUrls Paths to .collected.json files.
-     * @param {boolean} isV2 Boolean check to see if the testFormatVersion of the collected tests are for v2, otherwise for v1.
-     */
-    const createTestsForFormat = ({
-        allCollected,
-        rawTestId,
-        renderedUrls,
-        // There MAY be a need to handle additional versions. This may be changed to handle that
-        // when that time comes
-        isV2
-    }) => {
-        const getRenderedUrl = index =>
-            getAppUrl(renderedUrls[index], {
-                gitSha,
-                directoryPath: builtDirectoryPath
-            });
+  /**
+   * Creates tests to be included in [TestPlanVersion.tests]
+   * @param {object} allCollected Generated tests coming from aria-at through test-{number}-{at}-collected.json files.
+   * @param {string|number} rawTestId Numeric id for tests in v1 format, string id for tests in v2 format. Comes directly from `tests.csv` files.
+   * @param {string[]} renderedUrls Paths to .collected.json files.
+   * @param {boolean} isV2 Boolean check to see if the testFormatVersion of the collected tests are for v2, otherwise for v1.
+   */
+  const createTestsForFormat = ({
+    allCollected,
+    rawTestId,
+    renderedUrls,
+    // There MAY be a need to handle additional versions. This may be changed to handle that
+    // when that time comes
+    isV2
+  }) => {
+    const getRenderedUrl = index =>
+      getAppUrl(renderedUrls[index], {
+        gitSha,
+        directoryPath: builtDirectoryPath
+      });
 
-        const getAssertions = (data, testId) => {
-            return data.assertions.map((assertion, index) => {
-                let priority = '';
-                if (assertion.priority === 1) priority = 'MUST';
-                if (assertion.priority === 2) priority = 'SHOULD';
-                // Available for v2
-                if (assertion.priority === 3) priority = 'MAY';
-                if (assertion.priority === 0) priority = 'EXCLUDE';
+    const getAssertions = (data, testId) => {
+      return data.assertions.map((assertion, index) => {
+        let priority = '';
+        if (assertion.priority === 1) priority = 'MUST';
+        if (assertion.priority === 2) priority = 'SHOULD';
+        // Available for v2
+        if (assertion.priority === 3) priority = 'MAY';
+        if (assertion.priority === 0) priority = 'EXCLUDE';
 
-                let result = {
-                    id: createAssertionId(testId, index),
-                    priority
-                };
-
-                // Available for v1
-                if (assertion.expectation) result.text = assertion.expectation;
-
-                // Available for v2
-                if (assertion.assertionStatement) {
-                    const tokenizedAssertionStatement =
-                        assertion?.tokenizedAssertionStatements[
-                            data.target.at.key
-                        ];
-                    const tokenizedAssertionPhrase =
-                        assertion?.tokenizedAssertionPhrases?.[
-                            data.target.at.key
-                        ];
-
-                    result.rawAssertionId = assertion.assertionId;
-                    result.assertionStatement =
-                        tokenizedAssertionStatement ||
-                        assertion.assertionStatement;
-                    result.assertionPhrase =
-                        tokenizedAssertionPhrase || assertion.assertionPhrase;
-                    result.assertionExceptions = data.commands.flatMap(
-                        command => {
-                            return command.assertionExceptions
-                                .filter(
-                                    exception =>
-                                        exception.assertionId ===
-                                        assertion.assertionId
-                                )
-                                .map(({ priority: assertionPriority }) => {
-                                    let priority =
-                                        convertAssertionPriority(
-                                            assertionPriority
-                                        );
-
-                                    return {
-                                        priority,
-                                        commandId: command.id,
-                                        settings: command.settings
-                                    };
-                                });
-                        }
-                    );
-                }
-
-                return result;
-            });
+        let result = {
+          id: createAssertionId(testId, index),
+          priority
         };
 
-        // Using the v1 test format, https://github.com/w3c/aria-at/wiki/Test-Format-V1-Definition
-        if (!isV2) {
-            const common = allCollected[0];
-            const testId = createTestId(testPlanVersionId, common.info.testId);
-            const atIds = allCollected.map(
-                collected =>
-                    ats.find(at => at.name === collected.target.at.name).id
-            );
+        // Available for v1
+        if (assertion.expectation) result.text = assertion.expectation;
 
-            tests.push({
-                id: testId,
-                rowNumber: rawTestId,
-                title: common.info.title,
-                atIds,
-                renderableContent: Object.fromEntries(
-                    allCollected.map((collected, index) => {
-                        /** @type RenderableContent **/
-                        return [atIds[index], collected];
-                    })
-                ),
-                renderedUrls: Object.fromEntries(
-                    atIds.map((atId, index) => {
-                        return [atId, getRenderedUrl(index)];
-                    })
-                ),
-                scenarios: (() => {
-                    const scenarios = [];
-                    allCollected.forEach(collected => {
-                        collected.commands.forEach(command => {
-                            scenarios.push({
-                                id: createScenarioId(testId, scenarios.length),
-                                atId: ats.find(
-                                    at => at.name === collected.target.at.name
-                                ).id,
-                                commandIds: command.keypresses.map(
-                                    ({ id }) => id
-                                )
-                            });
-                        });
-                    });
-                    return scenarios;
-                })(),
-                assertions: getAssertions(common, testId),
-                viewers: [],
-                testFormatVersion: 1
-            });
-        }
+        // Available for v2
+        if (assertion.assertionStatement) {
+          const tokenizedAssertionStatement =
+            assertion?.tokenizedAssertionStatements[data.target.at.key];
+          const tokenizedAssertionPhrase =
+            assertion?.tokenizedAssertionPhrases?.[data.target.at.key];
 
-        // Using the v2 test format, https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2
-        if (isV2) {
-            for (const [collectedIndex, collected] of allCollected.entries()) {
-                const testId = createTestId(
-                    testPlanVersionId,
-                    `${collected.target.at.key}:${collected.info.testId}`
-                );
+          result.rawAssertionId = assertion.assertionId;
+          result.assertionStatement =
+            tokenizedAssertionStatement || assertion.assertionStatement;
+          result.assertionPhrase =
+            tokenizedAssertionPhrase || assertion.assertionPhrase;
+          result.assertionExceptions = data.commands.flatMap(command => {
+            return command.assertionExceptions
+              .filter(
+                exception => exception.assertionId === assertion.assertionId
+              )
+              .map(({ priority: assertionPriority }) => {
+                let priority = convertAssertionPriority(assertionPriority);
 
-                let test = {
-                    id: testId,
-                    rawTestId,
-                    rowNumber: collected.info.presentationNumber,
-                    title: collected.info.title,
-                    at: {
-                        key: collected.target.at.key,
-                        name: collected.target.at.name,
-                        settings: collected.target.at.raw.settings
-                    },
-                    atIds: [
-                        ats.find(at => at.name === collected.target.at.name).id
-                    ],
-                    /** @type RenderableContent **/
-                    renderableContent: {
-                        ...collected,
-                        target: {
-                            at: collected.target.at,
-                            referencePage: collected.target.referencePage,
-                            setupScript: collected.target.setupScript
-                        },
-                        assertions: collected.assertions.map(
-                            ({
-                                assertionId,
-                                priority,
-                                assertionStatement,
-                                assertionPhrase,
-                                refIds,
-                                tokenizedAssertionStatements,
-                                tokenizedAssertionPhrases
-                            }) => {
-                                const tokenizedAssertionStatement =
-                                    tokenizedAssertionStatements[
-                                        collected.target.at.key
-                                    ];
-                                const tokenizedAssertionPhrase =
-                                    tokenizedAssertionPhrases?.[
-                                        collected.target.at.key
-                                    ];
-
-                                return {
-                                    assertionId,
-                                    priority,
-                                    assertionStatement:
-                                        tokenizedAssertionStatement ||
-                                        assertionStatement,
-                                    assertionPhrase:
-                                        tokenizedAssertionPhrase ||
-                                        assertionPhrase,
-                                    refIds
-                                };
-                            }
-                        )
-                    },
-                    renderedUrl: getRenderedUrl(collectedIndex),
-                    scenarios: (() => {
-                        const scenarios = [];
-                        collected.commands.forEach(command => {
-                            scenarios.push({
-                                id: createScenarioId(
-                                    testId,
-                                    `${scenarios.length}:${command.settings}`
-                                ),
-                                atId: ats.find(
-                                    at => at.name === collected.target.at.name
-                                ).id,
-                                commandIds: command.keypresses.map(
-                                    ({ id }) => id
-                                ),
-                                settings: command.settings
-                            });
-                        });
-                        return scenarios;
-                    })(),
-                    assertions: getAssertions(collected, testId),
-                    viewers: [],
-                    testFormatVersion: 2
+                return {
+                  priority,
+                  commandId: command.id,
+                  settings: command.settings
                 };
-
-                tests.push(test);
-            }
+              });
+          });
         }
+
+        return result;
+      });
     };
 
-    Object.entries(allCollectedById).forEach(([rawTestId, allCollected]) => {
-        const renderedUrls = renderedUrlsById[rawTestId];
+    // Using the v1 test format, https://github.com/w3c/aria-at/wiki/Test-Format-V1-Definition
+    if (!isV2) {
+      const common = allCollected[0];
+      const testId = createTestId(testPlanVersionId, common.info.testId);
+      const atIds = allCollected.map(
+        collected => ats.find(at => at.name === collected.target.at.name).id
+      );
 
-        if (
-            !deepPickEqual(allCollected, {
-                excludeKeys: ['at', 'mode', 'commands']
-            })
-        ) {
-            throw new Error(
-                'Difference found in a part of a .collected.json file which ' +
-                    'should be equivalent'
-            );
-        }
+      tests.push({
+        id: testId,
+        rowNumber: rawTestId,
+        title: common.info.title,
+        atIds,
+        renderableContent: Object.fromEntries(
+          allCollected.map((collected, index) => {
+            /** @type RenderableContent **/
+            return [atIds[index], collected];
+          })
+        ),
+        renderedUrls: Object.fromEntries(
+          atIds.map((atId, index) => {
+            return [atId, getRenderedUrl(index)];
+          })
+        ),
+        scenarios: (() => {
+          const scenarios = [];
+          allCollected.forEach(collected => {
+            collected.commands.forEach(command => {
+              scenarios.push({
+                id: createScenarioId(testId, scenarios.length),
+                atId: ats.find(at => at.name === collected.target.at.name).id,
+                commandIds: command.keypresses.map(({ id }) => id)
+              });
+            });
+          });
+          return scenarios;
+        })(),
+        assertions: getAssertions(common, testId),
+        viewers: [],
+        testFormatVersion: 1
+      });
+    }
 
-        createTestsForFormat({ allCollected, rawTestId, renderedUrls, isV2 });
-    });
+    // Using the v2 test format, https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2
+    if (isV2) {
+      for (const [collectedIndex, collected] of allCollected.entries()) {
+        const testId = createTestId(
+          testPlanVersionId,
+          `${collected.target.at.key}:${collected.info.testId}`
+        );
 
-    return tests;
+        let test = {
+          id: testId,
+          rawTestId,
+          rowNumber: collected.info.presentationNumber,
+          title: collected.info.title,
+          at: {
+            key: collected.target.at.key,
+            name: collected.target.at.name,
+            settings: collected.target.at.raw.settings
+          },
+          atIds: [ats.find(at => at.name === collected.target.at.name).id],
+          /** @type RenderableContent **/
+          renderableContent: {
+            ...collected,
+            target: {
+              at: collected.target.at,
+              referencePage: collected.target.referencePage,
+              setupScript: collected.target.setupScript
+            },
+            assertions: collected.assertions.map(
+              ({
+                assertionId,
+                priority,
+                assertionStatement,
+                assertionPhrase,
+                refIds,
+                tokenizedAssertionStatements,
+                tokenizedAssertionPhrases
+              }) => {
+                const tokenizedAssertionStatement =
+                  tokenizedAssertionStatements[collected.target.at.key];
+                const tokenizedAssertionPhrase =
+                  tokenizedAssertionPhrases?.[collected.target.at.key];
+
+                return {
+                  assertionId,
+                  priority,
+                  assertionStatement:
+                    tokenizedAssertionStatement || assertionStatement,
+                  assertionPhrase: tokenizedAssertionPhrase || assertionPhrase,
+                  refIds
+                };
+              }
+            )
+          },
+          renderedUrl: getRenderedUrl(collectedIndex),
+          scenarios: (() => {
+            const scenarios = [];
+            collected.commands.forEach(command => {
+              scenarios.push({
+                id: createScenarioId(
+                  testId,
+                  `${scenarios.length}:${command.settings}`
+                ),
+                atId: ats.find(at => at.name === collected.target.at.name).id,
+                commandIds: command.keypresses.map(({ id }) => id),
+                settings: command.settings
+              });
+            });
+            return scenarios;
+          })(),
+          assertions: getAssertions(collected, testId),
+          viewers: [],
+          testFormatVersion: 2
+        };
+
+        tests.push(test);
+      }
+    }
+  };
+
+  Object.entries(allCollectedById).forEach(([rawTestId, allCollected]) => {
+    const renderedUrls = renderedUrlsById[rawTestId];
+
+    if (
+      !deepPickEqual(allCollected, {
+        excludeKeys: ['at', 'mode', 'commands']
+      })
+    ) {
+      throw new Error(
+        'Difference found in a part of a .collected.json file which ' +
+          'should be equivalent'
+      );
+    }
+
+    createTestsForFormat({ allCollected, rawTestId, renderedUrls, isV2 });
+  });
+
+  return tests;
 };
 
 sequelize
-    .transaction(importTestPlanVersions)
-    .then(
-        () => console.log('Done, no errors'),
-        err => {
-            console.error(`Error found: ${err.stack}`);
-            process.exitCode = 1;
-        }
-    )
-    .finally(() => {
-        // Delete temporary files
-        fse.removeSync(gitCloneDirectory);
-        process.exit();
-    });
+  .transaction(importTestPlanVersions)
+  .then(
+    () => console.log('Done, no errors'),
+    err => {
+      console.error(`Error found: ${err.stack}`);
+      process.exitCode = 1;
+    }
+  )
+  .finally(() => {
+    // Delete temporary files
+    fse.removeSync(gitCloneDirectory);
+    process.exit();
+  });
 
 /**
  * @typedef Reference

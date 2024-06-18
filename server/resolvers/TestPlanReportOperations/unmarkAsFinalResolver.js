@@ -1,27 +1,27 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-    updateTestPlanReportById
+  updateTestPlanReportById
 } = require('../../models/services/TestPlanReportService');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const unmarkAsFinalResolver = async (
-    { parentContext: { id: testPlanReportId } },
-    _,
-    context
+  { parentContext: { id: testPlanReportId } },
+  _,
+  context
 ) => {
-    const { user, transaction } = context;
+  const { user, transaction } = context;
 
-    if (!user?.roles.find(role => role.name === 'ADMIN')) {
-        throw new AuthenticationError();
-    }
+  if (!user?.roles.find(role => role.name === 'ADMIN')) {
+    throw new AuthenticationError();
+  }
 
-    await updateTestPlanReportById({
-        id: testPlanReportId,
-        values: { markedFinalAt: null },
-        transaction
-    });
+  await updateTestPlanReportById({
+    id: testPlanReportId,
+    values: { markedFinalAt: null },
+    transaction
+  });
 
-    return populateData({ testPlanReportId }, { context });
+  return populateData({ testPlanReportId }, { context });
 };
 
 module.exports = unmarkAsFinalResolver;
