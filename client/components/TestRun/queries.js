@@ -206,6 +206,22 @@ export const TEST_RUN_PAGE_QUERY = gql`
     }
 `;
 
+export const COLLECTION_JOB_UPDATES_QUERY = gql`
+    query CollectionJob($collectionJobId: ID!) {
+        collectionJob(id: $collectionJobId) {
+            id
+            status
+            externalLogsUrl
+            testStatus {
+                test {
+                    id
+                }
+                status
+            }
+        }
+    }
+`;
+
 export const TEST_RUN_PAGE_ANON_QUERY = gql`
     query TestPlanRunAnonPage($testPlanReportId: ID!) {
         testPlanReport(id: $testPlanReportId) {

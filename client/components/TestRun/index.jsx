@@ -6,12 +6,10 @@ import { useMutation, useQuery } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faPen,
-    faEdit,
     faRedo,
     faCheck,
     faCheckCircle,
-    faExclamationCircle,
-    faRobot
+    faExclamationCircle
 } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
 import { Alert, Button, Col, Container, Row } from 'react-bootstrap';
@@ -20,6 +18,7 @@ import ReviewConflictsModal from './ReviewConflictsModal';
 import StatusBar from './StatusBar';
 import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
+import Heading from './Heading';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
 import BasicThemedModal from '../common/BasicThemedModal';
@@ -41,8 +40,7 @@ import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
 import { convertDateToString } from '../../utils/formatter';
-import { isJobStatusFinal } from '../../utils/collectionJobStatus';
-const pollInterval = 2000;
+import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
 
 const TestRun = () => {
     const params = useParams();
@@ -69,24 +67,16 @@ const TestRun = () => {
 
     const { runId: testPlanRunId, testPlanReportId } = params;
 
-    const { loading, data, error, startPolling, stopPolling } = useQuery(
+    const { loading, data, error } = useQuery(
         testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
         {
             fetchPolicy: 'cache-and-network',
             variables: { testPlanRunId, testPlanReportId },
-            pollInterval
+            pollInterval: 0
         }
     );
 
-    // control the data flow, turn on polling if this is a collection job report
-    // that still has possible updates.
     useEffect(() => {
-        const status = data?.testPlanRun?.collectionJob?.status;
-        if (!isJobStatusFinal(status)) {
-            startPolling(pollInterval);
-        } else {
-            stopPolling();
-        }
         if (data) setup(data);
     }, [data]);
 
@@ -340,7 +330,7 @@ const TestRun = () => {
     };
 
     // Check to see if there are tests to run
-    const hasTestsToRun = tests.length;
+    const testCount = tests.length;
 
     // Check if this test is being run as an admin
     if (
@@ -894,63 +884,6 @@ const TestRun = () => {
         editAtBrowserDetailsButtonRef.current.focus();
     };
 
-    const renderTestsCompletedInfoBox = () => {
-        let isReviewingBot = false;
-        if (openAsUserId) {
-            isReviewingBot = openAsUser.isBot;
-        }
-
-        let content;
-
-        if (isReviewingBot) {
-            content = (
-                <>
-                    <p>
-                        <b>{`${testResults.reduce(
-                            (acc, { scenarioResults }) =>
-                                acc +
-                                (scenarioResults &&
-                                scenarioResults.every(({ output }) => !!output)
-                                    ? 1
-                                    : 0),
-                            0
-                        )} of ${tests.length}`}</b>{' '}
-                        responses collected.
-                    </p>
-                    <p>
-                        Collection Job Status:{' '}
-                        <b>{testPlanRun.collectionJob.status}</b>
-                    </p>
-                </>
-            );
-        } else if (!isSignedIn) {
-            content = <b>{tests.length} tests to view</b>;
-        } else if (hasTestsToRun) {
-            content = (
-                <>
-                    {' '}
-                    <b>{`${testResults.reduce(
-                        (acc, { completedAt }) => acc + (completedAt ? 1 : 0),
-                        0
-                    )} of ${tests.length}`}</b>{' '}
-                    tests completed
-                </>
-            );
-        } else {
-            content = <div>No tests for this AT and Browser combination</div>;
-        }
-        return (
-            <div className="test-info-entity tests-completed">
-                <div className="info-label">
-                    <FontAwesomeIcon
-                        icon={hasTestsToRun ? faCheck : faExclamationCircle}
-                    />
-                    {content}
-                </div>
-            </div>
-        );
-    };
-
     const renderTestContent = (testPlanReport, currentTest, heading) => {
         const { index } = currentTest;
         const isComplete = currentTest.testResult
@@ -1083,6 +1016,11 @@ const TestRun = () => {
             </div>
         );
 
+        // we are ready enough to show the page and all the buttons when the above code is
+        // pageReady and we have an anon view, bot test run, or a test result to display
+        const completeRender =
+            pageReady && (!isSignedIn || currentTest.testResult);
+
         return (
             <>
                 <h1 ref={titleRef} data-test="testing-task" tabIndex={-1}>
@@ -1097,7 +1035,7 @@ const TestRun = () => {
                         handleReviewConflictsButtonClick
                     }
                 />
-                {pageReady && (isSignedIn ? currentTest.testResult : true) && (
+                {completeRender && (
                     <Row>
                         <Col className="test-iframe-container" md={9}>
                             <Row>
@@ -1226,90 +1164,32 @@ const TestRun = () => {
 
     let heading;
     let content;
-    let openAsUserHeading = null;
-
-    if (openAsUserId) {
-        if (openAsUser.isBot) {
-            const status = testPlanRun.collectionJob.status;
-            openAsUserHeading = (
-                <div className="test-info-entity reviewing-as bot">
-                    Reviewing tests of{' '}
-                    <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
-                    <b>{`${openAsUser.username}`}.</b>
-                    {!isJobStatusFinal(status) && (
-                        <>
-                            <br />
-                            The collection bot is still updating information on
-                            this page. Changes may be lost when updates arrive.
-                        </>
-                    )}
-                </div>
-            );
-        } else {
-            openAsUserHeading = (
-                <div className="test-info-entity reviewing-as">
-                    Reviewing tests of <b>{`${openAsUser.username}`}.</b>
-                    <p>{`All changes will be saved as performed by ${openAsUser.username}.`}</p>
-                </div>
-            );
-        }
-    }
 
     heading = pageReady && (
-        <>
-            <div className="test-info-wrapper">
-                <div
-                    className="test-info-entity apg-example-name"
-                    data-test="apg-example-name"
-                >
-                    <div className="info-label">
-                        <b>Test Plan:</b>{' '}
-                        {`${
-                            testPlanVersion.title ||
-                            testPlanVersion.testPlan?.directory ||
-                            ''
-                        }`}
-                    </div>
-                </div>
-                <div
-                    className="test-info-entity at-browser"
-                    data-test="at-browser"
-                >
-                    <div className="at-browser-row">
-                        <div className="info-label">
-                            <b>AT:</b>{' '}
-                            {`${testPlanReport.at?.name}${
-                                isSignedIn ? ` ${currentAtVersion?.name}` : ''
-                            }`}
-                        </div>
-                        <div className="info-label">
-                            <b>Browser:</b>{' '}
-                            {`${testPlanReport.browser?.name}${
-                                isSignedIn
-                                    ? ` ${currentBrowserVersion?.name || ''}`
-                                    : ''
-                            }`}
-                        </div>
-                    </div>
-                    {isSignedIn && (
-                        <Button
-                            ref={editAtBrowserDetailsButtonRef}
-                            id="edit-fa-button"
-                            aria-label="Edit version details for AT and Browser"
-                            onClick={handleEditAtBrowserDetailsClick}
-                        >
-                            <FontAwesomeIcon icon={faEdit} />
-                        </Button>
-                    )}
-                </div>
-                {renderTestsCompletedInfoBox()}
-            </div>
-            {openAsUserHeading}
-        </>
+        <Heading
+            testPlanTitle={
+                testPlanVersion.title ||
+                testPlanVersion.testPlan?.directory ||
+                ''
+            }
+            at={`${testPlanReport.at?.name}${
+                isSignedIn ? ` ${currentAtVersion?.name}` : ''
+            }`}
+            browser={`${testPlanReport.browser?.name}${
+                isSignedIn ? ` ${currentBrowserVersion?.name || ''}` : ''
+            }`}
+            showEditAtBrowser={isSignedIn && !testPlanRun.initiatedByAutomation}
+            openAsUser={openAsUser}
+            testResults={testResults}
+            testCount={testCount}
+            editAtBrowserDetailsButtonRef={editAtBrowserDetailsButtonRef}
+            handleEditAtBrowserDetailsClick={handleEditAtBrowserDetailsClick}
+            isSignedIn={isSignedIn}
+        />
     );
 
     if (!isSignedIn || !testPlanRun?.isComplete) {
-        content = hasTestsToRun ? (
+        content = testCount ? (
             renderTestContent(testPlanReport, currentTest, heading)
         ) : (
             // No tests loaded
@@ -1335,110 +1215,114 @@ const TestRun = () => {
 
     return (
         pageReady && (
-            <Container className="test-run-container">
-                <Helmet>
-                    <title>
-                        {hasTestsToRun
-                            ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion?.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion?.name} ` +
-                              `| ARIA-AT`
-                            : 'No tests for this AT and Browser | ARIA-AT'}
-                    </title>
-                </Helmet>
-                {updateMessageComponent && (
-                    <Alert
-                        variant="success"
-                        className="at-browser-details-modal-alert"
-                    >
-                        {updateMessageComponent}
-                    </Alert>
-                )}
-                <Row>
-                    <TestNavigator
-                        show={showTestNavigator}
-                        tests={tests}
-                        currentTestIndex={currentTestIndex}
-                        toggleShowClick={toggleTestNavigator}
-                        handleTestClick={handleTestClick}
-                        testPlanRun={testPlanRun}
-                    />
-                    <Col
-                        className="main-test-area"
-                        id="main"
-                        as="main"
-                        tabIndex="-1"
-                    >
-                        <Row>
-                            <Col>{content}</Col>
-                        </Row>
-                    </Col>
-                </Row>
-                {showThemedModal && (
-                    <BasicThemedModal
-                        show={showThemedModal}
-                        theme={'warning'}
-                        title={themedModalTitle}
-                        dialogClassName="modal-50w"
-                        content={themedModalContent}
-                        actionButtons={
-                            themedModalOtherButton
-                                ? [
-                                      themedModalOtherButton,
-                                      {
-                                          text: 'Continue without changes',
-                                          action: onThemedModalClose
-                                      }
-                                  ]
-                                : [
-                                      // only applies to Admin, Scenario 4
-                                      {
-                                          text: 'Continue',
-                                          action: onThemedModalClose
-                                      }
-                                  ]
-                        }
-                        handleClose={onThemedModalClose}
-                    />
-                )}
-                {isSignedIn && isShowingAtBrowserModal && (
-                    <AtAndBrowserDetailsModal
-                        show={isShowingAtBrowserModal}
-                        firstLoad={!currentTest.testResult}
-                        isAdmin={isAdminReviewer}
-                        atName={testPlanReport.at.name}
-                        atVersion={currentTest.testResult?.atVersion?.name}
-                        atVersions={testPlanReport.at.atVersions
-                            .filter(item => {
-                                // Only provide at version options that released
-                                // at the same time or later than the minimum
-                                // AT version
-                                let earliestReleasedAt = null;
-                                if (testPlanReport.minimumAtVersion) {
-                                    earliestReleasedAt = new Date(
-                                        testPlanReport.minimumAtVersion.releasedAt
-                                    );
-                                    return (
-                                        new Date(item.releasedAt) >=
-                                        earliestReleasedAt
-                                    );
-                                }
-                                return item;
-                            })
-                            .map(item => item.name)}
-                        browserName={testPlanReport.browser.name}
-                        browserVersion={
-                            currentTest.testResult?.browserVersion?.name
-                        }
-                        browserVersions={testPlanReport.browser.browserVersions.map(
-                            item => item.name
-                        )}
-                        patternName={testPlanVersion.title}
-                        testerName={tester.username}
-                        exactAtVersion={testPlanReport.exactAtVersion}
-                        handleAction={handleAtAndBrowserDetailsModalAction}
-                        handleClose={handleAtAndBrowserDetailsModalCloseAction}
-                    />
-                )}
-            </Container>
+            <CollectionJobContextProvider testPlanRun={testPlanRun}>
+                <Container className="test-run-container">
+                    <Helmet>
+                        <title>
+                            {testCount
+                                ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion?.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion?.name} ` +
+                                  `| ARIA-AT`
+                                : 'No tests for this AT and Browser | ARIA-AT'}
+                        </title>
+                    </Helmet>
+                    {updateMessageComponent && (
+                        <Alert
+                            variant="success"
+                            className="at-browser-details-modal-alert"
+                        >
+                            {updateMessageComponent}
+                        </Alert>
+                    )}
+                    <Row>
+                        <TestNavigator
+                            show={showTestNavigator}
+                            tests={tests}
+                            currentTestIndex={currentTestIndex}
+                            toggleShowClick={toggleTestNavigator}
+                            handleTestClick={handleTestClick}
+                            testPlanRun={testPlanRun}
+                        />
+                        <Col
+                            className="main-test-area"
+                            id="main"
+                            as="main"
+                            tabIndex="-1"
+                        >
+                            <Row>
+                                <Col>{content}</Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    {showThemedModal && (
+                        <BasicThemedModal
+                            show={showThemedModal}
+                            theme={'warning'}
+                            title={themedModalTitle}
+                            dialogClassName="modal-50w"
+                            content={themedModalContent}
+                            actionButtons={
+                                themedModalOtherButton
+                                    ? [
+                                          themedModalOtherButton,
+                                          {
+                                              text: 'Continue without changes',
+                                              action: onThemedModalClose
+                                          }
+                                      ]
+                                    : [
+                                          // only applies to Admin, Scenario 4
+                                          {
+                                              text: 'Continue',
+                                              action: onThemedModalClose
+                                          }
+                                      ]
+                            }
+                            handleClose={onThemedModalClose}
+                        />
+                    )}
+                    {isSignedIn && isShowingAtBrowserModal && (
+                        <AtAndBrowserDetailsModal
+                            show={isShowingAtBrowserModal}
+                            firstLoad={!currentTest.testResult}
+                            isAdmin={isAdminReviewer}
+                            atName={testPlanReport.at.name}
+                            atVersion={currentTest.testResult?.atVersion?.name}
+                            atVersions={testPlanReport.at.atVersions
+                                .filter(item => {
+                                    // Only provide at version options that released
+                                    // at the same time or later than the minimum
+                                    // AT version
+                                    let earliestReleasedAt = null;
+                                    if (testPlanReport.minimumAtVersion) {
+                                        earliestReleasedAt = new Date(
+                                            testPlanReport.minimumAtVersion.releasedAt
+                                        );
+                                        return (
+                                            new Date(item.releasedAt) >=
+                                            earliestReleasedAt
+                                        );
+                                    }
+                                    return item;
+                                })
+                                .map(item => item.name)}
+                            exactAtVersion={testPlanReport.exactAtVersion}
+                            browserName={testPlanReport.browser.name}
+                            browserVersion={
+                                currentTest.testResult?.browserVersion?.name
+                            }
+                            browserVersions={testPlanReport.browser.browserVersions.map(
+                                item => item.name
+                            )}
+                            patternName={testPlanVersion.title}
+                            testerName={tester.username}
+                            handleAction={handleAtAndBrowserDetailsModalAction}
+                            handleClose={
+                                handleAtAndBrowserDetailsModalCloseAction
+                            }
+                        />
+                    )}
+                </Container>
+            </CollectionJobContextProvider>
         )
     );
 };

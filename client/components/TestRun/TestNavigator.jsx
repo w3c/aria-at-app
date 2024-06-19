@@ -6,7 +6,8 @@ import {
     faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import { Col } from 'react-bootstrap';
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
+import { Context as CollectionJobContext } from './CollectionJobContext';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
 const TestNavigator = ({
@@ -23,7 +24,13 @@ const TestNavigator = ({
 }) => {
     const isBotCompletedTest = testPlanRun?.tester?.isBot;
 
-    const testStatus = testPlanRun?.collectionJob?.testStatus;
+    const {
+        state: { collectionJob }
+    } = useContext(CollectionJobContext);
+    const testStatus = useMemo(
+        () => collectionJob?.testStatus ?? [],
+        [collectionJob]
+    );
 
     return (
         <Col className="test-navigator" md={show ? 3 : 12}>
