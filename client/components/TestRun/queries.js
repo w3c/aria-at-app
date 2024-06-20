@@ -122,7 +122,17 @@ export const TEST_RUN_PAGE_QUERY = gql`
                     atVersions {
                         id
                         name
+                        releasedAt
                     }
+                }
+                minimumAtVersion {
+                    id
+                    name
+                    releasedAt
+                }
+                exactAtVersion {
+                    id
+                    name
                 }
                 browser {
                     id
@@ -427,7 +437,17 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                             atVersions {
                                 id
                                 name
+                                releasedAt
                             }
+                        }
+                        minimumAtVersion {
+                            id
+                            name
+                            releasedAt
+                        }
+                        exactAtVersion {
+                            id
+                            name
                         }
                         browser {
                             id
@@ -525,7 +545,17 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
                         atVersions {
                             id
                             name
+                            releasedAt
                         }
+                    }
+                    minimumAtVersion {
+                        id
+                        name
+                        releasedAt
+                    }
+                    exactAtVersion {
+                        id
+                        name
                     }
                     browser {
                         id
@@ -721,7 +751,17 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                             atVersions {
                                 id
                                 name
+                                releasedAt
                             }
+                        }
+                        minimumAtVersion {
+                            id
+                            name
+                            releasedAt
+                        }
+                        exactAtVersion {
+                            id
+                            name
                         }
                         browser {
                             id
@@ -818,7 +858,17 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
                         atVersions {
                             id
                             name
+                            releasedAt
                         }
+                    }
+                    minimumAtVersion {
+                        id
+                        name
+                        releasedAt
+                    }
+                    exactAtVersion {
+                        id
+                        name
                     }
                     browser {
                         id
@@ -1013,7 +1063,17 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                             atVersions {
                                 id
                                 name
+                                releasedAt
                             }
+                        }
+                        minimumAtVersion {
+                            id
+                            name
+                            releasedAt
+                        }
+                        exactAtVersion {
+                            id
+                            name
                         }
                         browser {
                             id
@@ -1110,7 +1170,17 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
                         atVersions {
                             id
                             name
+                            releasedAt
                         }
+                    }
+                    minimumAtVersion {
+                        id
+                        name
+                        releasedAt
+                    }
+                    exactAtVersion {
+                        id
+                        name
                     }
                     browser {
                         id
