@@ -110,7 +110,7 @@ const TestRunHeading = ({
                 )}
             </div>
         );
-    } else {
+    } else if (openAsUser) {
         openAsUserHeading = (
             <div className="test-info-entity reviewing-as">
                 Reviewing tests of <b>{`${openAsUser.username}`}.</b>
