@@ -101,46 +101,73 @@ const Actions = ({
                         primaryTestPlanRunId: primaryRunIdRef.current
                     }
                 });
-            }, 'Marking final...');
+            }, 'Marking as Final ...');
 
             hideConfirmationModal();
         };
 
+        let title;
+        let content;
+
+        if (runs.length === 1) {
+            title =
+                "Are you sure you want to mark as final with a single tester's results?";
+            content = (
+                <>
+                    <p>
+                        Only {runs[0].tester.username}&apos;s results are
+                        included in this report, so their run will be marked as
+                        the primary run. Only their output will be displayed on
+                        report pages.
+                    </p>
+                    <p>
+                        Their run being marked as primary may also set the
+                        minimum required Assistive Technology Version that can
+                        be used for subsequent reports with this Test Plan
+                        Version and Assistive Technology combination.
+                    </p>
+                </>
+            );
+        } else {
+            // Multiple tester's results to choose from
+            title = 'Select Primary Test Plan Run';
+            content = (
+                <>
+                    <p>
+                        When a tester&apos;s run is marked as primary, it means
+                        that their output for collected results will be
+                        prioritized and shown on report pages.
+                    </p>
+                    <p>
+                        A tester&apos;s run being marked as primary may also set
+                        the minimum required Assistive Technology Version that
+                        can be used for subsequent reports with that Test Plan
+                        Version and Assistive Technology combination.
+                    </p>
+                    <Form.Select
+                        className="primary-test-run-select"
+                        defaultValue={runs[0].id}
+                        onChange={onChangePrimary}
+                        htmlSize={runs.length}
+                    >
+                        {runs.map(run => (
+                            <option
+                                key={`${testPlanReport.id}-${run.id}`}
+                                value={run.id}
+                            >
+                                {run.tester.username}
+                            </option>
+                        ))}
+                    </Form.Select>
+                </>
+            );
+        }
+
         showConfirmationModal(
             <BasicModal
                 show
-                title="Select Primary Test Plan Run"
-                content={
-                    <>
-                        <p>
-                            When a tester&apos;s run is marked as primary, it
-                            means that their output for collected results will
-                            be prioritized and shown on report pages.
-                        </p>
-                        <p>
-                            A tester&apos;s run being marked as primary may also
-                            set the minimum required Assistive Technology
-                            Version that can be used for subsequent reports with
-                            that Test Plan Version and Assistive Technology
-                            combination.
-                        </p>
-                        <Form.Select
-                            className="primary-test-run-select"
-                            defaultValue={runs[0].id}
-                            onChange={onChangePrimary}
-                            htmlSize={runs.length}
-                        >
-                            {runs.map(run => (
-                                <option
-                                    key={`${testPlanReport.id}-${run.id}`}
-                                    value={run.id}
-                                >
-                                    {run.tester.username}
-                                </option>
-                            ))}
-                        </Form.Select>
-                    </>
-                }
+                title={title}
+                content={content}
                 closeLabel="Cancel"
                 staticBackdrop={true}
                 actions={[
@@ -294,7 +321,12 @@ Actions.propTypes = {
         draftTestPlanRuns: PropTypes.arrayOf(
             PropTypes.shape({
                 id: PropTypes.string.isRequired,
-                testResultsLength: PropTypes.number.isRequired
+                testResultsLength: PropTypes.number.isRequired,
+                tester: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    username: PropTypes.string.isRequired,
+                    isBot: PropTypes.bool.isRequired
+                })
             })
         ).isRequired
     }).isRequired,
