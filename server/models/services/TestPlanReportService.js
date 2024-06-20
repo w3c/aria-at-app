@@ -1,30 +1,30 @@
 const { sequelize } = require('../');
 const ModelService = require('./ModelService');
 const {
-    TEST_PLAN_REPORT_ATTRIBUTES,
-    TEST_PLAN_VERSION_ATTRIBUTES,
-    TEST_PLAN_RUN_ATTRIBUTES,
-    AT_ATTRIBUTES,
-    BROWSER_ATTRIBUTES,
-    USER_ATTRIBUTES,
-    TEST_PLAN_ATTRIBUTES
+  TEST_PLAN_REPORT_ATTRIBUTES,
+  TEST_PLAN_VERSION_ATTRIBUTES,
+  TEST_PLAN_RUN_ATTRIBUTES,
+  AT_ATTRIBUTES,
+  BROWSER_ATTRIBUTES,
+  USER_ATTRIBUTES,
+  TEST_PLAN_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport, TestPlanVersion } = require('../');
 
 // custom column additions to Models being queried
 const testPlanRunLiterals = [
-    sequelize.literal(`(
+  sequelize.literal(`(
         WITH testPlanRunResult AS ( SELECT jsonb_array_elements("testResults") AS results )
         SELECT COUNT(*)
         FROM testPlanRunResult
         WHERE (testPlanRunResult.results -> 'completedAt') IS NOT NULL
             AND (testPlanRunResult.results -> 'completedAt') != 'null'
     )`),
-    'testResultsLength'
+  'testResultsLength'
 ];
 
 const testPlanVersionLiterals = [
-    sequelize.literal(`(
+  sequelize.literal(`(
         WITH testPlanVersionResult AS ( SELECT jsonb_array_elements("tests") AS results )
         SELECT json_build_array(
             ( SELECT COUNT(*)
@@ -39,7 +39,7 @@ const testPlanVersionLiterals = [
         )
         FROM testPlanVersionResult
         LIMIT 1 )`),
-    'runnableTestsCount'
+  'runnableTestsCount'
 ];
 
 // association helpers to be included with Models' results
@@ -49,14 +49,14 @@ const testPlanVersionLiterals = [
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
-    association: 'testPlanRuns',
-    attributes: testPlanRunAttributes?.length
-        ? testPlanRunAttributes.concat([testPlanRunLiterals])
-        : testPlanRunAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        userAssociation(userAttributes)
-    ]
+  association: 'testPlanRuns',
+  attributes: testPlanRunAttributes?.length
+    ? testPlanRunAttributes.concat([testPlanRunLiterals])
+    : testPlanRunAttributes,
+  include: [
+    // eslint-disable-next-line no-use-before-define
+    userAssociation(userAttributes)
+  ]
 });
 
 /**
@@ -64,14 +64,14 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanVersionAssociation = (
-    testPlanVersionAttributes,
-    testPlanAttributes
+  testPlanVersionAttributes,
+  testPlanAttributes
 ) => ({
-    association: 'testPlanVersion',
-    attributes: testPlanVersionAttributes?.length
-        ? testPlanVersionAttributes.concat([testPlanVersionLiterals])
-        : testPlanVersionAttributes,
-    include: [testPlanAssociation(testPlanAttributes)]
+  association: 'testPlanVersion',
+  attributes: testPlanVersionAttributes?.length
+    ? testPlanVersionAttributes.concat([testPlanVersionLiterals])
+    : testPlanVersionAttributes,
+  include: [testPlanAssociation(testPlanAttributes)]
 });
 
 /**
@@ -79,8 +79,8 @@ const testPlanVersionAssociation = (
  * @returns {{association: string, attributes: string[]}}
  */
 const atAssociation = atAttributes => ({
-    association: 'at',
-    attributes: atAttributes
+  association: 'at',
+  attributes: atAttributes
 });
 
 /**
@@ -88,8 +88,8 @@ const atAssociation = atAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const browserAssociation = browserAttributes => ({
-    association: 'browser',
-    attributes: browserAttributes
+  association: 'browser',
+  attributes: browserAttributes
 });
 
 /**
@@ -97,8 +97,8 @@ const browserAssociation = browserAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const userAssociation = userAttributes => ({
-    association: 'tester',
-    attributes: userAttributes
+  association: 'tester',
+  attributes: userAttributes
 });
 
 /**
@@ -106,8 +106,8 @@ const userAssociation = userAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanAssociation = testPlanAttributes => ({
-    association: 'testPlan',
-    attributes: testPlanAttributes
+  association: 'testPlan',
+  attributes: testPlanAttributes
 });
 
 /**
@@ -125,30 +125,27 @@ const testPlanAssociation = testPlanAttributes => ({
  * @returns {Promise<*>}
  */
 const getTestPlanReportById = async ({
-    id,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  id,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    return ModelService.getById(TestPlanReport, {
-        id,
-        attributes: testPlanReportAttributes,
-        include: [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
-            testPlanVersionAssociation(
-                testPlanVersionAttributes,
-                testPlanAttributes
-            ),
-            atAssociation(atAttributes),
-            browserAssociation(browserAttributes)
-        ],
-        transaction
-    });
+  return ModelService.getById(TestPlanReport, {
+    id,
+    attributes: testPlanReportAttributes,
+    include: [
+      testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+      testPlanVersionAssociation(testPlanVersionAttributes, testPlanAttributes),
+      atAssociation(atAttributes),
+      browserAssociation(browserAttributes)
+    ],
+    transaction
+  });
 };
 
 /**
@@ -171,34 +168,31 @@ const getTestPlanReportById = async ({
  * @returns {Promise<*>}
  */
 const getTestPlanReports = async ({
-    // search, // Nothing to search
-    where = {},
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    pagination = {},
-    transaction
+  // search, // Nothing to search
+  where = {},
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  pagination = {},
+  transaction
 }) => {
-    // search and filtering options
-    return ModelService.get(TestPlanReport, {
-        where,
-        attributes: testPlanReportAttributes,
-        include: [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
-            testPlanVersionAssociation(
-                testPlanVersionAttributes,
-                testPlanAttributes
-            ),
-            atAssociation(atAttributes),
-            browserAssociation(browserAttributes)
-        ],
-        pagination,
-        transaction
-    });
+  // search and filtering options
+  return ModelService.get(TestPlanReport, {
+    where,
+    attributes: testPlanReportAttributes,
+    include: [
+      testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+      testPlanVersionAssociation(testPlanVersionAttributes, testPlanAttributes),
+      atAssociation(atAttributes),
+      browserAssociation(browserAttributes)
+    ],
+    pagination,
+    transaction
+  });
 };
 
 /**
@@ -215,53 +209,50 @@ const getTestPlanReports = async ({
  * @returns {Promise<*>}
  */
 const createTestPlanReport = async ({
-    values: {
-        testPlanVersionId,
-        atId,
-        exactAtVersionId,
-        minimumAtVersionId,
-        browserId
-    },
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  values: {
+    testPlanVersionId,
+    atId,
+    exactAtVersionId,
+    minimumAtVersionId,
+    browserId
+  },
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    const testPlanVersion = await TestPlanVersion.findOne({
-        where: { id: testPlanVersionId },
-        transaction
-    });
-    const testPlanReportResult = await ModelService.create(TestPlanReport, {
-        values: {
-            testPlanVersionId,
-            atId,
-            browserId,
-            exactAtVersionId,
-            minimumAtVersionId,
-            testPlanId: testPlanVersion.testPlanId
-        },
-        transaction
-    });
+  const testPlanVersion = await TestPlanVersion.findOne({
+    where: { id: testPlanVersionId },
+    transaction
+  });
+  const testPlanReportResult = await ModelService.create(TestPlanReport, {
+    values: {
+      testPlanVersionId,
+      atId,
+      browserId,
+      exactAtVersionId,
+      minimumAtVersionId,
+      testPlanId: testPlanVersion.testPlanId
+    },
+    transaction
+  });
 
-    // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return ModelService.getById(TestPlanReport, {
-        id: testPlanReportResult.id,
-        attributes: testPlanReportAttributes,
-        include: [
-            testPlanRunAssociation(testPlanRunAttributes, userAttributes),
-            testPlanVersionAssociation(
-                testPlanVersionAttributes,
-                testPlanAttributes
-            ),
-            atAssociation(atAttributes),
-            browserAssociation(browserAttributes)
-        ],
-        transaction
-    });
+  // to ensure the structure being returned matches what we expect for simple queries and can be controlled
+  return ModelService.getById(TestPlanReport, {
+    id: testPlanReportResult.id,
+    attributes: testPlanReportAttributes,
+    include: [
+      testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+      testPlanVersionAssociation(testPlanVersionAttributes, testPlanAttributes),
+      atAssociation(atAttributes),
+      browserAssociation(browserAttributes)
+    ],
+    transaction
+  });
 };
 
 /**
@@ -279,49 +270,49 @@ const createTestPlanReport = async ({
  * @returns {Promise<*>}
  */
 const updateTestPlanReportById = async ({
-    id,
-    values: {
-        metrics,
-        testPlanVersionId,
-        vendorReviewStatus,
-        minimumAtVersionId,
-        exactAtVersionId,
-        markedFinalAt
-    },
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  id,
+  values: {
+    metrics,
+    testPlanVersionId,
+    vendorReviewStatus,
+    minimumAtVersionId,
+    exactAtVersionId,
+    markedFinalAt
+  },
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    await ModelService.update(TestPlanReport, {
-        where: { id },
-        values: {
-            metrics,
-            testPlanVersionId,
-            vendorReviewStatus,
-            minimumAtVersionId,
-            exactAtVersionId,
-            markedFinalAt
-        },
-        transaction
-    });
+  await ModelService.update(TestPlanReport, {
+    where: { id },
+    values: {
+      metrics,
+      testPlanVersionId,
+      vendorReviewStatus,
+      minimumAtVersionId,
+      exactAtVersionId,
+      markedFinalAt
+    },
+    transaction
+  });
 
-    // call custom this.getById if custom attributes are being accounted for
-    return getTestPlanReportById({
-        id,
-        testPlanReportAttributes,
-        testPlanRunAttributes,
-        testPlanVersionAttributes,
-        testPlanAttributes,
-        atAttributes,
-        browserAttributes,
-        userAttributes,
-        transaction
-    });
+  // call custom this.getById if custom attributes are being accounted for
+  return getTestPlanReportById({
+    id,
+    testPlanReportAttributes,
+    testPlanRunAttributes,
+    testPlanVersionAttributes,
+    testPlanAttributes,
+    atAttributes,
+    browserAttributes,
+    userAttributes,
+    transaction
+  });
 };
 
 /**
@@ -332,15 +323,15 @@ const updateTestPlanReportById = async ({
  * @returns {Promise<boolean>}
  */
 const removeTestPlanReportById = async ({
-    id,
-    truncate = false,
-    transaction
+  id,
+  truncate = false,
+  transaction
 }) => {
-    return ModelService.removeById(TestPlanReport, {
-        id,
-        truncate,
-        transaction
-    });
+  return ModelService.removeById(TestPlanReport, {
+    id,
+    truncate,
+    transaction
+  });
 };
 
 /**
@@ -358,91 +349,90 @@ const removeTestPlanReportById = async ({
  * @returns {Promise<[*, [*]]>}
  */
 const getOrCreateTestPlanReport = async ({
-    where: {
-        testPlanVersionId,
-        atId,
-        exactAtVersionId,
-        minimumAtVersionId,
-        browserId
-    },
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  where: {
+    testPlanVersionId,
+    atId,
+    exactAtVersionId,
+    minimumAtVersionId,
+    browserId
+  },
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    const accumulatedResults = await ModelService.nestedGetOrCreate({
-        operations: [
-            {
-                get: getTestPlanReports,
-                create: createTestPlanReport,
-                values: {
-                    testPlanVersionId,
-                    atId,
-                    ...(minimumAtVersionId ? { minimumAtVersionId } : {}),
-                    ...(exactAtVersionId ? { exactAtVersionId } : {}),
-                    browserId
-                },
-                returnAttributes: {
-                    testPlanReportAttributes,
-                    testPlanRunAttributes: [],
-                    testPlanVersionAttributes: [],
-                    testPlanAttributes: [],
-                    atAttributes: [],
-                    browserAttributes: [],
-                    userAttributes: []
-                }
-            }
-        ],
-        transaction
+  const accumulatedResults = await ModelService.nestedGetOrCreate({
+    operations: [
+      {
+        get: getTestPlanReports,
+        create: createTestPlanReport,
+        values: {
+          testPlanVersionId,
+          atId,
+          ...(minimumAtVersionId ? { minimumAtVersionId } : {}),
+          ...(exactAtVersionId ? { exactAtVersionId } : {}),
+          browserId
+        },
+        returnAttributes: {
+          testPlanReportAttributes,
+          testPlanRunAttributes: [],
+          testPlanVersionAttributes: [],
+          testPlanAttributes: [],
+          atAttributes: [],
+          browserAttributes: [],
+          userAttributes: []
+        }
+      }
+    ],
+    transaction
+  });
+
+  const [[{ id: testPlanReportId }, isNewTestPlanReport]] = accumulatedResults;
+
+  const testPlanReport = await getTestPlanReportById({
+    id: testPlanReportId,
+    testPlanReportAttributes,
+    testPlanRunAttributes,
+    testPlanVersionAttributes,
+    testPlanAttributes,
+    atAttributes,
+    browserAttributes,
+    userAttributes,
+    transaction
+  });
+
+  // If a TestPlanReport is being intentionally created that was previously marked as final,
+  // This will allow it to be displayed in the Test Queue again to be worked on
+  if (!isNewTestPlanReport && testPlanReport.markedFinalAt) {
+    await updateTestPlanReportById({
+      id: testPlanReportId,
+      values: { markedFinalAt: null },
+      testPlanReportAttributes,
+      testPlanRunAttributes,
+      testPlanVersionAttributes,
+      testPlanAttributes,
+      atAttributes,
+      browserAttributes,
+      userAttributes,
+      transaction
     });
+  }
 
-    const [[{ id: testPlanReportId }, isNewTestPlanReport]] =
-        accumulatedResults;
+  const created = isNewTestPlanReport ? [{ testPlanReportId }] : [];
 
-    const testPlanReport = await getTestPlanReportById({
-        id: testPlanReportId,
-        testPlanReportAttributes,
-        testPlanRunAttributes,
-        testPlanVersionAttributes,
-        testPlanAttributes,
-        atAttributes,
-        browserAttributes,
-        userAttributes,
-        transaction
-    });
-
-    // If a TestPlanReport is being intentionally created that was previously marked as final,
-    // This will allow it to be displayed in the Test Queue again to be worked on
-    if (!isNewTestPlanReport && testPlanReport.markedFinalAt) {
-        await updateTestPlanReportById({
-            id: testPlanReportId,
-            values: { markedFinalAt: null },
-            testPlanReportAttributes,
-            testPlanRunAttributes,
-            testPlanVersionAttributes,
-            testPlanAttributes,
-            atAttributes,
-            browserAttributes,
-            userAttributes,
-            transaction
-        });
-    }
-
-    const created = isNewTestPlanReport ? [{ testPlanReportId }] : [];
-
-    return [testPlanReport, created];
+  return [testPlanReport, created];
 };
 
 module.exports = {
-    // Basic CRUD
-    getTestPlanReportById,
-    getTestPlanReports,
-    createTestPlanReport,
-    updateTestPlanReportById,
-    removeTestPlanReportById,
-    getOrCreateTestPlanReport
+  // Basic CRUD
+  getTestPlanReportById,
+  getTestPlanReports,
+  createTestPlanReport,
+  updateTestPlanReportById,
+  removeTestPlanReportById,
+  getOrCreateTestPlanReport
 };

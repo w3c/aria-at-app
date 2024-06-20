@@ -78,11 +78,11 @@ button.more-actions:active {
 }
 
 .primary-test-run-select {
-    &[size]:not([size='1']) {
-        padding: 0 !important;
-    }
+  &[size]:not([size='1']) {
+    padding: 0 !important;
+  }
 
-    option {
-        padding: 0.5rem;
-    }
+  option {
+    padding: 0.5rem;
+  }
 }

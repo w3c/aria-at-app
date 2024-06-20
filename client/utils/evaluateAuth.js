@@ -10,22 +10,22 @@
  * @returns {Auth} - evaluated auth object
  */
 export const evaluateAuth = user => {
-    if (!user) user = {};
+  if (!user) user = {};
 
-    let roles = user.roles ?? [];
+  let roles = user.roles ?? [];
 
-    return {
-        // calculated booleans
-        isAdmin: roles.includes('ADMIN'),
-        isTester: roles.includes('TESTER'),
-        isVendor: roles.includes('VENDOR'),
-        isSignedIn: !!user.username,
+  return {
+    // calculated booleans
+    isAdmin: roles.includes('ADMIN'),
+    isTester: roles.includes('TESTER'),
+    isVendor: roles.includes('VENDOR'),
+    isSignedIn: !!user.username,
 
-        // user object values
-        id: user.id ?? null,
-        username: user.username ?? null,
-        roles
-    };
+    // user object values
+    id: user.id ?? null,
+    username: user.username ?? null,
+    roles
+  };
 };
 
 /**

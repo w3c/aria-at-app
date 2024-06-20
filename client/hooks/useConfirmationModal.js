@@ -5,38 +5,38 @@ import useForceUpdate from './useForceUpdate';
 const ConfirmationContext = createContext();
 
 const ConfirmationModalProvider = ({ children }) => {
-    const forceUpdate = useForceUpdate();
-    const modalContent = useRef();
+  const forceUpdate = useForceUpdate();
+  const modalContent = useRef();
 
-    const showConfirmationModal = newModalContent => {
-        modalContent.current = newModalContent;
-        forceUpdate();
-    };
+  const showConfirmationModal = newModalContent => {
+    modalContent.current = newModalContent;
+    forceUpdate();
+  };
 
-    const hideConfirmationModal = async () => {
-        modalContent.current = null;
-        forceUpdate();
-    };
+  const hideConfirmationModal = async () => {
+    modalContent.current = null;
+    forceUpdate();
+  };
 
-    return (
-        <ConfirmationContext.Provider
-            value={{ showConfirmationModal, hideConfirmationModal }}
-        >
-            {children}
-            {modalContent.current}
-        </ConfirmationContext.Provider>
-    );
+  return (
+    <ConfirmationContext.Provider
+      value={{ showConfirmationModal, hideConfirmationModal }}
+    >
+      {children}
+      {modalContent.current}
+    </ConfirmationContext.Provider>
+  );
 };
 
 ConfirmationModalProvider.propTypes = {
-    children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired
 };
 
 const useConfirmationModal = () => {
-    const { showConfirmationModal, hideConfirmationModal } =
-        useContext(ConfirmationContext);
+  const { showConfirmationModal, hideConfirmationModal } =
+    useContext(ConfirmationContext);
 
-    return { showConfirmationModal, hideConfirmationModal };
+  return { showConfirmationModal, hideConfirmationModal };
 };
 
 export { ConfirmationModalProvider };
