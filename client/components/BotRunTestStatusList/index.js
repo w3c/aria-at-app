@@ -5,6 +5,7 @@ import { useQuery } from '@apollo/client';
 import styled from '@emotion/styled';
 import ReportStatusDot from '../common/ReportStatusDot';
 
+// TODO: Remove when Test Queue v1 is removed
 const BotRunTestStatusUnorderedList = styled.ul`
     list-style-type: none;
     background-color: #f6f8fa;
@@ -12,6 +13,21 @@ const BotRunTestStatusUnorderedList = styled.ul`
     padding: 0.5rem 0;
     margin: 0.5rem 0;
     white-space: nowrap;
+`;
+
+const BotRunTestContainer = styled.div`
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0;
+    margin: 0.5rem 0;
+
+    background: #f5f5f5;
+    border-radius: 0.25rem;
+
+    white-space: nowrap;
+`;
+
+const BotRunTestStatusUnorderedListV2 = styled.ul`
+    list-style-type: none;
 `;
 
 /**
@@ -33,7 +49,10 @@ const testCountString = (count, status) =>
 
 const pollInterval = 2000;
 
-const BotRunTestStatusList = ({ testPlanReportId }) => {
+const BotRunTestStatusList = ({
+    testPlanReportId,
+    fromTestQueueV2 = false // TODO: Remove when Test Queue v1 is removed
+}) => {
     const {
         data: testPlanRunsQueryResult,
         startPolling,
@@ -84,40 +103,78 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
     ) {
         return null;
     }
+
     return (
-        <BotRunTestStatusUnorderedList className="text-secondary fs-6">
-            {RUNNING > 0 && (
-                <li className="m-2">
-                    <ReportStatusDot className="tests-running" />
-                    {testCountString(RUNNING, 'Running')}
-                </li>
+        <>
+            {fromTestQueueV2 ? (
+                <BotRunTestContainer>
+                    Bot Status:
+                    <BotRunTestStatusUnorderedListV2 className="text-secondary">
+                        {RUNNING > 0 && (
+                            <li>
+                                <ReportStatusDot className="tests-running" />
+                                {testCountString(RUNNING, 'Running')}
+                            </li>
+                        )}
+                        {ERROR > 0 && (
+                            <li>
+                                <ReportStatusDot className="tests-error" />
+                                {testCountString(ERROR, 'Error')}
+                            </li>
+                        )}
+                        <li>
+                            <ReportStatusDot className="tests-complete" />
+                            {testCountString(COMPLETED, 'Completed')}
+                        </li>
+                        <li>
+                            <ReportStatusDot className="tests-queued" />
+                            {testCountString(QUEUED, 'Queued')}
+                        </li>
+                        {CANCELLED > 0 && (
+                            <li>
+                                <ReportStatusDot className="tests-cancelled" />
+                                {testCountString(CANCELLED, 'Cancelled')}
+                            </li>
+                        )}
+                    </BotRunTestStatusUnorderedListV2>
+                </BotRunTestContainer>
+            ) : (
+                <BotRunTestStatusUnorderedList className="text-secondary fs-6">
+                    {RUNNING > 0 && (
+                        <li className="m-2">
+                            <ReportStatusDot className="tests-running" />
+                            {testCountString(RUNNING, 'Running')}
+                        </li>
+                    )}
+                    {ERROR > 0 && (
+                        <li className="m-2">
+                            <ReportStatusDot className="tests-error" />
+                            {testCountString(ERROR, 'Error')}
+                        </li>
+                    )}
+                    <li className="m-2">
+                        <ReportStatusDot className="tests-complete" />
+                        {testCountString(COMPLETED, 'Completed')}
+                    </li>
+                    <li className="m-2">
+                        <ReportStatusDot className="tests-queued" />
+                        {testCountString(QUEUED, 'Queued')}
+                    </li>
+                    {CANCELLED > 0 && (
+                        <li className="m-2">
+                            <ReportStatusDot className="tests-cancelled" />
+                            {testCountString(CANCELLED, 'Cancelled')}
+                        </li>
+                    )}
+                </BotRunTestStatusUnorderedList>
             )}
-            {ERROR > 0 && (
-                <li className="m-2">
-                    <ReportStatusDot className="tests-error" />
-                    {testCountString(ERROR, 'Error')}
-                </li>
-            )}
-            <li className="m-2">
-                <ReportStatusDot className="tests-complete" />
-                {testCountString(COMPLETED, 'Completed')}
-            </li>
-            <li className="m-2">
-                <ReportStatusDot className="tests-queued" />
-                {testCountString(QUEUED, 'Queued')}
-            </li>
-            {CANCELLED > 0 && (
-                <li className="m-2">
-                    <ReportStatusDot className="tests-cancelled" />
-                    {testCountString(CANCELLED, 'Cancelled')}
-                </li>
-            )}
-        </BotRunTestStatusUnorderedList>
+        </>
     );
 };
 
 BotRunTestStatusList.propTypes = {
-    testPlanReportId: PropTypes.string.isRequired
+    testPlanReportId: PropTypes.string.isRequired,
+    fromTestQueueV2: PropTypes.bool
 };
 
 export default BotRunTestStatusList;

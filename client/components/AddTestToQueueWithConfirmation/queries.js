@@ -30,6 +30,7 @@ export const EXISTING_TEST_PLAN_REPORTS = gql`
                     id
                 }
             }
+            metadata
         }
         oldTestPlanVersions: testPlanVersions(
             phases: [CANDIDATE, RECOMMENDED]
@@ -46,6 +47,7 @@ export const EXISTING_TEST_PLAN_REPORTS = gql`
                     id
                 }
             }
+            metadata
         }
     }
 `;

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import ManageBotRunDialog from '.';
 import { useTestPlanRunIsFinished } from '../../hooks/useTestPlanRunIsFinished';
 
@@ -9,6 +11,7 @@ const ManageBotRunDialogWithButton = ({
     testPlanReportId,
     runnableTestsLength,
     testers,
+    includeIcon = false,
     onChange
 }) => {
     const { runIsFinished } = useTestPlanRunIsFinished(testPlanRun.id);
@@ -24,22 +27,25 @@ const ManageBotRunDialogWithButton = ({
                 onClick={async () => {
                     setShowDialog(true);
                 }}
-                className="mb-2"
             >
+                {/* TODO: Include by default after removing Test Queue v1 content */}
+                {includeIcon ? <FontAwesomeIcon icon={faRobot} /> : null}
                 Manage {testPlanRun?.tester?.username} Run
             </Button>
-            <ManageBotRunDialog
-                testPlanRun={testPlanRun}
-                show={showDialog}
-                setShow={setShowDialog}
-                testers={testers}
-                testPlanReportId={testPlanReportId}
-                runnableTestsLength={runnableTestsLength}
-                onChange={async () => {
-                    await onChange();
-                    setShowDialog(false);
-                }}
-            />
+            {showDialog ? (
+                <ManageBotRunDialog
+                    testPlanRun={testPlanRun}
+                    show={showDialog}
+                    setShow={setShowDialog}
+                    testers={testers}
+                    testPlanReportId={testPlanReportId}
+                    runnableTestsLength={runnableTestsLength}
+                    onChange={async () => {
+                        await onChange();
+                        setShowDialog(false);
+                    }}
+                />
+            ) : null}
         </>
     );
 };
@@ -49,6 +55,7 @@ ManageBotRunDialogWithButton.propTypes = {
     testPlanReportId: PropTypes.string.isRequired,
     runnableTestsLength: PropTypes.number.isRequired,
     testers: PropTypes.array.isRequired,
+    includeIcon: PropTypes.bool,
     onChange: PropTypes.func.isRequired
 };
 

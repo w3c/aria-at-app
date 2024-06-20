@@ -64,6 +64,14 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
                 key
                 name
             }
+            minimumAtVersion {
+                id
+                name
+            }
+            exactAtVersion {
+                id
+                name
+            }
             browser {
                 id
                 key
@@ -115,6 +123,14 @@ export const TEST_PLAN_REPORT_QUERY = gql`
             at {
                 id
                 key
+                name
+            }
+            minimumAtVersion {
+                id
+                name
+            }
+            exactAtVersion {
+                id
                 name
             }
             browser {
@@ -236,33 +252,32 @@ export const ADD_TEST_QUEUE_MUTATION = gql`
     mutation AddTestPlanReport(
         $testPlanVersionId: ID!
         $atId: ID!
+        $exactAtVersionId: ID
+        $minimumAtVersionId: ID
         $browserId: ID!
-        $copyResultsFromTestPlanReportId: ID
+        $copyResultsFromTestPlanVersionId: ID
     ) {
-        findOrCreateTestPlanReport(
+        createTestPlanReport(
             input: {
                 testPlanVersionId: $testPlanVersionId
                 atId: $atId
+                exactAtVersionId: $exactAtVersionId
+                minimumAtVersionId: $minimumAtVersionId
                 browserId: $browserId
-                copyResultsFromTestPlanReportId: $copyResultsFromTestPlanReportId
+                copyResultsFromTestPlanVersionId: $copyResultsFromTestPlanVersionId
             }
         ) {
-            populatedData {
-                testPlanReport {
+            testPlanReport {
+                id
+                at {
                     id
-                    at {
-                        id
-                    }
-                    browser {
-                        id
-                    }
                 }
-                testPlanVersion {
+                browser {
                     id
                 }
             }
-            created {
-                locationOfData
+            testPlanVersion {
+                id
             }
         }
     }
@@ -291,10 +306,13 @@ export const ASSIGN_TESTER_MUTATION = gql`
     }
 `;
 
-export const UPDATE_TEST_PLAN_REPORT_APPROVED_AT_MUTATION = gql`
-    mutation UpdateTestPlanReportMarkedFinalAt($testReportId: ID!) {
+export const MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION = gql`
+    mutation MarkTestPlanReportAsFinal(
+        $testReportId: ID!
+        $primaryTestPlanRunId: ID!
+    ) {
         testPlanReport(id: $testReportId) {
-            markAsFinal {
+            markAsFinal(primaryTestPlanRunId: $primaryTestPlanRunId) {
                 testPlanReport {
                     markedFinalAt
                 }

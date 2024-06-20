@@ -151,11 +151,6 @@ describe('graphql', () => {
             ['PopulatedData', 'browserVersion'],
             ['TestPlanReport', 'issues'],
             ['TestPlanReport', 'vendorReviewStatus'],
-            ['TestPlanReportOperations', 'updateTestPlanReportTestPlanVersion'],
-            ['TestPlanVersion', 'candidatePhaseReachedAt'],
-            ['TestPlanVersion', 'recommendedPhaseReachedAt'],
-            ['TestPlanVersion', 'recommendedPhaseTargetDate'],
-            ['TestPlanVersion', 'deprecatedAt'],
             ['Test', 'viewers'],
             ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
             ['CollectionJob', 'testPlanRun'],
@@ -386,6 +381,44 @@ describe('graphql', () => {
                             directory
                         }
                     }
+                    recommendedTestPlanVersion: testPlanVersion(id: 69) {
+                        __typename
+                        id
+                        testPlanReports {
+                            __typename
+                            id
+                            recommendedAtVersion {
+                                __typename
+                                id
+                                name
+                                releasedAt
+                            }
+                        }
+                        earliestAtVersion(atId: 1) {
+                            id
+                            name
+                            releasedAt
+                        }
+                        testPlanReportStatuses {
+                            __typename
+                            isRequired
+                            at {
+                                id
+                            }
+                            exactAtVersion {
+                                id
+                            }
+                            minimumAtVersion {
+                                id
+                            }
+                            browser {
+                                id
+                            }
+                            testPlanReport {
+                                id
+                            }
+                        }
+                    }
                     conflictTestPlanReport: testPlanReport(id: 2) {
                         __typename
                         id
@@ -507,6 +540,15 @@ describe('graphql', () => {
                             releasedAt
                         }
                         markedFinalAt
+                        minimumAtVersion {
+                            id
+                        }
+                    }
+                    recommendedPhaseTestPlanReport: testPlanReport(id: 12) {
+                        __typename
+                        exactAtVersion {
+                            id
+                        }
                     }
                     testPlanReports {
                         id
@@ -607,20 +649,15 @@ describe('graphql', () => {
                         $browserVersionId: ID!
                     ) {
                         __typename
-                        findOrCreateTestPlanReport(
+                        createTestPlanReport(
                             input: {
                                 testPlanVersionId: 2
                                 atId: 2
+                                minimumAtVersionId: 2
                                 browserId: 2
                             }
                         ) {
                             __typename
-                            populatedData {
-                                locationOfData
-                            }
-                            created {
-                                locationOfData
-                            }
                         }
                         testPlanReport(id: 1) {
                             __typename
@@ -1010,7 +1047,3 @@ const getMutationInputs = async () => {
         browserVersionId: browserVersion.id
     };
 };
-
-/* Add the phrase to the assertion query. It will not work unless phrase is returned.
-Find a test plan version that does have a phrase (V2).
-*/

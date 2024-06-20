@@ -1,25 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
-import { convertDateToString } from '../../utils/formatter';
 import { ThemeTable } from '../common/ThemeTable';
 import BasicModal from '../common/BasicModal';
 import './TestPlanReportStatusDialog.css';
-
-const IncompleteStatusReport = styled.span`
-    min-width: 5rem;
-    display: inline-block;
-`;
+import ReportStatusSummary from '../common/ReportStatusSummary';
+import { AtVersion } from '../common/AtBrowserVersion';
 
 const TestPlanReportStatusDialog = ({
     testPlanVersion,
     show,
-    ats,
     handleHide = () => {},
     triggerUpdate = () => {}
 }) => {
@@ -27,133 +20,57 @@ const TestPlanReportStatusDialog = ({
         fetchPolicy: 'cache-and-network'
     });
 
-    const { testPlanReports } = testPlanVersion;
-
-    const auth = evaluateAuth(me ?? {});
+    const auth = evaluateAuth(me);
     const { isSignedIn, isAdmin } = auth;
 
-    const renderCompleteReportStatus = testPlanReport => {
-        const formattedDate = convertDateToString(
-            testPlanReport.markedFinalAt,
-            'MMM D, YYYY'
-        );
-        return (
-            <a
-                href={`/report/${testPlanVersion.id}/targets/${testPlanReport.id}`}
-            >
-                Report completed on <strong>{formattedDate}</strong>
-            </a>
-        );
-    };
-
-    const renderPartialCompleteReportStatus = testPlanReport => {
-        const { metrics, draftTestPlanRuns } = testPlanReport;
-        const conflictsCount = metrics.conflictsCount ?? 0;
-        const percentComplete =
-            calculateTestPlanReportCompletionPercentage(testPlanReport);
-        switch (draftTestPlanRuns?.length) {
-            case 0:
-                return <span>In test queue with no testers assigned.</span>;
-            case 1:
-                return (
-                    <span>
-                        {percentComplete}% complete by&nbsp;
-                        <a
-                            href={`https://github.com/${draftTestPlanRuns[0].tester.username}`}
-                        >
-                            {draftTestPlanRuns[0].tester.username}
-                        </a>
-                        &nbsp;with {conflictsCount} conflicts
-                    </span>
-                );
-            default:
-                return (
-                    <span>
-                        {percentComplete}% complete by&nbsp;
-                        {draftTestPlanRuns.length} testers with {conflictsCount}
-                        &nbsp;conflicts
-                    </span>
-                );
-        }
-    };
-
-    const renderReportStatus = ({ report, at, browser }) => {
-        if (report) {
-            const { markedFinalAt } = report;
-            if (markedFinalAt) {
-                return renderCompleteReportStatus(report);
-            } else {
-                return renderPartialCompleteReportStatus(report);
-            }
-        }
-        return (
-            <>
-                <IncompleteStatusReport>Missing</IncompleteStatusReport>
-                {isSignedIn && isAdmin ? (
-                    <AddTestToQueueWithConfirmation
-                        at={at}
-                        browser={browser}
-                        testPlanVersion={testPlanVersion}
-                        triggerUpdate={triggerUpdate}
-                    />
-                ) : null}
-            </>
-        );
-    };
+    const { testPlanReportStatuses } = testPlanVersion;
 
     let requiredReports = 0;
-    const rowData = [];
 
-    ats.forEach(at => {
-        // DRAFT as well because those reports are required to be promoted to CANDIDATE
-        if (
-            testPlanVersion.phase === 'DRAFT' ||
-            testPlanVersion.phase === 'CANDIDATE'
-        ) {
-            requiredReports += at.candidateBrowsers.length;
-        }
-        if (testPlanVersion.phase === 'RECOMMENDED') {
-            requiredReports += at.recommendedBrowsers.length;
-        }
+    const tableRows = testPlanReportStatuses.map(status => {
+        const {
+            isRequired,
+            at,
+            browser,
+            minimumAtVersion,
+            exactAtVersion,
+            testPlanReport
+        } = status;
 
-        at.browsers.forEach(browser => {
-            const report = testPlanReports.find(eachReport => {
-                return (
-                    eachReport.at.id === at.id &&
-                    eachReport.browser.id === browser.id
-                );
-            });
+        if (isRequired) requiredReports += 1;
 
-            let isRequired = false;
-            if (
-                testPlanVersion.phase === 'DRAFT' ||
-                testPlanVersion.phase === 'CANDIDATE'
-            ) {
-                isRequired = at.candidateBrowsers.some(candidateBrowser => {
-                    return candidateBrowser.id === browser.id;
-                });
-            } else if (testPlanVersion.phase === 'RECOMMENDED') {
-                isRequired = at.recommendedBrowsers.some(recommendedBrowser => {
-                    return recommendedBrowser.id === browser.id;
-                });
-            }
-            rowData.push({ report, at, browser, isRequired });
-        });
-    });
+        const key =
+            `${at.name}-${browser.name}-` +
+            `${minimumAtVersion?.id ?? exactAtVersion?.id}-` +
+            `${testPlanReport?.id ?? 'missing'}`;
 
-    // Sort by required then AT then browser
-    rowData.sort((a, b) => {
-        if (a.isRequired !== b.isRequired) return a.isRequired ? -1 : 1;
-        if (a.at.name !== b.at.name) return a.at.name.localeCompare(b.at.name);
-        return a.browser.name.localeCompare(b.browser.name);
-    });
-    const tableRows = rowData.map(({ report, at, browser, isRequired }) => {
         return (
-            <tr key={`${at.name}-${browser.name}`}>
+            <tr key={key}>
                 <td>{isRequired ? 'Yes' : 'No'}</td>
-                <td>{at.name}</td>
+                <td>
+                    <AtVersion
+                        at={at}
+                        minimumAtVersion={minimumAtVersion}
+                        exactAtVersion={exactAtVersion}
+                    />
+                </td>
                 <td>{browser.name}</td>
-                <td>{renderReportStatus({ report, at, browser })}</td>
+                <td>
+                    <ReportStatusSummary
+                        testPlanVersion={testPlanVersion}
+                        testPlanReport={testPlanReport}
+                    />
+                    {isSignedIn && isAdmin && !testPlanReport ? (
+                        <AddTestToQueueWithConfirmation
+                            at={at}
+                            minimumAtVersion={minimumAtVersion}
+                            exactAtVersion={exactAtVersion}
+                            browser={browser}
+                            testPlanVersion={testPlanVersion}
+                            triggerUpdate={triggerUpdate}
+                        />
+                    ) : null}
+                </td>
             </tr>
         );
     });
@@ -237,12 +154,8 @@ TestPlanReportStatusDialog.propTypes = {
         id: PropTypes.string.isRequired,
         title: PropTypes.string.isRequired,
         phase: PropTypes.string.isRequired,
-        testPlanReports: PropTypes.arrayOf(
+        testPlanReportStatuses: PropTypes.arrayOf(
             PropTypes.shape({
-                id: PropTypes.string.isRequired,
-                status: PropTypes.string,
-                runnableTests: PropTypes.arrayOf(PropTypes.object),
-                finalizedTestResults: PropTypes.arrayOf(PropTypes.object),
                 at: PropTypes.shape({
                     id: PropTypes.string.isRequired,
                     name: PropTypes.string.isRequired
@@ -250,32 +163,27 @@ TestPlanReportStatusDialog.propTypes = {
                 browser: PropTypes.shape({
                     id: PropTypes.string.isRequired,
                     name: PropTypes.string.isRequired
-                }).isRequired
+                }).isRequired,
+                minimumAtVersion: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    name: PropTypes.string.isRequired
+                }),
+                exactAtVersion: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    name: PropTypes.string.isRequired
+                }),
+                testPlanReport: PropTypes.shape({
+                    id: PropTypes.string.isRequired,
+                    status: PropTypes.string,
+                    runnableTests: PropTypes.arrayOf(PropTypes.object),
+                    finalizedTestResults: PropTypes.arrayOf(PropTypes.object)
+                })
             }).isRequired
         ).isRequired
     }).isRequired,
     handleHide: PropTypes.func.isRequired,
     triggerUpdate: PropTypes.func,
-    show: PropTypes.bool.isRequired,
-    ats: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
-            browsers: PropTypes.arrayOf(
-                PropTypes.shape({ id: PropTypes.string.isRequired }).isRequired
-            ).isRequired,
-            candidateBrowsers: PropTypes.arrayOf(
-                PropTypes.shape({
-                    id: PropTypes.string.isRequired
-                }).isRequired
-            ).isRequired,
-            recommendedBrowsers: PropTypes.arrayOf(
-                PropTypes.shape({
-                    id: PropTypes.string.isRequired
-                }).isRequired
-            ).isRequired
-        }).isRequired
-    ).isRequired
+    show: PropTypes.bool.isRequired
 };
 
 export default TestPlanReportStatusDialog;
