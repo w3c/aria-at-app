@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import TestPlanReportStatusDialog from './index';
-import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
+import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
 import styled from '@emotion/styled';
 import ReportStatusDot from '../common/ReportStatusDot';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from './queries';
@@ -25,7 +25,10 @@ const TestPlanReportStatusDialogButton = styled(Button)`
     margin-top: auto;
 `;
 
-const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
+const TestPlanReportStatusDialogWithButton = ({
+    testPlanVersionId,
+    triggerUpdate: refetchOther
+}) => {
     const {
         data: { testPlanVersion } = {},
         refetch,
@@ -52,7 +55,7 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
 
             if (testPlanReport) {
                 const percentComplete =
-                    calculateTestPlanReportCompletionPercentage(testPlanReport);
+                    calculatePercentComplete(testPlanReport);
 
                 if (percentComplete === 100 && testPlanReport.markedFinalAt) {
                     counts.completed += 1;
@@ -136,14 +139,18 @@ const TestPlanReportStatusDialogWithButton = ({ testPlanVersionId }) => {
                     setShowDialog(false);
                     buttonRef.current.focus();
                 }}
-                triggerUpdate={refetch}
+                triggerUpdate={async () => {
+                    await refetch();
+                    if (refetchOther) await refetchOther();
+                }}
             />
         </>
     );
 };
 
 TestPlanReportStatusDialogWithButton.propTypes = {
-    testPlanVersionId: PropTypes.string.isRequired
+    testPlanVersionId: PropTypes.string.isRequired,
+    triggerUpdate: PropTypes.func
 };
 
 export default TestPlanReportStatusDialogWithButton;

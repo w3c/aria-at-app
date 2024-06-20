@@ -14,6 +14,9 @@ import {
     SCHEDULE_COLLECTION_JOB_MUTATION,
     EXISTING_TEST_PLAN_REPORTS
 } from './queries';
+import { TEST_QUEUE_PAGE_QUERY } from '../TestQueue2/queries';
+import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
+import { ME_QUERY } from '../App/queries';
 
 function AddTestToQueueWithConfirmation({
     testPlanVersion,
@@ -29,8 +32,27 @@ function AddTestToQueueWithConfirmation({
         useState(false);
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [canUseOldResults, setCanUseOldResults] = useState(false);
-    const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION);
-    const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION);
+
+    const [addTestPlanReport] = useMutation(ADD_TEST_QUEUE_MUTATION, {
+        refetchQueries: [
+            ME_QUERY,
+            EXISTING_TEST_PLAN_REPORTS,
+            TEST_QUEUE_PAGE_QUERY,
+            TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
+        ],
+        awaitRefetchQueries: true
+    });
+
+    const [scheduleCollection] = useMutation(SCHEDULE_COLLECTION_JOB_MUTATION, {
+        refetchQueries: [
+            ME_QUERY,
+            EXISTING_TEST_PLAN_REPORTS,
+            TEST_QUEUE_PAGE_QUERY,
+            TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
+        ],
+        awaitRefetchQueries: true
+    });
+
     const { data: existingTestPlanReportsData } = useQuery(
         EXISTING_TEST_PLAN_REPORTS,
         {
@@ -49,13 +71,23 @@ function AddTestToQueueWithConfirmation({
     let latestOldVersion;
     let oldReportToCopyResultsFrom;
 
-    // Check if any results data available from a previous result
-    if (existingTestPlanReportsData?.oldTestPlanVersions?.length) {
-        latestOldVersion =
-            existingTestPlanReportsData?.oldTestPlanVersions?.reduce((a, b) =>
-                new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b
-            );
+    // Check if any results data available from a previous result using the
+    // same testFormatVersion
+    const oldTestPlanVersions =
+        existingTestPlanReportsData?.oldTestPlanVersions?.filter(
+            ({ metadata }) => {
+                return (
+                    metadata.testFormatVersion ===
+                    existingTestPlanReportsData?.existingTestPlanVersion
+                        ?.metadata.testFormatVersion
+                );
+            }
+        ) || [];
 
+    if (oldTestPlanVersions?.length) {
+        latestOldVersion = oldTestPlanVersions?.reduce((a, b) =>
+            new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b
+        );
         if (
             new Date(latestOldVersion?.updatedAt) <
             new Date(testPlanVersion?.updatedAt)
@@ -122,23 +154,8 @@ function AddTestToQueueWithConfirmation({
             actions.push({
                 label: 'Add and run later',
                 onClick: async () => {
-                    await addTestToQueue(
-                        canUseOldResults
-                            ? {
-                                  copyResultsFromTestPlanVersionId:
-                                      latestOldVersion.id
-                              }
-                            : {}
-                    );
-                    await closeWithUpdate();
-                }
-            });
-
-            if (!alreadyHasBotInTestPlanReport) {
-                actions.push({
-                    label: 'Add and run with bot',
-                    onClick: async () => {
-                        const testPlanReport = await addTestToQueue(
+                    try {
+                        await addTestToQueue(
                             canUseOldResults
                                 ? {
                                       copyResultsFromTestPlanVersionId:
@@ -146,8 +163,31 @@ function AddTestToQueueWithConfirmation({
                                   }
                                 : {}
                         );
-                        await scheduleCollectionJob(testPlanReport);
                         await closeWithUpdate();
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+            });
+
+            if (!alreadyHasBotInTestPlanReport) {
+                actions.push({
+                    label: 'Add and run with bot',
+                    onClick: async () => {
+                        try {
+                            const testPlanReport = await addTestToQueue(
+                                canUseOldResults
+                                    ? {
+                                          copyResultsFromTestPlanVersionId:
+                                              latestOldVersion.id
+                                      }
+                                    : {}
+                            );
+                            await scheduleCollectionJob(testPlanReport);
+                            await closeWithUpdate();
+                        } catch (e) {
+                            console.error(e);
+                        }
                     }
                 });
             }

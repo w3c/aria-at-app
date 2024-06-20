@@ -1,41 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import { calculateTestPlanReportCompletionPercentage } from './calculateTestPlanReportCompletionPercentage';
-import { convertDateToString } from '../../utils/formatter';
 import { ThemeTable } from '../common/ThemeTable';
 import BasicModal from '../common/BasicModal';
 import './TestPlanReportStatusDialog.css';
-
-const IncompleteStatusReport = styled.span`
-    min-width: 5rem;
-    display: inline-block;
-`;
-
-const AtInner = styled.div`
-    display: inline-block;
-    flex-wrap: wrap;
-    background: #f5f5f5;
-    border-radius: 4px;
-    padding: 0 5px;
-    font-weight: bold;
-
-    & :last-of-type {
-        margin-left: 6px;
-        font-weight: initial;
-    }
-`;
-
-const VersionBox = styled.span`
-    /* font-size: 15px;
-    color: #4a4a4a;
-    top: 1px;
-    position: relative; */
-`;
+import ReportStatusSummary from '../common/ReportStatusSummary';
+import { AtVersion } from '../common/AtBrowserVersion';
 
 const TestPlanReportStatusDialog = ({
     testPlanVersion,
@@ -47,87 +20,10 @@ const TestPlanReportStatusDialog = ({
         fetchPolicy: 'cache-and-network'
     });
 
-    const { testPlanReportStatuses } = testPlanVersion;
-
-    const auth = evaluateAuth(me ?? {});
+    const auth = evaluateAuth(me);
     const { isSignedIn, isAdmin } = auth;
 
-    const renderCompleteReportStatus = testPlanReport => {
-        const formattedDate = convertDateToString(
-            testPlanReport.markedFinalAt,
-            'MMM D, YYYY'
-        );
-        return (
-            <a
-                href={`/report/${testPlanVersion.id}/targets/${testPlanReport.id}`}
-            >
-                Report completed on <strong>{formattedDate}</strong>
-            </a>
-        );
-    };
-
-    const renderPartialCompleteReportStatus = testPlanReport => {
-        const { metrics, draftTestPlanRuns } = testPlanReport;
-        const conflictsCount = metrics.conflictsCount ?? 0;
-        const percentComplete =
-            calculateTestPlanReportCompletionPercentage(testPlanReport);
-        switch (draftTestPlanRuns?.length) {
-            case 0:
-                return <span>In test queue with no testers assigned.</span>;
-            case 1:
-                return (
-                    <span>
-                        {percentComplete}% complete by&nbsp;
-                        <a
-                            href={`https://github.com/${draftTestPlanRuns[0].tester.username}`}
-                        >
-                            {draftTestPlanRuns[0].tester.username}
-                        </a>
-                        &nbsp;with {conflictsCount} conflicts
-                    </span>
-                );
-            default:
-                return (
-                    <span>
-                        {percentComplete}% complete by&nbsp;
-                        {draftTestPlanRuns.length} testers with {conflictsCount}
-                        &nbsp;conflicts
-                    </span>
-                );
-        }
-    };
-
-    const renderReportStatus = ({
-        testPlanReport,
-        at,
-        browser,
-        minimumAtVersion,
-        exactAtVersion
-    }) => {
-        if (testPlanReport) {
-            const { markedFinalAt } = testPlanReport;
-            if (markedFinalAt) {
-                return renderCompleteReportStatus(testPlanReport);
-            } else {
-                return renderPartialCompleteReportStatus(testPlanReport);
-            }
-        }
-        return (
-            <>
-                <IncompleteStatusReport>Missing</IncompleteStatusReport>
-                {isSignedIn && isAdmin ? (
-                    <AddTestToQueueWithConfirmation
-                        at={at}
-                        minimumAtVersion={minimumAtVersion}
-                        exactAtVersion={exactAtVersion}
-                        browser={browser}
-                        testPlanVersion={testPlanVersion}
-                        triggerUpdate={triggerUpdate}
-                    />
-                ) : null}
-            </>
-        );
-    };
+    const { testPlanReportStatuses } = testPlanVersion;
 
     let requiredReports = 0;
 
@@ -148,28 +44,32 @@ const TestPlanReportStatusDialog = ({
             `${minimumAtVersion?.id ?? exactAtVersion?.id}-` +
             `${testPlanReport?.id ?? 'missing'}`;
 
-        const atVersionFormatted = minimumAtVersion
-            ? `${minimumAtVersion.name} or later`
-            : exactAtVersion.name;
-
         return (
             <tr key={key}>
                 <td>{isRequired ? 'Yes' : 'No'}</td>
                 <td>
-                    <AtInner>
-                        {at.name}
-                        <VersionBox>{atVersionFormatted}</VersionBox>
-                    </AtInner>
+                    <AtVersion
+                        at={at}
+                        minimumAtVersion={minimumAtVersion}
+                        exactAtVersion={exactAtVersion}
+                    />
                 </td>
                 <td>{browser.name}</td>
                 <td>
-                    {renderReportStatus({
-                        testPlanReport,
-                        at,
-                        browser,
-                        minimumAtVersion,
-                        exactAtVersion
-                    })}
+                    <ReportStatusSummary
+                        testPlanVersion={testPlanVersion}
+                        testPlanReport={testPlanReport}
+                    />
+                    {isSignedIn && isAdmin && !testPlanReport ? (
+                        <AddTestToQueueWithConfirmation
+                            at={at}
+                            minimumAtVersion={minimumAtVersion}
+                            exactAtVersion={exactAtVersion}
+                            browser={browser}
+                            testPlanVersion={testPlanVersion}
+                            triggerUpdate={triggerUpdate}
+                        />
+                    ) : null}
                 </td>
             </tr>
         );

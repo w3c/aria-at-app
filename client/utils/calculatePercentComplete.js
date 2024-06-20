@@ -1,7 +1,4 @@
-export const calculateTestPlanReportCompletionPercentage = ({
-    metrics,
-    draftTestPlanRuns
-}) => {
+export const calculatePercentComplete = ({ metrics, draftTestPlanRuns }) => {
     if (!metrics || !draftTestPlanRuns) return 0;
     const assignedUserCount = draftTestPlanRuns.length || 1;
     const totalTestsPossible = metrics.testsCount * assignedUserCount;

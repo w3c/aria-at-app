@@ -19,6 +19,23 @@ const FullHeightContainer = styled(Container)`
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
     const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
+
+    // Sort the test plan reports alphabetically by AT name first, then browser
+    const sortedTestPlanReports = testPlanReports.slice().sort((a, b) => {
+        const atNameA = a.at.name.toLowerCase();
+        const atNameB = b.at.name.toLowerCase();
+        const browserNameA = a.browser.name.toLowerCase();
+        const browserNameB = b.browser.name.toLowerCase();
+
+        if (atNameA < atNameB) return -1;
+        if (atNameA > atNameB) return 1;
+
+        if (browserNameA < browserNameB) return -1;
+        if (browserNameA > browserNameB) return 1;
+
+        return 0;
+    });
+
     return (
         <FullHeightContainer id="main" as="main" tabIndex="-1">
             <Helmet>
@@ -80,7 +97,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 ) : null}
             </ul>
 
-            {testPlanReports.map(testPlanReport => {
+            {sortedTestPlanReports.map(testPlanReport => {
                 if (testPlanReport.status === 'DRAFT') return null;
                 const overallMetrics = getMetrics({ testPlanReport });
 

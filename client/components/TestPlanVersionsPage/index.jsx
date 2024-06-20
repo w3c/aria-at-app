@@ -21,6 +21,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DisclosureComponentUnstyled from '../common/DisclosureComponent';
+import useForceUpdate from '../../hooks/useForceUpdate';
 
 const DisclosureContainer = styled.div`
     .timeline-for-version-table {
@@ -29,9 +30,7 @@ const DisclosureContainer = styled.div`
 `;
 
 const DisclosureComponent = styled(DisclosureComponentUnstyled)`
-    & h2 {
-        padding: 0;
-        margin: 0;
+    h2 {
         font-size: 1.25em;
 
         button {
@@ -76,13 +75,6 @@ const CoveredAtDl = styled.dl`
 const ThemeTableHeader = styled(UnstyledThemeTableHeader)`
     margin: 0 !important;
 `;
-
-// https://stackoverflow.com/a/53215514
-const useForceUpdate = () => {
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
-    return forceUpdate;
-};
 
 const TestPlanVersionsPage = () => {
     const { testPlanDirectory } = useParams();
@@ -550,7 +542,6 @@ const TestPlanVersionsPage = () => {
                             )} on ${getEventDate(testPlanVersion)}`}
                         >
                             <VersionString
-                                circleCheckIcon={false}
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}

@@ -30,6 +30,7 @@ a:focus-visible {
 details {
     margin-bottom: 1em;
 }
+
 details summary:focus-visible {
     outline-offset: -2px;
     outline: 2px solid #3a86d1;
@@ -97,7 +98,6 @@ details > summary > h4 {
     position: relative;
     padding-left: var(--left-right-padding);
     padding-right: var(--left-right-padding);
-
     font-family: Arial, Helvetica, sans-serif;
     font-size: 1em;
     color: #60470c;

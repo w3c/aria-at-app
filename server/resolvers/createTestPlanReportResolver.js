@@ -34,7 +34,7 @@ const createTestPlanReportResolver = async (_, { input }, context) => {
             context
         });
 
-        if (updatedTestPlanReports) {
+        if (updatedTestPlanReports?.length) {
             // Expecting only to get back the single requested combination
             testPlanReport = updatedTestPlanReports[0];
         } else {

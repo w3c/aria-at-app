@@ -9,12 +9,10 @@ const DisclosureParent = styled.div`
     border-radius: 3px;
     width: 100%;
 
-    h1 {
-        margin: 0;
-        padding: 0;
-    }
-
-    h3 {
+    h1,
+    h2,
+    h3,
+    h4 {
         margin: 0;
         padding: 0;
     }
@@ -34,7 +32,7 @@ const DisclosureButton = styled.button`
     position: relative;
     width: 100%;
     margin: 0;
-    padding: 1.25rem;
+    padding: 1.25rem 40px 1.25rem 1.25rem;
     text-align: left;
     font-size: 1rem;
     font-weight: bold;
@@ -99,6 +97,10 @@ const DisclosureComponent = ({
                 <DisclosureParent stacked className={className}>
                     {title.map((_, index) => {
                         const buttonTitle = title[index];
+                        const labelTitle =
+                            typeof buttonTitle === 'string'
+                                ? buttonTitle
+                                : index;
                         const buttonExpanded = expanded[index];
                         const buttonOnClick = onClick[index];
                         const buttonDisclosureContainerView =
@@ -108,10 +110,10 @@ const DisclosureComponent = ({
                             <Fragment key={`disclosure-${index}-key`}>
                                 <Tag>
                                     <DisclosureButton
-                                        id={`disclosure-btn-${componentId}-${buttonTitle}`}
+                                        id={`disclosure-btn-${componentId}-${labelTitle}`}
                                         type="button"
                                         aria-expanded={buttonExpanded}
-                                        aria-controls={`disclosure-btn-controls-${componentId}-${buttonTitle}`}
+                                        aria-controls={`disclosure-btn-controls-${componentId}-${labelTitle}`}
                                         onClick={buttonOnClick}
                                         stacked
                                     >
@@ -128,8 +130,8 @@ const DisclosureComponent = ({
                                 </Tag>
                                 <DisclosureContainer
                                     role="region"
-                                    id={`disclosure-container-${componentId}-${buttonTitle}`}
-                                    aria-labelledby={`disclosure-btn-${componentId}-${buttonTitle}`}
+                                    id={`disclosure-container-${componentId}-${labelTitle}`}
+                                    aria-labelledby={`disclosure-btn-${componentId}-${labelTitle}`}
                                     show={buttonExpanded}
                                     stacked
                                 >
