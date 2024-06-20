@@ -59,7 +59,7 @@ const TextThatWontShiftWhenBold = ({ isBold, children: text }) => {
         <span style={{ position: 'relative' }}>
             <span
                 style={{
-                    position: 'fixed',
+                    position: 'absolute',
                     fontWeight: isBold ? 'bold' : 'normal'
                 }}
             >
