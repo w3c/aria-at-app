@@ -1390,9 +1390,24 @@ const TestRun = () => {
                         isAdmin={isAdminReviewer}
                         atName={testPlanReport.at.name}
                         atVersion={currentTest.testResult?.atVersion?.name}
-                        atVersions={testPlanReport.at.atVersions.map(
-                            item => item.name
-                        )}
+                        atVersions={testPlanReport.at.atVersions
+                            .filter(item => {
+                                // Only provide at version options that released
+                                // at the same time or later than the minimum
+                                // AT version
+                                let earliestReleasedAt = null;
+                                if (testPlanReport.minimumAtVersion) {
+                                    earliestReleasedAt = new Date(
+                                        testPlanReport.minimumAtVersion.releasedAt
+                                    );
+                                    return (
+                                        new Date(item.releasedAt) >=
+                                        earliestReleasedAt
+                                    );
+                                }
+                                return item;
+                            })
+                            .map(item => item.name)}
                         browserName={testPlanReport.browser.name}
                         browserVersion={
                             currentTest.testResult?.browserVersion?.name
@@ -1402,6 +1417,7 @@ const TestRun = () => {
                         )}
                         patternName={testPlanVersion.title}
                         testerName={tester.username}
+                        exactAtVersion={testPlanReport.exactAtVersion}
                         handleAction={handleAtAndBrowserDetailsModalAction}
                         handleClose={handleAtAndBrowserDetailsModalCloseAction}
                     />
