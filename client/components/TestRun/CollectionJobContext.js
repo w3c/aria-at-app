@@ -12,10 +12,19 @@ export const Context = createContext({
     actions: {}
 });
 
-export const Provider = ({
-    children,
-    testPlanRun: { id: testPlanRunId, collectionJob: initialCollectionJob }
-}) => {
+export const Provider = ({ children, testPlanRun }) => {
+    if (!testPlanRun) {
+        // Anonymous page / not working, just viewing the tests, no need for the
+        // provider to provide any data or updates, but to be consistent we will
+        // still wrap with a provider with static data
+        return (
+            <Context.Provider value={{ state: {}, actions: {} }}>
+                {children}
+            </Context.Provider>
+        );
+    }
+    const { id: testPlanRunId, collectionJob: initialCollectionJob } =
+        testPlanRun;
     const [providerValue, setProviderValue] = useState({
         state: { collectionJob: initialCollectionJob },
         actions: {}
@@ -60,5 +69,5 @@ Provider.propTypes = {
             status: PropTypes.string.isRequired,
             testStatus: PropTypes.arrayOf(PropTypes.object).isRequired
         })
-    }).isRequired
+    })
 };

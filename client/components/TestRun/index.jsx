@@ -955,7 +955,7 @@ const TestRun = () => {
             ];
         }
 
-        const externalLogsUrl = testPlanRun.collectionJob?.externalLogsUrl;
+        const externalLogsUrl = testPlanRun?.collectionJob?.externalLogsUrl;
 
         const menuRightOfContent = (
             <div role="complementary">
