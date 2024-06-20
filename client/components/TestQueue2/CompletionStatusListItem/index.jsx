@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
-import BotTestCompletionStatus from '@components/TestQueue2/CompletionStatusListItem/BotTestCompletionStatus';
-import PreviouslyAutomatedTestCompletionStatus from '@components/TestQueue2/CompletionStatusListItem/PreviouslyAutomatedTestCompletionStatus';
+import BotTestCompletionStatus from '@components/TestQueueCompletionStatusListItem/BotTestCompletionStatus';
+import PreviouslyAutomatedTestCompletionStatus from '@components/TestQueueCompletionStatusListItem/PreviouslyAutomatedTestCompletionStatus';
 
 const CompletionStatusListItem = ({
     rowId,
@@ -32,6 +32,7 @@ const CompletionStatusListItem = ({
                 id={`BotTestCompletionStatus_${rowId}`}
                 testPlanRun={testPlanRun}
                 runnableTestsLength={testPlanReport.runnableTestsLength}
+                fromTestQueueV2
             />
         );
     } else {
@@ -50,6 +51,7 @@ const CompletionStatusListItem = ({
                 id={`PreviouslyAutomatedTestCompletionStatus_${rowId}`}
                 testPlanRunId={testPlanRun.id}
                 runnableTestsLength={testPlanReport.runnableTestsLength}
+                fromTestQueueV2
             />
         ) : (
             <em>

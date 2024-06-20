@@ -20,7 +20,7 @@ import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
 import ProgressBar from '../common/ClippedProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
-import BotRunTestStatusList from './BotRunTestStatusList';
+import BotRunTestStatusList from '../BotRunTestStatusList';
 
 const DisclosureComponent = styled(DisclosureComponentUnstyled)`
     h3 {
@@ -350,6 +350,7 @@ const TestQueue = () => {
                         {hasBotRun ? (
                             <BotRunTestStatusList
                                 testPlanReportId={testPlanReport.id}
+                                fromTestQueueV2
                             />
                         ) : null}
                     </StatusContainer>
