@@ -129,7 +129,7 @@ const Actions = ({
                 </>
             );
         } else {
-            // Multiple tester's results to choose from
+            // Multiple testers runs to choose from
             title = 'Select Primary Test Plan Run';
             content = (
                 <>
