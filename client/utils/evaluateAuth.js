@@ -9,21 +9,23 @@
  * @param {string[]} data.roles - currently logged in user's assigned roles
  * @returns {Auth} - evaluated auth object
  */
-export const evaluateAuth = (data = {}) => {
-  const roles = data.roles || [];
+export const evaluateAuth = user => {
+    if (!user) user = {};
 
-  return {
-    // calculated booleans
-    isAdmin: roles.includes('ADMIN'),
-    isTester: roles.includes('TESTER'),
-    isVendor: roles.includes('VENDOR'),
-    isSignedIn: !!data.username,
+    let roles = user.roles ?? [];
 
-    // user object values
-    id: data.id || null,
-    username: data.username || null,
-    roles
-  };
+    return {
+        // calculated booleans
+        isAdmin: roles.includes('ADMIN'),
+        isTester: roles.includes('TESTER'),
+        isVendor: roles.includes('VENDOR'),
+        isSignedIn: !!user.username,
+
+        // user object values
+        id: user.id ?? null,
+        username: user.username ?? null,
+        roles
+    };
 };
 
 /**

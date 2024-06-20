@@ -390,6 +390,14 @@ const removeAtVersionById = async ({ id, truncate = false, transaction }) => {
   });
 };
 
+/**
+ * Returns all the unique AT Versions used when collecting results from testers
+ * for a Test Plan Report
+ * @param {number} testPlanReportId - id of the test plan report
+ * @param {object} options
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
 const getUniqueAtVersionsForReport = async (
   testPlanReportId,
   { transaction }

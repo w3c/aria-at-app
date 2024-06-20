@@ -6,9 +6,9 @@ import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Container } from 'react-bootstrap';
 import {
-  ThemeTable,
-  ThemeTableUnavailable,
-  ThemeTableHeaderH3 as UnstyledThemeTableHeader
+    ThemeTable,
+    ThemeTableUnavailable,
+    ThemeTableHeaderH3 as UnstyledThemeTableHeader
 } from '../common/ThemeTable';
 import VersionString from '../common/VersionString';
 import PhasePill from '../common/PhasePill';
@@ -16,687 +16,710 @@ import { convertDateToString } from '../../utils/formatter';
 import { derivePhaseName } from '../../utils/aria';
 import styled from '@emotion/styled';
 import {
-  faArrowUpRightFromSquare,
-  faCodeCommit
+    faArrowUpRightFromSquare,
+    faCodeCommit
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DisclosureComponentUnstyled from '../common/DisclosureComponent';
+import useForceUpdate from '../../hooks/useForceUpdate';
 
 const DisclosureContainer = styled.div`
-  // Following directives are related to the ManageTestQueue component
-  > span {
-    display: block;
-    margin-bottom: 1rem;
-  }
-
-  // Add Test Plan to Test Queue button
-  > button {
-    display: flex;
-    padding: 0.5rem 1rem;
-    margin-top: 1rem;
-    margin-left: auto;
-    margin-right: 0;
-  }
-
-  .disclosure-row-manage-ats {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-gap: 1rem;
-
-    .ats-container {
-      grid-column: 1 / span 2;
+    .timeline-for-version-table {
+        padding: 0.5rem 1rem;
     }
-
-    .at-versions-container {
-      display: flex;
-      flex-direction: column;
-      grid-column: 3 / span 3;
-    }
-
-    .disclosure-buttons-row {
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-start;
-
-      > button {
-        margin: 0;
-        padding: 0;
-        color: #275caa;
-        border: none;
-        background-color: transparent;
-
-        &:nth-of-type(2) {
-          margin-left: auto;
-        }
-
-        // remove button
-        &:nth-of-type(3) {
-          margin-left: 1rem;
-          color: #ce1b4c;
-        }
-      }
-    }
-  }
-
-  .disclosure-row-test-plans {
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-gap: 1rem;
-  }
-
-  .disclosure-form-label {
-    font-weight: bold;
-    font-size: 1rem;
-  }
-
-  .timeline-for-version-table {
-    padding: 0.5rem 1rem;
-  }
 `;
 
 const DisclosureComponent = styled(DisclosureComponentUnstyled)`
-  & h2 {
-    padding: 0;
-    margin: 0;
-    font-size: 1.25em;
+    h2 {
+        font-size: 1.25em;
 
-    button {
-      font-size: unset;
-      font-weight: unset;
+        button {
+            font-size: unset;
+            font-weight: unset;
+        }
     }
-  }
 `;
 
 const NoneText = styled.span`
-  font-style: italic;
-  color: #6a7989;
+    font-style: italic;
+    color: #6a7989;
 `;
 
 const PageCommitHistory = styled.div`
-  padding: 1.5rem 0 1.5rem;
+    padding: 1.5rem 0 1.5rem;
 `;
 
 const PageUl = styled.ul`
-  margin-bottom: 2rem;
+    margin-bottom: 2rem;
 
-  li:not(:last-of-type) {
-    margin-bottom: 8px;
-  }
+    li:not(:last-of-type) {
+        margin-bottom: 8px;
+    }
 `;
 
 const PageSpacer = styled.div`
-  height: 3rem;
+    height: 3rem;
 `;
 
 const CoveredAtDl = styled.dl`
-  margin-bottom: 2rem;
+    margin-bottom: 2rem;
 
-  dt {
-    margin-bottom: 8px;
-  }
-  li:not(:last-of-type) {
-    margin-bottom: 8px;
-  }
+    dt {
+        margin-bottom: 8px;
+    }
+    li:not(:last-of-type) {
+        margin-bottom: 8px;
+    }
 `;
 
 const ThemeTableHeader = styled(UnstyledThemeTableHeader)`
-  margin: 0 !important;
+    margin: 0 !important;
 `;
 
-// https://stackoverflow.com/a/53215514
-const useForceUpdate = () => {
-  const [, updateState] = React.useState();
-  const forceUpdate = React.useCallback(() => updateState({}), []);
-  return forceUpdate;
-};
-
 const TestPlanVersionsPage = () => {
-  const { testPlanDirectory } = useParams();
+    const { testPlanDirectory } = useParams();
 
-  const { loading, data, error } = useQuery(TEST_PLAN_VERSIONS_PAGE_QUERY, {
-    variables: { testPlanDirectory },
-    fetchPolicy: 'cache-and-network'
-  });
-  const forceUpdate = useForceUpdate();
+    const { loading, data, error } = useQuery(TEST_PLAN_VERSIONS_PAGE_QUERY, {
+        variables: { testPlanDirectory },
+        fetchPolicy: 'cache-and-network'
+    });
+    const forceUpdate = useForceUpdate();
 
-  const expandedVersionSections = useRef();
-  const toggleVersionSections = useRef();
+    const expandedVersionSections = useRef();
+    const toggleVersionSections = useRef();
 
-  if (error) {
-    return (
-      <PageStatus
-        title="Test Plan Versions | ARIA-AT"
-        heading="Test Plan Versions"
-        message={error.message}
-        isError
-      />
-    );
-  }
-
-  if (loading) {
-    return (
-      <PageStatus
-        title="Loading - Test Plan Versions | ARIA-AT"
-        heading="Test Plan Versions"
-      />
-    );
-  }
-
-  if (!data) return null;
-
-  const getPhaseChangeDate = testPlanVersion => {
-    let date;
-    switch (testPlanVersion.phase) {
-      case 'DRAFT':
-        date = testPlanVersion.draftPhaseReachedAt;
-        break;
-      case 'CANDIDATE':
-        date = testPlanVersion.candidatePhaseReachedAt;
-        break;
-      case 'RECOMMENDED':
-        date = testPlanVersion.recommendedPhaseReachedAt;
-        break;
-      case 'RD':
-        date = testPlanVersion.updatedAt;
-        break;
-      case 'DEPRECATED':
-        date = testPlanVersion.deprecatedAt;
-        break;
-      default:
-        throw new Error('Unexpected case');
+    if (error) {
+        return (
+            <PageStatus
+                title="Test Plan Versions | ARIA-AT"
+                heading="Test Plan Versions"
+                message={error.message}
+                isError
+            />
+        );
     }
-    return convertDateToString(date, 'MMM D, YYYY');
-  };
 
-  const getIconColor = testPlanVersion => {
-    return testPlanVersion.phase === 'DEPRECATED' ||
-      testPlanVersion.phase === 'RD'
-      ? '#818F98'
-      : '#2BA51C';
-  };
+    if (loading) {
+        return (
+            <PageStatus
+                title="Loading - Test Plan Versions | ARIA-AT"
+                heading="Test Plan Versions"
+            />
+        );
+    }
 
-  const getEventDate = testPlanVersion => {
-    return convertDateToString(
-      (() => {
-        if (testPlanVersion.deprecatedAt) {
-          return testPlanVersion.deprecatedAt;
-        }
+    if (!data) return null;
+
+    const getPhaseChangeDate = testPlanVersion => {
+        let date;
         switch (testPlanVersion.phase) {
-          case 'RD':
-            return testPlanVersion.updatedAt;
-          case 'DRAFT':
-            return testPlanVersion.draftPhaseReachedAt;
-          case 'CANDIDATE':
-            return testPlanVersion.candidatePhaseReachedAt;
-          case 'RECOMMENDED':
-            return testPlanVersion.recommendedPhaseReachedAt;
-          case 'DEPRECATED':
-            return testPlanVersion.deprecatedAt;
+            case 'DRAFT':
+                date = testPlanVersion.draftPhaseReachedAt;
+                break;
+            case 'CANDIDATE':
+                date = testPlanVersion.candidatePhaseReachedAt;
+                break;
+            case 'RECOMMENDED':
+                date = testPlanVersion.recommendedPhaseReachedAt;
+                break;
+            case 'RD':
+                date = testPlanVersion.updatedAt;
+                break;
+            case 'DEPRECATED':
+                date = testPlanVersion.deprecatedAt;
+                break;
+            default:
+                throw new Error('Unexpected case');
         }
-      })(),
-      'MMM D, YYYY'
-    );
-  };
+        return convertDateToString(date, 'MMM D, YYYY');
+    };
 
-  const getEventBody = phase => {
-    const phasePill = <PhasePill fullWidth={false}>{phase}</PhasePill>;
+    const getIconColor = testPlanVersion => {
+        return testPlanVersion.phase === 'DEPRECATED' ||
+            testPlanVersion.phase === 'RD'
+            ? '#818F98'
+            : '#2BA51C';
+    };
 
-    switch (phase) {
-      case 'RD':
-        return <>{phasePill} Complete</>;
-      case 'DRAFT':
-      case 'CANDIDATE':
-        return <>{phasePill} Review Started</>;
-      case 'RECOMMENDED':
-        return <>{phasePill} Approved</>;
-      case 'DEPRECATED':
-        return <>{phasePill}</>;
-    }
-  };
+    const getEventDate = testPlanVersion => {
+        return convertDateToString(
+            (() => {
+                if (testPlanVersion.deprecatedAt) {
+                    return testPlanVersion.deprecatedAt;
+                }
+                switch (testPlanVersion.phase) {
+                    case 'RD':
+                        return testPlanVersion.updatedAt;
+                    case 'DRAFT':
+                        return testPlanVersion.draftPhaseReachedAt;
+                    case 'CANDIDATE':
+                        return testPlanVersion.candidatePhaseReachedAt;
+                    case 'RECOMMENDED':
+                        return testPlanVersion.recommendedPhaseReachedAt;
+                    case 'DEPRECATED':
+                        return testPlanVersion.deprecatedAt;
+                }
+            })(),
+            'MMM D, YYYY'
+        );
+    };
 
-  const deriveDeprecatedDuringPhase = testPlanVersion => {
-    let derivedPhaseDeprecatedDuring = 'RD';
-    if (testPlanVersion.recommendedPhaseReachedAt)
-      derivedPhaseDeprecatedDuring = 'RECOMMENDED';
-    else if (testPlanVersion.candidatePhaseReachedAt)
-      derivedPhaseDeprecatedDuring = 'CANDIDATE';
-    else if (testPlanVersion.draftPhaseReachedAt)
-      derivedPhaseDeprecatedDuring = 'DRAFT';
+    const getEventBody = phase => {
+        const phasePill = <PhasePill fullWidth={false}>{phase}</PhasePill>;
 
-    return derivedPhaseDeprecatedDuring;
-  };
+        switch (phase) {
+            case 'RD':
+                return <>{phasePill} Complete</>;
+            case 'DRAFT':
+            case 'CANDIDATE':
+                return <>{phasePill} Review Started</>;
+            case 'RECOMMENDED':
+                return <>{phasePill} Approved</>;
+            case 'DEPRECATED':
+                return <>{phasePill}</>;
+        }
+    };
 
-  const testPlan = data.testPlan;
+    const deriveDeprecatedDuringPhase = testPlanVersion => {
+        let derivedPhaseDeprecatedDuring = 'RD';
+        if (testPlanVersion.recommendedPhaseReachedAt)
+            derivedPhaseDeprecatedDuring = 'RECOMMENDED';
+        else if (testPlanVersion.candidatePhaseReachedAt)
+            derivedPhaseDeprecatedDuring = 'CANDIDATE';
+        else if (testPlanVersion.draftPhaseReachedAt)
+            derivedPhaseDeprecatedDuring = 'DRAFT';
 
-  // GraphQL results are read only so they need to be cloned before sorting
-  const issues = [...testPlan.issues].sort((a, b) => {
-    const aCreatedAt = new Date(a.createdAt);
-    const bCreatedAt = new Date(b.createdAt);
-    return bCreatedAt - aCreatedAt;
-  });
+        return derivedPhaseDeprecatedDuring;
+    };
 
-  const ats = data.ats;
+    const testPlan = data.testPlan;
 
-  const testPlanVersions = data.testPlan.testPlanVersions
-    .slice()
-    .sort((a, b) => {
-      return new Date(b.updatedAt) - new Date(a.updatedAt);
+    // GraphQL results are read only so they need to be cloned before sorting
+    const issues = [...testPlan.issues].sort((a, b) => {
+        const aCreatedAt = new Date(a.createdAt);
+        const bCreatedAt = new Date(b.createdAt);
+        return bCreatedAt - aCreatedAt;
     });
 
-  const timelineForAllVersions = [];
+    const ats = data.ats;
 
-  testPlanVersions.forEach(testPlanVersion => {
-    const event = {
-      id: testPlanVersion.id,
-      updatedAt: testPlanVersion.updatedAt,
-      versionString: testPlanVersion.versionString
+    const testPlanVersions = data.testPlan.testPlanVersions
+        .slice()
+        .sort((a, b) => {
+            return new Date(b.updatedAt) - new Date(a.updatedAt);
+        });
+
+    const timelineForAllVersions = [];
+
+    testPlanVersions.forEach(testPlanVersion => {
+        const event = {
+            id: testPlanVersion.id,
+            updatedAt: testPlanVersion.updatedAt,
+            versionString: testPlanVersion.versionString
+        };
+        timelineForAllVersions.push({ ...event, phase: 'RD' });
+
+        if (testPlanVersion.draftPhaseReachedAt)
+            timelineForAllVersions.push({
+                ...event,
+                phase: 'DRAFT',
+                draftPhaseReachedAt: testPlanVersion.draftPhaseReachedAt
+            });
+        if (testPlanVersion.candidatePhaseReachedAt)
+            timelineForAllVersions.push({
+                ...event,
+                phase: 'CANDIDATE',
+                candidatePhaseReachedAt: testPlanVersion.candidatePhaseReachedAt
+            });
+        if (testPlanVersion.recommendedPhaseReachedAt)
+            timelineForAllVersions.push({
+                ...event,
+                phase: 'RECOMMENDED',
+                recommendedPhaseReachedAt:
+                    testPlanVersion.recommendedPhaseReachedAt
+            });
+        if (testPlanVersion.deprecatedAt)
+            timelineForAllVersions.push({
+                ...event,
+                phase: 'DEPRECATED',
+                deprecatedAt: testPlanVersion.deprecatedAt
+            });
+    });
+
+    const phaseOrder = {
+        RD: 0,
+        DRAFT: 1,
+        CANDIDATE: 2,
+        RECOMMENDED: 3,
+        DEPRECATED: 4
     };
-    timelineForAllVersions.push({ ...event, phase: 'RD' });
 
-    if (testPlanVersion.draftPhaseReachedAt)
-      timelineForAllVersions.push({
-        ...event,
-        phase: 'DRAFT',
-        draftPhaseReachedAt: testPlanVersion.draftPhaseReachedAt
-      });
-    if (testPlanVersion.candidatePhaseReachedAt)
-      timelineForAllVersions.push({
-        ...event,
-        phase: 'CANDIDATE',
-        candidatePhaseReachedAt: testPlanVersion.candidatePhaseReachedAt
-      });
-    if (testPlanVersion.recommendedPhaseReachedAt)
-      timelineForAllVersions.push({
-        ...event,
-        phase: 'RECOMMENDED',
-        recommendedPhaseReachedAt: testPlanVersion.recommendedPhaseReachedAt
-      });
-    if (testPlanVersion.deprecatedAt)
-      timelineForAllVersions.push({
-        ...event,
-        phase: 'DEPRECATED',
-        deprecatedAt: testPlanVersion.deprecatedAt
-      });
-  });
+    timelineForAllVersions.sort((a, b) => {
+        const dateA =
+            a.recommendedPhaseReachedAt ||
+            a.candidatePhaseReachedAt ||
+            a.draftPhaseReachedAt ||
+            a.deprecatedAt ||
+            a.updatedAt;
+        const dateB =
+            b.recommendedPhaseReachedAt ||
+            b.candidatePhaseReachedAt ||
+            b.draftPhaseReachedAt ||
+            b.deprecatedAt ||
+            b.updatedAt;
 
-  const phaseOrder = {
-    RD: 0,
-    DRAFT: 1,
-    CANDIDATE: 2,
-    RECOMMENDED: 3,
-    DEPRECATED: 4
-  };
+        // If dates are the same, compare phases
+        if (dateA === dateB) return phaseOrder[a.phase] - phaseOrder[b.phase];
+        return new Date(dateA) - new Date(dateB);
+    });
 
-  timelineForAllVersions.sort((a, b) => {
-    const dateA =
-      a.recommendedPhaseReachedAt ||
-      a.candidatePhaseReachedAt ||
-      a.draftPhaseReachedAt ||
-      a.deprecatedAt ||
-      a.updatedAt;
-    const dateB =
-      b.recommendedPhaseReachedAt ||
-      b.candidatePhaseReachedAt ||
-      b.draftPhaseReachedAt ||
-      b.deprecatedAt ||
-      b.updatedAt;
+    if (!expandedVersionSections.current) {
+        expandedVersionSections.current = [];
+        toggleVersionSections.current = [];
 
-    // If dates are the same, compare phases
-    if (dateA === dateB) return phaseOrder[a.phase] - phaseOrder[b.phase];
-    return new Date(dateA) - new Date(dateB);
-  });
-
-  if (!expandedVersionSections.current) {
-    expandedVersionSections.current = [];
-    toggleVersionSections.current = [];
-
-    for (let i = 0; i < testPlanVersions.length; i += 1) {
-      expandedVersionSections.current[i] = false;
-      toggleVersionSections.current[i] = () => {
-        expandedVersionSections.current[i] =
-          !expandedVersionSections.current[i];
-        forceUpdate();
-      };
+        for (let i = 0; i < testPlanVersions.length; i += 1) {
+            expandedVersionSections.current[i] = false;
+            toggleVersionSections.current[i] = () => {
+                expandedVersionSections.current[i] =
+                    !expandedVersionSections.current[i];
+                forceUpdate();
+            };
+        }
     }
-  }
 
-  return (
-    <Container id="main" as="main" tabIndex="-1">
-      <Helmet>
-        <title>{testPlan.title} Test Plan Versions | ARIA-AT</title>
-      </Helmet>
-      <h1>{testPlan.title} Test Plan Versions</h1>
-      <PageCommitHistory>
-        <FontAwesomeIcon icon={faCodeCommit} color="#818F98" size="xs" />
-        <a
-          target="_blank"
-          rel="noreferrer"
-          href={`https://github.com/w3c/aria-at/commits/master/tests/${testPlanDirectory}`}
-        >
-          Commit History for aria-at/tests/{testPlanDirectory}
-        </a>
-      </PageCommitHistory>
-      {!testPlanVersions.length ? null : (
-        <>
-          <ThemeTableHeader id="version-summary">
-            Version Summary
-          </ThemeTableHeader>
-          <ThemeTable bordered responsive aria-labelledby="version-summary">
-            <thead>
-              <tr>
-                <th>Version</th>
-                <th>Latest Phase</th>
-                <th>Phase Change Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {testPlanVersions.map(testPlanVersion => (
-                <tr key={testPlanVersion.id}>
-                  <th>
-                    <VersionString
-                      iconColor={getIconColor(testPlanVersion)}
-                      autoWidth={false}
-                      linkHref={`/test-review/${testPlanVersion.id}`}
+    return (
+        <Container id="main" as="main" tabIndex="-1">
+            <Helmet>
+                <title>{testPlan.title} Test Plan Versions | ARIA-AT</title>
+            </Helmet>
+            <h1>{testPlan.title} Test Plan Versions</h1>
+            <PageCommitHistory>
+                <FontAwesomeIcon
+                    icon={faCodeCommit}
+                    color="#818F98"
+                    size="xs"
+                />
+                <a
+                    target="_blank"
+                    rel="noreferrer"
+                    href={`https://github.com/w3c/aria-at/commits/master/tests/${testPlanDirectory}`}
+                >
+                    Commit History for aria-at/tests/{testPlanDirectory}
+                </a>
+            </PageCommitHistory>
+            {!testPlanVersions.length ? null : (
+                <>
+                    <ThemeTableHeader id="version-summary">
+                        Version Summary
+                    </ThemeTableHeader>
+                    <ThemeTable
+                        bordered
+                        responsive
+                        aria-labelledby="version-summary"
                     >
-                      {testPlanVersion.versionString}
-                    </VersionString>
-                  </th>
-                  <td>
-                    {(() => {
-                      // Gets the derived phase even if deprecated by checking
-                      // the known dates on the testPlanVersion object
-                      const derivedDeprecatedAtPhase =
-                        deriveDeprecatedDuringPhase(testPlanVersion);
+                        <thead>
+                            <tr>
+                                <th>Version</th>
+                                <th>Latest Phase</th>
+                                <th>Phase Change Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {testPlanVersions.map(testPlanVersion => (
+                                <tr key={testPlanVersion.id}>
+                                    <th>
+                                        <VersionString
+                                            iconColor={getIconColor(
+                                                testPlanVersion
+                                            )}
+                                            autoWidth={false}
+                                            linkHref={`/test-review/${testPlanVersion.id}`}
+                                        >
+                                            {testPlanVersion.versionString}
+                                        </VersionString>
+                                    </th>
+                                    <td>
+                                        {(() => {
+                                            // Gets the derived phase even if deprecated by checking
+                                            // the known dates on the testPlanVersion object
+                                            const derivedDeprecatedAtPhase =
+                                                deriveDeprecatedDuringPhase(
+                                                    testPlanVersion
+                                                );
 
-                      const phasePill = (
-                        <PhasePill fullWidth={false}>
-                          {derivedDeprecatedAtPhase}
-                        </PhasePill>
-                      );
+                                            const phasePill = (
+                                                <PhasePill fullWidth={false}>
+                                                    {derivedDeprecatedAtPhase}
+                                                </PhasePill>
+                                            );
 
-                      if (testPlanVersion.deprecatedAt) {
-                        const deprecatedPill = (
-                          <PhasePill fullWidth={false}>DEPRECATED</PhasePill>
+                                            if (testPlanVersion.deprecatedAt) {
+                                                const deprecatedPill = (
+                                                    <PhasePill
+                                                        fullWidth={false}
+                                                    >
+                                                        DEPRECATED
+                                                    </PhasePill>
+                                                );
+
+                                                const draftPill = (
+                                                    <PhasePill
+                                                        fullWidth={false}
+                                                    >
+                                                        DRAFT
+                                                    </PhasePill>
+                                                );
+
+                                                if (
+                                                    derivedDeprecatedAtPhase ===
+                                                    'RD'
+                                                ) {
+                                                    return (
+                                                        <>
+                                                            {deprecatedPill}
+                                                            {` before `}
+                                                            {draftPill}
+                                                            {` review `}
+                                                        </>
+                                                    );
+                                                }
+
+                                                if (
+                                                    derivedDeprecatedAtPhase ===
+                                                    'RECOMMENDED'
+                                                ) {
+                                                    return (
+                                                        <>
+                                                            {deprecatedPill}
+                                                            {` after being approved as `}
+                                                            {phasePill}
+                                                        </>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <>
+                                                        {deprecatedPill}
+                                                        {` during `}
+                                                        {phasePill}
+                                                        {` review `}
+                                                    </>
+                                                );
+                                            }
+                                            return phasePill;
+                                        })()}
+                                    </td>
+                                    <td>
+                                        {getPhaseChangeDate(testPlanVersion)}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </ThemeTable>
+                    <PageSpacer />
+                </>
+            )}
+            <ThemeTableHeader id="github-issues">
+                GitHub Issues
+            </ThemeTableHeader>
+            {!issues.length ? (
+                <ThemeTableUnavailable aria-labelledby="github-issues">
+                    No GitHub Issues
+                </ThemeTableUnavailable>
+            ) : (
+                <ThemeTable bordered responsive aria-labelledby="github-issues">
+                    <thead>
+                        <tr>
+                            <th>Author</th>
+                            <th>Issue</th>
+                            <th>Status</th>
+                            <th>AT</th>
+                            <th>Created On</th>
+                            <th>Closed On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {issues.map(issue => {
+                            return (
+                                <tr key={issue.link}>
+                                    <td>
+                                        <a
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            href={`https://github.com/${issue.author}`}
+                                        >
+                                            {issue.author}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            href={issue.link}
+                                        >
+                                            {issue.title}
+                                        </a>
+                                    </td>
+                                    <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
+                                    <td>
+                                        {issue.at?.name ?? 'AT not specified'}
+                                    </td>
+                                    <td>
+                                        {convertDateToString(
+                                            issue.createdAt,
+                                            'MMM D, YYYY'
+                                        )}
+                                    </td>
+                                    <td>
+                                        {!issue.closedAt ? (
+                                            <NoneText>N/A</NoneText>
+                                        ) : (
+                                            convertDateToString(
+                                                issue.closedAt,
+                                                'MMM D, YYYY'
+                                            )
+                                        )}
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </ThemeTable>
+            )}
+            <PageSpacer />
+            <ThemeTableHeader id="timeline-for-all-versions">
+                Timeline for All Versions
+            </ThemeTableHeader>
+            <ThemeTable
+                bordered
+                responsive
+                aria-labelledby="timeline-for-all-versions"
+            >
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Event</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {timelineForAllVersions.map(testPlanVersion => {
+                        const versionString = (
+                            <VersionString
+                                iconColor={getIconColor(testPlanVersion)}
+                                fullWidth={false}
+                                autoWidth={false}
+                            >
+                                {testPlanVersion.versionString}
+                            </VersionString>
                         );
 
-                        const draftPill = (
-                          <PhasePill fullWidth={false}>DRAFT</PhasePill>
-                        );
-
-                        if (derivedDeprecatedAtPhase === 'RD') {
-                          return (
-                            <>
-                              {deprecatedPill}
-                              {` before `}
-                              {draftPill}
-                              {` review `}
-                            </>
-                          );
-                        }
-
-                        if (derivedDeprecatedAtPhase === 'RECOMMENDED') {
-                          return (
-                            <>
-                              {deprecatedPill}
-                              {` after being approved as `}
-                              {phasePill}
-                            </>
-                          );
-                        }
+                        const eventBody = getEventBody(testPlanVersion.phase);
 
                         return (
-                          <>
-                            {deprecatedPill}
-                            {` during `}
-                            {phasePill}
-                            {` review `}
-                          </>
+                            <tr
+                                key={`${testPlanVersion.id}-${testPlanVersion.phase}`}
+                            >
+                                <th>{getEventDate(testPlanVersion)}</th>
+                                <td>
+                                    {versionString}&nbsp;{eventBody}
+                                </td>
+                            </tr>
                         );
-                      }
-                      return phasePill;
-                    })()}
-                  </td>
-                  <td>{getPhaseChangeDate(testPlanVersion)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </ThemeTable>
-          <PageSpacer />
-        </>
-      )}
-      <ThemeTableHeader id="github-issues">GitHub Issues</ThemeTableHeader>
-      {!issues.length ? (
-        <ThemeTableUnavailable aria-labelledby="github-issues">
-          No GitHub Issues
-        </ThemeTableUnavailable>
-      ) : (
-        <ThemeTable bordered responsive aria-labelledby="github-issues">
-          <thead>
-            <tr>
-              <th>Author</th>
-              <th>Issue</th>
-              <th>Status</th>
-              <th>AT</th>
-              <th>Created On</th>
-              <th>Closed On</th>
-            </tr>
-          </thead>
-          <tbody>
-            {issues.map(issue => {
-              return (
-                <tr key={issue.link}>
-                  <td>
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href={`https://github.com/${issue.author}`}
-                    >
-                      {issue.author}
-                    </a>
-                  </td>
-                  <td>
-                    <a target="_blank" rel="noreferrer" href={issue.link}>
-                      {issue.title}
-                    </a>
-                  </td>
-                  <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
-                  <td>{issue.at?.name ?? 'AT not specified'}</td>
-                  <td>{convertDateToString(issue.createdAt, 'MMM D, YYYY')}</td>
-                  <td>
-                    {!issue.closedAt ? (
-                      <NoneText>N/A</NoneText>
-                    ) : (
-                      convertDateToString(issue.closedAt, 'MMM D, YYYY')
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </ThemeTable>
-      )}
-      <PageSpacer />
-      <ThemeTableHeader id="timeline-for-all-versions">
-        Timeline for All Versions
-      </ThemeTableHeader>
-      <ThemeTable
-        bordered
-        responsive
-        aria-labelledby="timeline-for-all-versions"
-      >
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Event</th>
-          </tr>
-        </thead>
-        <tbody>
-          {timelineForAllVersions.map(testPlanVersion => {
-            const versionString = (
-              <VersionString
-                iconColor={getIconColor(testPlanVersion)}
-                fullWidth={false}
-                autoWidth={false}
-              >
-                {testPlanVersion.versionString}
-              </VersionString>
-            );
+                    })}
+                </tbody>
+            </ThemeTable>
+            <PageSpacer />
+            <DisclosureComponent
+                componentId="versionHistory"
+                title={testPlanVersions.map(testPlanVersion => {
+                    return (
+                        <span
+                            key={testPlanVersion.id}
+                            aria-label={`${
+                                testPlanVersion.versionString
+                            } ${derivePhaseName(
+                                testPlanVersion.phase
+                            )} on ${getEventDate(testPlanVersion)}`}
+                        >
+                            <VersionString
+                                iconColor={getIconColor(testPlanVersion)}
+                                fullWidth={false}
+                                autoWidth={false}
+                            >
+                                {testPlanVersion.versionString}
+                            </VersionString>
+                            &nbsp;
+                            <PhasePill fullWidth={false}>
+                                {testPlanVersion.phase}
+                            </PhasePill>
+                            &nbsp;on&nbsp;
+                            {getEventDate(testPlanVersion)}
+                        </span>
+                    );
+                })}
+                disclosureContainerView={testPlanVersions.map(
+                    testPlanVersion => {
+                        const hasFinalReports =
+                            testPlanVersion.testPlanReports.some(
+                                testPlanReport => testPlanReport.isFinal
+                            );
 
-            const eventBody = getEventBody(testPlanVersion.phase);
+                        return (
+                            <div key={testPlanVersion.id}>
+                                <DisclosureContainer
+                                    key={`manage-test-queue-at-section`}
+                                >
+                                    <PageUl>
+                                        <li>
+                                            <FontAwesomeIcon
+                                                icon={faCodeCommit}
+                                                color="#818F98"
+                                                size="xs"
+                                            />
+                                            <a
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                href={`https://github.com/w3c/aria-at/commit/${testPlanVersion.gitSha}`}
+                                            >
+                                                Commit{' '}
+                                                {testPlanVersion.gitSha.substr(
+                                                    0,
+                                                    7
+                                                )}
+                                                : {testPlanVersion.gitMessage}
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a
+                                                href={`/test-review/${testPlanVersion.id}`}
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={
+                                                        faArrowUpRightFromSquare
+                                                    }
+                                                    size="xs"
+                                                    color="#818F98"
+                                                />
+                                                View tests in{' '}
+                                                {testPlanVersion.versionString}
+                                            </a>
+                                        </li>
+                                        {!hasFinalReports ? null : (
+                                            <li>
+                                                <a
+                                                    href={`/report/${testPlanVersion.id}`}
+                                                >
+                                                    <FontAwesomeIcon
+                                                        icon={
+                                                            faArrowUpRightFromSquare
+                                                        }
+                                                        size="xs"
+                                                        color="#818F98"
+                                                    />
+                                                    View reports generated from{' '}
+                                                    {
+                                                        testPlanVersion.versionString
+                                                    }
+                                                </a>
+                                            </li>
+                                        )}
+                                    </PageUl>
+                                    <CoveredAtDl>
+                                        <dt>Covered AT</dt>
+                                        <dd>
+                                            <ul>
+                                                {ats.map(at => (
+                                                    <li key={at.id}>
+                                                        {at.name}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </dd>
+                                    </CoveredAtDl>
+                                    <ThemeTableHeader
+                                        id={`timeline-for-${testPlanVersion.versionString}`}
+                                        className="timeline-for-version-table"
+                                    >
+                                        Timeline for{' '}
+                                        {testPlanVersion.versionString}
+                                    </ThemeTableHeader>
+                                    <ThemeTable
+                                        bordered
+                                        responsive
+                                        aria-labelledby={`timeline-for-${testPlanVersion.versionString}`}
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Event</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {(() => {
+                                                let events = [
+                                                    [
+                                                        'RD',
+                                                        testPlanVersion.updatedAt
+                                                    ],
+                                                    [
+                                                        'DRAFT',
+                                                        testPlanVersion.draftPhaseReachedAt
+                                                    ],
+                                                    [
+                                                        'CANDIDATE',
+                                                        testPlanVersion.candidatePhaseReachedAt
+                                                    ],
+                                                    [
+                                                        'RECOMMENDED',
+                                                        testPlanVersion.recommendedPhaseReachedAt
+                                                    ],
+                                                    [
+                                                        'DEPRECATED',
+                                                        testPlanVersion.deprecatedAt
+                                                    ]
+                                                ]
+                                                    .filter(event => event[1])
+                                                    .sort((a, b) => {
+                                                        const dateSort =
+                                                            new Date(a[1]) -
+                                                            new Date(b[1]);
+                                                        if (dateSort === 0)
+                                                            return 1; // maintain order above
+                                                        return dateSort;
+                                                    });
 
-            return (
-              <tr key={`${testPlanVersion.id}-${testPlanVersion.phase}`}>
-                <th>{getEventDate(testPlanVersion)}</th>
-                <td>
-                  {versionString}&nbsp;{eventBody}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </ThemeTable>
-      <PageSpacer />
-      <DisclosureComponent
-        componentId="versionHistory"
-        title={testPlanVersions.map(testPlanVersion => {
-          return (
-            <span
-              key={testPlanVersion.id}
-              aria-label={`${testPlanVersion.versionString} ${derivePhaseName(
-                testPlanVersion.phase
-              )} on ${getEventDate(testPlanVersion)}`}
-            >
-              <VersionString
-                circleCheckIcon={false}
-                iconColor={getIconColor(testPlanVersion)}
-                fullWidth={false}
-                autoWidth={false}
-              >
-                {testPlanVersion.versionString}
-              </VersionString>
-              &nbsp;
-              <PhasePill fullWidth={false}>{testPlanVersion.phase}</PhasePill>
-              &nbsp;on&nbsp;
-              {getEventDate(testPlanVersion)}
-            </span>
-          );
-        })}
-        disclosureContainerView={testPlanVersions.map(testPlanVersion => {
-          const hasFinalReports = testPlanVersion.testPlanReports.some(
-            testPlanReport => testPlanReport.isFinal
-          );
-
-          return (
-            <div key={testPlanVersion.id}>
-              <DisclosureContainer key={`manage-test-queue-at-section`}>
-                <PageUl>
-                  <li>
-                    <FontAwesomeIcon
-                      icon={faCodeCommit}
-                      color="#818F98"
-                      size="xs"
-                    />
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href={`https://github.com/w3c/aria-at/commit/${testPlanVersion.gitSha}`}
-                    >
-                      Commit {testPlanVersion.gitSha.substr(0, 7)}:{' '}
-                      {testPlanVersion.gitMessage}
-                    </a>
-                  </li>
-                  <li>
-                    <a href={`/test-review/${testPlanVersion.id}`}>
-                      <FontAwesomeIcon
-                        icon={faArrowUpRightFromSquare}
-                        size="xs"
-                        color="#818F98"
-                      />
-                      View tests in {testPlanVersion.versionString}
-                    </a>
-                  </li>
-                  {!hasFinalReports ? null : (
-                    <li>
-                      <a href={`/report/${testPlanVersion.id}`}>
-                        <FontAwesomeIcon
-                          icon={faArrowUpRightFromSquare}
-                          size="xs"
-                          color="#818F98"
-                        />
-                        View reports generated from{' '}
-                        {testPlanVersion.versionString}
-                      </a>
-                    </li>
-                  )}
-                </PageUl>
-                <CoveredAtDl>
-                  <dt>Covered AT</dt>
-                  <dd>
-                    <ul>
-                      {ats.map(at => (
-                        <li key={at.id}>{at.name}</li>
-                      ))}
-                    </ul>
-                  </dd>
-                </CoveredAtDl>
-                <ThemeTableHeader
-                  id={`timeline-for-${testPlanVersion.versionString}`}
-                  className="timeline-for-version-table"
-                >
-                  Timeline for {testPlanVersion.versionString}
-                </ThemeTableHeader>
-                <ThemeTable
-                  bordered
-                  responsive
-                  aria-labelledby={`timeline-for-${testPlanVersion.versionString}`}
-                >
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Event</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(() => {
-                      let events = [
-                        ['RD', testPlanVersion.updatedAt],
-                        ['DRAFT', testPlanVersion.draftPhaseReachedAt],
-                        ['CANDIDATE', testPlanVersion.candidatePhaseReachedAt],
-                        [
-                          'RECOMMENDED',
-                          testPlanVersion.recommendedPhaseReachedAt
-                        ],
-                        ['DEPRECATED', testPlanVersion.deprecatedAt]
-                      ]
-                        .filter(event => event[1])
-                        .sort((a, b) => {
-                          const dateSort = new Date(a[1]) - new Date(b[1]);
-                          if (dateSort === 0) return 1; // maintain order above
-                          return dateSort;
-                        });
-
-                      return events.map(([phase, date]) => (
-                        <tr key={phase}>
-                          <th>{convertDateToString(date, 'MMM D, YYYY')}</th>
-                          <td>{getEventBody(phase)}</td>
-                        </tr>
-                      ));
-                    })()}
-                  </tbody>
-                </ThemeTable>
-              </DisclosureContainer>
-            </div>
-          );
-        })}
-        onClick={toggleVersionSections.current}
-        expanded={expandedVersionSections.current}
-        stacked={true}
-        headingLevel="2"
-      />
-    </Container>
-  );
+                                                return events.map(
+                                                    ([phase, date]) => (
+                                                        <tr key={phase}>
+                                                            <th>
+                                                                {convertDateToString(
+                                                                    date,
+                                                                    'MMM D, YYYY'
+                                                                )}
+                                                            </th>
+                                                            <td>
+                                                                {getEventBody(
+                                                                    phase
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                );
+                                            })()}
+                                        </tbody>
+                                    </ThemeTable>
+                                </DisclosureContainer>
+                            </div>
+                        );
+                    }
+                )}
+                onClick={toggleVersionSections.current}
+                expanded={expandedVersionSections.current}
+                stacked={true}
+                headingLevel="2"
+            />
+        </Container>
+    );
 };
 
 export default TestPlanVersionsPage;

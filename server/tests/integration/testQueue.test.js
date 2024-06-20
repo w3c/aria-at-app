@@ -5,89 +5,89 @@ const { sortBy } = require('lodash');
 const db = require('../../models');
 
 afterAll(async () => {
-  // Closing the DB connection allows Jest to exit successfully.
-  await db.sequelize.close();
+    // Closing the DB connection allows Jest to exit successfully.
+    await db.sequelize.close();
 });
 
 describe('test queue', () => {
-  it('displays test plan reports', async () => {
-    const result = await query(
-      gql`
-        query {
-          testPlanReports(testPlanVersionPhases: [DRAFT]) {
-            id
-            conflicts {
-              source {
-                test {
-                  id
+    it('displays test plan reports', async () => {
+        const result = await query(
+            gql`
+                query {
+                    testPlanReports(testPlanVersionPhases: [DRAFT]) {
+                        id
+                        conflicts {
+                            source {
+                                test {
+                                    id
+                                }
+                            }
+                        }
+                        testPlanVersion {
+                            title
+                            phase
+                            gitSha
+                            gitMessage
+                            tests {
+                                id
+                            }
+                        }
+                        draftTestPlanRuns {
+                            id
+                            tester {
+                                username
+                            }
+                            testResults {
+                                id
+                            }
+                        }
+                    }
                 }
-              }
-            }
-            testPlanVersion {
-              title
-              phase
-              gitSha
-              gitMessage
-              tests {
-                id
-              }
-            }
-            draftTestPlanRuns {
-              id
-              tester {
-                username
-              }
-              testResults {
-                id
-              }
-            }
-          }
-        }
-      `,
-      { transaction: false }
-    );
+            `,
+            { transaction: false }
+        );
 
-    expect(result).toEqual({
-      testPlanReports: expect.arrayContaining([
-        {
-          id: expect.anything(),
-          conflicts: expect.any(Array),
-          testPlanVersion: {
-            title: expect.any(String),
-            phase: expect.any(String),
-            gitSha: expect.any(String),
-            gitMessage: expect.any(String),
-            tests: expect.arrayContaining([
-              expect.objectContaining({
-                id: expect.anything()
-              })
+        expect(result).toEqual({
+            testPlanReports: expect.arrayContaining([
+                {
+                    id: expect.anything(),
+                    conflicts: expect.any(Array),
+                    testPlanVersion: {
+                        title: expect.any(String),
+                        phase: expect.any(String),
+                        gitSha: expect.any(String),
+                        gitMessage: expect.any(String),
+                        tests: expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.anything()
+                            })
+                        ])
+                    },
+                    draftTestPlanRuns: expect.arrayContaining([
+                        {
+                            id: expect.anything(),
+                            tester: expect.objectContaining({
+                                username: expect.any(String)
+                            }),
+                            testResults: expect.arrayContaining([
+                                expect.objectContaining({
+                                    id: expect.anything()
+                                })
+                            ])
+                        }
+                    ])
+                }
             ])
-          },
-          draftTestPlanRuns: expect.arrayContaining([
-            {
-              id: expect.anything(),
-              tester: expect.objectContaining({
-                username: expect.any(String)
-              }),
-              testResults: expect.arrayContaining([
-                expect.objectContaining({
-                  id: expect.anything()
-                })
-              ])
-            }
-          ])
-        }
-      ])
+        });
     });
-  });
 
-  it('assigns testers to a test plan report', async () => {
-    await dbCleaner(async transaction => {
-      // A1
-      const testReportId = '1';
-      const newTesterId = '2';
-      const previous = await query(
-        gql`
+    it('assigns testers to a test plan report', async () => {
+        await dbCleaner(async transaction => {
+            // A1
+            const testReportId = '1';
+            const newTesterId = '2';
+            const previous = await query(
+                gql`
                     query {
                         testPlanReport(id: ${testReportId}) {
                             draftTestPlanRuns {
@@ -98,15 +98,16 @@ describe('test queue', () => {
                         }
                     }
                 `,
-        { transaction }
-      );
-      const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
-        testPlanRun => testPlanRun.tester.id
-      );
+                { transaction }
+            );
+            const previousTesterIds =
+                previous.testPlanReport.draftTestPlanRuns.map(
+                    testPlanRun => testPlanRun.tester.id
+                );
 
-      // A2
-      const result = await mutate(
-        gql`
+            // A2
+            const result = await mutate(
+                gql`
                     mutation {
                         testPlanReport(id: ${testReportId}) {
                             assignTester(userId: ${newTesterId}) {
@@ -122,31 +123,33 @@ describe('test queue', () => {
                         }
                     }
                 `,
-        { transaction }
-      );
+                { transaction }
+            );
 
-      // prettier-ignore
-      const resultTesterIds = result
+            // prettier-ignore
+            const resultTesterIds = result
                 .testPlanReport
                 .assignTester
                 .testPlanReport
                 .draftTestPlanRuns.map(testPlanRun => testPlanRun.tester.id);
 
-      // A3
-      expect(previousTesterIds).not.toEqual(
-        expect.arrayContaining([newTesterId])
-      );
-      expect(resultTesterIds).toEqual(expect.arrayContaining([newTesterId]));
+            // A3
+            expect(previousTesterIds).not.toEqual(
+                expect.arrayContaining([newTesterId])
+            );
+            expect(resultTesterIds).toEqual(
+                expect.arrayContaining([newTesterId])
+            );
+        });
     });
-  });
 
-  it('removes testers from a test plan report', async () => {
-    await dbCleaner(async transaction => {
-      // A1
-      const testPlanReportId = '1';
-      const previousTesterId = '1';
-      const previous = await query(
-        gql`
+    it('removes testers from a test plan report', async () => {
+        await dbCleaner(async transaction => {
+            // A1
+            const testPlanReportId = '1';
+            const previousTesterId = '1';
+            const previous = await query(
+                gql`
                     query {
                         testPlanReport(id: ${testPlanReportId}) {
                             draftTestPlanRuns {
@@ -157,15 +160,16 @@ describe('test queue', () => {
                         }
                     }
                 `,
-        { transaction }
-      );
-      const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
-        run => run.tester.id
-      );
+                { transaction }
+            );
+            const previousTesterIds =
+                previous.testPlanReport.draftTestPlanRuns.map(
+                    run => run.tester.id
+                );
 
-      // A2
-      const result = await mutate(
-        gql`
+            // A2
+            const result = await mutate(
+                gql`
                     mutation {
                         testPlanReport(id: ${testPlanReportId}) {
                             deleteTestPlanRun(userId: ${previousTesterId}) {
@@ -180,188 +184,160 @@ describe('test queue', () => {
                         }
                     }
                 `,
-        { transaction }
-      );
+                { transaction }
+            );
 
-      // prettier-ignore
-      const resultTesterIds = result
+            // prettier-ignore
+            const resultTesterIds = result
                 .testPlanReport
                 .deleteTestPlanRun
                 .testPlanReport
                 .draftTestPlanRuns.map((run) => run.tester.id);
 
-      // A3
-      expect(previousTesterIds).toEqual(
-        expect.arrayContaining([previousTesterId])
-      );
-      expect(resultTesterIds).not.toEqual(
-        expect.arrayContaining([previousTesterId])
-      );
+            // A3
+            expect(previousTesterIds).toEqual(
+                expect.arrayContaining([previousTesterId])
+            );
+            expect(resultTesterIds).not.toEqual(
+                expect.arrayContaining([previousTesterId])
+            );
+        });
     });
-  });
 
-  it('queries for information needed to add reports', async () => {
-    const result = await query(
-      gql`
-        query {
-          ats {
-            id
-            name
-            atVersions {
-              id
-              name
-            }
-          }
-          browsers {
-            id
-            name
-            browserVersions {
-              id
-              name
-            }
-          }
-          testPlans {
-            latestTestPlanVersion {
-              id
-              title
-            }
-          }
-        }
-      `,
-      { transaction: false }
-    );
+    it('queries for information needed to add reports', async () => {
+        const result = await query(
+            gql`
+                query {
+                    ats {
+                        id
+                        name
+                        atVersions {
+                            id
+                            name
+                        }
+                    }
+                    browsers {
+                        id
+                        name
+                        browserVersions {
+                            id
+                            name
+                        }
+                    }
+                    testPlans {
+                        latestTestPlanVersion {
+                            id
+                            title
+                        }
+                    }
+                }
+            `,
+            { transaction: false }
+        );
 
-    expect(result).toEqual(
-      expect.objectContaining({
-        ats: expect.arrayContaining([
-          expect.objectContaining({
-            id: expect.anything(),
-            name: 'NVDA',
-            atVersions: expect.arrayContaining([
-              expect.objectContaining({
-                id: expect.anything(),
-                name: '2020.4'
-              })
-            ])
-          })
-        ]),
-        browsers: expect.arrayContaining([
-          expect.objectContaining({
-            id: expect.anything(),
-            name: 'Firefox',
-            browserVersions: expect.arrayContaining([
-              expect.objectContaining({
-                id: expect.anything(),
-                name: '99.0.1'
-              })
-            ])
-          })
-        ]),
-        testPlans: expect.arrayContaining([
-          expect.objectContaining({
-            latestTestPlanVersion: expect.objectContaining({
-              id: expect.anything(),
-              title: 'Alert Example'
+        expect(result).toEqual(
+            expect.objectContaining({
+                ats: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.anything(),
+                        name: 'NVDA',
+                        atVersions: expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.anything(),
+                                name: '2020.4'
+                            })
+                        ])
+                    })
+                ]),
+                browsers: expect.arrayContaining([
+                    expect.objectContaining({
+                        id: expect.anything(),
+                        name: 'Firefox',
+                        browserVersions: expect.arrayContaining([
+                            expect.objectContaining({
+                                id: expect.anything(),
+                                name: '99.0.1'
+                            })
+                        ])
+                    })
+                ]),
+                testPlans: expect.arrayContaining([
+                    expect.objectContaining({
+                        latestTestPlanVersion: expect.objectContaining({
+                            id: expect.anything(),
+                            title: 'Alert Example'
+                        })
+                    })
+                ])
             })
-          })
-        ])
-      })
-    );
-  });
+        );
+    });
 
-  it('supports adding reports', async () => {
-    await dbCleaner(async transaction => {
-      // A1
-      const testPlanVersionId = '1';
-      const atId = '1';
-      const browserId = '1';
-      const mutationToTest = async () => {
-        const result = await mutate(
-          gql`
-                        mutation {
-                            findOrCreateTestPlanReport(input: {
-                                testPlanVersionId: ${testPlanVersionId}
-                                atId: ${atId}
-                                browserId: ${browserId}
-                            }) {
-                                populatedData {
-                                    testPlanReport {
-                                        id
-                                        at {
-                                            id
-                                        }
-                                        browser {
-                                            id
-                                        }
-                                    }
-                                    testPlanVersion {
-                                        id
-                                        phase
-                                    }
+    it('supports adding reports', async () => {
+        await dbCleaner(async transaction => {
+            // A1
+            const testPlanVersionId = '1';
+            const atId = '1';
+            const minimumAtVersionId = '1';
+            const browserId = '1';
+
+            // A2
+            const result = await mutate(
+                gql`
+                    mutation {
+                        createTestPlanReport(input: {
+                            testPlanVersionId: ${testPlanVersionId}
+                            atId: ${atId}
+                            minimumAtVersionId: ${minimumAtVersionId}
+                            browserId: ${browserId}
+                        }) {
+                            testPlanReport {
+                                id
+                                at {
+                                    id
                                 }
-                                created {
-                                    locationOfData
+                                browser {
+                                    id
                                 }
                             }
+                            testPlanVersion {
+                                id
+                                phase
+                            }
                         }
-                    `,
-          { transaction }
-        );
-        const {
-          populatedData: { testPlanReport, testPlanVersion },
-          created
-        } = result.findOrCreateTestPlanReport;
+                    }
+                `,
+                { transaction }
+            );
+            const { testPlanReport, testPlanVersion } =
+                result.createTestPlanReport;
 
-        return {
-          testPlanReport,
-          testPlanVersion,
-          created
-        };
-      };
-
-      // A2
-      const first = await mutationToTest();
-      const second = await mutationToTest();
-
-      // A3
-      expect(first.testPlanReport).toEqual(
-        expect.objectContaining({
-          id: expect.anything(),
-          at: expect.objectContaining({
-            id: atId
-          }),
-          browser: expect.objectContaining({
-            id: browserId
-          })
-        })
-      );
-      expect(first.testPlanVersion).toEqual(
-        expect.objectContaining({
-          id: testPlanVersionId,
-          phase: 'DRAFT'
-        })
-      );
-      expect(first.created.length).toBe(1);
-
-      expect(second.testPlanReport).toEqual(
-        expect.objectContaining({
-          id: first.testPlanReport.id
-        })
-      );
-      expect(second.testPlanVersion).toEqual(
-        expect.objectContaining({
-          id: first.testPlanVersion.id
-        })
-      );
-      expect(second.created.length).toBe(0);
+            // A3
+            expect(testPlanReport).toEqual(
+                expect.objectContaining({
+                    id: expect.anything(),
+                    at: expect.objectContaining({
+                        id: atId
+                    }),
+                    browser: expect.objectContaining({
+                        id: browserId
+                    })
+                })
+            );
+            expect(testPlanVersion).toEqual(
+                expect.objectContaining({
+                    id: testPlanVersionId,
+                    phase: 'DRAFT'
+                })
+            );
+        });
     });
-  });
 
-  it('can be deleted along with associated runs', async () => {
-    await dbCleaner(async transaction => {
-      const testPlanReportId = '4';
-      const queryBefore = await query(
-        gql`
+    it('can be deleted along with associated runs', async () => {
+        await dbCleaner(async transaction => {
+            const testPlanReportId = '4';
+            const queryBefore = await query(
+                gql`
                     query {
                         testPlanReport(id: ${testPlanReportId}) {
                             id
@@ -371,21 +347,21 @@ describe('test queue', () => {
                         }
                     }
                 `,
-        { transaction }
-      );
-      const { draftTestPlanRuns } = queryBefore.testPlanReport;
-      await mutate(
-        gql`
+                { transaction }
+            );
+            const { draftTestPlanRuns } = queryBefore.testPlanReport;
+            await mutate(
+                gql`
                     mutation {
                         testPlanReport(id: ${testPlanReportId}) {
                             deleteTestPlanReport
                         }
                     }
                 `,
-        { transaction }
-      );
-      const queryAfter = await query(
-        gql`
+                { transaction }
+            );
+            const queryAfter = await query(
+                gql`
                     query {
                         testPlanReport(id: ${testPlanReportId}) {
                             id
@@ -395,21 +371,21 @@ describe('test queue', () => {
                         }
                     }
                 `,
-        { transaction }
-      );
+                { transaction }
+            );
 
-      expect(queryBefore.testPlanReport.id).toBeTruthy();
-      expect(draftTestPlanRuns.length).toBeGreaterThan(0);
-      expect(queryAfter.testPlanReport).toBe(null);
-      expect(queryAfter.testPlanRun).toBe(null);
+            expect(queryBefore.testPlanReport.id).toBeTruthy();
+            expect(draftTestPlanRuns.length).toBeGreaterThan(0);
+            expect(queryAfter.testPlanReport).toBe(null);
+            expect(queryAfter.testPlanRun).toBe(null);
+        });
     });
-  });
 
-  it('displays conflicts', async () => {
-    const conflictingReportId = '2';
+    it('displays conflicts', async () => {
+        const conflictingReportId = '2';
 
-    const result = await query(
-      gql`
+        const result = await query(
+            gql`
                 query {
                     testPlanReport(id: ${conflictingReportId}) {
                         conflicts {
@@ -449,22 +425,22 @@ describe('test queue', () => {
                     }
                 }
             `,
-      { transaction: false }
-    );
+            { transaction: false }
+        );
 
-    // Nested sorting turns out to be inconsistent across environments -
-    // it might be nice to figure out an elegant way to establish a default
-    // sorting scheme for nested models, but this will do for now
-    result.testPlanReport.conflicts = result.testPlanReport.conflicts.map(
-      conflict => ({
-        ...conflict,
-        conflictingResults: sortBy(conflict.conflictingResults, [
-          'testPlanRun.id'
-        ])
-      })
-    );
+        // Nested sorting turns out to be inconsistent across environments -
+        // it might be nice to figure out an elegant way to establish a default
+        // sorting scheme for nested models, but this will do for now
+        result.testPlanReport.conflicts = result.testPlanReport.conflicts.map(
+            conflict => ({
+                ...conflict,
+                conflictingResults: sortBy(conflict.conflictingResults, [
+                    'testPlanRun.id'
+                ])
+            })
+        );
 
-    expect(result.testPlanReport).toMatchInlineSnapshot(`
+        expect(result.testPlanReport).toMatchInlineSnapshot(`
             {
               "conflicts": [
                 {
@@ -622,5 +598,5 @@ describe('test queue', () => {
               ],
             }
         `);
-  });
+    });
 });

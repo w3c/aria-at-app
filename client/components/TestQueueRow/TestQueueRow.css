@@ -77,6 +77,12 @@ button.more-actions:active {
   width: initial;
 }
 
-/* tr.test-queue-run-row td:first-child {
-    padding: 0.75rem;
-} */
+.primary-test-run-select {
+    &[size]:not([size='1']) {
+        padding: 0 !important;
+    }
+
+    option {
+        padding: 0.5rem;
+    }
+}
