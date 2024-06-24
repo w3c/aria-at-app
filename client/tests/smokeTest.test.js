@@ -111,7 +111,33 @@ describe('smoke test', () => {
                 const h1Handle = await page.waitForSelector('h1');
                 const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
                 expect(h1Text).toBe('Data Management');
-            })
+            }),
+            getPage(
+                { role: false, url: '/test-plan-report/15' },
+                async page => {
+                    // Wait for an h2 because an h1 will show while the page is
+                    // still loading
+                    await page.waitForSelector('h2');
+                    const h1Handle = await page.waitForSelector('h1');
+                    const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+                    expect(h1Text).toBe(
+                        'Test 1:\nNavigate forwards to a not pressed toggle button'
+                    );
+                }
+            ),
+            getPage(
+                { role: 'admin', url: '/test-plan-report/15' },
+                async page => {
+                    // Wait for an h2 because an h1 will show while the page is
+                    // still loading
+                    await page.waitForSelector('h2');
+                    const h1Handle = await page.waitForSelector('h1');
+                    const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+                    expect(h1Text).toBe(
+                        'Test 1:\nNavigate forwards to a not pressed toggle button'
+                    );
+                }
+            )
         ]);
     });
 });

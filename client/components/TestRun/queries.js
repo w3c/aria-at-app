@@ -5,6 +5,17 @@ export const TEST_RUN_PAGE_QUERY = gql`
         testPlanRun(id: $testPlanRunId) {
             id
             initiatedByAutomation
+            collectionJob {
+                id
+                status
+                externalLogsUrl
+                testStatus {
+                    test {
+                        id
+                    }
+                    status
+                }
+            }
             tester {
                 id
                 username
@@ -191,6 +202,22 @@ export const TEST_RUN_PAGE_QUERY = gql`
             id
             username
             isBot
+        }
+    }
+`;
+
+export const COLLECTION_JOB_UPDATES_QUERY = gql`
+    query CollectionJob($collectionJobId: ID!) {
+        collectionJob(id: $collectionJobId) {
+            id
+            status
+            externalLogsUrl
+            testStatus {
+                test {
+                    id
+                }
+                status
+            }
         }
     }
 `;
@@ -1254,16 +1281,6 @@ export const FIND_OR_CREATE_BROWSER_VERSION_MUTATION = gql`
                 id
                 name
             }
-        }
-    }
-`;
-
-export const COLLECTION_JOB_STATUS_BY_TEST_PLAN_RUN_ID_QUERY = gql`
-    query CollectionJobIdByTestPlanRunId($testPlanRunId: ID!) {
-        collectionJobByTestPlanRunId(testPlanRunId: $testPlanRunId) {
-            id
-            status
-            externalLogsUrl
         }
     }
 `;
