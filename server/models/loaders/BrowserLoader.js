@@ -15,15 +15,17 @@ const BrowserLoader = () => {
             }
 
             activePromise = getBrowsers({ transaction }).then(browsers => {
-                browsers = browsers.map(browser => ({
-                    ...browser.dataValues,
-                    candidateAts: browser.ats.filter(
-                        at => at.AtBrowsers.isCandidate
-                    ),
-                    recommendedAts: browser.ats.filter(
-                        at => at.AtBrowsers.isRecommended
-                    )
-                }));
+                browsers = browsers
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .map(browser => ({
+                        ...browser.dataValues,
+                        candidateAts: browser.ats.filter(
+                            at => at.AtBrowsers.isCandidate
+                        ),
+                        recommendedAts: browser.ats.filter(
+                            at => at.AtBrowsers.isRecommended
+                        )
+                    }));
 
                 return browsers;
             });

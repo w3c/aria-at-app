@@ -21,85 +21,16 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DisclosureComponentUnstyled from '../common/DisclosureComponent';
+import useForceUpdate from '../../hooks/useForceUpdate';
 
 const DisclosureContainer = styled.div`
-    // Following directives are related to the ManageTestQueue component
-    > span {
-        display: block;
-        margin-bottom: 1rem;
-    }
-
-    // Add Test Plan to Test Queue button
-    > button {
-        display: flex;
-        padding: 0.5rem 1rem;
-        margin-top: 1rem;
-        margin-left: auto;
-        margin-right: 0;
-    }
-
-    .disclosure-row-manage-ats {
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
-        grid-gap: 1rem;
-
-        .ats-container {
-            grid-column: 1 / span 2;
-        }
-
-        .at-versions-container {
-            display: flex;
-            flex-direction: column;
-            grid-column: 3 / span 3;
-        }
-
-        .disclosure-buttons-row {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-
-            > button {
-                margin: 0;
-                padding: 0;
-                color: #275caa;
-                border: none;
-                background-color: transparent;
-
-                &:nth-of-type(2) {
-                    margin-left: auto;
-                }
-
-                // remove button
-                &:nth-of-type(3) {
-                    margin-left: 1rem;
-                    color: #ce1b4c;
-                }
-            }
-        }
-    }
-
-    .disclosure-row-test-plans {
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-        grid-gap: 1rem;
-    }
-
-    .disclosure-form-label {
-        font-weight: bold;
-        font-size: 1rem;
-    }
-
     .timeline-for-version-table {
         padding: 0.5rem 1rem;
     }
 `;
 
 const DisclosureComponent = styled(DisclosureComponentUnstyled)`
-    & h2 {
-        padding: 0;
-        margin: 0;
+    h2 {
         font-size: 1.25em;
 
         button {
@@ -144,13 +75,6 @@ const CoveredAtDl = styled.dl`
 const ThemeTableHeader = styled(UnstyledThemeTableHeader)`
     margin: 0 !important;
 `;
-
-// https://stackoverflow.com/a/53215514
-const useForceUpdate = () => {
-    const [, updateState] = React.useState();
-    const forceUpdate = React.useCallback(() => updateState({}), []);
-    return forceUpdate;
-};
 
 const TestPlanVersionsPage = () => {
     const { testPlanDirectory } = useParams();
@@ -618,7 +542,6 @@ const TestPlanVersionsPage = () => {
                             )} on ${getEventDate(testPlanVersion)}`}
                         >
                             <VersionString
-                                circleCheckIcon={false}
                                 iconColor={getIconColor(testPlanVersion)}
                                 fullWidth={false}
                                 autoWidth={false}

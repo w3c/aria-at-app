@@ -550,11 +550,11 @@ const TestPlans = ({ testPlanVersions }) => {
                                                         to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
                                                     >
                                                         {getTestPlanVersionTitle(
-                                                            testPlanVersion
+                                                            testPlanVersion,
+                                                            {
+                                                                includeVersionString: true
+                                                            }
                                                         )}{' '}
-                                                        {
-                                                            testPlanVersion.versionString
-                                                        }{' '}
                                                         ({testsCount} Test
                                                         {testsCount === 0 ||
                                                         testsCount > 1
@@ -755,9 +755,9 @@ const TestPlans = ({ testPlanVersions }) => {
                                     <tr key={testPlanVersion.id}>
                                         <td>
                                             {getTestPlanVersionTitle(
-                                                testPlanVersion
-                                            )}{' '}
-                                            {testPlanVersion.versionString}
+                                                testPlanVersion,
+                                                { includeVersionString: true }
+                                            )}
                                         </td>
                                         <CenteredTd>
                                             {jawsDataExists

@@ -5,8 +5,10 @@ const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
         return null;
     }
 
-    // Since conflicts are now resolved, all testPlanRuns are interchangeable.
-    const testPlanRun = testPlanReport.testPlanRuns[0];
+    // Return the primary test plan run, otherwise pick the first TestPlanRun found.
+    const testPlanRun =
+        testPlanReport.testPlanRuns.find(({ isPrimary }) => isPrimary) ||
+        testPlanReport.testPlanRuns[0];
 
     return testResultsResolver(
         {

@@ -317,6 +317,7 @@ const CandidateTestPlanRun = () => {
         versionString: testPlanVersion.versionString,
         testTitle: currentTest.title,
         testRowNumber: currentTest.rowNumber,
+        testSequenceNumber: currentTest.seq,
         testRenderedUrl: currentTest.renderedUrl,
         atName: testPlanReport.at.name
     };
@@ -464,7 +465,7 @@ const CandidateTestPlanRun = () => {
                                     testPlanTitle: testPlanVersion.title,
                                     versionString:
                                         testPlanVersion.versionString,
-                                    testRowNumber: currentTest.rowNumber
+                                    testSequenceNumber: currentTest.seq
                                 })}
                             />
                         );

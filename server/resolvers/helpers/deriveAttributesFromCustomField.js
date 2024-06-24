@@ -52,6 +52,7 @@ const deriveAttributesFromCustomField = (fieldName, customFields) => {
                 fields.includes('testPlan.directory')
             )
                 derived.push('directory');
+            if (fields.includes('earliestAtVersion')) derived.push('phase');
             break;
         }
         case 'testPlanReport': {
@@ -60,6 +61,10 @@ const deriveAttributesFromCustomField = (fieldName, customFields) => {
             if (fields.includes('testPlanVersion'))
                 derived.push('testPlanVersionId');
             if (fields.includes('isFinal')) derived.push('markedFinalAt');
+            if (fields.includes('recommendedAtVersion')) {
+                derived.push('testPlanVersionId');
+                derived.push('markedFinalAt');
+            }
             break;
         }
         case 'draftTestPlanRuns': {

@@ -7,15 +7,19 @@ import App from './components/App';
 import GraphQLProvider from './components/GraphQLProvider';
 import { AriaLiveRegionProvider } from './components/providers/AriaLiveRegionProvider';
 import { resetCache } from './components/GraphQLProvider/GraphQLProvider';
+import { ConfirmationModalProvider } from './hooks/useConfirmationModal';
 
 const container = document.getElementById('root');
 const root = createRoot(container);
+
 root.render(
     <GraphQLProvider>
         <AriaLiveRegionProvider>
-            <BrowserRouter>
-                <App />
-            </BrowserRouter>
+            <ConfirmationModalProvider>
+                <BrowserRouter>
+                    <App />
+                </BrowserRouter>
+            </ConfirmationModalProvider>
         </AriaLiveRegionProvider>
     </GraphQLProvider>
 );

@@ -11,6 +11,22 @@ afterAll(async () => {
     await db.sequelize.close();
 }, 20000);
 
+const atsQuery = ({ transaction }) => {
+    return query(
+        gql`
+            query {
+                ats {
+                    id
+                    atVersions {
+                        id
+                    }
+                }
+            }
+        `,
+        { transaction }
+    );
+};
+
 const testPlanVersionsQuery = ({
     transaction,
     directory = `""`,
@@ -120,6 +136,12 @@ const updateVersionToPhaseQuery = (
                                 at {
                                     id
                                 }
+                                minimumAtVersion {
+                                    id
+                                }
+                                exactAtVersion {
+                                    id
+                                }
                                 browser {
                                     id
                                 }
@@ -177,40 +199,37 @@ const updateVersionToPhaseQuery = (
     );
 };
 
-const findOrCreateTestPlanReportQuery = (
+const createTestPlanReportQuery = (
     testPlanVersionId,
     atId,
+    minimumAtVersionId,
     browserId,
     { transaction }
 ) => {
     return mutate(
         gql`
             mutation {
-                findOrCreateTestPlanReport(input: {
+                createTestPlanReport(input: {
                     testPlanVersionId: ${testPlanVersionId}
                     atId: ${atId}
+                    minimumAtVersionId: ${minimumAtVersionId}
                     browserId: ${browserId}
                 }) {
-                    populatedData {
-                        testPlanReport {
+                    testPlanReport {
+                        id
+                        at {
                             id
-                            at {
-                                id
-                            }
-                            browser {
-                                id
-                            }
                         }
-                        testPlanVersion {
+                        browser {
                             id
-                            phase
-                            testPlanReports {
-                                id
-                            }
                         }
                     }
-                    created {
-                        locationOfData
+                    testPlanVersion {
+                        id
+                        phase
+                        testPlanReports {
+                            id
+                        }
                     }
                 }
             }
@@ -578,6 +597,8 @@ describe('data management', () => {
 
     it('updates test plan version and copies all but one report from previous version', async () => {
         await dbCleaner(async transaction => {
+            const { ats } = await atsQuery({ transaction });
+
             // oldModalDialogVersion has reports for JAWS + Chrome,
             // NVDA + Chrome, VO + Safari + additional non-required
             // reports in CANDIDATE
@@ -615,14 +636,13 @@ describe('data management', () => {
             });
 
             const {
-                findOrCreateTestPlanReport: {
-                    populatedData: {
-                        testPlanVersion: newModalDialogVersionInDraft
-                    }
+                createTestPlanReport: {
+                    testPlanVersion: newModalDialogVersionInDraft
                 }
-            } = await findOrCreateTestPlanReportQuery(
+            } = await createTestPlanReportQuery(
                 newModalDialogVersion.id,
                 3,
+                ats.find(at => at.id == 3).atVersions[0].id,
                 1,
                 { transaction }
             );
@@ -686,6 +706,8 @@ describe('data management', () => {
 
     it('updates test plan version but has new reports that are required and not yet marked as final', async () => {
         await dbCleaner(async transaction => {
+            const { ats } = await atsQuery({ transaction });
+
             // oldModalDialogVersion has reports for JAWS + Chrome,
             // NVDA + Chrome, VO + Safari + additional non-required
             // reports in CANDIDATE
@@ -716,14 +738,13 @@ describe('data management', () => {
             });
 
             const {
-                findOrCreateTestPlanReport: {
-                    populatedData: {
-                        testPlanVersion: newModalDialogVersionInDraft
-                    }
+                createTestPlanReport: {
+                    testPlanVersion: newModalDialogVersionInDraft
                 }
-            } = await findOrCreateTestPlanReportQuery(
+            } = await createTestPlanReportQuery(
                 newModalDialogVersion.id,
                 3,
+                ats.find(at => at.id == 3).atVersions[0].id,
                 3,
                 { transaction }
             );

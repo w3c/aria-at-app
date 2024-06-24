@@ -1,3 +1,15 @@
+## [1.4.0](https://github.com/w3c/aria-at-app/compare/v1.3.1...v1.4.0) (2024-06-24)
+
+
+### Features
+
+* Trends ([#1123](https://github.com/w3c/aria-at-app/issues/1123)) ([af8f492](https://github.com/w3c/aria-at-app/commit/af8f492b7d40ffadcedec88c47d06b166ec489fe)), closes [#791](https://github.com/w3c/aria-at-app/issues/791) [#792](https://github.com/w3c/aria-at-app/issues/792) [#1055](https://github.com/w3c/aria-at-app/issues/1055) [#1001](https://github.com/w3c/aria-at-app/issues/1001) [#1065](https://github.com/w3c/aria-at-app/issues/1065) [#1052](https://github.com/w3c/aria-at-app/issues/1052) [#1087](https://github.com/w3c/aria-at-app/issues/1087) [#1098](https://github.com/w3c/aria-at-app/issues/1098) [#1092](https://github.com/w3c/aria-at-app/issues/1092) [#1131](https://github.com/w3c/aria-at-app/issues/1131) [#1124](https://github.com/w3c/aria-at-app/issues/1124)
+
+
+### Bug Fixes
+
+* use correct test number sequence for raising github issues ([#1128](https://github.com/w3c/aria-at-app/issues/1128)) ([70270e3](https://github.com/w3c/aria-at-app/commit/70270e3d83bf1eca6ea8f74cef4fcba104b1e783))
+
 ### [1.3.1](https://github.com/w3c/aria-at-app/compare/v1.3.0...v1.3.1) (2024-06-12)
 
 

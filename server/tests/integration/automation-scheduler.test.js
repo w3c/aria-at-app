@@ -1058,7 +1058,7 @@ describe('Automation controller', () => {
             // must be markedAsFinal to have historical results
             const finalizedTestPlanVersion = await markAsFinalResolver(
                 { parentContext: { id: testPlanReportId } },
-                null,
+                {},
                 context
             );
 

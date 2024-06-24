@@ -26,7 +26,7 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             {
@@ -91,7 +91,7 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             {
@@ -136,7 +136,7 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             {
@@ -254,6 +254,8 @@ export default testQueuePageQuery => [
                         runnableTestsLength: 17,
                         markedFinalAt: null,
                         at: { id: '1', name: 'JAWS', key: 'jaws' },
+                        minimumAtVersion: { id: '1', name: '2024.3321.1' },
+                        exactAtVersion: null,
                         browser: { id: '2', name: 'Chrome', key: 'chrome' },
                         testPlanVersion: {
                             id: '1',
@@ -288,6 +290,8 @@ export default testQueuePageQuery => [
                             name: 'VoiceOver for macOS',
                             key: 'voiceover_macos'
                         },
+                        minimumAtVersion: { id: '3', name: '14.5' },
+                        exactAtVersion: null,
                         browser: {
                             id: '3',
                             name: 'Safari',
@@ -322,6 +326,8 @@ export default testQueuePageQuery => [
                         runnableTestsLength: 17,
                         markedFinalAt: null,
                         at: { id: '2', name: 'NVDA', key: 'nvda' },
+                        minimumAtVersion: null,
+                        exactAtVersion: { id: '2', name: '2024.2' },
                         browser: { id: '1', name: 'Firefox', key: 'firefox' },
                         testPlanVersion: {
                             id: '1',

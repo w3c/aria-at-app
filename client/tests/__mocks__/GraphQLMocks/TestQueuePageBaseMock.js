@@ -103,7 +103,12 @@ export default (testPlanReportAtBrowserQuery, existingTestPlanReportsQuery) => [
                                 key: 'chrome'
                             }
                         }
-                    ]
+                    ],
+                    metadata: {
+                        exampleUrl: 'https://fakeurl.com/exampleUrl',
+                        designPatternUrl: 'https://fakeurl.com/designPattern',
+                        testFormatVersion: 1
+                    }
                 },
                 oldTestPlanVersions: []
             }

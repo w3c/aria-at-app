@@ -13,6 +13,9 @@ function useThemedModal({ show, type, title, content }) {
     const [themedModalType, setThemedModalType] = useState(THEMES.WARNING);
     const [themedModalTitle, setThemedModalTitle] = useState('');
     const [themedModalContent, setThemedModalContent] = useState(<></>);
+    const [themedModalActions, setThemedModalActions] = useState(null);
+    const [themedModalShowCloseAction, setThemedModalShowCloseAction] =
+        useState(false);
 
     useEffect(() => {
         setShowThemedModal(showThemedModal || show);
@@ -21,13 +24,26 @@ function useThemedModal({ show, type, title, content }) {
         setThemedModalContent(themedModalContent || content);
     });
 
+    const hideThemedModal = () => {
+        setShowThemedModal(false);
+        setThemedModalType(THEMES.WARNING);
+        setThemedModalTitle('');
+        setThemedModalContent(<></>);
+        setThemedModalActions(null);
+        setThemedModalShowCloseAction(false);
+    };
+
     const onThemedModalClose = () => {
         setShowThemedModal(false);
         if (focusElementRef.current) focusElementRef.current.focus();
     };
 
     const setFocusRef = focusElement =>
-        (focusElementRef.current = focusElement);
+        (focusElementRef.current = focusElement?.current || focusElement);
+
+    const focus = () => {
+        if (focusElementRef.current) focusElementRef.current.focus();
+    };
 
     const themedModal = (
         <BasicThemedModal
@@ -36,25 +52,33 @@ function useThemedModal({ show, type, title, content }) {
             title={themedModalTitle}
             dialogClassName="modal-50w"
             content={themedModalContent}
-            actionButtons={[
-                {
-                    text: 'Ok',
-                    action: onThemedModalClose
-                }
-            ]}
+            actionButtons={
+                themedModalActions
+                    ? themedModalActions
+                    : [
+                          {
+                              text: 'Ok',
+                              action: onThemedModalClose
+                          }
+                      ]
+            }
             handleClose={onThemedModalClose}
-            showCloseAction={false}
+            showCloseAction={themedModalShowCloseAction}
         />
     );
 
     return {
-        setFocusRef,
         themedModal,
         showThemedModal,
         setShowThemedModal,
         setThemedModalType,
         setThemedModalTitle,
-        setThemedModalContent
+        setThemedModalContent,
+        setThemedModalActions,
+        setThemedModalShowCloseAction,
+        focus,
+        setFocusRef,
+        hideThemedModal
     };
 }
 

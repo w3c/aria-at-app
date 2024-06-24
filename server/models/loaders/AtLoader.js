@@ -16,7 +16,7 @@ const AtLoader = () => {
 
             activePromise = getAts({ transaction }).then(ats => {
                 // Sort date of atVersions subarray in desc order by releasedAt date
-                ats.forEach(item =>
+                ats.sort((a, b) => a.name.localeCompare(b.name)).forEach(item =>
                     item.atVersions.sort((a, b) => b.releasedAt - a.releasedAt)
                 );
 

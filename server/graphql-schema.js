@@ -368,11 +368,11 @@ const graphqlSchema = gql`
         version was imported from the ARIA-AT repo. Used to version the test
         plan over time.
         """
-        gitSha: String! # TODO: remove if using version labels
+        gitSha: String!
         """
         Git commit message corresponding to the git sha's commit.
         """
-        gitMessage: String! # TODO: remove if using version labels
+        gitMessage: String!
         """
         The date (originating in Git) corresponding to the Git sha's commit.
         This can also be considered as the time for when R & D was complete
@@ -401,8 +401,7 @@ const graphqlSchema = gql`
         """
         tests: [Test]!
         """
-        The TestPlanReports attached to the TestPlanVersion. There will always
-        be a unique combination of AT + Browser + TestPlanVersion.
+        The TestPlanReports attached to the TestPlanVersion.
 
         isFinal is used to check if a TestPlanReport has been "Marked as Final",
         indicated by TestPlanReport.markedFinalAt existence.
@@ -411,6 +410,77 @@ const graphqlSchema = gql`
         False value indicates to return the reports which have no markedFinalAt date.
         """
         testPlanReports(isFinal: Boolean): [TestPlanReport]!
+        """
+        A list of existing or missing TestPlanReports that may be collected.
+        """
+        testPlanReportStatuses: [TestPlanReportStatus]!
+        """
+        For each report under this TestPlanVersion, if the report's combination
+        is indicated as required and the report is marked as final at the time
+        the TestPlanVersion is updated to RECOMMENDED then by checking the
+        testers' runs which have been marked as primary, the earliest found AT
+        version for the respective ATs should be considered as the
+        first required AT version or "earliestAtVersion".
+
+        The "earliest" is determined by comparing the recorded AtVersions'
+        releasedAt value.
+
+        Required Reports definition and combinations are defined at
+        https://github.com/w3c/aria-at-app/wiki/Business-Logic-and-Processes#required-reports.
+
+        Primary Test Plan Run is defined at
+        https://github.com/w3c/aria-at-app/wiki/Business-Logic-and-Processes#primary-test-plan-run.
+
+        After this TestPlanVersion is updated to RECOMMENDED, this should be
+        used to ensure subsequent reports created under the TestPlanVersion
+        should only being capturing results for AT Versions which are the same
+        as or were released after the "earliestAtVersion".
+        """
+        earliestAtVersion(atId: ID!): AtVersion
+    }
+
+    """
+    An existing or missing TestPlanReport that can be collected for a given
+    TestPlanVersion.
+    """
+    type TestPlanReportStatus {
+        """
+        Whether the TestPlanReport is actually required during the given
+        TestPlanVersion phase.
+        """
+        isRequired: Boolean!
+        """
+        The report's AT, which will be populated even if the TestPlanReport is
+        missing.
+        """
+        at: At!
+        """
+        The version of the AT that should be used for the report will be
+        specified either as an exactAtVersion or minimumAtVersion and will be
+        populated even if the TestPlanReport is missing.
+
+        During the TestPlanVersion's draft and candidate phases, the looser
+        requirement of minimumAtVersion will be used to reduce the amount of
+        data collected before consensus is achieved.
+
+        During the recommended phase all reports will be associated with an
+        exactAtVersion, enabling large-scale data collection for all versions
+        of the AT as they are released.
+        """
+        exactAtVersion: AtVersion
+        """
+        See exactAtVersion for more information.
+        """
+        minimumAtVersion: AtVersion
+        """
+        The report's browser, which will be populated even if the
+        TestPlanReport is missing.
+        """
+        browser: Browser!
+        """
+        The TestPlanReport, which may not currently exist.
+        """
+        testPlanReport: TestPlanReport
     }
 
     """
@@ -979,6 +1049,22 @@ const graphqlSchema = gql`
         """
         at: At!
         """
+        Either a minimumAtVersion or exactAtVersion will be available. The
+        minimumAtVersion, when defined, is the oldest version of the AT that
+        testers are allowed to use when collecting results.
+        """
+        minimumAtVersion: AtVersion
+        """
+        Either a minimumAtVersion or exactAtVersion will be available. The
+        exactAtVersion, when defined, is the only version of the AT that
+        testers are allowed to use when collecting results. Note that when a
+        TestPlanVersion reaches the recommended stage, all its reports will
+        automatically switch from having a minimumAtVersion to an
+        exactAtVersion. See the earliestAtVersion field of TestPlanVersion for
+        more information.
+        """
+        exactAtVersion: AtVersion
+        """
         The unique AT Versions used when collecting results for this report.
         """
         atVersions: [AtVersion]!
@@ -1055,6 +1141,15 @@ const graphqlSchema = gql`
         Indicated by TestPlanReport.markedFinalAt existence, after a report has been "marked as final".
         """
         isFinal: Boolean!
+        """
+        The AtVersion to display for a TestPlanReport only when the
+        TestPlanVersion is RECOMMENDED.
+
+        If this TestPlanReport was created with an "exactAtVersionId" being set,
+        it will use the matching AtVersion, otherwise it will use the
+        TestPlanVersion.earliestAtVersion as a default.
+        """
+        recommendedAtVersion: AtVersion
     }
 
     """
@@ -1063,8 +1158,10 @@ const graphqlSchema = gql`
     input TestPlanReportInput {
         testPlanVersionId: ID!
         atId: ID!
+        exactAtVersionId: ID
+        minimumAtVersionId: ID
         browserId: ID!
-        copyResultsFromTestPlanReportId: ID
+        copyResultsFromTestPlanVersionId: ID
     }
 
     """
@@ -1142,7 +1239,7 @@ const graphqlSchema = gql`
         """
         Get all TestPlans.
         """
-        testPlans: [TestPlan]!
+        testPlans(testPlanVersionPhases: [TestPlanVersionPhase]): [TestPlan]!
         """
         Load a particular TestPlan by ID.
         """
@@ -1274,22 +1371,16 @@ const graphqlSchema = gql`
         Updates the markedFinalAt date. This must be set before a TestPlanReport can
         be advanced to CANDIDATE. All conflicts must also be resolved.
         Only available to admins.
+
+        Also optionally set a "primary test plan run" so a specific tester's output
+        will be shown for on the report pages over another.
         """
-        markAsFinal: PopulatedData!
+        markAsFinal(primaryTestPlanRunId: ID): PopulatedData!
         """
         Remove the TestPlanReport's markedFinalAt date. This allows the TestPlanReport
         to be worked on in the Test Queue page again if was previously marked as final.
         """
         unmarkAsFinal: PopulatedData!
-        """
-        Update the report to a specific TestPlanVersion id.
-        """
-        updateTestPlanReportTestPlanVersion(
-            """
-            The TestPlanReport to update.
-            """
-            input: TestPlanReportInput!
-        ): PopulatedData!
         """
         Move the vendor review status from READY to IN PROGRESS
         or IN PROGRESS to APPROVED
@@ -1383,25 +1474,6 @@ const graphqlSchema = gql`
         retryCanceledCollections: CollectionJob!
     }
 
-    """
-    Generic response to findOrCreate mutations, which allow you to dictate an
-    expectation of what you want to exist, and it will be made so. It allows you
-    to check whether new database records were created.
-    """
-    type FindOrCreateResult {
-        """
-        The data that was found or created, as well as any implicit
-        associations. For example, if you find or create a TestPlanReport, this
-        will include the TestPlanReport as well as the TestPlanVersion and
-        TestPlan.
-        """
-        populatedData: PopulatedData!
-        """
-        There will be one array item per database record created.
-        """
-        created: [PopulatedData]!
-    }
-
     type Mutation {
         """
         Get the available mutations for the given AT.
@@ -1416,17 +1488,18 @@ const graphqlSchema = gql`
         """
         browser(id: ID!): BrowserOperations!
         """
-        Adds a report with the given TestPlanVersion, AT and Browser, and a
-        state of "DRAFT", resulting in the report appearing in the Test Queue.
-        In the case an identical report already exists, it will be returned
-        without changes and without affecting existing results.
+        Adds an empty report to the test queue, a container for related test
+        results. Each report must be scoped to a specific TestPlanVersion, AT
+        and Browser. Optionally, either a minimum or exact AT version
+        requirement can be included to constrain the versions testers are
+        allowed to use to run the tests.
         """
-        findOrCreateTestPlanReport(
+        createTestPlanReport(
             """
-            The TestPlanReport to find or create.
+            The TestPlanReport to create.
             """
             input: TestPlanReportInput!
-        ): FindOrCreateResult!
+        ): PopulatedData!
         """
         Get the available mutations for the given TestPlanReport.
         """
