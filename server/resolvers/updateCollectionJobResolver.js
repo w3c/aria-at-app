@@ -1,31 +1,31 @@
 const { AuthenticationError } = require('apollo-server-core');
 const {
-    updateCollectionJobById
+  updateCollectionJobById
 } = require('../models/services/CollectionJobService');
 
 const updateCollectionJobResolver = async (
-    _,
-    { id, status, externalLogsUrl },
-    context
+  _,
+  { id, status, externalLogsUrl },
+  context
 ) => {
-    const { user, transaction } = context;
+  const { user, transaction } = context;
 
-    if (!user?.roles.find(role => role.name === 'ADMIN')) {
-        throw new AuthenticationError();
-    }
+  if (!user?.roles.find(role => role.name === 'ADMIN')) {
+    throw new AuthenticationError();
+  }
 
-    const values = {
-        ...(status && { status }),
-        ...(externalLogsUrl && { externalLogsUrl })
-    };
+  const values = {
+    ...(status && { status }),
+    ...(externalLogsUrl && { externalLogsUrl })
+  };
 
-    const collectionJobs = await updateCollectionJobById({
-        id,
-        values,
-        transaction
-    });
+  const collectionJobs = await updateCollectionJobById({
+    id,
+    values,
+    transaction
+  });
 
-    return collectionJobs;
+  return collectionJobs;
 };
 
 module.exports = updateCollectionJobResolver;

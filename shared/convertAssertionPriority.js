@@ -6,15 +6,15 @@
  * @returns {null|string}
  */
 const convertAssertionPriority = priority => {
-    const validInputRegex = /^(0|1|2|3|EXCLUDE|MUST|SHOULD|MAY)$/;
+  const validInputRegex = /^(0|1|2|3|EXCLUDE|MUST|SHOULD|MAY)$/;
 
-    if (!validInputRegex.test(priority)) return null;
+  if (!validInputRegex.test(priority)) return null;
 
-    if (priority === 0) return 'EXCLUDE';
-    if (priority === 1) return 'MUST';
-    if (priority === 2) return 'SHOULD';
-    if (priority === 3) return 'MAY';
-    return priority;
+  if (priority === 0) return 'EXCLUDE';
+  if (priority === 1) return 'MUST';
+  if (priority === 2) return 'SHOULD';
+  if (priority === 3) return 'MAY';
+  return priority;
 };
 
 module.exports = convertAssertionPriority;

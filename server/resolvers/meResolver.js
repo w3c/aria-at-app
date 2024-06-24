@@ -1,5 +1,5 @@
 const meResolver = (_, __, context) => {
-    return context.user;
+  return context.user;
 };
 
 module.exports = meResolver;

@@ -3,7 +3,7 @@ const submitTestResult = require('./submitTestResultResolver.js');
 const deleteTestResult = require('./deleteTestResultResolver.js');
 
 module.exports = {
-    saveTestResult,
-    submitTestResult,
-    deleteTestResult
+  saveTestResult,
+  submitTestResult,
+  deleteTestResult
 };

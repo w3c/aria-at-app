@@ -12,40 +12,40 @@ import moment from 'moment';
  * @returns {string} - transformed string
  */
 export const capitalizeEachWord = (
-    sentence,
-    { splitChar = ' ', joinChar = ' ' }
+  sentence,
+  { splitChar = ' ', joinChar = ' ' }
 ) => {
-    const words = sentence.toLowerCase().split(splitChar);
-    for (let i = 0; i < words.length; i++)
-        words[i] = `${words[i][0].toUpperCase() + words[i].substr(1)}`;
+  const words = sentence.toLowerCase().split(splitChar);
+  for (let i = 0; i < words.length; i++)
+    words[i] = `${words[i][0].toUpperCase() + words[i].substr(1)}`;
 
-    return words.join(joinChar);
+  return words.join(joinChar);
 };
 
 export const convertDateToString = (date, format = 'DD-MM-YYYY') => {
-    if (!date) return '';
-    return moment(date).format(format);
+  if (!date) return '';
+  return moment(date).format(format);
 };
 
 export const convertStringToDate = (date, format = 'DD-MM-YYYY') => {
-    return moment(date, format).toDate();
+  return moment(date, format).toDate();
 };
 
 export const convertStringFormatToAnotherFormat = (
-    date,
-    fromFormat = 'DD-MM-YYYY',
-    toFormat = 'MM-DD-YYYY'
+  date,
+  fromFormat = 'DD-MM-YYYY',
+  toFormat = 'MM-DD-YYYY'
 ) => {
-    return moment(date, fromFormat).format(toFormat);
+  return moment(date, fromFormat).format(toFormat);
 };
 
 export const isValidDate = (date, format = 'DD-MM-YYYY') => {
-    return moment(date, format).isValid();
+  return moment(date, format).isValid();
 };
 
 export const checkDaysBetweenDates = (date, otherDate) => {
-    const _date = moment(date);
-    const _otherDate = moment(otherDate);
-    const hours = _date.diff(_otherDate, 'hours');
-    return Math.ceil(hours / 24);
+  const _date = moment(date);
+  const _otherDate = moment(otherDate);
+  const hours = _date.diff(_otherDate, 'hours');
+  return Math.ceil(hours / 24);
 };

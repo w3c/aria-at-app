@@ -1,12 +1,12 @@
 const ModelService = require('./ModelService');
 const {
-    TEST_PLAN_VERSION_ATTRIBUTES,
-    TEST_PLAN_REPORT_ATTRIBUTES,
-    TEST_PLAN_RUN_ATTRIBUTES,
-    USER_ATTRIBUTES,
-    AT_ATTRIBUTES,
-    BROWSER_ATTRIBUTES,
-    TEST_PLAN_ATTRIBUTES
+  TEST_PLAN_VERSION_ATTRIBUTES,
+  TEST_PLAN_REPORT_ATTRIBUTES,
+  TEST_PLAN_RUN_ATTRIBUTES,
+  USER_ATTRIBUTES,
+  AT_ATTRIBUTES,
+  BROWSER_ATTRIBUTES,
+  TEST_PLAN_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, TestPlanVersion } = require('../');
 const { Op } = Sequelize;
@@ -18,8 +18,8 @@ const { Op } = Sequelize;
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanAssociation = testPlanAttributes => ({
-    association: 'testPlan',
-    attributes: testPlanAttributes
+  association: 'testPlan',
+  attributes: testPlanAttributes
 });
 
 /**
@@ -31,22 +31,22 @@ const testPlanAssociation = testPlanAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanReportAssociation = (
-    testPlanReportAttributes,
-    atAttributes,
-    browserAttributes,
-    testPlanRunAttributes,
-    userAttributes
+  testPlanReportAttributes,
+  atAttributes,
+  browserAttributes,
+  testPlanRunAttributes,
+  userAttributes
 ) => ({
-    association: 'testPlanReports',
-    attributes: testPlanReportAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        atAssociation(atAttributes),
-        // eslint-disable-next-line no-use-before-define
-        browserAssociation(browserAttributes),
-        // eslint-disable-next-line no-use-before-define
-        testPlanRunAssociation(testPlanRunAttributes, userAttributes)
-    ]
+  association: 'testPlanReports',
+  attributes: testPlanReportAttributes,
+  include: [
+    // eslint-disable-next-line no-use-before-define
+    atAssociation(atAttributes),
+    // eslint-disable-next-line no-use-before-define
+    browserAssociation(browserAttributes),
+    // eslint-disable-next-line no-use-before-define
+    testPlanRunAssociation(testPlanRunAttributes, userAttributes)
+  ]
 });
 
 /**
@@ -55,12 +55,12 @@ const testPlanReportAssociation = (
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
-    association: 'testPlanRuns',
-    attributes: testPlanRunAttributes,
-    include: [
-        // eslint-disable-next-line no-use-before-define
-        userAssociation(userAttributes)
-    ]
+  association: 'testPlanRuns',
+  attributes: testPlanRunAttributes,
+  include: [
+    // eslint-disable-next-line no-use-before-define
+    userAssociation(userAttributes)
+  ]
 });
 
 /**
@@ -68,8 +68,8 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const atAssociation = atAttributes => ({
-    association: 'at',
-    attributes: atAttributes
+  association: 'at',
+  attributes: atAttributes
 });
 
 /**
@@ -77,8 +77,8 @@ const atAssociation = atAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const browserAssociation = browserAttributes => ({
-    association: 'browser',
-    attributes: browserAttributes
+  association: 'browser',
+  attributes: browserAttributes
 });
 
 /**
@@ -86,8 +86,8 @@ const browserAssociation = browserAttributes => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const userAssociation = userAttributes => ({
-    association: 'tester',
-    attributes: userAttributes
+  association: 'tester',
+  attributes: userAttributes
 });
 
 /**
@@ -104,29 +104,29 @@ const userAssociation = userAttributes => ({
  * @returns {Promise<*>}
  */
 const getTestPlanVersionById = async ({
-    id,
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  id,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    return ModelService.getById(TestPlanVersion, {
-        id,
-        attributes: testPlanVersionAttributes,
-        include: [
-            testPlanReportAssociation(
-                testPlanReportAttributes,
-                atAttributes,
-                browserAttributes,
-                testPlanRunAttributes,
-                userAttributes
-            )
-        ],
-        transaction
-    });
+  return ModelService.getById(TestPlanVersion, {
+    id,
+    attributes: testPlanVersionAttributes,
+    include: [
+      testPlanReportAssociation(
+        testPlanReportAttributes,
+        atAttributes,
+        browserAttributes,
+        testPlanRunAttributes,
+        userAttributes
+      )
+    ],
+    transaction
+  });
 };
 
 /**
@@ -149,38 +149,38 @@ const getTestPlanVersionById = async ({
  * @returns {Promise<*>}
  */
 const getTestPlanVersions = async ({
-    search,
-    where = {},
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanAttributes = TEST_PLAN_ATTRIBUTES,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    pagination = {},
-    transaction = {}
+  search,
+  where = {},
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  pagination = {},
+  transaction = {}
 }) => {
-    // search and filtering options
-    const searchQuery = search ? `%${search}%` : '';
-    if (searchQuery) where = { ...where, title: { [Op.iLike]: searchQuery } };
+  // search and filtering options
+  const searchQuery = search ? `%${search}%` : '';
+  if (searchQuery) where = { ...where, title: { [Op.iLike]: searchQuery } };
 
-    return ModelService.get(TestPlanVersion, {
-        where,
-        attributes: testPlanVersionAttributes,
-        include: [
-            testPlanAssociation(testPlanAttributes),
-            testPlanReportAssociation(
-                testPlanReportAttributes,
-                atAttributes,
-                browserAttributes,
-                testPlanRunAttributes,
-                userAttributes
-            )
-        ],
-        pagination,
-        transaction
-    });
+  return ModelService.get(TestPlanVersion, {
+    where,
+    attributes: testPlanVersionAttributes,
+    include: [
+      testPlanAssociation(testPlanAttributes),
+      testPlanReportAssociation(
+        testPlanReportAttributes,
+        atAttributes,
+        browserAttributes,
+        testPlanRunAttributes,
+        userAttributes
+      )
+    ],
+    pagination,
+    transaction
+  });
 };
 
 /**
@@ -196,60 +196,60 @@ const getTestPlanVersions = async ({
  * @returns {Promise<*>}
  */
 const createTestPlanVersion = async ({
-    values: {
-        // ID must be provided, so it matches the ID which is baked into the Test
-        // IDs (see LocationOfDataId.js for more information).
-        id,
-        title,
-        directory,
-        phase,
-        gitSha,
-        gitMessage,
-        testPageUrl,
-        hashedTests,
-        updatedAt,
-        versionString,
-        metadata,
-        tests,
-        testPlanId = null
-    },
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  values: {
+    // ID must be provided, so it matches the ID which is baked into the Test
+    // IDs (see LocationOfDataId.js for more information).
+    id,
+    title,
+    directory,
+    phase,
+    gitSha,
+    gitMessage,
+    testPageUrl,
+    hashedTests,
+    updatedAt,
+    versionString,
+    metadata,
+    tests,
+    testPlanId = null
+  },
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    await ModelService.create(TestPlanVersion, {
-        values: {
-            id,
-            title,
-            directory,
-            phase,
-            gitSha,
-            gitMessage,
-            testPageUrl,
-            hashedTests,
-            updatedAt,
-            versionString,
-            metadata,
-            tests,
-            testPlanId
-        },
-        transaction
-    });
+  await ModelService.create(TestPlanVersion, {
+    values: {
+      id,
+      title,
+      directory,
+      phase,
+      gitSha,
+      gitMessage,
+      testPageUrl,
+      hashedTests,
+      updatedAt,
+      versionString,
+      metadata,
+      tests,
+      testPlanId
+    },
+    transaction
+  });
 
-    return getTestPlanVersionById({
-        id,
-        testPlanVersionAttributes,
-        testPlanReportAttributes,
-        atAttributes,
-        browserAttributes,
-        testPlanRunAttributes,
-        userAttributes,
-        transaction
-    });
+  return getTestPlanVersionById({
+    id,
+    testPlanVersionAttributes,
+    testPlanReportAttributes,
+    atAttributes,
+    browserAttributes,
+    testPlanRunAttributes,
+    userAttributes,
+    transaction
+  });
 };
 
 /**
@@ -266,72 +266,72 @@ const createTestPlanVersion = async ({
  * @returns {Promise<*>}
  */
 const updateTestPlanVersionById = async ({
-    id,
-    values: {
-        title,
-        directory,
-        phase,
-        gitSha,
-        gitMessage,
-        testPageUrl,
-        hashedTests,
-        updatedAt,
-        versionString,
-        metadata,
-        tests,
-        draftPhaseReachedAt,
-        candidatePhaseReachedAt,
-        recommendedPhaseReachedAt,
-        recommendedPhaseTargetDate,
-        deprecatedAt
-    },
-    testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
-    testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
-    atAttributes = AT_ATTRIBUTES,
-    browserAttributes = BROWSER_ATTRIBUTES,
-    testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  id,
+  values: {
+    title,
+    directory,
+    phase,
+    gitSha,
+    gitMessage,
+    testPageUrl,
+    hashedTests,
+    updatedAt,
+    versionString,
+    metadata,
+    tests,
+    draftPhaseReachedAt,
+    candidatePhaseReachedAt,
+    recommendedPhaseReachedAt,
+    recommendedPhaseTargetDate,
+    deprecatedAt
+  },
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    await ModelService.update(TestPlanVersion, {
-        where: { id },
-        values: {
-            title,
-            directory,
-            phase,
-            gitSha,
-            gitMessage,
-            testPageUrl,
-            hashedTests,
-            updatedAt,
-            versionString,
-            metadata,
-            tests,
-            draftPhaseReachedAt,
-            candidatePhaseReachedAt,
-            recommendedPhaseReachedAt,
-            recommendedPhaseTargetDate,
-            deprecatedAt
-        },
-        transaction
-    });
+  await ModelService.update(TestPlanVersion, {
+    where: { id },
+    values: {
+      title,
+      directory,
+      phase,
+      gitSha,
+      gitMessage,
+      testPageUrl,
+      hashedTests,
+      updatedAt,
+      versionString,
+      metadata,
+      tests,
+      draftPhaseReachedAt,
+      candidatePhaseReachedAt,
+      recommendedPhaseReachedAt,
+      recommendedPhaseTargetDate,
+      deprecatedAt
+    },
+    transaction
+  });
 
-    return getTestPlanVersionById({
-        id,
-        testPlanVersionAttributes,
-        testPlanReportAttributes,
-        atAttributes,
-        browserAttributes,
-        testPlanRunAttributes,
-        userAttributes,
-        transaction
-    });
+  return getTestPlanVersionById({
+    id,
+    testPlanVersionAttributes,
+    testPlanReportAttributes,
+    atAttributes,
+    browserAttributes,
+    testPlanRunAttributes,
+    userAttributes,
+    transaction
+  });
 };
 
 module.exports = {
-    // Basic CRUD
-    getTestPlanVersionById,
-    getTestPlanVersions,
-    createTestPlanVersion,
-    updateTestPlanVersionById
+  // Basic CRUD
+  getTestPlanVersionById,
+  getTestPlanVersions,
+  createTestPlanVersion,
+  updateTestPlanVersionById
 };

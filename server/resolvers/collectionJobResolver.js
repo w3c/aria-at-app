@@ -1,13 +1,13 @@
 const {
-    getCollectionJobById
+  getCollectionJobById
 } = require('../models/services/CollectionJobService');
 
 const collectionJobResolver = async (_, { id }, context) => {
-    const { transaction } = context;
+  const { transaction } = context;
 
-    const collectionJob = await getCollectionJobById({ id, transaction });
+  const collectionJob = await getCollectionJobById({ id, transaction });
 
-    return collectionJob;
+  return collectionJob;
 };
 
 module.exports = collectionJobResolver;

@@ -8,16 +8,16 @@ const db = require('../../models/index');
  * @returns {*}
  */
 const dbCleaner = async callback => {
-    global.globalTestTransaction = await db.sequelize.transaction();
-    try {
-        await callback();
-        await global.globalTestTransaction.rollback();
-        global.globalTestTransaction = undefined;
-    } catch (error) {
-        await global.globalTestTransaction.rollback();
-        global.globalTestTransaction = undefined;
-        throw error;
-    }
+  global.globalTestTransaction = await db.sequelize.transaction();
+  try {
+    await callback();
+    await global.globalTestTransaction.rollback();
+    global.globalTestTransaction = undefined;
+  } catch (error) {
+    await global.globalTestTransaction.rollback();
+    global.globalTestTransaction = undefined;
+    throw error;
+  }
 };
 
 module.exports = dbCleaner;

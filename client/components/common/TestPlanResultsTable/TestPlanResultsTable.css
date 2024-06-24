@@ -1,24 +1,24 @@
 table.test-plan-results-table {
-    /* To override `caption-side: bottom;` coming from _reboot.scss */
-    caption-side: unset;
+  /* To override `caption-side: bottom;` coming from _reboot.scss */
+  caption-side: unset;
 }
 
 table.test-plan-unexpected-behaviors-table {
-    margin-top: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 p.test-plan-results-response-p {
-    margin: 0;
+  margin: 0;
 }
 
 blockquote.test-plan-results-blockquote {
-    background: #f7f7f7;
-    border-left: 4px solid #d3d5d9;
-    margin: 0.5em 0;
-    padding: 0.5em;
+  background: #f7f7f7;
+  border-left: 4px solid #d3d5d9;
+  margin: 0.5em 0;
+  padding: 0.5em;
 }
 
 li.test-plan-results-li {
-    margin-left: 1rem;
-    list-style: disc;
+  margin-left: 1rem;
+  list-style: disc;
 }

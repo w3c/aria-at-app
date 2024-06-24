@@ -13,33 +13,33 @@ const allEqual = require('./allEqual');
  * @returns {boolean} - Whether the objects are equivalent
  */
 const deepPickEqual = (
-    comparisons,
-    { pickKeys = null, excludeKeys = [] } = {}
+  comparisons,
+  { pickKeys = null, excludeKeys = [] } = {}
 ) => {
-    let failed = false;
+  let failed = false;
 
-    const recurse = (parts, parentKey = null) => {
-        if (isPlainObject(parts[0])) {
-            Object.keys(parts[0]).forEach(key => {
-                if (!excludeKeys.includes(key)) {
-                    recurse(
-                        parts.map(part => part?.[key]),
-                        key
-                    );
-                }
-            });
-        } else if (Array.isArray(parts[0])) {
-            parts[0].forEach((_, index) => {
-                recurse(parts.map(part => part?.[index]));
-            });
-        } else if (!pickKeys || pickKeys.includes(parentKey)) {
-            if (!allEqual(parts)) failed = true;
+  const recurse = (parts, parentKey = null) => {
+    if (isPlainObject(parts[0])) {
+      Object.keys(parts[0]).forEach(key => {
+        if (!excludeKeys.includes(key)) {
+          recurse(
+            parts.map(part => part?.[key]),
+            key
+          );
         }
-    };
+      });
+    } else if (Array.isArray(parts[0])) {
+      parts[0].forEach((_, index) => {
+        recurse(parts.map(part => part?.[index]));
+      });
+    } else if (!pickKeys || pickKeys.includes(parentKey)) {
+      if (!allEqual(parts)) failed = true;
+    }
+  };
 
-    recurse(comparisons);
+  recurse(comparisons);
 
-    return !failed;
+  return !failed;
 };
 
 module.exports = deepPickEqual;

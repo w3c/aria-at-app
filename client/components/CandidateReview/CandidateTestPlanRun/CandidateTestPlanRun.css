@@ -1,154 +1,154 @@
 .card-body {
-    padding: 0;
+  padding: 0;
 }
 
 .card-body > div {
-    border: none;
+  border: none;
 }
 
 .current-test-title {
-    border: none;
+  border: none;
 }
 
 .current-test-options .options-wrapper {
-    text-align: center;
+  text-align: center;
 }
 
 .current-test-options .options-wrapper li {
-    margin-bottom: 0.5em;
+  margin-bottom: 0.5em;
 }
 
 .current-test-options .options-wrapper li:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .feedback-accordion {
-    width: 100%;
+  width: 100%;
 }
 
 .feedback-accordion-header {
-    display: grid;
-    grid-template-columns: 50% 50%;
+  display: grid;
+  grid-template-columns: 50% 50%;
 }
 
 .feedback-accordion-header span {
-    text-align: right;
+  text-align: right;
 }
 
 .feedback-from-text {
-    font-weight: 400;
+  font-weight: 400;
 }
 
 .feedback-list-item {
-    padding: 1em 0 1em 0.5em;
-    position: relative;
-    margin: 1em 0 1em 0em;
-    list-style: none;
-    font-size: 14px;
-    border: solid 1px #e5e5e5;
-    width: 100%;
+  padding: 1em 0 1em 0.5em;
+  position: relative;
+  margin: 1em 0 1em 0em;
+  list-style: none;
+  font-size: 14px;
+  border: solid 1px #e5e5e5;
+  width: 100%;
 }
 
 .feedback-indicator {
-    position: absolute;
-    left: -2em;
-    top: 1.3em;
-    width: 16px;
-    height: 16px;
-    border-radius: 50px;
-    border: 2px solid #9a9a9a;
+  position: absolute;
+  left: -2em;
+  top: 1.3em;
+  width: 16px;
+  height: 16px;
+  border-radius: 50px;
+  border: 2px solid #9a9a9a;
 }
 
 .feedback-list-item:before {
-    content: '';
-    position: absolute;
-    height: 2.3em;
-    width: 2px;
-    top: -1.1em;
-    left: -1.5em;
-    background: #d2d5d9;
+  content: '';
+  position: absolute;
+  height: 2.3em;
+  width: 2px;
+  top: -1.1em;
+  left: -1.5em;
+  background: #d2d5d9;
 }
 
 .feedback-list-item:after {
-    content: '';
-    position: absolute;
-    height: calc(100% - 1.3em);
-    width: 2px;
-    bottom: -1.2em;
-    left: -1.5em;
-    background: #d2d5d9;
+  content: '';
+  position: absolute;
+  height: calc(100% - 1.3em);
+  width: 2px;
+  bottom: -1.2em;
+  left: -1.5em;
+  background: #d2d5d9;
 }
 
 .feedback-list-item .feedback-indicator {
-    background: white;
+  background: white;
 }
 
 .issues-container {
-    max-width: 800px;
-    margin-bottom: -14px;
+  max-width: 800px;
+  margin-bottom: -14px;
 }
 
 .issues-container > h2 {
-    margin: 0 0 0.5em;
-    font-size: 18px;
-    padding-bottom: 5px;
-    border-bottom: solid 1px #e5e5e5;
+  margin: 0 0 0.5em;
+  font-size: 18px;
+  padding-bottom: 5px;
+  border-bottom: solid 1px #e5e5e5;
 }
 
 .task-label {
-    font-size: 18px !important;
+  font-size: 18px !important;
 }
 
 .test-results-header,
 .test-instructions-header {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .review-status,
 .target-date,
 .apg-example-name {
-    width: 32% !important;
+  width: 32% !important;
 }
 
 .results-container {
-    padding: 0px;
+  padding: 0px;
 }
 
 .results-container-col {
-    padding: 0;
+  padding: 0;
 }
 
 .results-container-row {
-    border: solid 1px #e5e5e5;
-    padding: 1em;
+  border: solid 1px #e5e5e5;
+  padding: 1em;
 }
 
 .results-container {
-    padding: 0;
+  padding: 0;
 }
 
 .options-feedback {
-    top: 35px;
+  top: 35px;
 }
 
 .test-results-header {
-    margin: 0 0 1rem;
+  margin: 0 0 1rem;
 }
 
 .test-results-table {
-    margin-bottom: 0;
-    border-left: none;
+  margin-bottom: 0;
+  border-left: none;
 }
 
 .using {
-    font-weight: 300;
+  font-weight: 300;
 }
 
 .viewed-badge {
-    background-color: #e5e5e5 !important;
-    color: black;
-    font-size: 15px;
-    font-weight: 400;
-    position: relative;
-    top: -5px;
+  background-color: #e5e5e5 !important;
+  color: black;
+  font-size: 15px;
+  font-weight: 400;
+  position: relative;
+  top: -5px;
 }

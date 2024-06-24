@@ -38,26 +38,26 @@ const { sequelize } = require('..');
  * @returns {Promise<Model>} - Sequelize Model
  */
 const getById = async (
-    model,
-    { id, attributes = [], include = [], transaction }
+  model,
+  { id, attributes = [], include = [], transaction }
 ) => {
-    if (!model) throw new Error('Model not defined');
+  if (!model) throw new Error('Model not defined');
 
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
 
-    // findByPk
-    return model.findOne({
-        where: { id },
-        attributes,
-        include,
-        transaction
-    });
+  // findByPk
+  return model.findOne({
+    where: { id },
+    attributes,
+    include,
+    transaction
+  });
 };
 
 /**
@@ -70,25 +70,25 @@ const getById = async (
  * @returns {Promise<Model>} - Sequelize Model
  */
 const getByQuery = async (
-    model,
-    { where, attributes = [], include = [], transaction }
+  model,
+  { where, attributes = [], include = [], transaction }
 ) => {
-    if (!model) throw new Error('Model not defined');
+  if (!model) throw new Error('Model not defined');
 
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
 
-    return model.findOne({
-        where: { ...where },
-        attributes,
-        include,
-        transaction
-    });
+  return model.findOne({
+    where: { ...where },
+    attributes,
+    include,
+    transaction
+  });
 };
 
 /**
@@ -107,68 +107,68 @@ const getByQuery = async (
  * @returns {Promise<*>} - collection of queried Sequelize Models or paginated structure if pagination flag is enabled
  */
 const get = async (
-    model,
-    {
-        where = {}, // passed in search and filtering options
-        attributes = [],
-        include = [],
-        pagination = {},
-        transaction
-    }
+  model,
+  {
+    where = {}, // passed in search and filtering options
+    attributes = [],
+    include = [],
+    pagination = {},
+    transaction
+  }
 ) => {
-    if (!model) throw new Error('Model not defined');
+  if (!model) throw new Error('Model not defined');
 
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
 
-    // pagination and sorting options
-    let {
-        page = 0,
-        limit = 10,
-        order = [],
-        enablePagination = false
-    } = pagination; // page 0->1, 1->2; manage through middleware
-    // 'order' structure eg. [ [ 'username', 'DESC' ], [..., ...], ... ]
-    if (page < 0) page = 0;
-    if (limit < 0 || !enablePagination) limit = null;
-    const offset = limit < 0 || !limit ? 0 : page * limit; // skip (1 * 10 results) = 10 to get get to page 2
+  // pagination and sorting options
+  let {
+    page = 0,
+    limit = 10,
+    order = [],
+    enablePagination = false
+  } = pagination; // page 0->1, 1->2; manage through middleware
+  // 'order' structure eg. [ [ 'username', 'DESC' ], [..., ...], ... ]
+  if (page < 0) page = 0;
+  if (limit < 0 || !enablePagination) limit = null;
+  const offset = limit < 0 || !limit ? 0 : page * limit; // skip (1 * 10 results) = 10 to get get to page 2
 
-    const queryOptions = {
-        where,
-        order,
-        attributes,
-        include, // included fields being marked as 'required' will affect overall count for pagination
-        transaction
+  const queryOptions = {
+    where,
+    order,
+    attributes,
+    include, // included fields being marked as 'required' will affect overall count for pagination
+    transaction
+  };
+
+  // enablePagination paginated result structure and related values
+  if (enablePagination) {
+    const result = await model.findAndCountAll({
+      ...queryOptions,
+      limit,
+      offset,
+      distinct: true // applies distinct SQL rule to avoid duplicates created by 'includes' affecting count
+    });
+
+    const { count: totalResultsCount, rows: data } = result;
+    const resultsCount = data.length;
+    const pagesCount = limit ? Math.ceil(totalResultsCount / limit) : 1;
+
+    return {
+      page: page + 1,
+      pageSize: limit,
+      pagesCount,
+      resultsCount,
+      totalResultsCount,
+      data
     };
-
-    // enablePagination paginated result structure and related values
-    if (enablePagination) {
-        const result = await model.findAndCountAll({
-            ...queryOptions,
-            limit,
-            offset,
-            distinct: true // applies distinct SQL rule to avoid duplicates created by 'includes' affecting count
-        });
-
-        const { count: totalResultsCount, rows: data } = result;
-        const resultsCount = data.length;
-        const pagesCount = limit ? Math.ceil(totalResultsCount / limit) : 1;
-
-        return {
-            page: page + 1,
-            pageSize: limit,
-            pagesCount,
-            resultsCount,
-            totalResultsCount,
-            data
-        };
-    }
-    return model.findAll({ ...queryOptions });
+  }
+  return model.findAll({ ...queryOptions });
 };
 
 /**
@@ -179,16 +179,16 @@ const get = async (
  * @returns {Promise<*>} - result of the sequelize.create function
  */
 const create = async (model, { values, transaction }) => {
-    if (!model) throw new Error('Model not defined');
+  if (!model) throw new Error('Model not defined');
 
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
-    return model.create(values, { transaction });
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
+  return model.create(values, { transaction });
 };
 
 /**
@@ -199,16 +199,16 @@ const create = async (model, { values, transaction }) => {
  * @returns {Promise<*>} - result of the sequelize.create function
  */
 const bulkCreate = async (model, { valuesList, transaction }) => {
-    if (!model) throw new Error('Model not defined');
+  if (!model) throw new Error('Model not defined');
 
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
-    return model.bulkCreate(valuesList, { transaction });
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
+  return model.bulkCreate(valuesList, { transaction });
 };
 
 /**
@@ -220,17 +220,17 @@ const bulkCreate = async (model, { valuesList, transaction }) => {
  * @returns {Promise<*>} - result of the sequelize.update function
  */
 const update = async (model, { values, where, transaction }) => {
-    if (!model) throw new Error('Model not defined');
+  if (!model) throw new Error('Model not defined');
 
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
 
-    return model.update(values, { where, transaction });
+  return model.update(values, { where, transaction });
 };
 
 /**
@@ -302,77 +302,77 @@ const update = async (model, { values, where, transaction }) => {
  * @returns {Promise<[[*,Boolean]]>}
  */
 const nestedGetOrCreate = async ({ operations, transaction }) => {
-    if (!transaction && transaction !== false) {
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
+
+  let accumulatedResults = [];
+  for (const getOperation of operations) {
+    const {
+      get,
+      create,
+      update,
+      values,
+      updateValues,
+      bulkGetOrReplace,
+      bulkGetOrReplaceWhere,
+      valuesList,
+      returnAttributes
+    } = isFunction(getOperation)
+      ? getOperation(accumulatedResults)
+      : getOperation;
+
+    if (bulkGetOrReplace) {
+      if (get || create || update) {
         throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
+          'Cannot mix bulkGetOrReplace with get, create or update' +
+            'update, because one works with an array and the ' +
+            'others work with a single record'
         );
+      }
+      const [records, isUpdated] = await bulkGetOrReplace({
+        where: bulkGetOrReplaceWhere,
+        valuesList,
+        ...returnAttributes,
+        transaction
+      });
+      accumulatedResults.push([records, isUpdated]);
+      continue;
     }
 
-    let accumulatedResults = [];
-    for (const getOperation of operations) {
-        const {
-            get,
-            create,
-            update,
-            values,
-            updateValues,
-            bulkGetOrReplace,
-            bulkGetOrReplaceWhere,
-            valuesList,
-            returnAttributes
-        } = isFunction(getOperation)
-            ? getOperation(accumulatedResults)
-            : getOperation;
+    const found = await get({
+      where: values,
+      ...returnAttributes,
+      transaction
+    });
 
-        if (bulkGetOrReplace) {
-            if (get || create || update) {
-                throw new Error(
-                    'Cannot mix bulkGetOrReplace with get, create or update' +
-                        'update, because one works with an array and the ' +
-                        'others work with a single record'
-                );
-            }
-            const [records, isUpdated] = await bulkGetOrReplace({
-                where: bulkGetOrReplaceWhere,
-                valuesList,
-                ...returnAttributes,
-                transaction
-            });
-            accumulatedResults.push([records, isUpdated]);
-            continue;
-        }
-
-        const found = await get({
-            where: values,
-            ...returnAttributes,
-            transaction
+    if (found.length) {
+      if (updateValues) {
+        await update({
+          id: found[0].id,
+          values: updateValues,
+          ...returnAttributes,
+          transaction
         });
-
-        if (found.length) {
-            if (updateValues) {
-                await update({
-                    id: found[0].id,
-                    values: updateValues,
-                    ...returnAttributes,
-                    transaction
-                });
-            }
-            accumulatedResults.push([found[0], false]);
-            continue;
-        }
-
-        const created = await create({
-            values: { ...values, ...updateValues },
-            ...returnAttributes,
-            transaction
-        });
-
-        accumulatedResults.push([created, true]);
+      }
+      accumulatedResults.push([found[0], false]);
+      continue;
     }
 
-    return accumulatedResults;
+    const created = await create({
+      values: { ...values, ...updateValues },
+      ...returnAttributes,
+      transaction
+    });
+
+    accumulatedResults.push([created, true]);
+  }
+
+  return accumulatedResults;
 };
 
 /**
@@ -392,62 +392,59 @@ const nestedGetOrCreate = async ({ operations, transaction }) => {
  * @returns {Promise<boolean>} - True / false if the records were replaced
  */
 const bulkGetOrReplace = async (Model, { where, valuesList, transaction }) => {
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
 
-    const comparisonKeys =
-        valuesList.length === 0 ? [] : Object.keys(valuesList[0]);
+  const comparisonKeys =
+    valuesList.length === 0 ? [] : Object.keys(valuesList[0]);
 
-    const whereKeys = Object.keys(where);
+  const whereKeys = Object.keys(where);
 
-    const persistedValues = await get(Model, {
-        where,
-        attributes: [...whereKeys, ...comparisonKeys],
-        transaction
-    });
+  const persistedValues = await get(Model, {
+    where,
+    attributes: [...whereKeys, ...comparisonKeys],
+    transaction
+  });
 
-    const isUpdated =
-        valuesList.length === 0
-            ? persistedValues.length !== 0
-            : !isEqualWith(
-                  sortBy(persistedValues, comparisonKeys),
-                  sortBy(valuesList, comparisonKeys),
-                  (persisted, expected, index) => {
-                      // See https://github.com/lodash/lodash/issues/2490
-                      if (index === undefined) return;
+  const isUpdated =
+    valuesList.length === 0
+      ? persistedValues.length !== 0
+      : !isEqualWith(
+          sortBy(persistedValues, comparisonKeys),
+          sortBy(valuesList, comparisonKeys),
+          (persisted, expected, index) => {
+            // See https://github.com/lodash/lodash/issues/2490
+            if (index === undefined) return;
 
-                      return !comparisonKeys.find(comparisonKey => {
-                          return (
-                              persisted[comparisonKey] !==
-                              expected[comparisonKey]
-                          );
-                      });
-                  }
-              );
-
-    if (isUpdated) {
-        // eslint-disable-next-line no-use-before-define
-        await removeByQuery(Model, { where, transaction });
-
-        if (valuesList.length !== 0) {
-            const fullRecordValues = valuesList.map(expectedValue => ({
-                ...where,
-                ...expectedValue
-            }));
-
-            await bulkCreate(Model, {
-                valuesList: fullRecordValues,
-                transaction
+            return !comparisonKeys.find(comparisonKey => {
+              return persisted[comparisonKey] !== expected[comparisonKey];
             });
-        }
-    }
+          }
+        );
 
-    return isUpdated;
+  if (isUpdated) {
+    // eslint-disable-next-line no-use-before-define
+    await removeByQuery(Model, { where, transaction });
+
+    if (valuesList.length !== 0) {
+      const fullRecordValues = valuesList.map(expectedValue => ({
+        ...where,
+        ...expectedValue
+      }));
+
+      await bulkCreate(Model, {
+        valuesList: fullRecordValues,
+        transaction
+      });
+    }
+  }
+
+  return isUpdated;
 };
 
 /**
@@ -460,23 +457,23 @@ const bulkGetOrReplace = async (Model, { where, valuesList, transaction }) => {
  * @returns {Promise<boolean>} - returns true if record was deleted
  */
 const removeById = async (model, { id, truncate = false, transaction }) => {
-    if (!model) throw new Error('Model not defined');
+  if (!model) throw new Error('Model not defined');
 
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
 
-    await model.destroy({
-        where: { id },
-        truncate,
-        transaction
-    });
+  await model.destroy({
+    where: { id },
+    truncate,
+    transaction
+  });
 
-    return true;
+  return true;
 };
 
 /**
@@ -488,22 +485,22 @@ const removeById = async (model, { id, truncate = false, transaction }) => {
  * @returns {Promise<boolean>} - returns true if record was deleted
  */
 const removeByQuery = async (
-    model,
-    { where, truncate = false, transaction }
+  model,
+  { where, truncate = false, transaction }
 ) => {
-    if (!model) throw new Error('Model not defined');
+  if (!model) throw new Error('Model not defined');
 
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
 
-    await model.destroy({ where, truncate, transaction });
+  await model.destroy({ where, truncate, transaction });
 
-    return true;
+  return true;
 };
 
 /**
@@ -512,31 +509,31 @@ const removeByQuery = async (
  * @returns {Promise<*>} - results of the raw SQL query after being ran
  */
 const rawQuery = async (query, { transaction }) => {
-    if (!transaction && transaction !== false) {
-        throw new Error(
-            'Please provide a transaction via the "transaction" field or ' +
-                'pass a value of false to specify that a transaction is not ' +
-                'needed'
-        );
-    }
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
 
-    const [results /*, metadata*/] = await sequelize.query(query, {
-        transaction
-    });
+  const [results /*, metadata*/] = await sequelize.query(query, {
+    transaction
+  });
 
-    return results;
+  return results;
 };
 
 module.exports = {
-    getById,
-    getByQuery,
-    get,
-    create,
-    bulkCreate,
-    update,
-    bulkGetOrReplace,
-    nestedGetOrCreate,
-    removeById,
-    removeByQuery,
-    rawQuery
+  getById,
+  getByQuery,
+  get,
+  create,
+  bulkCreate,
+  update,
+  bulkGetOrReplace,
+  nestedGetOrCreate,
+  removeById,
+  removeByQuery,
+  rawQuery
 };

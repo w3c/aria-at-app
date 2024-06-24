@@ -1,88 +1,88 @@
 .testers-wrapper {
-    display: flex;
-    flex-direction: row;
-    min-height: 3.75rem;
+  display: flex;
+  flex-direction: row;
+  min-height: 3.75rem;
 }
 
 .testers-wrapper div {
-    flex-basis: auto;
+  flex-basis: auto;
 }
 
 .testers-wrapper .dropdown {
-    padding-right: 0.75em;
+  padding-right: 0.75em;
 }
 
 .testers-wrapper .assign-actions {
-    width: 100%;
+  width: 100%;
 }
 
 .fullname {
-    color: gray;
-    font-size: 0.9em;
-    margin-left: 0.25em;
+  color: gray;
+  font-size: 0.9em;
+  margin-left: 0.25em;
 }
 
 svg.svg-inline--fa {
-    margin-right: 0.5em;
+  margin-right: 0.5em;
 }
 
 button.more-actions svg {
-    color: #9fa4aa;
+  color: #9fa4aa;
 }
 
 button.more-actions {
-    background: transparent;
-    color: inherit;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    outline: inherit;
+  background: transparent;
+  color: inherit;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: inherit;
 }
 
 button.more-actions:hover svg,
 button.more-actions:focus svg {
-    color: #6d757d;
+  color: #6d757d;
 }
 
 button.more-actions.btn-primary:hover,
 button.more-actions.btn-primary:focus {
-    background: transparent;
+  background: transparent;
 }
 
 button.more-actions:active {
-    background: #0053ba;
+  background: #0053ba;
 }
 
 .primary-buttons {
-    width: inherit;
+  width: inherit;
 }
 
 .reports-link {
-    display: block;
-    text-align: center;
-    margin: 0.45em 0 0;
-    font-size: 0.9rem;
+  display: block;
+  text-align: center;
+  margin: 0.45em 0 0;
+  font-size: 0.9rem;
 }
 
 .git-string {
-    font-style: italic;
-    font-size: 0.9rem;
+  font-style: italic;
+  font-size: 0.9rem;
 }
 
 .test-plan {
-    font-size: 1.1rem;
+  font-size: 1.1rem;
 }
 
 .btn.updater-button {
-    width: initial;
+  width: initial;
 }
 
 .primary-test-run-select {
-    &[size]:not([size='1']) {
-        padding: 0 !important;
-    }
+  &[size]:not([size='1']) {
+    padding: 0 !important;
+  }
 
-    option {
-        padding: 0.5rem;
-    }
+  option {
+    padding: 0.5rem;
+  }
 }

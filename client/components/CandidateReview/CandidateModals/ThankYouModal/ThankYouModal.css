@@ -1,52 +1,52 @@
 .thank-you {
-    justify-content: center;
+  justify-content: center;
 }
 
 .thank-you .modal-content {
-    align-items: center;
-    width: 360px;
-    padding-top: 2em;
-    padding-bottom: 2em;
+  align-items: center;
+  width: 360px;
+  padding-top: 2em;
+  padding-bottom: 2em;
 }
 
 .thank-you-check {
-    font-size: 100px;
-    margin-right: 0 !important;
-    margin-bottom: 20px;
+  font-size: 100px;
+  margin-right: 0 !important;
+  margin-bottom: 20px;
 }
 
 .thank-you-title {
-    text-align: center;
+  text-align: center;
 }
 
 .thank-you-title h1 {
-    border-bottom: none;
-    font-size: 1.5em;
+  border-bottom: none;
+  font-size: 1.5em;
 }
 
 .thank-you-content {
-    font-weight: bold;
-    text-align: center;
+  font-weight: bold;
+  text-align: center;
 }
 
 .thank-you-share {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .thank-you-issue {
-    text-align: center;
-    font-size: 12px;
-    margin-bottom: 0;
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 0;
 }
 
 .thank-you .modal-header {
-    padding-bottom: 0;
+  padding-bottom: 0;
 }
 
 .thank-you .modal-footer {
-    padding-bottom: 30px;
+  padding-bottom: 30px;
 }
 
 .thank-you .modal-footer .btn {
-    width: 100px;
+  width: 100px;
 }
