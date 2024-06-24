@@ -15,6 +15,7 @@ const {
 } = require('../../models/services/TestPlanVersionService');
 const AtLoader = require('../../models/loaders/AtLoader');
 const processCopiedReports = require('../helpers/processCopiedReports');
+const earliestAtVersionResolver = require('../TestPlanVersion/earliestAtVersionResolver');
 
 const updatePhaseResolver = async (
     { parentContext: { id: testPlanVersionId } },
@@ -337,11 +338,36 @@ const updatePhaseResolver = async (
             transaction
         });
     }
-    await updateTestPlanVersionById({
+
+    const testPlanVersion = await updateTestPlanVersionById({
         id: testPlanVersionId,
         values: updateParams,
         transaction
     });
+
+    // From the point the TestPlanVersion has achieved consensus
+    // and reached the recommended phase, extensive data collection
+    // can begin and the loose requirement of a mininumAtVersion
+    // will no longer be allowed.
+    if (testPlanVersion.phase === 'RECOMMENDED') {
+        for (const testPlanReport of testPlanVersion.testPlanReports) {
+            const atVersion = await earliestAtVersionResolver(
+                testPlanVersion,
+                { atId: testPlanReport.at.id },
+                context
+            );
+
+            await updateTestPlanReportById({
+                id: testPlanReport.id,
+                values: {
+                    minimumAtVersionId: null,
+                    exactAtVersionId: atVersion.id
+                },
+                transaction
+            });
+        }
+    }
+
     return populateData({ testPlanVersionId }, { context });
 };
 

@@ -26,7 +26,7 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             {
@@ -91,7 +91,7 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             {
@@ -136,7 +136,7 @@ export default testQueuePageQuery => [
                         browsers: [
                             {
                                 id: '3',
-                                key: 'safari',
+                                key: 'safari_macos',
                                 name: 'Safari'
                             },
                             {
@@ -258,6 +258,8 @@ export default testQueuePageQuery => [
                             key: 'nvda',
                             name: 'NVDA'
                         },
+                        minimumAtVersion: { id: '1', name: '2024.3321.1' },
+                        exactAtVersion: null,
                         browser: {
                             id: '1',
                             key: 'firefox',
@@ -308,6 +310,8 @@ export default testQueuePageQuery => [
                             key: 'jaws',
                             name: 'JAWS'
                         },
+                        minimumAtVersion: { id: '3', name: '14.5' },
+                        exactAtVersion: null,
                         browser: {
                             id: '1',
                             key: 'firefox',
@@ -348,6 +352,8 @@ export default testQueuePageQuery => [
                             key: 'voiceover_macos',
                             name: 'VoiceOver for macOS'
                         },
+                        minimumAtVersion: null,
+                        exactAtVersion: { id: '2', name: '2024.2' },
                         browser: {
                             id: '1',
                             key: 'firefox',

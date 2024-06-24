@@ -18,7 +18,7 @@ const getTestResults = async ({ testPlanRun, context }) => {
     const { atLoader, browserLoader, transaction } = context;
 
     const { testPlanReport } = testPlanRun;
-    const tests = getTests(testPlanReport);
+    const tests = getTests(testPlanRun);
     const ats = await atLoader.getAll({ transaction });
     const browsers = await browserLoader.getAll({ transaction });
 
