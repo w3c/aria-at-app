@@ -234,6 +234,7 @@ describe('graphql', () => {
                             id
                             name
                             releasedAt
+                            supportedByAutomation
                         }
                     }
                     users {
