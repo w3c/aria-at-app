@@ -233,6 +233,10 @@ const graphqlSchema = gql`
     Date for approximate availability of the version.
     """
     releasedAt: Timestamp!
+    """
+    Whether this AT version is supported by automation.
+    """
+    supportedByAutomation: Boolean!
   }
 
   """
