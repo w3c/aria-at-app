@@ -1,5 +1,5 @@
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
-
+const {v4: uuid} = require('uuid');
 const MODEL_NAME = 'CollectionJob';
 
 module.exports = function (sequelize, DataTypes) {
@@ -34,8 +34,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       secret: {
         type: DataTypes.UUID,
-        allowNull: false,
-        defaultValue: sequelize.literal('gen_random_uuid()')
+        allowNull: false
       }
     },
     {
@@ -43,6 +42,10 @@ module.exports = function (sequelize, DataTypes) {
       tableName: MODEL_NAME
     }
   );
+
+  Model.beforeCreate((job) => {
+    job.uuid = uuid();
+  });
 
   Model.associate = function (models) {
     Model.hasOne(models.TestPlanRun, {

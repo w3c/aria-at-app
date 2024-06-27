@@ -1,4 +1,5 @@
 'use strict';
+const uuid = require('uuid');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -10,7 +11,7 @@ module.exports = {
         {
           type: Sequelize.DataTypes.UUID,
           allowNull: false,
-          defaultValue: Sequelize.literal('gen_random_uuid()')
+          defaultValue: uuid.NIL
         },
         { transaction }
       );
