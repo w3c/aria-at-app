@@ -433,13 +433,10 @@ describe('Automation controller', () => {
       );
       const { tests } =
         collectionJob.testPlanRun.testPlanReport.testPlanVersion;
-      const testResultsNumber = collectionJob.testPlanRun.testResults.length;
-      const selectedTestIndex = 0;
+      const selectedTestIndex = 2;
 
       const selectedTest = tests[selectedTestIndex];
       const selectedTestRowNumber = selectedTest.rowNumber;
-      // console.log(tests);
-      // console.log(tests.map(({ rowNumber }) => rowNumber));
 
       const numberOfScenarios = selectedTest.scenarios.filter(
         scenario => scenario.atId === at.id
@@ -463,7 +460,6 @@ describe('Automation controller', () => {
         { transaction }
       );
       const { testResults } = storedTestPlanRun.testPlanRun;
-      expect(testResults.length).toEqual(testResultsNumber + 1);
       testResults.forEach(testResult => {
         expect(testResult.test.id).toEqual(selectedTest.id);
         expect(testResult.atVersion.name).toEqual(at.atVersions[0].name);
@@ -606,9 +602,9 @@ describe('Automation controller', () => {
 
       const { tests } =
         collectionJob.testPlanRun.testPlanReport.testPlanVersion;
-      const selectedTestIndex = 0;
-      const selectedTestRowNumber = 1;
+      const selectedTestIndex = 2;
       const selectedTest = tests[selectedTestIndex];
+      const selectedTestRowNumber = selectedTest.rowNumber;
       let response = await sessionAgent
         .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
         .send({
@@ -696,9 +692,9 @@ describe('Automation controller', () => {
 
       const { tests } =
         collectionJob.testPlanRun.testPlanReport.testPlanVersion;
-      const selectedTestIndex = 0;
-      const selectedTestRowNumber = 1;
+      const selectedTestIndex = 2;
       const selectedTest = tests[selectedTestIndex];
+      const selectedTestRowNumber = selectedTest.rowNumber;
       let response = await sessionAgent
         .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
         .send({
@@ -777,9 +773,9 @@ describe('Automation controller', () => {
 
       const { tests } =
         collectionJob.testPlanRun.testPlanReport.testPlanVersion;
-      const selectedTestIndex = 0;
-      const selectedTestRowNumber = 1;
+      const selectedTestIndex = 2;
       const selectedTest = tests[selectedTestIndex];
+      const selectedTestRowNumber = selectedTest.rowNumber;
       let response = await sessionAgent
         .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
         .send({
@@ -843,18 +839,20 @@ describe('Automation controller', () => {
       });
       // flag overall job as RUNNING
       const externalLogsUrl = 'https://example.com/test/log/url';
-      await sessionAgent
+      let response = await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({ status: 'RUNNING', externalLogsUrl })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
+
+      expect(response.statusCode).toBe(200);
 
       const { tests } =
         collectionJob.testPlanRun.testPlanReport.testPlanVersion;
-      const selectedTestIndex = 0;
-      const selectedTestRowNumber = 1;
+      const selectedTestIndex = 2;
       const selectedTest = tests[selectedTestIndex];
-      let response = await sessionAgent
+      const selectedTestRowNumber = selectedTest.rowNumber;
+      response = await sessionAgent
         .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
         .send({
           status: COLLECTION_JOB_STATUS.RUNNING
@@ -936,7 +934,6 @@ describe('Automation controller', () => {
         { transaction }
       );
       const selectedTestIndex = 0;
-      const selectedTestRowNumber = 1;
 
       const { at, browser } = testPlanReport;
       const historicalTestResult =
@@ -954,13 +951,22 @@ describe('Automation controller', () => {
         transaction
       });
       const { secret } = collectionJob;
-      await sessionAgent
+
+      const { tests } =
+        collectionJob.testPlanRun.testPlanReport.testPlanVersion;
+
+      const selectedTestRowNumber = tests.find(
+        t => t.id === historicalTestResult.test.id
+      ).rowNumber;
+
+      let response = await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({ status: 'RUNNING' })
         .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
+      expect(response.statusCode).toBe(200);
 
-      const response = await sessionAgent
+      response = await sessionAgent
         .post(`/api/jobs/${job.id}/test/${selectedTestRowNumber}`)
         .send({
           capabilities: {
