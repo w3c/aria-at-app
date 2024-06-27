@@ -37,7 +37,7 @@
         "cross-spawn": "^7.0.3",
         "dotenv": "^16.0.3",
         "dotenv-cli": "^6.0.0",
-        "express": "^5.0.0-alpha.8",
+        "express": "^5.0.0-beta.3",
         "express-handlebars": "^6.0.6",
         "express-session": "^1.17.2",
         "fs-extra": "^11.1.0",
