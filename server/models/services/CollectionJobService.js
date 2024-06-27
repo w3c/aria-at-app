@@ -19,21 +19,19 @@ const {
 } = require('./TestPlanRunService');
 const { getTestPlanReportById } = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
-const { default: axios } = require('axios');
+
 const {
   default: createGithubWorkflow,
   isEnabled: isGithubWorkflowEnabled
 } = require('../../services/GithubWorkflowService');
+
+const {
+  startCollectionJobSimulation
+} = require('../../tests/util/mock-automation-scheduler-server');
+
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../../graphql-context');
 const { getBotUserByAtId } = require('./UserService');
-
-const axiosConfig = {
-  headers: {
-    'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
-  },
-  timeout: 1000
-};
 
 // association helpers to be included with Models' results
 
@@ -252,7 +250,6 @@ const createCollectionJob = async ({
     })),
     transaction
   });
-
   return ModelService.getById(CollectionJob, {
     id: collectionJobResult.id,
     attributes: collectionJobAttributes,
@@ -315,6 +312,7 @@ const getCollectionJobById = async ({
       )
     ],
     transaction
+    // logging: console.log
   });
 };
 
@@ -374,6 +372,7 @@ const getCollectionJobs = async ({
     ],
     pagination,
     transaction
+    // logging: console.log
   });
 };
 
@@ -393,17 +392,7 @@ const triggerWorkflow = async (job, testIds, { transaction }) => {
       // TODO: pass the reduced list of testIds along / deal with them somehow
       await createGithubWorkflow({ job, directory, gitSha });
     } else {
-      await axios.post(
-        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-        {
-          testPlanVersionGitSha: gitSha,
-          testIds,
-          testPlanName: directory,
-          jobId: job.id,
-          transactionId: transaction.id
-        },
-        axiosConfig
-      );
+      await startCollectionJobSimulation(job, transaction);
     }
   } catch (error) {
     console.error(error);
