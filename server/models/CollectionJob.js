@@ -40,7 +40,9 @@ module.exports = function (sequelize, DataTypes) {
     {
       hooks: {
         beforeValidate: job => {
-          job.secret = uuid();
+          if (!job.secret) {
+            job.secret = uuid();
+          }
         }
       },
       timestamps: false,
