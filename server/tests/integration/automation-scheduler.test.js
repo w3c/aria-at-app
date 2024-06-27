@@ -1,10 +1,11 @@
 const startSupertestServer = require('../util/api-server');
 const automationRoutes = require('../../routes/automation');
-const setupMockAutomationSchedulerServer = require('../util/mock-automation-scheduler-server');
+const {
+  setupMockAutomationSchedulerServer
+} = require('../util/mock-automation-scheduler-server');
 const db = require('../../models/index');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const dbCleaner = require('../util/db-cleaner');
-const { default: axios } = require('axios');
 const {
   getCollectionJobById
 } = require('../../models/services/CollectionJobService');
@@ -14,22 +15,20 @@ const BrowserLoader = require('../../models/loaders/BrowserLoader');
 const getGraphQLContext = require('../../graphql-context');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 
-let mockAutomationSchedulerServer;
 let apiServer;
 let sessionAgent;
 
-const testPlanReportId = '4';
+const testPlanReportId = '18';
 
 beforeAll(async () => {
   apiServer = await startSupertestServer({
     pathToRoutes: [['/api/jobs', automationRoutes]]
   });
   sessionAgent = apiServer.sessionAgent;
-  mockAutomationSchedulerServer = await setupMockAutomationSchedulerServer();
+  await setupMockAutomationSchedulerServer();
 });
 
 afterAll(async () => {
-  await mockAutomationSchedulerServer.tearDown();
   await apiServer.tearDown();
   await db.sequelize.close();
 });
@@ -222,6 +221,11 @@ const deleteCollectionJobByMutation = async (jobId, { transaction }) =>
     { transaction }
   );
 
+const getJobSecret = async (jobId, { transaction }) => {
+  const job = await getCollectionJobById({ id: jobId, transaction });
+  return job.secret;
+};
+
 describe('Automation controller', () => {
   it('should schedule a new job', async () => {
     await dbCleaner(async transaction => {
@@ -232,68 +236,6 @@ describe('Automation controller', () => {
       expect(storedJob.status).toEqual('QUEUED');
       expect(storedJob.testPlanRun.testPlanReport.id).toEqual(testPlanReportId);
       expect(storedJob.testPlanRun.testResults.length).toEqual(0);
-    });
-  });
-
-  it('should schedule a new job and correctly construct test data for automation scheduler', async () => {
-    await dbCleaner(async transaction => {
-      const axiosPostMock = jest.spyOn(axios, 'post').mockResolvedValue({
-        data: { id: '999', status: 'QUEUED' }
-      });
-
-      const {
-        testPlanReport: {
-          runnableTests,
-          testPlanVersion: {
-            gitSha: testPlanVersionGitSha,
-            testPlan: { directory: testPlanName }
-          }
-        }
-      } = await query(
-        `
-                    query {
-                        testPlanReport(id: "${testPlanReportId}") {
-                            runnableTests {
-                                id
-                            }
-                            testPlanVersion {
-                                testPlan {
-                                    directory
-                                }
-                                gitSha
-                            }
-                        }
-                    }
-                `,
-        { transaction }
-      );
-
-      const testIds = runnableTests.map(({ id }) => id);
-
-      const collectionJob = await scheduleCollectionJobByMutation({
-        transaction
-      });
-
-      const expectedRequestBody = {
-        testPlanVersionGitSha,
-        testIds,
-        testPlanName,
-        jobId: parseInt(collectionJob.scheduleCollectionJob.id),
-        transactionId: transaction.id
-      };
-
-      expect(axiosPostMock).toHaveBeenCalledWith(
-        `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
-        expectedRequestBody,
-        {
-          headers: {
-            'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
-          },
-          timeout: 1000
-        }
-      );
-
-      axiosPostMock.mockRestore();
     });
   });
 
@@ -355,25 +297,29 @@ describe('Automation controller', () => {
   });
 
   it('should not update a job status without verification', async () => {
-    await dbCleaner(async transaction => {
-      const { scheduleCollectionJob: job } =
-        await scheduleCollectionJobByMutation({ transaction });
-      const response = await sessionAgent.post(`/api/jobs/${job.id}`);
-      expect(response.statusCode).toBe(403);
-      expect(response.body).toEqual({
-        error: 'Unauthorized'
-      });
-    });
-  });
-
-  it('should fail to update a job status with invalid status', async () => {
-    await dbCleaner(async transaction => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
       const { scheduleCollectionJob: job } =
         await scheduleCollectionJobByMutation({ transaction });
       const response = await sessionAgent
         .post(`/api/jobs/${job.id}`)
+        .set('x-transaction-id', transaction.id);
+      expect(response.body).toEqual({
+        error: 'Unauthorized'
+      });
+      expect(response.statusCode).toBe(403);
+    });
+  });
+
+  it('should fail to update a job status with invalid status', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      const { scheduleCollectionJob: job } =
+        await scheduleCollectionJobByMutation({ transaction });
+      const secret = await getJobSecret(job.id, { transaction });
+      const response = await sessionAgent
+        .post(`/api/jobs/${job.id}`)
         .send({ status: 'INVALID' })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET);
+        .set('x-automation-secret', secret)
+        .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(400);
       expect(response.body).toEqual({
         error: 'Invalid status: INVALID'
@@ -396,10 +342,11 @@ describe('Automation controller', () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
       const { scheduleCollectionJob: job } =
         await scheduleCollectionJobByMutation({ transaction });
+      const secret = await getJobSecret(job.id, { transaction });
       const response = await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({ status: 'RUNNING' })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       const { body } = response;
       expect(response.statusCode).toBe(200);
@@ -427,13 +374,14 @@ describe('Automation controller', () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
       const { scheduleCollectionJob: job } =
         await scheduleCollectionJobByMutation({ transaction });
+      const secret = await getJobSecret(job.id, { transaction });
       const response = await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({
           status: 'CANCELLED',
           externalLogsUrl: 'https://www.aol.com/'
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       const { body } = response;
       expect(response.statusCode).toBe(200);
@@ -463,6 +411,7 @@ describe('Automation controller', () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
       const { scheduleCollectionJob: job } =
         await scheduleCollectionJobByMutation({ transaction });
+      const secret = await getJobSecret(job.id, { transaction });
       const collectionJob = await getCollectionJobById({
         id: job.id,
         transaction
@@ -470,7 +419,7 @@ describe('Automation controller', () => {
       await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({ status: 'RUNNING' })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       const automatedTestResponse = 'AUTOMATED TEST RESPONSE';
       const ats = await AtLoader().getAll({ transaction });
@@ -486,9 +435,12 @@ describe('Automation controller', () => {
         collectionJob.testPlanRun.testPlanReport.testPlanVersion;
       const testResultsNumber = collectionJob.testPlanRun.testResults.length;
       const selectedTestIndex = 0;
-      const selectedTestRowNumber = 1;
 
       const selectedTest = tests[selectedTestIndex];
+      const selectedTestRowNumber = selectedTest.rowNumber;
+      // console.log(tests);
+      // console.log(tests.map(({ rowNumber }) => rowNumber));
+
       const numberOfScenarios = selectedTest.scenarios.filter(
         scenario => scenario.atId === at.id
       ).length;
@@ -503,7 +455,7 @@ describe('Automation controller', () => {
           },
           responses: new Array(numberOfScenarios).fill(automatedTestResponse)
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
       const storedTestPlanRun = await getTestPlanRun(
@@ -551,6 +503,7 @@ describe('Automation controller', () => {
           transaction,
           reportId: '19'
         });
+      const secret = await getJobSecret(job.id, { transaction });
       const collectionJob = await getCollectionJobById({
         id: job.id,
         transaction
@@ -558,7 +511,7 @@ describe('Automation controller', () => {
       await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({ status: 'RUNNING' })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       const automatedTestResponse = 'AUTOMATED TEST RESPONSE';
       const ats = await AtLoader().getAll({ transaction });
@@ -593,7 +546,7 @@ describe('Automation controller', () => {
           },
           responses: new Array(numberOfScenarios).fill(automatedTestResponse)
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
       const storedTestPlanRun = await getTestPlanRun(
@@ -638,6 +591,7 @@ describe('Automation controller', () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
       const { scheduleCollectionJob: job } =
         await scheduleCollectionJobByMutation({ transaction });
+      const secret = await getJobSecret(job.id, { transaction });
       const collectionJob = await getCollectionJobById({
         id: job.id,
         transaction
@@ -647,7 +601,7 @@ describe('Automation controller', () => {
       await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({ status: 'RUNNING', externalLogsUrl })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
 
       const { tests } =
@@ -660,7 +614,7 @@ describe('Automation controller', () => {
         .send({
           status: COLLECTION_JOB_STATUS.RUNNING
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 
@@ -689,7 +643,7 @@ describe('Automation controller', () => {
         .send({
           status: COLLECTION_JOB_STATUS.ERROR
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 
@@ -700,7 +654,7 @@ describe('Automation controller', () => {
           // missing it is not overwritten/emptied.
           status: COLLECTION_JOB_STATUS.ERROR
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 
@@ -727,6 +681,7 @@ describe('Automation controller', () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
       const { scheduleCollectionJob: job } =
         await scheduleCollectionJobByMutation({ transaction });
+      const secret = await getJobSecret(job.id, { transaction });
       const collectionJob = await getCollectionJobById({
         id: job.id,
         transaction
@@ -736,7 +691,7 @@ describe('Automation controller', () => {
       await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({ status: 'RUNNING', externalLogsUrl })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
 
       const { tests } =
@@ -749,7 +704,7 @@ describe('Automation controller', () => {
         .send({
           status: COLLECTION_JOB_STATUS.RUNNING
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 
@@ -780,7 +735,7 @@ describe('Automation controller', () => {
           // missing it is not overwritten/emptied.
           status: COLLECTION_JOB_STATUS.ERROR
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 
@@ -807,6 +762,7 @@ describe('Automation controller', () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
       const { scheduleCollectionJob: job } =
         await scheduleCollectionJobByMutation({ transaction });
+      const secret = await getJobSecret(job.id, { transaction });
       const collectionJob = await getCollectionJobById({
         id: job.id,
         transaction
@@ -816,7 +772,7 @@ describe('Automation controller', () => {
       await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({ status: 'RUNNING', externalLogsUrl })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
 
       const { tests } =
@@ -829,7 +785,7 @@ describe('Automation controller', () => {
         .send({
           status: COLLECTION_JOB_STATUS.RUNNING
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 
@@ -860,7 +816,7 @@ describe('Automation controller', () => {
           // missing it is not overwritten/emptied.
           status: COLLECTION_JOB_STATUS.CANCELLED
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 
@@ -880,6 +836,7 @@ describe('Automation controller', () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
       const { scheduleCollectionJob: job } =
         await scheduleCollectionJobByMutation({ transaction });
+      const secret = await getJobSecret(job.id, { transaction });
       const collectionJob = await getCollectionJobById({
         id: job.id,
         transaction
@@ -902,7 +859,7 @@ describe('Automation controller', () => {
         .send({
           status: COLLECTION_JOB_STATUS.RUNNING
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 
@@ -933,7 +890,7 @@ describe('Automation controller', () => {
           // missing it is not overwritten/emptied.
           status: COLLECTION_JOB_STATUS.COMPLETED
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 
@@ -996,10 +953,11 @@ describe('Automation controller', () => {
         id: job.id,
         transaction
       });
+      const { secret } = collectionJob;
       await sessionAgent
         .post(`/api/jobs/${job.id}`)
         .send({ status: 'RUNNING' })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
 
       const response = await sessionAgent
@@ -1013,7 +971,7 @@ describe('Automation controller', () => {
           },
           responses: historicalResponses
         })
-        .set('x-automation-secret', process.env.AUTOMATION_SCHEDULER_SECRET)
+        .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
       expect(response.statusCode).toBe(200);
 

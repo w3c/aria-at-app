@@ -30,9 +30,6 @@ const getGraphQLContext = require('../graphql-context');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
-  headers: {
-    'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
-  },
   timeout: 1000,
   httpAgent
 };
@@ -267,7 +264,8 @@ const updateJobResults = async (req, res) => {
     } = {}
   } = req.body;
 
-  const job = await getCollectionJobById({ id, transaction });
+  const job =
+    req.collectionJob ?? (await getCollectionJobById({ id, transaction }));
   if (!job) {
     throwNoJobFoundError(id);
   }

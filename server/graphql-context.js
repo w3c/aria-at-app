@@ -9,7 +9,6 @@ const getGraphQLContext = ({ req }) => {
 
   const atLoader = AtLoader();
   const browserLoader = BrowserLoader();
-
   return { user, atLoader, browserLoader, transaction };
 };
 
