@@ -25,6 +25,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         id
         name
         releasedAt
+        supportedByAutomation
       }
       browsers {
         id
@@ -49,6 +50,11 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             id
             key
             name
+            atVersions {
+              id
+              name
+              supportedByAutomation
+            }
           }
           browser {
             id
@@ -58,10 +64,12 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
           minimumAtVersion {
             id
             name
+            supportedByAutomation
           }
           exactAtVersion {
             id
             name
+            supportedByAutomation
           }
           runnableTestsLength
           conflictsLength
