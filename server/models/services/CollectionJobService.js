@@ -385,13 +385,13 @@ const getCollectionJobs = async ({
  * @param {*} options.transaction - Sequelize transaction
  * @returns Promise<CollectionJob>
  */
-const triggerWorkflow = async (job, testIds, { transaction }) => {
+const triggerWorkflow = async (job, testIds, atVersion, { transaction }) => {
   const { testPlanVersion } = job.testPlanRun.testPlanReport;
   const { gitSha, directory } = testPlanVersion;
   try {
     if (isGithubWorkflowEnabled()) {
       // TODO: pass the reduced list of testIds along / deal with them somehow
-      await createGithubWorkflow({ job, directory, gitSha });
+      await createGithubWorkflow({ job, directory, gitSha, atVersion });
     } else {
       await axios.post(
         `${process.env.AUTOMATION_SCHEDULER_URL}/jobs/new`,
@@ -400,7 +400,8 @@ const triggerWorkflow = async (job, testIds, { transaction }) => {
           testIds,
           testPlanName: directory,
           jobId: job.id,
-          transactionId: transaction.id
+          transactionId: transaction.id,
+          atVersion
         },
         axiosConfig
       );
@@ -572,9 +573,17 @@ const scheduleCollectionJob = async (
     transaction
   });
 
-  return triggerWorkflow(job, testIds ?? tests.map(test => test.id), {
-    transaction
-  });
+  // TODO: Calculate minimum/exact AT version
+  const atVersion = report.exactAtVersion;
+
+  return triggerWorkflow(
+    job,
+    testIds ?? tests.map(test => test.id),
+    atVersion,
+    {
+      transaction
+    }
+  );
 };
 
 /**

@@ -83,6 +83,16 @@ module.exports = function (sequelize, DataTypes) {
       as: 'testPlan'
     });
 
+    Model.belongsTo(sequelize.models.AtVersion, {
+      as: 'exactAtVersion',
+      foreignKey: 'exactAtVersionId'
+    });
+
+    Model.belongsTo(sequelize.models.AtVersion, {
+      as: 'minimumAtVersion',
+      foreignKey: 'minimumAtVersionId'
+    });
+
     Model.hasMany(models.TestPlanRun, {
       ...Model.TEST_PLAN_RUN_ASSOCIATION,
       foreignKey: 'testPlanReportId',

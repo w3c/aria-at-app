@@ -114,7 +114,7 @@ const fetchInstallationAccessToken = async (jsonWebToken, installationID) => {
   return JSON.parse(response.data).token;
 };
 
-const createGithubWorkflow = async ({ job, directory, gitSha }) => {
+const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   const payload = {
     iat: calculateIssuedAt(),
     exp: calculateExpiresAt(),
@@ -147,6 +147,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
   if (atKey === 'nvda') {
     inputs.test_pattern = '{reference/**,test-*-nvda.*}';
     inputs.browser = browser;
+    inputs.nvda_version = atVersion?.name;
   }
   const axiosConfig = {
     method: 'POST',
@@ -158,7 +159,8 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
       'X-GitHub-Api-Version': '2022-11-28'
     },
     data: JSON.stringify({
-      ref: 'main',
+      // TODO: Set back to 'main' once this branch is merged
+      ref: 'support-specific-at-runs',
       inputs
     }),
     validateStatus: () => true,

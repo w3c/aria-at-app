@@ -7,7 +7,8 @@ const {
   AT_ATTRIBUTES,
   BROWSER_ATTRIBUTES,
   USER_ATTRIBUTES,
-  TEST_PLAN_ATTRIBUTES
+  TEST_PLAN_ATTRIBUTES,
+  AT_VERSION_ATTRIBUTES
 } = require('./helpers');
 const { TestPlanReport, TestPlanVersion } = require('../');
 
@@ -57,6 +58,16 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
     // eslint-disable-next-line no-use-before-define
     userAssociation(userAttributes)
   ]
+});
+
+/**
+ * @param {string} alias - alias for the association
+ * @param {string[]} atVersionAttributes - AtVersion attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const atVersionAssociation = (alias, atVersionAttributes) => ({
+  association: 'exactAtVersion',
+  attributes: atVersionAttributes
 });
 
 /**
@@ -133,6 +144,7 @@ const getTestPlanReportById = async ({
   atAttributes = AT_ATTRIBUTES,
   browserAttributes = BROWSER_ATTRIBUTES,
   userAttributes = USER_ATTRIBUTES,
+  atVersionAttributes = AT_VERSION_ATTRIBUTES,
   transaction
 }) => {
   return ModelService.getById(TestPlanReport, {
@@ -142,7 +154,9 @@ const getTestPlanReportById = async ({
       testPlanRunAssociation(testPlanRunAttributes, userAttributes),
       testPlanVersionAssociation(testPlanVersionAttributes, testPlanAttributes),
       atAssociation(atAttributes),
-      browserAssociation(browserAttributes)
+      browserAssociation(browserAttributes),
+      atVersionAssociation('exactAtVersion', atVersionAttributes),
+      atVersionAssociation('minimumAtVersion', atVersionAttributes)
     ],
     transaction
   });
