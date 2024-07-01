@@ -41,7 +41,7 @@
         "express-handlebars": "^6.0.6",
         "express-session": "^1.17.2",
         "fs-extra": "^11.1.0",
-        "graphql": "^16.6.0",
+        "graphql": "^16.9.0",
         "js-base64": "^3.6.1",
         "jsonwebtoken": "^9.0.2",
         "lodash": "^4.17.21",
