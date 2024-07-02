@@ -149,6 +149,9 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
     inputs.browser = browser;
     inputs.nvda_version = atVersion?.name;
   }
+  if (atKey === 'voiceover_macos') {
+    inputs.macos_version = atVersion?.name;
+  }
   const axiosConfig = {
     method: 'POST',
     url: `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${workflowFilename}/dispatches`,
