@@ -357,13 +357,16 @@ describe('Automation controller', () => {
     await dbCleaner(async transaction => {
       const { scheduleCollectionJob: job } =
         await scheduleCollectionJobByMutation({ transaction });
+
       const { restartCollectionJob: collectionJob } =
         await restartCollectionJobByMutation(job.id, { transaction });
+
       expect(collectionJob).not.toBe(undefined);
       expect(collectionJob).toEqual({
         id: job.id,
         status: 'QUEUED'
       });
+
       const { collectionJob: storedCollectionJob } = await getTestCollectionJob(
         job.id,
         { transaction }

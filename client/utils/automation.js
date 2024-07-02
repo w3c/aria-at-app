@@ -26,6 +26,7 @@ export const isSupportedByResponseCollector = ctx => {
   ) {
     return false;
   }
+
   // If there are version requirements, check if they are supported by automation
   if (ctx.minimumAtVersion || ctx.exactAtVersion) {
     return atVersionRequirementsSupportedByAutomation(ctx);
@@ -46,7 +47,7 @@ const atVersionRequirementsSupportedByAutomation = ({
   minimumAtVersion,
   exactAtVersion
 }) => {
-  if (!at && !(exactAtVersion || minimumAtVersion)) {
+  if (!at || !(exactAtVersion || minimumAtVersion)) {
     return false;
   }
 

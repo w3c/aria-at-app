@@ -2,7 +2,9 @@
 const NO_OUTPUT_STRING = 'No output was detected.';
 
 const AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS = {
-  'VoiceOver for macOS': ['12.0', '13.0', '14.0', '11.6 (20G165)'],
+  // These should be tracked with the available version in the github workflow
+  // TODO: Add link once feature branch for these changes is merged in aria-at-gh-actions-helper
+  'VoiceOver for macOS': ['13.0', '14.0'],
   // These are tracked with the https://github.com/bocoup/aria-at-automation-nvda-builds/releases
   NVDA: ['2024.1', '2023.3.3', '2023.3']
 };
