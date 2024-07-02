@@ -128,7 +128,7 @@ const setupMockAutomationSchedulerServer = async () => {
       });
     } else {
       // Local development must simulate posting results
-      const { jobId, transactionId } = req.body;
+      const { jobId, transactionId, atVersion } = req.body;
       const transaction = getTransactionById(transactionId);
       const data = await query(
         gql`
@@ -177,7 +177,7 @@ const setupMockAutomationSchedulerServer = async () => {
       const browserVersionName = testPlanReport.browser.browserVersions[0].name;
 
       const atName = testPlanReport.at.name;
-      const atVersionName = testPlanReport.at.atVersions[0].name;
+      const { name: atVersionName } = atVersion;
       const { runnableTests } = testPlanReport;
 
       const isV2 = testPlanVersion.metadata?.testFormatVersion === 2;
