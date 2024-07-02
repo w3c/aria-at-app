@@ -66,7 +66,7 @@ const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
  * @returns {{association: string, attributes: string[]}}
  */
 const atVersionAssociation = (alias, atVersionAttributes) => ({
-  association: 'exactAtVersion',
+  association: alias,
   attributes: atVersionAttributes
 });
 

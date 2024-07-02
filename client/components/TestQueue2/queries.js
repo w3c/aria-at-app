@@ -54,6 +54,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
               id
               name
               supportedByAutomation
+              releasedAt
             }
           }
           browser {

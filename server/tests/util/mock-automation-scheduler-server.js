@@ -177,6 +177,15 @@ const setupMockAutomationSchedulerServer = async () => {
       const browserVersionName = testPlanReport.browser.browserVersions[0].name;
 
       const atName = testPlanReport.at.name;
+
+      if (!atVersion || !atVersion.name) {
+        console.warn('Simulated job started without specified version');
+        return res.json({
+          id: jobId,
+          status: COLLECTION_JOB_STATUS.ERROR
+        });
+      }
+
       const { name: atVersionName } = atVersion;
       const { runnableTests } = testPlanReport;
 

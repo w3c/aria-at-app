@@ -27,12 +27,70 @@ const {
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../../graphql-context');
 const { getBotUserByAtId } = require('./UserService');
+const { getAtVersions } = require('./AtService');
 
 const axiosConfig = {
   headers: {
     'x-automation-secret': process.env.AUTOMATION_SCHEDULER_SECRET
   },
   timeout: 1000
+};
+
+const getAtVersionWithRequirements = async (
+  atId,
+  exactAtVersion,
+  minimumAtVersion,
+  transaction
+) => {
+  try {
+    if (exactAtVersion) {
+      return exactAtVersion;
+    }
+
+    if (!minimumAtVersion) {
+      throw new Error(
+        'Either exactAtVersion or minimumAtVersion must be provided'
+      );
+    }
+
+    const isMinimumVersionSupported =
+      await minimumAtVersion.supportedByAutomation;
+    if (isMinimumVersionSupported) {
+      return minimumAtVersion;
+    }
+
+    const matchingAts = await getAtVersions({
+      where: {
+        atId,
+        releasedAt: { [Op.gte]: minimumAtVersion.releasedAt }
+      },
+      pagination: {
+        order: [['releasedAt', 'ASC']]
+      },
+      transaction
+    });
+
+    const supportedAts = await Promise.all(
+      matchingAts.map(async version => {
+        const supportedByAutomation = await version.supportedByAutomation;
+        return supportedByAutomation ? version.toJSON() : null;
+      })
+    );
+
+    const latestSupportedAt = supportedAts.filter(Boolean)[0];
+
+    if (!latestSupportedAt) {
+      throw new Error(
+        `No suitable AT version found for automation for AT ${atId} ` +
+          `with minimumAtVersion ${minimumAtVersion?.name}`
+      );
+    }
+
+    return latestSupportedAt;
+  } catch (error) {
+    console.error('Error while determining AT version:', error);
+    throw error;
+  }
 };
 
 // association helpers to be included with Models' results
@@ -573,8 +631,12 @@ const scheduleCollectionJob = async (
     transaction
   });
 
-  // TODO: Calculate minimum/exact AT version
-  const atVersion = report.exactAtVersion;
+  const atVersion = await getAtVersionWithRequirements(
+    report.at.id,
+    report.exactAtVersion,
+    report.minimumAtVersion,
+    transaction
+  );
 
   return triggerWorkflow(
     job,
