@@ -12,9 +12,9 @@ import {
   ASSIGN_TESTER_MUTATION,
   REMOVE_TESTER_MUTATION,
   TEST_PLAN_REPORT_AT_BROWSER_QUERY
-} from '../queries';
+} from '../../TestQueue/queries';
 import { useMutation, useQuery } from '@apollo/client';
-import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
+import { LoadingStatus, useTriggerLoad } from '../LoadingStatus';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
 import { isSupportedByResponseCollector } from '../../../utils/automation';
 

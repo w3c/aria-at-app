@@ -10,7 +10,7 @@ import {
   cleanup
 } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import AssignTesterDropdown from '../components/TestQueue/AssignTesterDropdown';
+import AssignTesterDropdown from '../components/common/AssignTesterDropdown';
 import {
   ASSIGN_TESTER_MUTATION,
   REMOVE_TESTER_MUTATION,

@@ -20,7 +20,7 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import './TestQueueRow.css';
 import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import TestQueueCompletionStatusListItem from '../TestQueueCompletionStatusListItem';
-import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
+import AssignTesterDropdown from '../common/AssignTesterDropdown';
 import BotRunTestStatusList from '../BotRunTestStatusList';
 import ManageBotRunDialogWithButton from '../ManageBotRunDialog/WithButton';
 
