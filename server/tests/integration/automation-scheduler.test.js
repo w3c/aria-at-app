@@ -13,6 +13,7 @@ const AtLoader = require('../../models/loaders/AtLoader');
 const BrowserLoader = require('../../models/loaders/BrowserLoader');
 const getGraphQLContext = require('../../graphql-context');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
+const getAtVersionWithRequirements = require('../../util/getAtVersionWithRequirements');
 
 let mockAutomationSchedulerServer;
 let apiServer;
@@ -241,20 +242,27 @@ describe('Automation controller', () => {
         data: { id: '999', status: 'QUEUED' }
       });
 
-      const {
-        testPlanReport: {
-          runnableTests,
-          testPlanVersion: {
-            gitSha: testPlanVersionGitSha,
-            testPlan: { directory: testPlanName }
-          }
-        }
-      } = await query(
+      const { testPlanReport } = await query(
         `
                     query {
                         testPlanReport(id: "${testPlanReportId}") {
                             runnableTests {
                                 id
+                            }
+                            minimumAtVersion {
+                              name
+                              id
+                              releasedAt
+                              supportedByAutomation
+                            }
+                            exactAtVersion {
+                              name
+                              id
+                              releasedAt
+                              supportedByAutomation
+                            }
+                            at {
+                              id
                             }
                             testPlanVersion {
                                 testPlan {
@@ -268,18 +276,37 @@ describe('Automation controller', () => {
         { transaction }
       );
 
+      const {
+        runnableTests,
+        testPlanVersion: {
+          gitSha: testPlanVersionGitSha,
+          testPlan: { directory: testPlanName }
+        },
+        minimumAtVersion,
+        exactAtVersion,
+        at
+      } = testPlanReport;
+
       const testIds = runnableTests.map(({ id }) => id);
 
       const collectionJob = await scheduleCollectionJobByMutation({
         transaction
       });
 
+      const atVersion = await getAtVersionWithRequirements(
+        at.id,
+        exactAtVersion,
+        minimumAtVersion,
+        transaction
+      );
+
       const expectedRequestBody = {
         testPlanVersionGitSha,
         testIds,
         testPlanName,
         jobId: parseInt(collectionJob.scheduleCollectionJob.id),
-        transactionId: transaction.id
+        transactionId: transaction.id,
+        atVersion
       };
 
       expect(axiosPostMock).toHaveBeenCalledWith(

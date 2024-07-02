@@ -31,6 +31,8 @@ $$;
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2023.3.3', '2023-12-02');
+
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2019.3', '2022-05-02');
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.1', '2022-05-02');
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.2', '2022-05-02');
