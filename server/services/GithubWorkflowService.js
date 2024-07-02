@@ -153,7 +153,6 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
     // We just want the whole number of the macOS version
     // due to limitations on Github workflow runners
     inputs.macos_version = atVersion?.name?.split('.')[0];
-    console.log(inputs.macos_version);
   }
   const axiosConfig = {
     method: 'POST',
