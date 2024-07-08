@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import BasicModal from '../common/BasicModal';
 import { useMutation, useQuery } from '@apollo/client';
-import { ADD_TEST_QUEUE_MUTATION } from '../TestQueue/queries';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import {
   getBotUsernameFromAtBrowser,
@@ -12,7 +11,8 @@ import {
 import './AddTestToQueueWithConfirmation.css';
 import {
   SCHEDULE_COLLECTION_JOB_MUTATION,
-  EXISTING_TEST_PLAN_REPORTS
+  EXISTING_TEST_PLAN_REPORTS,
+  ADD_TEST_QUEUE_MUTATION
 } from './queries';
 import { TEST_QUEUE_PAGE_QUERY } from '../TestQueue2/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';

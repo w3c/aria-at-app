@@ -1,40 +1,6 @@
-import getPage from './util/getPage';
+import getPage from '../util/getPage';
 
 describe('smoke test', () => {
-  it('end-to-end tests can simultaneously sign in with all roles [old]', async () => {
-    await Promise.all([
-      getPage({ role: 'admin', url: '/test-queue-old' }, async page => {
-        // Only admins can remove rows from the test queue
-        await page.waitForSelector('td.actions ::-p-text(Remove)');
-      }),
-
-      getPage({ role: 'tester', url: '/test-queue-old' }, async page => {
-        // Testers can assign themselves
-        await page.waitForSelector('table ::-p-text(Assign Yourself)');
-        const adminOnlyRemoveButton = await page.$(
-          'td.actions ::-p-text(Remove)'
-        );
-        expect(adminOnlyRemoveButton).toBe(null);
-      }),
-
-      getPage(
-        { role: 'vendor', url: '/test-queue-old' },
-        async (page, { baseUrl }) => {
-          // Vendors get the same test queue as signed-out users
-          await page.waitForSelector('td.actions ::-p-text(View tests)');
-          // Unlike signed-out users, they will get tables on this page
-          await page.goto(`${baseUrl}/candidate-review`);
-          await page.waitForSelector('table');
-        }
-      ),
-
-      getPage({ role: false, url: '/test-queue-old' }, async page => {
-        // Signed-out users can only view tests, not run them
-        await page.waitForSelector('td.actions ::-p-text(View tests)');
-      })
-    ]);
-  });
-
   it('end-to-end tests can simultaneously sign in with all roles', async () => {
     await Promise.all([
       getPage({ role: 'admin', url: '/test-queue' }, async page => {

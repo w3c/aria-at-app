@@ -2,7 +2,7 @@ import React, { Fragment, useRef } from 'react';
 import { useApolloClient, useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
-import { Container, Table as BootstrapTable } from 'react-bootstrap';
+import { Alert, Container, Table as BootstrapTable } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import ManageTestQueue from '../ManageTestQueue';
@@ -21,6 +21,7 @@ import ProgressBar from '../common/ClippedProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
+import './TestQueue.css';
 
 const DisclosureComponent = styled(DisclosureComponentUnstyled)`
   h3 {
@@ -362,17 +363,47 @@ const TestQueue = () => {
     );
   };
 
+  const renderNoReportsMessage = () => {
+    if (isAdmin) {
+      return (
+        <>
+          <h2 data-testid="no-test-plans">
+            There are currently no test plan reports available.
+          </h2>
+          <Alert variant="danger" data-testid="add-test-plans-queue">
+            Add a Test Plan to the Queue
+          </Alert>
+        </>
+      );
+    } else {
+      return (
+        <h2 data-testid="no-test-plans">
+          There are currently no test plan reports available.
+        </h2>
+      );
+    }
+  };
+
+  const hasTestPlanReports = !!testPlans.length;
+
   return (
     <Container id="main" as="main" tabIndex="-1">
       <Helmet>
         <title>Test Queue | ARIA-AT</title>
       </Helmet>
       <h1>Test Queue</h1>
-      <p>
-        {isSignedIn
-          ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
-          : 'Select a test plan to view. Your results will not be saved.'}
-      </p>
+      {hasTestPlanReports && (
+        <p data-testid="test-queue-instructions">
+          {isAdmin
+            ? 'Manage the test plans, assign yourself a test plan or start executing one that is already assigned to you.'
+            : isSignedIn
+            ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
+            : 'Select a test plan to view. Your results will not be saved.'}
+        </p>
+      )}
+
+      {!testPlans.length ? renderNoReportsMessage() : null}
+
       {isAdmin && (
         <ManageTestQueue
           ats={data.ats}
@@ -381,9 +412,8 @@ const TestQueue = () => {
         />
       )}
 
-      {!testPlans.length
-        ? 'There are currently no test plan reports to show.'
-        : testPlans.map(testPlan => (
+      {testPlans.length
+        ? testPlans.map(testPlan => (
             <Fragment key={testPlan.directory}>
               {/* ID needed for recovering focus after deleting a report */}
               <h2 tabIndex="-1" id={testPlan.directory}>
@@ -391,7 +421,8 @@ const TestQueue = () => {
               </h2>
               {renderDisclosure({ testPlan })}
             </Fragment>
-          ))}
+          ))
+        : null}
     </Container>
   );
 };

@@ -16,7 +16,6 @@ import {
   MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION,
   REMOVE_TEST_PLAN_REPORT_MUTATION,
   TEST_QUEUE_PAGE_QUERY
-  // TEST_PLAN_REPORT_QUERY
 } from './queries';
 import useForceUpdate from '../../hooks/useForceUpdate';
 import BasicThemedModal from '../common/BasicThemedModal';

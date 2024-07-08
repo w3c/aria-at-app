@@ -7,7 +7,6 @@ import NotFound from '@components/NotFound';
 import { Reports, Report } from '@components/Reports';
 import CandidateReview from '@components/CandidateReview';
 import SignupInstructions from '@components/SignupInstructions';
-import TestQueue from '@components/TestQueue';
 import TestQueue2 from '@components/TestQueue2';
 import TestRun from '@components/TestRun';
 import UserSettings from '@components/UserSettings';
@@ -38,8 +37,6 @@ export default () => (
         </ConfirmAuth>
       }
     />
-    {/* TODO: Deprecate and remove */}
-    <Route exact path="/test-queue-old" element={<TestQueue />} />
     <Route exact path="/test-queue" element={<TestQueue2 />} />
     <Route
       exact
