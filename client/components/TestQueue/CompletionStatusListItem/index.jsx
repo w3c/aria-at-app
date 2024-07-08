@@ -32,7 +32,6 @@ const CompletionStatusListItem = ({
         id={`BotTestCompletionStatus_${rowId}`}
         testPlanRun={testPlanRun}
         runnableTestsLength={testPlanReport.runnableTestsLength}
-        fromTestQueueV2
       />
     );
   } else {
@@ -51,7 +50,6 @@ const CompletionStatusListItem = ({
         id={`PreviouslyAutomatedTestCompletionStatus_${rowId}`}
         testPlanRunId={testPlanRun.id}
         runnableTestsLength={testPlanReport.runnableTestsLength}
-        fromTestQueueV2
       />
     ) : (
       <em>

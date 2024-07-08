@@ -272,7 +272,6 @@ const Actions = ({
             runnableTestsLength={testPlanReport.runnableTestsLength}
             testers={testers}
             onChange={triggerUpdate}
-            includeIcon
           />
         )}
         {isAdmin && (

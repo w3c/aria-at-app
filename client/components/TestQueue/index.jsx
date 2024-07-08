@@ -335,10 +335,7 @@ const TestQueue = () => {
               fromTestQueue
             />
             {hasBotRun ? (
-              <BotRunTestStatusList
-                testPlanReportId={testPlanReport.id}
-                fromTestQueueV2
-              />
+              <BotRunTestStatusList testPlanReportId={testPlanReport.id} />
             ) : null}
           </StatusContainer>
         </td>

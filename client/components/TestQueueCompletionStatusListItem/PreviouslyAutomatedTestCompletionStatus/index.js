@@ -6,8 +6,7 @@ import { TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY } from '../queries';
 const PreviouslyAutomatedTestCompletionStatus = ({
   runnableTestsLength,
   testPlanRunId,
-  id,
-  fromTestQueueV2 = false // TODO: Remove when Test Queue v1 is removed
+  id
 }) => {
   const { data: testPlanRunAssertionsQueryResult } = useQuery(
     TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY,
@@ -40,15 +39,9 @@ const PreviouslyAutomatedTestCompletionStatus = ({
 
   return (
     <>
-      {fromTestQueueV2 ? (
-        <em id={id}>
-          {`${numValidatedTests} of ${runnableTestsLength} tests evaluated`}
-        </em>
-      ) : (
-        <div id={id} className="text-secondary">
-          {`${numValidatedTests} of ${runnableTestsLength} tests evaluated`}
-        </div>
-      )}
+      <em id={id}>
+        {`${numValidatedTests} of ${runnableTestsLength} tests evaluated`}
+      </em>
     </>
   );
 };
@@ -56,8 +49,7 @@ const PreviouslyAutomatedTestCompletionStatus = ({
 PreviouslyAutomatedTestCompletionStatus.propTypes = {
   runnableTestsLength: PropTypes.number.isRequired,
   testPlanRunId: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
-  fromTestQueueV2: PropTypes.bool
+  id: PropTypes.string.isRequired
 };
 
 export default PreviouslyAutomatedTestCompletionStatus;
