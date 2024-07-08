@@ -9,7 +9,7 @@ import { MockedProvider } from '@apollo/client/testing';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 
-import TestQueue from '../components/TestQueue2';
+import TestQueue from '../components/TestQueue';
 
 // eslint-disable-next-line jest/no-mocks-import
 import {

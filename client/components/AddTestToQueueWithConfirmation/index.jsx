@@ -14,7 +14,7 @@ import {
   EXISTING_TEST_PLAN_REPORTS,
   ADD_TEST_QUEUE_MUTATION
 } from './queries';
-import { TEST_QUEUE_PAGE_QUERY } from '../TestQueue2/queries';
+import { TEST_QUEUE_PAGE_QUERY } from '../TestQueue/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
 import { ME_QUERY } from '../App/queries';
 

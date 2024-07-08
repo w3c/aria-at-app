@@ -1,4 +1,4 @@
-import { TEST_QUEUE_PAGE_QUERY } from '@components/TestQueue2/queries';
+import { TEST_QUEUE_PAGE_QUERY } from '@components/TestQueue/queries';
 import { TEST_PLAN_REPORT_AT_BROWSER_QUERY } from '@components/common/AssignTesterDropdown/queries';
 import { DATA_MANAGEMENT_PAGE_QUERY } from '@components/DataManagement/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '@components/TestPlanReportStatusDialog/queries';
