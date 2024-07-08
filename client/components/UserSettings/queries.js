@@ -1,10 +1,11 @@
 import { gql } from '@apollo/client';
+import { ME_FIELDS } from '@components/common/fragments';
 
 export const CURRENT_SETTINGS_QUERY = gql`
+  ${ME_FIELDS}
   query CurrentSettings {
     me {
-      id
-      username
+      ...ME_FIELDS
       ats {
         id
       }

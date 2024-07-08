@@ -1,4 +1,5 @@
 import { gql } from '@apollo/client';
+import { ME_FIELDS } from '@components/common/fragments';
 
 export const ADD_VIEWER_MUTATION = gql`
   mutation AddViewerMutation($testPlanVersionId: ID!, $testId: ID!) {
@@ -25,15 +26,14 @@ export const PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION = gql`
 `;
 
 export const CANDIDATE_REPORTS_QUERY = gql`
+  ${ME_FIELDS}
   query CandidateReportsQuery(
     $atId: ID!
     $testPlanVersionId: ID
     $testPlanVersionIds: [ID]
   ) {
     me {
-      id
-      roles
-      username
+      ...ME_FIELDS
     }
     testPlanReports(
       atId: $atId

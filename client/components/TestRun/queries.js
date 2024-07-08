@@ -1,6 +1,9 @@
 import { gql } from '@apollo/client';
+import { ME_FIELDS, USER_FIELDS } from '@components/common/fragments';
 
 export const TEST_RUN_PAGE_QUERY = gql`
+  ${ME_FIELDS}
+  ${USER_FIELDS}
   query TestPlanRunPage($testPlanRunId: ID!) {
     testPlanRun(id: $testPlanRunId) {
       id
@@ -194,14 +197,10 @@ export const TEST_RUN_PAGE_QUERY = gql`
       }
     }
     me {
-      id
-      username
-      roles
+      ...ME_FIELDS
     }
     users {
-      id
-      username
-      isBot
+      ...USER_FIELDS
     }
   }
 `;

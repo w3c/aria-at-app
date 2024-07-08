@@ -1,17 +1,15 @@
 import { gql } from '@apollo/client';
+import { ME_FIELDS, USER_FIELDS } from '@components/common/fragments';
 
 export const TEST_QUEUE_PAGE_QUERY = gql`
+  ${ME_FIELDS}
+  ${USER_FIELDS}
   query TestQueuePage {
     me {
-      id
-      username
-      roles
+      ...ME_FIELDS
     }
     users {
-      id
-      username
-      roles
-      isBot
+      ...USER_FIELDS
       ats {
         id
         key
