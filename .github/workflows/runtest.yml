@@ -9,9 +9,9 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2
       - name: Install NodeJS 18
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: 18
           cache: 'npm'
       - run: yarn --version
       - name: Install PostgreSQL 12
