@@ -164,8 +164,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
       'X-GitHub-Api-Version': '2022-11-28'
     },
     data: JSON.stringify({
-      // TODO: Set back to 'main' once this branch is merged
-      ref: 'support-specific-at-runs',
+      ref: 'main',
       inputs
     }),
     validateStatus: () => true,
