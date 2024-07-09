@@ -13,7 +13,7 @@ import DataManagement from '../components/DataManagement';
 
 // eslint-disable-next-line jest/no-mocks-import
 import { DATA_MANAGEMENT_PAGE_POPULATED_MOCK_DATA } from './__mocks__/GraphQLMocks';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 import {
   useDataManagementTableFiltering,
   useDataManagementTableSorting,

@@ -55,7 +55,7 @@ const mockProps = {
 };
 
 import { useMutation } from '@apollo/client';
-import { act } from 'react-dom/test-utils';
+import { act } from 'react';
 
 // Mock useMutation hook
 useMutation.mockImplementation(mutation => {
