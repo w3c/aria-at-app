@@ -146,7 +146,6 @@ describe('Test Queue admin traits when reports exist', () => {
           actionsColumnText.includes('Open run as...') &&
           actionsColumnText.includes('Mark as Final') &&
           actionsColumnText.includes('Mark as Final');
-        // TODO: && actionsColumnText.includes('Manage NVDA Bot Run');
 
         return (
           atColumnCondition &&
