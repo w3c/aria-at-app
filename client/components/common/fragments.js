@@ -19,26 +19,99 @@ export const USER_FIELDS = gql`
   }
 `;
 
+export const AT_FIELDS = gql`
+  fragment AT_FIELDS on At {
+    __typename
+    id
+    key
+    name
+  }
+`;
+
+export const AT_VERSION_FIELDS = gql`
+  fragment AT_VERSION_FIELDS on AtVersion {
+    __typename
+    id
+    name
+    releasedAt
+  }
+`;
+
+export const BROWSER_FIELDS = gql`
+  fragment BROWSER_FIELDS on Browser {
+    __typename
+    id
+    key
+    name
+  }
+`;
+
+export const BROWSER_VERSION_FIELDS = gql`
+  fragment BROWSER_VERSION_FIELDS on BrowserVersion {
+    __typename
+    id
+    name
+  }
+`;
+
+export const TEST_PLAN_FIELDS = gql`
+  fragment TEST_PLAN_FIELDS on TestPlan {
+    __typename
+    id
+    title
+    directory
+  }
+`;
+
 export const TEST_PLAN_VERSION_FIELDS = gql`
   fragment TEST_PLAN_VERSION_FIELDS on TestPlanVersion {
     __typename
+    id
+    title
+    phase
+    gitSha
+    gitMessage
+    versionString
+    updatedAt
+    draftPhaseReachedAt
+    candidatePhaseReachedAt
+    recommendedPhaseReachedAt
+    recommendedPhaseTargetDate
+    deprecatedAt
+    metadata
   }
 `;
 
 export const TEST_PLAN_REPORT_FIELDS = gql`
   fragment TEST_PLAN_REPORT_FIELDS on TestPlanReport {
     __typename
-  }
-`;
-
-export const SCENARIO_RESULT_FIELDS = gql`
-  fragment SCENARIO_RESULT_FIELDS on ScenarioResult {
-    __typename
+    id
+    runnableTestsLength
+    conflictsLength
+    vendorReviewStatus
+    metrics
+    createdAt
+    markedFinalAt
+    isFinal
   }
 `;
 
 export const TEST_PLAN_RUN_FIELDS = gql`
   fragment TEST_PLAN_RUN_FIELDS on TestPlanRun {
+    __typename
+    id
+    testResultsLength
+    initiatedByAutomation
+    tester {
+      id
+      username
+      isBot
+    }
+  }
+`;
+
+export const SCENARIO_RESULT_FIELDS = gql`
+  fragment SCENARIO_RESULT_FIELDS on ScenarioResult {
     __typename
   }
 `;

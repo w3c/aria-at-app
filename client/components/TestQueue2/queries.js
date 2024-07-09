@@ -1,9 +1,26 @@
 import { gql } from '@apollo/client';
-import { ME_FIELDS, USER_FIELDS } from '@components/common/fragments';
+import {
+  ME_FIELDS,
+  USER_FIELDS,
+  AT_FIELDS,
+  AT_VERSION_FIELDS,
+  BROWSER_FIELDS,
+  TEST_PLAN_FIELDS,
+  TEST_PLAN_VERSION_FIELDS,
+  TEST_PLAN_REPORT_FIELDS,
+  TEST_PLAN_RUN_FIELDS
+} from '@components/common/fragments';
 
 export const TEST_QUEUE_PAGE_QUERY = gql`
   ${ME_FIELDS}
   ${USER_FIELDS}
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${TEST_PLAN_FIELDS}
+  ${TEST_PLAN_VERSION_FIELDS}
+  ${TEST_PLAN_REPORT_FIELDS}
+  ${TEST_PLAN_RUN_FIELDS}
   query TestQueuePage {
     me {
       ...ME_FIELDS
@@ -11,68 +28,38 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
     users {
       ...USER_FIELDS
       ats {
-        id
-        key
+        ...AT_FIELDS
       }
     }
     ats {
-      id
-      key
-      name
+      ...AT_FIELDS
       atVersions {
-        id
-        name
-        releasedAt
+        ...AT_VERSION_FIELDS
       }
       browsers {
-        id
-        key
-        name
+        ...BROWSER_FIELDS
       }
     }
     testPlans(testPlanVersionPhases: [DRAFT, CANDIDATE, RECOMMENDED]) {
-      directory
-      title
+      ...TEST_PLAN_FIELDS
       testPlanVersions {
-        id
-        title
-        phase
-        versionString
-        updatedAt
-        gitSha
-        gitMessage
+        ...TEST_PLAN_VERSION_FIELDS
         testPlanReports(isFinal: false) {
-          id
+          ...TEST_PLAN_REPORT_FIELDS
           at {
-            id
-            key
-            name
+            ...AT_FIELDS
           }
           browser {
-            id
-            key
-            name
+            ...BROWSER_FIELDS
           }
           minimumAtVersion {
-            id
-            name
+            ...AT_VERSION_FIELDS
           }
           exactAtVersion {
-            id
-            name
+            ...AT_VERSION_FIELDS
           }
-          runnableTestsLength
-          conflictsLength
-          metrics
           draftTestPlanRuns {
-            id
-            testResultsLength
-            initiatedByAutomation
-            tester {
-              id
-              username
-              isBot
-            }
+            ...TEST_PLAN_RUN_FIELDS
             testResults {
               completedAt
             }
