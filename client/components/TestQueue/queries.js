@@ -19,8 +19,8 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
     }
     ats {
       id
-      name
       key
+      name
       atVersions {
         id
         name
@@ -31,13 +31,65 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         key
         name
       }
-      candidateBrowsers {
+    }
+    testPlans(testPlanVersionPhases: [DRAFT, CANDIDATE, RECOMMENDED]) {
+      directory
+      title
+      testPlanVersions {
         id
-        name
-      }
-      recommendedBrowsers {
-        id
-        name
+        title
+        phase
+        versionString
+        updatedAt
+        gitSha
+        gitMessage
+        testPlanReports(isFinal: false) {
+          id
+          at {
+            id
+            key
+            name
+          }
+          browser {
+            id
+            key
+            name
+          }
+          minimumAtVersion {
+            id
+            name
+          }
+          exactAtVersion {
+            id
+            name
+          }
+          runnableTestsLength
+          conflictsLength
+          metrics
+          draftTestPlanRuns {
+            id
+            testResultsLength
+            initiatedByAutomation
+            tester {
+              id
+              username
+              isBot
+            }
+            testResults {
+              completedAt
+            }
+          }
+        }
+        testPlanReportStatuses {
+          testPlanReport {
+            metrics
+            draftTestPlanRuns {
+              testResults {
+                completedAt
+              }
+            }
+          }
+        }
       }
     }
     testPlanVersions {
@@ -49,234 +101,9 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
       testPlan {
         directory
       }
-      updatedAt
     }
-    testPlanReports(
-      isFinal: false
-      testPlanVersionPhases: [DRAFT, CANDIDATE, RECOMMENDED]
-    ) {
+    testPlanReports {
       id
-      conflictsLength
-      runnableTestsLength
-      markedFinalAt
-      at {
-        id
-        key
-        name
-      }
-      minimumAtVersion {
-        id
-        name
-      }
-      exactAtVersion {
-        id
-        name
-      }
-      browser {
-        id
-        key
-        name
-      }
-      testPlanVersion {
-        id
-        title
-        phase
-        gitSha
-        gitMessage
-        testPlan {
-          directory
-        }
-        versionString
-      }
-      draftTestPlanRuns {
-        id
-        initiatedByAutomation
-        tester {
-          id
-          username
-          isBot
-        }
-        testResultsLength
-      }
-    }
-    testPlans {
-      latestTestPlanVersion {
-        id
-        gitSha
-        testPlan {
-          id
-        }
-      }
-    }
-  }
-`;
-
-export const TEST_PLAN_REPORT_QUERY = gql`
-  query TestPlanReport($testPlanReportId: ID!) {
-    testPlanReport(id: $testPlanReportId) {
-      id
-      conflictsLength
-      runnableTests {
-        id
-      }
-      runnableTestsLength
-      at {
-        id
-        key
-        name
-      }
-      minimumAtVersion {
-        id
-        name
-      }
-      exactAtVersion {
-        id
-        name
-      }
-      browser {
-        id
-        key
-        name
-      }
-      testPlanVersion {
-        id
-        title
-        phase
-        gitSha
-        gitMessage
-        testPlan {
-          directory
-        }
-        versionString
-        updatedAt
-      }
-      draftTestPlanRuns {
-        id
-        initiatedByAutomation
-        tester {
-          id
-          username
-          isBot
-        }
-        testResults {
-          id
-          test {
-            id
-          }
-          completedAt
-        }
-        testResultsLength
-      }
-    }
-  }
-`;
-
-export const TEST_PLAN_REPORT_AT_BROWSER_QUERY = gql`
-  query TestPlanReportAtBrowser($testPlanReportId: ID!) {
-    testPlanReport(id: $testPlanReportId) {
-      id
-      at {
-        id
-        key
-        name
-      }
-      browser {
-        id
-        key
-        name
-      }
-    }
-  }
-`;
-
-export const ADD_AT_VERSION_MUTATION = gql`
-  mutation AddAtVersion($atId: ID!, $name: String!, $releasedAt: Timestamp!) {
-    at(id: $atId) {
-      findOrCreateAtVersion(input: { name: $name, releasedAt: $releasedAt }) {
-        id
-        name
-        releasedAt
-      }
-    }
-  }
-`;
-
-export const EDIT_AT_VERSION_MUTATION = gql`
-  mutation EditAtVersion(
-    $atVersionId: ID!
-    $name: String!
-    $releasedAt: Timestamp!
-  ) {
-    atVersion(id: $atVersionId) {
-      updateAtVersion(input: { name: $name, releasedAt: $releasedAt }) {
-        id
-        name
-        releasedAt
-      }
-    }
-  }
-`;
-
-export const DELETE_AT_VERSION_MUTATION = gql`
-  mutation DeleteAtVersion($atVersionId: ID!) {
-    atVersion(id: $atVersionId) {
-      deleteAtVersion {
-        isDeleted
-        failedDueToTestResults {
-          testPlanVersion {
-            id
-            title
-          }
-          # To be used when listing the conflicting results
-          testResult {
-            id
-          }
-          # To be used when providing more details on the conflicting results
-          testPlanReport {
-            at {
-              name
-            }
-            browser {
-              name
-            }
-          }
-        }
-      }
-    }
-  }
-`;
-
-export const ADD_TEST_QUEUE_MUTATION = gql`
-  mutation AddTestPlanReport(
-    $testPlanVersionId: ID!
-    $atId: ID!
-    $exactAtVersionId: ID
-    $minimumAtVersionId: ID
-    $browserId: ID!
-    $copyResultsFromTestPlanVersionId: ID
-  ) {
-    createTestPlanReport(
-      input: {
-        testPlanVersionId: $testPlanVersionId
-        atId: $atId
-        exactAtVersionId: $exactAtVersionId
-        minimumAtVersionId: $minimumAtVersionId
-        browserId: $browserId
-        copyResultsFromTestPlanVersionId: $copyResultsFromTestPlanVersionId
-      }
-    ) {
-      testPlanReport {
-        id
-        at {
-          id
-        }
-        browser {
-          id
-        }
-      }
-      testPlanVersion {
-        id
-      }
     }
   }
 `;
@@ -304,35 +131,14 @@ export const ASSIGN_TESTER_MUTATION = gql`
   }
 `;
 
-export const MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION = gql`
-  mutation MarkTestPlanReportAsFinal(
-    $testReportId: ID!
-    $primaryTestPlanRunId: ID!
-  ) {
-    testPlanReport(id: $testReportId) {
-      markAsFinal(primaryTestPlanRunId: $primaryTestPlanRunId) {
-        testPlanReport {
-          markedFinalAt
-        }
-      }
-    }
-  }
-`;
-
-export const REMOVE_TEST_PLAN_REPORT_MUTATION = gql`
-  mutation RemoveTestPlanReport($testReportId: ID!) {
-    testPlanReport(id: $testReportId) {
-      deleteTestPlanReport
-    }
-  }
-`;
-
-export const REMOVE_TESTER_MUTATION = gql`
-  mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
+export const DELETE_TEST_PLAN_RUN = gql`
+  mutation DeleteTestPlanRun($testReportId: ID!, $testerId: ID!) {
     testPlanReport(id: $testReportId) {
       deleteTestPlanRun(userId: $testerId) {
         testPlanReport {
+          id
           draftTestPlanRuns {
+            id
             tester {
               id
               username
@@ -345,12 +151,25 @@ export const REMOVE_TESTER_MUTATION = gql`
   }
 `;
 
-export const REMOVE_TESTER_RESULTS_MUTATION = gql`
-  mutation RemoveTesterResult($testPlanRunId: ID!) {
-    testPlanRun(id: $testPlanRunId) {
-      deleteTestResults {
-        locationOfData
+export const MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION = gql`
+  mutation MarkTestPlanReportAsFinal(
+    $testPlanReportId: ID!
+    $primaryTestPlanRunId: ID!
+  ) {
+    testPlanReport(id: $testPlanReportId) {
+      markAsFinal(primaryTestPlanRunId: $primaryTestPlanRunId) {
+        testPlanReport {
+          markedFinalAt
+        }
       }
+    }
+  }
+`;
+
+export const REMOVE_TEST_PLAN_REPORT_MUTATION = gql`
+  mutation RemoveTestPlanReport($testPlanReportId: ID!) {
+    testPlanReport(id: $testPlanReportId) {
+      deleteTestPlanReport
     }
   }
 `;
