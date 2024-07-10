@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import BasicModal from '../components/common/BasicModal';
 
 const MockCustomComponent = ({ customProp }) => <button>{customProp}</button>; // eslint-disable-line react/prop-types

@@ -6,7 +6,7 @@ import { render, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import BotRunTestStatusList from '../components/BotRunTestStatusList';
 import { TEST_PLAN_RUNS_TEST_RESULTS_QUERY } from '../components/BotRunTestStatusList/queries';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { COLLECTION_JOB_STATUS } from '../../server/util/enums';
 
 const getMocks = testPlanRuns => {

@@ -5,7 +5,7 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import OutputTextArea from '../../components/TestRenderer/OutputTextArea';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { NO_OUTPUT_STRING } from '../../components/TestRenderer/OutputTextArea/constants';
 
 describe('OutputTextArea', () => {
