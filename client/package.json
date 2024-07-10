@@ -71,8 +71,8 @@
     "babel-plugin-lodash": "^3.3.4",
     "babel-polyfill": "^6.26.0",
     "copy-webpack-plugin": "^11.0.0",
-    "css-loader": "^6.7.3",
-    "dotenv-webpack": "^8.0.1",
+    "css-loader": "^6.11.0",
+    "dotenv-webpack": "^8.1.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "eslint": "^8.57.0",
@@ -89,11 +89,11 @@
     "puppeteer": "^21.11.0",
     "storybook-addon-apollo-client": "^4.1.4",
     "storybook-react-router": "^1.0.8",
-    "style-loader": "^3.3.1",
+    "style-loader": "^3.3.4",
     "tree-kill": "^1.2.2",
-    "webpack": "^5.75.0",
-    "webpack-cli": "^5.0.1",
-    "webpack-dev-server": "^4.11.1"
+    "webpack": "^5.92.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.2"
   },
   "resolutions": {
     "jest-environment-jsdom": "^29.7.0"
