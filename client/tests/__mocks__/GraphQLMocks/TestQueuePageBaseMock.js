@@ -88,25 +88,22 @@ export default (testPlanReportAtBrowserQuery, existingTestPlanReportsQuery) => [
           id: '1',
           testPlanReports: [
             {
-              id: '1',
-              markedFinalAt: '2021-01-01T00:00:00.000Z',
-              isFinal: true,
-              draftTestPlanRuns: {
-                initiatedByAutomation: true
-              },
+              id: '7',
+              markedFinalAt: null,
+              isFinal: false,
+              draftTestPlanRuns: [],
               at: {
-                id: '1',
-                key: 'jaws'
+                id: '3'
               },
               browser: {
-                id: '2',
-                key: 'chrome'
+                id: '1'
               }
             }
           ],
           metadata: {
-            exampleUrl: 'https://fakeurl.com/exampleUrl',
-            designPatternUrl: 'https://fakeurl.com/designPattern',
+            exampleUrl:
+              'https://w3c.github.io/aria-practices/examples/alert/alert.html',
+            designPatternUrl: 'https://w3c.github.io/aria-practices/#alert',
             testFormatVersion: 1
           }
         },
