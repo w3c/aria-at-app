@@ -79,6 +79,9 @@ export const TEST_PLAN_VERSION_FIELDS = gql`
     recommendedPhaseTargetDate
     deprecatedAt
     metadata
+    testPlan {
+      directory
+    }
   }
 `;
 
@@ -107,6 +110,25 @@ export const TEST_PLAN_RUN_FIELDS = gql`
       username
       isBot
     }
+  }
+`;
+
+export const TEST_FIELDS = gql`
+  fragment TEST_FIELDS on Test {
+    __typename
+    id
+    title
+    rowNumber
+    testFormatVersion
+  }
+`;
+
+export const TEST_RESULT_FIELDS = gql`
+  fragment TEST_RESULT_FIELDS on TestResult {
+    __typename
+    id
+    startedAt
+    completedAt
   }
 `;
 
