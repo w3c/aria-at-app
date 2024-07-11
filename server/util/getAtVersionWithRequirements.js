@@ -42,7 +42,7 @@ const getAtVersionWithRequirements = async (
       })
     );
 
-    const latestSupportedAt = supportedAts.filter(Boolean)[0];
+    const latestSupportedAt = supportedAts.find(Boolean);
 
     if (!latestSupportedAt) {
       throw new Error(
