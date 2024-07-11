@@ -50,12 +50,12 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             id
             key
             name
-          }
-          atVersions {
-            id
-            name
-            supportedByAutomation
-            releasedAt
+            atVersions {
+              id
+              name
+              supportedByAutomation
+              releasedAt
+            }
           }
           browser {
             id
@@ -66,6 +66,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             id
             name
             supportedByAutomation
+            releasedAt
           }
           exactAtVersion {
             id

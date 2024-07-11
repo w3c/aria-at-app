@@ -37,7 +37,8 @@ export default (
               {
                 id: '1',
                 name: '2021.2111.13',
-                releasedAt: '2021-11-01T04:00:00.000Z'
+                releasedAt: '2021-11-01T04:00:00.000Z',
+                supportedByAutomation: false
               }
             ],
             browsers: [
@@ -63,7 +64,8 @@ export default (
               {
                 id: '2',
                 name: '2020.4',
-                releasedAt: '2021-02-19T05:00:00.000Z'
+                releasedAt: '2021-02-19T05:00:00.000Z',
+                supportedByAutomation: false
               }
             ],
             browsers: [
@@ -89,7 +91,8 @@ export default (
               {
                 id: '3',
                 name: '11.6 (20G165)',
-                releasedAt: '2019-09-01T04:00:00.000Z'
+                releasedAt: '2019-09-01T04:00:00.000Z',
+                supportedByAutomation: false
               }
             ],
             browsers: [
@@ -413,7 +416,15 @@ export default (
                 at: {
                   id: '3',
                   key: 'voiceover_macos',
-                  name: 'VoiceOver for macOS'
+                  name: 'VoiceOver for macOS',
+                  atVersions: [
+                    {
+                      id: '3',
+                      name: '11.6 (20G165)',
+                      supportedByAutomation: false,
+                      releasedAt: '2021-11-01T04:00:00.000Z'
+                    }
+                  ]
                 },
                 browser: {
                   id: '1',
@@ -1083,7 +1094,15 @@ export default (
                 at: {
                   id: '2',
                   key: 'nvda',
-                  name: 'NVDA'
+                  name: 'NVDA',
+                  atVersions: [
+                    {
+                      id: '2',
+                      name: '2020.4',
+                      supportedByAutomation: false,
+                      releasedAt: '2020-04-01T04:00:00.000Z'
+                    }
+                  ]
                 },
                 browser: {
                   id: '1',
@@ -1638,7 +1657,15 @@ export default (
                 at: {
                   id: '2',
                   key: 'nvda',
-                  name: 'NVDA'
+                  name: 'NVDA',
+                  atVersions: [
+                    {
+                      id: '2',
+                      name: '2020.4',
+                      supportedByAutomation: false,
+                      releasedAt: '2020-04-01T04:00:00.000Z'
+                    }
+                  ]
                 },
                 browser: {
                   id: '2',
@@ -1834,7 +1861,15 @@ export default (
                 at: {
                   id: '2',
                   key: 'nvda',
-                  name: 'NVDA'
+                  name: 'NVDA',
+                  atVersions: [
+                    {
+                      id: '2',
+                      name: '2020.4',
+                      supportedByAutomation: false,
+                      releasedAt: '2020-04-01T04:00:00.000Z'
+                    }
+                  ]
                 },
                 browser: {
                   id: '1',
@@ -2126,7 +2161,15 @@ export default (
                 at: {
                   id: '2',
                   key: 'nvda',
-                  name: 'NVDA'
+                  name: 'NVDA',
+                  atVersions: [
+                    {
+                      id: '2',
+                      name: '2020.4',
+                      supportedByAutomation: false,
+                      releasedAt: '2020-04-01T04:00:00.000Z'
+                    }
+                  ]
                 },
                 browser: {
                   id: '2',
@@ -2498,7 +2541,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -2507,7 +2558,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -2524,7 +2577,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -2533,7 +2594,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -2543,7 +2606,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -2552,7 +2623,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -2562,7 +2635,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -2571,7 +2652,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -2581,7 +2664,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '3',
@@ -2590,7 +2681,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -2600,7 +2693,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -2609,7 +2710,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -2619,7 +2722,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -2628,7 +2739,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -2672,7 +2785,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -2681,7 +2802,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -2933,7 +3056,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -2942,7 +3073,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -2952,7 +3085,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -2961,7 +3102,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -3213,7 +3356,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -3222,7 +3373,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -3232,7 +3385,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -3241,7 +3402,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -3251,7 +3414,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '3',
@@ -3260,7 +3431,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -3414,7 +3587,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -3423,7 +3604,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -3461,7 +3644,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -3470,7 +3661,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -3480,7 +3673,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -3489,7 +3690,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -3499,7 +3702,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -3508,7 +3719,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -3518,7 +3731,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -3527,7 +3748,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -4131,7 +4354,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '3',
@@ -4140,7 +4371,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -4150,7 +4383,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -4159,7 +4400,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -4169,7 +4412,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -4178,7 +4429,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -4215,7 +4468,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -4224,7 +4485,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -4532,7 +4795,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -4542,7 +4813,9 @@ export default (
               minimumAtVersion: null,
               exactAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               testPlanReport: {
                 id: '105',
@@ -4558,7 +4831,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -4567,7 +4848,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -4875,7 +5158,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -4884,7 +5175,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -5192,7 +5485,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -5201,7 +5502,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -5509,7 +5812,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '3',
@@ -5518,7 +5829,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -5728,7 +6041,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -5737,7 +6058,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -5947,7 +6270,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -5956,7 +6287,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -6194,7 +6527,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -6203,7 +6544,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -6469,7 +6812,15 @@ export default (
               at: {
                 id: '1',
                 key: 'jaws',
-                name: 'JAWS'
+                name: 'JAWS',
+                atVersions: [
+                  {
+                    id: '1',
+                    name: '2021.2111.13',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -6478,7 +6829,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '1',
-                name: '2021.2111.13'
+                name: '2021.2111.13',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -6488,7 +6841,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -6497,7 +6858,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -6777,7 +7140,15 @@ export default (
               at: {
                 id: '2',
                 key: 'nvda',
-                name: 'NVDA'
+                name: 'NVDA',
+                atVersions: [
+                  {
+                    id: '2',
+                    name: '2020.4',
+                    supportedByAutomation: false,
+                    releasedAt: '2020-04-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -6786,7 +7157,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '2',
-                name: '2020.4'
+                name: '2020.4',
+                supportedByAutomation: false,
+                releasedAt: '2020-04-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -6796,7 +7169,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '3',
@@ -6805,7 +7186,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: {
@@ -6973,7 +7356,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '2',
@@ -6982,7 +7373,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null
@@ -6992,7 +7385,15 @@ export default (
               at: {
                 id: '3',
                 key: 'voiceover_macos',
-                name: 'VoiceOver for macOS'
+                name: 'VoiceOver for macOS',
+                atVersions: [
+                  {
+                    id: '3',
+                    name: '11.6 (20G165)',
+                    supportedByAutomation: false,
+                    releasedAt: '2021-11-01T04:00:00.000Z'
+                  }
+                ]
               },
               browser: {
                 id: '1',
@@ -7001,7 +7402,9 @@ export default (
               },
               minimumAtVersion: {
                 id: '3',
-                name: '11.6 (20G165)'
+                name: '11.6 (20G165)',
+                supportedByAutomation: false,
+                releasedAt: '2021-11-01T04:00:00.000Z'
               },
               exactAtVersion: null,
               testPlanReport: null

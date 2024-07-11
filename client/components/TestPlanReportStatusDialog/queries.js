@@ -22,6 +22,12 @@ export const TEST_PLAN_REPORT_STATUS_DIALOG_QUERY = gql`
           id
           key
           name
+          atVersions {
+            id
+            name
+            supportedByAutomation
+            releasedAt
+          }
         }
         browser {
           id
@@ -31,10 +37,14 @@ export const TEST_PLAN_REPORT_STATUS_DIALOG_QUERY = gql`
         minimumAtVersion {
           id
           name
+          supportedByAutomation
+          releasedAt
         }
         exactAtVersion {
           id
           name
+          supportedByAutomation
+          releasedAt
         }
         testPlanReport {
           id
