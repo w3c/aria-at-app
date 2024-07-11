@@ -312,7 +312,6 @@ const getCollectionJobById = async ({
       )
     ],
     transaction
-    // logging: console.log
   });
 };
 
