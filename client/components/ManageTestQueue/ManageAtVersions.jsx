@@ -11,7 +11,7 @@ import {
   ADD_AT_VERSION_MUTATION,
   DELETE_AT_VERSION_MUTATION,
   EDIT_AT_VERSION_MUTATION
-} from '@components/TestQueue/queries';
+} from './queries';
 import { useTriggerLoad } from '@components/common/LoadingStatus';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import PropTypes from 'prop-types';
@@ -357,14 +357,12 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
             </Form.Group>
             <div className="disclosure-buttons-row">
               <button
-                // ref={addAtVersionButtonRef}
                 ref={ref => setFocusRef(ref)}
                 onClick={() => onOpenAtVersionModalClick('add')}
               >
                 Add a New Version
               </button>
               <button
-                // ref={editAtVersionButtonRef}
                 ref={ref => setFocusRef(ref)}
                 onClick={() => onOpenAtVersionModalClick('edit')}
               >
@@ -372,9 +370,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
                 Edit
               </button>
               <button
-                // ref={deleteAtVersionButtonRef}
                 ref={ref => setFocusRef(ref)}
-                // onClick={onRemoveClick}
                 onClick={() => onOpenAtVersionModalClick('delete')}
               >
                 <FontAwesomeIcon icon={faTrashAlt} />

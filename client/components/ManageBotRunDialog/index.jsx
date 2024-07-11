@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import BasicModal from '../common/BasicModal';
-import AssignTesterDropdown from '../TestQueue/AssignTesterDropdown';
+import AssignTesterDropdown from '../common/AssignTesterDropdown';
 import { useMutation, useQuery } from '@apollo/client';
 import {
   COLLECTION_JOB_ID_BY_TEST_PLAN_RUN_ID_QUERY,

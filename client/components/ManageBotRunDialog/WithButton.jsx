@@ -11,7 +11,6 @@ const ManageBotRunDialogWithButton = ({
   testPlanReportId,
   runnableTestsLength,
   testers,
-  includeIcon = false,
   onChange
 }) => {
   const { runIsFinished } = useTestPlanRunIsFinished(testPlanRun.id);
@@ -28,8 +27,7 @@ const ManageBotRunDialogWithButton = ({
           setShowDialog(true);
         }}
       >
-        {/* TODO: Include by default after removing Test Queue v1 content */}
-        {includeIcon ? <FontAwesomeIcon icon={faRobot} /> : null}
+        <FontAwesomeIcon icon={faRobot} />
         Manage {testPlanRun?.tester?.username} Run
       </Button>
       {showDialog ? (
@@ -55,7 +53,6 @@ ManageBotRunDialogWithButton.propTypes = {
   testPlanReportId: PropTypes.string.isRequired,
   runnableTestsLength: PropTypes.number.isRequired,
   testers: PropTypes.array.isRequired,
-  includeIcon: PropTypes.bool,
   onChange: PropTypes.func.isRequired
 };
 

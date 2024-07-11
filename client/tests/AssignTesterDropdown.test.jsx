@@ -10,13 +10,13 @@ import {
   cleanup
 } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
-import AssignTesterDropdown from '../components/TestQueue/AssignTesterDropdown';
+import AssignTesterDropdown from '../components/common/AssignTesterDropdown';
 import {
   ASSIGN_TESTER_MUTATION,
   REMOVE_TESTER_MUTATION,
   TEST_PLAN_REPORT_AT_BROWSER_QUERY
-} from '../components/TestQueue/queries';
-import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../components/AddTestToQueueWithConfirmation/queries';
+} from '@components/common/AssignTesterDropdown/queries';
+import { SCHEDULE_COLLECTION_JOB_MUTATION } from '@components/AddTestToQueueWithConfirmation/queries';
 import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('@apollo/client', () => {

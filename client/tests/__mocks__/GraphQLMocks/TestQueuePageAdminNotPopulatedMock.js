@@ -6,15 +6,14 @@ export default testQueuePageQuery => [
     result: {
       data: {
         me: {
+          __typename: 'User',
           id: '1',
           username: 'foo-bar',
-          roles: ['ADMIN', 'TESTER'],
-          __typename: 'User'
+          roles: ['ADMIN', 'TESTER']
         },
-        ats: [],
-        browsers: [],
         users: [
           {
+            __typename: 'User',
             id: '1',
             username: 'foo-bar',
             roles: ['ADMIN', 'TESTER'],
@@ -22,6 +21,7 @@ export default testQueuePageQuery => [
             ats: []
           },
           {
+            __typename: 'User',
             id: '4',
             username: 'bar-foo',
             roles: ['TESTER'],
@@ -29,6 +29,7 @@ export default testQueuePageQuery => [
             ats: []
           },
           {
+            __typename: 'User',
             id: '5',
             username: 'boo-far',
             roles: ['TESTER'],
@@ -36,9 +37,10 @@ export default testQueuePageQuery => [
             ats: []
           }
         ],
+        ats: [],
+        testPlans: [],
         testPlanVersions: [],
-        testPlanReports: [],
-        testPlans: []
+        testPlanReports: []
       }
     }
   }
