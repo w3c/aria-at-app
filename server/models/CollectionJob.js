@@ -1,5 +1,5 @@
 const { COLLECTION_JOB_STATUS } = require('../util/enums');
-
+const { v4: uuid } = require('uuid');
 const MODEL_NAME = 'CollectionJob';
 
 module.exports = function (sequelize, DataTypes) {
@@ -31,9 +31,20 @@ module.exports = function (sequelize, DataTypes) {
         onDelete: 'SET NULL',
         allowNull: true,
         unique: true
+      },
+      secret: {
+        type: DataTypes.UUID,
+        allowNull: false
       }
     },
     {
+      hooks: {
+        beforeValidate: job => {
+          if (!job.secret) {
+            job.secret = uuid();
+          }
+        }
+      },
       timestamps: false,
       tableName: MODEL_NAME
     }

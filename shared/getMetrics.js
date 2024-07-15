@@ -221,7 +221,7 @@ const getMetrics = ({
   const mayFormatted =
     mayAssertionsCount === 0
       ? false
-      : `${mayAssertionsPassedCount} of ${mayAssertionsCount} passed`;
+      : `${mayAssertionsPassedCount} of ${mayAssertionsCount} supported`;
 
   const unexpectedBehaviorCount = countUnexpectedBehaviors({ ...result });
   const unexpectedBehaviorsFormatted =
