@@ -16,13 +16,15 @@ module.exports = {
         }
       );
 
-      await sequelize.query(
-        `SELECT setval(pg_get_serial_sequence('"TestPlanVersion"', 'id'), :currentSequenceValue)`,
-        {
-          replacements: { currentSequenceValue: latestTestPlanVersion.id },
-          transaction
-        }
-      );
+      if (latestTestPlanVersion) {
+        await sequelize.query(
+          `SELECT setval(pg_get_serial_sequence('"TestPlanVersion"', 'id'), :currentSequenceValue)`,
+          {
+            replacements: { currentSequenceValue: latestTestPlanVersion.id },
+            transaction
+          }
+        );
+      }
     });
   },
 
