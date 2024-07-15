@@ -392,7 +392,7 @@ const triggerWorkflow = async (job, testIds, atVersion, { transaction }) => {
       // TODO: pass the reduced list of testIds along / deal with them somehow
       await createGithubWorkflow({ job, directory, gitSha, atVersion });
     } else {
-      await startCollectionJobSimulation(job, transaction);
+      await startCollectionJobSimulation(job, atVersion, transaction);
     }
   } catch (error) {
     console.error(error);
