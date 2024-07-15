@@ -32,6 +32,8 @@ $$;
 --
 
 INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2023.3.3', '2023-12-02');
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '14.5.0', '2024-05-13');
+
 
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2019.3', '2022-05-02');
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.1', '2022-05-02');
@@ -40,7 +42,6 @@ INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2023.3.3', '2
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2020.4', '2022-05-02');
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (1, '2021.2103.174', '2022-05-02');
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '11.5.2', '2022-05-02');
--- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '14.5.0', '2024-05-13');
 
 
 --
