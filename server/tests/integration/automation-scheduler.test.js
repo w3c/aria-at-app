@@ -45,6 +45,7 @@ const getTestPlanReport = async (id, { transaction }) =>
                     finalizedTestResults {
                         test {
                             id
+                            rowNumber
                         }
                         atVersion {
                             name

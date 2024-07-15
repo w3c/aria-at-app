@@ -145,42 +145,41 @@ const startCollectionJobSimulation = async (job, transaction) => {
     const { data } = await apolloServer.executeOperation(
       {
         query: gql`
-                query {
-                    collectionJob(id: "${job.id}") {
-                        id
-                        testPlanRun {
-                            testPlanReport {
-                                testPlanVersion {
-                                    metadata
-                                    gitSha
-                                }
-                                at {
-                                    name
-                                    atVersions {
-                                        name
-                                    }
-                                }
-                                browser {
-                                    name
-                                    browserVersions {
-                                        name
-                                    }
-                                }
-                                runnableTests {
-                                    id
-                                    rowNumber
-                                    scenarios {
-                                        id
-                                    }
-                                    assertions {
-                                        id
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            `
+          query {
+              collectionJob(id: "${job.id}") {
+                  id
+                  testPlanRun {
+                      testPlanReport {
+                          testPlanVersion {
+                              metadata
+                              gitSha
+                          }
+                          at {
+                              name
+                              atVersions {
+                                  name
+                              }
+                          }
+                          browser {
+                              name
+                              browserVersions {
+                                  name
+                              }
+                          }
+                          runnableTests {
+                              id
+                              rowNumber
+                              scenarios {
+                                  id
+                              }
+                              assertions {
+                                  id
+                              }
+                          }
+                      }
+                  }
+              }
+          }`
       },
       { req: { transaction } }
     );
