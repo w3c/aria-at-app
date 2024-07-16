@@ -79,19 +79,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         }
       }
     }
-    testPlanVersions {
-      id
-      title
-      phase
-      gitSha
-      gitMessage
-      testPlan {
-        directory
-      }
-    }
-    testPlanReports {
-      id
-    }
   }
 `;
 
