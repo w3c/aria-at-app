@@ -2,6 +2,7 @@ import AT_FIELDS from './At';
 import AT_VERSION_FIELDS from './AtVersion';
 import BROWSER_FIELDS from './Browser';
 import BROWSER_VERSION_FIELDS from './BrowserVersion';
+import ISSUE_FIELDS from './Issue';
 import ME_FIELDS from './Me';
 import SCENARIO_RESULT_FIELDS from './ScenarioResult';
 import TEST_FIELDS from './Test';
@@ -18,6 +19,7 @@ export {
   AT_VERSION_FIELDS,
   BROWSER_FIELDS,
   BROWSER_VERSION_FIELDS,
+  ISSUE_FIELDS,
   ME_FIELDS,
   SCENARIO_RESULT_FIELDS,
   TEST_FIELDS,

@@ -7,13 +7,13 @@ const TEST_PLAN_REPORT_FIELDS = (type = 'simple') => {
         fragment TestPlanReportFieldsSimple on TestPlanReport {
           __typename
           id
-          runnableTestsLength
-          conflictsLength
-          vendorReviewStatus
           metrics
+          isFinal
           createdAt
           markedFinalAt
-          isFinal
+          conflictsLength
+          runnableTestsLength
+          vendorReviewStatus
         }
       `;
     case 'runs':
