@@ -152,6 +152,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   if (atKey === 'voiceover_macos') {
     // We just want the whole number of the macOS version
     // due to limitations on Github workflow runners
+    // See https://github.com/w3c/aria-at-app/issues/1143 for more info
     inputs.macos_version = atVersion?.name?.split('.')[0];
   }
   const axiosConfig = {

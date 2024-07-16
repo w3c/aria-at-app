@@ -380,6 +380,7 @@ const getCollectionJobs = async ({
  * Trigger a workflow, set job status to ERROR if workflow creation fails.
  * @param {object} job - CollectionJob to trigger workflow for.
  * @param {number[]} testIds - Array of testIds
+ * @param {object} atVersion - AtVersion to use for the workflow
  * @param {object} options
  * @param {*} options.transaction - Sequelize transaction
  * @returns Promise<CollectionJob>
@@ -484,6 +485,18 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
       !testResult?.scenarioResults?.every(scenario => scenario?.output !== null)
   );
 
+  const testPlanReport = await getTestPlanReportById({
+    id: job.testPlanRun.testPlanReportId,
+    transaction
+  });
+
+  const atVersion = await getAtVersionWithRequirements(
+    testPlanReport.at.id,
+    testPlanReport.exactAtVersion,
+    testPlanReport.minimumAtVersion,
+    transaction
+  );
+
   const testIds = cancelledTests.map(test => test.id);
 
   const job = await getCollectionJobById({
@@ -491,7 +504,7 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
     transaction
   });
 
-  return triggerWorkflow(job, testIds, { transaction });
+  return triggerWorkflow(job, testIds, atVersion, { transaction });
 };
 
 /**

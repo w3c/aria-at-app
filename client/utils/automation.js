@@ -17,13 +17,12 @@ export const isSupportedByResponseCollector = ctx => {
   const { key: browserKey } = browser;
 
   // Check if the AT and browser are supported by the automation
-  if (
-    !(
-      atKey === 'nvda' &&
-      (browserKey === 'chrome' || browserKey === 'firefox')
-    ) &&
-    !(atKey === 'voiceover_macos' && browserKey === 'safari_macos')
-  ) {
+  const isNvdaWithSupportedBrowser =
+    atKey === 'nvda' && (browserKey === 'chrome' || browserKey === 'firefox');
+  const isVoiceOverMacWithSafari =
+    atKey === 'voiceover_macos' && browserKey === 'safari_macos';
+
+  if (!isNvdaWithSupportedBrowser && !isVoiceOverMacWithSafari) {
     return false;
   }
 
