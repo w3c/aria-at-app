@@ -270,7 +270,7 @@ describe('graphql', () => {
             id
             status
           }
-          v2TestPlanVersion: testPlanVersion(id: 133) {
+          v2TestPlanVersion: testPlanVersion(id: 80) {
             __typename
             id
             metadata
