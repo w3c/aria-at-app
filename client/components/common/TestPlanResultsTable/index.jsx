@@ -5,6 +5,13 @@ import nextId from 'react-id-generator';
 import { getMetrics } from 'shared';
 import './TestPlanResultsTable.css';
 
+const getAssertionResultText = (passed, priority) => {
+  if (priority === 'MAY') {
+    return passed ? 'Supported' : 'Unsupported';
+  }
+  return passed ? 'Passed' : 'Failed';
+};
+
 const renderAssertionRow = (assertionResult, priorityString) => {
   return (
     <tr key={`${assertionResult.id}__${nextId()}`}>
@@ -16,7 +23,7 @@ const renderAssertionRow = (assertionResult, priorityString) => {
           : assertionResult.assertion.text.charAt(0).toUpperCase() +
             assertionResult.assertion.text.slice(1)}
       </td>
-      <td>{assertionResult.passed ? 'Passed' : 'Failed'}</td>
+      <td>{getAssertionResultText(assertionResult.passed, priorityString)}</td>
     </tr>
   );
 };
