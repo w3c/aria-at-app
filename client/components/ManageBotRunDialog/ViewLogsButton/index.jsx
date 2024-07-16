@@ -13,7 +13,6 @@ const ViewLogsButton = ({ externalLogsUrl }) => {
       aria-disabled={!externalLogsUrl}
       onClick={onClick}
       role="link"
-      aria-label={`View logs at ${externalLogsUrl}`}
       variant="secondary"
     >
       View Log
