@@ -54,7 +54,8 @@
         "rawgit": "https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52",
         "sequelize": "^6.37.3",
         "shared": "1.0.0",
-        "supertest-session": "^4.1.0"
+        "supertest-session": "^4.1.0",
+        "uuid": "^10.0.0"
     },
     "devDependencies": {
         "@testing-library/dom": "^10.3.1",
