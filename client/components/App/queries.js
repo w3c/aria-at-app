@@ -5,7 +5,7 @@ export const ME_QUERY = gql`
   ${ME_FIELDS}
   query Me {
     me {
-      ...ME_FIELDS
+      ...MeFields
     }
   }
 `;

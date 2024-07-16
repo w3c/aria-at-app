@@ -5,7 +5,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
   ${ME_FIELDS}
   query DataManagementPage {
     me {
-      ...ME_FIELDS
+      ...MeFields
     }
     ats {
       id

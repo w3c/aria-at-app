@@ -33,7 +33,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
     $testPlanVersionIds: [ID]
   ) {
     me {
-      ...ME_FIELDS
+      ...MeFields
     }
     testPlanReports(
       atId: $atId

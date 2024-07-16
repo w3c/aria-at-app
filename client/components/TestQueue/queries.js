@@ -9,7 +9,8 @@ import {
   TEST_PLAN_VERSION_FIELDS,
   TEST_PLAN_REPORT_FIELDS,
   TEST_PLAN_RUN_FIELDS,
-  TEST_RESULT_FIELDS
+  TEST_RESULT_FIELDS,
+  TEST_PLAN_REPORT_STATUS_FIELDS
 } from '@components/common/fragments';
 
 export const TEST_QUEUE_PAGE_QUERY = gql`
@@ -20,62 +21,56 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
   ${BROWSER_FIELDS}
   ${TEST_PLAN_FIELDS}
   ${TEST_PLAN_VERSION_FIELDS}
-  ${TEST_PLAN_REPORT_FIELDS}
+  ${TEST_PLAN_REPORT_FIELDS()}
   ${TEST_PLAN_RUN_FIELDS}
   ${TEST_RESULT_FIELDS}
+  ${TEST_PLAN_REPORT_STATUS_FIELDS()}
   query TestQueuePage {
     me {
-      ...ME_FIELDS
+      ...MeFields
     }
     users {
-      ...USER_FIELDS
+      ...UserFields
       ats {
-        ...AT_FIELDS
+        ...AtFields
       }
     }
     ats {
-      ...AT_FIELDS
+      ...AtFields
       atVersions {
-        ...AT_VERSION_FIELDS
+        ...AtVersionFields
       }
       browsers {
-        ...BROWSER_FIELDS
+        ...BrowserFields
       }
     }
     testPlans(testPlanVersionPhases: [DRAFT, CANDIDATE, RECOMMENDED]) {
-      ...TEST_PLAN_FIELDS
+      ...TestPlanFields
       testPlanVersions {
-        ...TEST_PLAN_VERSION_FIELDS
+        ...TestPlanVersionFields
         testPlanReports(isFinal: false) {
-          ...TEST_PLAN_REPORT_FIELDS
+          ...TestPlanReportFieldsSimple
           at {
-            ...AT_FIELDS
+            ...AtFields
           }
           browser {
-            ...BROWSER_FIELDS
+            ...BrowserFields
           }
           minimumAtVersion {
-            ...AT_VERSION_FIELDS
+            ...AtVersionFields
           }
           exactAtVersion {
-            ...AT_VERSION_FIELDS
+            ...AtVersionFields
           }
           draftTestPlanRuns {
-            ...TEST_PLAN_RUN_FIELDS
+            ...TestPlanRunFields
             testResults {
-              ...TEST_RESULT_FIELDS
+              ...TestResultFields
             }
           }
         }
         testPlanReportStatuses {
-          testPlanReport {
-            metrics
-            draftTestPlanRuns {
-              testResults {
-                ...TEST_RESULT_FIELDS
-              }
-            }
-          }
+          ...TestPlanReportStatusFieldsSimple
         }
       }
     }
@@ -83,6 +78,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
 `;
 
 export const ASSIGN_TESTER_MUTATION = gql`
+  ${TEST_PLAN_REPORT_FIELDS('runs')}
   mutation AssignTester(
     $testReportId: ID!
     $testerId: ID!
@@ -91,14 +87,7 @@ export const ASSIGN_TESTER_MUTATION = gql`
     testPlanReport(id: $testReportId) {
       assignTester(userId: $testerId, testPlanRunId: $testPlanRunId) {
         testPlanReport {
-          draftTestPlanRuns {
-            initiatedByAutomation
-            tester {
-              id
-              username
-              isBot
-            }
-          }
+          ...TestPlanReportFieldsRuns
         }
       }
     }
@@ -106,19 +95,12 @@ export const ASSIGN_TESTER_MUTATION = gql`
 `;
 
 export const DELETE_TEST_PLAN_RUN = gql`
+  ${TEST_PLAN_REPORT_FIELDS('runs')}
   mutation DeleteTestPlanRun($testReportId: ID!, $testerId: ID!) {
     testPlanReport(id: $testReportId) {
       deleteTestPlanRun(userId: $testerId) {
         testPlanReport {
-          id
-          draftTestPlanRuns {
-            id
-            tester {
-              id
-              username
-              isBot
-            }
-          }
+          ...TestPlanReportFieldsRuns
         }
       }
     }

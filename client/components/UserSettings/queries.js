@@ -5,7 +5,7 @@ export const CURRENT_SETTINGS_QUERY = gql`
   ${ME_FIELDS}
   query CurrentSettings {
     me {
-      ...ME_FIELDS
+      ...MeFields
       ats {
         id
       }

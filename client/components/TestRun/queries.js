@@ -197,10 +197,10 @@ export const TEST_RUN_PAGE_QUERY = gql`
       }
     }
     me {
-      ...ME_FIELDS
+      ...MeFields
     }
     users {
-      ...USER_FIELDS
+      ...UserFields
     }
   }
 `;
