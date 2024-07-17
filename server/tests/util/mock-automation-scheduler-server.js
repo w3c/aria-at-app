@@ -136,7 +136,7 @@ const simulateResultCompletion = async (
   }
 };
 
-const startCollectionJobSimulation = async (job, transaction) => {
+const startCollectionJobSimulation = async (job, atVersion, transaction) => {
   if (!mockSchedulerEnabled) throw new Error('mock scheduler is not enabled');
   if (process.env.ENVIRONMENT === 'test') {
     // stub behavior in test suite
@@ -195,7 +195,13 @@ const startCollectionJobSimulation = async (job, transaction) => {
     const browserVersionName = testPlanReport.browser.browserVersions[0].name;
 
     const atName = testPlanReport.at.name;
-    const atVersionName = testPlanReport.at.atVersions[0].name;
+
+    if (!atVersion || !atVersion.name) {
+      throw new Error('Simulated job started without specified version');
+    }
+
+    const { name: atVersionName } = atVersion;
+
     const { runnableTests } = testPlanReport;
 
     const isV2 = testPlanVersion.metadata?.testFormatVersion === 2;

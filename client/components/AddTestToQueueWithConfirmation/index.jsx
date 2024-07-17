@@ -102,7 +102,9 @@ function AddTestToQueueWithConfirmation({
 
   const hasAutomationSupport = isSupportedByResponseCollector({
     at,
-    browser
+    browser,
+    minimumAtVersion,
+    exactAtVersion
   });
 
   const alreadyHasBotInTestPlanReport = useMemo(
@@ -328,10 +330,25 @@ AddTestToQueueWithConfirmation.propTypes = {
   at: PropTypes.shape({
     id: PropTypes.string.isRequired,
     key: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
+    name: PropTypes.string.isRequired,
+    atVersions: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
+        supportedByAutomation: PropTypes.bool.isRequired
+      })
+    )
   }),
-  exactAtVersion: PropTypes.object,
-  minimumAtVersion: PropTypes.object,
+  exactAtVersion: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    supportedByAutomation: PropTypes.bool
+  }),
+  minimumAtVersion: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    supportedByAutomation: PropTypes.bool
+  }),
   buttonRef: PropTypes.object,
   onFocus: PropTypes.func,
   onBlur: PropTypes.func,

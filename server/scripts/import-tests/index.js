@@ -141,13 +141,20 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
     // Gets the next ID and increments the ID counter in Postgres
     // Needed to create the testIds - see LocationOfDataId.js for more info
     const [testPlanVersionIdResult] = await sequelize.query(
-      `SELECT nextval(
-                pg_get_serial_sequence('"TestPlanVersion"', 'id')
-            )`,
+      `SELECT nextval(pg_get_serial_sequence('"TestPlanVersion"', 'id'))`,
       { transaction }
     );
     const testPlanVersionIdResultRow = testPlanVersionIdResult[0];
     const testPlanVersionId = testPlanVersionIdResultRow.nextval;
+
+    // Get the currently set value to rollback the 'correct' nextval for
+    // subsequent runs
+    const [currentTestPlanVersionIdResult] = await sequelize.query(
+      `SELECT currval(pg_get_serial_sequence('"TestPlanVersion"', 'id'))`,
+      { transaction }
+    );
+    const currentTestPlanVersionId =
+      currentTestPlanVersionIdResult[0].currval - 1;
 
     // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
     // actually last changed
@@ -180,7 +187,17 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
       transaction
     });
 
-    if (existing.length) continue;
+    if (existing.length) {
+      // Rollback the sequence to avoid unintentional id jumps (potentially 35+)
+      await sequelize.query(
+        `SELECT setval(pg_get_serial_sequence('"TestPlanVersion"', 'id'), :currentTestPlanVersionId)`,
+        {
+          replacements: { currentTestPlanVersionId },
+          transaction
+        }
+      );
+      continue;
+    }
 
     const { title, exampleUrl, designPatternUrl, testPageUrl } = readCsv({
       sourceDirectoryPath,

@@ -52,6 +52,9 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
           ...TestPlanReportFieldsSimple
           at {
             ...AtFields
+            atVersions {
+              ...AtVersionFields
+            }
           }
           browser {
             ...BrowserFields
