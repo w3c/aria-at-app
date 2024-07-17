@@ -6,6 +6,7 @@ import {
   BROWSER_VERSION_FIELDS,
   ISSUE_FIELDS,
   ME_FIELDS,
+  TEST_PLAN_FIELDS,
   TEST_PLAN_REPORT_FIELDS,
   TEST_PLAN_VERSION_FIELDS,
   TEST_RESULT_FIELDS
@@ -18,6 +19,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
   ${BROWSER_VERSION_FIELDS}
   ${ISSUE_FIELDS()}
   ${ME_FIELDS}
+  ${TEST_PLAN_FIELDS}
   ${TEST_PLAN_REPORT_FIELDS()}
   ${TEST_RESULT_FIELDS}
   query DataManagementPage {
@@ -40,9 +42,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
       }
     }
     testPlans {
-      id
-      directory
-      title
+      ...TestPlanFields
     }
     deprecatedTestPlanVersions: testPlanVersions(phases: [DEPRECATED]) {
       id
