@@ -168,6 +168,15 @@ const getPage = async (options, callback) => {
     await page.waitForSelector('::-p-text(Signed in)');
   }
 
+  // Re-attempt If the url wasn't meant to be accessed by a certain role and was
+  // initially redirected away from proper link; eg. 'false' role accessing
+  // /account/settings
+  const currentUrl = await page.url();
+  if (currentUrl.includes('/404') || currentUrl.includes('/invalid-request')) {
+    await page.goto(`${baseUrl}${url}`);
+    await page.waitForNetworkIdle();
+  }
+
   try {
     await callback(page, { baseUrl });
   } finally {
