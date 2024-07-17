@@ -25,6 +25,12 @@ const TEST_PLAN_REPORT_STATUS_FIELDS = (type = 'simple') => {
             id
             key
             name
+            atVersions {
+              id
+              name
+              releasedAt
+              supportedByAutomation
+            }
           }
           browser {
             id
@@ -34,10 +40,14 @@ const TEST_PLAN_REPORT_STATUS_FIELDS = (type = 'simple') => {
           minimumAtVersion {
             id
             name
+            releasedAt
+            supportedByAutomation
           }
           exactAtVersion {
             id
             name
+            releasedAt
+            supportedByAutomation
           }
           testPlanReport {
             id

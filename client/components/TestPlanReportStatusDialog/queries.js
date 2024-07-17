@@ -1,84 +1,17 @@
 import { gql } from '@apollo/client';
+import {
+  TEST_PLAN_REPORT_STATUS_FIELDS,
+  TEST_PLAN_VERSION_FIELDS
+} from '@components/common/fragments';
 
 export const TEST_PLAN_REPORT_STATUS_DIALOG_QUERY = gql`
+  ${TEST_PLAN_REPORT_STATUS_FIELDS('all')}
+  ${TEST_PLAN_VERSION_FIELDS}
   query TestPlanReportStatusDialog($testPlanVersionId: ID!) {
     testPlanVersion(id: $testPlanVersionId) {
-      id
-      title
-      phase
-      gitSha
-      gitMessage
-      updatedAt
-      draftPhaseReachedAt
-      candidatePhaseReachedAt
-      recommendedPhaseTargetDate
-      recommendedPhaseReachedAt
-      testPlan {
-        directory
-      }
+      ...TestPlanVersionFields
       testPlanReportStatuses {
-        isRequired
-        at {
-          id
-          key
-          name
-          atVersions {
-            id
-            name
-            supportedByAutomation
-            releasedAt
-          }
-        }
-        browser {
-          id
-          key
-          name
-        }
-        minimumAtVersion {
-          id
-          name
-          supportedByAutomation
-          releasedAt
-        }
-        exactAtVersion {
-          id
-          name
-          supportedByAutomation
-          releasedAt
-        }
-        testPlanReport {
-          id
-          metrics
-          isFinal
-          markedFinalAt
-          issues {
-            link
-            isOpen
-            feedbackType
-          }
-          draftTestPlanRuns {
-            tester {
-              username
-            }
-            testPlanReport {
-              id
-            }
-            testResults {
-              test {
-                id
-              }
-              atVersion {
-                id
-                name
-              }
-              browserVersion {
-                id
-                name
-              }
-              completedAt
-            }
-          }
-        }
+        ...TestPlanReportStatusFieldsAll
       }
     }
   }
