@@ -6,6 +6,7 @@ const AT_VERSION_FIELDS = gql`
     id
     name
     releasedAt
+    supportedByAutomation
   }
 `;
 
