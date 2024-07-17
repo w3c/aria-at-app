@@ -7,7 +7,7 @@ import { render, waitFor, fireEvent } from '@testing-library/react';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
 import { BrowserRouter } from 'react-router-dom';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 import TestQueue from '../components/TestQueue';
 

@@ -2,18 +2,16 @@
  * @jest-environment jsdom
  */
 
-import React from 'react';
+import React, { act } from 'react';
 import { render, renderHook, waitFor } from '@testing-library/react';
 import { InMemoryCache } from '@apollo/client';
 import { MockedProvider } from '@apollo/client/testing';
 import { BrowserRouter } from 'react-router-dom';
-import '@testing-library/jest-dom/extend-expect';
-
+import '@testing-library/jest-dom';
 import DataManagement from '../components/DataManagement';
 
 // eslint-disable-next-line jest/no-mocks-import
 import { DATA_MANAGEMENT_PAGE_POPULATED_MOCK_DATA } from './__mocks__/GraphQLMocks';
-import { act } from 'react-dom/test-utils';
 import {
   useDataManagementTableFiltering,
   useDataManagementTableSorting,

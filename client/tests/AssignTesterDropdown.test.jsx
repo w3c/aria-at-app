@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-import React from 'react';
+import React, { act } from 'react';
 import {
   render,
   fireEvent,
@@ -17,7 +17,7 @@ import {
   TEST_PLAN_REPORT_AT_BROWSER_QUERY
 } from '@components/common/AssignTesterDropdown/queries';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '@components/AddTestToQueueWithConfirmation/queries';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 jest.mock('@apollo/client', () => {
   const original = jest.requireActual('@apollo/client');
@@ -55,7 +55,6 @@ const mockProps = {
 };
 
 import { useMutation } from '@apollo/client';
-import { act } from 'react-dom/test-utils';
 
 // Mock useMutation hook
 useMutation.mockImplementation(mutation => {
