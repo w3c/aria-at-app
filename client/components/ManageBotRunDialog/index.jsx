@@ -15,6 +15,7 @@ import './ManageBotRunDialog.css';
 import MarkBotRunFinishedButton from './MarkBotRunFinishedButton';
 import RetryCanceledCollectionsButton from './RetryCanceledCollectionsButton';
 import StopRunningCollectionButton from './StopRunningCollectionButton';
+import ViewLogsButton from './ViewLogsButton';
 
 const ManageBotRunDialog = ({
   testPlanReportId,
@@ -79,6 +80,13 @@ const ManageBotRunDialog = ({
         }
       },
       {
+        component: ViewLogsButton,
+        props: {
+          externalLogsUrl:
+            collectionJobQuery?.collectionJobByTestPlanRunId?.externalLogsUrl
+        }
+      },
+      {
         component: StopRunningCollectionButton,
         props: {
           collectionJob: collectionJobQuery?.collectionJobByTestPlanRunId,
@@ -107,7 +115,14 @@ const ManageBotRunDialog = ({
         }
       }
     ];
-  }, [testPlanReportId, testPlanRun, possibleReassignees, onChange]);
+  }, [
+    testPlanReportId,
+    testPlanRun,
+    possibleReassignees,
+    onChange,
+    collectionJobQuery
+  ]);
+
   const deleteConfirmationContent = (
     <>
       <p>

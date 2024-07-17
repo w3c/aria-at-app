@@ -181,445 +181,445 @@ describe('graphql', () => {
     // eslint-disable-next-line no-unused-vars
     const queryResult = await typeAwareQuery(
       gql`
-                query {
-                    __typename
-                    browsers {
-                        __typename
-                        id
-                        key
-                        name
-                        ats {
-                            __typename
-                            id
-                            name
-                        }
-                        candidateAts {
-                            __typename
-                            id
-                            name
-                        }
-                        recommendedAts {
-                            __typename
-                            id
-                            name
-                        }
-                        browserVersions {
-                            __typename
-                            id
-                            name
-                        }
-                    }
-                    ats {
-                        __typename
-                        id
-                        key
-                        name
-                        browsers {
-                            __typename
-                            id
-                            name
-                        }
-                        candidateBrowsers {
-                            __typename
-                            id
-                            name
-                        }
-                        recommendedBrowsers {
-                            __typename
-                            id
-                            name
-                        }
-                        atVersions {
-                            __typename
-                            id
-                            name
-                            releasedAt
-                            supportedByAutomation
-                        }
-                    }
-                    users {
-                        __typename
-                        username
-                        roles
-                        isBot
-                    }
-                    me {
-                        __typename
-                        id
-                        username
-                        roles
-                        ats {
-                            id
-                            name
-                        }
-                    }
-                    collectionJob(id: 1) {
-                        __typename
-                        id
-                        status
-                        testPlanRun {
-                            id
-                        }
-                    }
-                    collectionJobs {
-                        __typename
-                        id
-                        status
-                    }
-                    collectionJobByTestPlanRunId(testPlanRunId: 1) {
-                        __typename
-                        id
-                        status
-                    }
-                    v2TestPlanVersion: testPlanVersion(id: 133) {
-                        __typename
-                        id
-                        metadata
-                        tests {
-                            __typename
-                            assertions {
-                                __typename
-                                phrase
-                            }
-                        }
-                    }
-                    testPlan(id: "checkbox") {
-                        __typename
-                        id
-                        directory
-                        title
-                        latestTestPlanVersion {
-                            __typename
-                            id
-                            title
-                            updatedAt
-                            gitSha
-                            gitMessage
-                            updatedAt
-                            testPageUrl
-                            metadata
-                            tests {
-                                __typename
-                                id
-                                rowNumber
-                                title
-                                ats {
-                                    id
-                                }
-                                scenarios {
-                                    __typename
-                                    id
-                                    at {
-                                        id
-                                    }
-                                    commands {
-                                        __typename
-                                        id
-                                        text
-                                        atOperatingMode
-                                    }
-                                }
-                                assertions {
-                                    __typename
-                                    id
-                                    priority
-                                    text
-                                }
-                                testFormatVersion
-                            }
-                        }
-                        testPlanVersions {
-                            id
-                        }
-                        issues {
-                            __typename
-                            author
-                            title
-                            link
-                            isCandidateReview
-                            feedbackType
-                            isOpen
-                            testNumberFilteredByAt
-                            createdAt
-                            closedAt
-                            at {
-                                name
-                            }
-                            browser {
-                                name
-                            }
-                        }
-                    }
-                    testPlans {
-                        directory
-                        title
-                    }
-                    testPlanRuns {
-                        id
-                    }
-                    testPlanVersions {
-                        __typename
-                        id
-                        phase
-                        draftPhaseReachedAt
-                        candidatePhaseReachedAt
-                        recommendedPhaseTargetDate
-                        recommendedPhaseReachedAt
-                        deprecatedAt
-                        versionString
-                    }
-                    testPlanVersion(id: 1) {
-                        __typename
-                        id
-                        testPlanReports {
-                            id
-                        }
-                        testPlan {
-                            id
-                            directory
-                        }
-                    }
-                    recommendedTestPlanVersion: testPlanVersion(id: 69) {
-                        __typename
-                        id
-                        testPlanReports {
-                            __typename
-                            id
-                            recommendedAtVersion {
-                                __typename
-                                id
-                                name
-                                releasedAt
-                            }
-                        }
-                        earliestAtVersion(atId: 1) {
-                            id
-                            name
-                            releasedAt
-                        }
-                        testPlanReportStatuses {
-                            __typename
-                            isRequired
-                            at {
-                                id
-                            }
-                            exactAtVersion {
-                                id
-                            }
-                            minimumAtVersion {
-                                id
-                            }
-                            browser {
-                                id
-                            }
-                            testPlanReport {
-                                id
-                            }
-                        }
-                    }
-                    conflictTestPlanReport: testPlanReport(id: 2) {
-                        __typename
-                        id
-                        isFinal
-                        createdAt
-                        vendorReviewStatus
-                        testPlanVersion {
-                            id
-                        }
-                        at {
-                            __typename
-                            id
-                        }
-                        browser {
-                            __typename
-                            id
-                        }
-                        runnableTests {
-                            __typename
-                            id
-                            renderableContent
-                            renderableContents {
-                                __typename
-                                at {
-                                    id
-                                }
-                                renderableContent
-                            }
-                            renderedUrl
-                            renderedUrls {
-                                __typename
-                                at {
-                                    id
-                                }
-                                renderedUrl
-                            }
-                        }
-                        runnableTestsLength
-                        draftTestPlanRuns {
-                            __typename
-                            id
-                            tester {
-                                username
-                            }
-                            testResults {
-                                __typename
-                                id
-                                test {
-                                    id
-                                }
-                                atVersion {
-                                    __typename
-                                    id
-                                    name
-                                    releasedAt
-                                }
-                                browserVersion {
-                                    __typename
-                                    id
-                                    name
-                                }
-                                scenarioResults {
-                                    __typename
-                                    id
-                                    scenario {
-                                        id
-                                    }
-                                    output
-                                    assertionResults {
-                                        __typename
-                                        id
-                                        assertion {
-                                            id
-                                        }
-                                        passed
-                                    }
-                                    unexpectedBehaviors {
-                                        __typename
-                                        id
-                                        text
-                                        impact
-                                        details
-                                    }
-                                }
-                            }
-                            testResultsLength
-                        }
-                        conflicts {
-                            __typename
-                            source {
-                                locationOfData
-                            }
-                            conflictingResults {
-                                locationOfData
-                            }
-                        }
-                        issues {
-                            __typename
-                        }
-                    }
-                    testPlanReport(id: 3) {
-                        __typename
-                        finalizedTestResults {
-                            __typename
-                            id
-                            startedAt
-                            completedAt
-                        }
-                        metrics
-                        conflictsLength
-                        atVersions {
-                            id
-                            name
-                            releasedAt
-                        }
-                        latestAtVersionReleasedAt {
-                            id
-                            name
-                            releasedAt
-                        }
-                        markedFinalAt
-                        minimumAtVersion {
-                            id
-                        }
-                    }
-                    recommendedPhaseTestPlanReport: testPlanReport(id: 12) {
-                        __typename
-                        exactAtVersion {
-                            id
-                        }
-                    }
-                    testPlanReports {
-                        id
-                        atVersions {
-                            id
-                            name
-                            releasedAt
-                        }
-                        latestAtVersionReleasedAt {
-                            id
-                            name
-                            releasedAt
-                        }
-                    }
-                    testPlanRun(id: 1) {
-                        __typename
-                        id
-                        initiatedByAutomation
-                        collectionJob { id }
-                        testPlanReport {
-                            id
-                        }
-                    }
-                    populateData(locationOfData: {
-                        assertionResultId: "${assertionResultId}"
-                    }) {
-                        __typename
-                        locationOfData
-                        testPlan {
-                            id
-                        }
-                        testPlanVersion {
-                            id
-                        }
-                        testPlanReport {
-                            id
-                        }
-                        at {
-                            id
-                        }
-                        browser {
-                            id
-                        }
-                        testPlanRun {
-                            id
-                        }
-                        test {
-                            id
-                        }
-                        scenario {
-                            id
-                        }
-                        assertion {
-                            id
-                        }
-                        testResult {
-                            id
-                        }
-                        atVersion {
-                            id
-                        }
-                        browserVersion {
-                            id
-                        }
-                        scenarioResult {
-                            id
-                        }
-                        assertionResult {
-                            id
-                        }
-                    }
+        query {
+          __typename
+          browsers {
+            __typename
+            id
+            key
+            name
+            ats {
+              __typename
+              id
+              name
+            }
+            candidateAts {
+              __typename
+              id
+              name
+            }
+            recommendedAts {
+              __typename
+              id
+              name
+            }
+            browserVersions {
+              __typename
+              id
+              name
+            }
+          }
+          ats {
+            __typename
+            id
+            key
+            name
+            browsers {
+              __typename
+              id
+              name
+            }
+            candidateBrowsers {
+              __typename
+              id
+              name
+            }
+            recommendedBrowsers {
+              __typename
+              id
+              name
+            }
+            atVersions {
+              __typename
+              id
+              name
+              releasedAt
+              supportedByAutomation
+            }
+          }
+          users {
+            __typename
+            username
+            roles
+            isBot
+          }
+          me {
+            __typename
+            id
+            username
+            roles
+            ats {
+              id
+              name
+            }
+          }
+          collectionJob(id: 1) {
+            __typename
+            id
+            status
+            testPlanRun {
+              id
+            }
+          }
+          collectionJobs {
+            __typename
+            id
+            status
+          }
+          collectionJobByTestPlanRunId(testPlanRunId: 1) {
+            __typename
+            id
+            status
+          }
+          v2TestPlanVersion: testPlanVersion(id: 80) {
+            __typename
+            id
+            metadata
+            tests {
+              __typename
+              assertions {
+                __typename
+                phrase
+              }
+            }
+          }
+          testPlan(id: "checkbox") {
+            __typename
+            id
+            directory
+            title
+            latestTestPlanVersion {
+              __typename
+              id
+              title
+              updatedAt
+              gitSha
+              gitMessage
+              updatedAt
+              testPageUrl
+              metadata
+              tests {
+                __typename
+                id
+                rowNumber
+                title
+                ats {
+                  id
                 }
-            `,
+                scenarios {
+                  __typename
+                  id
+                  at {
+                    id
+                  }
+                  commands {
+                    __typename
+                    id
+                    text
+                    atOperatingMode
+                  }
+                }
+                assertions {
+                  __typename
+                  id
+                  priority
+                  text
+                }
+                testFormatVersion
+              }
+            }
+            testPlanVersions {
+              id
+            }
+            issues {
+              __typename
+              author
+              title
+              link
+              isCandidateReview
+              feedbackType
+              isOpen
+              testNumberFilteredByAt
+              createdAt
+              closedAt
+              at {
+                name
+              }
+              browser {
+                name
+              }
+            }
+          }
+          testPlans {
+            directory
+            title
+          }
+          testPlanRuns {
+            id
+          }
+          testPlanVersions {
+            __typename
+            id
+            phase
+            draftPhaseReachedAt
+            candidatePhaseReachedAt
+            recommendedPhaseTargetDate
+            recommendedPhaseReachedAt
+            deprecatedAt
+            versionString
+          }
+          testPlanVersion(id: 1) {
+            __typename
+            id
+            testPlanReports {
+              id
+            }
+            testPlan {
+              id
+              directory
+            }
+          }
+          recommendedTestPlanVersion: testPlanVersion(id: 67) {
+            __typename
+            id
+            testPlanReports {
+              __typename
+              id
+              recommendedAtVersion {
+                __typename
+                id
+                name
+                releasedAt
+              }
+            }
+            earliestAtVersion(atId: 1) {
+              id
+              name
+              releasedAt
+            }
+            testPlanReportStatuses {
+              __typename
+              isRequired
+              at {
+                id
+              }
+              exactAtVersion {
+                id
+              }
+              minimumAtVersion {
+                id
+              }
+              browser {
+                id
+              }
+              testPlanReport {
+                id
+              }
+            }
+          }
+          conflictTestPlanReport: testPlanReport(id: 2) {
+            __typename
+            id
+            isFinal
+            createdAt
+            vendorReviewStatus
+            testPlanVersion {
+              id
+            }
+            at {
+              __typename
+              id
+            }
+            browser {
+              __typename
+              id
+            }
+            runnableTests {
+              __typename
+              id
+              renderableContent
+              renderableContents {
+                __typename
+                at {
+                  id
+                }
+                renderableContent
+              }
+              renderedUrl
+              renderedUrls {
+                __typename
+                at {
+                  id
+                }
+                renderedUrl
+              }
+            }
+            runnableTestsLength
+            draftTestPlanRuns {
+              __typename
+              id
+              tester {
+                username
+              }
+              testResults {
+                __typename
+                id
+                test {
+                  id
+                }
+                atVersion {
+                  __typename
+                  id
+                  name
+                  releasedAt
+                }
+                browserVersion {
+                  __typename
+                  id
+                  name
+                }
+                scenarioResults {
+                  __typename
+                  id
+                  scenario {
+                    id
+                  }
+                  output
+                  assertionResults {
+                    __typename
+                    id
+                    assertion {
+                      id
+                    }
+                    passed
+                  }
+                  unexpectedBehaviors {
+                    __typename
+                    id
+                    text
+                    impact
+                    details
+                  }
+                }
+              }
+              testResultsLength
+            }
+            conflicts {
+              __typename
+              source {
+                locationOfData
+              }
+              conflictingResults {
+                locationOfData
+              }
+            }
+            issues {
+              __typename
+            }
+          }
+          testPlanReport(id: 3) {
+            __typename
+            finalizedTestResults {
+              __typename
+              id
+              startedAt
+              completedAt
+            }
+            metrics
+            conflictsLength
+            atVersions {
+              id
+              name
+              releasedAt
+            }
+            latestAtVersionReleasedAt {
+              id
+              name
+              releasedAt
+            }
+            markedFinalAt
+            minimumAtVersion {
+              id
+            }
+          }
+          recommendedPhaseTestPlanReport: testPlanReport(id: 12) {
+            __typename
+            exactAtVersion {
+              id
+            }
+          }
+          testPlanReports {
+            id
+            atVersions {
+              id
+              name
+              releasedAt
+            }
+            latestAtVersionReleasedAt {
+              id
+              name
+              releasedAt
+            }
+          }
+          testPlanRun(id: 1) {
+            __typename
+            id
+            initiatedByAutomation
+            collectionJob { id }
+            testPlanReport {
+              id
+            }
+          }
+          populateData(locationOfData: {
+            assertionResultId: "${assertionResultId}"
+          }) {
+            __typename
+            locationOfData
+            testPlan {
+              id
+            }
+            testPlanVersion {
+              id
+            }
+            testPlanReport {
+              id
+            }
+            at {
+              id
+            }
+            browser {
+              id
+            }
+            testPlanRun {
+              id
+            }
+            test {
+              id
+            }
+            scenario {
+              id
+            }
+            assertion {
+              id
+            }
+            testResult {
+              id
+            }
+            atVersion {
+              id
+            }
+            browserVersion {
+              id
+            }
+            scenarioResult {
+              id
+            }
+            assertionResult {
+              id
+            }
+          }
+        }
+      `,
       { transaction: false }
     );
 
