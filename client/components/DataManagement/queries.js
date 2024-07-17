@@ -44,6 +44,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
     testPlans {
       ...TestPlanFields
     }
+    # TODO: Understand why using ...TestPlanVersionFields here causes query issues
     deprecatedTestPlanVersions: testPlanVersions(phases: [DEPRECATED]) {
       id
       phase
@@ -57,6 +58,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
         directory
       }
     }
+    # TODO: Understand why using ...TestPlanVersionFields here causes query issues
     testPlanVersions(phases: [RD, DRAFT, CANDIDATE, RECOMMENDED]) {
       id
       title
