@@ -55,19 +55,48 @@ window.signMeInAsVendor = username => {
 };
 
 window.startTestTransaction = async () => {
-  const response = await fetch('/api/transactions', { method: 'POST' });
-  const { transactionId } = await response.json();
-  sessionStorage.setItem('currentTransactionId', transactionId);
+  try {
+    const response = await fetch('/api/transactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to start transaction: ${response.statusText}`);
+    }
+    const { transactionId } = await response.json();
+    if (!transactionId) {
+      throw new Error('Transaction ID is missing from response');
+    }
+    sessionStorage.setItem('currentTransactionId', transactionId);
+  } catch (error) {
+    console.error('Error starting test transaction:', error);
+    throw error;
+  }
 };
 
 window.endTestTransaction = async () => {
   const currentTransactionId = sessionStorage.getItem('currentTransactionId');
-  if (!currentTransactionId) throw new Error('Nothing to roll back');
-  await fetch('/api/transactions', {
-    method: 'DELETE',
-    headers: { 'x-transaction-id': currentTransactionId }
-  });
-  sessionStorage.removeItem('currentTransactionId');
-  await resetCache();
-  location.reload();
+  if (!currentTransactionId) {
+    console.warn('No active test transaction to end');
+    return;
+  }
+  try {
+    const response = await fetch('/api/transactions', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-transaction-id': currentTransactionId
+      }
+    });
+    if (!response.ok) {
+      throw new Error(`Failed to end transaction: ${response.statusText}`);
+    }
+    sessionStorage.removeItem('currentTransactionId');
+    await resetCache();
+  } catch (error) {
+    console.error('Error ending test transaction:', error);
+    throw error;
+  } finally {
+    sessionStorage.removeItem('currentTransactionId');
+  }
 };
