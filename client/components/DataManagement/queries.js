@@ -19,7 +19,6 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
   ${BROWSER_VERSION_FIELDS}
   ${ISSUE_FIELDS()}
   ${ME_FIELDS}
-  ${TEST_PLAN_FIELDS}
   ${TEST_PLAN_REPORT_FIELDS()}
   ${TEST_RESULT_FIELDS}
   query DataManagementPage {
@@ -42,7 +41,9 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
       }
     }
     testPlans {
-      ...TestPlanFields
+      id
+      directory
+      title
     }
     deprecatedTestPlanVersions: testPlanVersions(phases: [DEPRECATED]) {
       id
