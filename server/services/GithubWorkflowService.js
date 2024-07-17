@@ -114,7 +114,7 @@ const fetchInstallationAccessToken = async (jsonWebToken, installationID) => {
   return JSON.parse(response.data).token;
 };
 
-const createGithubWorkflow = async ({ job, directory, gitSha }) => {
+const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   const payload = {
     iat: calculateIssuedAt(),
     exp: calculateExpiresAt(),
@@ -147,6 +147,13 @@ const createGithubWorkflow = async ({ job, directory, gitSha }) => {
   if (atKey === 'nvda') {
     inputs.test_pattern = '{reference/**,test-*-nvda.*}';
     inputs.browser = browser;
+    inputs.nvda_version = atVersion?.name;
+  }
+  if (atKey === 'voiceover_macos') {
+    // We just want the whole number of the macOS version
+    // due to limitations on Github workflow runners
+    // See https://github.com/w3c/aria-at-app/issues/1143 for more info
+    inputs.macos_version = atVersion?.name?.split('.')[0];
   }
   const axiosConfig = {
     method: 'POST',

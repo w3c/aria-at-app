@@ -32,6 +32,7 @@ const {
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../../graphql-context');
 const { getBotUserByAtId } = require('./UserService');
+const getAtVersionWithRequirements = require('../../util/getAtVersionWithRequirements');
 
 // association helpers to be included with Models' results
 
@@ -379,19 +380,20 @@ const getCollectionJobs = async ({
  * Trigger a workflow, set job status to ERROR if workflow creation fails.
  * @param {object} job - CollectionJob to trigger workflow for.
  * @param {number[]} testIds - Array of testIds
+ * @param {object} atVersion - AtVersion to use for the workflow
  * @param {object} options
  * @param {*} options.transaction - Sequelize transaction
  * @returns Promise<CollectionJob>
  */
-const triggerWorkflow = async (job, testIds, { transaction }) => {
+const triggerWorkflow = async (job, testIds, atVersion, { transaction }) => {
   const { testPlanVersion } = job.testPlanRun.testPlanReport;
   const { gitSha, directory } = testPlanVersion;
   try {
     if (isGithubWorkflowEnabled()) {
       // TODO: pass the reduced list of testIds along / deal with them somehow
-      await createGithubWorkflow({ job, directory, gitSha });
+      await createGithubWorkflow({ job, directory, gitSha, atVersion });
     } else {
-      await startCollectionJobSimulation(job, transaction);
+      await startCollectionJobSimulation(job, atVersion, transaction);
     }
   } catch (error) {
     console.error(error);
@@ -483,6 +485,18 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
       !testResult?.scenarioResults?.every(scenario => scenario?.output !== null)
   );
 
+  const testPlanReport = await getTestPlanReportById({
+    id: job.testPlanRun.testPlanReportId,
+    transaction
+  });
+
+  const atVersion = await getAtVersionWithRequirements(
+    testPlanReport.at.id,
+    testPlanReport.exactAtVersion,
+    testPlanReport.minimumAtVersion,
+    transaction
+  );
+
   const testIds = cancelledTests.map(test => test.id);
 
   const job = await getCollectionJobById({
@@ -490,7 +504,7 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
     transaction
   });
 
-  return triggerWorkflow(job, testIds, { transaction });
+  return triggerWorkflow(job, testIds, atVersion, { transaction });
 };
 
 /**
@@ -560,9 +574,21 @@ const scheduleCollectionJob = async (
     transaction
   });
 
-  return triggerWorkflow(job, testIds ?? tests.map(test => test.id), {
+  const atVersion = await getAtVersionWithRequirements(
+    report.at.id,
+    report.exactAtVersion,
+    report.minimumAtVersion,
     transaction
-  });
+  );
+
+  return triggerWorkflow(
+    job,
+    testIds ?? tests.map(test => test.id),
+    atVersion,
+    {
+      transaction
+    }
+  );
 };
 
 /**
@@ -631,7 +657,19 @@ const restartCollectionJob = async ({ id }, { transaction }) => {
     return null;
   }
 
-  return triggerWorkflow(job, [], { transaction });
+  const testPlanReport = await getTestPlanReportById({
+    id: job.testPlanRun.testPlanReportId,
+    transaction
+  });
+
+  const atVersion = await getAtVersionWithRequirements(
+    testPlanReport.at.id,
+    testPlanReport.exactAtVersion,
+    testPlanReport.minimumAtVersion,
+    transaction
+  );
+
+  return triggerWorkflow(job, [], atVersion, { transaction });
 };
 
 /**

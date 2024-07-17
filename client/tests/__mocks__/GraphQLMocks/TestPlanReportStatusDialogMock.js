@@ -18,7 +18,15 @@ export const mockedTestPlanVersion = {
       at: {
         id: '1',
         key: 'jaws',
-        name: 'JAWS'
+        name: 'JAWS',
+        atVersions: [
+          {
+            id: '1',
+            name: '2021.2111.13',
+            supportedByAutomation: false,
+            releasedAt: '2021-11-01T04:00:00.000Z'
+          }
+        ]
       },
       browser: {
         id: '2',
@@ -27,7 +35,9 @@ export const mockedTestPlanVersion = {
       },
       minimumAtVersion: {
         id: '1',
-        name: '2021.2111.13'
+        name: '2021.2111.13',
+        supportedByAutomation: false,
+        releasedAt: '2021-11-01T04:00:00.000Z'
       },
       exactAtVersion: null,
       testPlanReport: null
@@ -37,7 +47,15 @@ export const mockedTestPlanVersion = {
       at: {
         id: '1',
         key: 'jaws',
-        name: 'JAWS'
+        name: 'JAWS',
+        atVersions: [
+          {
+            id: '1',
+            name: '2021.2111.13',
+            supportedByAutomation: false,
+            releasedAt: '2021-11-01T04:00:00.000Z'
+          }
+        ]
       },
       browser: {
         id: '1',
@@ -46,7 +64,9 @@ export const mockedTestPlanVersion = {
       },
       minimumAtVersion: {
         id: '1',
-        name: '2021.2111.13'
+        name: '2021.2111.13',
+        supportedByAutomation: false,
+        releasedAt: '2021-11-01T04:00:00.000Z'
       },
       exactAtVersion: null,
       testPlanReport: null
@@ -56,7 +76,15 @@ export const mockedTestPlanVersion = {
       at: {
         id: '2',
         key: 'nvda',
-        name: 'NVDA'
+        name: 'NVDA',
+        atVersions: [
+          {
+            id: '2',
+            name: '2020.4',
+            supportedByAutomation: false,
+            releasedAt: '2020-04-01T04:00:00.000Z'
+          }
+        ]
       },
       browser: {
         id: '2',
@@ -65,7 +93,9 @@ export const mockedTestPlanVersion = {
       },
       minimumAtVersion: {
         id: '2',
-        name: '2020.4'
+        name: '2020.4',
+        supportedByAutomation: false,
+        releasedAt: '2020-04-01T04:00:00.000Z'
       },
       exactAtVersion: null,
       testPlanReport: null
@@ -75,7 +105,15 @@ export const mockedTestPlanVersion = {
       at: {
         id: '2',
         key: 'nvda',
-        name: 'NVDA'
+        name: 'NVDA',
+        atVersions: [
+          {
+            id: '2',
+            name: '2020.4',
+            supportedByAutomation: false,
+            releasedAt: '2020-04-01T04:00:00.000Z'
+          }
+        ]
       },
       browser: {
         id: '1',
@@ -84,7 +122,9 @@ export const mockedTestPlanVersion = {
       },
       minimumAtVersion: {
         id: '2',
-        name: '2020.4'
+        name: '2020.4',
+        supportedByAutomation: false,
+        releasedAt: '2020-04-01T04:00:00.000Z'
       },
       exactAtVersion: null,
       testPlanReport: {
@@ -688,7 +728,15 @@ export const mockedTestPlanVersion = {
       at: {
         id: '3',
         key: 'voiceover_macos',
-        name: 'VoiceOver for macOS'
+        name: 'VoiceOver for macOS',
+        atVersions: [
+          {
+            id: '3',
+            name: '11.6 (20G165)',
+            supportedByAutomation: false,
+            releasedAt: '2020-04-01T04:00:00.000Z'
+          }
+        ]
       },
       browser: {
         id: '3',
@@ -697,7 +745,9 @@ export const mockedTestPlanVersion = {
       },
       minimumAtVersion: {
         id: '3',
-        name: '11.6 (20G165)'
+        name: '11.6 (20G165)',
+        supportedByAutomation: false,
+        releasedAt: '2020-04-01T04:00:00.000Z'
       },
       exactAtVersion: null,
       testPlanReport: null
@@ -707,7 +757,15 @@ export const mockedTestPlanVersion = {
       at: {
         id: '3',
         key: 'voiceover_macos',
-        name: 'VoiceOver for macOS'
+        name: 'VoiceOver for macOS',
+        atVersions: [
+          {
+            id: '3',
+            name: '11.6 (20G165)',
+            supportedByAutomation: false,
+            releasedAt: '2020-04-01T04:00:00.000Z'
+          }
+        ]
       },
       browser: {
         id: '2',
@@ -716,7 +774,9 @@ export const mockedTestPlanVersion = {
       },
       minimumAtVersion: {
         id: '3',
-        name: '11.6 (20G165)'
+        name: '11.6 (20G165)',
+        supportedByAutomation: false,
+        releasedAt: '2020-04-01T04:00:00.000Z'
       },
       exactAtVersion: null,
       testPlanReport: null
@@ -726,7 +786,15 @@ export const mockedTestPlanVersion = {
       at: {
         id: '3',
         key: 'voiceover_macos',
-        name: 'VoiceOver for macOS'
+        name: 'VoiceOver for macOS',
+        atVersions: [
+          {
+            id: '3',
+            name: '11.6 (20G165)',
+            supportedByAutomation: false,
+            releasedAt: '2020-04-01T04:00:00.000Z'
+          }
+        ]
       },
       browser: {
         id: '1',
@@ -735,7 +803,9 @@ export const mockedTestPlanVersion = {
       },
       minimumAtVersion: {
         id: '3',
-        name: '11.6 (20G165)'
+        name: '11.6 (20G165)',
+        supportedByAutomation: false,
+        releasedAt: '2020-04-01T04:00:00.000Z'
       },
       exactAtVersion: null,
       testPlanReport: null

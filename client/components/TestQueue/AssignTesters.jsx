@@ -236,7 +236,9 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
       const supportedByResponseCollector = isSupportedByResponseCollector({
         id: testPlanReport.id,
         at: testPlanReport.at,
-        browser: testPlanReport.browser
+        browser: testPlanReport.browser,
+        minimumAtVersion: testPlanReport.minimumAtVersion,
+        exactAtVersion: testPlanReport.exactAtVersion
       });
       if (!foundAtForBot || !supportedByResponseCollector) return null;
     }
@@ -353,13 +355,28 @@ AssignTesters.propTypes = {
     at: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      key: PropTypes.string.isRequired
+      key: PropTypes.string.isRequired,
+      atVersions: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.string.isRequired,
+          name: PropTypes.string.isRequired,
+          supportedByAutomation: PropTypes.bool.isRequired
+        })
+      )
     }).isRequired,
     browser: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       key: PropTypes.string.isRequired
-    }).isRequired
+    }).isRequired,
+    minimumAtVersion: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    }),
+    exactAtVersion: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired
+    })
   }).isRequired
 };
 

@@ -20,6 +20,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
         id
         name
         releasedAt
+        supportedByAutomation
       }
       candidateBrowsers {
         id
