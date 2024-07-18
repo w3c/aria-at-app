@@ -19,7 +19,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
   ${BROWSER_FIELDS}
   ${ME_FIELDS}
   ${TEST_PLAN_FIELDS}
-  ${TEST_PLAN_REPORT_FIELDS()}
+  ${TEST_PLAN_REPORT_FIELDS}
   ${TEST_PLAN_REPORT_STATUS_FIELDS()}
   ${TEST_PLAN_RUN_FIELDS}
   ${TEST_PLAN_VERSION_FIELDS}
@@ -50,7 +50,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
       testPlanVersions {
         ...TestPlanVersionFields
         testPlanReports(isFinal: false) {
-          ...TestPlanReportFieldsSimple
+          ...TestPlanReportFields
           at {
             ...AtFields
             atVersions {
@@ -68,6 +68,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
           }
           draftTestPlanRuns {
             ...TestPlanRunFields
+            testResultsLength
             testResults {
               ...TestResultFields
             }
@@ -82,7 +83,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
 `;
 
 export const ASSIGN_TESTER_MUTATION = gql`
-  ${TEST_PLAN_REPORT_FIELDS('runs')}
+  ${TEST_PLAN_RUN_FIELDS}
   mutation AssignTester(
     $testReportId: ID!
     $testerId: ID!
@@ -91,7 +92,9 @@ export const ASSIGN_TESTER_MUTATION = gql`
     testPlanReport(id: $testReportId) {
       assignTester(userId: $testerId, testPlanRunId: $testPlanRunId) {
         testPlanReport {
-          ...TestPlanReportFieldsRuns
+          draftTestPlanRuns {
+            ...TestPlanRunFields
+          }
         }
       }
     }
@@ -99,12 +102,15 @@ export const ASSIGN_TESTER_MUTATION = gql`
 `;
 
 export const DELETE_TEST_PLAN_RUN = gql`
-  ${TEST_PLAN_REPORT_FIELDS('runs')}
+  ${TEST_PLAN_RUN_FIELDS}
   mutation DeleteTestPlanRun($testReportId: ID!, $testerId: ID!) {
     testPlanReport(id: $testReportId) {
       deleteTestPlanRun(userId: $testerId) {
         testPlanReport {
-          ...TestPlanReportFieldsRuns
+          id
+          draftTestPlanRuns {
+            ...TestPlanRunFields
+          }
         }
       }
     }

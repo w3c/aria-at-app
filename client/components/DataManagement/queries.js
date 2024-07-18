@@ -20,7 +20,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
   ${ISSUE_FIELDS()}
   ${ME_FIELDS}
   ${TEST_PLAN_FIELDS}
-  ${TEST_PLAN_REPORT_FIELDS()}
+  ${TEST_PLAN_REPORT_FIELDS}
   ${TEST_RESULT_FIELDS}
   query DataManagementPage {
     me {
@@ -76,7 +76,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
         directory
       }
       testPlanReports {
-        ...TestPlanReportFieldsSimple
+        ...TestPlanReportFields
         at {
           ...AtFields
         }
