@@ -150,7 +150,7 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
       gitSha,
       gitMessage,
       gitCommitDate: updatedAt
-    } = readDirectoryGitInfo(sourceDirectoryPath);
+    } = await readDirectoryGitInfo(sourceDirectoryPath);
 
     // Use existence of assertions.csv to determine if v2 format files exist
     const assertionsCsvPath = path.join(
@@ -418,8 +418,8 @@ const getVersionString = async ({ directory, updatedAt, transaction }) => {
 
   if (!versionString) return versionStringBase;
 
-  const currentCount = versionString.match(/V\d\d\.\d\d\.\d\d-(\d+)/);
-  let duplicateCount = currentCount ? Number(currentCount[1]) + 1 : 1;
+  const currentCount = versionString.match(/V\d\d\.\d\d\.\d\d-(\d+)/)?.[1] ?? 0;
+  let duplicateCount = Number(currentCount) + 1;
 
   return `${versionStringBase}-${duplicateCount}`;
 };
