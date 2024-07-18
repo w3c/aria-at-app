@@ -170,4 +170,8 @@ describe('Test Run when signed in as tester', () => {
       expect(listItemsLength).toBeGreaterThan(1);
     });
   });
+
+  // TODO: Add test to verify tests saving functionality
+  // TODO: Add test to verify tests submission functionality
+  // TODO: Add test to verify Open Test Page functionality
 });
