@@ -15,6 +15,7 @@ const TEST_PLAN_VERSION_FIELDS = gql`
     recommendedPhaseReachedAt
     recommendedPhaseTargetDate
     deprecatedAt
+    testPageUrl
     metadata
     testPlan {
       directory

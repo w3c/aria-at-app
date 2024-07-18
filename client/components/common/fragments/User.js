@@ -5,7 +5,6 @@ const USER_FIELDS = gql`
     __typename
     id
     username
-    roles
     isBot
   }
 `;

@@ -1,198 +1,87 @@
 import { gql } from '@apollo/client';
-import { ME_FIELDS, USER_FIELDS } from '@components/common/fragments';
+import {
+  AT_FIELDS,
+  AT_VERSION_FIELDS,
+  BROWSER_FIELDS,
+  BROWSER_VERSION_FIELDS,
+  COLLECTION_JOB_FIELDS,
+  ME_FIELDS,
+  SCENARIO_RESULT_FIELDS,
+  TEST_FIELDS,
+  TEST_PLAN_REPORT_CONFLICT_FIELDS,
+  TEST_PLAN_VERSION_FIELDS,
+  TEST_RESULT_FIELDS,
+  USER_FIELDS
+} from '@components/common/fragments';
 
 export const TEST_RUN_PAGE_QUERY = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${BROWSER_VERSION_FIELDS}
+  ${COLLECTION_JOB_FIELDS}
   ${ME_FIELDS}
+  ${SCENARIO_RESULT_FIELDS('all')}
+  ${TEST_FIELDS()}
+  ${TEST_FIELDS('all')}
+  ${TEST_PLAN_REPORT_CONFLICT_FIELDS}
+  ${TEST_PLAN_VERSION_FIELDS}
+  ${TEST_RESULT_FIELDS}
   ${USER_FIELDS}
   query TestPlanRunPage($testPlanRunId: ID!) {
     testPlanRun(id: $testPlanRunId) {
       id
       initiatedByAutomation
       collectionJob {
-        id
-        status
-        externalLogsUrl
-        testStatus {
-          test {
-            id
-          }
-          status
-        }
+        ...CollectionJobFields
       }
       tester {
-        id
-        username
-        isBot
+        ...UserFields
       }
       testResults {
-        id
-        startedAt
-        completedAt
+        ...TestResultFields
         test {
-          id
-          rowNumber
-          title
-          renderedUrl
+          ...TestFieldsSimple
           renderableContent
         }
         scenarioResults {
-          id
-          scenario {
-            commands {
-              id
-              text
-            }
-          }
-          output
-          assertionResults {
-            id
-            assertion {
-              text
-              phrase
-            }
-            passed
-          }
-          mustAssertionResults: assertionResults(priority: MUST) {
-            assertion {
-              text
-              phrase
-            }
-            passed
-          }
-          shouldAssertionResults: assertionResults(priority: SHOULD) {
-            assertion {
-              text
-              phrase
-            }
-            passed
-          }
-          mayAssertionResults: assertionResults(priority: MAY) {
-            assertion {
-              text
-              phrase
-            }
-            passed
-          }
-          unexpectedBehaviors {
-            id
-            text
-            impact
-            details
-          }
+          ...ScenarioResultFieldsAll
         }
         atVersion {
-          id
-          name
+          ...AtVersionFields
         }
         browserVersion {
-          id
-          name
+          ...BrowserVersionFields
         }
       }
       testPlanReport {
         id
         conflicts {
-          source {
-            test {
-              id
-              title
-              rowNumber
-            }
-            scenario {
-              id
-              commands {
-                text
-              }
-            }
-            assertion {
-              id
-              text
-              phrase
-            }
-          }
-          conflictingResults {
-            testPlanRun {
-              id
-              tester {
-                username
-              }
-            }
-            scenarioResult {
-              output
-              unexpectedBehaviors {
-                text
-                impact
-                details
-              }
-            }
-            assertionResult {
-              passed
-            }
-          }
+          ...TestPlanReportConflictFields
         }
         at {
-          id
-          name
+          ...AtFields
           atVersions {
-            id
-            name
-            releasedAt
+            ...AtVersionFields
           }
         }
         minimumAtVersion {
-          id
-          name
-          releasedAt
+          ...AtVersionFields
         }
         exactAtVersion {
-          id
-          name
+          ...AtVersionFields
         }
         browser {
-          id
-          name
+          ...BrowserFields
           browserVersions {
-            id
-            name
+            ...BrowserVersionFields
           }
         }
         testPlanVersion {
-          id
-          title
-          phase
-          updatedAt
-          gitSha
-          testPageUrl
-          testPlan {
-            directory
-          }
-          metadata
+          ...TestPlanVersionFields
         }
         runnableTests {
-          id
-          rowNumber
-          title
-          ats {
-            id
-            name
-          }
-          renderedUrl
-          scenarios {
-            id
-            at {
-              id
-              name
-            }
-            commands {
-              id
-              text
-            }
-          }
-          assertions {
-            id
-            priority
-            text
-          }
+          ...TestFieldsAll
         }
       }
     }
@@ -206,125 +95,64 @@ export const TEST_RUN_PAGE_QUERY = gql`
 `;
 
 export const COLLECTION_JOB_UPDATES_QUERY = gql`
+  ${COLLECTION_JOB_FIELDS}
   query CollectionJob($collectionJobId: ID!) {
     collectionJob(id: $collectionJobId) {
-      id
-      status
-      externalLogsUrl
-      testStatus {
-        test {
-          id
-        }
-        status
-      }
+      ...CollectionJobFields
     }
   }
 `;
 
 export const TEST_RUN_PAGE_ANON_QUERY = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${BROWSER_VERSION_FIELDS}
+  ${TEST_FIELDS('all')}
+  ${TEST_PLAN_REPORT_CONFLICT_FIELDS}
+  ${TEST_PLAN_VERSION_FIELDS}
   query TestPlanRunAnonPage($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       id
       conflicts {
-        source {
-          test {
-            id
-            title
-            rowNumber
-          }
-          scenario {
-            id
-            commands {
-              text
-            }
-          }
-          assertion {
-            id
-            text
-            phrase
-          }
-        }
-        conflictingResults {
-          testPlanRun {
-            id
-            tester {
-              username
-              isBot
-            }
-          }
-          scenarioResult {
-            output
-            unexpectedBehaviors {
-              text
-              impact
-              details
-            }
-          }
-          assertionResult {
-            passed
-          }
-        }
+        ...TestPlanReportConflictFields
       }
       at {
-        id
-        name
+        ...AtFields
         atVersions {
-          id
-          name
+          ...AtVersionFields
         }
       }
       browser {
-        id
-        name
+        ...BrowserFields
         browserVersions {
-          id
-          name
+          ...BrowserVersionFields
         }
       }
       testPlanVersion {
-        id
-        title
-        phase
-        updatedAt
-        gitSha
-        testPageUrl
-        testPlan {
-          directory
-        }
-        metadata
+        ...TestPlanVersionFields
       }
       runnableTests {
-        id
-        rowNumber
-        title
-        ats {
-          id
-          name
-        }
-        renderedUrl
+        ...TestFieldsAll
         renderableContent
-        scenarios {
-          id
-          at {
-            id
-            name
-          }
-          commands {
-            id
-            text
-          }
-        }
-        assertions {
-          id
-          priority
-          text
-        }
       }
     }
   }
 `;
 
 export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${BROWSER_VERSION_FIELDS}
+  ${COLLECTION_JOB_FIELDS}
+  ${SCENARIO_RESULT_FIELDS('all')}
+  ${TEST_FIELDS()}
+  ${TEST_FIELDS('all')}
+  ${TEST_PLAN_REPORT_CONFLICT_FIELDS}
+  ${TEST_PLAN_VERSION_FIELDS}
+  ${TEST_RESULT_FIELDS}
+  ${USER_FIELDS}
   mutation FindOrCreateTestResult(
     $testPlanRunId: ID!
     $testId: ID!
@@ -340,287 +168,57 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
         locationOfData
         testPlanRun {
           id
+          initiatedByAutomation
+          collectionJob {
+            ...CollectionJobFields
+          }
           tester {
-            id
-            username
-            isBot
+            ...UserFields
           }
           testResults {
-            id
-            startedAt
-            completedAt
+            ...TestResultFields
             test {
-              id
-              rowNumber
-              title
-              renderedUrl
+              ...TestFieldsSimple
               renderableContent
             }
             scenarioResults {
-              id
-              scenario {
-                commands {
-                  id
-                  text
-                }
-              }
-              output
-              assertionResults {
-                id
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              mustAssertionResults: assertionResults(priority: MUST) {
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              shouldAssertionResults: assertionResults(priority: SHOULD) {
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              mayAssertionResults: assertionResults(priority: MAY) {
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              unexpectedBehaviors {
-                id
-                text
-                impact
-                details
-              }
+              ...ScenarioResultFieldsAll
             }
             atVersion {
-              id
-              name
+              ...AtVersionFields
             }
             browserVersion {
-              id
-              name
+              ...BrowserVersionFields
             }
           }
           testPlanReport {
             id
             conflicts {
-              source {
-                test {
-                  id
-                  title
-                  rowNumber
-                }
-                scenario {
-                  id
-                  commands {
-                    text
-                  }
-                }
-                assertion {
-                  id
-                  text
-                  phrase
-                }
-              }
-              conflictingResults {
-                testPlanRun {
-                  id
-                  tester {
-                    username
-                  }
-                }
-                scenarioResult {
-                  output
-                  unexpectedBehaviors {
-                    text
-                    impact
-                    details
-                  }
-                }
-                assertionResult {
-                  passed
-                }
-              }
+              ...TestPlanReportConflictFields
             }
             at {
-              id
-              name
+              ...AtFields
               atVersions {
-                id
-                name
-                releasedAt
+                ...AtVersionFields
               }
             }
             minimumAtVersion {
-              id
-              name
-              releasedAt
+              ...AtVersionFields
             }
             exactAtVersion {
-              id
-              name
+              ...AtVersionFields
             }
             browser {
-              id
-              name
+              ...BrowserFields
               browserVersions {
-                id
-                name
+                ...BrowserVersionFields
               }
             }
             testPlanVersion {
-              id
-              title
-              phase
-              updatedAt
-              gitSha
-              testPageUrl
-              testPlan {
-                directory
-              }
-              metadata
+              ...TestPlanVersionFields
             }
             runnableTests {
-              id
-              rowNumber
-              title
-              ats {
-                id
-                name
-              }
-              renderedUrl
-              scenarios {
-                id
-                at {
-                  id
-                  name
-                }
-                commands {
-                  id
-                  text
-                }
-              }
-              assertions {
-                id
-                priority
-                text
-              }
-            }
-          }
-        }
-        testPlanReport {
-          id
-          conflicts {
-            source {
-              test {
-                id
-                title
-                rowNumber
-              }
-              scenario {
-                id
-                commands {
-                  text
-                }
-              }
-              assertion {
-                id
-                text
-                phrase
-              }
-            }
-            conflictingResults {
-              testPlanRun {
-                id
-                tester {
-                  isBot
-                  username
-                }
-              }
-              scenarioResult {
-                output
-                unexpectedBehaviors {
-                  text
-                  impact
-                  details
-                }
-              }
-              assertionResult {
-                passed
-              }
-            }
-          }
-          at {
-            id
-            name
-            atVersions {
-              id
-              name
-              releasedAt
-            }
-          }
-          minimumAtVersion {
-            id
-            name
-            releasedAt
-          }
-          exactAtVersion {
-            id
-            name
-          }
-          browser {
-            id
-            name
-            browserVersions {
-              id
-              name
-            }
-          }
-          testPlanVersion {
-            id
-            title
-            phase
-            updatedAt
-            gitSha
-            testPageUrl
-            testPlan {
-              directory
-            }
-            metadata
-          }
-          runnableTests {
-            id
-            rowNumber
-            title
-            ats {
-              id
-              name
-            }
-            renderedUrl
-            scenarios {
-              id
-              at {
-                id
-                name
-              }
-              commands {
-                id
-                text
-              }
-            }
-            assertions {
-              id
-              priority
-              text
+              ...TestFieldsAll
             }
           }
         }
@@ -630,6 +228,18 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
 `;
 
 export const SAVE_TEST_RESULT_MUTATION = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${BROWSER_VERSION_FIELDS}
+  ${COLLECTION_JOB_FIELDS}
+  ${SCENARIO_RESULT_FIELDS('all')}
+  ${TEST_FIELDS()}
+  ${TEST_FIELDS('all')}
+  ${TEST_PLAN_REPORT_CONFLICT_FIELDS}
+  ${TEST_PLAN_VERSION_FIELDS}
+  ${TEST_RESULT_FIELDS}
+  ${USER_FIELDS}
   mutation SaveTestResult(
     $id: ID!
     $atVersionId: ID!
@@ -648,286 +258,57 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
         locationOfData
         testPlanRun {
           id
+          initiatedByAutomation
+          collectionJob {
+            ...CollectionJobFields
+          }
           tester {
-            id
-            username
-            isBot
+            ...UserFields
           }
           testResults {
-            id
-            startedAt
-            completedAt
+            ...TestResultFields
             test {
-              id
-              rowNumber
-              title
-              renderedUrl
+              ...TestFieldsSimple
               renderableContent
             }
             scenarioResults {
-              id
-              scenario {
-                commands {
-                  id
-                  text
-                }
-              }
-              output
-              assertionResults {
-                id
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              mustAssertionResults: assertionResults(priority: MUST) {
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              shouldAssertionResults: assertionResults(priority: SHOULD) {
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              mayAssertionResults: assertionResults(priority: MAY) {
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              unexpectedBehaviors {
-                id
-                text
-                impact
-                details
-              }
+              ...ScenarioResultFieldsAll
             }
             atVersion {
-              id
-              name
+              ...AtVersionFields
             }
             browserVersion {
-              id
-              name
+              ...BrowserVersionFields
             }
           }
           testPlanReport {
             id
             conflicts {
-              source {
-                test {
-                  id
-                  title
-                  rowNumber
-                }
-                scenario {
-                  id
-                  commands {
-                    text
-                  }
-                }
-                assertion {
-                  id
-                  text
-                  phrase
-                }
-              }
-              conflictingResults {
-                testPlanRun {
-                  id
-                  tester {
-                    username
-                  }
-                }
-                scenarioResult {
-                  output
-                  unexpectedBehaviors {
-                    text
-                    impact
-                    details
-                  }
-                }
-                assertionResult {
-                  passed
-                }
-              }
+              ...TestPlanReportConflictFields
             }
             at {
-              id
-              name
+              ...AtFields
               atVersions {
-                id
-                name
-                releasedAt
+                ...AtVersionFields
               }
             }
             minimumAtVersion {
-              id
-              name
-              releasedAt
+              ...AtVersionFields
             }
             exactAtVersion {
-              id
-              name
+              ...AtVersionFields
             }
             browser {
-              id
-              name
+              ...BrowserFields
               browserVersions {
-                id
-                name
+                ...BrowserVersionFields
               }
             }
             testPlanVersion {
-              id
-              title
-              phase
-              updatedAt
-              gitSha
-              testPageUrl
-              testPlan {
-                directory
-              }
-              metadata
+              ...TestPlanVersionFields
             }
             runnableTests {
-              id
-              rowNumber
-              title
-              ats {
-                id
-                name
-              }
-              renderedUrl
-              scenarios {
-                id
-                at {
-                  id
-                  name
-                }
-                commands {
-                  id
-                  text
-                }
-              }
-              assertions {
-                id
-                priority
-                text
-              }
-            }
-          }
-        }
-        testPlanReport {
-          id
-          conflicts {
-            source {
-              test {
-                id
-                title
-                rowNumber
-              }
-              scenario {
-                id
-                commands {
-                  text
-                }
-              }
-              assertion {
-                id
-                text
-                phrase
-              }
-            }
-            conflictingResults {
-              testPlanRun {
-                id
-                tester {
-                  username
-                }
-              }
-              scenarioResult {
-                output
-                unexpectedBehaviors {
-                  text
-                  impact
-                  details
-                }
-              }
-              assertionResult {
-                passed
-              }
-            }
-          }
-          at {
-            id
-            name
-            atVersions {
-              id
-              name
-              releasedAt
-            }
-          }
-          minimumAtVersion {
-            id
-            name
-            releasedAt
-          }
-          exactAtVersion {
-            id
-            name
-          }
-          browser {
-            id
-            name
-            browserVersions {
-              id
-              name
-            }
-          }
-          testPlanVersion {
-            id
-            title
-            phase
-            updatedAt
-            gitSha
-            testPageUrl
-            testPlan {
-              directory
-            }
-            metadata
-          }
-          runnableTests {
-            id
-            rowNumber
-            title
-            ats {
-              id
-              name
-            }
-            renderedUrl
-            scenarios {
-              id
-              at {
-                id
-                name
-              }
-              commands {
-                id
-                text
-              }
-            }
-            assertions {
-              id
-              priority
-              text
+              ...TestFieldsAll
             }
           }
         }
@@ -937,6 +318,18 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
 `;
 
 export const SUBMIT_TEST_RESULT_MUTATION = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${BROWSER_VERSION_FIELDS}
+  ${COLLECTION_JOB_FIELDS}
+  ${SCENARIO_RESULT_FIELDS('all')}
+  ${TEST_FIELDS()}
+  ${TEST_FIELDS('all')}
+  ${TEST_PLAN_REPORT_CONFLICT_FIELDS}
+  ${TEST_PLAN_VERSION_FIELDS}
+  ${TEST_RESULT_FIELDS}
+  ${USER_FIELDS}
   mutation SubmitTestResult(
     $id: ID!
     $atVersionId: ID!
@@ -955,285 +348,57 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
         locationOfData
         testPlanRun {
           id
+          initiatedByAutomation
+          collectionJob {
+            ...CollectionJobFields
+          }
           tester {
-            id
-            username
+            ...UserFields
           }
           testResults {
-            id
-            startedAt
-            completedAt
+            ...TestResultFields
             test {
-              id
-              rowNumber
-              title
-              renderedUrl
+              ...TestFieldsSimple
               renderableContent
             }
             scenarioResults {
-              id
-              scenario {
-                commands {
-                  id
-                  text
-                }
-              }
-              output
-              assertionResults {
-                id
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              mustAssertionResults: assertionResults(priority: MUST) {
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              shouldAssertionResults: assertionResults(priority: SHOULD) {
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              mayAssertionResults: assertionResults(priority: MAY) {
-                assertion {
-                  text
-                  phrase
-                }
-                passed
-              }
-              unexpectedBehaviors {
-                id
-                text
-                impact
-                details
-              }
+              ...ScenarioResultFieldsAll
             }
             atVersion {
-              id
-              name
+              ...AtVersionFields
             }
             browserVersion {
-              id
-              name
+              ...BrowserVersionFields
             }
           }
           testPlanReport {
             id
             conflicts {
-              source {
-                test {
-                  id
-                  title
-                  rowNumber
-                }
-                scenario {
-                  id
-                  commands {
-                    text
-                  }
-                }
-                assertion {
-                  id
-                  text
-                  phrase
-                }
-              }
-              conflictingResults {
-                testPlanRun {
-                  id
-                  tester {
-                    username
-                  }
-                }
-                scenarioResult {
-                  output
-                  unexpectedBehaviors {
-                    text
-                    impact
-                    details
-                  }
-                }
-                assertionResult {
-                  passed
-                }
-              }
+              ...TestPlanReportConflictFields
             }
             at {
-              id
-              name
+              ...AtFields
               atVersions {
-                id
-                name
-                releasedAt
+                ...AtVersionFields
               }
             }
             minimumAtVersion {
-              id
-              name
-              releasedAt
+              ...AtVersionFields
             }
             exactAtVersion {
-              id
-              name
+              ...AtVersionFields
             }
             browser {
-              id
-              name
+              ...BrowserFields
               browserVersions {
-                id
-                name
+                ...BrowserVersionFields
               }
             }
             testPlanVersion {
-              id
-              title
-              phase
-              updatedAt
-              gitSha
-              testPageUrl
-              testPlan {
-                directory
-              }
-              metadata
+              ...TestPlanVersionFields
             }
             runnableTests {
-              id
-              rowNumber
-              title
-              ats {
-                id
-                name
-              }
-              renderedUrl
-              scenarios {
-                id
-                at {
-                  id
-                  name
-                }
-                commands {
-                  id
-                  text
-                }
-              }
-              assertions {
-                id
-                priority
-                text
-              }
-            }
-          }
-        }
-        testPlanReport {
-          id
-          conflicts {
-            source {
-              test {
-                id
-                title
-                rowNumber
-              }
-              scenario {
-                id
-                commands {
-                  text
-                }
-              }
-              assertion {
-                id
-                text
-                phrase
-              }
-            }
-            conflictingResults {
-              testPlanRun {
-                id
-                tester {
-                  username
-                }
-              }
-              scenarioResult {
-                output
-                unexpectedBehaviors {
-                  text
-                  impact
-                  details
-                }
-              }
-              assertionResult {
-                passed
-              }
-            }
-          }
-          at {
-            id
-            name
-            atVersions {
-              id
-              name
-              releasedAt
-            }
-          }
-          minimumAtVersion {
-            id
-            name
-            releasedAt
-          }
-          exactAtVersion {
-            id
-            name
-          }
-          browser {
-            id
-            name
-            browserVersions {
-              id
-              name
-            }
-          }
-          testPlanVersion {
-            id
-            title
-            phase
-            updatedAt
-            gitSha
-            testPageUrl
-            testPlan {
-              directory
-            }
-            metadata
-          }
-          runnableTests {
-            id
-            rowNumber
-            title
-            ats {
-              id
-              name
-            }
-            renderedUrl
-            scenarios {
-              id
-              at {
-                id
-                name
-              }
-              commands {
-                id
-                text
-              }
-            }
-            assertions {
-              id
-              priority
-              text
+              ...TestFieldsAll
             }
           }
         }
@@ -1253,14 +418,14 @@ export const DELETE_TEST_RESULT_MUTATION = gql`
 `;
 
 export const FIND_OR_CREATE_BROWSER_VERSION_MUTATION = gql`
+  ${BROWSER_VERSION_FIELDS}
   mutation FindOrCreateBrowserVersion(
     $browserId: ID!
     $browserVersionName: String!
   ) {
     browser(id: $browserId) {
       findOrCreateBrowserVersion(input: { name: $browserVersionName }) {
-        id
-        name
+        ...BrowserVersionFields
       }
     }
   }
