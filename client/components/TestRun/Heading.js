@@ -120,13 +120,13 @@ const TestRunHeading = ({
       <div className="test-info-wrapper">
         <div
           className="test-info-entity apg-example-name"
-          data-test="apg-example-name"
+          data-testid="apg-example-name"
         >
           <div className="info-label">
             <b>Test Plan:</b> {testPlanTitle}
           </div>
         </div>
-        <div className="test-info-entity at-browser" data-test="at-browser">
+        <div className="test-info-entity at-browser" data-testid="at-browser">
           <div className="at-browser-row">
             <div className="info-label">
               <b>AT:</b> {at}
