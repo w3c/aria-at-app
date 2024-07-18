@@ -12,4 +12,5 @@ const getAppUrl = (directoryRelativePath, { gitSha, directoryPath }) => {
     )
   );
 };
+
 module.exports = { getAppUrl };
