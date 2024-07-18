@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { Fieldset } from '..';
 import styled from '@emotion/styled';
 import supportJson from '../../../resources/support.json';
+import { Fieldset } from '..';
 
 const Label = styled.label`
-  display: block;
+  display: inline-block;
+  margin-right: 1rem;
 
   input {
     margin-right: 0.25rem;
@@ -28,18 +29,30 @@ const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
       </legend>
       {assertions.map((assertion, assertionIndex) => {
         const { description, passed, click } = assertion;
-
         return (
-          <Label key={`AssertionKey_${assertionIndex}`}>
-            <input
-              type="checkbox"
-              id={`pass-${commandIndex}-${assertionIndex}`}
-              name={`assertion-${commandIndex}-${assertionIndex}`}
-              defaultChecked={passed}
-              onClick={click}
-            />
-            {description[0]}
-          </Label>
+          <Fieldset key={`AssertionKey_${assertionIndex}`}>
+            <legend>{description[0]}</legend>
+            <Label>
+              <input
+                type="radio"
+                id={`pass-${commandIndex}-${assertionIndex}-yes`}
+                name={`assertion-${commandIndex}-${assertionIndex}`}
+                checked={passed === true}
+                onChange={() => click(true)}
+              />
+              Yes
+            </Label>
+            <Label>
+              <input
+                type="radio"
+                id={`pass-${commandIndex}-${assertionIndex}-no`}
+                name={`assertion-${commandIndex}-${assertionIndex}`}
+                checked={passed === false}
+                onChange={() => click(false)}
+              />
+              No
+            </Label>
+          </Fieldset>
         );
       })}
     </Fieldset>

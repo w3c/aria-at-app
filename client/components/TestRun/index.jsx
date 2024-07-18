@@ -414,7 +414,7 @@ const TestRun = () => {
           ...scenarioResult.assertionResults.find(
             ({ assertion: { text } }) => text === description
           ),
-          passed: result === 'pass'
+          passed: result
         };
         assertionResults.push(
           captureHighlightRequired
