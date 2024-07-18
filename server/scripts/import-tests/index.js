@@ -23,6 +23,11 @@ const deepPickEqual = require('../../util/deepPickEqual');
 const { hashTests } = require('../../util/aria');
 const convertDateToString = require('../../util/convertDateToString');
 const { convertAssertionPriority } = require('shared');
+const {
+  cloneRepo,
+  readCommit,
+  readDirectoryGitInfo
+} = require('./gitOperations');
 
 const args = require('minimist')(process.argv.slice(2), {
   alias: {
@@ -46,25 +51,12 @@ Default use:
   process.exit();
 }
 
-const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-const ariaAtDefaultBranch = 'master';
 const gitCloneDirectory = path.resolve(__dirname, 'tmp');
 const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
 
-const gitRun = (args, cwd = gitCloneDirectory) => {
-  const gitRunOutput = spawn.sync('git', args.split(' '), { cwd });
-
-  if (gitRunOutput.error) {
-    console.info(`'git ${args}' failed with error ${gitRunOutput.error}`);
-    process.exit(1);
-  }
-
-  return gitRunOutput.stdout.toString().trimEnd();
-};
-
 const importTestPlanVersions = async transaction => {
-  await cloneRepo();
+  await cloneRepo(gitCloneDirectory);
 
   // Get list of commits when multiple passed in as
   // `<import_cmd> -c "commit1 commit2 commitN ..."`
@@ -83,7 +75,7 @@ const importTestPlanVersions = async transaction => {
 };
 
 const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
-  const { gitCommitDate } = await readCommit(commit);
+  const { gitCommitDate } = await readCommit(gitCloneDirectory, commit);
 
   console.log('Running `npm install` ...\n');
   const installOutput = spawn.sync('npm', ['install'], {
@@ -284,42 +276,6 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
     cwd: gitCloneDirectory
   });
   console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
-};
-
-const cloneRepo = async () => {
-  fse.ensureDirSync(gitCloneDirectory);
-
-  console.info('Cloning aria-at repo ...');
-  const cloneOutput = spawn.sync('git', [
-    'clone',
-    ariaAtRepo,
-    gitCloneDirectory
-  ]);
-
-  if (cloneOutput.error) {
-    console.info(
-      `git clone ${ariaAtRepo} ${gitCloneDirectory} failed with error ${cloneOutput.error}`
-    );
-    process.exit(1);
-  }
-  console.info('Cloning aria-at repo complete.');
-};
-
-const readCommit = async commit => {
-  gitRun(`checkout ${commit ?? ariaAtDefaultBranch}`);
-  const gitCommitDate = new Date(gitRun(`log --format=%aI -n 1`));
-
-  return { gitCommitDate };
-};
-
-const readDirectoryGitInfo = directoryPath => {
-  const gitSha = gitRun(`log -1 --format=%H -- .`, directoryPath);
-  const gitMessage = gitRun(`log -1 --format=%s -- .`, directoryPath);
-  const gitCommitDate = new Date(
-    gitRun(`log -1 --format=%aI -- .`, directoryPath)
-  );
-
-  return { gitSha, gitMessage, gitCommitDate };
 };
 
 const importHarness = () => {
