@@ -8,5 +8,5 @@ const { listener } = require('./server/server');
 listener.use(history()).use(express.static('./client/dist'));
 
 listener.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, './client/dist/index.html'));
+  res.sendFile(path.join(__dirname, './client/dist/index.html'));
 });

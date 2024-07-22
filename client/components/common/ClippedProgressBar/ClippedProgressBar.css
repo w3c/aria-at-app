@@ -1,38 +1,38 @@
 .progress {
-    height: 1.2rem;
-    border-radius: 1rem;
-    margin-top: 0.2em;
-    border: 1px solid gray;
+  height: 1.2rem;
+  border-radius: 1rem;
+  margin-top: 0.2em;
+  border: 1px solid gray;
 }
 
 .progress .progress-bar.bg-info {
-    background-color: #0b60ab !important;
+  background-color: #0b60ab !important;
 }
 
 .progress.clipped {
-    position: relative;
-    display: flex;
-    overflow: hidden;
+  position: relative;
+  display: flex;
+  overflow: hidden;
 }
 
 .progress.clipped .front {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background: #e9ecef;
-    color: black;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #e9ecef;
+  color: black;
 }
 
 .progress.clipped .back {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    background: #0b60ab;
-    color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: #0b60ab;
+  color: white;
 }

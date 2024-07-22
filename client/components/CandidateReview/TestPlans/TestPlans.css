@@ -1,18 +1,18 @@
 .dropdown-btn-mark-as .btn {
-    display: flex;
-    align-items: center;
-    width: fit-content;
-    height: 30px;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  height: 30px;
 
-    padding-right: 1.5em;
-    font-size: 0.875rem;
+  padding-right: 1.5em;
+  font-size: 0.875rem;
 }
 
 .dropdown-btn-mark-as.btn {
-    display: flex;
-    align-items: center;
-    width: fit-content;
-    height: 30px;
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  height: 30px;
 
-    font-size: 0.875rem;
+  font-size: 0.875rem;
 }

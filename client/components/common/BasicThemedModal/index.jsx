@@ -7,132 +7,130 @@ import styled from '@emotion/styled';
 import { uniqueId } from 'lodash';
 
 const ModalTitleStyle = styled.h1`
-    border: 0;
-    padding: 0;
-    font-size: 1.5rem;
+  border: 0;
+  padding: 0;
+  font-size: 1.5rem;
 `;
 
 const ModalInnerSectionContainer = styled.div`
-    display: grid;
-    grid-auto-flow: column;
+  display: grid;
+  grid-auto-flow: column;
 
-    grid-template-columns: 50px auto;
-    grid-gap: 10px;
+  grid-template-columns: 50px auto;
+  grid-gap: 10px;
 `;
 
 const ColorStrip = styled.div`
-    width: 100%;
-    height: 10px;
-    ${props => props.hideHeadline && `display: none;`}
-    background-color: ${({ theme }) =>
-        theme === 'danger' ? '#ce1b4c' : '#fab700'};
+  width: 100%;
+  height: 10px;
+  ${props => props.hideHeadline && `display: none;`}
+  background-color: ${({ theme }) =>
+    theme === 'danger' ? '#ce1b4c' : '#fab700'};
 
-    border-top-left-radius: calc(0.3rem - 1px);
-    border-top-right-radius: calc(0.3rem - 1px);
+  border-top-left-radius: calc(0.3rem - 1px);
+  border-top-right-radius: calc(0.3rem - 1px);
 `;
 
 const BasicThemedModal = ({
-    show = false,
-    centered = false,
-    animation = true,
-    theme = 'warning', // warning, danger
-    dialogClassName = '',
-    title = null,
-    content = null,
-    actionButtons = [],
-    closeLabel = 'Cancel',
-    handleClose = null,
-    showCloseAction = true
+  show = false,
+  centered = false,
+  animation = true,
+  theme = 'warning', // warning, danger
+  dialogClassName = '',
+  title = null,
+  content = null,
+  actionButtons = [],
+  closeLabel = 'Cancel',
+  handleClose = null,
+  showCloseAction = true
 }) => {
-    const headerRef = useRef();
+  const headerRef = useRef();
 
-    useEffect(() => {
-        if (!show) return;
-        headerRef.current.focus();
-    }, [show]);
+  useEffect(() => {
+    if (!show) return;
+    headerRef.current.focus();
+  }, [show]);
 
-    const id = useMemo(() => {
-        return uniqueId('modal-');
-    }, []);
+  const id = useMemo(() => {
+    return uniqueId('modal-');
+  }, []);
 
-    return (
-        <>
-            <Modal
-                show={show}
-                centered={centered}
-                animation={animation}
-                onExit={handleClose}
-                /* Disabled due to buggy implementation which jumps the page */
-                autoFocus={false}
-                aria-labelledby={`title-${id}`}
-                dialogClassName={dialogClassName}
+  return (
+    <>
+      <Modal
+        show={show}
+        centered={centered}
+        animation={animation}
+        onExit={handleClose}
+        /* Disabled due to buggy implementation which jumps the page */
+        autoFocus={false}
+        aria-labelledby={`title-${id}`}
+        dialogClassName={dialogClassName}
+      >
+        <ColorStrip theme={theme} />
+        <Modal.Header className="border-bottom-0">
+          <Modal.Title
+            as={ModalTitleStyle}
+            tabIndex="-1"
+            ref={headerRef}
+            id={`title-${id}`}
+          >
+            <ModalInnerSectionContainer>
+              <FontAwesomeIcon
+                icon={faExclamationTriangle}
+                size="lg"
+                color={theme === 'danger' ? '#ce1b4c' : '#fab700'}
+              />
+              {title}
+            </ModalInnerSectionContainer>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ModalInnerSectionContainer>
+            <>
+              <div />
+              <div>{content}</div>
+            </>
+          </ModalInnerSectionContainer>
+        </Modal.Body>
+        <Modal.Footer>
+          {showCloseAction && (
+            <Button variant="secondary" onClick={handleClose}>
+              {closeLabel}
+            </Button>
+          )}
+          {actionButtons.map(({ action, text }) => (
+            <Button
+              key={text}
+              variant={theme === 'danger' ? 'danger' : 'primary'}
+              onClick={action}
             >
-                <ColorStrip theme={theme} />
-                <Modal.Header className="border-bottom-0">
-                    <Modal.Title
-                        as={ModalTitleStyle}
-                        tabIndex="-1"
-                        ref={headerRef}
-                        id={`title-${id}`}
-                    >
-                        <ModalInnerSectionContainer>
-                            <FontAwesomeIcon
-                                icon={faExclamationTriangle}
-                                size="lg"
-                                color={
-                                    theme === 'danger' ? '#ce1b4c' : '#fab700'
-                                }
-                            />
-                            {title}
-                        </ModalInnerSectionContainer>
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <ModalInnerSectionContainer>
-                        <>
-                            <div />
-                            <div>{content}</div>
-                        </>
-                    </ModalInnerSectionContainer>
-                </Modal.Body>
-                <Modal.Footer>
-                    {showCloseAction && (
-                        <Button variant="secondary" onClick={handleClose}>
-                            {closeLabel}
-                        </Button>
-                    )}
-                    {actionButtons.map(({ action, text }) => (
-                        <Button
-                            key={text}
-                            variant={theme === 'danger' ? 'danger' : 'primary'}
-                            onClick={action}
-                        >
-                            {text}
-                        </Button>
-                    ))}
-                </Modal.Footer>
-            </Modal>
-        </>
-    );
+              {text}
+            </Button>
+          ))}
+        </Modal.Footer>
+      </Modal>
+    </>
+  );
 };
 
 BasicThemedModal.propTypes = {
-    show: PropTypes.bool,
-    centered: PropTypes.bool,
-    animation: PropTypes.bool,
-    theme: PropTypes.string,
-    dialogClassName: PropTypes.string,
-    title: PropTypes.node.isRequired,
-    content: PropTypes.node.isRequired,
-    actionButtons: PropTypes.arrayOf(
-        PropTypes.shape({
-            text: PropTypes.string,
-            action: PropTypes.func
-        })
-    ),
-    closeLabel: PropTypes.string,
-    handleClose: PropTypes.func,
-    showCloseAction: PropTypes.bool
+  show: PropTypes.bool,
+  centered: PropTypes.bool,
+  animation: PropTypes.bool,
+  theme: PropTypes.string,
+  dialogClassName: PropTypes.string,
+  title: PropTypes.node.isRequired,
+  content: PropTypes.node.isRequired,
+  actionButtons: PropTypes.arrayOf(
+    PropTypes.shape({
+      text: PropTypes.string,
+      action: PropTypes.func
+    })
+  ),
+  closeLabel: PropTypes.string,
+  handleClose: PropTypes.func,
+  showCloseAction: PropTypes.bool
 };
 
 export default BasicThemedModal;

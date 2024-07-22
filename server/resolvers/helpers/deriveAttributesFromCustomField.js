@@ -1,32 +1,32 @@
 const mapParentFn = field => {
-    if (field.subfields) {
-        return [
-            ...field.subfields.flatMap(subfield =>
-                mapSubfieldFn(field.value, subfield)
-            ),
-            field.value
-        ];
-    }
-    return field.value;
+  if (field.subfields) {
+    return [
+      ...field.subfields.flatMap(subfield =>
+        mapSubfieldFn(field.value, subfield)
+      ),
+      field.value
+    ];
+  }
+  return field.value;
 };
 
 const mapSubfieldFn = (parent, field) => {
-    if (field.subfields) {
-        return [
-            ...field.subfields.flatMap(subfield =>
-                mapSubfieldFn(field.value, subfield)
-            ),
-            `${parent}.${field.value}`
-        ];
-    }
-    return `${parent}.${field.value}`;
+  if (field.subfields) {
+    return [
+      ...field.subfields.flatMap(subfield =>
+        mapSubfieldFn(field.value, subfield)
+      ),
+      `${parent}.${field.value}`
+    ];
+  }
+  return `${parent}.${field.value}`;
 };
 
 const getChildPaths = (parent, fields) => {
-    return fields.map(item => {
-        if (item.includes(`${parent}.`)) return item.replace(`${parent}.`, '');
-        return item;
-    });
+  return fields.map(item => {
+    if (item.includes(`${parent}.`)) return item.replace(`${parent}.`, '');
+    return item;
+  });
 };
 
 /**
@@ -36,45 +36,43 @@ const getChildPaths = (parent, fields) => {
  * @returns {{fields: *[], derived: *[]}|*[]}
  */
 const deriveAttributesFromCustomField = (fieldName, customFields) => {
-    if (!customFields) return [];
-    const derived = [];
-    const fields = [
-        ...customFields.map(({ value }) => value),
-        ...customFields.flatMap(mapParentFn)
-    ];
-    fields.push(...getChildPaths(fieldName, fields));
+  if (!customFields) return [];
+  const derived = [];
+  const fields = [
+    ...customFields.map(({ value }) => value),
+    ...customFields.flatMap(mapParentFn)
+  ];
+  fields.push(...getChildPaths(fieldName, fields));
 
-    switch (fieldName) {
-        case 'testPlanVersion':
-        case 'latestTestPlanVersion': {
-            if (
-                fields.includes('testPlan.id') ||
-                fields.includes('testPlan.directory')
-            )
-                derived.push('directory');
-            if (fields.includes('earliestAtVersion')) derived.push('phase');
-            break;
-        }
-        case 'testPlanReport': {
-            if (fields.includes('at')) derived.push('atId');
-            if (fields.includes('browser')) derived.push('browserId');
-            if (fields.includes('testPlanVersion'))
-                derived.push('testPlanVersionId');
-            if (fields.includes('isFinal')) derived.push('markedFinalAt');
-            if (fields.includes('recommendedAtVersion')) {
-                derived.push('testPlanVersionId');
-                derived.push('markedFinalAt');
-            }
-            break;
-        }
-        case 'draftTestPlanRuns': {
-            if (fields.includes('tester')) derived.push('testerUserId');
-            if (fields.includes('testPlanReport'))
-                derived.push('testPlanReportId');
-        }
+  switch (fieldName) {
+    case 'testPlanVersion':
+    case 'latestTestPlanVersion': {
+      if (
+        fields.includes('testPlan.id') ||
+        fields.includes('testPlan.directory')
+      )
+        derived.push('directory');
+      if (fields.includes('earliestAtVersion')) derived.push('phase');
+      break;
     }
+    case 'testPlanReport': {
+      if (fields.includes('at')) derived.push('atId');
+      if (fields.includes('browser')) derived.push('browserId');
+      if (fields.includes('testPlanVersion')) derived.push('testPlanVersionId');
+      if (fields.includes('isFinal')) derived.push('markedFinalAt');
+      if (fields.includes('recommendedAtVersion')) {
+        derived.push('testPlanVersionId');
+        derived.push('markedFinalAt');
+      }
+      break;
+    }
+    case 'draftTestPlanRuns': {
+      if (fields.includes('tester')) derived.push('testerUserId');
+      if (fields.includes('testPlanReport')) derived.push('testPlanReportId');
+    }
+  }
 
-    return { fields, derived };
+  return { fields, derived };
 };
 
 module.exports = deriveAttributesFromCustomField;

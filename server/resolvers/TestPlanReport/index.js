@@ -15,19 +15,19 @@ const exactAtVersion = require('./exactAtVersionResolver');
 const minimumAtVersion = require('./minimumAtVersionResolver');
 
 module.exports = {
-    runnableTests,
-    runnableTestsLength,
-    draftTestPlanRuns,
-    finalizedTestResults,
-    conflicts,
-    conflictsLength,
-    issues,
-    atVersions,
-    at,
-    exactAtVersion,
-    minimumAtVersion,
-    browser,
-    latestAtVersionReleasedAt,
-    recommendedAtVersion,
-    isFinal
+  runnableTests,
+  runnableTestsLength,
+  draftTestPlanRuns,
+  finalizedTestResults,
+  conflicts,
+  conflictsLength,
+  issues,
+  atVersions,
+  at,
+  exactAtVersion,
+  minimumAtVersion,
+  browser,
+  latestAtVersionReleasedAt,
+  recommendedAtVersion,
+  isFinal
 };

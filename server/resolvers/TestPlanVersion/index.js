@@ -7,13 +7,13 @@ const testPlanReportStatuses = require('./testPlanReportStatusesResolver');
 const earliestAtVersion = require('./earliestAtVersionResolver');
 
 const TestPlanVersion = {
-    testPlan,
-    gitMessage,
-    tests,
-    recommendedPhaseTargetDate,
-    testPlanReports,
-    testPlanReportStatuses,
-    earliestAtVersion
+  testPlan,
+  gitMessage,
+  tests,
+  recommendedPhaseTargetDate,
+  testPlanReports,
+  testPlanReportStatuses,
+  earliestAtVersion
 };
 
 module.exports = TestPlanVersion;

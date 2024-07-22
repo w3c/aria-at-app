@@ -1,23 +1,23 @@
 const deriveAttributesFromCustomField = require('./deriveAttributesFromCustomField');
 
 const getAttributesFromSelections = (
-    selections,
-    fieldName = null,
-    useSubpath = false
+  selections,
+  fieldName = null,
+  useSubpath = false
 ) => {
-    return (
-        useSubpath
-            ? selections.filter(item => item.name.value === fieldName)
-            : selections
-    ).map(({ name: { value }, selectionSet }) => {
-        return {
-            value,
-            // Most selections with an extra selectionSet is a custom attribute
-            subfields: selectionSet
-                ? getAttributesFromSelections(selectionSet.selections)
-                : null
-        };
-    });
+  return (
+    useSubpath
+      ? selections.filter(item => item.name.value === fieldName)
+      : selections
+  ).map(({ name: { value }, selectionSet }) => {
+    return {
+      value,
+      // Most selections with an extra selectionSet is a custom attribute
+      subfields: selectionSet
+        ? getAttributesFromSelections(selectionSet.selections)
+        : null
+    };
+  });
 };
 
 /**
@@ -31,42 +31,42 @@ const getAttributesFromSelections = (
  * @returns {{raw: *[], attributes: any[]}}
  */
 const retrieveAttributes = (
-    fieldName,
-    modelAttributes,
-    { fieldNodes },
-    useSubpath = false
+  fieldName,
+  modelAttributes,
+  { fieldNodes },
+  useSubpath = false
 ) => {
-    const attributes = getAttributesFromSelections(
-        fieldNodes[0].selectionSet.selections,
-        fieldName,
-        useSubpath
-    );
+  const attributes = getAttributesFromSelections(
+    fieldNodes[0].selectionSet.selections,
+    fieldName,
+    useSubpath
+  );
 
-    // Filter the attributes from field nodes against the model columns
-    const found = [];
+  // Filter the attributes from field nodes against the model columns
+  const found = [];
 
-    // Could be custom fields that need to be handled separately in resolver
-    const unknown = [];
+  // Could be custom fields that need to be handled separately in resolver
+  const unknown = [];
 
-    attributes.forEach(attribute => {
-        if (modelAttributes.includes(attribute.value)) found.push(attribute);
-        else unknown.push(attribute);
-    });
+  attributes.forEach(attribute => {
+    if (modelAttributes.includes(attribute.value)) found.push(attribute);
+    else unknown.push(attribute);
+  });
 
-    const { fields, derived } = deriveAttributesFromCustomField(
-        fieldName,
-        unknown
-    );
+  const { fields, derived } = deriveAttributesFromCustomField(
+    fieldName,
+    unknown
+  );
 
-    fields.forEach(field => {
-        if (modelAttributes.includes(field)) found.push({ value: field });
-    });
+  fields.forEach(field => {
+    if (modelAttributes.includes(field)) found.push({ value: field });
+  });
 
-    // filter out duplicates
-    return {
-        raw: [...new Set(fields)],
-        attributes: [...new Set([...found.map(item => item.value), ...derived])]
-    };
+  // filter out duplicates
+  return {
+    raw: [...new Set(fields)],
+    attributes: [...new Set([...found.map(item => item.value), ...derived])]
+  };
 };
 
 module.exports = retrieveAttributes;
