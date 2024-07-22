@@ -47,8 +47,7 @@ Default use:
 }
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-// TODO: Change this one aria-at is updated and before merging
-const ariaAtDefaultBranch = 'assertion-verdict-radio-buttons';
+const ariaAtDefaultBranch = 'master';
 const gitCloneDirectory = path.resolve(__dirname, 'tmp');
 const builtTestsDirectory = path.resolve(gitCloneDirectory, 'build', 'tests');
 const testsDirectory = path.resolve(gitCloneDirectory, 'tests');
