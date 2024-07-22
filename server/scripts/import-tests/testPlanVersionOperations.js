@@ -25,6 +25,13 @@ const {
 } = require('./settings');
 const { getAppUrl } = require('./utils');
 
+/**
+ * Builds tests and creates test plan versions for a given commit.
+ * @param {string} commit - The git commit hash.
+ * @param {Object} options - Options object.
+ * @param {import('sequelize').Transaction} options.transaction - The database transaction.
+ * @returns {Promise<void>}
+ */
 const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
   const { gitCommitDate } = await readCommit(gitCloneDirectory, commit);
 
@@ -64,6 +71,10 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
     const builtDirectoryPath = path.join(builtTestsDirectory, directory);
     const sourceDirectoryPath = path.join(testsDirectory, directory);
 
+    // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
+    // This is the date of the last commit before the build folder removal.
+    // Meant to support backward compatability until the existing tests can
+    // be updated to the current structure
     const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
     const useBuildInAppAppUrlPath =
       gitCommitDate.getTime() <= buildRemovalDate.getTime();
@@ -88,6 +99,8 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
     });
   }
 
+  // To ensure build folder is clean when multiple commits are being processed
+  // to prevent `EPERM` errors
   console.log('Running `npm run cleanup` ...\n');
   const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
     cwd: gitCloneDirectory
@@ -95,6 +108,17 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
   console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
 };
 
+/**
+ * Processes a test plan version for a given directory.
+ * @param {Object} options - Options object.
+ * @param {string} options.directory - The directory name.
+ * @param {string} options.builtDirectoryPath - Path to the built directory.
+ * @param {string} options.sourceDirectoryPath - Path to the source directory.
+ * @param {boolean} options.useBuildInAppAppUrlPath - Whether to use build path in app URL.
+ * @param {Array} options.ats - Array of AT objects.
+ * @param {import('sequelize').Transaction} options.transaction - The database transaction.
+ * @returns {Promise<void>}
+ */
 const processTestPlanVersion = async ({
   directory,
   builtDirectoryPath,
@@ -103,6 +127,8 @@ const processTestPlanVersion = async ({
   ats,
   transaction
 }) => {
+  // Gets the next ID and increments the ID counter in Postgres
+  // Needed to create the testIds - see LocationOfDataId.js for more info
   const [testPlanVersionIdResult] = await sequelize.query(
     `SELECT nextval(pg_get_serial_sequence('"TestPlanVersion"', 'id'))`,
     { transaction }
@@ -110,6 +136,8 @@ const processTestPlanVersion = async ({
   const testPlanVersionIdResultRow = testPlanVersionIdResult[0];
   const testPlanVersionId = testPlanVersionIdResultRow.nextval;
 
+  // Get the currently set value to rollback the 'correct' nextval for
+  // subsequent runs
   const [currentTestPlanVersionIdResult] = await sequelize.query(
     `SELECT currval(pg_get_serial_sequence('"TestPlanVersion"', 'id'))`,
     { transaction }
@@ -117,12 +145,15 @@ const processTestPlanVersion = async ({
   const currentTestPlanVersionId =
     currentTestPlanVersionIdResult[0].currval - 1;
 
+  // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
+  // actually last changed
   const {
     gitSha,
     gitMessage,
     gitCommitDate: updatedAt
   } = readDirectoryGitInfo(sourceDirectoryPath);
 
+  // Use existence of assertions.csv to determine if v2 format files exist
   const assertionsCsvPath = path.join(
     sourceDirectoryPath,
     'data',
@@ -146,6 +177,7 @@ const processTestPlanVersion = async ({
   });
 
   if (existing.length) {
+    // Rollback the sequence to avoid unintentional id jumps (potentially 35+)
     await sequelize.query(
       `SELECT setval(pg_get_serial_sequence('"TestPlanVersion"', 'id'), :currentTestPlanVersionId)`,
       {
@@ -199,12 +231,16 @@ const processTestPlanVersion = async ({
   });
 };
 
+/**
+ * Imports the harness files from the test directory to the client resources.
+ */
 const importHarness = () => {
   const sourceFolder = path.resolve(`${testsDirectory}/resources`);
   const targetFolder = path.resolve('../', 'client/resources');
   console.info(`Updating harness directory, ${targetFolder} ...`);
   fse.rmSync(targetFolder, { recursive: true, force: true });
 
+  // Copy source folder
   console.info('Importing latest harness files ...');
   fse.copySync(sourceFolder, targetFolder, {
     filter: src => {
@@ -217,6 +253,7 @@ const importHarness = () => {
     }
   });
 
+  // Copy files
   const commandsJson = 'commands.json';
   const supportJson = 'support.json';
   if (fse.existsSync(`${testsDirectory}/${commandsJson}`)) {
@@ -232,7 +269,16 @@ const importHarness = () => {
   console.info('Harness files update complete.');
 };
 
+/**
+ * Reads CSV data from the source directory.
+ * @param {Object} options - Options object.
+ * @param {string} options.sourceDirectoryPath - Path to the source directory.
+ * @param {boolean} options.isV2 - Whether it's version 2 format.
+ * @returns {Object} An object containing title, exampleUrl, designPatternUrl, and testPageUrl.
+ */
 const readCsv = ({ sourceDirectoryPath, isV2 }) => {
+  // 'references.csv' only exists in <root>/tests/<directory>/data/references.csv
+  // doesn't exist in <root>/build/tests/<directory>/data/references.csv
   const referencesCsvPath = path.join(
     sourceDirectoryPath,
     'data',
@@ -257,6 +303,12 @@ const readCsv = ({ sourceDirectoryPath, isV2 }) => {
   };
 };
 
+/**
+ * Flattens a nested object.
+ * @param {Object} obj - The object to flatten.
+ * @param {string} [parentKey=''] - The parent key for nested objects.
+ * @returns {Object} A flattened object.
+ */
 const flattenObject = (obj, parentKey = '') => {
   const flattened = {};
 
@@ -272,7 +324,12 @@ const flattenObject = (obj, parentKey = '') => {
   return flattened;
 };
 
+/**
+ * Updates JSON files for commands and support.
+ * @returns {Promise<Object>} An object containing the parsed support data.
+ */
 const updateJsons = async () => {
+  // Commands path info for v1 format
   const keysMjsPath = pathToFileURL(
     path.join(testsDirectory, 'resources', 'keys.mjs')
   );
@@ -280,18 +337,21 @@ const updateJsons = async () => {
     ([id, text]) => ({ id, text })
   );
 
+  // Write commands for v1 format
   await fse.writeFile(
     path.resolve(__dirname, '../../resources/commandsV1.json'),
     JSON.stringify(commands, null, 4)
   );
 
   try {
+    // Commands path info for v2 format
     const commandsV2Path = pathToFileURL(
       path.join(testsDirectory, 'commands.json')
     );
     const commandsV2PathString = fse.readFileSync(commandsV2Path, 'utf8');
     const commandsV2Parsed = JSON.parse(commandsV2PathString);
 
+    // Write commands for v2 format
     await fse.writeFile(
       path.resolve(__dirname, '../../resources/commandsV2.json'),
       JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
@@ -300,6 +360,7 @@ const updateJsons = async () => {
     console.error('commands.json for v2 test format may not exist');
   }
 
+  // Path info for support.json
   const supportPath = pathToFileURL(path.join(testsDirectory, 'support.json'));
   const supportPathString = fse.readFileSync(supportPath, 'utf8');
   const supportParsed = JSON.parse(supportPathString);
@@ -307,7 +368,14 @@ const updateJsons = async () => {
   return { support: supportParsed };
 };
 
-const updateAtsJson = async ({ ats, supportAts }) => {
+/**
+ * Updates the ATs JSON file.
+ * @param {Object} options - Options object.
+ * @param {Array} options.ats - Array of AT objects.
+ * @param {Array} options.supportAts - Array of support AT objects.
+ * @returns {Promise<void>}
+ */
+async function updateAtsJson({ ats, supportAts }) {
   const atsResult = ats.map(at => ({
     ...at.dataValues,
     ...supportAts.find(supportAt => supportAt.name === at.dataValues.name)
@@ -317,9 +385,16 @@ const updateAtsJson = async ({ ats, supportAts }) => {
     path.resolve(__dirname, '../../resources/ats.json'),
     JSON.stringify(atsResult, null, 4)
   );
-};
+}
 
-const getOrCreateTestPlan = async (directory, title, transaction) => {
+/**
+ * Gets or creates a test plan for a given directory.
+ * @param {string} directory - The directory name.
+ * @param {string} title - The title of the test plan.
+ * @param {import('sequelize').Transaction} transaction - The database transaction.
+ * @returns {Promise<number>} The ID of the test plan.
+ */
+async function getOrCreateTestPlan(directory, title, transaction) {
   const associatedTestPlans = await getTestPlans({
     where: { directory },
     transaction
@@ -334,13 +409,18 @@ const getOrCreateTestPlan = async (directory, title, transaction) => {
     });
     return newTestPlan.dataValues.id;
   }
-};
+}
 
-const deprecateOldTestPlanVersions = async (
-  directory,
-  updatedAt,
-  transaction
-) => {
+/**
+ * Deprecates old test plan versions for a given directory.
+ * @param {string} directory - The directory name.
+ * @param {Date} updatedAt - The update date.
+ * @param {import('sequelize').Transaction} transaction - The database transaction.
+ * @returns {Promise<void>}
+ */
+async function deprecateOldTestPlanVersions(directory, updatedAt, transaction) {
+  // Check if any TestPlanVersions exist for the directory and is currently in RD, and set it
+  // to DEPRECATED
   const testPlanVersionsToDeprecate = await getTestPlanVersions({
     where: { phase: 'RD', directory },
     transaction
@@ -348,6 +428,9 @@ const deprecateOldTestPlanVersions = async (
   if (testPlanVersionsToDeprecate.length) {
     for (const testPlanVersionToDeprecate of testPlanVersionsToDeprecate) {
       if (new Date(testPlanVersionToDeprecate.updatedAt) < updatedAt) {
+        // Set the deprecatedAt time to a couple seconds less than the updatedAt date.
+        // Deprecations happen slightly before update during normal app operations.
+        // This is to maintain correctness and any app sorts issues
         const deprecatedAt = new Date(updatedAt);
         deprecatedAt.setSeconds(deprecatedAt.getSeconds() - 120);
         await updateTestPlanVersionById({
@@ -358,9 +441,17 @@ const deprecateOldTestPlanVersions = async (
       }
     }
   }
-};
+}
 
-const getVersionString = async ({ directory, updatedAt, transaction }) => {
+/**
+ * Generates a version string for a test plan version.
+ * @param {Object} options - Options object.
+ * @param {string} options.directory - The directory name.
+ * @param {Date} options.updatedAt - The update date.
+ * @param {import('sequelize').Transaction} options.transaction - The database transaction.
+ * @returns {Promise<string>} The generated version string.
+ */
+async function getVersionString({ directory, updatedAt, transaction }) {
   const versionStringBase = `V${convertDateToString(updatedAt, 'YY.MM.DD')}`;
   const result = await sequelize.query(
     `
@@ -379,7 +470,7 @@ const getVersionString = async ({ directory, updatedAt, transaction }) => {
   let duplicateCount = currentCount ? Number(currentCount[1]) + 1 : 1;
 
   return `${versionStringBase}-${duplicateCount}`;
-};
+}
 
 module.exports = {
   buildTestsAndCreateTestPlanVersions,

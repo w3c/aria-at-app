@@ -44,6 +44,7 @@ function createV1Test({
   getRenderedUrl,
   tests
 }) {
+  // Using the v1 test format, https://github.com/w3c/aria-at/wiki/Test-Format-V1-Definition
   const common = allCollected[0];
   const testId = createTestId(testPlanVersionId, common.info.testId);
   const atIds = allCollected.map(
@@ -55,6 +56,7 @@ function createV1Test({
     rowNumber: rawTestId,
     title: common.info.title,
     atIds,
+    /** @type {RenderableContent} */
     renderableContent: createRenderableContent(allCollected, atIds),
     renderedUrls: createRenderedUrls(atIds, getRenderedUrl),
     scenarios: createScenarios(allCollected, testId, ats),
@@ -96,6 +98,7 @@ function createV2Test({
       title: collected.info.title,
       at: createAtObject(collected),
       atIds: [atId],
+      /** @type {RenderableContent} */
       renderableContent: createV2RenderableContent(collected),
       renderedUrl: getRenderedUrl(collectedIndex),
       scenarios: createV2Scenarios(collected, testId, atId),
@@ -110,11 +113,14 @@ function createV2Test({
  * Creates renderable content for V1 format tests.
  * @param {Array} allCollected - Array of collected test data
  * @param {Array} atIds - Array of assistive technology IDs
- * @returns {Object} Renderable content object
+ * @returns {RenderableContent} Renderable content object
  */
 function createRenderableContent(allCollected, atIds) {
   return Object.fromEntries(
-    allCollected.map((collected, index) => [atIds[index], collected])
+    allCollected.map((collected, index) =>
+      /** @type {RenderableContent} */
+      [atIds[index], collected]
+    )
   );
 }
 
@@ -167,7 +173,7 @@ function createAtObject(collected) {
 /**
  * Creates renderable content for V2 format tests.
  * @param {Object} collected - Collected test data
- * @returns {Object} Renderable content object
+ * @returns {RenderableContent} Renderable content object
  */
 function createV2RenderableContent(collected) {
   return {
@@ -224,7 +230,7 @@ function createV2Scenarios(collected, testId, atId) {
  * Gets assertions from collected data.
  * @param {Object} data - Collected test data
  * @param {string} testId - Test ID
- * @returns {Array} Array of assertion objects
+ * @returns {Assertion[]} Array of assertion objects
  */
 function getAssertions(data, testId) {
   return data.assertions.map((assertion, index) => {
@@ -234,8 +240,10 @@ function getAssertions(data, testId) {
       priority
     };
 
+    // Available for v1
     if (assertion.expectation) result.text = assertion.expectation;
 
+    // Available for v2
     if (assertion.assertionStatement) {
       result = {
         ...result,
@@ -250,16 +258,17 @@ function getAssertions(data, testId) {
 /**
  * Converts priority value to string representation.
  * @param {number} priority - Priority value
- * @returns {string} String representation of priority
+ * @returns {'MUST'|'SHOULD'|'MAY'|'EXCLUDE'|''} String representation of priority
  */
 function convertPriority(priority) {
+  // MAY and EXCLUDE available for v2
   const priorities = { 1: 'MUST', 2: 'SHOULD', 3: 'MAY', 0: 'EXCLUDE' };
   return priorities[priority] || '';
 }
 
 /**
  * Creates V2 assertion data.
- * @param {Object} assertion - Assertion object
+ * @param {Assertion} assertion - Assertion object
  * @param {Object} data - Collected test data
  * @returns {Object} V2 assertion data object
  */
@@ -409,3 +418,6 @@ function parseTests({
 module.exports = {
   parseTests
 };
+
+/** @typedef {import('./types').Assertion} Assertion */
+/** @typedef {import('./types').RenderableContent} RenderableContent */
