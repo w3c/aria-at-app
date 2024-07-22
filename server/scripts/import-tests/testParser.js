@@ -9,125 +9,41 @@ const { convertAssertionPriority } = require('shared');
 const { getAppUrl } = require('./utils');
 const deepPickEqual = require('../../util/deepPickEqual');
 
-const parseTests = ({
-  builtDirectoryPath,
-  testPlanVersionId,
-  ats,
-  gitSha,
-  isV2
-}) => {
-  const tests = [];
-  const { renderedUrlsById, allCollectedById } =
-    collectTestData(builtDirectoryPath);
-
-  Object.entries(allCollectedById).forEach(([rawTestId, allCollected]) => {
-    const renderedUrls = renderedUrlsById[rawTestId];
-
-    validateCollectedData(allCollected);
-
-    createTestsForFormat({
-      allCollected,
-      rawTestId,
-      renderedUrls,
-      isV2,
-      testPlanVersionId,
-      ats,
-      gitSha,
-      builtDirectoryPath,
-      tests
-    });
-  });
-
-  return tests;
-};
-
-const collectTestData = builtDirectoryPath => {
-  const renderedUrlsById = {};
-  const allCollectedById = {};
-
-  fse.readdirSync(builtDirectoryPath).forEach(filePath => {
-    if (!filePath.endsWith('.collected.json')) return;
-    const jsonPath = path.join(builtDirectoryPath, filePath);
-    const jsonString = fse.readFileSync(jsonPath, 'utf8');
-    const collected = JSON.parse(jsonString);
-    const renderedUrl = filePath.replace(/\.json$/, '.html');
-
-    if (!allCollectedById[collected.info.testId]) {
-      allCollectedById[collected.info.testId] = [];
-      renderedUrlsById[collected.info.testId] = [];
-    }
-    allCollectedById[collected.info.testId].push(collected);
-    renderedUrlsById[collected.info.testId].push(renderedUrl);
-  });
-
-  return { renderedUrlsById, allCollectedById };
-};
-
-const validateCollectedData = allCollected => {
-  if (
-    !deepPickEqual(allCollected, { excludeKeys: ['at', 'mode', 'commands'] })
-  ) {
-    throw new Error(
-      'Difference found in a part of a .collected.json file which should be equivalent'
-    );
+/**
+ * Strategies for different test format versions.
+ */
+const testFormatStrategies = {
+  v1: {
+    createTest: createV1Test,
+    createRenderableContent,
+    createRenderedUrls,
+    createScenarios
+  },
+  v2: {
+    createTest: createV2Test,
+    createRenderableContent: createV2RenderableContent,
+    createScenarios: createV2Scenarios
   }
 };
 
-const createTestsForFormat = ({
-  allCollected,
-  rawTestId,
-  renderedUrls,
-  isV2,
-  testPlanVersionId,
-  ats,
-  gitSha,
-  builtDirectoryPath,
-  tests
-}) => {
-  const getRenderedUrl = createRenderedUrlGetter(
-    renderedUrls,
-    gitSha,
-    builtDirectoryPath
-  );
-
-  if (!isV2) {
-    createV1Test({
-      allCollected,
-      rawTestId,
-      renderedUrls,
-      testPlanVersionId,
-      ats,
-      getRenderedUrl,
-      tests
-    });
-  } else {
-    createV2Tests({
-      allCollected,
-      rawTestId,
-      testPlanVersionId,
-      ats,
-      getRenderedUrl,
-      tests
-    });
-  }
-};
-
-const createRenderedUrlGetter = (renderedUrls, gitSha, builtDirectoryPath) => {
-  return index =>
-    getAppUrl(renderedUrls[index], {
-      gitSha,
-      directoryPath: builtDirectoryPath
-    });
-};
-
-const createV1Test = ({
+/**
+ * Creates a V1 format test object.
+ * @param {Object} options
+ * @param {Array} options.allCollected - Array of collected test data
+ * @param {string} options.rawTestId - Raw test ID
+ * @param {string} options.testPlanVersionId - ID of the test plan version
+ * @param {Array} options.ats - Array of assistive technologies
+ * @param {Function} options.getRenderedUrl - Function to get rendered URL
+ * @param {Array} options.tests - Array to store created tests
+ */
+function createV1Test({
   allCollected,
   rawTestId,
   testPlanVersionId,
   ats,
   getRenderedUrl,
   tests
-}) => {
+}) {
   const common = allCollected[0];
   const testId = createTestId(testPlanVersionId, common.info.testId);
   const atIds = allCollected.map(
@@ -146,16 +62,26 @@ const createV1Test = ({
     viewers: [],
     testFormatVersion: 1
   });
-};
+}
 
-const createV2Tests = ({
+/**
+ * Creates V2 format test objects.
+ * @param {Object} options
+ * @param {Array} options.allCollected - Array of collected test data
+ * @param {string} options.rawTestId - Raw test ID
+ * @param {string} options.testPlanVersionId - ID of the test plan version
+ * @param {Array} options.ats - Array of assistive technologies
+ * @param {Function} options.getRenderedUrl - Function to get rendered URL
+ * @param {Array} options.tests - Array to store created tests
+ */
+function createV2Test({
   allCollected,
   rawTestId,
   testPlanVersionId,
   ats,
   getRenderedUrl,
   tests
-}) => {
+}) {
   allCollected.forEach((collected, collectedIndex) => {
     const testId = createTestId(
       testPlanVersionId,
@@ -178,21 +104,40 @@ const createV2Tests = ({
       testFormatVersion: 2
     });
   });
-};
+}
 
-const createRenderableContent = (allCollected, atIds) => {
+/**
+ * Creates renderable content for V1 format tests.
+ * @param {Array} allCollected - Array of collected test data
+ * @param {Array} atIds - Array of assistive technology IDs
+ * @returns {Object} Renderable content object
+ */
+function createRenderableContent(allCollected, atIds) {
   return Object.fromEntries(
     allCollected.map((collected, index) => [atIds[index], collected])
   );
-};
+}
 
-const createRenderedUrls = (atIds, getRenderedUrl) => {
+/**
+ * Creates rendered URLs object for V1 format tests.
+ * @param {Array} atIds - Array of assistive technology IDs
+ * @param {Function} getRenderedUrl - Function to get rendered URL
+ * @returns {Object} Rendered URLs object
+ */
+function createRenderedUrls(atIds, getRenderedUrl) {
   return Object.fromEntries(
     atIds.map((atId, index) => [atId, getRenderedUrl(index)])
   );
-};
+}
 
-const createScenarios = (allCollected, testId, ats) => {
+/**
+ * Creates scenarios for V1 format tests.
+ * @param {Array} allCollected - Array of collected test data
+ * @param {string} testId - Test ID
+ * @param {Array} ats - Array of assistive technologies
+ * @returns {Array} Array of scenario objects
+ */
+function createScenarios(allCollected, testId, ats) {
   const scenarios = [];
   allCollected.forEach(collected => {
     collected.commands.forEach(command => {
@@ -204,17 +149,27 @@ const createScenarios = (allCollected, testId, ats) => {
     });
   });
   return scenarios;
-};
+}
 
-const createAtObject = collected => {
+/**
+ * Creates an AT object for V2 format tests.
+ * @param {Object} collected - Collected test data
+ * @returns {Object} AT object
+ */
+function createAtObject(collected) {
   return {
     key: collected.target.at.key,
     name: collected.target.at.name,
     settings: collected.target.at.raw.settings
   };
-};
+}
 
-const createV2RenderableContent = collected => {
+/**
+ * Creates renderable content for V2 format tests.
+ * @param {Object} collected - Collected test data
+ * @returns {Object} Renderable content object
+ */
+function createV2RenderableContent(collected) {
   return {
     ...collected,
     target: {
@@ -247,18 +202,31 @@ const createV2RenderableContent = collected => {
       }
     )
   };
-};
+}
 
-const createV2Scenarios = (collected, testId, atId) => {
+/**
+ * Creates scenarios for V2 format tests.
+ * @param {Object} collected - Collected test data
+ * @param {string} testId - Test ID
+ * @param {string} atId - Assistive technology ID
+ * @returns {Array} Array of scenario objects
+ */
+function createV2Scenarios(collected, testId, atId) {
   return collected.commands.map((command, index) => ({
     id: createScenarioId(testId, `${index}:${command.settings}`),
     atId,
     commandIds: command.keypresses.map(({ id }) => id),
     settings: command.settings
   }));
-};
+}
 
-const getAssertions = (data, testId) => {
+/**
+ * Gets assertions from collected data.
+ * @param {Object} data - Collected test data
+ * @param {string} testId - Test ID
+ * @returns {Array} Array of assertion objects
+ */
+function getAssertions(data, testId) {
   return data.assertions.map((assertion, index) => {
     const priority = convertPriority(assertion.priority);
     let result = {
@@ -277,14 +245,25 @@ const getAssertions = (data, testId) => {
 
     return result;
   });
-};
+}
 
-const convertPriority = priority => {
+/**
+ * Converts priority value to string representation.
+ * @param {number} priority - Priority value
+ * @returns {string} String representation of priority
+ */
+function convertPriority(priority) {
   const priorities = { 1: 'MUST', 2: 'SHOULD', 3: 'MAY', 0: 'EXCLUDE' };
   return priorities[priority] || '';
-};
+}
 
-const createV2AssertionData = (assertion, data) => {
+/**
+ * Creates V2 assertion data.
+ * @param {Object} assertion - Assertion object
+ * @param {Object} data - Collected test data
+ * @returns {Object} V2 assertion data object
+ */
+function createV2AssertionData(assertion, data) {
   const {
     assertionId,
     assertionStatement,
@@ -301,9 +280,15 @@ const createV2AssertionData = (assertion, data) => {
     assertionPhrase: tokenizedAssertionPhrases?.[atKey] || assertionPhrase,
     assertionExceptions: createAssertionExceptions(data.commands, assertionId)
   };
-};
+}
 
-const createAssertionExceptions = (commands, assertionId) => {
+/**
+ * Creates assertion exceptions.
+ * @param {Array} commands - Array of command objects
+ * @param {string} assertionId - Assertion ID
+ * @returns {Array} Array of assertion exception objects
+ */
+function createAssertionExceptions(commands, assertionId) {
   return commands.flatMap(command => {
     return command.assertionExceptions
       .filter(exception => exception.assertionId === assertionId)
@@ -313,7 +298,113 @@ const createAssertionExceptions = (commands, assertionId) => {
         settings: command.settings
       }));
   });
-};
+}
+
+/**
+ * Collects test data from JSON files in the built directory.
+ * @param {string} builtDirectoryPath - Path to the directory containing built test files
+ * @returns {Object} Object containing renderedUrlsById and allCollectedById
+ */
+function collectTestData(builtDirectoryPath) {
+  const renderedUrlsById = {};
+  const allCollectedById = {};
+
+  fse.readdirSync(builtDirectoryPath).forEach(filePath => {
+    if (!filePath.endsWith('.collected.json')) return;
+    const jsonPath = path.join(builtDirectoryPath, filePath);
+    const jsonString = fse.readFileSync(jsonPath, 'utf8');
+    const collected = JSON.parse(jsonString);
+    const renderedUrl = filePath.replace(/\.json$/, '.html');
+
+    if (!allCollectedById[collected.info.testId]) {
+      allCollectedById[collected.info.testId] = [];
+      renderedUrlsById[collected.info.testId] = [];
+    }
+    allCollectedById[collected.info.testId].push(collected);
+    renderedUrlsById[collected.info.testId].push(renderedUrl);
+  });
+
+  return { renderedUrlsById, allCollectedById };
+}
+
+/**
+ * Validates collected data for consistency across different formats.
+ * @param {Array} allCollected - Array of collected test data
+ * @throws {Error} If inconsistencies are found in the collected data
+ */
+function validateCollectedData(allCollected) {
+  if (
+    !deepPickEqual(allCollected, { excludeKeys: ['at', 'mode', 'commands'] })
+  ) {
+    throw new Error(
+      'Difference found in a part of a .collected.json file which should be equivalent'
+    );
+  }
+}
+
+/**
+ * Creates a function to get rendered URLs.
+ * @param {Array} renderedUrls - Array of rendered URLs
+ * @param {string} gitSha - Git SHA of the current commit
+ * @param {string} builtDirectoryPath - Path to the directory containing built test files
+ * @returns {Function} Function to get rendered URL by index
+ */
+function createRenderedUrlGetter(renderedUrls, gitSha, builtDirectoryPath) {
+  return index =>
+    getAppUrl(renderedUrls[index], {
+      gitSha,
+      directoryPath: builtDirectoryPath
+    });
+}
+
+/**
+ * Parses test data from built files and creates test objects.
+ * @param {Object} options
+ * @param {string} options.builtDirectoryPath - Path to the directory containing built test files
+ * @param {string} options.testPlanVersionId - ID of the test plan version
+ * @param {Array} options.ats - Array of assistive technologies
+ * @param {string} options.gitSha - Git SHA of the current commit
+ * @param {boolean} options.isV2 - Flag indicating if it's version 2 of the test format
+ * @returns {Array} Array of parsed test objects
+ */
+function parseTests({
+  builtDirectoryPath,
+  testPlanVersionId,
+  ats,
+  gitSha,
+  isV2
+}) {
+  const tests = [];
+  const { renderedUrlsById, allCollectedById } =
+    collectTestData(builtDirectoryPath);
+  const strategy = testFormatStrategies[isV2 ? 'v2' : 'v1'];
+
+  Object.entries(allCollectedById).forEach(([rawTestId, allCollected]) => {
+    const renderedUrls = renderedUrlsById[rawTestId];
+    validateCollectedData(allCollected);
+
+    const getRenderedUrl = createRenderedUrlGetter(
+      renderedUrls,
+      gitSha,
+      builtDirectoryPath
+    );
+
+    strategy.createTest({
+      allCollected,
+      rawTestId,
+      renderedUrls,
+      testPlanVersionId,
+      ats,
+      getRenderedUrl,
+      tests,
+      createRenderableContent: strategy.createRenderableContent,
+      createRenderedUrls: strategy.createRenderedUrls,
+      createScenarios: strategy.createScenarios
+    });
+  });
+
+  return tests;
+}
 
 module.exports = {
   parseTests

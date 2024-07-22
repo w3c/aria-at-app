@@ -31,6 +31,10 @@ Default use:
   process.exit();
 }
 
+/**
+ * Imports test plan versions from the specified git commit or the default branch.
+ * @param {import('sequelize').Transaction} transaction - A Sequelize transaction object.
+ */
 const importTestPlanVersions = async transaction => {
   await cloneRepo(gitCloneDirectory);
 
