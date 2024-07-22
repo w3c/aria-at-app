@@ -178,7 +178,7 @@ const getPage = async (options, callback) => {
   }
 
   try {
-    await callback(page, { baseUrl });
+    await callback(page, { browser: global.browser, baseUrl });
   } finally {
     await page.evaluate('endTestTransaction()');
   }

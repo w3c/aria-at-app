@@ -127,9 +127,10 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
-  it('navigates between tests on /run/:id', async () => {
+  it('navigates between tests', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page);
+
       await page.waitForSelector('h1 ::-p-text(Test 1)');
 
       const testNavigatorListSelector = 'nav#test-navigator-nav ol';
@@ -173,5 +174,25 @@ describe('Test Run when signed in as tester', () => {
 
   // TODO: Add test to verify tests saving functionality
   // TODO: Add test to verify tests submission functionality
-  // TODO: Add test to verify Open Test Page functionality
+  it('opens popup with content after clicking "Open Test Page" button', async () => {
+    await getPage(
+      { role: 'tester', url: '/test-queue' },
+      async (page, { browser }) => {
+        await assignSelfAndNavigateToRun(page);
+
+        const openTestPageButtonSelector = 'button ::-p-text(Open Test Page)';
+        await page.waitForSelector(openTestPageButtonSelector);
+        await page.click(openTestPageButtonSelector);
+
+        const popupTarget = await new Promise(resolve =>
+          browser.once('targetcreated', resolve)
+        );
+        const popupPage = await popupTarget.page();
+
+        // Check for 'Run Test Setup' button
+        await popupPage.waitForSelector('button ::-p-text(Run Test Setup)');
+        await popupPage.close();
+      }
+    );
+  });
 });

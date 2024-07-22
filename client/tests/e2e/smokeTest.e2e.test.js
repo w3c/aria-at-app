@@ -1,16 +1,22 @@
 import getPage from '../util/getPage';
+import { text } from './util';
 
 describe('smoke test', () => {
   it('end-to-end tests can simultaneously sign in with all roles', async () => {
     await Promise.all([
       getPage({ role: 'admin', url: '/test-queue' }, async page => {
+        // Wait for page load
+        await page.waitForSelector('div[data-testid="page-status"]');
+
         // Only admins can remove rows from the test queue
         await page.waitForSelector(
           'td [type="button"] ::-p-text(Delete Report)'
         );
       }),
-
       getPage({ role: 'tester', url: '/test-queue' }, async page => {
+        // Wait for page load
+        await page.waitForSelector('div[data-testid="page-status"]');
+
         // Testers can assign themselves
         await page.waitForSelector('table ::-p-text(Assign Yourself)');
         const adminOnlyRemoveButton = await page.$(
@@ -18,10 +24,12 @@ describe('smoke test', () => {
         );
         expect(adminOnlyRemoveButton).toBe(null);
       }),
-
       getPage(
         { role: 'vendor', url: '/test-queue' },
         async (page, { baseUrl }) => {
+          // Wait for page load
+          await page.waitForSelector('div[data-testid="page-status"]');
+
           // Vendors get the same test queue as signed-out users
           await page.waitForSelector('button ::-p-text(V22.04.14)');
           await page.click('button ::-p-text(V22.04.14)');
@@ -38,7 +46,6 @@ describe('smoke test', () => {
           await page.waitForSelector('table');
         }
       ),
-
       getPage({ role: false, url: '/test-queue' }, async page => {
         // Signed-out users can only view tests, not run them
         await page.waitForSelector('td [role="button"] ::-p-text(View Tests)');
@@ -50,8 +57,7 @@ describe('smoke test', () => {
     await Promise.all([
       getPage({ role: false, url: '/' }, async page => {
         await page.waitForSelector('h1');
-        const h1Handle = await page.waitForSelector('h1');
-        const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+        const h1Text = await text(page, 'h1');
         expect(h1Text).toBe(
           'Enabling Interoperability for Assistive Technology Users'
         );
@@ -60,24 +66,21 @@ describe('smoke test', () => {
         // Wait for an h2 because an h1 will show while the page is
         // still loading
         await page.waitForSelector('h2');
-        const h1Handle = await page.waitForSelector('h1');
-        const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+        const h1Text = await text(page, 'h1');
         expect(h1Text).toBe('Assistive Technology Interoperability Reports');
       }),
       getPage({ role: false, url: '/data-management' }, async page => {
         // Wait for an h2 because an h1 will show while the page is
         // still loading
         await page.waitForSelector('h2');
-        const h1Handle = await page.waitForSelector('h1');
-        const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+        const h1Text = await text(page, 'h1');
         expect(h1Text).toBe('Data Management');
       }),
       getPage({ role: false, url: '/test-plan-report/15' }, async page => {
         // Wait for an h2 because an h1 will show while the page is
         // still loading
         await page.waitForSelector('h2');
-        const h1Handle = await page.waitForSelector('h1');
-        const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+        const h1Text = await text(page, 'h1');
         expect(h1Text).toBe(
           'Test 1:\nNavigate forwards to a not pressed toggle button'
         );
@@ -86,8 +89,7 @@ describe('smoke test', () => {
         // Wait for an h2 because an h1 will show while the page is
         // still loading
         await page.waitForSelector('h2');
-        const h1Handle = await page.waitForSelector('h1');
-        const h1Text = await h1Handle.evaluate(h1 => h1.innerText);
+        const h1Text = await text(page, 'h1');
         expect(h1Text).toBe(
           'Test 1:\nNavigate forwards to a not pressed toggle button'
         );
