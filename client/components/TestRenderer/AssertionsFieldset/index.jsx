@@ -5,8 +5,9 @@ import supportJson from '../../../resources/support.json';
 import { Fieldset } from '..';
 
 const Label = styled.label`
-  display: block;
+  display: inline-block;
   margin-bottom: 0.5rem;
+  margin-right: 0.5rem;
 
   input {
     margin-right: 0.25rem;
