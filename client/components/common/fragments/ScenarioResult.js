@@ -1,12 +1,24 @@
 import { gql } from '@apollo/client';
 import { ASSERTION_RESULT_FIELDS } from '@components/common/fragments/index';
 
+/**
+ * @param {'simple'|'all'} type
+ * @returns {*}
+ * @constructor
+ */
 const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
   switch (type) {
     case 'simple':
       return gql`
         fragment ScenarioResultFieldsSimple on ScenarioResult {
           __typename
+          id
+          scenario {
+            commands {
+              id
+              text
+            }
+          }
         }
       `;
     case 'all':
