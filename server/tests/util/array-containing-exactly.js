@@ -5,36 +5,34 @@
 const { equals } = require('expect/build/jasmineUtils');
 
 class ArrayContainingExactly {
-    constructor(sample) {
-        this.sample = sample;
+  constructor(sample) {
+    this.sample = sample;
+  }
+
+  asymmetricMatch(other) {
+    if (!Array.isArray(this.sample)) {
+      throw new Error(
+        `You must provide an array to ${this.toString()}, not '` +
+          typeof this.sample +
+          "'."
+      );
     }
 
-    asymmetricMatch(other) {
-        if (!Array.isArray(this.sample)) {
-            throw new Error(
-                `You must provide an array to ${this.toString()}, not '` +
-                    typeof this.sample +
-                    "'."
-            );
-        }
+    const result =
+      this.sample.length === other.length &&
+      Array.isArray(other) &&
+      this.sample.every(item => other.some(another => equals(item, another)));
 
-        const result =
-            this.sample.length === other.length &&
-            Array.isArray(other) &&
-            this.sample.every(item =>
-                other.some(another => equals(item, another))
-            );
+    return result;
+  }
 
-        return result;
-    }
+  toString() {
+    return `Array Containing`;
+  }
 
-    toString() {
-        return `Array Containing`;
-    }
-
-    getExpectedType() {
-        return 'array';
-    }
+  getExpectedType() {
+    return 'array';
+  }
 }
 
 module.exports = ArrayContainingExactly;

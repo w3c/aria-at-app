@@ -7,19 +7,19 @@ const { isPlainObject } = require('lodash');
  * @returns {array} - An array of values which matched.
  */
 const deepFlatFilter = (nested, testCallback) => {
-    const foundValues = [];
-    const recurse = nestedPart => {
-        const isMatch = testCallback(nestedPart);
-        if (isMatch) foundValues.push(nestedPart);
+  const foundValues = [];
+  const recurse = nestedPart => {
+    const isMatch = testCallback(nestedPart);
+    if (isMatch) foundValues.push(nestedPart);
 
-        if (isPlainObject(nestedPart)) {
-            Object.values(nestedPart).forEach(recurse);
-        } else if (Array.isArray(nestedPart)) {
-            nestedPart.forEach(recurse);
-        }
-    };
-    recurse(nested);
-    return foundValues;
+    if (isPlainObject(nestedPart)) {
+      Object.values(nestedPart).forEach(recurse);
+    } else if (Array.isArray(nestedPart)) {
+      nestedPart.forEach(recurse);
+    }
+  };
+  recurse(nested);
+  return foundValues;
 };
 
 module.exports = deepFlatFilter;

@@ -6,10 +6,10 @@ const renderedUrl = require('./renderedUrlResolver');
 const renderedUrls = require('./renderedUrlsResolver');
 
 module.exports = {
-    scenarios,
-    assertions,
-    renderableContent,
-    renderableContents,
-    renderedUrl,
-    renderedUrls
+  scenarios,
+  assertions,
+  renderableContent,
+  renderableContents,
+  renderedUrl,
+  renderedUrls
 };

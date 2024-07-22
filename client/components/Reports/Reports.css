@@ -1,145 +1,145 @@
 .breadcrumb {
-    background: none;
-    border: 1px solid gainsboro;
-    position: relative;
-    font-size: 0.9em;
-    margin: 0;
+  background: none;
+  border: 1px solid gainsboro;
+  position: relative;
+  font-size: 0.9em;
+  margin: 0;
 }
 
 .breadcrumb-item {
-    position: relative;
+  position: relative;
 }
 
 .breadcrumb-item + .breadcrumb-item {
-    padding-left: 1.5rem;
+  padding-left: 1.5rem;
 }
 
 .breadcrumb-item + .breadcrumb-item::before {
-    content: '';
-    position: absolute;
-    width: 1px;
-    height: 1.6em;
-    background: gainsboro;
-    display: initial;
-    padding: 0;
-    top: -0.8em;
-    transform: rotate(-20deg);
-    left: 0.75em;
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 1.6em;
+  background: gainsboro;
+  display: initial;
+  padding: 0;
+  top: -0.8em;
+  transform: rotate(-20deg);
+  left: 0.75em;
 }
 
 .breadcrumb-item + .breadcrumb-item::after {
-    content: '';
-    position: absolute;
-    width: 1px;
-    height: 1.6em;
-    background: gainsboro;
-    display: initial;
-    padding: 0;
-    bottom: -0.8em;
-    transform: rotate(20deg);
-    left: 0.75em;
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 1.6em;
+  background: gainsboro;
+  display: initial;
+  padding: 0;
+  bottom: -0.8em;
+  transform: rotate(20deg);
+  left: 0.75em;
 }
 
 .breadcrumb-item a {
-    color: #0b60ab;
+  color: #0b60ab;
 }
 
 .breadcrumb-item a:hover {
-    color: #0b60ab;
+  color: #0b60ab;
 }
 
 .breadcrumb-item.active {
-    color: #000000;
+  color: #000000;
 }
 
 .current-commit {
-    margin-top: 1em;
+  margin-top: 1em;
 }
 
 .test-result-heading {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    background: #e9f0f8;
-    padding: 1.75em 1.75em 1em 1.75em;
-    border: 1px solid #b5cfec;
-    margin-top: 2em;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  background: #e9f0f8;
+  padding: 1.75em 1.75em 1em 1.75em;
+  border: 1px solid #b5cfec;
+  margin-top: 2em;
 }
 
 .test-result-heading h2 {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .test-result-heading h2 {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .test-result-buttons {
-    margin-bottom: 0.5em;
-    margin-left: 0.5rem;
-    flex-shrink: 0;
+  margin-bottom: 0.5em;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
 }
 
 .test-result-buttons a {
-    margin-right: 0.5em;
+  margin-right: 0.5em;
 }
 
 .test-result-buttons .btn {
-    border-color: #b5cfec;
+  border-color: #b5cfec;
 }
 
 .test-result-buttons .btn:hover {
-    background: #f6faff;
+  background: #f6faff;
 }
 
 .report-results-details {
-    width: 75%;
+  width: 75%;
 }
 
 .progress {
-    height: 1.2rem;
-    border-radius: 1rem;
-    margin-top: 0.2em;
-    border: 1px solid gray;
+  height: 1.2rem;
+  border-radius: 1rem;
+  margin-top: 0.2em;
+  border: 1px solid gray;
 }
 
 .progress .progress-bar.bg-info {
-    background-color: #0b60ab !important;
+  background-color: #0b60ab !important;
 }
 
 .progress.clipped {
-    position: relative;
-    display: flex;
-    overflow: hidden;
+  position: relative;
+  display: flex;
+  overflow: hidden;
 }
 
 .progress.clipped .front {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background: #e9ecef;
-    color: black;
-    /*clip-path: inset(0 0 0 50%);*/
-    /*-webkit-clip-path: inset(0 0 0 50%);*/
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: #e9ecef;
+  color: black;
+  /*clip-path: inset(0 0 0 50%);*/
+  /*-webkit-clip-path: inset(0 0 0 50%);*/
 }
 
 .progress.clipped .back {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    background: #0b60ab;
-    color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background: #0b60ab;
+  color: white;
 }
 
 .test-details {
-    display: block;
-    font-size: 0.7em;
-    font-weight: normal;
-    margin-bottom: 0.25em;
+  display: block;
+  font-size: 0.7em;
+  font-weight: normal;
+  margin-bottom: 0.25em;
 }

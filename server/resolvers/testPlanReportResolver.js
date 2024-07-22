@@ -1,11 +1,11 @@
 const {
-    getTestPlanReportById
+  getTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 
 const testPlanReportResolver = (_, { id }, context) => {
-    const { transaction } = context;
+  const { transaction } = context;
 
-    return getTestPlanReportById({ id, transaction });
+  return getTestPlanReportById({ id, transaction });
 };
 
 module.exports = testPlanReportResolver;

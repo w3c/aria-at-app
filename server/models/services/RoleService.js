@@ -10,9 +10,9 @@ const { Op } = Sequelize;
  * @returns {{association: string, attributes: string[], through: {attributes: string[]}}}
  */
 const userAssociation = userAttributes => ({
-    association: 'users',
-    attributes: userAttributes,
-    through: { attributes: [] }
+  association: 'users',
+  attributes: userAttributes,
+  through: { attributes: [] }
 });
 
 /**
@@ -25,17 +25,17 @@ const userAssociation = userAttributes => ({
  * @returns {Promise<*>}
  */
 const getRoleByName = async ({
-    name,
-    roleAttributes = ROLE_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  name,
+  roleAttributes = ROLE_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    return ModelService.getByQuery(Role, {
-        where: { name },
-        attributes: roleAttributes,
-        include: [userAssociation(userAttributes)],
-        transaction
-    });
+  return ModelService.getByQuery(Role, {
+    where: { name },
+    attributes: roleAttributes,
+    include: [userAssociation(userAttributes)],
+    transaction
+  });
 };
 
 /**
@@ -53,24 +53,24 @@ const getRoleByName = async ({
  * @returns {Promise<*>}
  */
 const getRoles = async ({
-    search,
-    where = {},
-    roleAttributes = ROLE_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    pagination = {},
-    transaction
+  search,
+  where = {},
+  roleAttributes = ROLE_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  pagination = {},
+  transaction
 }) => {
-    // search and filtering options
-    const searchQuery = search ? `%${search}%` : '';
-    if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
+  // search and filtering options
+  const searchQuery = search ? `%${search}%` : '';
+  if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
 
-    return ModelService.get(Role, {
-        where,
-        attributes: roleAttributes,
-        include: [userAssociation(userAttributes)],
-        pagination,
-        transaction
-    });
+  return ModelService.get(Role, {
+    where,
+    attributes: roleAttributes,
+    include: [userAssociation(userAttributes)],
+    pagination,
+    transaction
+  });
 };
 
 /**
@@ -82,24 +82,24 @@ const getRoles = async ({
  * @returns {Promise<*>}
  */
 const createRole = async ({
-    values: { name },
-    roleAttributes = ROLE_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  values: { name },
+  roleAttributes = ROLE_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    const role = await ModelService.create(Role, {
-        values: { name },
-        transaction
-    });
-    const { name: createdName } = role; // in case some Postgres function is ever written to modify the the name value on insert
+  const role = await ModelService.create(Role, {
+    values: { name },
+    transaction
+  });
+  const { name: createdName } = role; // in case some Postgres function is ever written to modify the the name value on insert
 
-    // to ensure the structure being returned matches what we expect for simple queries and can be controlled
-    return getRoleByName({
-        name: createdName,
-        roleAttributes,
-        userAttributes,
-        transaction
-    });
+  // to ensure the structure being returned matches what we expect for simple queries and can be controlled
+  return getRoleByName({
+    name: createdName,
+    roleAttributes,
+    userAttributes,
+    transaction
+  });
 };
 
 /**
@@ -112,21 +112,21 @@ const createRole = async ({
  * @returns {Promise<*>}
  */
 const updateRoleByName = async ({
-    name,
-    values = {},
-    roleAttributes = ROLE_ATTRIBUTES,
-    userAttributes = USER_ATTRIBUTES,
-    transaction
+  name,
+  values = {},
+  roleAttributes = ROLE_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  transaction
 }) => {
-    await ModelService.update(Role, { where: { name }, values, transaction });
-    const { name: updatedName } = values;
+  await ModelService.update(Role, { where: { name }, values, transaction });
+  const { name: updatedName } = values;
 
-    return getRoleByName({
-        name: updatedName || name,
-        roleAttributes,
-        userAttributes,
-        transaction
-    });
+  return getRoleByName({
+    name: updatedName || name,
+    roleAttributes,
+    userAttributes,
+    transaction
+  });
 };
 
 /**
@@ -137,18 +137,18 @@ const updateRoleByName = async ({
  * @returns {Promise<boolean>}
  */
 const removeRoleByName = async ({ name, truncate = false, transaction }) => {
-    return ModelService.removeByQuery(Role, {
-        where: { name },
-        truncate,
-        transaction
-    });
+  return ModelService.removeByQuery(Role, {
+    where: { name },
+    truncate,
+    transaction
+  });
 };
 
 module.exports = {
-    // Basic CRUD
-    getRoleByName,
-    getRoles,
-    createRole,
-    updateRoleByName,
-    removeRoleByName
+  // Basic CRUD
+  getRoleByName,
+  getRoles,
+  createRole,
+  updateRoleByName,
+  removeRoleByName
 };

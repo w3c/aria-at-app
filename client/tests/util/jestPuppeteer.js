@@ -11,40 +11,40 @@ const isDebugMode = process.argv.some(arg => arg.startsWith('--testTimeout'));
 const DIR = path.join(os.tmpdir(), 'jest_puppeteer_global_setup');
 
 class PuppeteerEnvironment extends NodeEnvironment {
-    constructor(config) {
-        super(config);
+  constructor(config) {
+    super(config);
+  }
+
+  async setup() {
+    await super.setup();
+    // get the wsEndpoint
+    const wsEndpoint = await readFile(path.join(DIR, 'wsEndpoint'), 'utf8');
+    if (!wsEndpoint) {
+      throw new Error('wsEndpoint not found');
     }
 
-    async setup() {
-        await super.setup();
-        // get the wsEndpoint
-        const wsEndpoint = await readFile(path.join(DIR, 'wsEndpoint'), 'utf8');
-        if (!wsEndpoint) {
-            throw new Error('wsEndpoint not found');
-        }
+    // connect to puppeteer
+    this.global.browser = await puppeteer.connect({
+      browserWSEndpoint: wsEndpoint
+    });
+  }
 
-        // connect to puppeteer
-        this.global.browser = await puppeteer.connect({
-            browserWSEndpoint: wsEndpoint
-        });
+  async teardown() {
+    if (this.global.browser) {
+      this.global.browser.disconnect();
     }
+    await super.teardown();
+  }
 
-    async teardown() {
-        if (this.global.browser) {
-            this.global.browser.disconnect();
-        }
-        await super.teardown();
-    }
-
-    getVmContext() {
-        return super.getVmContext();
-    }
+  getVmContext() {
+    return super.getVmContext();
+  }
 }
 
 class DoNothingEnvironment extends NodeEnvironment {
-    constructor(config) {
-        super(config);
-    }
+  constructor(config) {
+    super(config);
+  }
 }
 
 module.exports = isDebugMode ? DoNothingEnvironment : PuppeteerEnvironment;

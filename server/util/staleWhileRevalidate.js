@@ -1,8 +1,8 @@
 const NodeCache = require('node-cache');
 
 const cache = new NodeCache({
-    checkperiod: 0, // Caches forever until cleared (or server restarts)
-    useClones: false // Does not make copies of data
+  checkperiod: 0, // Caches forever until cleared (or server restarts)
+  useClones: false // Does not make copies of data
 });
 
 /**
@@ -27,80 +27,79 @@ const cache = new NodeCache({
  * stale-while-revalidate caching.
  */
 const staleWhileRevalidate = (
-    expensiveFunction,
-    { getCacheKeyFromArguments, millisecondsUntilStale = 0 } = {}
+  expensiveFunction,
+  { getCacheKeyFromArguments, millisecondsUntilStale = 0 } = {}
 ) => {
-    // Allows the same cache key to be reused for different
-    // staleWhileRevalidate instances
-    const randomString = Math.random().toString().substr(2, 10);
+  // Allows the same cache key to be reused for different
+  // staleWhileRevalidate instances
+  const randomString = Math.random().toString().substr(2, 10);
 
-    return async (...args) => {
-        let cacheKey = getCacheKeyFromArguments?.(...args) ?? '' + randomString;
+  return async (...args) => {
+    let cacheKey = getCacheKeyFromArguments?.(...args) ?? '' + randomString;
 
-        const { existingData, isLoading, loadingPromise, timestamp } =
-            cache.get(cacheKey) ?? {};
+    const { existingData, isLoading, loadingPromise, timestamp } =
+      cache.get(cacheKey) ?? {};
 
-        if (existingData) {
-            // Immediately return the existing data, and then refresh the data
-            // in the background. Only make one simultaneous query per cacheKey
+    if (existingData) {
+      // Immediately return the existing data, and then refresh the data
+      // in the background. Only make one simultaneous query per cacheKey
 
-            const isStale =
-                Number(new Date()) - timestamp > millisecondsUntilStale;
+      const isStale = Number(new Date()) - timestamp > millisecondsUntilStale;
 
-            if (isLoading || !isStale) {
-                return existingData;
-            }
+      if (isLoading || !isStale) {
+        return existingData;
+      }
 
-            const newActivePromise = expensiveFunction(...args);
+      const newActivePromise = expensiveFunction(...args);
 
-            cache.set(cacheKey, {
-                existingData, // Keep stale data in place
-                isLoading: true,
-                loadingPromise: newActivePromise,
-                timestamp
-            });
+      cache.set(cacheKey, {
+        existingData, // Keep stale data in place
+        isLoading: true,
+        loadingPromise: newActivePromise,
+        timestamp
+      });
 
-            // Occurs in background
-            newActivePromise.then(data => {
-                cache.set(cacheKey, {
-                    existingData: data,
-                    isLoading: false,
-                    loadingPromise: null,
-                    timestamp: Number(new Date())
-                });
-            });
-
-            return existingData;
-        }
-
-        if (isLoading) {
-            // When no data is ready, but a request is already in progress,
-            // prevent multiple requests for the same data
-            return loadingPromise;
-        }
-
-        // Initial load
-
-        const newActivePromise = expensiveFunction(...args);
-
+      // Occurs in background
+      newActivePromise.then(data => {
         cache.set(cacheKey, {
-            existingData: null,
-            isLoading: true,
-            loadingPromise: newActivePromise,
-            timestamp: null
+          existingData: data,
+          isLoading: false,
+          loadingPromise: null,
+          timestamp: Number(new Date())
         });
+      });
 
-        const data = await newActivePromise;
+      return existingData;
+    }
 
-        cache.set(cacheKey, {
-            existingData: data,
-            isLoading: false,
-            loadingPromise: null,
-            timestamp: Number(new Date())
-        });
+    if (isLoading) {
+      // When no data is ready, but a request is already in progress,
+      // prevent multiple requests for the same data
+      return loadingPromise;
+    }
 
-        return data;
-    };
+    // Initial load
+
+    const newActivePromise = expensiveFunction(...args);
+
+    cache.set(cacheKey, {
+      existingData: null,
+      isLoading: true,
+      loadingPromise: newActivePromise,
+      timestamp: null
+    });
+
+    const data = await newActivePromise;
+
+    cache.set(cacheKey, {
+      existingData: data,
+      isLoading: false,
+      loadingPromise: null,
+      timestamp: Number(new Date())
+    });
+
+    return data;
+  };
 };
 
 module.exports = staleWhileRevalidate;

@@ -1,5 +1,5 @@
 const issues = require('./issuesResolver');
 
 module.exports = {
-    issues
+  issues
 };

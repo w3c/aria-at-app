@@ -1,3 +1,22 @@
+## [1.5.0](https://github.com/w3c/aria-at-app/compare/v1.4.0...v1.5.0) (2024-07-22)
+
+
+### Features
+
+* Specify AtVersion for automation ([#1144](https://github.com/w3c/aria-at-app/issues/1144)) ([52865e2](https://github.com/w3c/aria-at-app/commit/52865e2192ebeb8ae6f41b23a8b05d4923bdb2a3))
+* Test Run / Navigator polling updates for collection jobs ([#1125](https://github.com/w3c/aria-at-app/issues/1125)) ([29456fc](https://github.com/w3c/aria-at-app/commit/29456fcf7ef9dd808a7d70131c95c43fb8f4b0ca))
+* Update Dependencies ([#1148](https://github.com/w3c/aria-at-app/issues/1148)) ([6b4aedd](https://github.com/w3c/aria-at-app/commit/6b4aeddac40bc93599b1a215bcaa41bdc622d12a))
+
+
+### Bug Fixes
+
+* Add "View Logs" button to Manage Bot Run Dialog ([#1152](https://github.com/w3c/aria-at-app/issues/1152)) ([6379fd0](https://github.com/w3c/aria-at-app/commit/6379fd0c25159dec6a7ef6323b322ac6346e4208))
+* onHide error thrown on ESC press when <UpdateVersionModal /> is open ([d118b35](https://github.com/w3c/aria-at-app/commit/d118b35418d4e8f9b43dbd2a4ec53f84575150c6))
+* random key for each collection job ([#1135](https://github.com/w3c/aria-at-app/issues/1135)) ([78fab77](https://github.com/w3c/aria-at-app/commit/78fab77f7fe8f9d53a2d03920cea794aa9a8c07a))
+* Remove TestQueue v1 and update Test Queue e2e tests ([#1146](https://github.com/w3c/aria-at-app/issues/1146)) ([fd6e86f](https://github.com/w3c/aria-at-app/commit/fd6e86f75af2be7cfc2b957897e07c36601aa227))
+* Reset TestPlanVersion `nextval` during import if IDs aren't used ([#1153](https://github.com/w3c/aria-at-app/issues/1153)) ([c913504](https://github.com/w3c/aria-at-app/commit/c913504355a53adfef2bb807bc4629430c4bd044))
+* terminology update for priority 3 (MAY), passed/failing -> supported/unsupported ([#1150](https://github.com/w3c/aria-at-app/issues/1150)) ([1f61c87](https://github.com/w3c/aria-at-app/commit/1f61c87fa0bad33e63e2ce145fe989942b332dd8))
+
 ## [1.4.0](https://github.com/w3c/aria-at-app/compare/v1.3.1...v1.4.0) (2024-06-24)
 
 

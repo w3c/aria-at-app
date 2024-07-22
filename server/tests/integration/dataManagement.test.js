@@ -7,33 +7,33 @@ const { rawQuery } = require('../../models/services/ModelService');
 jest.setTimeout(20000);
 
 afterAll(async () => {
-    // Closing the DB connection allows Jest to exit successfully.
-    await db.sequelize.close();
+  // Closing the DB connection allows Jest to exit successfully.
+  await db.sequelize.close();
 }, 20000);
 
 const atsQuery = ({ transaction }) => {
-    return query(
-        gql`
-            query {
-                ats {
-                    id
-                    atVersions {
-                        id
-                    }
-                }
-            }
-        `,
-        { transaction }
-    );
+  return query(
+    gql`
+      query {
+        ats {
+          id
+          atVersions {
+            id
+          }
+        }
+      }
+    `,
+    { transaction }
+  );
 };
 
 const testPlanVersionsQuery = ({
-    transaction,
-    directory = `""`,
-    phases = `[RD, DRAFT, CANDIDATE]`
+  transaction,
+  directory = `""`,
+  phases = `[RD, DRAFT, CANDIDATE]`
 }) => {
-    return query(
-        gql`
+  return query(
+    gql`
             query {
                 testPlanVersions(
                     directory: ${directory}
@@ -103,23 +103,23 @@ const testPlanVersionsQuery = ({
                 }
             }
         `,
-        { transaction }
-    );
+    { transaction }
+  );
 };
 
 const updateVersionToPhaseQuery = (
-    testPlanVersionId,
-    phase,
-    { testPlanVersionDataToIncludeId, transaction } = {}
+  testPlanVersionId,
+  phase,
+  { testPlanVersionDataToIncludeId, transaction } = {}
 ) => {
-    return mutate(
-        gql`
+  return mutate(
+    gql`
             mutation {
                 testPlanVersion(id: ${testPlanVersionId}) {
                     updatePhase(
                         phase: ${phase}
                         testPlanVersionDataToIncludeId: ${
-                            testPlanVersionDataToIncludeId ?? null
+                          testPlanVersionDataToIncludeId ?? null
                         }
                     ) {
                         testPlanVersion {
@@ -195,19 +195,19 @@ const updateVersionToPhaseQuery = (
                 }
             }
         `,
-        { transaction }
-    );
+    { transaction }
+  );
 };
 
 const createTestPlanReportQuery = (
-    testPlanVersionId,
-    atId,
-    minimumAtVersionId,
-    browserId,
-    { transaction }
+  testPlanVersionId,
+  atId,
+  minimumAtVersionId,
+  browserId,
+  { transaction }
 ) => {
-    return mutate(
-        gql`
+  return mutate(
+    gql`
             mutation {
                 createTestPlanReport(input: {
                     testPlanVersionId: ${testPlanVersionId}
@@ -234,13 +234,13 @@ const createTestPlanReportQuery = (
                 }
             }
         `,
-        { transaction }
-    );
+    { transaction }
+  );
 };
 
 const markAsFinal = (testPlanReportId, { transaction }) => {
-    return mutate(
-        gql`
+  return mutate(
+    gql`
             mutation {
                 testPlanReport(id: ${testPlanReportId}) {
                     markAsFinal {
@@ -252,160 +252,159 @@ const markAsFinal = (testPlanReportId, { transaction }) => {
                 }
             }
         `,
-        { transaction }
-    );
+    { transaction }
+  );
 };
 
 const countCompletedTests = testPlanReports => {
-    return testPlanReports.reduce((acc, testPlanReport) => {
-        return (
-            acc +
-                testPlanReport.draftTestPlanRuns[0]?.testResults.reduce(
-                    (acc, testResult) =>
-                        testResult.completedAt ? acc + 1 : acc,
-                    0
-                ) || 0
-        );
-    }, 0);
+  return testPlanReports.reduce((acc, testPlanReport) => {
+    return (
+      acc +
+        testPlanReport.draftTestPlanRuns[0]?.testResults.reduce(
+          (acc, testResult) => (testResult.completedAt ? acc + 1 : acc),
+          0
+        ) || 0
+    );
+  }, 0);
 };
 
 const getTestableTestPlanVersions = async ({
-    directory = '',
-    oldVersionSha,
-    newVersionSha,
-    expectedOldVersionPhase = 'DRAFT',
-    expectedNewVersionPhase = 'RD',
-    useV2Format = false,
-    transaction
+  directory = '',
+  oldVersionSha,
+  newVersionSha,
+  expectedOldVersionPhase = 'DRAFT',
+  expectedNewVersionPhase = 'RD',
+  useV2Format = false,
+  transaction
 }) => {
-    const testPlanVersions = await testPlanVersionsQuery({
-        transaction,
-        directory: `"${directory}"`,
-        phases: `[DEPRECATED, RD, DRAFT, CANDIDATE]`
-    });
+  const testPlanVersions = await testPlanVersionsQuery({
+    transaction,
+    directory: `"${directory}"`,
+    phases: `[DEPRECATED, RD, DRAFT, CANDIDATE]`
+  });
 
-    const oldTestPlanVersion = testPlanVersions.testPlanVersions.find(
-        e =>
-            e.phase === expectedOldVersionPhase &&
-            e.gitSha === oldVersionSha &&
-            (useV2Format ? e.metadata.testFormatVersion === 2 : true)
-    );
+  const oldTestPlanVersion = testPlanVersions.testPlanVersions.find(
+    e =>
+      e.phase === expectedOldVersionPhase &&
+      e.gitSha === oldVersionSha &&
+      (useV2Format ? e.metadata.testFormatVersion === 2 : true)
+  );
 
-    // Process new version coming in as RD
-    let newTestPlanVersion = testPlanVersions.testPlanVersions.find(
-        e =>
-            e.phase === expectedNewVersionPhase &&
-            e.testPlan.directory === directory &&
-            (useV2Format ? e.metadata.testFormatVersion === 2 : true)
-    );
+  // Process new version coming in as RD
+  let newTestPlanVersion = testPlanVersions.testPlanVersions.find(
+    e =>
+      e.phase === expectedNewVersionPhase &&
+      e.testPlan.directory === directory &&
+      (useV2Format ? e.metadata.testFormatVersion === 2 : true)
+  );
 
-    if (newTestPlanVersion) {
-        if (newTestPlanVersion.gitSha === newVersionSha)
-            return [oldTestPlanVersion, newTestPlanVersion];
+  if (newTestPlanVersion) {
+    if (newTestPlanVersion.gitSha === newVersionSha)
+      return [oldTestPlanVersion, newTestPlanVersion];
 
-        // To prevent any oddities when using the intended version to be in RD,
-        // remove any newer version that deprecated it
-        await rawQuery(
-            `
+    // To prevent any oddities when using the intended version to be in RD,
+    // remove any newer version that deprecated it
+    await rawQuery(
+      `
                     delete from "TestPlanReport" where "testPlanVersionId" = ${newTestPlanVersion.id};
                     delete from "TestPlanVersion" where id = ${newTestPlanVersion.id};`,
-            { transaction }
-        );
+      { transaction }
+    );
 
-        newTestPlanVersion = testPlanVersions.testPlanVersions.find(
-            e =>
-                e.gitSha === newVersionSha &&
-                e.testPlan.directory === directory &&
-                (useV2Format ? e.metadata.testFormatVersion === 2 : true)
-        );
+    newTestPlanVersion = testPlanVersions.testPlanVersions.find(
+      e =>
+        e.gitSha === newVersionSha &&
+        e.testPlan.directory === directory &&
+        (useV2Format ? e.metadata.testFormatVersion === 2 : true)
+    );
 
-        const {
-            testPlanVersion: {
-                updatePhase: { testPlanVersion: updatedTestPlanVersion }
-            }
-        } = await updateVersionToPhaseQuery(
-            newTestPlanVersion.id,
-            expectedNewVersionPhase,
-            {
-                transaction
-            }
-        );
+    const {
+      testPlanVersion: {
+        updatePhase: { testPlanVersion: updatedTestPlanVersion }
+      }
+    } = await updateVersionToPhaseQuery(
+      newTestPlanVersion.id,
+      expectedNewVersionPhase,
+      {
+        transaction
+      }
+    );
 
-        newTestPlanVersion = updatedTestPlanVersion;
-    }
+    newTestPlanVersion = updatedTestPlanVersion;
+  }
 
-    return [oldTestPlanVersion, newTestPlanVersion];
+  return [oldTestPlanVersion, newTestPlanVersion];
 };
 
 const getTestableModalDialogVersions = async transaction => {
-    // https://github.com/w3c/aria-at/compare/5fe7afd82fe51c185b8661276105190a59d47322..d0e16b42179de6f6c070da2310e99de837c71215
-    // Modal Dialog was updated to show have differences between several NVDA and JAWS tests
-    // There are no changes for the VO tests
-    const directory = 'modal-dialog';
-    const expectedOldVersionPhase = 'CANDIDATE';
-    const expectedNewVersionPhase = 'DRAFT';
-    const oldVersionSha = '5fe7afd82fe51c185b8661276105190a59d47322';
-    const newVersionSha = 'd0e16b42179de6f6c070da2310e99de837c71215';
+  // https://github.com/w3c/aria-at/compare/5fe7afd82fe51c185b8661276105190a59d47322..d0e16b42179de6f6c070da2310e99de837c71215
+  // Modal Dialog was updated to show have differences between several NVDA and JAWS tests
+  // There are no changes for the VO tests
+  const directory = 'modal-dialog';
+  const expectedOldVersionPhase = 'CANDIDATE';
+  const expectedNewVersionPhase = 'DRAFT';
+  const oldVersionSha = '5fe7afd82fe51c185b8661276105190a59d47322';
+  const newVersionSha = 'd0e16b42179de6f6c070da2310e99de837c71215';
 
-    return getTestableTestPlanVersions({
-        directory,
-        expectedOldVersionPhase,
-        expectedNewVersionPhase,
-        oldVersionSha,
-        newVersionSha,
-        transaction
-    });
+  return getTestableTestPlanVersions({
+    directory,
+    expectedOldVersionPhase,
+    expectedNewVersionPhase,
+    oldVersionSha,
+    newVersionSha,
+    transaction
+  });
 };
 
 const getTestableCommandButtonVersions = async transaction => {
-    // The difference between them is that there have been updated settings for VoiceOver tests;
-    // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn'
-    //
-    // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
-    // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
-    // 'reqInfoAboutButton' should still match.
-    const directory = 'command-button';
-    const expectedOldVersionPhase = 'DRAFT';
-    const oldVersionSha = 'd9a19f815d0f21194023b1c5919eb3b04d5c1ab7';
-    const newVersionSha = '565a87b4111acebdb883d187b581e82c42a73844';
-    const useV2Format = true;
+  // The difference between them is that there have been updated settings for VoiceOver tests;
+  // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn'
+  //
+  // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
+  // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
+  // 'reqInfoAboutButton' should still match.
+  const directory = 'command-button';
+  const expectedOldVersionPhase = 'DRAFT';
+  const oldVersionSha = 'd9a19f815d0f21194023b1c5919eb3b04d5c1ab7';
+  const newVersionSha = '565a87b4111acebdb883d187b581e82c42a73844';
+  const useV2Format = true;
 
-    return getTestableTestPlanVersions({
-        directory,
-        expectedOldVersionPhase,
-        oldVersionSha,
-        newVersionSha,
-        useV2Format,
-        transaction
-    });
+  return getTestableTestPlanVersions({
+    directory,
+    expectedOldVersionPhase,
+    oldVersionSha,
+    newVersionSha,
+    useV2Format,
+    transaction
+  });
 };
 
 describe('data management', () => {
-    it('can set test plan version to candidate and recommended', async () => {
-        await dbCleaner(async transaction => {
-            const candidateTestPlanVersions = await query(
-                gql`
-                    query {
-                        testPlanVersions(phases: [CANDIDATE]) {
-                            id
-                            phase
-                        }
-                    }
-                `,
-                { transaction }
-            );
-            const candidateTestPlanVersion =
-                candidateTestPlanVersions.testPlanVersions[0];
+  it('can set test plan version to candidate and recommended', async () => {
+    await dbCleaner(async transaction => {
+      const candidateTestPlanVersions = await query(
+        gql`
+          query {
+            testPlanVersions(phases: [CANDIDATE]) {
+              id
+              phase
+            }
+          }
+        `,
+        { transaction }
+      );
+      const candidateTestPlanVersion =
+        candidateTestPlanVersions.testPlanVersions[0];
 
-            // This version is in 'CANDIDATE' phase. Set it to DRAFT
-            // This will also remove the associated TestPlanReports markedFinalAt values
-            const testPlanVersionId = candidateTestPlanVersion.id;
-            await updateVersionToPhaseQuery(testPlanVersionId, 'DRAFT', {
-                transaction
-            });
+      // This version is in 'CANDIDATE' phase. Set it to DRAFT
+      // This will also remove the associated TestPlanReports markedFinalAt values
+      const testPlanVersionId = candidateTestPlanVersion.id;
+      await updateVersionToPhaseQuery(testPlanVersionId, 'DRAFT', {
+        transaction
+      });
 
-            const previous = await query(
-                gql`
+      const previous = await query(
+        gql`
                     query {
                         testPlanVersion(id: ${testPlanVersionId}) {
                             phase
@@ -415,585 +414,521 @@ describe('data management', () => {
                         }
                     }
                 `,
-                { transaction }
-            );
-            const previousPhase = previous.testPlanVersion.phase;
-            const previousPhaseTestPlanReportId =
-                previous.testPlanVersion.testPlanReports[0].id;
+        { transaction }
+      );
+      const previousPhase = previous.testPlanVersion.phase;
+      const previousPhaseTestPlanReportId =
+        previous.testPlanVersion.testPlanReports[0].id;
 
-            // Need to approve at least one of the associated reports
-            await markAsFinal(previousPhaseTestPlanReportId, { transaction });
+      // Need to approve at least one of the associated reports
+      await markAsFinal(previousPhaseTestPlanReportId, { transaction });
 
-            // Check to see that the testPlanVersion cannot be updated until the reports have been
-            // finalized
-            await expect(() => {
-                return updateVersionToPhaseQuery(
-                    testPlanVersionId,
-                    'CANDIDATE',
-                    { transaction }
-                );
-            }).rejects.toThrow(
-                /Cannot set phase to candidate because the following required reports have not been collected or finalized:/i
-            );
+      // Check to see that the testPlanVersion cannot be updated until the reports have been
+      // finalized
+      await expect(() => {
+        return updateVersionToPhaseQuery(testPlanVersionId, 'CANDIDATE', {
+          transaction
+        });
+      }).rejects.toThrow(
+        /Cannot set phase to candidate because the following required reports have not been collected or finalized:/i
+      );
 
-            const testPlanReportsToMarkAsFinalResult = await query(
-                gql`
+      const testPlanReportsToMarkAsFinalResult = await query(
+        gql`
                     query {
                         testPlanReports(testPlanVersionId: ${testPlanVersionId}) {
                             id
                         }
                     }
                 `,
-                { transaction }
-            );
+        { transaction }
+      );
 
-            for (const testPlanReport of testPlanReportsToMarkAsFinalResult.testPlanReports) {
-                await markAsFinal(testPlanReport.id, { transaction });
-            }
+      for (const testPlanReport of testPlanReportsToMarkAsFinalResult.testPlanReports) {
+        await markAsFinal(testPlanReport.id, { transaction });
+      }
 
-            const candidateResult = await updateVersionToPhaseQuery(
-                testPlanVersionId,
-                'CANDIDATE',
-                { transaction }
-            );
-            const candidateResultPhase =
-                candidateResult.testPlanVersion.updatePhase.testPlanVersion
-                    .phase;
+      const candidateResult = await updateVersionToPhaseQuery(
+        testPlanVersionId,
+        'CANDIDATE',
+        { transaction }
+      );
+      const candidateResultPhase =
+        candidateResult.testPlanVersion.updatePhase.testPlanVersion.phase;
 
-            const recommendedResult = await updateVersionToPhaseQuery(
-                testPlanVersionId,
-                'RECOMMENDED',
-                { transaction }
-            );
-            const recommendedResultPhase =
-                recommendedResult.testPlanVersion.updatePhase.testPlanVersion
-                    .phase;
+      const recommendedResult = await updateVersionToPhaseQuery(
+        testPlanVersionId,
+        'RECOMMENDED',
+        { transaction }
+      );
+      const recommendedResultPhase =
+        recommendedResult.testPlanVersion.updatePhase.testPlanVersion.phase;
 
-            expect(candidateTestPlanVersion.phase).toBe('CANDIDATE');
-            expect(previousPhase).not.toBe('CANDIDATE');
-            expect(candidateResultPhase).toBe('CANDIDATE');
-            expect(recommendedResultPhase).toBe('RECOMMENDED');
-        });
+      expect(candidateTestPlanVersion.phase).toBe('CANDIDATE');
+      expect(previousPhase).not.toBe('CANDIDATE');
+      expect(candidateResultPhase).toBe('CANDIDATE');
+      expect(recommendedResultPhase).toBe('RECOMMENDED');
     });
+  });
 
-    it('updates test plan version and copies results from previous version reports even in advanced phase', async () => {
-        await dbCleaner(async transaction => {
-            // oldModalDialogVersion has reports for JAWS + Chrome,
-            // NVDA + Chrome, VO + Safari + additional non-required
-            // reports in CANDIDATE
-            //
-            // Process newModalDialogVersion will be coming in as RD
-            const [oldModalDialogVersion, newModalDialogVersion] =
-                await getTestableModalDialogVersions(transaction);
+  it('updates test plan version and copies results from previous version reports even in advanced phase', async () => {
+    await dbCleaner(async transaction => {
+      // oldModalDialogVersion has reports for JAWS + Chrome,
+      // NVDA + Chrome, VO + Safari + additional non-required
+      // reports in CANDIDATE
+      //
+      // Process newModalDialogVersion will be coming in as RD
+      const [oldModalDialogVersion, newModalDialogVersion] =
+        await getTestableModalDialogVersions(transaction);
 
-            const oldModalDialogVersionTestPlanReports =
-                oldModalDialogVersion.testPlanReports;
-            const oldModalDialogVersionTestPlanReportsCount =
-                oldModalDialogVersionTestPlanReports.length;
+      const oldModalDialogVersionTestPlanReports =
+        oldModalDialogVersion.testPlanReports;
+      const oldModalDialogVersionTestPlanReportsCount =
+        oldModalDialogVersionTestPlanReports.length;
 
-            // Get JAWS-specific tests count for old version
-            const oldModalDialogVersionJAWSCompletedTestsCount =
-                countCompletedTests(
-                    oldModalDialogVersionTestPlanReports.filter(
-                        el => el.at.id == 1
-                    )
-                );
+      // Get JAWS-specific tests count for old version
+      const oldModalDialogVersionJAWSCompletedTestsCount = countCompletedTests(
+        oldModalDialogVersionTestPlanReports.filter(el => el.at.id == 1)
+      );
 
-            // Get NVDA-specific tests count for old version
-            const oldModalDialogVersionNVDACompletedTestsCount =
-                countCompletedTests(
-                    oldModalDialogVersionTestPlanReports.filter(
-                        el => el.at.id == 2
-                    )
-                );
+      // Get NVDA-specific tests count for old version
+      const oldModalDialogVersionNVDACompletedTestsCount = countCompletedTests(
+        oldModalDialogVersionTestPlanReports.filter(el => el.at.id == 2)
+      );
 
-            // Get VO-specific tests count for old version
-            const oldModalDialogVersionVOCompletedTestsCount =
-                countCompletedTests(
-                    oldModalDialogVersionTestPlanReports.filter(
-                        el => el.at.id == 3
-                    )
-                );
+      // Get VO-specific tests count for old version
+      const oldModalDialogVersionVOCompletedTestsCount = countCompletedTests(
+        oldModalDialogVersionTestPlanReports.filter(el => el.at.id == 3)
+      );
 
-            // Process new version coming in as RD
-            const newModalDialogVersionTestPlanReportsInRDCount =
-                newModalDialogVersion.testPlanReports.length;
+      // Process new version coming in as RD
+      const newModalDialogVersionTestPlanReportsInRDCount =
+        newModalDialogVersion.testPlanReports.length;
 
-            // Should still retrieve results from older CANDIDATE version since
-            // no DRAFT version was present
-            const { testPlanVersion: newModalDialogVersionInDraft } =
-                await updateVersionToPhaseQuery(
-                    newModalDialogVersion.id,
-                    'DRAFT',
-                    {
-                        testPlanVersionDataToIncludeId:
-                            oldModalDialogVersion.id,
-                        transaction
-                    }
-                );
-            const newModalDialogVersionTestPlanReportsInDraft =
-                newModalDialogVersionInDraft.updatePhase.testPlanVersion
-                    .testPlanReports;
-            const newModalDialogVersionTestPlanReportsInDraftCount =
-                newModalDialogVersionTestPlanReportsInDraft.length;
-
-            // Get JAWS-specific tests count for new version
-            const newModalDialogVersionJAWSCompletedTestsInDraftCount =
-                countCompletedTests(
-                    newModalDialogVersionTestPlanReportsInDraft.filter(
-                        el => el.at.id == 1
-                    )
-                );
-
-            // Get NVDA-specific tests count for new version
-            const newModalDialogVersionNVDACompletedTestsInDraftCount =
-                countCompletedTests(
-                    newModalDialogVersionTestPlanReportsInDraft.filter(
-                        el => el.at.id == 2
-                    )
-                );
-
-            // Get VO-specific tests count for new version
-            const newModalDialogVersionVOCompletedTestsInDraftCount =
-                countCompletedTests(
-                    newModalDialogVersionTestPlanReportsInDraft.filter(
-                        el => el.at.id == 3
-                    )
-                );
-
-            // https://github.com/w3c/aria-at/compare/5fe7afd82fe51c185b8661276105190a59d47322..d0e16b42179de6f6c070da2310e99de837c71215
-            // Modal Dialog was updated to show have differences between several NVDA and JAWS tests
-            // There are no changes for the VO tests
-            expect(oldModalDialogVersion.gitSha).toBe(
-                '5fe7afd82fe51c185b8661276105190a59d47322'
-            );
-            expect(newModalDialogVersion.gitSha).toBe(
-                'd0e16b42179de6f6c070da2310e99de837c71215'
-            );
-
-            expect(oldModalDialogVersionTestPlanReportsCount).toBeGreaterThan(
-                0
-            );
-            expect(newModalDialogVersionTestPlanReportsInRDCount).toBe(0);
-            expect(newModalDialogVersionTestPlanReportsInDraftCount).toEqual(
-                oldModalDialogVersionTestPlanReportsCount
-            );
-
-            expect(
-                oldModalDialogVersionJAWSCompletedTestsCount
-            ).toBeGreaterThan(
-                newModalDialogVersionJAWSCompletedTestsInDraftCount
-            );
-            expect(
-                oldModalDialogVersionNVDACompletedTestsCount
-            ).toBeGreaterThan(
-                newModalDialogVersionNVDACompletedTestsInDraftCount
-            );
-            expect(oldModalDialogVersionVOCompletedTestsCount).toEqual(
-                newModalDialogVersionVOCompletedTestsInDraftCount
-            );
+      // Should still retrieve results from older CANDIDATE version since
+      // no DRAFT version was present
+      const { testPlanVersion: newModalDialogVersionInDraft } =
+        await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT', {
+          testPlanVersionDataToIncludeId: oldModalDialogVersion.id,
+          transaction
         });
+      const newModalDialogVersionTestPlanReportsInDraft =
+        newModalDialogVersionInDraft.updatePhase.testPlanVersion
+          .testPlanReports;
+      const newModalDialogVersionTestPlanReportsInDraftCount =
+        newModalDialogVersionTestPlanReportsInDraft.length;
+
+      // Get JAWS-specific tests count for new version
+      const newModalDialogVersionJAWSCompletedTestsInDraftCount =
+        countCompletedTests(
+          newModalDialogVersionTestPlanReportsInDraft.filter(
+            el => el.at.id == 1
+          )
+        );
+
+      // Get NVDA-specific tests count for new version
+      const newModalDialogVersionNVDACompletedTestsInDraftCount =
+        countCompletedTests(
+          newModalDialogVersionTestPlanReportsInDraft.filter(
+            el => el.at.id == 2
+          )
+        );
+
+      // Get VO-specific tests count for new version
+      const newModalDialogVersionVOCompletedTestsInDraftCount =
+        countCompletedTests(
+          newModalDialogVersionTestPlanReportsInDraft.filter(
+            el => el.at.id == 3
+          )
+        );
+
+      // https://github.com/w3c/aria-at/compare/5fe7afd82fe51c185b8661276105190a59d47322..d0e16b42179de6f6c070da2310e99de837c71215
+      // Modal Dialog was updated to show have differences between several NVDA and JAWS tests
+      // There are no changes for the VO tests
+      expect(oldModalDialogVersion.gitSha).toBe(
+        '5fe7afd82fe51c185b8661276105190a59d47322'
+      );
+      expect(newModalDialogVersion.gitSha).toBe(
+        'd0e16b42179de6f6c070da2310e99de837c71215'
+      );
+
+      expect(oldModalDialogVersionTestPlanReportsCount).toBeGreaterThan(0);
+      expect(newModalDialogVersionTestPlanReportsInRDCount).toBe(0);
+      expect(newModalDialogVersionTestPlanReportsInDraftCount).toEqual(
+        oldModalDialogVersionTestPlanReportsCount
+      );
+
+      expect(oldModalDialogVersionJAWSCompletedTestsCount).toBeGreaterThan(
+        newModalDialogVersionJAWSCompletedTestsInDraftCount
+      );
+      expect(oldModalDialogVersionNVDACompletedTestsCount).toBeGreaterThan(
+        newModalDialogVersionNVDACompletedTestsInDraftCount
+      );
+      expect(oldModalDialogVersionVOCompletedTestsCount).toEqual(
+        newModalDialogVersionVOCompletedTestsInDraftCount
+      );
     });
+  });
 
-    it('updates test plan version and copies all but one report from previous version', async () => {
-        await dbCleaner(async transaction => {
-            const { ats } = await atsQuery({ transaction });
+  it('updates test plan version and copies all but one report from previous version', async () => {
+    await dbCleaner(async transaction => {
+      const { ats } = await atsQuery({ transaction });
 
-            // oldModalDialogVersion has reports for JAWS + Chrome,
-            // NVDA + Chrome, VO + Safari + additional non-required
-            // reports in CANDIDATE
-            //
-            // Process newModalDialogVersion will be coming in as RD
-            const [oldModalDialogVersion, newModalDialogVersion] =
-                await getTestableModalDialogVersions(transaction);
+      // oldModalDialogVersion has reports for JAWS + Chrome,
+      // NVDA + Chrome, VO + Safari + additional non-required
+      // reports in CANDIDATE
+      //
+      // Process newModalDialogVersion will be coming in as RD
+      const [oldModalDialogVersion, newModalDialogVersion] =
+        await getTestableModalDialogVersions(transaction);
 
-            // This version is in 'CANDIDATE' phase. Set it to DRAFT
-            // This will also remove the associated TestPlanReports markedFinalAt values
-            const oldTestPlanVersionId = oldModalDialogVersion.id;
-            await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT', {
-                transaction
-            });
+      // This version is in 'CANDIDATE' phase. Set it to DRAFT
+      // This will also remove the associated TestPlanReports markedFinalAt values
+      const oldTestPlanVersionId = oldModalDialogVersion.id;
+      await updateVersionToPhaseQuery(oldTestPlanVersionId, 'DRAFT', {
+        transaction
+      });
 
-            const oldModalDialogVersionTestPlanReports =
-                oldModalDialogVersion.testPlanReports;
-            const oldModalDialogVersionTestPlanReportsCount =
-                oldModalDialogVersionTestPlanReports.length;
+      const oldModalDialogVersionTestPlanReports =
+        oldModalDialogVersion.testPlanReports;
+      const oldModalDialogVersionTestPlanReportsCount =
+        oldModalDialogVersionTestPlanReports.length;
 
-            // Get VO+Firefox-specific tests count for old version
-            const oldModalDialogVersionVOFirefoxCompletedTestsCount =
-                countCompletedTests(
-                    oldModalDialogVersionTestPlanReports.filter(
-                        el => el.at.id == 3 && el.browser.id == 1
-                    )
-                );
+      // Get VO+Firefox-specific tests count for old version
+      const oldModalDialogVersionVOFirefoxCompletedTestsCount =
+        countCompletedTests(
+          oldModalDialogVersionTestPlanReports.filter(
+            el => el.at.id == 3 && el.browser.id == 1
+          )
+        );
 
-            // Process new version coming in as RD
-            const newModalDialogVersionTestPlanReportsInRDCount =
-                newModalDialogVersion.testPlanReports.length;
+      // Process new version coming in as RD
+      const newModalDialogVersionTestPlanReportsInRDCount =
+        newModalDialogVersion.testPlanReports.length;
 
-            await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT', {
-                transaction
-            });
+      await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT', {
+        transaction
+      });
 
-            const {
-                createTestPlanReport: {
-                    testPlanVersion: newModalDialogVersionInDraft
-                }
-            } = await createTestPlanReportQuery(
-                newModalDialogVersion.id,
-                3,
-                ats.find(at => at.id == 3).atVersions[0].id,
-                1,
-                { transaction }
-            );
+      const {
+        createTestPlanReport: { testPlanVersion: newModalDialogVersionInDraft }
+      } = await createTestPlanReportQuery(
+        newModalDialogVersion.id,
+        3,
+        ats.find(at => at.id == 3).atVersions[0].id,
+        1,
+        { transaction }
+      );
 
-            const newModalDialogVersionTestPlanReportsInDraftCount =
-                newModalDialogVersionInDraft.testPlanReports.length;
+      const newModalDialogVersionTestPlanReportsInDraftCount =
+        newModalDialogVersionInDraft.testPlanReports.length;
 
-            const {
-                testPlanVersion: newModalDialogVersionInDraftWithOldResults
-            } = await updateVersionToPhaseQuery(
-                newModalDialogVersion.id,
-                'DRAFT',
-                {
-                    testPlanVersionDataToIncludeId: oldModalDialogVersion.id,
-                    transaction
-                }
-            );
-            const newModalDialogVersionTestPlanReportsInDraftWithOldResults =
-                newModalDialogVersionInDraftWithOldResults.updatePhase
-                    .testPlanVersion.testPlanReports;
-            const newModalDialogVersionTestPlanReportsInDraftWithOldResultsCount =
-                newModalDialogVersionTestPlanReportsInDraftWithOldResults.length;
-
-            // Get VO+Firefox-specific tests count for new version
-            const newModalDialogVersionVOFirefoxCompletedTestsInDraftWithOldResultsCount =
-                countCompletedTests(
-                    newModalDialogVersionTestPlanReportsInDraftWithOldResults.filter(
-                        el => el.at.id == 3 && el.browser.id == 1
-                    )
-                );
-
-            // https://github.com/w3c/aria-at/compare/5fe7afd82fe51c185b8661276105190a59d47322..d0e16b42179de6f6c070da2310e99de837c71215
-            // Modal Dialog was updated to show have differences between several NVDA and JAWS tests
-            // There are no changes for the VO tests
-            expect(oldModalDialogVersion.gitSha).toBe(
-                '5fe7afd82fe51c185b8661276105190a59d47322'
-            );
-            expect(newModalDialogVersion.gitSha).toBe(
-                'd0e16b42179de6f6c070da2310e99de837c71215'
-            );
-
-            expect(oldModalDialogVersionTestPlanReportsCount).toBeGreaterThan(
-                0
-            );
-            expect(newModalDialogVersionTestPlanReportsInRDCount).toBe(0);
-            expect(newModalDialogVersionTestPlanReportsInDraftCount).toEqual(1);
-            expect(
-                newModalDialogVersionTestPlanReportsInDraftWithOldResultsCount
-            ).toEqual(oldModalDialogVersionTestPlanReportsCount);
-
-            expect(
-                oldModalDialogVersionVOFirefoxCompletedTestsCount
-            ).toBeGreaterThan(
-                newModalDialogVersionVOFirefoxCompletedTestsInDraftWithOldResultsCount
-            );
-            expect(
-                newModalDialogVersionVOFirefoxCompletedTestsInDraftWithOldResultsCount
-            ).toEqual(0);
+      const { testPlanVersion: newModalDialogVersionInDraftWithOldResults } =
+        await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT', {
+          testPlanVersionDataToIncludeId: oldModalDialogVersion.id,
+          transaction
         });
+      const newModalDialogVersionTestPlanReportsInDraftWithOldResults =
+        newModalDialogVersionInDraftWithOldResults.updatePhase.testPlanVersion
+          .testPlanReports;
+      const newModalDialogVersionTestPlanReportsInDraftWithOldResultsCount =
+        newModalDialogVersionTestPlanReportsInDraftWithOldResults.length;
+
+      // Get VO+Firefox-specific tests count for new version
+      const newModalDialogVersionVOFirefoxCompletedTestsInDraftWithOldResultsCount =
+        countCompletedTests(
+          newModalDialogVersionTestPlanReportsInDraftWithOldResults.filter(
+            el => el.at.id == 3 && el.browser.id == 1
+          )
+        );
+
+      // https://github.com/w3c/aria-at/compare/5fe7afd82fe51c185b8661276105190a59d47322..d0e16b42179de6f6c070da2310e99de837c71215
+      // Modal Dialog was updated to show have differences between several NVDA and JAWS tests
+      // There are no changes for the VO tests
+      expect(oldModalDialogVersion.gitSha).toBe(
+        '5fe7afd82fe51c185b8661276105190a59d47322'
+      );
+      expect(newModalDialogVersion.gitSha).toBe(
+        'd0e16b42179de6f6c070da2310e99de837c71215'
+      );
+
+      expect(oldModalDialogVersionTestPlanReportsCount).toBeGreaterThan(0);
+      expect(newModalDialogVersionTestPlanReportsInRDCount).toBe(0);
+      expect(newModalDialogVersionTestPlanReportsInDraftCount).toEqual(1);
+      expect(
+        newModalDialogVersionTestPlanReportsInDraftWithOldResultsCount
+      ).toEqual(oldModalDialogVersionTestPlanReportsCount);
+
+      expect(oldModalDialogVersionVOFirefoxCompletedTestsCount).toBeGreaterThan(
+        newModalDialogVersionVOFirefoxCompletedTestsInDraftWithOldResultsCount
+      );
+      expect(
+        newModalDialogVersionVOFirefoxCompletedTestsInDraftWithOldResultsCount
+      ).toEqual(0);
     });
+  });
 
-    it('updates test plan version but has new reports that are required and not yet marked as final', async () => {
-        await dbCleaner(async transaction => {
-            const { ats } = await atsQuery({ transaction });
+  it('updates test plan version but has new reports that are required and not yet marked as final', async () => {
+    await dbCleaner(async transaction => {
+      const { ats } = await atsQuery({ transaction });
 
-            // oldModalDialogVersion has reports for JAWS + Chrome,
-            // NVDA + Chrome, VO + Safari + additional non-required
-            // reports in CANDIDATE
-            //
-            // Process newModalDialogVersion will be coming in as RD
-            const [oldModalDialogVersion, newModalDialogVersion] =
-                await getTestableModalDialogVersions(transaction);
+      // oldModalDialogVersion has reports for JAWS + Chrome,
+      // NVDA + Chrome, VO + Safari + additional non-required
+      // reports in CANDIDATE
+      //
+      // Process newModalDialogVersion will be coming in as RD
+      const [oldModalDialogVersion, newModalDialogVersion] =
+        await getTestableModalDialogVersions(transaction);
 
-            const oldModalDialogVersionTestPlanReports =
-                oldModalDialogVersion.testPlanReports;
-            const oldModalDialogVersionTestPlanReportsCount =
-                oldModalDialogVersionTestPlanReports.length;
+      const oldModalDialogVersionTestPlanReports =
+        oldModalDialogVersion.testPlanReports;
+      const oldModalDialogVersionTestPlanReportsCount =
+        oldModalDialogVersionTestPlanReports.length;
 
-            // Get VO+Safari-specific tests count for old version
-            const oldModalDialogVersionVOSafariCompletedTestsCount =
-                countCompletedTests(
-                    oldModalDialogVersionTestPlanReports.filter(
-                        el => el.at.id == 3 && el.browser.id == 3
-                    )
-                );
+      // Get VO+Safari-specific tests count for old version
+      const oldModalDialogVersionVOSafariCompletedTestsCount =
+        countCompletedTests(
+          oldModalDialogVersionTestPlanReports.filter(
+            el => el.at.id == 3 && el.browser.id == 3
+          )
+        );
 
-            // Process new version coming in as RD
-            const newModalDialogVersionTestPlanReportsInRDCount =
-                newModalDialogVersion.testPlanReports.length;
+      // Process new version coming in as RD
+      const newModalDialogVersionTestPlanReportsInRDCount =
+        newModalDialogVersion.testPlanReports.length;
 
-            await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT', {
-                transaction
-            });
+      await updateVersionToPhaseQuery(newModalDialogVersion.id, 'DRAFT', {
+        transaction
+      });
 
-            const {
-                createTestPlanReport: {
-                    testPlanVersion: newModalDialogVersionInDraft
-                }
-            } = await createTestPlanReportQuery(
-                newModalDialogVersion.id,
-                3,
-                ats.find(at => at.id == 3).atVersions[0].id,
-                3,
-                { transaction }
-            );
+      const {
+        createTestPlanReport: { testPlanVersion: newModalDialogVersionInDraft }
+      } = await createTestPlanReportQuery(
+        newModalDialogVersion.id,
+        3,
+        ats.find(at => at.id == 3).atVersions[0].id,
+        3,
+        { transaction }
+      );
 
-            const newModalDialogVersionTestPlanReportsInDraftCount =
-                newModalDialogVersionInDraft.testPlanReports.length;
+      const newModalDialogVersionTestPlanReportsInDraftCount =
+        newModalDialogVersionInDraft.testPlanReports.length;
 
-            // A required report isn't marked as final, VO + Safari
-            await expect(() => {
-                return updateVersionToPhaseQuery(
-                    newModalDialogVersion.id,
-                    'CANDIDATE',
-                    {
-                        testPlanVersionDataToIncludeId:
-                            oldModalDialogVersion.id,
-                        transaction
-                    }
-                );
-            }).rejects.toThrow(/No reports have been marked as final/i);
+      // A required report isn't marked as final, VO + Safari
+      await expect(() => {
+        return updateVersionToPhaseQuery(
+          newModalDialogVersion.id,
+          'CANDIDATE',
+          {
+            testPlanVersionDataToIncludeId: oldModalDialogVersion.id,
+            transaction
+          }
+        );
+      }).rejects.toThrow(/No reports have been marked as final/i);
 
-            // https://github.com/w3c/aria-at/compare/5fe7afd82fe51c185b8661276105190a59d47322..d0e16b42179de6f6c070da2310e99de837c71215
-            // Modal Dialog was updated to show have differences between several NVDA and JAWS tests
-            // There are no changes for the VO tests
-            expect(oldModalDialogVersion.gitSha).toBe(
-                '5fe7afd82fe51c185b8661276105190a59d47322'
-            );
-            expect(newModalDialogVersion.gitSha).toBe(
-                'd0e16b42179de6f6c070da2310e99de837c71215'
-            );
+      // https://github.com/w3c/aria-at/compare/5fe7afd82fe51c185b8661276105190a59d47322..d0e16b42179de6f6c070da2310e99de837c71215
+      // Modal Dialog was updated to show have differences between several NVDA and JAWS tests
+      // There are no changes for the VO tests
+      expect(oldModalDialogVersion.gitSha).toBe(
+        '5fe7afd82fe51c185b8661276105190a59d47322'
+      );
+      expect(newModalDialogVersion.gitSha).toBe(
+        'd0e16b42179de6f6c070da2310e99de837c71215'
+      );
 
-            expect(oldModalDialogVersionTestPlanReportsCount).toBeGreaterThan(
-                0
-            );
-            expect(
-                oldModalDialogVersionVOSafariCompletedTestsCount
-            ).toBeGreaterThan(0);
-            expect(newModalDialogVersionTestPlanReportsInRDCount).toBe(0);
-            expect(newModalDialogVersionTestPlanReportsInDraftCount).toEqual(1);
+      expect(oldModalDialogVersionTestPlanReportsCount).toBeGreaterThan(0);
+      expect(oldModalDialogVersionVOSafariCompletedTestsCount).toBeGreaterThan(
+        0
+      );
+      expect(newModalDialogVersionTestPlanReportsInRDCount).toBe(0);
+      expect(newModalDialogVersionTestPlanReportsInDraftCount).toEqual(1);
+    });
+  });
+
+  it('updates test plan version over another which had all test plan reports as final but removes final for all newly created test plan reports', async () => {
+    await dbCleaner(async transaction => {
+      function markedFinalAtFilter({ markedFinalAt }) {
+        return !!markedFinalAt;
+      }
+
+      function completedResultsCount(testPlanReports, atId) {
+        return (
+          testPlanReports
+            .find(({ at }) => at.id == atId)
+            // 0 because only 1 tester for each already marked final
+            // report matters during this test
+            .draftTestPlanRuns[0].testResults.filter(
+              ({ completedAt }) => !!completedAt
+            ).length
+        );
+      }
+
+      const [oldCommandButtonVersion, newCommandButtonVersion] =
+        await getTestableCommandButtonVersions(transaction);
+
+      // Process counts for old test plan version
+      const oldCommandButtonVersionMarkedFinalReportsCount =
+        oldCommandButtonVersion.testPlanReports.filter(
+          markedFinalAtFilter
+        ).length;
+      const oldCommandButtonJawsCompletedTestResultsCount =
+        completedResultsCount(oldCommandButtonVersion.testPlanReports, 1);
+      const oldCommandButtonNvdaCompletedTestResultsCount =
+        completedResultsCount(oldCommandButtonVersion.testPlanReports, 2);
+      const oldCommandButtonSafariCompletedTestResultsCount =
+        completedResultsCount(oldCommandButtonVersion.testPlanReports, 3);
+
+      // Process counts for new test plan version
+      const { testPlanVersion: newCommandButtonVersionInDraft } =
+        await updateVersionToPhaseQuery(newCommandButtonVersion.id, 'DRAFT', {
+          testPlanVersionDataToIncludeId: oldCommandButtonVersion.id,
+          transaction
         });
+      const newCommandButtonVersionInDraftMarkedFinalReportsCount =
+        newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.filter(
+          markedFinalAtFilter
+        ).length;
+      const newCommandButtonJawsCompletedTestResultsCount =
+        completedResultsCount(
+          newCommandButtonVersionInDraft.updatePhase.testPlanVersion
+            .testPlanReports,
+          1
+        );
+      const newCommandButtonNvdaCompletedTestResultsCount =
+        completedResultsCount(
+          newCommandButtonVersionInDraft.updatePhase.testPlanVersion
+            .testPlanReports,
+          2
+        );
+      const newCommandButtonSafariCompletedTestResultsCount =
+        completedResultsCount(
+          newCommandButtonVersionInDraft.updatePhase.testPlanVersion
+            .testPlanReports,
+          3
+        );
+
+      // The difference between them is that there have been updated settings for VoiceOver tests;
+      // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn'
+      //
+      // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
+      // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
+      // 'reqInfoAboutButton' should still match.
+      //
+      // This means only 1 test plan report was affected results-wise, for VoiceOver, but they should all still be
+      // unmarked as final. The single JAWS and NVDA reports should have unaffected results but also unmarked as
+      // final.
+      expect(oldCommandButtonVersionMarkedFinalReportsCount).toBeGreaterThan(0);
+      expect(newCommandButtonVersionInDraftMarkedFinalReportsCount).toEqual(0);
+      expect(newCommandButtonJawsCompletedTestResultsCount).toEqual(
+        oldCommandButtonJawsCompletedTestResultsCount
+      );
+      expect(newCommandButtonNvdaCompletedTestResultsCount).toEqual(
+        oldCommandButtonNvdaCompletedTestResultsCount
+      );
+      expect(newCommandButtonSafariCompletedTestResultsCount).toEqual(
+        oldCommandButtonSafariCompletedTestResultsCount - 2
+      );
     });
+  });
 
-    it('updates test plan version over another which had all test plan reports as final but removes final for all newly created test plan reports', async () => {
-        await dbCleaner(async transaction => {
-            function markedFinalAtFilter({ markedFinalAt }) {
-                return !!markedFinalAt;
-            }
+  it('preserves results for copied report combinations where commands or assertions are unchanged', async () => {
+    await dbCleaner(async transaction => {
+      function countCollectedAssertionResults(run) {
+        return run.testResults.reduce((trSum, tr) => {
+          return (
+            trSum +
+            tr.scenarioResults.reduce((srSum, sr) => {
+              // Check if assertion has been collected; null
+              // if not yet collected
+              return (
+                srSum +
+                sr.assertionResults.filter(({ passed }) => passed != null)
+                  .length
+              );
+            }, 0)
+          );
+        }, 0);
+      }
 
-            function completedResultsCount(testPlanReports, atId) {
-                return (
-                    testPlanReports
-                        .find(({ at }) => at.id == atId)
-                        // 0 because only 1 tester for each already marked final
-                        // report matters during this test
-                        .draftTestPlanRuns[0].testResults.filter(
-                            ({ completedAt }) => !!completedAt
-                        ).length
-                );
-            }
+      const [oldCommandButtonVersion, newCommandButtonVersion] =
+        await getTestableCommandButtonVersions(transaction);
 
-            const [oldCommandButtonVersion, newCommandButtonVersion] =
-                await getTestableCommandButtonVersions(transaction);
+      // Process counts for old version
+      const oldJAWSReport = oldCommandButtonVersion.testPlanReports.find(
+        ({ at }) => at.id == 1
+      );
+      const oldNVDAReport = oldCommandButtonVersion.testPlanReports.find(
+        ({ at }) => at.id == 2
+      );
+      const oldVOReport = oldCommandButtonVersion.testPlanReports.find(
+        ({ at }) => at.id == 3
+      );
 
-            // Process counts for old test plan version
-            const oldCommandButtonVersionMarkedFinalReportsCount =
-                oldCommandButtonVersion.testPlanReports.filter(
-                    markedFinalAtFilter
-                ).length;
-            const oldCommandButtonJawsCompletedTestResultsCount =
-                completedResultsCount(
-                    oldCommandButtonVersion.testPlanReports,
-                    1
-                );
-            const oldCommandButtonNvdaCompletedTestResultsCount =
-                completedResultsCount(
-                    oldCommandButtonVersion.testPlanReports,
-                    2
-                );
-            const oldCommandButtonSafariCompletedTestResultsCount =
-                completedResultsCount(
-                    oldCommandButtonVersion.testPlanReports,
-                    3
-                );
+      // They're all marked as final so only one run matters for this test
+      const [oldJAWSRun] = oldJAWSReport.draftTestPlanRuns;
+      const [oldNVDARun] = oldNVDAReport.draftTestPlanRuns;
+      const [oldVORun] = oldVOReport.draftTestPlanRuns;
 
-            // Process counts for new test plan version
-            const { testPlanVersion: newCommandButtonVersionInDraft } =
-                await updateVersionToPhaseQuery(
-                    newCommandButtonVersion.id,
-                    'DRAFT',
-                    {
-                        testPlanVersionDataToIncludeId:
-                            oldCommandButtonVersion.id,
-                        transaction
-                    }
-                );
-            const newCommandButtonVersionInDraftMarkedFinalReportsCount =
-                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.filter(
-                    markedFinalAtFilter
-                ).length;
-            const newCommandButtonJawsCompletedTestResultsCount =
-                completedResultsCount(
-                    newCommandButtonVersionInDraft.updatePhase.testPlanVersion
-                        .testPlanReports,
-                    1
-                );
-            const newCommandButtonNvdaCompletedTestResultsCount =
-                completedResultsCount(
-                    newCommandButtonVersionInDraft.updatePhase.testPlanVersion
-                        .testPlanReports,
-                    2
-                );
-            const newCommandButtonSafariCompletedTestResultsCount =
-                completedResultsCount(
-                    newCommandButtonVersionInDraft.updatePhase.testPlanVersion
-                        .testPlanReports,
-                    3
-                );
+      const oldJAWSAssertionsCollectedCount =
+        countCollectedAssertionResults(oldJAWSRun);
+      const oldNVDAAssertionsCollectedCount =
+        countCollectedAssertionResults(oldNVDARun);
+      const oldVOAssertionsCollectedCount =
+        countCollectedAssertionResults(oldVORun);
 
-            // The difference between them is that there have been updated settings for VoiceOver tests;
-            // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn'
-            //
-            // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
-            // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
-            // 'reqInfoAboutButton' should still match.
-            //
-            // This means only 1 test plan report was affected results-wise, for VoiceOver, but they should all still be
-            // unmarked as final. The single JAWS and NVDA reports should have unaffected results but also unmarked as
-            // final.
-            expect(
-                oldCommandButtonVersionMarkedFinalReportsCount
-            ).toBeGreaterThan(0);
-            expect(
-                newCommandButtonVersionInDraftMarkedFinalReportsCount
-            ).toEqual(0);
-            expect(newCommandButtonJawsCompletedTestResultsCount).toEqual(
-                oldCommandButtonJawsCompletedTestResultsCount
-            );
-            expect(newCommandButtonNvdaCompletedTestResultsCount).toEqual(
-                oldCommandButtonNvdaCompletedTestResultsCount
-            );
-            expect(newCommandButtonSafariCompletedTestResultsCount).toEqual(
-                oldCommandButtonSafariCompletedTestResultsCount - 2
-            );
+      // Process counts for new version
+      const { testPlanVersion: newCommandButtonVersionInDraft } =
+        await updateVersionToPhaseQuery(newCommandButtonVersion.id, 'DRAFT', {
+          testPlanVersionDataToIncludeId: oldCommandButtonVersion.id,
+          transaction
         });
+
+      const newJAWSReport =
+        newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+          ({ at }) => at.id == 1
+        );
+      const newNVDAReport =
+        newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+          ({ at }) => at.id == 2
+        );
+      const newVOReport =
+        newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
+          ({ at }) => at.id == 3
+        );
+
+      // They're all marked as final so only one run matters for this test
+      const [newJAWSRun] = newJAWSReport.draftTestPlanRuns;
+      const [newNVDARun] = newNVDAReport.draftTestPlanRuns;
+      const [newVORun] = newVOReport.draftTestPlanRuns;
+
+      const newJAWSAssertionsCollectedCount =
+        countCollectedAssertionResults(newJAWSRun);
+      const newNVDAAssertionsCollectedCount =
+        countCollectedAssertionResults(newNVDARun);
+      const newVOAssertionsCollectedCount =
+        countCollectedAssertionResults(newVORun);
+
+      // The difference between them is that there have been updated settings for VoiceOver tests;
+      // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn' which means the tracked command
+      // has been changed.
+      //
+      // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
+      // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
+      // 'reqInfoAboutButton' should still match.
+      //
+      // This means only 1 test plan report should be affected, for VoiceOver for 2 tests,
+      // for 1 command, which carries 2 assertions. So 2 tests * 2 assertions = 4 assertions
+      // have been affected.
+      // The JAWS and NVDA reports should be unaffected.
+      expect(newJAWSAssertionsCollectedCount).toEqual(
+        oldJAWSAssertionsCollectedCount
+      );
+      expect(newNVDAAssertionsCollectedCount).toEqual(
+        oldNVDAAssertionsCollectedCount
+      );
+      expect(newVOAssertionsCollectedCount).toEqual(
+        oldVOAssertionsCollectedCount - 4
+      );
     });
-
-    it('preserves results for copied report combinations where commands or assertions are unchanged', async () => {
-        await dbCleaner(async transaction => {
-            function countCollectedAssertionResults(run) {
-                return run.testResults.reduce((trSum, tr) => {
-                    return (
-                        trSum +
-                        tr.scenarioResults.reduce((srSum, sr) => {
-                            // Check if assertion has been collected; null
-                            // if not yet collected
-                            return (
-                                srSum +
-                                sr.assertionResults.filter(
-                                    ({ passed }) => passed != null
-                                ).length
-                            );
-                        }, 0)
-                    );
-                }, 0);
-            }
-
-            const [oldCommandButtonVersion, newCommandButtonVersion] =
-                await getTestableCommandButtonVersions(transaction);
-
-            // Process counts for old version
-            const oldJAWSReport = oldCommandButtonVersion.testPlanReports.find(
-                ({ at }) => at.id == 1
-            );
-            const oldNVDAReport = oldCommandButtonVersion.testPlanReports.find(
-                ({ at }) => at.id == 2
-            );
-            const oldVOReport = oldCommandButtonVersion.testPlanReports.find(
-                ({ at }) => at.id == 3
-            );
-
-            // They're all marked as final so only one run matters for this test
-            const [oldJAWSRun] = oldJAWSReport.draftTestPlanRuns;
-            const [oldNVDARun] = oldNVDAReport.draftTestPlanRuns;
-            const [oldVORun] = oldVOReport.draftTestPlanRuns;
-
-            const oldJAWSAssertionsCollectedCount =
-                countCollectedAssertionResults(oldJAWSRun);
-            const oldNVDAAssertionsCollectedCount =
-                countCollectedAssertionResults(oldNVDARun);
-            const oldVOAssertionsCollectedCount =
-                countCollectedAssertionResults(oldVORun);
-
-            // Process counts for new version
-            const { testPlanVersion: newCommandButtonVersionInDraft } =
-                await updateVersionToPhaseQuery(
-                    newCommandButtonVersion.id,
-                    'DRAFT',
-                    {
-                        testPlanVersionDataToIncludeId:
-                            oldCommandButtonVersion.id,
-                        transaction
-                    }
-                );
-
-            const newJAWSReport =
-                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
-                    ({ at }) => at.id == 1
-                );
-            const newNVDAReport =
-                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
-                    ({ at }) => at.id == 2
-                );
-            const newVOReport =
-                newCommandButtonVersionInDraft.updatePhase.testPlanVersion.testPlanReports.find(
-                    ({ at }) => at.id == 3
-                );
-
-            // They're all marked as final so only one run matters for this test
-            const [newJAWSRun] = newJAWSReport.draftTestPlanRuns;
-            const [newNVDARun] = newNVDAReport.draftTestPlanRuns;
-            const [newVORun] = newVOReport.draftTestPlanRuns;
-
-            const newJAWSAssertionsCollectedCount =
-                countCollectedAssertionResults(newJAWSRun);
-            const newNVDAAssertionsCollectedCount =
-                countCollectedAssertionResults(newNVDARun);
-            const newVOAssertionsCollectedCount =
-                countCollectedAssertionResults(newVORun);
-
-            // The difference between them is that there have been updated settings for VoiceOver tests;
-            // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn' which means the tracked command
-            // has been changed.
-            //
-            // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
-            // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
-            // 'reqInfoAboutButton' should still match.
-            //
-            // This means only 1 test plan report should be affected, for VoiceOver for 2 tests,
-            // for 1 command, which carries 2 assertions. So 2 tests * 2 assertions = 4 assertions
-            // have been affected.
-            // The JAWS and NVDA reports should be unaffected.
-            expect(newJAWSAssertionsCollectedCount).toEqual(
-                oldJAWSAssertionsCollectedCount
-            );
-            expect(newNVDAAssertionsCollectedCount).toEqual(
-                oldNVDAAssertionsCollectedCount
-            );
-            expect(newVOAssertionsCollectedCount).toEqual(
-                oldVOAssertionsCollectedCount - 4
-            );
-        });
-    });
+  });
 });
