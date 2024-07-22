@@ -1,5 +1,10 @@
 import { gql } from '@apollo/client';
 
+/**
+ *
+ * @param {'simple'|'all'} type
+ * @returns {*}
+ */
 const ISSUE_FIELDS = (type = 'simple') => {
   switch (type) {
     case 'simple':
