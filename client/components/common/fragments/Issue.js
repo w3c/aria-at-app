@@ -22,11 +22,12 @@ const ISSUE_FIELDS = (type = 'simple') => {
         fragment IssueFieldsAll on Issue {
           __typename
           link
+          title
+          author
           isOpen
           feedbackType
           isCandidateReview
-          author
-          title
+          testNumberFilteredByAt
           createdAt
           closedAt
         }

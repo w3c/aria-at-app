@@ -16,6 +16,7 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
             commands {
               id
               text
+              atOperatingMode
             }
           }
         }
@@ -31,6 +32,7 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
             commands {
               id
               text
+              atOperatingMode
             }
           }
           assertionResults {
