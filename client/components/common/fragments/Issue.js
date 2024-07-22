@@ -14,6 +14,7 @@ const ISSUE_FIELDS = (type = 'simple') => {
           link
           isOpen
           feedbackType
+          isCandidateReview
         }
       `;
     case 'all':

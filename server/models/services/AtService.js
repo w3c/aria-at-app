@@ -5,6 +5,9 @@ const {
   BROWSER_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, At, AtVersion } = require('../');
+const {
+  AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS
+} = require('../../util/constants');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -404,22 +407,38 @@ const getUniqueAtVersionsForReport = async (
 ) => {
   const results = await ModelService.rawQuery(
     `
-        select "atVersionId", name, "releasedAt", "testPlanReportId", "testerUserId", "testPlanRunId"
-        from ( select distinct "TestPlanReport".id                                              as "testPlanReportId",
-                               "TestPlanRun".id                                                 as "testPlanRunId",
-                               "TestPlanRun"."testerUserId",
-                               (jsonb_array_elements("testResults") ->> 'atVersionId')::integer as "atVersionId"
-               from "TestPlanReport"
-                        left outer join "TestPlanRun" on "TestPlanRun"."testPlanReportId" = "TestPlanReport".id
-               where "testPlanReportId" = ${testPlanReportId}
-               group by "TestPlanReport".id, "TestPlanRun".id ) as atVersionResults
-                 join "AtVersion" on "AtVersion".id = atVersionResults."atVersionId";
-        `,
+      select "At".name        as "atName",
+             "atVersionId",
+             "AtVersion".name as "atVersionName",
+             "releasedAt",
+             "testPlanReportId",
+             "testerUserId",
+             "testPlanRunId"
+      from ( select distinct "TestPlanReport".id                                              as "testPlanReportId",
+                             "TestPlanRun".id                                                 as "testPlanRunId",
+                             "TestPlanRun"."testerUserId",
+                             (jsonb_array_elements("testResults") ->> 'atVersionId')::integer as "atVersionId"
+             from "TestPlanReport"
+                    left outer join "TestPlanRun" on "TestPlanRun"."testPlanReportId" = "TestPlanReport".id
+             where "testPlanReportId" = ${testPlanReportId}
+             group by "TestPlanReport".id, "TestPlanRun".id ) as atVersionResults
+             join "AtVersion" on "AtVersion".id = atVersionResults."atVersionId"
+             join "At" on "AtVersion"."atId" = "At".id;
+    `,
     { transaction }
   );
 
   // Sort in descending order of releasedAt date
   results.sort((a, b) => new Date(b.releasedAt) - new Date(a.releasedAt));
+
+  // Check if `isSupportedByAutomation`
+  results.forEach(result => {
+    const supportedVersions =
+      AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[result.atName] || [];
+    result.supportedByAutomation = supportedVersions.includes(
+      result.atVersionName
+    );
+  });
 
   return results;
 };
