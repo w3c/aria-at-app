@@ -127,3 +127,6 @@ server/migrations/test_plan_target_id.csv
 jwt-signing-key.pem
 
 client/resources
+
+#temp files for import-tests
+server/scripts/import-tests/tmp

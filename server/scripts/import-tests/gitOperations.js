@@ -76,7 +76,6 @@ function readDirectoryGitInfo(directoryPath) {
 }
 
 module.exports = {
-  gitRun,
   cloneRepo,
   readCommit,
   readDirectoryGitInfo

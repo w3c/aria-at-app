@@ -15,9 +15,9 @@ const deepPickEqual = require('../../util/deepPickEqual');
 const testFormatStrategies = {
   v1: {
     createTest: createV1Test,
-    createRenderableContent,
-    createRenderedUrls,
-    createScenarios
+    createRenderableContent: createV1RenderableContent,
+    createRenderedUrls: createV1RenderedUrls,
+    createScenarios: createV1Scenarios
   },
   v2: {
     createTest: createV2Test,
@@ -57,9 +57,9 @@ function createV1Test({
     title: common.info.title,
     atIds,
     /** @type {RenderableContent} */
-    renderableContent: createRenderableContent(allCollected, atIds),
-    renderedUrls: createRenderedUrls(atIds, getRenderedUrl),
-    scenarios: createScenarios(allCollected, testId, ats),
+    renderableContent: createV1RenderableContent(allCollected, atIds),
+    renderedUrls: createV1RenderedUrls(atIds, getRenderedUrl),
+    scenarios: createV1Scenarios(allCollected, testId, ats),
     assertions: getAssertions(common, testId),
     viewers: [],
     testFormatVersion: 1
@@ -115,7 +115,7 @@ function createV2Test({
  * @param {Array} atIds - Array of assistive technology IDs
  * @returns {RenderableContent} Renderable content object
  */
-function createRenderableContent(allCollected, atIds) {
+function createV1RenderableContent(allCollected, atIds) {
   return Object.fromEntries(
     allCollected.map((collected, index) =>
       /** @type {RenderableContent} */
@@ -130,7 +130,7 @@ function createRenderableContent(allCollected, atIds) {
  * @param {Function} getRenderedUrl - Function to get rendered URL
  * @returns {Object} Rendered URLs object
  */
-function createRenderedUrls(atIds, getRenderedUrl) {
+function createV1RenderedUrls(atIds, getRenderedUrl) {
   return Object.fromEntries(
     atIds.map((atId, index) => [atId, getRenderedUrl(index)])
   );
@@ -143,7 +143,7 @@ function createRenderedUrls(atIds, getRenderedUrl) {
  * @param {Array} ats - Array of assistive technologies
  * @returns {Array} Array of scenario objects
  */
-function createScenarios(allCollected, testId, ats) {
+function createV1Scenarios(allCollected, testId, ats) {
   const scenarios = [];
   allCollected.forEach(collected => {
     collected.commands.forEach(command => {

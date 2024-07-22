@@ -475,7 +475,5 @@ async function getVersionString({ directory, updatedAt, transaction }) {
 module.exports = {
   buildTestsAndCreateTestPlanVersions,
   importHarness,
-  updateJsons,
-  updateAtsJson,
-  getVersionString
+  updateJsons
 };
