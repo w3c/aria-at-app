@@ -10,7 +10,6 @@ const TEST_PLAN_REPORT_FIELDS = gql`
     markedFinalAt
     conflictsLength
     runnableTestsLength
-    vendorReviewStatus
   }
 `;
 
