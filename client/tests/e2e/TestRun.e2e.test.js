@@ -247,11 +247,21 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('button ::-p-text(Next Test)');
       const test1CheckedCount = await page.$$eval(
         checkboxSelector,
-        els => els.filter(checkbox => checkbox.checked).length
+        els =>
+          els.filter(
+            checkbox =>
+              checkbox.id &&
+              !checkbox.id.includes('undesirable') &&
+              checkbox.checked
+          ).length
       );
 
       const test1CheckboxIds = await page.$$eval(checkboxSelector, els =>
-        els.map(checkbox => checkbox.id)
+        els
+          .filter(
+            checkbox => checkbox.id && !checkbox.id.includes('undesirable')
+          )
+          .map(checkbox => checkbox.id)
       );
       // eslint-disable-next-line
       console.log('view test1CheckboxIds in CI', test1CheckboxIds);
