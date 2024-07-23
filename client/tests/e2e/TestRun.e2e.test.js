@@ -259,7 +259,10 @@ describe('Test Run when signed in as tester', () => {
       const test1CheckboxIds = await page.$$eval(checkboxSelector, els =>
         els
           .filter(
-            checkbox => checkbox.id && !checkbox.id.includes('undesirable')
+            checkbox =>
+              checkbox.id &&
+              !checkbox.id.includes('undesirable') &&
+              checkbox.checked
           )
           .map(checkbox => checkbox.id)
       );
