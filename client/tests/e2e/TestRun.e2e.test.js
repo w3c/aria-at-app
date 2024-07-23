@@ -175,15 +175,17 @@ describe('Test Run when signed in as tester', () => {
     async function getRandomlyCheckedTestCount(page, checkboxSelector) {
       return await page.$$eval(checkboxSelector, els => {
         let checkedCount = 0;
-        els.forEach(checkbox => {
+        const filteredCheckboxes = els.filter(
+          checkbox => checkbox.id && !checkbox.id.includes('undesirable')
+        );
+
+        filteredCheckboxes.forEach(checkbox => {
           // avoid checking the undesirable checkboxes which are conditionally
           // rendered
-          if (checkbox.id && !checkbox.id.includes('undesirable')) {
-            const isChecked = Math.random() < 0.5;
-            if (isChecked) {
-              checkedCount++;
-              checkbox.click();
-            }
+          const isChecked = Math.random() < 0.5;
+          if (isChecked) {
+            checkedCount++;
+            checkbox.click();
           }
         });
         return checkedCount;
@@ -275,19 +277,25 @@ describe('Test Run when signed in as tester', () => {
 
       // Input output for valid submission
       await page.evaluate(() => {
-        const checkboxEls = document.querySelectorAll('input[type="checkbox"]');
-        checkboxEls.forEach(checkbox => {
-          if (checkbox.id && !checkbox.id.includes('undesirable')) {
-            if (checkbox.id.includes('no-output-checkbox')) checkbox.click();
-            else {
-              // Randomly select assertions to force a conflict
-              const doRandomCheck = Math.random() < 0.5;
-              if (doRandomCheck) checkbox.click();
-            }
+        const checkboxEls = Array.from(
+          document.querySelectorAll('input[type="checkbox"]')
+        );
+        const filteredCheckboxes = checkboxEls.filter(
+          checkbox => checkbox.id && !checkbox.id.includes('undesirable')
+        );
+
+        filteredCheckboxes.forEach(checkbox => {
+          if (checkbox.id.includes('no-output-checkbox')) checkbox.click();
+          else {
+            // Randomly select assertions to force a conflict
+            const doRandomCheck = Math.random() < 0.5;
+            if (doRandomCheck) checkbox.click();
           }
         });
 
-        const radioEls = document.querySelectorAll('input[type="radio"]');
+        const radioEls = Array.from(
+          document.querySelectorAll('input[type="radio"]')
+        );
         radioEls.forEach(radio => {
           if (radio.id && radio.id.includes('true')) radio.click();
         });
