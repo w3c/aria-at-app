@@ -132,7 +132,6 @@ describe('Test Run when signed in as tester', () => {
       await assignSelfAndNavigateToRun(page);
 
       await page.waitForSelector('h1 ::-p-text(Test 1)');
-
       const testNavigatorListSelector = 'nav#test-navigator-nav ol';
       await page.waitForSelector(testNavigatorListSelector);
 
@@ -172,8 +171,142 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
-  // TODO: Add test to verify tests saving functionality
-  // TODO: Add test to verify tests submission functionality
+  it('inputs results and navigates between tests to confirm saving', async () => {
+    async function getRandomlyCheckedTestCount(page, checkboxSelector) {
+      return await page.$$eval(checkboxSelector, els => {
+        let checkedCount = 0;
+        els.forEach(checkbox => {
+          // avoid checking the undesirable checkboxes which are conditionally
+          // rendered
+          if (checkbox.id && !checkbox.id.includes('undesirable')) {
+            const isChecked = Math.random() < 0.5;
+            if (isChecked) {
+              checkedCount++;
+              checkbox.click();
+            }
+          }
+        });
+        return checkedCount;
+      });
+    }
+
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+
+      const checkboxSelector = 'input[type="checkbox"]';
+      const test1NavSelector = 'nav#test-navigator-nav ol li:nth-child(1)';
+      const test2NavSelector = 'nav#test-navigator-nav ol li:nth-child(2)';
+      const nextTestButtonSelector = 'button ::-p-text(Next Test)';
+      const previousTestButtonSelector = 'button ::-p-text(Previous Test)';
+
+      // Randomly check checkboxes on first test
+      const randomlyCheckedTest1Count = await getRandomlyCheckedTestCount(
+        page,
+        checkboxSelector
+      );
+
+      // Navigate to test 2 with navigation menu
+      await page.$eval(test2NavSelector, el => el.querySelector('a').click());
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 2:)');
+      const randomlyCheckedTest2Count = await getRandomlyCheckedTestCount(
+        page,
+        checkboxSelector
+      );
+
+      // Navigate to test 3 with next button
+      await page.click(nextTestButtonSelector);
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 3:)');
+      const test3CheckedCount = await page.$$eval(
+        checkboxSelector,
+        els => els.filter(checkbox => checkbox.checked).length
+      );
+
+      // Navigate back to test 2 with previous button
+      await page.click(previousTestButtonSelector);
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 2:)');
+      const test2CheckedCount = await page.$$eval(
+        checkboxSelector,
+        els => els.filter(checkbox => checkbox.checked).length
+      );
+
+      // Navigate back to Test 1 with navigation menu
+      await page.$eval(test1NavSelector, el => el.querySelector('a').click());
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      const test1CheckedCount = await page.$$eval(
+        checkboxSelector,
+        els => els.filter(checkbox => checkbox.checked).length
+      );
+
+      expect(test1CheckedCount).toBe(randomlyCheckedTest1Count);
+      expect(test2CheckedCount).toBe(randomlyCheckedTest2Count);
+      expect(test3CheckedCount).toBe(0);
+    });
+  });
+
+  it('inputs results and successfully submits', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+
+      // Confirm that submission cannot happen with empty form
+      // Specificity with selector because there's a 2nd 'hidden' button coming
+      // from the harness which is what is actually called for the submit event
+      const submitResultsButtonSelector =
+        'button[class="btn btn-primary"] ::-p-text(Submit Results)';
+      await page.waitForSelector(submitResultsButtonSelector);
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('::-p-text((required))');
+
+      // Should refocus on topmost output textarea on page
+      const activeElementAfterEmptySubmit = await page.evaluate(() => {
+        return {
+          id: document.activeElement.id,
+          nodeName: document.activeElement.nodeName.toLowerCase()
+        };
+      });
+
+      // Input output for valid submission
+      await page.evaluate(() => {
+        const checkboxEls = document.querySelectorAll('input[type="checkbox"]');
+        checkboxEls.forEach(checkbox => {
+          if (checkbox.id && !checkbox.id.includes('undesirable')) {
+            if (checkbox.id.includes('no-output-checkbox')) checkbox.click();
+            else {
+              // Randomly select assertions to force a conflict
+              const doRandomCheck = Math.random() < 0.5;
+              if (doRandomCheck) checkbox.click();
+            }
+          }
+        });
+
+        const radioEls = document.querySelectorAll('input[type="radio"]');
+        radioEls.forEach(radio => {
+          if (radio.id && radio.id.includes('true')) radio.click();
+        });
+      });
+
+      // Submit valid form
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
+      await page.waitForSelector(
+        '::-p-text(This test has conflicting results)'
+      );
+      await page.waitForSelector('h2 ::-p-text(Test Results)');
+      await page.waitForSelector('button ::-p-text(Edit Results)');
+
+      expect(activeElementAfterEmptySubmit.id).toBe('speechoutput-0');
+      expect(activeElementAfterEmptySubmit.nodeName).toBe('textarea');
+    });
+  });
+
   it('opens popup with content after clicking "Open Test Page" button', async () => {
     await getPage(
       { role: 'tester', url: '/test-queue' },
