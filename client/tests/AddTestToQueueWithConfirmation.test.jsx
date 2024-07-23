@@ -111,6 +111,7 @@ describe('AddTestToQueueWithConfirmation', () => {
 
   test('calls mutation on button click with correct variables', async () => {
     fireEvent.click(getByTestId('add-button'));
+    fireEvent.click(await getByTestId('add-run-later'));
 
     await waitFor(() => {
       expect(mutationMock).toHaveBeenCalled();
