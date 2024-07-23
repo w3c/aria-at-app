@@ -172,17 +172,17 @@ describe('Test Run when signed in as tester', () => {
   });
 
   it('inputs results and navigates between tests to confirm saving', async () => {
-    async function getRandomlyCheckedTestCount(page, checkboxSelector) {
+    async function getGeneratedCheckedTestCount(page, checkboxSelector) {
       return await page.$$eval(checkboxSelector, els => {
         let checkedCount = 0;
         const filteredCheckboxes = els.filter(
           checkbox => checkbox.id && !checkbox.id.includes('undesirable')
         );
 
-        filteredCheckboxes.forEach(checkbox => {
+        filteredCheckboxes.forEach((checkbox, index) => {
           // avoid checking the undesirable checkboxes which are conditionally
           // rendered
-          const isChecked = Math.random() < 0.5;
+          const isChecked = index % 2 === 0;
           if (isChecked) {
             checkedCount++;
             checkbox.click();
@@ -205,7 +205,7 @@ describe('Test Run when signed in as tester', () => {
       const previousTestButtonSelector = 'button ::-p-text(Previous Test)';
 
       // Randomly check checkboxes on first test
-      const randomlyCheckedTest1Count = await getRandomlyCheckedTestCount(
+      const generatedCheckedTest1Count = await getGeneratedCheckedTestCount(
         page,
         checkboxSelector
       );
@@ -215,7 +215,7 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
-      const randomlyCheckedTest2Count = await getRandomlyCheckedTestCount(
+      const generatedCheckedTest2Count = await getGeneratedCheckedTestCount(
         page,
         checkboxSelector
       );
@@ -250,8 +250,8 @@ describe('Test Run when signed in as tester', () => {
         els => els.filter(checkbox => checkbox.checked).length
       );
 
-      expect(test1CheckedCount).toBe(randomlyCheckedTest1Count);
-      expect(test2CheckedCount).toBe(randomlyCheckedTest2Count);
+      expect(test1CheckedCount).toBe(generatedCheckedTest1Count);
+      expect(test2CheckedCount).toBe(generatedCheckedTest2Count);
       expect(test3CheckedCount).toBe(0);
     });
   });
@@ -289,12 +289,12 @@ describe('Test Run when signed in as tester', () => {
           checkbox => checkbox.id && !checkbox.id.includes('undesirable')
         );
 
-        filteredCheckboxes.forEach(checkbox => {
+        filteredCheckboxes.forEach((checkbox, index) => {
           if (checkbox.id.includes('no-output-checkbox')) checkbox.click();
           else {
-            // Randomly select assertions to force a conflict
-            const doRandomCheck = Math.random() < 0.5;
-            if (doRandomCheck) checkbox.click();
+            // Selecting different assertions to force a conflict
+            const check = index % 2 === 0;
+            if (check) checkbox.click();
           }
         });
 
