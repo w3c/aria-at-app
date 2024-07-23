@@ -196,6 +196,7 @@ describe('Test Run when signed in as tester', () => {
       await assignSelfAndNavigateToRun(page);
 
       await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
 
       const checkboxSelector = 'input[type="checkbox"]';
       const test1NavSelector = 'nav#test-navigator-nav ol li:nth-child(1)';
@@ -213,6 +214,7 @@ describe('Test Run when signed in as tester', () => {
       await page.$eval(test2NavSelector, el => el.querySelector('a').click());
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
       const randomlyCheckedTest2Count = await getRandomlyCheckedTestCount(
         page,
         checkboxSelector
@@ -222,6 +224,7 @@ describe('Test Run when signed in as tester', () => {
       await page.click(nextTestButtonSelector);
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 3:)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
       const test3CheckedCount = await page.$$eval(
         checkboxSelector,
         els => els.filter(checkbox => checkbox.checked).length
@@ -231,6 +234,7 @@ describe('Test Run when signed in as tester', () => {
       await page.click(previousTestButtonSelector);
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
       const test2CheckedCount = await page.$$eval(
         checkboxSelector,
         els => els.filter(checkbox => checkbox.checked).length
@@ -240,6 +244,7 @@ describe('Test Run when signed in as tester', () => {
       await page.$eval(test1NavSelector, el => el.querySelector('a').click());
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
       const test1CheckedCount = await page.$$eval(
         checkboxSelector,
         els => els.filter(checkbox => checkbox.checked).length
