@@ -11,8 +11,7 @@
     "lint": "eslint --ext js,jsx .",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook",
-    "lighthouse": "lhci autorun",
-    "record-routes": "DOTENV_CONFIG_PATH=../config/test.env node -r dotenv/config tests/e2e/scripts/takeSnapshots.js"
+    "lighthouse": "lhci autorun"
   },
   "repository": {
     "type": "git",
