@@ -174,8 +174,7 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
-  // TODO: Review why assertions of test are wrong in CI
-  it.skip('inputs results and navigates between tests to confirm saving', async () => {
+  it('inputs results and navigates between tests to confirm saving', async () => {
     async function getGeneratedCheckedTestCount(page, checkboxSelector) {
       return await page.$$eval(checkboxSelector, els => {
         let checkedCount = 0;
