@@ -51,9 +51,16 @@ async function takeSnapshot(browser, role, route) {
 
       const content = await page.content();
 
+      // Strip out randomly generated ids, "id=react-aria*"
+      // Currently relevant for the /test-queue page
+      const cleanedContent = content.replace(
+        /id="react-aria\d+-:r[0-9a-z]+:"/g,
+        ''
+      );
+
       // Prettify the HTML using Prettier, otherwise it is minified
       // and it would be difficult to read diffs
-      const prettifiedHtml = await prettier.format(content, {
+      const prettifiedHtml = await prettier.format(cleanedContent, {
         parser: 'html',
         printWidth: 80,
         tabWidth: 2,
