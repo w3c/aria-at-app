@@ -550,10 +550,10 @@ const TestPlans = ({ testPlanVersions }) => {
                         <CenteredTd>
                           <Link
                             to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                            aria-label={`${metrics.totalSupportPercent}% completed`}
                           >
                             <ClippedProgressBar
                               progress={metrics.totalSupportPercent}
-                              label={`${metrics.totalSupportPercent}% completed`}
                               clipped
                             />
                           </Link>
