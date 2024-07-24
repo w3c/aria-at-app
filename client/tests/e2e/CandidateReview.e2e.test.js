@@ -58,4 +58,51 @@ describe('Candidate Review when signed in as vendor', () => {
       expect(afterClickDisplayForTableDisclosureContainer).toBe('none');
     });
   });
+
+  it('navigates to candidate test plan run page', async () => {
+    await getPage({ role: 'vendor', url: '/candidate-review' }, async page => {
+      await page.waitForSelector('h1 ::-p-text(Candidate Review)');
+
+      // Select first possible link from the table in the Candidate Test Plans
+      // column
+      await page.click('table[aria-label] a');
+
+      await page.waitForSelector('nav#test-navigator-nav ol');
+      await page.waitForSelector('h1 ::-p-text(1.)');
+      await page.waitForSelector('h1[class="current-test-title"]');
+
+      // Expand Test Instructions and Test Results
+      const instructionsDisclosureContainerSelector =
+        '[id="disclosure-container-test-instructions-and-results-Test Instructions"]';
+      const testResultsDisclosureContainerSelector =
+        '[id^="disclosure-container-test-instructions-and-results-Test Results for"]';
+      const initialInstructionsDisclosureDisplay = await display(
+        page,
+        instructionsDisclosureContainerSelector
+      );
+      const initialTestResultDisclosureDisplay = await display(
+        page,
+        testResultsDisclosureContainerSelector
+      );
+
+      await page.click('button ::-p-text(Test Instructions)');
+      await page.click('button ::-p-text(Test Results for)');
+
+      const afterClickInstructionsDisclosureDisplay = await display(
+        page,
+        instructionsDisclosureContainerSelector
+      );
+      const afterClickTestResultDisclosureDisplay = await display(
+        page,
+        testResultsDisclosureContainerSelector
+      );
+
+      const currentUrl = await page.url();
+      expect(currentUrl).toMatch(/^.*\/candidate-test-plan\/\d+\/\d+/);
+      expect(initialInstructionsDisclosureDisplay).toBe('none');
+      expect(initialTestResultDisclosureDisplay).toBe('none');
+      expect(afterClickInstructionsDisclosureDisplay).not.toBe('none');
+      expect(afterClickTestResultDisclosureDisplay).not.toBe('none');
+    });
+  });
 });

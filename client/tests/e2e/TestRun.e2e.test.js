@@ -18,8 +18,7 @@ describe('Test Run when not signed in', () => {
       const h1Text = await text(page, 'h1');
       const currentUrl = await page.url();
 
-      const testNavigatorListSelector = 'nav#test-navigator-nav ol';
-      await page.waitForSelector(testNavigatorListSelector);
+      await page.waitForSelector('nav#test-navigator-nav ol');
       const testNavigatorListItemsHandle = await page.evaluateHandle(() => {
         const testNavigatorListSelector = 'nav#test-navigator-nav ol';
         const testNavigatorList = document.querySelector(
@@ -37,7 +36,11 @@ describe('Test Run when not signed in', () => {
 
       // Click each navigation item and confirm the h1 on page has changed
       for (const [index, li] of testNavigatorListItems.entries()) {
-        await li.evaluate(el => el.querySelector('a').click());
+        // Randomly navigate using the navigation link or the next button
+        if (Math.random())
+          await li.evaluate(el => el.querySelector('a').click());
+        else await page.click('button ::-p-text(Next Test)');
+
         await page.waitForSelector(`h1 ::-p-text(Test ${index + 1}:)`);
         await page.waitForSelector(
           `div[class="info-label"] ::-p-text(Test Plan:)`
