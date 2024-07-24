@@ -259,19 +259,6 @@ describe('Test Run when signed in as tester', () => {
           ).length
       );
 
-      const test1CheckboxIds = await page.$$eval(checkboxSelector, els =>
-        els
-          .filter(
-            checkbox =>
-              checkbox.id &&
-              !checkbox.id.includes('undesirable') &&
-              checkbox.checked
-          )
-          .map(checkbox => checkbox.id)
-      );
-      // eslint-disable-next-line
-      console.log('view test1CheckboxIds in CI', test1CheckboxIds);
-
       expect(test1CheckedCount).toBe(generatedCheckedTest1Count);
       expect(test2CheckedCount).toBe(generatedCheckedTest2Count);
       expect(test3CheckedCount).toBe(0);
