@@ -15,7 +15,8 @@ const AUTOMATION_SCHEDULER_PORT = 8833;
 const baseUrl = `http://localhost:${CLIENT_PORT}`;
 
 const startServer = async serverOrClient => {
-  return new Promise(resolve => {
+  console.log(`[DEBUG] Starting ${serverOrClient} server...`);
+  return new Promise((resolve, reject) => {
     const server = spawn(
       'yarn',
       serverOrClient === 'server'
@@ -24,6 +25,7 @@ const startServer = async serverOrClient => {
       {
         cwd: path.resolve(__dirname, '../../'),
         env: {
+          ...process.env,
           PATH: process.env.PATH,
           PORT,
           CLIENT_PORT,
@@ -38,26 +40,55 @@ const startServer = async serverOrClient => {
       }
     );
 
+    console.log(
+      `[DEBUG] ${serverOrClient} server process spawned with PID: ${server.pid}`
+    );
+
     server.on('error', error => {
-      throw new Error('Error raised by startServer process', {
-        cause: error
-      });
+      console.error(`[DEBUG] Error in ${serverOrClient} server:`, error);
+      reject(
+        new Error(
+          `Error raised by ${serverOrClient} startServer process: ${error.message}`
+        )
+      );
     });
 
     server.on('exit', (code, signal) => {
+      console.log(
+        `[DEBUG] ${serverOrClient} server exited with code ${code} and signal ${signal}`
+      );
       if (code) {
-        console.error('startServer exited with code', code);
+        console.error(
+          `[DEBUG] ${serverOrClient} server exited with code ${code}`
+        );
+        reject(new Error(`${serverOrClient} server exited with code ${code}`));
       } else if (signal) {
-        console.error('startServer was killed with signal', signal);
+        console.error(
+          `[DEBUG] ${serverOrClient} server was killed with signal ${signal}`
+        );
+        reject(
+          new Error(`${serverOrClient} server was killed with signal ${signal}`)
+        );
       } else {
-        console.info('startServer exited with no errors.'); // eslint-disable-line no-console
+        console.info(`[DEBUG] ${serverOrClient} server exited with no errors.`);
+        resolve();
       }
     });
 
     const killServer = async () => {
+      console.log(
+        `[DEBUG] Attempting to kill ${serverOrClient} server (PID: ${server.pid})`
+      );
       await new Promise((resolve, reject) => {
         treeKill(server.pid, error => {
-          if (error) return reject(error);
+          if (error) {
+            console.error(
+              `[DEBUG] Error killing ${serverOrClient} server:`,
+              error
+            );
+            return reject(error);
+          }
+          console.log(`[DEBUG] Successfully killed ${serverOrClient} server`);
           resolve();
         });
       });
@@ -65,7 +96,7 @@ const startServer = async serverOrClient => {
 
     server.stdout.on('data', data => {
       const output = stripAnsi(data.toString());
-      console.info(output); // eslint-disable-line no-console
+      console.log(`[DEBUG] ${serverOrClient} stdout:`, output);
 
       if (
         (serverOrClient === 'server' &&
@@ -73,13 +104,26 @@ const startServer = async serverOrClient => {
         (serverOrClient === 'client' &&
           output.includes('compiled successfully'))
       ) {
+        console.log(`[DEBUG] ${serverOrClient} server started successfully`);
         resolve({ close: killServer });
       }
     });
 
     server.stderr.on('data', data => {
       const output = data.toString();
-      console.info(output); // eslint-disable-line no-console
+      console.error(`[DEBUG] ${serverOrClient} stderr:`, output);
+    });
+
+    // Add a timeout
+    const timeout = setTimeout(() => {
+      console.error(`[DEBUG] ${serverOrClient} server start timed out`);
+      killServer().then(() => {
+        reject(new Error(`${serverOrClient} server start timed out`));
+      });
+    }, 60000); // 60 second timeout
+
+    server.on('close', () => {
+      clearTimeout(timeout);
     });
   });
 };

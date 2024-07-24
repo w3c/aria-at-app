@@ -1,0 +1,2596 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Data Management | ARIA-AT</title>
+  </head>
+  <body>
+    <div id="root">
+      <div class="container-fluid">
+        <nav
+          aria-label="Menu"
+          class="navbar navbar-expand-xl navbar-light bg-light">
+          <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
+          ><a href="#main" class="css-32m7ay">Skip to main content</a
+          ><button
+            aria-controls="basic-navbar-nav"
+            type="button"
+            aria-label="Toggle navigation"
+            class="navbar-toggler collapsed">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div
+            class="justify-content-end navbar-collapse collapse"
+            id="basic-navbar-nav">
+            <div class="navbar-nav">
+              <li>
+                <a aria-current="false" class="nav-link" href="/reports"
+                  >AT Interoperability Reports</a
+                >
+              </li>
+              <li>
+                <a aria-current="true" class="nav-link" href="/data-management"
+                  >Data Management</a
+                >
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/test-queue"
+                  >Test Queue</a
+                >
+              </li>
+              <li>
+                <a
+                  aria-current="false"
+                  class="nav-link"
+                  href="/candidate-review"
+                  >Candidate Review</a
+                >
+              </li>
+              <li class="signed-in-wrapper">
+                <div class="signed-in" id="signed-in">
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="circle-user"
+                    class="svg-inline--fa fa-circle-user"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512">
+                    <path
+                      fill="currentColor"
+                      d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z"></path></svg
+                  >Signed in as <b>joe-the-admin</b>
+                </div>
+                <a aria-describedby="signed-in" class="nav-link" href="/"
+                  >Sign out</a
+                >
+              </li>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="container-fluid">
+        <main id="main" tabindex="-1" class="container">
+          <h1>Data Management</h1>
+          <h2>Introduction</h2>
+          <p data-testid="data-management-instructions">
+            This page provides a view of the latest test plan version
+            information, and where they currently are in the
+            <a href="https://github.com/w3c/aria-at/wiki/Working-Mode"
+              >ARIA-AT Community Group’s review process</a
+            >.<br />Use this page to manage Test Plans in the Test Queue and
+            their phases.
+          </p>
+          <div class="css-5akihl">
+            <h3>
+              <button
+                id="disclosure-btn-manage-test-queue-Manage Assistive Technology Versions"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-manage-test-queue-Manage Assistive Technology Versions"
+                class="css-10jxhio">
+                Manage Assistive Technology Versions<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-manage-test-queue-Manage Assistive Technology Versions"
+              aria-labelledby="disclosure-btn-manage-test-queue-Manage Assistive Technology Versions"
+              class="css-19fsyrg">
+              <div class="css-16uhkdf">
+                <span
+                  >Select an assistive technology and manage its versions in the
+                  ARIA-AT App</span
+                >
+                <div class="disclosure-row-manage-ats">
+                  <div class="ats-container form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Assistive Technology</label
+                    ><select class="form-select">
+                      <option value="1">JAWS</option>
+                      <option value="2">NVDA</option>
+                      <option value="3">VoiceOver for macOS</option>
+                    </select>
+                  </div>
+                  <div class="at-versions-container">
+                    <div class="form-group">
+                      <label class="disclosure-form-label form-label"
+                        >Available Versions</label
+                      ><select class="form-select">
+                        <option value="1">2021.2111.13</option>
+                      </select>
+                    </div>
+                    <div class="disclosure-buttons-row">
+                      <button>Add a New Version</button
+                      ><button>
+                        <svg
+                          aria-hidden="true"
+                          focusable="false"
+                          data-prefix="fas"
+                          data-icon="pen-to-square"
+                          class="svg-inline--fa fa-pen-to-square"
+                          role="img"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 512">
+                          <path
+                            fill="currentColor"
+                            d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"></path></svg
+                        >Edit</button
+                      ><button>
+                        <svg
+                          aria-hidden="true"
+                          focusable="false"
+                          data-prefix="fas"
+                          data-icon="trash-can"
+                          class="svg-inline--fa fa-trash-can"
+                          role="img"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 448 512">
+                          <path
+                            fill="currentColor"
+                            d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                        >Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3>
+              <button
+                id="disclosure-btn-manage-test-queue-Add Test Plans to the Test Queue"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-manage-test-queue-Add Test Plans to the Test Queue"
+                class="css-10jxhio">
+                Add Test Plans to the Test Queue<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-manage-test-queue-Add Test Plans to the Test Queue"
+              aria-labelledby="disclosure-btn-manage-test-queue-Add Test Plans to the Test Queue"
+              class="css-19fsyrg">
+              <div class="css-16uhkdf">
+                <span
+                  >Select a test plan, assistive technology and browser to add a
+                  new test plan report to the test queue.</span
+                >
+                <div class="disclosure-row-test-plans">
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Test Plan</label
+                    ><select class="form-select">
+                      <option value="51">
+                        Action Menu Button Example Using aria-activedescendant
+                      </option>
+                      <option value="50">
+                        Action Menu Button Example Using element.focus()
+                      </option>
+                      <option value="81">Alert Example</option>
+                      <option value="34">Banner Landmark</option>
+                      <option value="66">Breadcrumb Example</option>
+                      <option value="67">Checkbox Example (Mixed-State)</option>
+                      <option value="4">Checkbox Example (Two State)</option>
+                      <option value="83">Color Viewer Slider</option>
+                      <option value="6">
+                        Combobox with Both List and Inline Autocomplete Example
+                      </option>
+                      <option value="82">Command Button Example</option>
+                      <option value="9">Complementary Landmark</option>
+                      <option value="42">Contentinfo Landmark</option>
+                      <option value="23">
+                        Data Grid Example 1: Minimal Data Grid
+                      </option>
+                      <option value="11">
+                        Date Picker Spin Button Example
+                      </option>
+                      <option value="69">
+                        Disclosure Navigation Menu Example
+                      </option>
+                      <option value="12">
+                        Disclosure of Answers to Frequently Asked Questions
+                        Example
+                      </option>
+                      <option value="21">Editor Menubar Example</option>
+                      <option value="14">Form Landmark</option>
+                      <option value="75">Horizontal Multi-Thumb Slider</option>
+                      <option value="78">
+                        Link Example 1 (span element with text content)
+                      </option>
+                      <option value="71">
+                        Link Example 2 (img element with alt attribute)
+                      </option>
+                      <option value="70">
+                        Link Example 3 (CSS :before content property on a span
+                        element)
+                      </option>
+                      <option value="49">Main Landmark</option>
+                      <option value="28">Media Seek Slider</option>
+                      <option value="54">Meter</option>
+                      <option value="84">Modal Dialog Example</option>
+                      <option value="52">Navigation Menu Button</option>
+                      <option value="74">
+                        Radio Group Example Using Roving tabindex
+                      </option>
+                      <option value="85">
+                        Radio Group Example Using aria-activedescendant
+                      </option>
+                      <option value="27">Rating Slider</option>
+                      <option value="7">Select Only Combobox Example</option>
+                      <option value="61">Switch Example</option>
+                      <option value="30">Tabs with Manual Activation</option>
+                      <option value="86">Toggle Button</option>
+                      <option value="64">Vertical Temperature Slider</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Test Plan Version</label
+                    ><select
+                      disabled=""
+                      aria-disabled="true"
+                      class="form-select">
+                      <option>Versions in R&amp;D or Deprecated</option>
+                    </select>
+                  </div>
+                  <div></div>
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Assistive Technology</label
+                    ><select class="form-select">
+                      <option value="" disabled="">
+                        Select an Assistive Technology
+                      </option>
+                      <option value="1">JAWS</option>
+                      <option value="2">NVDA</option>
+                      <option value="3">VoiceOver for macOS</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Assistive Technology Version</label
+                    >
+                    <div class="form-group-at-version">
+                      <div class="css-ov1ktg">
+                        <label class="css-r65lzy"
+                          ><input
+                            type="radio"
+                            name="atVersion"
+                            class="css-1brh7ys"
+                            checked="" /><span style="position: relative"
+                            ><span style="position: absolute; font-weight: bold"
+                              >Exact Version</span
+                            ><span
+                              aria-hidden="true"
+                              style="font-weight: bold; opacity: 0"
+                              >Exact Version</span
+                            ></span
+                          ></label
+                        ><label class="css-1bcjvtp"
+                          ><input
+                            type="radio"
+                            name="atVersion"
+                            class="css-1brh7ys" /><span
+                            style="position: relative"
+                            ><span
+                              style="position: absolute; font-weight: normal"
+                              >Minimum Version</span
+                            ><span
+                              aria-hidden="true"
+                              style="font-weight: bold; opacity: 0"
+                              >Minimum Version</span
+                            ></span
+                          ></label
+                        >
+                      </div>
+                      <select disabled="" class="form-select">
+                        <option value="" disabled="">Select AT Version</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Browser</label
+                    ><select disabled="" class="form-select">
+                      <option value="" disabled="">Select a Browser</option>
+                    </select>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled=""
+                  data-testid="add-button"
+                  class="w-auto btn btn-secondary">
+                  Add to Test Queue
+                </button>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+          </div>
+          <h2>Test Plans Status Summary</h2>
+          <ul
+            class="d-flex align-items-center my-3"
+            aria-label="Filter tests plans by status"
+            role="group">
+            <li aria-hidden="true">Filter</li>
+            <li>
+              <button
+                type="button"
+                aria-pressed="true"
+                class="css-14jv778 btn active btn-secondary">
+                All Plans (35)
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                aria-pressed="false"
+                class="css-14jv778 btn btn-secondary">
+                R&amp;D Complete (33)
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                aria-pressed="false"
+                class="css-14jv778 btn btn-secondary">
+                In Draft Review (5)
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                aria-pressed="false"
+                class="css-14jv778 btn btn-secondary">
+                In Candidate Review (1)
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                aria-pressed="false"
+                class="css-14jv778 btn btn-secondary">
+                Recommended Plans (1)
+              </button>
+            </li>
+          </ul>
+          <table
+            aria-label="Test Plans Status Summary Table"
+            aria-rowcount="35"
+            class="data-management table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th
+                  role="columnheader"
+                  scope="col"
+                  aria-sort="none"
+                  class="css-3wr2tv">
+                  <button type="button" class="css-m9nyhn btn btn-primary">
+                    Test Plan<svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="arrow-up-short-wide"
+                      class="svg-inline--fa fa-arrow-up-short-wide css-mmxqyt"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 576 512">
+                      <path
+                        fill="currentColor"
+                        d="M151.6 42.4C145.5 35.8 137 32 128 32s-17.5 3.8-23.6 10.4l-88 96c-11.9 13-11.1 33.3 2 45.2s33.3 11.1 45.2-2L96 146.3V448c0 17.7 14.3 32 32 32s32-14.3 32-32V146.3l32.4 35.4c11.9 13 32.2 13.9 45.2 2s13.9-32.2 2-45.2l-88-96zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h32c17.7 0 32-14.3 32-32s-14.3-32-32-32H320zm0 128c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H320zm0 128c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H320zm0 128c-17.7 0-32 14.3-32 32s14.3 32 32 32H544c17.7 0 32-14.3 32-32s-14.3-32-32-32H320z"></path>
+                    </svg>
+                  </button>
+                </th>
+                <th
+                  role="columnheader"
+                  scope="col"
+                  aria-sort="none"
+                  class="css-3wr2tv">
+                  <button type="button" class="css-m9nyhn btn btn-primary">
+                    Covered AT<svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="arrow-up-short-wide"
+                      class="svg-inline--fa fa-arrow-up-short-wide css-mmxqyt"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 576 512">
+                      <path
+                        fill="currentColor"
+                        d="M151.6 42.4C145.5 35.8 137 32 128 32s-17.5 3.8-23.6 10.4l-88 96c-11.9 13-11.1 33.3 2 45.2s33.3 11.1 45.2-2L96 146.3V448c0 17.7 14.3 32 32 32s32-14.3 32-32V146.3l32.4 35.4c11.9 13 32.2 13.9 45.2 2s13.9-32.2 2-45.2l-88-96zM320 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h32c17.7 0 32-14.3 32-32s-14.3-32-32-32H320zm0 128c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H320zm0 128c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H320zm0 128c-17.7 0-32 14.3-32 32s14.3 32 32 32H544c17.7 0 32-14.3 32-32s-14.3-32-32-32H320z"></path>
+                    </svg>
+                  </button>
+                </th>
+                <th
+                  role="columnheader"
+                  scope="col"
+                  aria-sort="descending"
+                  class="css-3wr2tv">
+                  <button type="button" class="css-m9nyhn btn btn-primary">
+                    Overall Status<svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="arrow-down-short-wide"
+                      class="svg-inline--fa fa-arrow-down-short-wide"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 576 512">
+                      <path
+                        fill="currentColor"
+                        d="M151.6 469.6C145.5 476.2 137 480 128 480s-17.5-3.8-23.6-10.4l-88-96c-11.9-13-11.1-33.3 2-45.2s33.3-11.1 45.2 2L96 365.7V64c0-17.7 14.3-32 32-32s32 14.3 32 32V365.7l32.4-35.4c11.9-13 32.2-13.9 45.2-2s13.9 32.2 2 45.2l-88 96zM320 32h32c17.7 0 32 14.3 32 32s-14.3 32-32 32H320c-17.7 0-32-14.3-32-32s14.3-32 32-32zm0 128h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H320c-17.7 0-32-14.3-32-32s14.3-32 32-32zm0 128H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H320c-17.7 0-32-14.3-32-32s14.3-32 32-32zm0 128H544c17.7 0 32 14.3 32 32s-14.3 32-32 32H320c-17.7 0-32-14.3-32-32s14.3-32 32-32z"></path>
+                    </svg>
+                  </button>
+                </th>
+                <th>R&amp;D Version</th>
+                <th>Draft Review</th>
+                <th>Candidate Review</th>
+                <th>Recommended Version</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr aria-rowindex="0">
+                <th>
+                  <a href="/data-management/checkbox-tri-state"
+                    ><b>Checkbox Example (Tri State)</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="recommended full-width css-be9e2a"
+                      >Recommended</span
+                    >
+                    <p class="review-text">Since <b>Jan 2, 2023</b></p>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">N/A</span></td>
+                <td>
+                  <div role="list" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><span
+                        ><svg
+                          aria-hidden="true"
+                          focusable="false"
+                          data-prefix="fas"
+                          data-icon="circle-check"
+                          class="svg-inline--fa fa-circle-check check"
+                          role="img"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 512"
+                          color="#818F98">
+                          <path
+                            fill="currentColor"
+                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                        ><b>V23.08.23</b></span
+                      ></span
+                    ><span role="listitem" class="review-complete"
+                      >Review Completed&nbsp;<b>Jul 5, 2022</b></span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div role="list" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><span
+                        ><svg
+                          aria-hidden="true"
+                          focusable="false"
+                          data-prefix="fas"
+                          data-icon="circle-check"
+                          class="svg-inline--fa fa-circle-check check"
+                          role="img"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 512"
+                          color="#818F98">
+                          <path
+                            fill="currentColor"
+                            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                        ><b>V23.08.23</b></span
+                      ></span
+                    ><span role="listitem" class="review-complete"
+                      >Review Completed&nbsp;<b>Jan 2, 2023</b></span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div role="list" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/67"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V23.08.23</b></span
+                        ></a
+                      ></span
+                    ><span role="listitem"
+                      ><button
+                        type="button"
+                        class="css-1c4pbk0 btn btn-primary">
+                        <span
+                          ><span class="reports-missing css-fidnqg"></span>Some
+                          Required Reports <strong>Missing</strong></span
+                        >
+                      </button>
+                      <div></div></span
+                    ><span role="listitem" class="review-complete"
+                      >Approved&nbsp;<b>Jan 2, 2023</b></span
+                    >
+                  </div>
+                </td>
+              </tr>
+              <tr aria-rowindex="1">
+                <th>
+                  <a href="/data-management/modal-dialog"
+                    ><b>Modal Dialog Example</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="candidate full-width css-be9e2a"
+                      >Candidate</span
+                    >
+                    <p class="review-text">Review Started <b>Jul 5, 2022</b></p>
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
+                    >
+                  </div>
+                </td>
+                <td><span class="css-wpichc">N/A</span></td>
+                <td>
+                  <div role="list" aria-setsize="3" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/84"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V24.06.07</b></span
+                        ></a
+                      ></span
+                    ><span role="listitem"
+                      ><button
+                        type="button"
+                        class="css-1c4pbk0 btn btn-primary">
+                        <span
+                          ><span class="reports-missing css-fidnqg"></span>Some
+                          Required Reports <strong>Missing</strong></span
+                        >
+                      </button>
+                      <div></div
+                    ></span>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="5" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/24"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.05.26</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Recommended</button
+                    ><span role="listitem"
+                      ><button
+                        type="button"
+                        class="css-1c4pbk0 btn btn-primary">
+                        <span
+                          ><span class="reports-complete css-fidnqg"></span
+                          >Required Reports <strong>Complete</strong></span
+                        >
+                      </button>
+                      <div></div></span
+                    ><span class="more"
+                      ><span role="listitem" class="more-issues-container"
+                        ><span class="issues css-fidnqg"></span>0 Open
+                        Issues</span
+                      ><span class="target-days-container"
+                        ><button>
+                          Target&nbsp;<b>570 Days</b>&nbsp;Past
+                        </button></span
+                      ></span
+                    >
+                  </div>
+                </td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="2">
+                <th>
+                  <a href="/data-management/alert"><b>Alert Example</b></a>
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="draft full-width css-be9e2a">Draft</span>
+                    <p class="review-text">Review Started <b>Jul 5, 2022</b></p>
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/81"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V24.04.25</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="3" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/1"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.04.14</b></span
+                        ></a
+                      ></span
+                    ><span role="listitem"
+                      ><button
+                        type="button"
+                        class="css-1c4pbk0 btn btn-primary">
+                        <span
+                          ><span class="reports-not-started css-fidnqg"></span
+                          >Required Reports <strong>Not Started</strong></span
+                        >
+                      </button>
+                      <div></div
+                    ></span>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="3">
+                <th>
+                  <a href="/data-management/command-button"
+                    ><b>Command Button Example</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="draft full-width css-be9e2a">Draft</span>
+                    <p class="review-text">
+                      Review Started <b>Dec 13, 2023</b>
+                    </p>
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/82"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V24.03.12</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="3" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/68"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V23.12.06</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Candidate</button
+                    ><span role="listitem"
+                      ><button
+                        type="button"
+                        class="css-1c4pbk0 btn btn-primary">
+                        <span
+                          ><span class="reports-complete css-fidnqg"></span
+                          >Required Reports <strong>Complete</strong></span
+                        >
+                      </button>
+                      <div></div
+                    ></span>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="4">
+                <th>
+                  <a href="/data-management/combobox-select-only"
+                    ><b>Select Only Combobox Example</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="draft full-width css-be9e2a">Draft</span>
+                    <p class="review-text">Review Started <b>Jul 5, 2022</b></p>
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/39"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="3" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/7"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17</b></span
+                        ></a
+                      ></span
+                    ><span role="listitem"
+                      ><button
+                        type="button"
+                        class="css-1c4pbk0 btn btn-primary">
+                        <span
+                          ><span class="reports-not-started css-fidnqg"></span
+                          >Required Reports <strong>Not Started</strong></span
+                        >
+                      </button>
+                      <div></div
+                    ></span>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="5">
+                <th>
+                  <a href="/data-management/toggle-button"
+                    ><b>Toggle Button</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="draft full-width css-be9e2a">Draft</span>
+                    <p class="review-text">Review Started <b>Jul 5, 2022</b></p>
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
+                    >
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/86"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V24.03.12</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="3" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/31"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.05.18</b></span
+                        ></a
+                      ></span
+                    ><span role="listitem"
+                      ><button
+                        type="button"
+                        class="css-1c4pbk0 btn btn-primary">
+                        <span
+                          ><span class="reports-in-progress css-fidnqg"></span
+                          >Required Reports <strong>In Progress</strong></span
+                        >
+                      </button>
+                      <div></div
+                    ></span>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="6">
+                <th>
+                  <a
+                    href="/data-management/menu-button-actions-active-descendant"
+                    ><b
+                      >Action Menu Button Example Using aria-activedescendant</b
+                    ></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/19"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="7">
+                <th>
+                  <a href="/data-management/menu-button-actions"
+                    ><b>Action Menu Button Example Using element.focus()</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/18"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="8">
+                <th>
+                  <a href="/data-management/banner"><b>Banner Landmark</b></a>
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/2"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="9">
+                <th>
+                  <a href="/data-management/breadcrumb"
+                    ><b>Breadcrumb Example</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 23, 2023</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/66"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V23.08.23</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="10">
+                <th>
+                  <a href="/data-management/checkbox"
+                    ><b>Checkbox Example (Two State)</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/36"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="11">
+                <th>
+                  <a href="/data-management/horizontal-slider"
+                    ><b>Color Viewer Slider</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Jun 26, 2024</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/83"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V24.06.26</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="12">
+                <th>
+                  <a href="/data-management/combobox-autocomplete-both-updated"
+                    ><b
+                      >Combobox with Both List and Inline Autocomplete
+                      Example</b
+                    ></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 29, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/38"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.29-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="13">
+                <th>
+                  <a href="/data-management/complementary"
+                    ><b>Complementary Landmark</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/41"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="14">
+                <th>
+                  <a href="/data-management/contentinfo"
+                    ><b>Contentinfo Landmark</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/10"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="15">
+                <th>
+                  <a href="/data-management/minimal-data-grid"
+                    ><b>Data Grid Example 1: Minimal Data Grid</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/55"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="16">
+                <th>
+                  <a href="/data-management/datepicker-spin-button"
+                    ><b>Date Picker Spin Button Example</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/43"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="17">
+                <th>
+                  <a href="/data-management/disclosure-navigation"
+                    ><b>Disclosure Navigation Menu Example</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 23, 2023</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/69"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V23.08.23</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="18">
+                <th>
+                  <a href="/data-management/disclosure-faq"
+                    ><b
+                      >Disclosure of Answers to Frequently Asked Questions
+                      Example</b
+                    ></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/44"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="19">
+                <th>
+                  <a href="/data-management/menubar-editor"
+                    ><b>Editor Menubar Example</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/53"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="20">
+                <th>
+                  <a href="/data-management/form"><b>Form Landmark</b></a>
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/46"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="21">
+                <th>
+                  <a href="/data-management/slider-multithumb"
+                    ><b>Horizontal Multi-Thumb Slider</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 23, 2023</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/75"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V23.08.23</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="22">
+                <th>
+                  <a href="/data-management/link-span-text"
+                    ><b>Link Example 1 (span element with text content)</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Dec 13, 2023</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/78"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V23.12.13</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="23">
+                <th>
+                  <a href="/data-management/link-img-alt"
+                    ><b>Link Example 2 (img element with alt attribute)</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 23, 2023</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/71"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V23.08.23</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="24">
+                <th>
+                  <a href="/data-management/link-css"
+                    ><b
+                      >Link Example 3 (CSS :before content property on a span
+                      element)</b
+                    ></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 23, 2023</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/70"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V23.08.23</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="25">
+                <th>
+                  <a href="/data-management/main"><b>Main Landmark</b></a>
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 5, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/49"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.08.05</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="26">
+                <th>
+                  <a href="/data-management/seek-slider"
+                    ><b>Media Seek Slider</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/60"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="27">
+                <th>
+                  <a href="/data-management/meter"><b>Meter</b></a>
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 5, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/54"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.08.05</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="28">
+                <th>
+                  <a href="/data-management/menu-button-navigation"
+                    ><b>Navigation Menu Button</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>May 26, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/52"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.05.26</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="29">
+                <th>
+                  <a href="/data-management/radiogroup-roving-tabindex"
+                    ><b>Radio Group Example Using Roving tabindex</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 23, 2023</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/74"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V23.08.23</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="30">
+                <th>
+                  <a href="/data-management/radiogroup-aria-activedescendant"
+                    ><b>Radio Group Example Using aria-activedescendant</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 12, 2024</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/85"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V24.03.12</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="31">
+                <th>
+                  <a href="/data-management/rating-slider"
+                    ><b>Rating Slider</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/59"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="32">
+                <th>
+                  <a href="/data-management/switch"><b>Switch Example</b></a>
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 5, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/61"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.08.05</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="33">
+                <th>
+                  <a href="/data-management/tabs-manual-activation"
+                    ><b>Tabs with Manual Activation</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/62"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17-1</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+              <tr aria-rowindex="34">
+                <th>
+                  <a href="/data-management/vertical-temperature-slider"
+                    ><b>Vertical Temperature Slider</b></a
+                  >
+                </th>
+                <td>
+                  <div>
+                    <b>JAWS</b><span>, </span><b>NVDA</b><span> and </span
+                    ><b>VoiceOver for macOS</b>
+                  </div>
+                </td>
+                <td>
+                  <div class="css-bpz90">
+                    <span class="rd full-width css-be9e2a">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
+                  </div>
+                </td>
+                <td>
+                  <div role="list" aria-setsize="2" class="css-1bj5ml9">
+                    <span
+                      class="full-width auto-width css-36z7cz"
+                      role="listitem"
+                      ><a href="/test-review/32"
+                        ><span
+                          ><svg
+                            aria-hidden="true"
+                            focusable="false"
+                            data-prefix="fas"
+                            data-icon="circle-check"
+                            class="svg-inline--fa fa-circle-check check"
+                            role="img"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 512 512"
+                            color="#2BA51C">
+                            <path
+                              fill="currentColor"
+                              d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                          ><b>V22.03.17</b></span
+                        ></a
+                      ></span
+                    ><button
+                      type="button"
+                      class="advance-button btn btn-secondary">
+                      Advance to Draft
+                    </button>
+                  </div>
+                </td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">Not Started</span></td>
+                <td><span class="css-wpichc">None Yet</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </main>
+      </div>
+      <span aria-live="polite" aria-atomic="true" class="css-1wkn33"
+        >Test Plans Status Summary Table, now sorted by Overall Status in
+        descending order</span
+      >
+    </div>
+    <script src="/bundle.js"></script>
+  </body>
+</html>

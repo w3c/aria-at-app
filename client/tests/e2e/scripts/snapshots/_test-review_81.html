@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Alert Example Test Plan V24.04.25 | ARIA-AT</title>
+  </head>
+  <body>
+    <div id="root">
+      <div class="container-fluid">
+        <nav
+          aria-label="Menu"
+          class="navbar navbar-expand-xl navbar-light bg-light">
+          <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
+          ><a href="#main" class="css-32m7ay">Skip to main content</a
+          ><button
+            aria-controls="basic-navbar-nav"
+            type="button"
+            aria-label="Toggle navigation"
+            class="navbar-toggler collapsed">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div
+            class="justify-content-end navbar-collapse collapse"
+            id="basic-navbar-nav">
+            <div class="navbar-nav">
+              <li>
+                <a aria-current="false" class="nav-link" href="/reports"
+                  >AT Interoperability Reports</a
+                >
+              </li>
+              <li>
+                <a aria-current="true" class="nav-link" href="/data-management"
+                  >Data Management</a
+                >
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/test-queue"
+                  >Test Queue</a
+                >
+              </li>
+              <li>
+                <a
+                  aria-current="false"
+                  class="nav-link"
+                  href="/candidate-review"
+                  >Candidate Review</a
+                >
+              </li>
+              <li class="signed-in-wrapper">
+                <div class="signed-in" id="signed-in">
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="circle-user"
+                    class="svg-inline--fa fa-circle-user"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512">
+                    <path
+                      fill="currentColor"
+                      d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z"></path></svg
+                  >Signed in as <b>joe-the-admin</b>
+                </div>
+                <a aria-describedby="signed-in" class="nav-link" href="/"
+                  >Sign out</a
+                >
+              </li>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="container-fluid">
+        <main id="main" tabindex="-1" class="container">
+          <h1>Alert Example Test Plan V24.04.25</h1>
+          <h2>About This Test Plan</h2>
+          <ul>
+            <li><strong>Phase:&nbsp;</strong>R&amp;D</li>
+            <li>
+              <strong>Version:&nbsp;</strong>V24.04.25
+              <a href="/data-management/alert"
+                >(View all versions of this test plan)</a
+              >
+            </li>
+            <li>
+              <strong>Version History:&nbsp;</strong>
+              <ul class="css-8n7029">
+                <li>R&amp;D completed on Apr 25, 2024.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>Latest Commit:&nbsp;</strong
+              ><a
+                target="_blank"
+                rel="noreferrer"
+                href="https://github.com/w3c/aria-at/commit/ca4c80fdb888a9ed9b68d92712189af681b437dc"
+                >Change priority of role assertion to 3 (#1054)</a
+              >
+            </li>
+          </ul>
+          <h2>Supporting Documentation</h2>
+          <ul>
+            <li>
+              <a
+                href="https://www.w3.org/WAI/ARIA/apg/patterns/alert/examples/alert/"
+                rel="noreferrer"
+                target="_blank"
+                >APG Example: Alert</a
+              >
+            </li>
+          </ul>
+          <h2>Tests</h2>
+          <div class="css-ifttx1">
+            <ul
+              class="d-flex align-items-center my-3"
+              aria-label="Filter tests by covered AT"
+              role="group">
+              <li aria-hidden="true">Filter tests by covered AT</li>
+              <li>
+                <button
+                  type="button"
+                  aria-pressed="true"
+                  class="css-14jv778 btn active btn-secondary">
+                  All ATs (1)
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  aria-pressed="false"
+                  class="css-14jv778 btn btn-secondary">
+                  JAWS (1)
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  aria-pressed="false"
+                  class="css-14jv778 btn btn-secondary">
+                  NVDA (1)
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  aria-pressed="false"
+                  class="css-14jv778 btn btn-secondary">
+                  VoiceOver for macOS (1)
+                </button>
+              </li>
+            </ul>
+          </div>
+          <h3>Test 1: Trigger an alert</h3>
+          <h4>JAWS</h4>
+          <h5>Instructions</h5>
+          <ol class="css-tzo3vz">
+            <li>
+              Configure JAWS with default settings. For help, read
+              <a
+                href="https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing"
+                >Configuring Screen Readers for Testing</a
+              >.
+            </li>
+            <li>
+              Activate the "Open test page" button, which opens the example to
+              test in a new window and runs a script that sets focus on the
+              'Trigger Alert' button.
+            </li>
+            <li>
+              Starting at the 'Trigger Alert' button, activate the button to
+              trigger the alert. Do this with each of the following commands or
+              command sequences. If any settings are specified in parentheses,
+              ensure the settings are active before executing the command or
+              command sequence.
+              <ul class="css-18v4d0a">
+                <li>Space (virtual cursor active)</li>
+                <li>Enter (virtual cursor active)</li>
+                <li>Space (PC cursor active)</li>
+                <li>Enter (PC cursor active)</li>
+              </ul>
+            </li>
+          </ol>
+          <div>
+            To perform a task with PC cursor active:
+            <ol>
+              <li>
+                Press <kbd>Alt</kbd>+<kbd>Delete</kbd> to determine which cursor
+                is active.
+              </li>
+              <li>
+                If the virtual cursor is active, press <kbd>Insert</kbd>+<kbd
+                  >z</kbd
+                >
+                to disable the virtual cursor.
+              </li>
+            </ol>
+          </div>
+          <div>
+            To perform a task with virtual cursor active:
+            <ol>
+              <li>
+                Press <kbd>Alt</kbd>+<kbd>Delete</kbd> to determine which cursor
+                is active.
+              </li>
+              <li>
+                If the PC cursor is active, press <kbd>Escape</kbd> to activate
+                the virtual cursor.
+              </li>
+            </ol>
+          </div>
+          <h5 id="JAWS-test3-space-cmd0">
+            Space (virtual cursor active): 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="JAWS-test3-space-cmd0"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h5 id="JAWS-test3-enter-cmd1">
+            Enter (virtual cursor active): 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="JAWS-test3-enter-cmd1"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h5 id="JAWS-test3-space-cmd2">
+            Space (PC cursor active): 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="JAWS-test3-space-cmd2"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h5 id="JAWS-test3-enter-cmd3">
+            Enter (PC cursor active): 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="JAWS-test3-enter-cmd3"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button type="button" class="btn btn-primary">Open Test Page</button>
+          <h4>NVDA</h4>
+          <h5>Instructions</h5>
+          <ol class="css-tzo3vz">
+            <li>
+              Configure NVDA with default settings. For help, read
+              <a
+                href="https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing"
+                >Configuring Screen Readers for Testing</a
+              >.
+            </li>
+            <li>
+              Activate the "Open test page" button, which opens the example to
+              test in a new window and runs a script that sets focus on the
+              'Trigger Alert' button.
+            </li>
+            <li>
+              Starting at the 'Trigger Alert' button, activate the button to
+              trigger the alert. Do this with each of the following commands or
+              command sequences. If any settings are specified in parentheses,
+              ensure the settings are active before executing the command or
+              command sequence.
+              <ul class="css-18v4d0a">
+                <li>Space (browse mode on)</li>
+                <li>Enter (browse mode on)</li>
+                <li>Space (focus mode on)</li>
+                <li>Enter (focus mode on)</li>
+              </ul>
+            </li>
+          </ol>
+          <div>
+            To perform a task with focus mode on:
+            <ol>
+              <li>Press <kbd>Insert</kbd>+<kbd>Space</kbd>.</li>
+              <li>
+                If NVDA made the browse mode sound, press <kbd>Insert</kbd>+<kbd
+                  >Space</kbd
+                >
+                again to turn focus mode back on.
+              </li>
+            </ol>
+          </div>
+          <div>
+            To perform a task with browse mode on:
+            <ol>
+              <li>Press <kbd>Insert</kbd>+<kbd>Space</kbd>.</li>
+              <li>
+                If NVDA made the focus mode sound, press <kbd>Insert</kbd>+<kbd
+                  >Space</kbd
+                >
+                again to turn browse mode back on.
+              </li>
+            </ol>
+          </div>
+          <h5 id="NVDA-test3-space-cmd0">
+            Space (browse mode on): 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="NVDA-test3-space-cmd0"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h5 id="NVDA-test3-enter-cmd1">
+            Enter (browse mode on): 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="NVDA-test3-enter-cmd1"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h5 id="NVDA-test3-space-cmd2">
+            Space (focus mode on): 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="NVDA-test3-space-cmd2"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h5 id="NVDA-test3-enter-cmd3">
+            Enter (focus mode on): 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="NVDA-test3-enter-cmd3"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button type="button" class="btn btn-primary">Open Test Page</button>
+          <h4>VoiceOver for macOS</h4>
+          <h5>Instructions</h5>
+          <ol class="css-tzo3vz">
+            <li>
+              Configure VoiceOver with default settings. For help, read
+              <a
+                href="https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing"
+                >Configuring Screen Readers for Testing</a
+              >.
+            </li>
+            <li>
+              Activate the "Open test page" button, which opens the example to
+              test in a new window and runs a script that sets focus on the
+              'Trigger Alert' button.
+            </li>
+            <li>
+              Starting at the 'Trigger Alert' button, activate the button to
+              trigger the alert. Do this with each of the following commands or
+              command sequences.
+              <ul class="css-18v4d0a">
+                <li>Control+Option+Space</li>
+                <li>Space</li>
+                <li>Enter</li>
+              </ul>
+            </li>
+          </ol>
+          <h5 id="VoiceOver_for_macOS-test3-ctrl_opt_space-cmd0">
+            Control+Option+Space: 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="VoiceOver_for_macOS-test3-ctrl_opt_space-cmd0"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h5 id="VoiceOver_for_macOS-test3-space-cmd1">
+            Space: 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="VoiceOver_for_macOS-test3-space-cmd1"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h5 id="VoiceOver_for_macOS-test3-enter-cmd2">
+            Enter: 1 MUST, 0 SHOULD, 1 MAY Assertions
+          </h5>
+          <div class="table-responsive">
+            <table
+              aria-labelledby="VoiceOver_for_macOS-test3-enter-cmd2"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Priority</th>
+                  <th>Assertion Phrase</th>
+                  <th>Assertion Statement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>MAY</td>
+                  <td>convey role 'alert'</td>
+                  <td>Role 'alert' is conveyed</td>
+                </tr>
+                <tr>
+                  <td>MUST</td>
+                  <td>convey text 'Hello'</td>
+                  <td>Text 'Hello' is conveyed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button type="button" class="btn btn-primary">Open Test Page</button>
+        </main>
+      </div>
+      <span aria-live="polite" aria-atomic="true" class="css-1wkn33"></span>
+    </div>
+    <script src="/bundle.js"></script>
+  </body>
+</html>

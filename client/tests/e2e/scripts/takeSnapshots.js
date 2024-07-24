@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-const puppeteer = require('puppeteer');
 const fs = require('fs').promises;
 const path = require('path');
 const prettier = require('prettier');
+const { execSync } = require('child_process');
 
 const {
   ApolloClient,
@@ -13,7 +13,7 @@ const {
 const getPage = require('../../util/getPage');
 const { setup, teardown } = require('../../util/getPage');
 
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'http://localhost:3033';
 const SNAPSHOTS_DIR = path.join(__dirname, 'snapshots');
 
 const client = new ApolloClient({
@@ -21,12 +21,26 @@ const client = new ApolloClient({
   cache: new InMemoryCache()
 });
 
-async function getReportRoutesForTestPlanVersions() {
-  const maxValidTestPlanReportId = 19;
-  return Array.from(
-    { length: maxValidTestPlanReportId },
-    (_, i) => `/test-plan-report/${i + 1}`
-  );
+function killExistingProcesses() {
+  try {
+    execSync('pkill -f "node.*server/server.js"');
+    execSync('pkill -f "node.*next"');
+  } catch (error) {
+    console.log(
+      'No processes to kill or error killing processes:',
+      error.message
+    );
+  }
+}
+
+async function shutdown() {
+  console.log('Shutting down...');
+  killExistingProcesses();
+  if (global.browser) {
+    await global.browser.close();
+  }
+  await teardown();
+  console.log('Shutdown complete');
 }
 
 async function getBaseRoutes() {
@@ -38,14 +52,50 @@ async function getBaseRoutes() {
     '/reports',
     '/candidate-review',
     '/data-management',
-    '/invalid-request',
     '/404'
     // TODO
-    // '/run/:runId',
-    // '/test-plan-report/:testPlanReportId',
-    // '/test-review/:testPlanVersionId',
     // '/candidate-test-plan/:testPlanVersionId/:atId',
   ];
+}
+
+function getCandidateTestPlanRoutes() {
+  const atIds = [1, 2, 3];
+  const testPlanVersionId = 24;
+  return atIds.map(atId => `/candidate-test-plan/${testPlanVersionId}/${atId}`);
+}
+
+async function getTestReviewRoutes() {
+  const query = gql`
+    query GetTestPlanVersionIds {
+      testPlanVersions {
+        id
+      }
+    }
+  `;
+  const { data } = await client.query({ query });
+  return data.testPlanVersions.map(({ id }) => `/test-review/${id}`);
+}
+
+// The first 19 are valid
+async function getReportRoutesForTestPlanVersions() {
+  const maxValidTestPlanReportId = 19;
+  return Array.from(
+    { length: maxValidTestPlanReportId },
+    (_, i) => `/test-plan-report/${i + 1}`
+  );
+}
+
+async function getRunRoutes() {
+  const query = gql`
+    query GetRunIds {
+      testPlanRuns {
+        id
+      }
+    }
+  `;
+
+  const { data } = await client.query({ query });
+  return data.testPlanRuns.map(({ id }) => `/run/${id}`);
 }
 
 async function getDataManagementRoutes() {
@@ -65,79 +115,115 @@ async function getDataManagementRoutes() {
 }
 
 async function takeSnapshot(browser, role, route) {
-  const page = await browser.newPage();
+  console.log(`Taking snapshot for ${route}`);
   try {
-    await page.goto(`${BASE_URL}${route}`, { waitUntil: 'networkidle0' });
+    let snapshot;
+    await getPage({ role, url: route }, async page => {
+      await page.waitForSelector('main');
 
-    // Remove all <style> and <link rel="stylesheet"> elements
-    await page.evaluate(() => {
-      const stylesToRemove = document.querySelectorAll(
-        'style, link[rel="stylesheet"]'
-      );
-      stylesToRemove.forEach(el => el.remove());
+      // Remove all <style> and <link rel="stylesheet"> elements
+      await page.evaluate(() => {
+        const stylesToRemove = document.querySelectorAll(
+          'style, link[rel="stylesheet"]'
+        );
+        stylesToRemove.forEach(el => el.remove());
+      });
+
+      const content = await page.content();
+
+      // Prettify the HTML using Prettier, otherwise it is minified
+      // and it would be difficult to read diffs
+      const prettifiedHtml = await prettier.format(content, {
+        parser: 'html',
+        printWidth: 80,
+        tabWidth: 2,
+        useTabs: false,
+        singleQuote: false,
+        bracketSameLine: true
+      });
+
+      snapshot = prettifiedHtml;
     });
 
-    const content = await page.content();
+    if (!snapshot) {
+      throw new Error('Snapshot is undefined');
+    }
 
-    // Extract only the <body> content
-    const bodyContent =
-      content.match(/<body[^>]*>([\s\S]*)<\/body>/i)?.[1] || '';
-
-    // Prettify the HTML using Prettier, otherwise it is minified
-    // and it would be difficult to read diffs
-    const prettifiedHtml = prettier.format(bodyContent, {
-      parser: 'html',
-      printWidth: 80,
-      tabWidth: 2,
-      useTabs: false,
-      singleQuote: false,
-      bracketSameLine: true
-    });
-
-    return prettifiedHtml;
-  } finally {
-    await page.close();
+    return snapshot;
+  } catch (error) {
+    console.error(`Error taking snapshot for ${route}:`, error);
+    throw error;
   }
 }
 
 async function takeSnapshots() {
-  const browser = await setup();
+  killExistingProcesses();
 
   try {
-    const routes = await getBaseRoutes();
+    const browser = await setup();
+    global.browser = browser;
 
-    for (const role of ['admin', 'tester', false]) {
-      for (const route of routes) {
-        const snapshot = await takeSnapshot(browser, role, route);
-        const fileName = `${route.replace(/\//g, '_')}_${
-          role ? role : ''
-        }.html`;
-        await fs.writeFile(path.join(SNAPSHOTS_DIR, fileName), snapshot);
-        console.log(`Recorded snapshot for ${route} as ${role}`);
-      }
-    }
+    // const routes = await getBaseRoutes();
 
-    const reportRoutes = await getReportRoutesForTestPlanVersions();
-    for (const route of reportRoutes) {
-      const snapshot = await takeSnapshot(browser, 'admin', route);
-      const fileName = `${route.replace(/\//g, '_')}.html`;
-      await fs.writeFile(path.join(SNAPSHOTS_DIR, fileName), snapshot);
-      console.log(`Recorded snapshot for ${route}`);
-    }
+    // for (const role of ['admin', 'tester', false]) {
+    //   for (const route of routes) {
+    //     const snapshot = await takeSnapshot(browser, role, route);
+    //     const fileName = `${route.replace(/\//g, '_')}_${
+    //       role ? role : ''
+    //     }.html`;
+    //     await fs.writeFile(path.join(SNAPSHOTS_DIR, fileName), snapshot);
+    //     console.log(`Recorded snapshot for ${route} as ${role}`);
+    //   }
+    // }
 
-    const dataManagementRoutes = await getDataManagementRoutes();
-    for (const route of dataManagementRoutes) {
+    // const reportRoutes = await getReportRoutesForTestPlanVersions();
+    // for (const route of reportRoutes) {
+    //   const snapshot = await takeSnapshot(browser, 'admin', route);
+    //   const fileName = `${route.replace(/\//g, '_')}.html`;
+    //   await fs.writeFile(path.join(SNAPSHOTS_DIR, fileName), snapshot);
+    //   console.log(`Recorded snapshot for ${route}`);
+    // }
+
+    // const dataManagementRoutes = await getDataManagementRoutes();
+    // for (const route of dataManagementRoutes) {
+    //   const snapshot = await takeSnapshot(browser, 'admin', route);
+    //   const fileName = `${route.replace(/\//g, '_')}.html`;
+    //   await fs.writeFile(path.join(SNAPSHOTS_DIR, fileName), snapshot);
+    //   console.log(`Recorded snapshot for ${route}`);
+    // }
+
+    // const runRoutes = await getRunRoutes();
+    // for (const route of runRoutes) {
+    //   const snapshot = await takeSnapshot(browser, 'admin', route);
+    //   const fileName = `${route.replace(/\//g, '_')}.html`;
+    //   await fs.writeFile(path.join(SNAPSHOTS_DIR, fileName), snapshot);
+    //   console.log(`Recorded snapshot for ${route}`);
+    // }
+
+    // const testReviewRoutes = await getTestReviewRoutes();
+    // for (const route of testReviewRoutes) {
+    //   try {
+    //     const snapshot = await takeSnapshot(browser, 'admin', route);
+    //     const fileName = `${route.replace(/\//g, '_')}.html`;
+    //     await fs.writeFile(path.join(SNAPSHOTS_DIR, fileName), snapshot);
+    //     console.log(`Recorded snapshot for ${route}`);
+    //   } catch (error) {
+    //     console.warn(`Failed to take snapshot for ${route}`, error);
+    //     continue;
+    //   }
+    // }
+
+    const candidateTestPlanRoutes = getCandidateTestPlanRoutes();
+    for (const route of candidateTestPlanRoutes) {
       const snapshot = await takeSnapshot(browser, 'admin', route);
       const fileName = `${route.replace(/\//g, '_')}.html`;
       await fs.writeFile(path.join(SNAPSHOTS_DIR, fileName), snapshot);
       console.log(`Recorded snapshot for ${route}`);
     }
   } catch (e) {
-    console.error(e);
-    process.exit(1);
+    console.error('Error during snapshot taking:', e);
   } finally {
-    await teardown();
-    process.exit(0);
+    await shutdown();
   }
 }
 
