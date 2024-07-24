@@ -1,4 +1,5 @@
 const convertAssertionPriority = require('./convertAssertionPriority');
+const { calculatePercentage, trimDecimals } = require('./calculations');
 
 const sum = arr => arr?.reduce((total, item) => total + item, 0) || 0;
 
@@ -257,9 +258,11 @@ const getMetrics = ({
     supportLevel = 'FULL';
   }
 
-  const supportPercent = Math.round(
-    (mustAssertionsPassedCount / mustAssertionsCount) * 100
+  const percentage = calculatePercentage(
+    mustAssertionsPassedCount + shouldAssertionsPassedCount,
+    mustAssertionsCount + shouldAssertionsCount
   );
+  const supportPercent = trimDecimals(percentage);
 
   const assertionsPassedCount =
     mustAssertionsPassedCount +
