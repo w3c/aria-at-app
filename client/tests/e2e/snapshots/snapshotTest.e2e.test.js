@@ -7,7 +7,7 @@ import {
 } from './utils';
 import getPage from '../../util/getPage';
 
-const SNAPSHOTS_DIR = path.join(__dirname, 'snapshots');
+const SNAPSHOTS_DIR = path.join(__dirname, 'saved');
 
 describe('Snapshot Comparison', () => {
   snapshotRoutes.forEach(route => {

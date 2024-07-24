@@ -9,7 +9,7 @@ const {
   routeToSnapshotFilename
 } = require('./utils');
 
-const SNAPSHOTS_DIR = path.join(__dirname, 'snapshots');
+const SNAPSHOTS_DIR = path.join(__dirname, 'saved');
 
 async function takeSnapshot(browser, role, route) {
   console.log(`Taking snapshot for ${route}`);
