@@ -46,11 +46,32 @@ const countAssertions = ({
     if (isClient) {
       all = scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] || [];
     } else {
-      all = scenarioResult.assertionResults.filter(
-        a =>
+      all = scenarioResult.assertionResults.filter(a => {
+        // Same as `server/resolvers/ScenarioResult/assertionResultsResolver.js`
+        if (a.assertion?.assertionExceptions?.length) {
+          const scenarioSettings = scenarioResult.scenario.settings;
+          const scenarioCommandId =
+            scenarioResult.scenario.commandIds.join(' ');
+
+          const foundException = a.assertion.assertionExceptions.find(
+            exception =>
+              exception.settings === scenarioSettings &&
+              exception.commandId === scenarioCommandId
+          );
+
+          if (foundException) {
+            return (
+              convertAssertionPriority(foundException.priority) ===
+              convertAssertionPriority(priority)
+            );
+          }
+        }
+
+        return (
           convertAssertionPriority(a.assertion.priority) ===
           convertAssertionPriority(priority)
-      );
+        );
+      });
     }
     if (passedOnly) return all.filter(each => each.passed).length;
     return all.length;
