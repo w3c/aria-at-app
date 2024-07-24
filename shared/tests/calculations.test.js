@@ -3,7 +3,7 @@ const { calculatePercentage, trimDecimals } = require('../calculations');
 describe('Verify calculatePercentage usage', () => {
   it('should throw error if total value is 0', () => {
     expect(() => {
-      calculatePercentage(25, 0);
+      calculatePercentage(25, 0, { ignoreError: false });
     }).toThrow();
   });
 

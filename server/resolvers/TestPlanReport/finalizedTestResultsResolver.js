@@ -8,6 +8,9 @@ const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
   // Return the primary test plan run, otherwise pick the first TestPlanRun found.
   const testPlanRun =
     testPlanReport.testPlanRuns.find(({ isPrimary }) => isPrimary) ||
+    testPlanReport.testPlanRuns.find(testPlanRun =>
+      testPlanRun.testResults?.some(testResult => !!testResult.completedAt)
+    ) ||
     testPlanReport.testPlanRuns[0];
 
   return testResultsResolver(

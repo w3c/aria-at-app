@@ -1,5 +1,11 @@
-const calculatePercentage = (value, total) => {
-  if (total === 0) {
+/**
+ * @param {number} value
+ * @param {number} total
+ * @param {boolean} ignoreError - to account for cases where having a NaN is "expected"
+ * @returns {number}
+ */
+const calculatePercentage = (value, total, { ignoreError = true } = {}) => {
+  if (!ignoreError && total === 0) {
     throw new Error("Unable to divide. 'total' cannot be 0.");
   }
   return (value / total) * 100;
