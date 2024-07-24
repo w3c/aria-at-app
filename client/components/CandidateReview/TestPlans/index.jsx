@@ -20,7 +20,7 @@ import {
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
 import { convertDateToString } from '@client/utils/formatter';
 import './TestPlans.css';
-import { calculatePercentage, trimDecimals } from '@/shared/calculations';
+import { calculations } from 'shared';
 
 const FullHeightContainer = styled(Container)`
   min-height: calc(100vh - 64px);
@@ -487,7 +487,7 @@ const TestPlans = ({ testPlanVersions }) => {
                         obj.mustAssertionsFailedCount,
                       0
                     ),
-                    totalSupportPercent: trimDecimals(
+                    totalSupportPercent: calculations.trimDecimals(
                       allMetrics.reduce(
                         (acc, obj) => acc + obj.supportPercent,
                         0
