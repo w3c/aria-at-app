@@ -1,7 +1,7 @@
 const getMetrics = require('../getMetrics');
 const { calculatePercentage, trimDecimals } = require('../calculations');
 // eslint-disable-next-line jest/no-mocks-import
-const testPlanReport = require('./__mocks__/testPlanReportForMetrics.json');
+const testPlanReport = require('./__mocks__/testPlanReportForMetricsFromLiveData.json');
 
 const generateRandomNumber = (max, min = 1) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
