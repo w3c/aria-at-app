@@ -47,7 +47,6 @@ const generateTestPlanReport = () => {
       let scenario = {
         commands: []
       };
-      let assertionResults = [];
       let mustAssertionResults = [];
       let shouldAssertionResults = [];
       let mayAssertionResults = [];
@@ -101,12 +100,6 @@ const generateTestPlanReport = () => {
         mayAssertionResults.push(assertion);
       }
 
-      assertionResults = [
-        ...mustAssertionResults,
-        ...shouldAssertionResults,
-        ...mayAssertionResults
-      ];
-
       const unexpectedBehaviorsLength = generateRandomNumber(2, 0);
       unexpectedBehaviorCount += unexpectedBehaviorsLength;
       for (
@@ -126,6 +119,12 @@ const generateTestPlanReport = () => {
         severeImpactFailedAssertionCount++;
       if (unexpectedBehaviors.some(({ impact }) => impact === 'MODERATE'))
         moderateImpactFailedAssertionCount++;
+
+      const assertionResults = [
+        ...mustAssertionResults,
+        ...shouldAssertionResults,
+        ...mayAssertionResults
+      ];
 
       const scenarioResult = {
         id: scenarioResultId,
