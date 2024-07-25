@@ -32,10 +32,10 @@ async function cleanAndNormalizeSnapshot(page) {
       elements.forEach(el => {
         const text = el.textContent.trim();
         if (
-          text.includes('Target') ||
-          text.includes('Days Past') ||
-          text.includes('Review Completed') ||
-          text.includes('Target Completion Date') ||
+          // text.includes('Target') ||
+          // text.includes('Days Past') ||
+          // text.includes('Review Completed') ||
+          // text.includes('Target Completion Date') ||
           text.includes('Ready for Review') ||
           text.includes('Review in Progress') ||
           text.match(/\w{3} \d{1,2}, \d{4}/)
@@ -46,7 +46,7 @@ async function cleanAndNormalizeSnapshot(page) {
     }
 
     removeElements('span, p.review-text, span.review-complete, div.info-label');
-    removeElements('td > i');
+    // removeElements('td > i');
     removeElements('.ready-for-review, .in-progress');
   });
 
@@ -58,12 +58,12 @@ async function cleanAndNormalizeSnapshot(page) {
     ''
   );
 
-  // Remove href and version number on data management page
-  // Addresses inconsistent links and date -> version number
-  cleanedContent = cleanedContent.replace(
-    /<span[^>]*class="[^"]*full-width[^"]*"[^>]*>\s*<a href="\/test-review\/\d+">\s*<span>\s*<svg[\s\S]*?<\/svg>\s*<b>V\d+\.\d+\.\d+(?:-\d+)?<\/b>\s*<\/span>\s*<\/a>\s*<\/span>/g,
-    '<span class="full-width"><a><span><svg>...</svg><b>VERSION_REMOVED</b></span></a></span>'
-  );
+  // // Remove href and version number on data management page
+  // // Addresses inconsistent links and date -> version number
+  // cleanedContent = cleanedContent.replace(
+  //   /<span[^>]*class="[^"]*full-width[^"]*"[^>]*>\s*<a href="\/test-review\/\d+">\s*<span>\s*<svg[\s\S]*?<\/svg>\s*<b>V\d+\.\d+\.\d+(?:-\d+)?<\/b>\s*<\/span>\s*<\/a>\s*<\/span>/g,
+  //   '<span class="full-width"><a><span><svg>...</svg><b>VERSION_REMOVED</b></span></a></span>'
+  // );
 
   // Strip out randomly generated IDs
   cleanedContent = cleanedContent.replace(
