@@ -58,6 +58,13 @@ async function cleanAndNormalizeSnapshot(page) {
     ''
   );
 
+  // Remove href and version number on data management page
+  // Addresses inconsistent links and date -> version number
+  cleanedContent = cleanedContent.replace(
+    /<span[^>]*class="[^"]*full-width[^"]*"[^>]*>\s*<a href="\/test-review\/\d+">\s*<span>\s*<svg[\s\S]*?<\/svg>\s*<b>V\d+\.\d+\.\d+(?:-\d+)?<\/b>\s*<\/span>\s*<\/a>\s*<\/span>/g,
+    '<span class="full-width"><a><span><svg>...</svg><b>VERSION_REMOVED</b></span></a></span>'
+  );
+
   // Strip out randomly generated IDs
   cleanedContent = cleanedContent.replace(
     /id="react-aria\d+-:r[0-9a-z]+:"/g,
