@@ -25,7 +25,8 @@ async function cleanAndNormalizeSnapshot(page) {
     stylesToRemove.forEach(el => el.remove());
   });
 
-  // Remove elements with Date or status content that might differ between local and CI
+  // Remove elements with ready for review and in progress statuses
+  // These can change on multiple viewings
   await page.evaluate(() => {
     function removeElements(selector) {
       const elements = document.querySelectorAll(selector);
@@ -33,15 +34,13 @@ async function cleanAndNormalizeSnapshot(page) {
         const text = el.textContent.trim();
         if (
           text.includes('Ready for Review') ||
-          text.includes('Review in Progress') ||
-          text.match(/\w{3} \d{1,2}, \d{4}/)
+          text.includes('Review in Progress')
         ) {
           el.remove();
         }
       });
     }
 
-    removeElements('span, p.review-text, span.review-complete, div.info-label');
     removeElements('.ready-for-review, .in-progress');
   });
 
@@ -56,12 +55,6 @@ async function cleanAndNormalizeSnapshot(page) {
   // Strip out randomly generated IDs
   cleanedContent = cleanedContent.replace(
     /id="react-aria\d+-:r[0-9a-z]+:"/g,
-    ''
-  );
-
-  // Remove review completed span
-  cleanedContent = cleanedContent.replace(
-    /<span[^>]*class="review-complete"[^>]*>.*?<\/span>/g,
     ''
   );
 
