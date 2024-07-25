@@ -132,9 +132,7 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
                             `/report/${testPlanVersion.id}` +
                             `/targets/${testPlanReport.id}`
                           }
-                          aria-label={`${getTestPlanTargetTitle(
-                            testPlanTarget
-                          )}, ${metrics.supportPercent}% completed`}
+                          aria-label={`${metrics.supportPercent}%`}
                         >
                           <ClippedProgressBar
                             progress={metrics.supportPercent}
