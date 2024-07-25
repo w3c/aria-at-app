@@ -61,6 +61,7 @@ const generateTestPlanReport = () => {
       const mustLength = generateRandomNumber(4, 1);
       for (let mustIndex = 0; mustIndex < mustLength; mustIndex++) {
         mustAssertionsCount++;
+        // To increase the chance of having at least 1 passed MUST assertion
         const passed = Math.random() < 0.9;
         if (passed) mustAssertionsPassedCount++;
         else {
@@ -138,6 +139,7 @@ const generateTestPlanReport = () => {
       scenarioResults.push(scenarioResult);
     }
 
+    // Scenarios being equivalent to the amount of commands
     commandsCount += scenarioResults.length;
     if (isTestPassed) testsPassedCount++;
 
