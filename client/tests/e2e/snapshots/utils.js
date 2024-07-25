@@ -25,8 +25,9 @@ async function cleanAndNormalizeSnapshot(page) {
     stylesToRemove.forEach(el => el.remove());
   });
 
-  // Remove elements with ready for review and in progress statuses
-  // These can change on multiple viewings
+  // TODO: Investigate why "Ready for Review" and "Review in Progress" status
+  // is not rolled back by transaction management system in e2e testing,
+  // for now we will strip out the associated elements
   await page.evaluate(() => {
     function removeElements(selector) {
       const elements = document.querySelectorAll(selector);
@@ -46,7 +47,9 @@ async function cleanAndNormalizeSnapshot(page) {
 
   const content = await page.content();
 
-  // Strip out "Previously Viewed" badges and other dynamic content
+  // TODO: Investigate why "Previously Viewed" status is not rolled back by transaction
+  // management system in e2e testing, for now we will strip out the badges
+  // "Previously Viewed"
   let cleanedContent = content.replace(
     /<span[^>]*class="[^"]*viewed-badge[^"]*"[^>]*>Previously Viewed<\/span>/g,
     ''
