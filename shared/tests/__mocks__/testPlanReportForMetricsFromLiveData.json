@@ -1,0 +1,3053 @@
+{
+  "id": "242",
+  "runnableTests": [
+    {
+      "id": "NjRhMeyIyIjoiNzUzMjIifQzQ0OG"
+    },
+    {
+      "id": "MjE0ZeyIyIjoiNzUzMjIifQDE2YW"
+    },
+    {
+      "id": "MmUxYeyIyIjoiNzUzMjIifQWNmOW"
+    },
+    {
+      "id": "Y2EzOeyIyIjoiNzUzMjIifQTJkM2"
+    },
+    {
+      "id": "ZTAxOeyIyIjoiNzUzMjIifQDgwZj"
+    },
+    {
+      "id": "NjMzYeyIyIjoiNzUzMjIifQjc1YW"
+    },
+    {
+      "id": "OTRiZeyIyIjoiNzUzMjIifQDhkOG"
+    },
+    {
+      "id": "OWIyNeyIyIjoiNzUzMjIifQ2U4ZW"
+    },
+    {
+      "id": "NzJiNeyIyIjoiNzUzMjIifQjc1ND"
+    },
+    {
+      "id": "MjE3NeyIyIjoiNzUzMjIifQmQ3ZW"
+    },
+    {
+      "id": "ZjZjMeyIyIjoiNzUzMjIifQGFiOD"
+    },
+    {
+      "id": "NTgxYeyIyIjoiNzUzMjIifQTg1N2"
+    },
+    {
+      "id": "ZTMzNeyIyIjoiNzUzMjIifQTIzYW"
+    },
+    {
+      "id": "YzE1MeyIyIjoiNzUzMjIifQTg5MT"
+    },
+    {
+      "id": "MGY5MeyIyIjoiNzUzMjIifQmM5Ym"
+    }
+  ],
+  "finalizedTestResults": [
+    {
+      "id": "ODZiYeyIxMiI6NTU1fQjgyZm",
+      "scenarioResults": [
+        {
+          "id": "ZjFlZeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9jQ1M2",
+          "scenario": {
+            "commands": [
+              {
+                "id": "f"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "OTlkNeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9DM4Zm",
+          "scenario": {
+            "commands": [
+              {
+                "id": "a"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "M2NkNeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9TVjYj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "down"
+              },
+              {
+                "id": "down"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "ODhjZeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9DM3OG",
+          "scenario": {
+            "commands": [
+              {
+                "id": "tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NzdmZeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9jI1Nj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "MDVkZeyIxMiI6NTU1fQDY0Mm",
+      "scenarioResults": [
+        {
+          "id": "Y2NiOeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ9TRmZj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+f"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "YzcxNeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ9DdkMz",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+a"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "OTVjMeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ9DA3OT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "up"
+              },
+              {
+                "id": "up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "YTY5OeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ9DY3YT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "ZDEyYeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ92EwZD",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "ODk1NeyIxMiI6NTU1fQjYyMG",
+      "scenarioResults": [
+        {
+          "id": "YWJiOeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9GU5Nz",
+          "scenario": {
+            "commands": [
+              {
+                "id": "f"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "MDI0MeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9DE3OD",
+          "scenario": {
+            "commands": [
+              {
+                "id": "a"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NDJkMeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9jMxNj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "down"
+              },
+              {
+                "id": "down"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "ZWRhYeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9TdjMG",
+          "scenario": {
+            "commands": [
+              {
+                "id": "tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NWJlYeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9zcyYW",
+          "scenario": {
+            "commands": [
+              {
+                "id": "tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "Mzc5OeyIxMiI6NTU1fQTkzZD",
+      "scenarioResults": [
+        {
+          "id": "MDM3ZeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ9jlkNT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+f"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "MmY5MeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ92ExMG",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+a"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "OGNlOeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ9TdiNT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "up"
+              },
+              {
+                "id": "up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NWNmYeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ9zVkOT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NWE0MeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ9GUzND",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "ZjIyMeyIxMiI6NTU1fQzJkOD",
+      "scenarioResults": [
+        {
+          "id": "NTBiOeyIxMyI6IlpqSXlNZXlJeE1pSTZOVFUxZlF6SmtPRCJ9TQ4Nj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+u"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "passed": false
+            }
+          ],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "YWE4NeyIxMyI6IlpqSXlNZXlJeE1pSTZOVFUxZlF6SmtPRCJ9TY2YT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "up"
+              },
+              {
+                "id": "up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NjY3ZeyIxMyI6IlpqSXlNZXlJeE1pSTZOVFUxZlF6SmtPRCJ9mQ3ZT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "passed": false
+            }
+          ],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "YTVjYeyIxMyI6IlpqSXlNZXlJeE1pSTZOVFUxZlF6SmtPRCJ9mQxNT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "passed": false
+            }
+          ],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "ODdhOeyIxMiI6NTU1fQDI5NT",
+      "scenarioResults": [
+        {
+          "id": "ZTIyNeyIxMyI6Ik9EZGhPZXlJeE1pSTZOVFUxZlFESTVOVCJ9mI2OT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "u"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "passed": false
+            }
+          ],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "YzFjYeyIxMyI6Ik9EZGhPZXlJeE1pSTZOVFUxZlFESTVOVCJ9mM3NT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "down"
+              },
+              {
+                "id": "down"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "M2U2ZeyIxMyI6Ik9EZGhPZXlJeE1pSTZOVFUxZlFESTVOVCJ9TdjNG",
+          "scenario": {
+            "commands": [
+              {
+                "id": "tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "passed": false
+            }
+          ],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NzgxNeyIxMyI6Ik9EZGhPZXlJeE1pSTZOVFUxZlFESTVOVCJ92RiOG",
+          "scenario": {
+            "commands": [
+              {
+                "id": "tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "passed": false
+            }
+          ],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "MDBiNeyIxMiI6NTU1fQDMwMD",
+      "scenarioResults": [
+        {
+          "id": "MzgxZeyIxMyI6Ik1EQmlOZXlJeE1pSTZOVFUxZlFETXdNRCJ9WMyOT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "f"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NTFlZeyIxMyI6Ik1EQmlOZXlJeE1pSTZOVFUxZlFETXdNRCJ9TRlZj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "a"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "ZmJhMeyIxMyI6Ik1EQmlOZXlJeE1pSTZOVFUxZlFETXdNRCJ92VkMD",
+          "scenario": {
+            "commands": [
+              {
+                "id": "down"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "MDdhZeyIxMiI6NTU1fQDBlNz",
+      "scenarioResults": [
+        {
+          "id": "NGU1NeyIxMyI6Ik1EZGhaZXlJeE1pSTZOVFUxZlFEQmxOeiJ9zcxY2",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+f"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "ODY2ZeyIxMyI6Ik1EZGhaZXlJeE1pSTZOVFUxZlFEQmxOeiJ9GMwMW",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+a"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "MzQ1OeyIxMyI6Ik1EZGhaZXlJeE1pSTZOVFUxZlFEQmxOeiJ9TQyNT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "NTBlNeyIxMiI6NTU1fQjY0Ym",
+      "scenarioResults": [
+        {
+          "id": "NDlkYeyIxMyI6Ik5UQmxOZXlJeE1pSTZOVFUxZlFqWTBZbSJ9WI3Yz",
+          "scenario": {
+            "commands": [
+              {
+                "id": "f"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "YjA0NeyIxMyI6Ik5UQmxOZXlJeE1pSTZOVFUxZlFqWTBZbSJ9jRlMm",
+          "scenario": {
+            "commands": [
+              {
+                "id": "a"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "MDQ4ZeyIxMyI6Ik5UQmxOZXlJeE1pSTZOVFUxZlFqWTBZbSJ9jUxYm",
+          "scenario": {
+            "commands": [
+              {
+                "id": "down"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "NzkwYeyIxMiI6NTU1fQmUzYj",
+      "scenarioResults": [
+        {
+          "id": "OWM4ZeyIxMyI6Ik56a3dZZXlJeE1pSTZOVFUxZlFtVXpZaiJ9WJjNz",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+f"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "YTRjMeyIxMyI6Ik56a3dZZXlJeE1pSTZOVFUxZlFtVXpZaiJ9Tg4MD",
+          "scenario": {
+            "commands": [
+              {
+                "id": "shift+a"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "MTZmZeyIxMyI6Ik56a3dZZXlJeE1pSTZOVFUxZlFtVXpZaiJ9jdjYW",
+          "scenario": {
+            "commands": [
+              {
+                "id": "up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "YmIzMeyIxMiI6NTU1fQWVlOT",
+      "scenarioResults": [
+        {
+          "id": "ZjIwMeyIxMyI6IlltSXpNZXlJeE1pSTZOVFUxZlFXVmxPVCJ9DU1MT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "space"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "OTFjYeyIxMyI6IlltSXpNZXlJeE1pSTZOVFUxZlFXVmxPVCJ9zI1NG",
+          "scenario": {
+            "commands": [
+              {
+                "id": "enter"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "MzFiYeyIxMyI6IlltSXpNZXlJeE1pSTZOVFUxZlFXVmxPVCJ9jQ3Yj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "space"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "NTZkMeyIxMiI6NTU1fQzJhY2",
+      "scenarioResults": [
+        {
+          "id": "ZmE0ZeyIxMyI6Ik5UWmtNZXlJeE1pSTZOVFUxZlF6SmhZMiJ9jAxZD",
+          "scenario": {
+            "commands": [
+              {
+                "id": "down"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "ZjE3OeyIxMyI6Ik5UWmtNZXlJeE1pSTZOVFUxZlF6SmhZMiJ9WQxZj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "right"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "ZTQ3NeyIxMiI6NTU1fQzNjND",
+      "scenarioResults": [
+        {
+          "id": "YzJmOeyIxMyI6IlpUUTNOZXlJeE1pSTZOVFUxZlF6TmpORCJ9WQzYz",
+          "scenario": {
+            "commands": [
+              {
+                "id": "up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NzJiZeyIxMyI6IlpUUTNOZXlJeE1pSTZOVFUxZlF6TmpORCJ9GNlNj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "left"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "M2U1MeyIxMiI6NTU1fQzIyNz",
+      "scenarioResults": [
+        {
+          "id": "YzExMeyIxMyI6Ik0yVTFNZXlJeE1pSTZOVFUxZlF6SXlOeiJ92YwNm",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ins+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "Yjc1YeyIxMyI6Ik0yVTFNZXlJeE1pSTZOVFUxZlF6SXlOeiJ92VjYT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ins+up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "NDdmZeyIxMyI6Ik0yVTFNZXlJeE1pSTZOVFUxZlF6SXlOeiJ9jg3Yz",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ins+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "OGEwOeyIxMyI6Ik0yVTFNZXlJeE1pSTZOVFUxZlF6SXlOeiJ9WI3Yz",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ins+up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    },
+    {
+      "id": "YTFmZeyIxMiI6NTU1fQWFiZm",
+      "scenarioResults": [
+        {
+          "id": "MDhiNeyIxMyI6IllURm1aZXlJeE1pSTZOVFUxZlFXRmlabSJ9TY4Nm",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ins+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "ZGFmZeyIxMyI6IllURm1aZXlJeE1pSTZOVFUxZlFXRmlabSJ9Dk5Nj",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ins+up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "MDM0YeyIxMyI6IllURm1aZXlJeE1pSTZOVFUxZlFXRmlabSJ9mU4ND",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ins+tab"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "OWYzZeyIxMyI6IllURm1aZXlJeE1pSTZOVFUxZlFXRmlabSJ9jM0YT",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ins+up"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            }
+          ],
+          "shouldAssertionResults": [
+            {
+              "passed": true
+            },
+            {
+              "passed": true
+            },
+            {
+              "passed": false
+            },
+            {
+              "passed": false
+            }
+          ],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        }
+      ]
+    }
+  ]
+}

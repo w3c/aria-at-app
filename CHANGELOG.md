@@ -1,3 +1,20 @@
+## [1.6.0](https://github.com/w3c/aria-at-app/compare/v1.5.0...v1.6.0) (2024-07-29)
+
+
+### Features
+
+* permit automated testing for firefox and chrome with voiceover ([#1170](https://github.com/w3c/aria-at-app/issues/1170)) ([9c73ab5](https://github.com/w3c/aria-at-app/commit/9c73ab516ac8f6bfbc0138191351ce84d680c732))
+
+
+### Bug Fixes
+
+* Update metrics calculations and related UI components ([#1172](https://github.com/w3c/aria-at-app/issues/1172)) ([e4242bc](https://github.com/w3c/aria-at-app/commit/e4242bcb38eec20eb50794f96c0bc8ae9a5aba97))
+
+
+### Reverts
+
+* revert accidental commit directly to develop ([d1c409c](https://github.com/w3c/aria-at-app/commit/d1c409c6f33005467f426771593c2c7eb00eef9b))
+
 ## [1.5.0](https://github.com/w3c/aria-at-app/compare/v1.4.0...v1.5.0) (2024-07-22)
 
 

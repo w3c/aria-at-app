@@ -19,10 +19,13 @@ export const isSupportedByResponseCollector = ctx => {
   // Check if the AT and browser are supported by the automation
   const isNvdaWithSupportedBrowser =
     atKey === 'nvda' && (browserKey === 'chrome' || browserKey === 'firefox');
-  const isVoiceOverMacWithSafari =
-    atKey === 'voiceover_macos' && browserKey === 'safari_macos';
+  const isVoiceOverMacWithSupportedBrowser =
+    atKey === 'voiceover_macos' &&
+    (browserKey === 'safari_macos' ||
+      browserKey === 'chrome' ||
+      browserKey === 'firefox');
 
-  if (!isNvdaWithSupportedBrowser && !isVoiceOverMacWithSafari) {
+  if (!isNvdaWithSupportedBrowser && !isVoiceOverMacWithSupportedBrowser) {
     return false;
   }
 
@@ -89,7 +92,12 @@ export const getBotUsernameFromAtBrowser = (at, browser) => {
   ) {
     return 'NVDA Bot';
   }
-  if (at?.key === 'voiceover_macos' && browser?.key === 'safari_macos') {
+  if (
+    at?.key === 'voiceover_macos' &&
+    (browser?.key === 'safari_macos' ||
+      browser?.key === 'chrome' ||
+      browser?.key === 'firefox')
+  ) {
     return 'VoiceOver Bot';
   }
 };

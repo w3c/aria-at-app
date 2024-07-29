@@ -166,7 +166,8 @@ function AddTestToQueueWithConfirmation({
           } catch (e) {
             console.error(e);
           }
-        }
+        },
+        testId: 'add-run-later'
       });
 
       if (!alreadyHasBotInTestPlanReport) {
@@ -186,7 +187,8 @@ function AddTestToQueueWithConfirmation({
             } catch (e) {
               console.error(e);
             }
-          }
+          },
+          testId: 'add-run-bot'
         });
       }
     }
