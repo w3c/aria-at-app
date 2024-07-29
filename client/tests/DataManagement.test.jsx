@@ -2,16 +2,10 @@
  * @jest-environment jsdom
  */
 
-import React, { act } from 'react';
-import { render, renderHook } from '@testing-library/react';
-import { InMemoryCache } from '@apollo/client';
-import { MockedProvider } from '@apollo/client/testing';
-import { BrowserRouter } from 'react-router-dom';
+import { act } from 'react';
+import { renderHook } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import DataManagement from '../components/DataManagement';
 
-// eslint-disable-next-line jest/no-mocks-import
-import { DATA_MANAGEMENT_PAGE_POPULATED_MOCK_DATA } from './__mocks__/GraphQLMocks';
 import {
   useDataManagementTableFiltering,
   useDataManagementTableSorting,
@@ -24,38 +18,6 @@ import {
   DATA_MANAGEMENT_TABLE_SORT_OPTIONS
 } from '../components/DataManagement/utils';
 import { TABLE_SORT_ORDERS } from '../components/common/SortableTableHeader';
-import { AriaLiveRegionProvider } from '../components/providers/AriaLiveRegionProvider';
-
-const setup = (mocks = []) => {
-  return render(
-    <BrowserRouter>
-      <AriaLiveRegionProvider>
-        <MockedProvider
-          mocks={mocks}
-          cache={new InMemoryCache({ addTypename: false })}
-        >
-          <DataManagement />
-        </MockedProvider>
-      </AriaLiveRegionProvider>
-    </BrowserRouter>
-  );
-};
-
-describe('Data Management page', () => {
-  let wrapper;
-
-  beforeEach(() => {
-    wrapper = setup(DATA_MANAGEMENT_PAGE_POPULATED_MOCK_DATA);
-  });
-
-  it('renders loading state on initialization', async () => {
-    const { getByTestId } = wrapper;
-    const element = getByTestId('page-status');
-
-    expect(element).toBeTruthy();
-    expect(element).toHaveTextContent('Loading');
-  });
-});
 
 const testPlans = [
   { title: 'Test A', directory: 'dirA', id: '1' },

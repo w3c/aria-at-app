@@ -20,6 +20,7 @@ import {
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
 import { convertDateToString } from '@client/utils/formatter';
 import './TestPlans.css';
+import { calculations } from 'shared';
 
 const FullHeightContainer = styled(Container)`
   min-height: calc(100vh - 64px);
@@ -486,13 +487,12 @@ const TestPlans = ({ testPlanVersions }) => {
                         obj.mustAssertionsFailedCount,
                       0
                     ),
-                    totalSupportPercent:
-                      Math.round(
-                        allMetrics.reduce(
-                          (acc, obj) => acc + obj.supportPercent,
-                          0
-                        ) / allMetrics.length
-                      ) || 0
+                    totalSupportPercent: calculations.trimDecimals(
+                      allMetrics.reduce(
+                        (acc, obj) => acc + obj.supportPercent,
+                        0
+                      ) / allMetrics.length
+                    )
                   };
 
                   // Make sure issues are unique
@@ -550,10 +550,10 @@ const TestPlans = ({ testPlanVersions }) => {
                         <CenteredTd>
                           <Link
                             to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                            aria-label={`${metrics.totalSupportPercent}%`}
                           >
                             <ClippedProgressBar
                               progress={metrics.totalSupportPercent}
-                              label={`${metrics.totalSupportPercent}% completed`}
                               clipped
                             />
                           </Link>

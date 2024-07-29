@@ -61,6 +61,7 @@ const BasicModal = ({
           variant={action.variant ?? 'primary'}
           onClick={action.onClick}
           className={action.className ?? ''}
+          data-testid={action.testId ?? ''}
         >
           {action.label ?? 'Continue'}
         </Button>
@@ -138,6 +139,7 @@ BasicModal.propTypes = {
       onClick: PropTypes.func,
       variant: PropTypes.string,
       className: PropTypes.string,
+      testId: PropTypes.string,
       component: PropTypes.elementType,
       props: PropTypes.object
     })

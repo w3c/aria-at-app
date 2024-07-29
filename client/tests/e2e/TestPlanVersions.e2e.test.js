@@ -13,8 +13,6 @@ describe('Versions page for pattern with highest report being recommended', () =
       }
     );
   });
-
-  // TODO: Additional tests
 });
 
 describe('Versions page for pattern with highest report being candidate', () => {
@@ -29,8 +27,6 @@ describe('Versions page for pattern with highest report being candidate', () => 
       }
     );
   });
-
-  // TODO: Additional tests
 });
 
 describe('Versions page for pattern with highest report being draft', () => {
@@ -42,8 +38,6 @@ describe('Versions page for pattern with highest report being draft', () => {
       }
     );
   });
-
-  // TODO: Additional tests
 });
 
 describe('Versions page for pattern with highest report being R&D', () => {
@@ -55,6 +49,4 @@ describe('Versions page for pattern with highest report being R&D', () => {
       }
     );
   });
-
-  // TODO: Additional tests
 });
