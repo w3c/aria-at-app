@@ -61,6 +61,7 @@ const BasicModal = ({
           variant={action.variant ?? 'primary'}
           onClick={action.onClick}
           className={action.className ?? ''}
+          data-testid={action.testId ?? ''}
         >
           {action.label ?? 'Continue'}
         </Button>
@@ -79,8 +80,8 @@ const BasicModal = ({
         id={`focus-trapped-${id}`}
         centered={centered}
         animation={animation}
-        onHide={useOnHide ? handleHide || handleClose : null}
-        onExit={!useOnHide ? handleHide || handleClose : null}
+        onHide={useOnHide ? handleHide || handleClose : () => {}}
+        onExit={!useOnHide ? handleHide || handleClose : () => {}}
         /* Disabled due to buggy implementation which jumps the page */
         autoFocus={false}
         aria-labelledby={`title-${id}`}
@@ -138,6 +139,7 @@ BasicModal.propTypes = {
       onClick: PropTypes.func,
       variant: PropTypes.string,
       className: PropTypes.string,
+      testId: PropTypes.string,
       component: PropTypes.elementType,
       props: PropTypes.object
     })
