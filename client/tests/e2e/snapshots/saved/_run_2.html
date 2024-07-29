@@ -293,7 +293,7 @@
             <main id="main" tabindex="-1" class="main-test-area col">
               <div class="row">
                 <div class="col">
-                  <h1 data-test="testing-task" tabindex="-1">
+                  <h1 data-testid="testing-task" tabindex="-1">
                     <span class="task-label">Test 1:</span>Navigate forwards to
                     a collapsed select-only combobox in reading mode
                   </h1>
@@ -301,14 +301,14 @@
                     ><div class="test-info-wrapper">
                       <div
                         class="test-info-entity apg-example-name"
-                        data-test="apg-example-name">
+                        data-testid="apg-example-name">
                         <div class="info-label">
                           <b>Test Plan:</b> Select Only Combobox Example
                         </div>
                       </div>
                       <div
                         class="test-info-entity at-browser"
-                        data-test="at-browser">
+                        data-testid="at-browser">
                         <div class="at-browser-row">
                           <div class="info-label"><b>AT:</b> NVDA 2020.4</div>
                           <div class="info-label">
@@ -843,7 +843,10 @@
                     >Assistive Technology Version<span
                       aria-hidden="true"
                       class="css-93f3j7"></span></label
-                  ><select required="" class="form-select">
+                  ><select
+                    required=""
+                    data-testid="at-browser-modal-select"
+                    class="form-select">
                     <option value="Select a Version" disabled="">
                       Select a Version
                     </option>
@@ -892,6 +895,7 @@
                       class="css-93f3j7"></span></label
                   ><input
                     required=""
+                    data-testid="at-browser-modal-input"
                     type="text"
                     class="form-control"
                     value="99" />
