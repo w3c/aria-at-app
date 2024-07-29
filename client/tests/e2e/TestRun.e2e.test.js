@@ -330,27 +330,22 @@ describe('Test Run when signed in as tester', () => {
   });
 
   it('opens popup with content after clicking "Open Test Page" button', async () => {
-    await getPage(
-      { role: 'tester', url: '/test-queue' },
-      async (page, { browser }) => {
-        await assignSelfAndNavigateToRun(page);
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
 
-        const openTestPageButtonSelector = 'button ::-p-text(Open Test Page)';
-        await page.waitForSelector(openTestPageButtonSelector);
-        await page.click(openTestPageButtonSelector);
+      // Confirm open test page works
+      const openTestPageButtonSelector = 'button ::-p-text(Open Test Page)';
+      await page.click(openTestPageButtonSelector);
 
-        const popupTarget = await new Promise(resolve =>
-          browser.once('targetcreated', resolve)
-        );
+      const popupTarget = await new Promise(resolve =>
+        page.browser().once('targetcreated', resolve)
+      );
 
-        // Allow additional time for popup to open
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        const popupPage = await popupTarget.page();
+      // Allow additional time for popup to open
+      const popupPage = await popupTarget.page();
 
-        // Check for 'Run Test Setup' button
-        await popupPage.waitForSelector('button ::-p-text(Run Test Setup)');
-        await popupPage.close();
-      }
-    );
+      // Check for 'Run Test Setup' button
+      await popupPage.waitForSelector('button ::-p-text(Run Test Setup)');
+    });
   });
 });

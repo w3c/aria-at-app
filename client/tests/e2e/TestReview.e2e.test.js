@@ -2,11 +2,7 @@ import getPage from '../util/getPage';
 import { text } from './util';
 
 describe('Test Review page', () => {
-  const getReviewPageElements = async (
-    page,
-    browser,
-    { isV2 = false } = {}
-  ) => {
+  const getReviewPageElements = async (page, { isV2 = false } = {}) => {
     await text(page, 'h2 ::-p-text(About This Test Plan)');
     await text(page, 'h2 ::-p-text(Supporting Documentation)');
     await text(page, 'h2 ::-p-text(Tests)');
@@ -30,46 +26,37 @@ describe('Test Review page', () => {
 
     // Confirm open test page works
     const openTestPageButtonSelector = 'button ::-p-text(Open Test Page)';
-    await page.waitForSelector(openTestPageButtonSelector);
     await page.click(openTestPageButtonSelector);
 
     const popupTarget = await new Promise(resolve =>
-      browser.once('targetcreated', resolve)
+      page.browser().once('targetcreated', resolve)
     );
 
     // Allow additional time for popup to open
-    await new Promise(resolve => setTimeout(resolve, 5000));
     const popupPage = await popupTarget.page();
 
     // Check for 'Run Test Setup' button
     await popupPage.waitForSelector('button ::-p-text(Run Test Setup)');
-    await popupPage.close();
   };
 
   it('renders page for review page before test format v2', async () => {
-    await getPage(
-      { role: false, url: '/test-review/1' },
-      async (page, { browser }) => {
-        await text(
-          page,
-          'h1 ::-p-text(Alert Example Test Plan V22.04.14 (Deprecated))'
-        );
-        await getReviewPageElements(page, browser);
-      }
-    );
+    await getPage({ role: false, url: '/test-review/1' }, async page => {
+      await text(
+        page,
+        'h1 ::-p-text(Alert Example Test Plan V22.04.14 (Deprecated))'
+      );
+      await getReviewPageElements(page);
+    });
   });
 
   it('renders page for review page after test format v2', async () => {
-    await getPage(
-      { role: false, url: '/test-review/65' },
-      async (page, { browser }) => {
-        await text(
-          page,
-          'h1 ::-p-text(Alert Example Test Plan V23.12.06 (Deprecated))'
-        );
-        await getReviewPageElements(page, browser, { isV2: true });
-      }
-    );
+    await getPage({ role: false, url: '/test-review/65' }, async page => {
+      await text(
+        page,
+        'h1 ::-p-text(Alert Example Test Plan V23.12.06 (Deprecated))'
+      );
+      await getReviewPageElements(page, { isV2: true });
+    });
   });
 
   it('opens latest review page for pattern from /data-management', async () => {
@@ -78,7 +65,7 @@ describe('Test Review page', () => {
         role: false,
         url: '/data-management'
       },
-      async (page, { browser }) => {
+      async page => {
         await text(page, 'h1 ::-p-text(Data Management)');
 
         const latestAlertVersionLink = await page.evaluateHandle(() => {
@@ -106,7 +93,7 @@ describe('Test Review page', () => {
           page,
           `h1 ::-p-text(Alert Example Test Plan ${latestAlertVersionLinkText})`
         );
-        await getReviewPageElements(page, browser, { isV2: true });
+        await getReviewPageElements(page, { isV2: true });
       }
     );
   });
