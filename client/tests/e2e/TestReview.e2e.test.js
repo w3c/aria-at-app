@@ -36,8 +36,9 @@ describe('Test Review page', () => {
     const popupTarget = await new Promise(resolve =>
       browser.once('targetcreated', resolve)
     );
+
     // Allow additional time for popup to open
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 5000));
     const popupPage = await popupTarget.page();
 
     // Check for 'Run Test Setup' button
