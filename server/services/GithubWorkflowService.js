@@ -154,6 +154,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
     // due to limitations on Github workflow runners
     // See https://github.com/w3c/aria-at-app/issues/1143 for more info
     inputs.macos_version = atVersion?.name?.split('.')[0];
+    inputs.browser = browser;
   }
   const axiosConfig = {
     method: 'POST',
