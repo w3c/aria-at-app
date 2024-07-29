@@ -346,6 +346,7 @@ const AtAndBrowserDetailsModal = ({
                         onChange={handleAtVersionChange}
                         isInvalid={isAtVersionError}
                         required
+                        data-testid="at-browser-modal-select"
                       >
                         {['Select a Version', ...atVersions].map(item => (
                           <option
@@ -545,6 +546,7 @@ const AtAndBrowserDetailsModal = ({
                     onChange={handleBrowserVersionChange}
                     isInvalid={isBrowserVersionError}
                     required
+                    data-testid="at-browser-modal-input"
                   />
                   {isBrowserVersionError && (
                     <Form.Control.Feedback
