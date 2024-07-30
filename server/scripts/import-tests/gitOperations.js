@@ -3,7 +3,7 @@
 const spawn = require('cross-spawn');
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-const ariaAtDefaultBranch = 'master';
+const ariaAtDefaultBranch = 'assertion-verdict-radio-buttons';
 
 /**
  * Executes a git command and returns its output.
