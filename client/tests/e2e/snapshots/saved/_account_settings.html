@@ -75,9 +75,9 @@
       </div>
       <div class="container-fluid">
         <main id="main" tabindex="-1" class="container">
-          <div data-test="user-settings-contents" class="container-fluid">
+          <div class="container-fluid">
             <h1>Settings</h1>
-            <section data-test="user-settings-authorized">
+            <section>
               <h2>User Details</h2>
               <p>
                 <a
@@ -89,17 +89,16 @@
               </p>
               <h2>Assistive Technology Settings</h2>
               <div aria-atomic="true" aria-live="polite">
-                <p>
-                  You currently are not configured to run any assistive
-                  technologies.
+                <p data-testid="testable-ats-status">
+                  You have not yet selected any assistive technologies.
                 </p>
               </div>
               <p>
-                Submit the form below to update the assistive technologies you
-                can test:
+                Update the assistive technologies you can test by selecting from
+                the options below:
               </p>
               <form class="">
-                <h3 id="at-group-label">ATs</h3>
+                <h3 id="at-group-label">Assistive Technologies</h3>
                 <div role="group" aria-labelledby="at-group-label">
                   <div class="form-check">
                     <input

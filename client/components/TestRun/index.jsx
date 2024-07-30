@@ -992,7 +992,7 @@ const TestRun = () => {
 
     return (
       <>
-        <h1 ref={titleRef} data-test="testing-task" tabIndex={-1}>
+        <h1 ref={titleRef} data-testid="testing-task" tabIndex={-1}>
           <span className="task-label">Test {currentTest.seq}:</span>
           {currentTest.title}
         </h1>
