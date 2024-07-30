@@ -36,7 +36,6 @@ const getAtVersionWithRequirements = async (
     const latestSupportedAtVersion = matchingAtVersions.find(async atv => {
       // supportedByAutomation is a computed graphql field,
       // so we need to compute directly here
-      await atv.supportedByAutomation;
       return atv.supportedByAutomation;
     });
 
