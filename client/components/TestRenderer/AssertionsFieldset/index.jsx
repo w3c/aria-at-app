@@ -31,7 +31,7 @@ const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
       {assertions.map((assertion, assertionIndex) => {
         const { description, passed, click } = assertion;
         return (
-          <Fieldset key={`AssertionKey_${assertionIndex}`}>
+          <Fieldset key={`AssertionKey_${commandIndex}_${assertionIndex}`}>
             <legend>{description[0]}</legend>
             <Label>
               <input
@@ -40,6 +40,7 @@ const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
                 name={`assertion-${commandIndex}-${assertionIndex}`}
                 checked={passed === true}
                 onChange={() => click(true)}
+                data-testid={`radio-yes-${commandIndex}-${assertionIndex}`}
               />
               Yes
             </Label>
@@ -50,6 +51,7 @@ const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
                 name={`assertion-${commandIndex}-${assertionIndex}`}
                 checked={passed === false}
                 onChange={() => click(false)}
+                data-testid={`radio-no-${commandIndex}-${assertionIndex}`}
               />
               No
             </Label>
