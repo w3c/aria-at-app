@@ -1,6 +1,17 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  AT_VERSION_FIELDS,
+  BROWSER_FIELDS,
+  BROWSER_VERSION_FIELDS,
+  SCENARIO_RESULT_FIELDS,
+  TEST_FIELDS,
+  TEST_RESULT_FIELDS
+} from '@components/common/fragments';
 
 export const REPORTS_PAGE_QUERY = gql`
+  ${AT_FIELDS}
+  ${BROWSER_FIELDS}
   query ReportsPageQuery {
     testPlanVersions(phases: [CANDIDATE, RECOMMENDED]) {
       id
@@ -8,20 +19,19 @@ export const REPORTS_PAGE_QUERY = gql`
       phase
       gitSha
       updatedAt
+      versionString
+      metadata
       testPlan {
         directory
       }
-      metadata
       testPlanReports(isFinal: true) {
         id
         metrics
         at {
-          id
-          name
+          ...AtFields
         }
         browser {
-          id
-          name
+          ...BrowserFields
         }
       }
     }
@@ -29,97 +39,54 @@ export const REPORTS_PAGE_QUERY = gql`
 `;
 
 export const REPORT_PAGE_QUERY = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${BROWSER_VERSION_FIELDS}
+  ${SCENARIO_RESULT_FIELDS('all')}
+  ${TEST_FIELDS()}
+  ${TEST_RESULT_FIELDS}
   query ReportPageQuery($testPlanVersionId: ID) {
     testPlanVersion(id: $testPlanVersionId) {
       id
       title
       phase
       gitSha
+      updatedAt
       versionString
+      metadata
       testPlan {
         directory
       }
-      metadata
       testPlanReports(isFinal: true) {
         id
         metrics
         markedFinalAt
         at {
-          id
-          name
+          ...AtFields
         }
         browser {
-          id
-          name
+          ...BrowserFields
         }
         recommendedAtVersion {
-          id
-          name
-          releasedAt
+          ...AtVersionFields
         }
         runnableTests {
-          id
-          title
-          renderedUrl
+          ...TestFieldsSimple
         }
         finalizedTestResults {
-          id
+          ...TestResultFields
           test {
-            id
-            rowNumber
-            title
-            renderedUrl
+            ...TestFieldsSimple
           }
           scenarioResults {
-            id
-            scenario {
-              commands {
-                id
-                text
-              }
-            }
-            output
-            assertionResults {
-              id
-              assertion {
-                text
-                phrase
-              }
-              passed
-            }
-            mustAssertionResults: assertionResults(priority: MUST) {
-              assertion {
-                text
-                phrase
-              }
-              passed
-            }
-            shouldAssertionResults: assertionResults(priority: SHOULD) {
-              assertion {
-                text
-                phrase
-              }
-              passed
-            }
-            mayAssertionResults: assertionResults(priority: MAY) {
-              assertion {
-                text
-                phrase
-              }
-              passed
-            }
-            unexpectedBehaviors {
-              id
-              text
-              impact
-              details
-            }
+            ...ScenarioResultFieldsAll
           }
           atVersion {
-            name
+            ...AtVersionFields
           }
           browserVersion {
-            name
+            ...BrowserVersionFields
           }
         }
         draftTestPlanRuns {
@@ -130,18 +97,16 @@ export const REPORT_PAGE_QUERY = gql`
             id
           }
           testResults {
+            ...TestResultFields
             test {
               id
             }
             atVersion {
-              id
-              name
+              ...AtVersionFields
             }
             browserVersion {
-              id
-              name
+              ...BrowserVersionFields
             }
-            completedAt
           }
         }
       }

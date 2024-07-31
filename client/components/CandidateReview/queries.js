@@ -1,51 +1,45 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  AT_VERSION_FIELDS,
+  BROWSER_FIELDS,
+  ISSUE_FIELDS
+} from '@components/common/fragments';
 
 export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${ISSUE_FIELDS()}
   query {
     testPlanVersions(phases: [CANDIDATE]) {
       id
-      phase
       title
+      phase
       gitSha
+      versionString
+      updatedAt
+      candidatePhaseReachedAt
+      recommendedPhaseTargetDate
+      metadata
       testPlan {
         directory
       }
-      metadata
-      versionString
-      candidatePhaseReachedAt
-      recommendedPhaseTargetDate
       testPlanReports(isFinal: true) {
         id
         metrics
+        vendorReviewStatus
         at {
-          id
-          name
+          ...AtFields
         }
         latestAtVersionReleasedAt {
-          id
-          name
-          releasedAt
+          ...AtVersionFields
         }
         browser {
-          id
-          name
+          ...BrowserFields
         }
-        testPlanVersion {
-          id
-          title
-          gitSha
-          testPlan {
-            directory
-          }
-          metadata
-          updatedAt
-        }
-        vendorReviewStatus
         issues {
-          link
-          isOpen
-          isCandidateReview
-          feedbackType
+          ...IssueFieldsSimple
         }
       }
     }
