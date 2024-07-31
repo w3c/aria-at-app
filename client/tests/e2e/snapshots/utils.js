@@ -35,14 +35,18 @@ async function cleanAndNormalizeSnapshot(page) {
         const text = el.textContent.trim();
         if (
           text.includes('Ready for Review') ||
-          text.includes('Review in Progress')
+          text.includes('Review in Progress') ||
+          (text.includes('Days') &&
+            (text.includes('Past') || text.includes('Away')))
         ) {
           el.remove();
         }
       });
     }
 
-    removeElements('.ready-for-review, .in-progress');
+    removeElements(
+      '.ready-for-review, .in-progress, .target-days-container button'
+    );
   });
 
   const content = await page.content();
