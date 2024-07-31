@@ -376,7 +376,8 @@ const CandidateTestPlanRun = () => {
       </span>
       <h1>
         {`${currentTest.seq}. ${currentTest.title}`}{' '}
-        <span className="using">using</span> {`${at}`}
+        <span className="using">using</span> {`${at}`}{' '}
+        {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
         {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
         {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
           <Badge className="viewed-badge" pill variant="secondary">
