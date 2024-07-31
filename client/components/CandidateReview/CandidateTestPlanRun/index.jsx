@@ -392,9 +392,11 @@ const CandidateTestPlanRun = () => {
       <div className="test-info-entity apg-example-name">
         <div className="info-label">
           <b>Candidate Test Plan:</b>{' '}
-          {`${
-            testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
-          } ${testPlanVersion.versionString}`}
+          <a href={`/test-review/${testPlanVersion.id}`}>
+            {`${
+              testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
+            } ${testPlanVersion.versionString}`}
+          </a>
         </div>
       </div>
       <div className="test-info-entity review-status">
