@@ -1,7 +1,7 @@
-const supportedByAutomationResolver = require('./supportedByAutomationResolver');
+const supportedByAutomation = require('./supportedByAutomationResolver');
 
 const AtVersion = {
-  supportedByAutomation: supportedByAutomationResolver
+  supportedByAutomation
 };
 
 module.exports = AtVersion;
