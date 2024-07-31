@@ -394,7 +394,7 @@ const CandidateTestPlanRun = () => {
           <b>Candidate Test Plan:</b>{' '}
           {`${
             testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
-          }`}
+          } ${testPlanVersion.versionString}`}
         </div>
       </div>
       <div className="test-info-entity review-status">
