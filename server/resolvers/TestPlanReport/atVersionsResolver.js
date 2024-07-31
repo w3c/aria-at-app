@@ -10,16 +10,10 @@ const atVersionsResolver = async (testPlanReport, _, context) => {
   });
 
   return results.map(
-    ({
-      atVersionId: id,
-      atVersionName: name,
-      releasedAt,
-      supportedByAutomation
-    }) => ({
+    ({ atVersionId: id, atVersionName: name, releasedAt }) => ({
       id,
       name,
-      releasedAt,
-      supportedByAutomation
+      releasedAt
     })
   );
 };

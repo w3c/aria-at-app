@@ -15,18 +15,12 @@ const latestAtVersionReleasedAtResolver = async (
     transaction
   });
   if (results[0]) {
-    const {
-      atVersionId: id,
-      atVersionName: name,
-      releasedAt,
-      supportedByAutomation
-    } = results[0];
+    const { atVersionId: id, atVersionName: name, releasedAt } = results[0];
 
     return {
       id,
       name,
-      releasedAt,
-      supportedByAutomation
+      releasedAt
     };
   }
 

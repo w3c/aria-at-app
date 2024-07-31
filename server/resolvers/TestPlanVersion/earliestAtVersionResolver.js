@@ -54,12 +54,11 @@ const earliestAtVersionResolver = async (
         !earliestAtVersion ||
         new Date(atVersion.releasedAt) < new Date(earliestAtVersion.releasedAt)
       ) {
-        const supportedByAutomation = await atVersion.supportedByAutomation;
         earliestAtVersion = {
           id: atVersion.id,
           name: atVersion.name,
           releasedAt: atVersion.releasedAt,
-          supportedByAutomation
+          supportedByAutomation: atVersion.supportedByAutomation
         };
       }
     }

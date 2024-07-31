@@ -5,9 +5,6 @@ const {
   BROWSER_ATTRIBUTES
 } = require('./helpers');
 const { Sequelize, At, AtVersion } = require('../');
-const {
-  AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS
-} = require('../../util/constants');
 const { Op } = Sequelize;
 
 // association helpers to be included with Models' results
@@ -430,15 +427,6 @@ const getUniqueAtVersionsForReport = async (
 
   // Sort in descending order of releasedAt date
   results.sort((a, b) => new Date(b.releasedAt) - new Date(a.releasedAt));
-
-  // Check if `isSupportedByAutomation`
-  results.forEach(result => {
-    const supportedVersions =
-      AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[result.atName] || [];
-    result.supportedByAutomation = supportedVersions.includes(
-      result.atVersionName
-    );
-  });
 
   return results;
 };
