@@ -18,7 +18,7 @@ const display = async (page, selector, { wait = true } = {}) => {
  * @param {number} [timeout=500] - Timeout in milliseconds to wait for errors
  * @returns {Promise<string[]>} - Array of error messages, if any
  */
-async function checkConsoleErrors(page, action, timeout = 5000) {
+async function checkConsoleErrors(page, action, timeout = 500) {
   let errors = [];
 
   page.on('console', msg => {
