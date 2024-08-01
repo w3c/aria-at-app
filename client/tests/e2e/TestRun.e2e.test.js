@@ -55,6 +55,11 @@ describe('Test Run when not signed in', () => {
         await page.waitForSelector(`h2 ::-p-text(Instructions)`);
         await page.waitForSelector(`h2 ::-p-text(Record Results)`);
         await page.waitForSelector(`h3 ::-p-text(After)`);
+
+        const updatedUrl = await page.url();
+        expect(updatedUrl).toMatch(
+          new RegExp(`/test-plan-report/19#${index + 1}$`)
+        );
       }
 
       expect(h1Text.includes('Test 1:')).toBe(true);

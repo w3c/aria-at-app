@@ -126,8 +126,11 @@ const TestNavigator = ({
                 key={`TestNavigatorItem_${test.id}`}
               >
                 <a
+                  onClick={async e => {
+                    e.preventDefault();
+                    await handleTestClick(test.index);
+                  }}
                   href={`#${index + 1}`}
-                  onClick={async () => await handleTestClick(test.index)}
                   className="test-name"
                   aria-current={test.index === currentTestIndex}
                 >
