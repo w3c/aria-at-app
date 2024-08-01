@@ -1,4 +1,5 @@
 const { exec } = require('child_process');
+const path = require('path');
 
 /**
  * Used to dump a table in case a significantly destructive behavior is to be
@@ -10,10 +11,12 @@ const { exec } = require('child_process');
  */
 const dumpTable = async tableName => {
   try {
+    const dumpFilePath = path.resolve(
+      `${__dirname}/../dumps/pg_dump_${tableName}_${new Date().getTime()}.sql`
+    );
+
     await exec(
-      `pg_dump -t '"${tableName}"' ${
-        process.env.PGDATABASE
-      } > ${__dirname}/dumps/pg_dump_${tableName}_${new Date().getTime()}.sql`
+      `pg_dump -t '"${tableName}"' ${process.env.PGDATABASE} --inserts > ${dumpFilePath}`
     );
   } catch (err) {
     console.error(`Error dumping ${tableName}:${err}`);
