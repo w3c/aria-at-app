@@ -24,6 +24,20 @@ SET default_tablespace = '';
 -- Prevents import into Postgres 11 database
 -- SET default_table_access_method = heap;
 
+create or replace function add_constraint_if_not_exists(
+    constraint_name TEXT,
+    table_name TEXT,
+    constraint_definition TEXT
+) returns void
+language plpgsql
+as $$
+begin
+    if not exists ( select 1 from pg_constraint where conname = constraint_name ) then
+        execute format('ALTER TABLE ONLY public.%I ADD CONSTRAINT %I %s', table_name, constraint_name, constraint_definition);
+    end if;
+end;
+$$;
+
 --
 -- Name: At; Type: TABLE; Schema: public; Owner: atr
 --
@@ -675,171 +689,133 @@ ALTER TABLE ONLY public."User" ALTER COLUMN id SET DEFAULT nextval('public."User
 -- Name: AtVersion AtVersion_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."AtVersion" DROP CONSTRAINT IF EXISTS "AtVersion_pkey" CASCADE;
-ALTER TABLE ONLY public."AtVersion"
-    ADD CONSTRAINT "AtVersion_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('AtVersion_pkey', 'AtVersion', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: At At_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."At" DROP CONSTRAINT IF EXISTS "At_pkey" CASCADE;
-ALTER TABLE ONLY public."At"
-    ADD CONSTRAINT "At_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('At_pkey', 'At', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: BrowserVersion BrowserVersion_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."BrowserVersion" DROP CONSTRAINT IF EXISTS "BrowserVersion_pkey" CASCADE;
-ALTER TABLE ONLY public."BrowserVersion"
-    ADD CONSTRAINT "BrowserVersion_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('BrowserVersion_pkey', 'BrowserVersion', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: Browser Browser_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."Browser" DROP CONSTRAINT IF EXISTS "Browser_pkey" CASCADE;
-ALTER TABLE ONLY public."Browser"
-    ADD CONSTRAINT "Browser_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('Browser_pkey', 'Browser', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: CollectionJobTestStatus CollectionJobTestStatus_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."CollectionJobTestStatus" DROP CONSTRAINT IF EXISTS "CollectionJobTestStatus_pkey" CASCADE;
-ALTER TABLE ONLY public."CollectionJobTestStatus"
-    ADD CONSTRAINT "CollectionJobTestStatus_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('CollectionJobTestStatus_pkey', 'CollectionJobTestStatus', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: CollectionJobTestStatus CollectionJob_Test_unique; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."CollectionJobTestStatus" DROP CONSTRAINT IF EXISTS "CollectionJob_Test_unique" CASCADE;
-ALTER TABLE ONLY public."CollectionJobTestStatus"
-    ADD CONSTRAINT "CollectionJob_Test_unique" UNIQUE ("collectionJobId", "testId");
+SELECT add_constraint_if_not_exists('CollectionJob_Test_unique', 'CollectionJobTestStatus', 'UNIQUE ("collectionJobId", "testId")');
 
 
 --
 -- Name: CollectionJob CollectionJob_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."CollectionJob" DROP CONSTRAINT IF EXISTS "CollectionJob_pkey" CASCADE;
-ALTER TABLE ONLY public."CollectionJob"
-    ADD CONSTRAINT "CollectionJob_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('CollectionJob_pkey', 'CollectionJob', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: CollectionJob CollectionJob_testPlanRunId_key; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."CollectionJob" DROP CONSTRAINT IF EXISTS "CollectionJob_testPlanRunId_key" CASCADE;
-ALTER TABLE ONLY public."CollectionJob"
-    ADD CONSTRAINT "CollectionJob_testPlanRunId_key" UNIQUE ("testPlanRunId");
+SELECT add_constraint_if_not_exists('CollectionJob_testPlanRunId_key', 'CollectionJob', 'UNIQUE ("testPlanRunId")');
 
 
 --
 -- Name: Role Role_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."Role" DROP CONSTRAINT IF EXISTS "Role_pkey" CASCADE;
-ALTER TABLE ONLY public."Role"
-    ADD CONSTRAINT "Role_pkey" PRIMARY KEY (name);
+SELECT add_constraint_if_not_exists('Role_pkey', 'Role', 'PRIMARY KEY (name)');
 
 
 --
 -- Name: TestPlanReport TestPlanReport_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanReport" DROP CONSTRAINT IF EXISTS "TestPlanReport_pkey" CASCADE;
-ALTER TABLE ONLY public."TestPlanReport"
-    ADD CONSTRAINT "TestPlanReport_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('TestPlanReport_pkey', 'TestPlanReport', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: TestPlanRun TestPlanRun_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanRun" DROP CONSTRAINT IF EXISTS "TestPlanRun_pkey" CASCADE;
-ALTER TABLE ONLY public."TestPlanRun"
-    ADD CONSTRAINT "TestPlanRun_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('TestPlanRun_pkey', 'TestPlanRun', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: TestPlanVersion TestPlanVersion_hashedTests_key; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanVersion" DROP CONSTRAINT IF EXISTS "TestPlanVersion_hashedTests_key" CASCADE;
-ALTER TABLE ONLY public."TestPlanVersion"
-    ADD CONSTRAINT "TestPlanVersion_hashedTests_key" UNIQUE ("hashedTests");
+SELECT add_constraint_if_not_exists('TestPlanVersion_hashedTests_key', 'TestPlanVersion', 'UNIQUE ("hashedTests")');
 
 
 --
 -- Name: TestPlanVersion TestPlan_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanVersion" DROP CONSTRAINT IF EXISTS "TestPlan_pkey" CASCADE;
-ALTER TABLE ONLY public."TestPlanVersion"
-    ADD CONSTRAINT "TestPlan_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('TestPlan_pkey', 'TestPlanVersion', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: TestPlan TestPlan_pkey1; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlan" DROP CONSTRAINT IF EXISTS "TestPlan_pkey1" CASCADE;
-ALTER TABLE ONLY public."TestPlan"
-    ADD CONSTRAINT "TestPlan_pkey1" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('TestPlan_pkey1', 'TestPlan', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: UserRoles UserRoles_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."UserRoles" DROP CONSTRAINT IF EXISTS "UserRoles_pkey" CASCADE;
-ALTER TABLE ONLY public."UserRoles"
-    ADD CONSTRAINT "UserRoles_pkey" PRIMARY KEY ("userId", "roleName");
+SELECT add_constraint_if_not_exists('UserRoles_pkey', 'UserRoles', 'PRIMARY KEY ("userId", "roleName")');
 
 
 --
 -- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."User" DROP CONSTRAINT IF EXISTS "User_pkey" CASCADE;
-ALTER TABLE ONLY public."User"
-    ADD CONSTRAINT "User_pkey" PRIMARY KEY (id);
+SELECT add_constraint_if_not_exists('User_pkey', 'User', 'PRIMARY KEY (id)');
 
 
 --
 -- Name: User User_username_key; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."User" DROP CONSTRAINT IF EXISTS "User_username_key" CASCADE;
-ALTER TABLE ONLY public."User"
-    ADD CONSTRAINT "User_username_key" UNIQUE (username);
+SELECT add_constraint_if_not_exists('User_username_key', 'User', 'UNIQUE (username)');
 
 
 --
 -- Name: session session_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public.session DROP CONSTRAINT IF EXISTS session_pkey CASCADE;
-ALTER TABLE ONLY public.session
-    ADD CONSTRAINT session_pkey PRIMARY KEY (sid);
+SELECT add_constraint_if_not_exists('session_pkey', 'session', 'PRIMARY KEY (sid)');
 
 
 --
 -- Name: TestPlanVersion uniqueVersionStringByDirectory; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanVersion" DROP CONSTRAINT IF EXISTS "uniqueVersionStringByDirectory" CASCADE;
-ALTER TABLE ONLY public."TestPlanVersion"
-    ADD CONSTRAINT "uniqueVersionStringByDirectory" UNIQUE (directory, "versionString");
+SELECT add_constraint_if_not_exists('uniqueVersionStringByDirectory', 'TestPlanVersion', 'UNIQUE (directory, "versionString")');
 
 
 --
@@ -853,118 +829,94 @@ CREATE INDEX IF NOT EXISTS "IDX_session_expire" ON public.session USING btree (e
 -- Name: AtBrowsers AtBrowsers_atId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."AtBrowsers" DROP CONSTRAINT IF EXISTS "AtBrowsers_atId_fkey" CASCADE;
-ALTER TABLE ONLY public."AtBrowsers"
-    ADD CONSTRAINT "AtBrowsers_atId_fkey" FOREIGN KEY ("atId") REFERENCES public."At"(id);
+SELECT add_constraint_if_not_exists('AtBrowsers_atId_fkey', 'AtBrowsers', 'FOREIGN KEY ("atId") REFERENCES public."At"(id)');
 
 
 --
 -- Name: AtBrowsers AtBrowsers_browserId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."AtBrowsers" DROP CONSTRAINT IF EXISTS "AtBrowsers_browserId_fkey" CASCADE;
-ALTER TABLE ONLY public."AtBrowsers"
-    ADD CONSTRAINT "AtBrowsers_browserId_fkey" FOREIGN KEY ("browserId") REFERENCES public."Browser"(id);
+SELECT add_constraint_if_not_exists('AtBrowsers_browserId_fkey', 'AtBrowsers', 'FOREIGN KEY ("browserId") REFERENCES public."Browser"(id)');
 
 
 --
 -- Name: AtVersion AtVersion_at_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."AtVersion" DROP CONSTRAINT IF EXISTS "AtVersion_at_fkey" CASCADE;
-ALTER TABLE ONLY public."AtVersion"
-    ADD CONSTRAINT "AtVersion_at_fkey" FOREIGN KEY ("atId") REFERENCES public."At"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+SELECT add_constraint_if_not_exists('AtVersion_at_fkey', 'AtVersion', 'FOREIGN KEY ("atId") REFERENCES public."At"(id) ON UPDATE CASCADE ON DELETE CASCADE');
 
 
 --
 -- Name: BrowserVersion BrowserVersion_browser_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."BrowserVersion" DROP CONSTRAINT IF EXISTS "BrowserVersion_browser_fkey" CASCADE;
-ALTER TABLE ONLY public."BrowserVersion"
-    ADD CONSTRAINT "BrowserVersion_browser_fkey" FOREIGN KEY ("browserId") REFERENCES public."Browser"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+SELECT add_constraint_if_not_exists('BrowserVersion_browser_fkey', 'BrowserVersion', 'FOREIGN KEY ("browserId") REFERENCES public."Browser"(id) ON UPDATE CASCADE ON DELETE CASCADE');
 
 
 --
 -- Name: CollectionJobTestStatus CollectionJobTestStatus_collectionJobId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."CollectionJobTestStatus" DROP CONSTRAINT IF EXISTS "CollectionJobTestStatus_collectionJobId_fkey" CASCADE;
-ALTER TABLE ONLY public."CollectionJobTestStatus"
-    ADD CONSTRAINT "CollectionJobTestStatus_collectionJobId_fkey" FOREIGN KEY ("collectionJobId") REFERENCES public."CollectionJob"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+SELECT add_constraint_if_not_exists('CollectionJobTestStatus_collectionJobId_fkey', 'CollectionJobTestStatus', 'FOREIGN KEY ("collectionJobId") REFERENCES public."CollectionJob"(id) ON UPDATE CASCADE ON DELETE CASCADE');
 
 
 --
 -- Name: CollectionJob CollectionJob_testPlanRunId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."CollectionJob" DROP CONSTRAINT IF EXISTS "CollectionJob_testPlanRunId_fkey" CASCADE;
-ALTER TABLE ONLY public."CollectionJob"
-    ADD CONSTRAINT "CollectionJob_testPlanRunId_fkey" FOREIGN KEY ("testPlanRunId") REFERENCES public."TestPlanRun"(id) ON DELETE SET NULL;
+SELECT add_constraint_if_not_exists('CollectionJob_testPlanRunId_fkey', 'CollectionJob', 'FOREIGN KEY ("testPlanRunId") REFERENCES public."TestPlanRun"(id) ON DELETE SET NULL');
 
 
 --
 -- Name: TestPlanReport TestPlanReport_testPlanId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanReport" DROP CONSTRAINT IF EXISTS "TestPlanReport_testPlanId_fkey" CASCADE;
-ALTER TABLE ONLY public."TestPlanReport"
-    ADD CONSTRAINT "TestPlanReport_testPlanId_fkey" FOREIGN KEY ("testPlanId") REFERENCES public."TestPlan"(id);
+SELECT add_constraint_if_not_exists('TestPlanReport_testPlanId_fkey', 'TestPlanReport', 'FOREIGN KEY ("testPlanId") REFERENCES public."TestPlan"(id)');
 
 
 --
 -- Name: TestPlanReport TestPlanReport_testPlan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanReport" DROP CONSTRAINT IF EXISTS "TestPlanReport_testPlan_fkey" CASCADE;
-ALTER TABLE ONLY public."TestPlanReport"
-    ADD CONSTRAINT "TestPlanReport_testPlan_fkey" FOREIGN KEY ("testPlanVersionId") REFERENCES public."TestPlanVersion"(id) ON UPDATE CASCADE;
+SELECT add_constraint_if_not_exists('TestPlanReport_testPlan_fkey', 'TestPlanReport', 'FOREIGN KEY ("testPlanVersionId") REFERENCES public."TestPlanVersion"(id) ON UPDATE CASCADE');
 
 
 --
 -- Name: TestPlanRun TestPlanRun_testPlanReport_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanRun" DROP CONSTRAINT IF EXISTS "TestPlanRun_testPlanReport_fkey" CASCADE;
-ALTER TABLE ONLY public."TestPlanRun"
-    ADD CONSTRAINT "TestPlanRun_testPlanReport_fkey" FOREIGN KEY ("testPlanReportId") REFERENCES public."TestPlanReport"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+SELECT add_constraint_if_not_exists('TestPlanRun_testPlanReport_fkey', 'TestPlanRun', 'FOREIGN KEY ("testPlanReportId") REFERENCES public."TestPlanReport"(id) ON UPDATE CASCADE ON DELETE CASCADE');
 
 
 --
 -- Name: TestPlanRun TestPlanRun_tester_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanRun" DROP CONSTRAINT IF EXISTS "TestPlanRun_tester_fkey" CASCADE;
-ALTER TABLE ONLY public."TestPlanRun"
-    ADD CONSTRAINT "TestPlanRun_tester_fkey" FOREIGN KEY ("testerUserId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE SET NULL;
+SELECT add_constraint_if_not_exists('TestPlanRun_tester_fkey', 'TestPlanRun', 'FOREIGN KEY ("testerUserId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE SET NULL');
 
 
 --
 -- Name: TestPlanVersion TestPlanVersion_testPlanId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."TestPlanVersion" DROP CONSTRAINT IF EXISTS "TestPlanVersion_testPlanId_fkey" CASCADE;
-ALTER TABLE ONLY public."TestPlanVersion"
-    ADD CONSTRAINT "TestPlanVersion_testPlanId_fkey" FOREIGN KEY ("testPlanId") REFERENCES public."TestPlan"(id);
+SELECT add_constraint_if_not_exists('TestPlanVersion_testPlanId_fkey', 'TestPlanVersion', 'FOREIGN KEY ("testPlanId") REFERENCES public."TestPlan"(id)');
 
 
 --
 -- Name: UserRoles UserRoles_roleName_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."UserRoles" DROP CONSTRAINT IF EXISTS "UserRoles_roleName_fkey" CASCADE;
-ALTER TABLE ONLY public."UserRoles"
-    ADD CONSTRAINT "UserRoles_roleName_fkey" FOREIGN KEY ("roleName") REFERENCES public."Role"(name) ON UPDATE CASCADE ON DELETE CASCADE;
+SELECT add_constraint_if_not_exists('UserRoles_roleName_fkey', 'UserRoles', 'FOREIGN KEY ("roleName") REFERENCES public."Role"(name) ON UPDATE CASCADE ON DELETE CASCADE');
 
 
 --
 -- Name: UserRoles UserRoles_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: atr
 --
 
-ALTER TABLE public."UserRoles" DROP CONSTRAINT IF EXISTS "UserRoles_userId_fkey" CASCADE;
-ALTER TABLE ONLY public."UserRoles"
-    ADD CONSTRAINT "UserRoles_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+SELECT add_constraint_if_not_exists('UserRoles_userId_fkey', 'UserRoles', 'FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE');
 
+
+DROP FUNCTION add_constraint_if_not_exists(TEXT, TEXT, TEXT);
 
 --
 -- PostgreSQL database dump complete

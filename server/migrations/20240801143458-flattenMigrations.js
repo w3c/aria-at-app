@@ -8,7 +8,7 @@ module.exports = {
   async up(queryInterface) {
     await queryInterface.sequelize.query(`DELETE FROM "SequelizeMeta"`);
 
-    const sqlFilePath = path.join(__dirname, 'dumps', 'pg_dump_20240710.sql');
+    const sqlFilePath = path.join(__dirname, 'dumps', 'pg_dump_20240801.sql');
     const sql = fs.readFileSync(sqlFilePath, 'utf-8');
     await queryInterface.sequelize.query(sql);
   },
