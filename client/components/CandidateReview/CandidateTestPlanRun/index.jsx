@@ -31,6 +31,7 @@ import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
   getIssueSearchLink
 } from '../../../utils/createIssueLink';
+import { getTestersRunHistory } from '../../Reports/getTestersRunHistory';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -64,6 +65,7 @@ const CandidateTestPlanRun = () => {
   const [thankYouModalShowing, setThankYouModalShowing] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showBrowserBools, setShowBrowserBools] = useState([]);
+  const [showRunHistory, setShowRunHistory] = useState(false);
   const [showBrowserClicks, setShowBrowserClicks] = useState([]);
 
   const isLaptopOrLarger = useMediaQuery({
@@ -464,13 +466,15 @@ const CandidateTestPlanRun = () => {
           'Test Instructions',
           ...testPlanReports.map(
             testPlanReport => `Test Results for ${testPlanReport.browser.name}`
-          )
+          ),
+          'Run History'
         ]}
         onClick={[
           () => setShowInstructions(!showInstructions),
-          ...showBrowserClicks
+          ...showBrowserClicks,
+          () => setShowRunHistory(!showRunHistory)
         ]}
-        expanded={[showInstructions, ...showBrowserBools]}
+        expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
         disclosureContainerView={[
           <InstructionsRenderer
             key={`instructions-${currentTest.id}`}
@@ -501,7 +505,12 @@ const CandidateTestPlanRun = () => {
                 />
               </>
             );
-          })
+          }),
+          getTestersRunHistory(
+            testPlanReport,
+            currentTest.id,
+            testPlanReport.draftTestPlanRuns
+          )
         ]}
         stacked
       ></DisclosureComponent>
