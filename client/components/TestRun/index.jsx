@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
@@ -41,6 +41,7 @@ import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
 import { convertDateToString } from '../../utils/formatter';
 import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
+import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
 
 const TestRun = () => {
   const params = useParams();
@@ -119,7 +120,7 @@ const TestRun = () => {
   const [testPlanReport, setTestPlanReport] = useState({});
   const [testPlanVersion, setTestPlanVersion] = useState();
   const [currentTest, setCurrentTest] = useState({});
-  const [currentTestIndex, setCurrentTestIndex] = useState(0);
+  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex();
   const [currentTestAtVersionId, setCurrentTestAtVersionId] = useState('');
   const [currentTestBrowserVersionId, setCurrentTestBrowserVersionId] =
     useState('');
@@ -143,6 +144,22 @@ const TestRun = () => {
   const testerId = openAsUserId || userId;
   const isAdminReviewer = !!(isAdmin && openAsUserId);
   const openAsUser = users?.find(user => user.id === openAsUserId);
+
+  // Define createTestResultForRenderer as a memoized function
+  const createTestResultForRenderer = useCallback(
+    async (testId, atVersionId, browserVersionId) => {
+      const result = await createTestResult({
+        variables: {
+          testPlanRunId,
+          testId,
+          atVersionId,
+          browserVersionId
+        }
+      });
+      return result.data.testPlanRun.findOrCreateTestResult;
+    },
+    [createTestResult, testPlanRunId]
+  );
 
   useEffect(() => {
     reset();
@@ -169,7 +186,7 @@ const TestRun = () => {
         setPageReady(true);
       }
     } else if (data) setup(data);
-  }, [currentTestIndex]);
+  }, [currentTestIndex, createTestResultForRenderer]);
 
   const setup = data => {
     const { testPlanRun, users } = data;
@@ -312,22 +329,6 @@ const TestRun = () => {
   }
 
   const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
-
-  const createTestResultForRenderer = async (
-    testId,
-    atVersionId,
-    browserVersionId
-  ) => {
-    const result = await createTestResult({
-      variables: {
-        testPlanRunId,
-        testId,
-        atVersionId,
-        browserVersionId
-      }
-    });
-    return result.data.testPlanRun.findOrCreateTestResult;
-  };
 
   // Check to see if there are tests to run
   const testCount = tests.length;
