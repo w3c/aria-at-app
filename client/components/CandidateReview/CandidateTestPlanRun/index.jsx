@@ -31,6 +31,7 @@ import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
   getIssueSearchLink
 } from '../../../utils/createIssueLink';
+import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -56,7 +57,7 @@ const CandidateTestPlanRun = () => {
   const [reviewStatus, setReviewStatus] = useState('');
   const [firstTimeViewing, setFirstTimeViewing] = useState(false);
   const [viewedTests, setViewedTests] = useState([]);
-  const [currentTestIndex, setCurrentTestIndex] = useState(0);
+  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex();
   const [showTestNavigator, setShowTestNavigator] = useState(true);
   const [isFirstTest, setIsFirstTest] = useState(true);
   const [isLastTest, setIsLastTest] = useState(false);
