@@ -19,7 +19,10 @@ const recalculateMetrics = async (queryInterface, transaction) => {
   const context = getGraphQLContext({ req: { transaction } });
 
   const testPlanReports = await queryInterface.sequelize.query(
-    `SELECT id, metrics FROM "TestPlanReport"`,
+    `select distinct on ("TestPlanReport".id) "TestPlanReport".id, metrics
+     from "TestPlanReport"
+            join public."TestPlanRun" testPlanRun on "TestPlanReport".id = testPlanRun."testPlanReportId"
+     where jsonb_array_length(testPlanRun."testResults") > 0;`,
     {
       type: Sequelize.QueryTypes.SELECT,
       transaction
