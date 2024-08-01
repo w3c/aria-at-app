@@ -1,12 +1,17 @@
 import getPage from '../util/getPage';
-import { text } from './util';
+import { checkConsoleErrors, text } from './util';
 
 describe('Reports page', () => {
   it('renders reports page', async () => {
     await getPage({ role: false, url: '/reports' }, async page => {
-      await page.waitForSelector(
-        'h1 ::-p-text(Assistive Technology Interoperability Reports)'
-      );
+      const errors = await checkConsoleErrors(page, async () => {
+        await page.waitForSelector(
+          'h1 ::-p-text(Assistive Technology Interoperability Reports)'
+        );
+      });
+
+      expect(errors).toHaveLength(0);
+
       await page.waitForSelector('h2 ::-p-text(Introduction)');
       await page.waitForSelector('h2 ::-p-text(Support Levels)');
 

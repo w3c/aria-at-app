@@ -1,5 +1,5 @@
 import getPage from '../util/getPage';
-import { text, display } from './util';
+import { text, display, checkConsoleErrors } from './util';
 
 describe('Candidate Review when not signed in or tester', () => {
   it('does not render page if signed out', async () => {
@@ -26,7 +26,11 @@ describe('Candidate Review when not signed in or tester', () => {
 describe('Candidate Review when signed in as vendor', () => {
   it('renders page if signed in', async () => {
     await getPage({ role: 'vendor', url: '/candidate-review' }, async page => {
-      await page.waitForSelector('h1 ::-p-text(Candidate Review)');
+      const errors = await checkConsoleErrors(page, async () => {
+        await page.waitForSelector('h1 ::-p-text(Candidate Review)');
+      });
+
+      expect(errors).toHaveLength(0);
 
       // Get section's disclosure titles
       await page.waitForSelector('h3 button ::-p-text(JAWS)');

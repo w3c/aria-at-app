@@ -12,6 +12,10 @@ import { faHome } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import DisclaimerInfo from '../DisclaimerInfo';
 import { convertDateToString } from '../../utils/formatter';
+import {
+  TestPlanReportPropType,
+  TestPlanVersionPropType
+} from '../common/proptypes';
 
 const FullHeightContainer = styled(Container)`
   min-height: calc(100vh - 64px);
@@ -184,26 +188,8 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
 };
 
 SummarizeTestPlanVersion.propTypes = {
-  testPlanVersion: PropTypes.shape({
-    gitSha: PropTypes.string,
-    testPlan: PropTypes.object,
-    directory: PropTypes.string,
-    versionString: PropTypes.string,
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string,
-    phase: PropTypes.string,
-    metadata: PropTypes.shape({
-      exampleUrl: PropTypes.string.isRequired,
-      designPatternUrl: PropTypes.string
-    }).isRequired
-  }).isRequired,
-  testPlanReports: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      runnableTests: PropTypes.arrayOf(PropTypes.object).isRequired,
-      finalizedTestResults: PropTypes.arrayOf(PropTypes.object)
-    }).isRequired
-  ).isRequired
+  testPlanVersion: TestPlanVersionPropType.isRequired,
+  testPlanReports: PropTypes.arrayOf(TestPlanReportPropType).isRequired
 };
 
 export default SummarizeTestPlanVersion;

@@ -19,6 +19,10 @@ import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
+import {
+  TestPlanReportPropType,
+  TestPlanVersionPropType
+} from '../common/proptypes';
 
 const ResultsContainer = styled.div`
   padding: 1em 1.75em;
@@ -378,60 +382,8 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
 };
 
 SummarizeTestPlanReport.propTypes = {
-  testPlanVersion: PropTypes.object.isRequired,
-  testPlanReports: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
-      at: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired
-      }).isRequired,
-      browser: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired
-      }).isRequired,
-      finalizedTestResults: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          test: PropTypes.shape({
-            title: PropTypes.string.isRequired,
-            renderedUrl: PropTypes.string.isRequired
-          }).isRequired,
-          scenarioResults: PropTypes.arrayOf(
-            PropTypes.shape({
-              id: PropTypes.string.isRequired,
-              output: PropTypes.string.isRequired,
-              assertionResults: PropTypes.arrayOf(
-                PropTypes.shape({
-                  id: PropTypes.string.isRequired,
-                  passed: PropTypes.bool.isRequired,
-                  assertion: PropTypes.shape({
-                    text: PropTypes.string.isRequired
-                  }).isRequired
-                }).isRequired
-              ).isRequired,
-              unexpectedBehaviors: PropTypes.arrayOf(
-                PropTypes.shape({
-                  id: PropTypes.string.isRequired,
-                  text: PropTypes.string.isRequired,
-                  impact: PropTypes.string.isRequired,
-                  details: PropTypes.string.isRequired
-                }).isRequired
-              ).isRequired
-            }).isRequired
-          ).isRequired
-        }).isRequired
-      ).isRequired,
-      draftTestPlanRuns: PropTypes.arrayOf(
-        PropTypes.shape({
-          tester: PropTypes.shape({
-            username: PropTypes.string.isRequired
-          })
-        })
-      )
-    }).isRequired
-  )
+  testPlanVersion: TestPlanVersionPropType.isRequired,
+  testPlanReports: PropTypes.arrayOf(TestPlanReportPropType).isRequired
 };
 
 export default SummarizeTestPlanReport;

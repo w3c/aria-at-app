@@ -1,5 +1,5 @@
 import getPage from '../util/getPage';
-import { text, display } from './util';
+import { text, display, checkConsoleErrors } from './util';
 
 describe('Test Queue common traits', () => {
   it('renders page h1', async () => {
@@ -13,8 +13,12 @@ describe('Test Queue common traits', () => {
 describe('Test Queue admin traits when reports exist', () => {
   it('renders page h1', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      const h1Element = await text(page, 'h1');
-      expect(h1Element).toBe('Test Queue');
+      const errors = await checkConsoleErrors(page, async () => {
+        const h1Element = await text(page, 'h1');
+        expect(h1Element).toBe('Test Queue');
+      });
+
+      expect(errors).toHaveLength(0);
     });
   });
 

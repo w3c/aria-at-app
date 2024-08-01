@@ -10,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useDetectUa } from '../../../hooks/useDetectUa';
 import BasicModal from '../BasicModal';
+import { AtVersionPropType } from '../proptypes';
 
 const ModalInnerSectionContainer = styled.div`
   display: flex;
@@ -596,10 +597,7 @@ AtAndBrowserDetailsModal.propTypes = {
   browserVersions: PropTypes.arrayOf(PropTypes.string),
   patternName: PropTypes.string,
   testerName: PropTypes.string,
-  exactAtVersion: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
-  }),
+  exactAtVersion: AtVersionPropType,
   handleClose: PropTypes.func,
   handleAction: PropTypes.func
 };

@@ -1,5 +1,5 @@
 import getPage from '../util/getPage';
-import { text } from './util';
+import { checkConsoleErrors, text } from './util';
 
 describe('Test Run when not signed in', () => {
   it('renders invalid request when attempting to go directly to /run/:id', async () => {
@@ -15,7 +15,13 @@ describe('Test Run when not signed in', () => {
   it('renders /test-plan-report/:id and can navigate between tests', async () => {
     // This should be NVDA + Chrome + Modal Dialog Example with 12 tests
     await getPage({ role: false, url: '/test-plan-report/19' }, async page => {
-      const h1Text = await text(page, 'h1');
+      const errors = await checkConsoleErrors(page, async () => {
+        const h1Text = await text(page, 'h1');
+        expect(h1Text.includes('Test 1:')).toBe(true);
+      });
+
+      expect(errors).toHaveLength(0);
+
       const currentUrl = await page.url();
 
       await page.waitForSelector('nav#test-navigator-nav ol');
@@ -57,7 +63,6 @@ describe('Test Run when not signed in', () => {
         await page.waitForSelector(`h3 ::-p-text(After)`);
       }
 
-      expect(h1Text.includes('Test 1:')).toBe(true);
       expect(currentUrl.includes('/test-plan-report/19')).toBe(true);
       expect(listItemsLength).toBeGreaterThan(1);
     });

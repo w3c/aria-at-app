@@ -5,6 +5,7 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
 import ManageAtVersions from '@components/ManageTestQueue/ManageAtVersions';
 import AddTestPlans from '@components/ManageTestQueue/AddTestPlans';
+import { AtPropType, TestPlanVersionPropType } from '../common/proptypes';
 
 export const DisclosureContainer = styled.div`
   // Following directives are related to the ManageTestQueue component
@@ -148,21 +149,8 @@ const ManageTestQueue = ({
 };
 
 ManageTestQueue.propTypes = {
-  ats: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      key: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      browsers: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          key: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired
-        })
-      ).isRequired
-    })
-  ).isRequired,
-  testPlanVersions: PropTypes.array,
+  ats: PropTypes.arrayOf(AtPropType).isRequired,
+  testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType),
   triggerUpdate: PropTypes.func
 };
 
