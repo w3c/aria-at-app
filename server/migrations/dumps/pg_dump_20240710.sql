@@ -2,15 +2,18 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.12 (Homebrew)
--- Dumped by pg_dump version 14.12 (Homebrew)
+-- Dumped from database version 14.12 (Homebrew) but modified manually to support Postgres 11 and the flattening of the
+-- tables' structures from previous migrations
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
+
+-- Creates issues with the SequelizeMeta table
+-- SELECT pg_catalog.set_config('search_path', '', false);
+
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
@@ -18,7 +21,8 @@ SET row_security = off;
 
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
+-- Prevents import into Postgres 11 database
+-- SET default_table_access_method = heap;
 
 --
 -- Name: At; Type: TABLE; Schema: public; Owner: atr
@@ -55,7 +59,7 @@ CREATE TABLE IF NOT EXISTS public."AtVersion" (
                                     "atId" integer NOT NULL,
                                     name text NOT NULL,
                                     id integer NOT NULL,
-                                    "releasedAt" timestamp with time zone DEFAULT '2024-07-29 11:43:34.459-04'::timestamp with time zone NOT NULL
+                                    "releasedAt" timestamp with time zone DEFAULT (now() at time zone 'utc') NOT NULL
 );
 
 
@@ -237,17 +241,6 @@ CREATE TABLE IF NOT EXISTS public."Role" (
 
 
 ALTER TABLE public."Role" OWNER TO atr;
-
---
--- Name: SequelizeMeta; Type: TABLE; Schema: public; Owner: atr
---
-
-CREATE TABLE IF NOT EXISTS public."SequelizeMeta" (
-                                        name character varying(255) NOT NULL
-);
-
-
-ALTER TABLE public."SequelizeMeta" OWNER TO atr;
 
 --
 -- Name: TestPlan; Type: TABLE; Schema: public; Owner: atr
@@ -637,91 +630,6 @@ ALTER TABLE ONLY public."User" ALTER COLUMN id SET DEFAULT nextval('public."User
 
 
 --
--- Data for Name: SequelizeMeta; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200518185559-initial-migration.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200521003201-create_table_test_issues.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200522002555-add-serialized-form-column-to-test-results.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200528143617-add-run-status.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200528143624-add-run-status-to-run.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200528172804-add-run-status-to-run-data-view.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200915181019-create-browser-version-to-at-and-at-version.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200915184800-AddActiveFlags.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200915203422-AddColumnsToTestRun.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200928035513-update-create-browser-version-to-at-version.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20200929194042-AddActiveToTestVersions.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20201016203157-RemoveTestCycleModel.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20201201232332-add-links-columns-apg-examples.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20210512004505-BuildNewDatabaseSchema.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20210524210332-TestQueueChanges.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20210601152335-supportNewTestQueueMutations.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20210601152340-emptyObsoleteTables.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20210601152341-removeTestPlanTargetVersionConstraints.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20210809220722-UserSettings.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20210920195544-reportingBackend.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20211116172219-commandSequences.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20211118143508-testRowNumber.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220427145338-alterAtVersionTable.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220427192638-changeConstraintsAtVersion.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220427194229-addIdConstraintAtVersion.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220427204420-changeAtVersionColumn.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220503193406-alterBrowserVersionTable.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220509140537-removeTestPlanTarget.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220712044433-changeJsonbArraysToJsonb.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220801210224-updateJawsTestInstructions.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220825125643-addStatusChangeUpdateColumns.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220919142951-addVendorReviewStatusColumn.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220928162616-addViewersToTests.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220929155024-addMetricsColumn.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20220929155029-addMetricsValues.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20221116154332-updateTestPlanReportStatuses.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230329214527-removeInReviewStatusFromTestPlanReport.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230424152008-addAtBrowser.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230424152008-createTestPlanTable.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230425152008-createTestPlanColumns.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230425215656-updateTestPlanVersionTitles.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230501220810-deduplicateTestPlanVersions.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230523163855-addColumnsToAtBrowsers.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230523163856-remove-OtherUnexpectedBehaviorText.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230608170853-addDateColumnsToTestPlanVersion.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230614004831-removeDateColumnsFromTestPlanReportAndRenameCandidateStatusReachedAtToApprovedAt.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230626203205-updatePhaseAndDraftPhaseReachedAtColumnsForTestPlanVersion.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230719174358-removeTestPlanReportStatus.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230823212533-addCollectionJobs.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230830225248-addMissingDeprecatedAtAndReorderPhaseChangeDates.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230927172432-addVersionStrings.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20230927230957-add-initiatedByAutomation-to-testPlanRun.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20231031162340-verifyNoSkippedTests.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20231114170315-addScreenTextAndInstructionsToAtMode.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20231129175445-updateResultsUnexpectedBehaviorImpactAndDetails.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20231219212344-recalculateV2TestHashes.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240104150500-includeAdditionalTestFormatVersionAttributes.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240111225130-includeMissingAssertionExceptions.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240215220201-updateMetricsForCountingUnexpectedBehaviors.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240224173914-includeAssertionIdInTestAssertions.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240229195433-modifyCollectionJobIdType.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240305205951-removeAtMode.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240311192910-removeRequiredAndOptionalPriority.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240312122457-testPlanReportAtVersions.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240312131258-browserVersionReleasedAt.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240312145416-updateMetricsForUsingTotalCalculation.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240313145124-addIsPrimaryColumnToTestPlanRun.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240319190618-updateCandidatePhaseReachedDates.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240321182449-addKeyColumnToAtAndBrowserTables.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240325205951-cleanupDuplicatesAndRegenerateHashes.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240401203810-fixCommandButtonPhaseChangeDate.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240404171101-addCollectionJobTestStatus.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240509102300-addIsBot.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240516195950-updateMetrics.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240522032230-fixIncorrectDeprecationDates.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240525041559-addCollectionJobSecret.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240711160607-update-may-terminology.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240715150459-resetTestPlanVersionIdToLatest.js') ON CONFLICT DO NOTHING;
-INSERT INTO public."SequelizeMeta" (name) VALUES ('20240724212706-updateMetrics.js') ON CONFLICT DO NOTHING;
-
-
---
 -- Data for Name: TestPlan; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
@@ -761,89 +669,6 @@ INSERT INTO public."SequelizeMeta" (name) VALUES ('20240724212706-updateMetrics.
 -- Data for Name: UserRoles; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-
-
---
--- Data for Name: session; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Name: AtVersion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."AtVersion_id_seq"', 1, false);
-
-
---
--- Name: At_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."At_id_seq"', 1, false);
-
-
---
--- Name: BrowserVersion_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."BrowserVersion_id_seq"', 1, false);
-
-
---
--- Name: Browser_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."Browser_id_seq"', 1, false);
-
-
---
--- Name: CollectionJobTestStatus_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."CollectionJobTestStatus_id_seq"', 1, false);
-
-
---
--- Name: TestPlanReport_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."TestPlanReport_id_seq"', 1, false);
-
-
---
--- Name: TestPlanRun_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."TestPlanRun_id_seq"', 1, false);
-
-
---
--- Name: TestPlan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."TestPlan_id_seq"', 1, false);
-
-
---
--- Name: TestPlan_id_seq1; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."TestPlan_id_seq1"', 1, false);
-
-
---
--- Name: User_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public."User_id_seq"', 1, false);
-
-
---
--- Name: collectionjob_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
---
-
-SELECT pg_catalog.setval('public.collectionjob_id_seq', 1, true);
 
 
 --
@@ -925,15 +750,6 @@ ALTER TABLE ONLY public."CollectionJob"
 ALTER TABLE public."Role" DROP CONSTRAINT IF EXISTS "Role_pkey" CASCADE;
 ALTER TABLE ONLY public."Role"
     ADD CONSTRAINT "Role_pkey" PRIMARY KEY (name);
-
-
---
--- Name: SequelizeMeta SequelizeMeta_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
---
-
-ALTER TABLE public."SequelizeMeta" DROP CONSTRAINT IF EXISTS "SequelizeMeta_pkey" CASCADE;
-ALTER TABLE ONLY public."SequelizeMeta"
-    ADD CONSTRAINT "SequelizeMeta_pkey" PRIMARY KEY (name);
 
 
 --
