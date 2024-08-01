@@ -1,124 +1,89 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  AT_VERSION_FIELDS,
+  BROWSER_FIELDS,
+  ME_FIELDS,
+  TEST_PLAN_FIELDS,
+  TEST_PLAN_REPORT_FIELDS,
+  TEST_PLAN_REPORT_STATUS_FIELDS,
+  TEST_PLAN_RUN_FIELDS,
+  TEST_PLAN_VERSION_FIELDS,
+  TEST_RESULT_FIELDS,
+  USER_FIELDS
+} from '@components/common/fragments';
 
 export const TEST_QUEUE_PAGE_QUERY = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${ME_FIELDS}
+  ${TEST_PLAN_FIELDS}
+  ${TEST_PLAN_REPORT_FIELDS}
+  ${TEST_PLAN_REPORT_STATUS_FIELDS()}
+  ${TEST_PLAN_RUN_FIELDS}
+  ${TEST_PLAN_VERSION_FIELDS}
+  ${TEST_RESULT_FIELDS}
+  ${USER_FIELDS}
   query TestQueuePage {
     me {
-      id
-      username
-      roles
+      ...MeFields
     }
     users {
-      id
-      username
+      ...UserFields
       roles
-      isBot
       ats {
-        id
-        key
+        ...AtFields
       }
     }
     ats {
-      id
-      key
-      name
+      ...AtFields
       atVersions {
-        id
-        name
-        releasedAt
-        supportedByAutomation
+        ...AtVersionFields
       }
       browsers {
-        id
-        key
-        name
+        ...BrowserFields
       }
     }
     testPlans(testPlanVersionPhases: [DRAFT, CANDIDATE, RECOMMENDED]) {
-      directory
-      title
+      ...TestPlanFields
       testPlanVersions {
-        id
-        title
-        phase
-        versionString
-        updatedAt
-        gitSha
-        gitMessage
+        ...TestPlanVersionFields
         testPlanReports(isFinal: false) {
-          id
+          ...TestPlanReportFields
           at {
-            id
-            key
-            name
+            ...AtFields
             atVersions {
-              id
-              name
-              supportedByAutomation
-              releasedAt
+              ...AtVersionFields
             }
           }
           browser {
-            id
-            key
-            name
+            ...BrowserFields
           }
           minimumAtVersion {
-            id
-            name
-            supportedByAutomation
-            releasedAt
+            ...AtVersionFields
           }
           exactAtVersion {
-            id
-            name
-            supportedByAutomation
+            ...AtVersionFields
           }
-          runnableTestsLength
-          conflictsLength
-          metrics
           draftTestPlanRuns {
-            id
+            ...TestPlanRunFields
             testResultsLength
-            initiatedByAutomation
-            tester {
-              id
-              username
-              isBot
-            }
             testResults {
-              completedAt
+              ...TestResultFields
             }
           }
         }
         testPlanReportStatuses {
-          testPlanReport {
-            metrics
-            draftTestPlanRuns {
-              testResults {
-                completedAt
-              }
-            }
-          }
+          ...TestPlanReportStatusFieldsSimple
         }
       }
-    }
-    testPlanVersions {
-      id
-      title
-      phase
-      gitSha
-      gitMessage
-      testPlan {
-        directory
-      }
-    }
-    testPlanReports {
-      id
     }
   }
 `;
 
 export const ASSIGN_TESTER_MUTATION = gql`
+  ${TEST_PLAN_RUN_FIELDS}
   mutation AssignTester(
     $testReportId: ID!
     $testerId: ID!
@@ -128,12 +93,7 @@ export const ASSIGN_TESTER_MUTATION = gql`
       assignTester(userId: $testerId, testPlanRunId: $testPlanRunId) {
         testPlanReport {
           draftTestPlanRuns {
-            initiatedByAutomation
-            tester {
-              id
-              username
-              isBot
-            }
+            ...TestPlanRunFields
           }
         }
       }
@@ -142,18 +102,14 @@ export const ASSIGN_TESTER_MUTATION = gql`
 `;
 
 export const DELETE_TEST_PLAN_RUN = gql`
+  ${TEST_PLAN_RUN_FIELDS}
   mutation DeleteTestPlanRun($testReportId: ID!, $testerId: ID!) {
     testPlanReport(id: $testReportId) {
       deleteTestPlanRun(userId: $testerId) {
         testPlanReport {
           id
           draftTestPlanRuns {
-            id
-            tester {
-              id
-              username
-              isBot
-            }
+            ...TestPlanRunFields
           }
         }
       }

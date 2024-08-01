@@ -153,13 +153,14 @@ const TestRun = () => {
       setPageReady(false);
       if (isSignedIn) {
         (async () => {
-          const { testPlanRun, testPlanReport } =
+          const { testPlanRun: updatedTestPlanRun } =
             await createTestResultForRenderer(
               currentTest.id,
               currentTestAtVersionId,
               currentTestBrowserVersionId
             );
-          updateLocalState(testPlanRun, testPlanReport);
+          const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+          updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
           setPageReady(true);
         })();
       } else {
@@ -605,12 +606,14 @@ const TestRun = () => {
 
     reset();
     setPageReady(false);
-    const { testPlanRun, testPlanReport } = await createTestResultForRenderer(
-      currentTest.id,
-      currentTestAtVersionId,
-      currentTestBrowserVersionId
-    );
-    updateLocalState(testPlanRun, testPlanReport);
+    const { testPlanRun: updatedTestPlanRun } =
+      await createTestResultForRenderer(
+        currentTest.id,
+        currentTestAtVersionId,
+        currentTestBrowserVersionId
+      );
+    const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+    updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
     setPageReady(true);
 
     // close modal after action
@@ -681,14 +684,16 @@ const TestRun = () => {
 
     if (isSubmit) {
       const result = await submitTestResult({ variables });
-      const { testPlanRun, testPlanReport } =
+      const { testPlanRun: updatedTestPlanRun } =
         result.data.testResult.submitTestResult;
-      updateLocalState(testPlanRun, testPlanReport);
+      const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+      updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
     } else {
       const result = await saveTestResult({ variables });
-      const { testPlanRun, testPlanReport } =
+      const { testPlanRun: updatedTestPlanRun } =
         result.data.testResult.saveTestResult;
-      updateLocalState(testPlanRun, testPlanReport);
+      const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+      updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
     }
   };
 
@@ -850,13 +855,14 @@ const TestRun = () => {
     setCurrentBrowserVersion(browserVersion);
     setUpdateMessageComponent(updateMessageComponent);
 
-    const { testPlanRun: _testPlanRun, testPlanReport: _testPlanReport } =
+    const { testPlanRun: updatedTestPlanRun } =
       await createTestResultForRenderer(
         currentTest.id,
         atVersion.id,
         browserVersion.id
       );
-    updateLocalState(_testPlanRun, _testPlanReport);
+    const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+    updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
     handleAtAndBrowserDetailsModalCloseAction();
   };
 

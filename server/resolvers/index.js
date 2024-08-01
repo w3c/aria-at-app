@@ -45,6 +45,7 @@ const CollectionJob = require('./CollectionJob');
 const TestPlanRun = require('./TestPlanRun');
 const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
+const AtVersion = require('./AtVersion');
 
 const resolvers = {
   Query: {
@@ -97,7 +98,8 @@ const resolvers = {
   TestPlanRunOperations,
   TestResultOperations,
   TestPlanVersionOperations,
-  CollectionJobOperations
+  CollectionJobOperations,
+  AtVersion
 };
 
 module.exports = resolvers;

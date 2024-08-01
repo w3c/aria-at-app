@@ -36,7 +36,8 @@ async function cleanAndNormalizeSnapshot(page) {
         if (
           text.includes('Ready for Review') ||
           text.includes('Review in Progress') ||
-          (text.includes('Days') && text.includes('Past'))
+          (text.includes('Days') &&
+            (text.includes('Past') || text.includes('Away')))
         ) {
           el.remove();
         }
