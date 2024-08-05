@@ -1,19 +1,17 @@
 import getPage from '../util/getPage';
-import { checkConsoleErrors, text } from './util';
+import { text } from './util';
 
 describe('Versions page for pattern with highest report being recommended', () => {
   it('renders page h1', async () => {
     await getPage(
       { role: false, url: '/data-management/checkbox-tri-state' },
-      async page => {
-        const errors = await checkConsoleErrors(page, async () => {
-          await text(
-            page,
-            'h1 ::-p-text(Checkbox Example (Tri State) Test Plan Versions)'
-          );
-        });
+      async (page, { consoleErrors }) => {
+        await text(
+          page,
+          'h1 ::-p-text(Checkbox Example (Tri State) Test Plan Versions)'
+        );
 
-        expect(errors).toHaveLength(0);
+        expect(consoleErrors).toHaveLength(0);
       }
     );
   });

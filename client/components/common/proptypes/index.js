@@ -278,9 +278,9 @@ export const TestPlanVersionPropType = PropTypes.shape({
 
 export const TestResultPropType = PropTypes.shape({
   __typename: PropTypes.string,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.string,
   startedAt: PropTypes.string,
-  completedAt: PropTypes.string
+  completedAt: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
 });
 
 export const UserPropType = PropTypes.shape({

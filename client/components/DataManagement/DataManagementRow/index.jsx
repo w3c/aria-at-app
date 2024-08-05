@@ -1096,7 +1096,14 @@ DataManagementRow.propTypes = {
   isAdmin: PropTypes.bool,
   ats: PropTypes.arrayOf(AtPropType),
   testPlan: TestPlanPropType.isRequired,
-  testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType).isRequired,
+  testPlanVersions: PropTypes.arrayOf(
+    PropTypes.shape({
+      ...TestPlanVersionPropType,
+      // Optional in this component
+      title: PropTypes.string,
+      isRequired: PropTypes.bool
+    })
+  ),
   tableRowIndex: PropTypes.number.isRequired,
   setTestPlanVersions: PropTypes.func
 };

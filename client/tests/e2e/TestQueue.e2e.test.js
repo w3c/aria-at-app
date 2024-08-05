@@ -1,5 +1,5 @@
 import getPage from '../util/getPage';
-import { text, display, checkConsoleErrors } from './util';
+import { text, display } from './util';
 
 describe('Test Queue common traits', () => {
   it('renders page h1', async () => {
@@ -13,24 +13,25 @@ describe('Test Queue common traits', () => {
 describe('Test Queue admin traits when reports exist', () => {
   it('renders page h1', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      const errors = await checkConsoleErrors(page, async () => {
-        const h1Element = await text(page, 'h1');
-        expect(h1Element).toBe('Test Queue');
-      });
-
-      expect(errors).toHaveLength(0);
+      const h1Element = await text(page, 'h1');
+      expect(h1Element).toBe('Test Queue');
     });
   });
 
   it('renders page with instructions', async () => {
-    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      const instructionsSelector = '[data-testid="test-queue-instructions"]';
-      const instructionsText = await text(page, instructionsSelector);
+    await getPage(
+      { role: 'admin', url: '/test-queue' },
+      async (page, { consoleErrors }) => {
+        const instructionsSelector = '[data-testid="test-queue-instructions"]';
+        const instructionsText = await text(page, instructionsSelector);
 
-      expect(instructionsText).toBe(
-        'Manage the test plans, assign yourself a test plan or start executing one that is already assigned to you.'
-      );
-    });
+        expect(instructionsText).toBe(
+          'Manage the test plans, assign yourself a test plan or start executing one that is already assigned to you.'
+        );
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
   });
 
   it('renders page with known pattern sections', async () => {

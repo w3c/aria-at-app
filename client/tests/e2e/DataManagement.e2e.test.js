@@ -1,5 +1,5 @@
 import getPage from '../util/getPage';
-import { checkConsoleErrors, text } from './util';
+import { text } from './util';
 
 describe('Data Management common traits', () => {
   it('renders page h1', async () => {
@@ -10,29 +10,32 @@ describe('Data Management common traits', () => {
   });
 
   it('renders page with introduction', async () => {
-    await getPage({ role: false, url: '/data-management' }, async page => {
-      const introductionHeadingSelector = 'h2 ::-p-text(Introduction)';
-      const errors = await checkConsoleErrors(page, async () => {
+    await getPage(
+      { role: false, url: '/data-management' },
+      async (page, { consoleErrors }) => {
+        const introductionHeadingSelector = 'h2 ::-p-text(Introduction)';
         const introductionHeadingText = await text(
           page,
           introductionHeadingSelector
         );
         expect(introductionHeadingText).toBe('Introduction');
-      });
 
-      expect(errors).toHaveLength(0);
+        expect(consoleErrors).toHaveLength(0);
 
-      const introductionContentSelector =
-        '[data-testid="data-management-instructions"]';
-      const introductionContentText = await text(
-        page,
-        introductionContentSelector
-      );
+        const introductionContentSelector =
+          '[data-testid="data-management-instructions"]';
+        const introductionContentText = await text(
+          page,
+          introductionContentSelector
+        );
 
-      expect(introductionContentText).toMatch(
-        /This page provides a view of the latest test plan version information, and where they currently are in the ARIA-AT Community Group’s review process\./
-      );
-    });
+        expect(introductionContentText).toMatch(
+          /This page provides a view of the latest test plan version information, and where they currently are in the ARIA-AT Community Group’s review process\./
+        );
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
   });
 
   it('renders page with Test Plan Status Summary heading and table', async () => {

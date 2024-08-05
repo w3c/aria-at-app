@@ -1,5 +1,5 @@
 import getPage from '../util/getPage';
-import { checkConsoleErrors, text } from './util';
+import { text } from './util';
 
 describe('Test Review page', () => {
   const getReviewPageElements = async (page, { isV2 = false } = {}) => {
@@ -40,18 +40,18 @@ describe('Test Review page', () => {
   };
 
   it('renders page for review page before test format v2', async () => {
-    await getPage({ role: false, url: '/test-review/1' }, async page => {
-      const errors = await checkConsoleErrors(page, async () => {
+    await getPage(
+      { role: false, url: '/test-review/1' },
+      async (page, { consoleErrors }) => {
         await text(
           page,
           'h1 ::-p-text(Alert Example Test Plan V22.04.14 (Deprecated))'
         );
-      });
 
-      expect(errors).toHaveLength(0);
-
-      await getReviewPageElements(page);
-    });
+        await getReviewPageElements(page);
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
   });
 
   it('renders page for review page after test format v2', async () => {
