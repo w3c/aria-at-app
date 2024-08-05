@@ -120,7 +120,7 @@ const TestRun = () => {
   const [testPlanReport, setTestPlanReport] = useState({});
   const [testPlanVersion, setTestPlanVersion] = useState();
   const [currentTest, setCurrentTest] = useState({});
-  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex();
+  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex(tests.length);
   const [currentTestAtVersionId, setCurrentTestAtVersionId] = useState('');
   const [currentTestBrowserVersionId, setCurrentTestBrowserVersionId] =
     useState('');
