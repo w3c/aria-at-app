@@ -5,21 +5,21 @@
 -- Dumped from database version 14.12 (Homebrew) but modified manually to support Postgres 11 and the flattening of the
 -- tables' structures from previous migrations
 
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
+-- SET statement_timeout = 0;
+-- SET lock_timeout = 0;
+-- SET idle_in_transaction_session_timeout = 0;
+-- SET client_encoding = 'UTF8';
+-- SET standard_conforming_strings = on;
 
 -- Creates issues with the SequelizeMeta table
 -- SELECT pg_catalog.set_config('search_path', '', false);
 
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
+-- SET check_function_bodies = false;
+-- SET xmloption = content;
+-- SET client_min_messages = warning;
+-- SET row_security = off;
 
-SET default_tablespace = '';
+-- SET default_tablespace = '';
 
 -- Prevents import into Postgres 11 database
 -- SET default_table_access_method = heap;
@@ -596,96 +596,6 @@ ALTER TABLE ONLY public."User" ALTER COLUMN id SET DEFAULT nextval('public."User
 
 
 --
--- Data for Name: At; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: AtBrowsers; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: Browser; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: BrowserVersion; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: CollectionJob; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: CollectionJobTestStatus; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: Role; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: TestPlan; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: TestPlanReport; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: TestPlanRun; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: TestPlanVersion; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: UserAts; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
--- Data for Name: UserRoles; Type: TABLE DATA; Schema: public; Owner: atr
---
-
-
-
---
 -- Name: AtVersion AtVersion_pkey; Type: CONSTRAINT; Schema: public; Owner: atr
 --
 
@@ -915,8 +825,11 @@ SELECT add_constraint_if_not_exists('UserRoles_roleName_fkey', 'UserRoles', 'FOR
 
 SELECT add_constraint_if_not_exists('UserRoles_userId_fkey', 'UserRoles', 'FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE');
 
-
+-- Remove the function as it won't be used again
 DROP FUNCTION add_constraint_if_not_exists(TEXT, TEXT, TEXT);
+
+-- Specially handle next sequence value for CollectionJob due to how testing is done
+SELECT pg_catalog.setval('public.collectionjob_id_seq', 1, true);
 
 --
 -- PostgreSQL database dump complete

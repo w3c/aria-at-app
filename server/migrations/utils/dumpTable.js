@@ -5,14 +5,13 @@ const path = require('path');
  * Used to dump a table in case a significantly destructive behavior is to be
  * done. This should make running a down migration possible if required.
  *
- * Ideally, also add "server/migrations/dumps/<tableName>" to <root>/.gitignore
  * @param tableName
  * @returns {Promise<void>}
  */
 const dumpTable = async tableName => {
   try {
     const dumpFilePath = path.resolve(
-      `${__dirname}/../dumps/pg_dump_${tableName}_${new Date().getTime()}.sql`
+      `${__dirname}/../dumps/dumpTable_${tableName}_${new Date().getTime()}.sql`
     );
 
     await exec(
