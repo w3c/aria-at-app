@@ -179,6 +179,30 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
+  it('clamps the test index to the bounds of the test list', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      const url = await page.url();
+      await page.goto(`${url}#0`);
+      await page.waitForNetworkIdle();
+      let h1Text = await text(page, 'h1');
+      expect(h1Text).toMatch(/^Test 1:/);
+
+      const numberOfTests = await page.$eval(
+        'nav#test-navigator-nav ol',
+        el => {
+          return el.children.length;
+        }
+      );
+      await page.goto(`${url}#${numberOfTests + 10}`);
+      await page.waitForNetworkIdle();
+      h1Text = await text(page, 'h1');
+      expect(h1Text).toMatch(new RegExp(`Test ${numberOfTests}:`));
+    });
+  });
+
   it('inputs results and navigates between tests to confirm saving', async () => {
     async function getGeneratedCheckedTestCount(page, checkboxSelector) {
       return await page.$$eval(checkboxSelector, els => {
