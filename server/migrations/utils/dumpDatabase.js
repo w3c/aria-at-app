@@ -12,10 +12,9 @@ const dumpDatabase = async () => {
     const dumpFilePath = path.resolve(
       `${__dirname}/../dumps/dumpDatabase_${new Date().getTime()}.sql`
     );
-
     await exec(`pg_dump ${process.env.PGDATABASE} --inserts > ${dumpFilePath}`);
   } catch (err) {
-    console.error(`Error dumping ${process.env.PGDATABASE}:${err}`);
+    throw new Error(`Error dumping ${process.env.PGDATABASE}:${err.message}`);
   }
 };
 

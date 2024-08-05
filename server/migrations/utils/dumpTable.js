@@ -13,12 +13,11 @@ const dumpTable = async tableName => {
     const dumpFilePath = path.resolve(
       `${__dirname}/../dumps/dumpTable_${tableName}_${new Date().getTime()}.sql`
     );
-
     await exec(
       `pg_dump -t '"${tableName}"' ${process.env.PGDATABASE} --inserts > ${dumpFilePath}`
     );
   } catch (err) {
-    console.error(`Error dumping ${tableName}:${err}`);
+    throw new Error(`Error dumping ${tableName}:${err.message}`);
   }
 };
 
