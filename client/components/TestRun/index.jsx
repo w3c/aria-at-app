@@ -39,7 +39,7 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
-import { convertDateToString } from '../../utils/formatter';
+import { dates } from 'shared';
 import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
 
 const TestRun = () => {
@@ -354,7 +354,7 @@ const TestRun = () => {
     issueLink = createIssueLink({
       testPlanTitle: testPlanVersion.title,
       testPlanDirectory: testPlanVersion.testPlan.directory,
-      versionString: `V${convertDateToString(
+      versionString: `V${dates.convertDateToString(
         testPlanVersion.updatedAt,
         'YY.MM.DD'
       )}`,

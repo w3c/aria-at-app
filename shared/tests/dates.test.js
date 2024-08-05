@@ -1,4 +1,4 @@
-import { gitUpdatedDateToString } from './gitUtils';
+import { gitUpdatedDateToString } from '../dates';
 
 describe('gitUpdatedDateToString', () => {
   it('returns a formatted string AM', () => {

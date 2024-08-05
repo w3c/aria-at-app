@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import BasicModal from '../BasicModal';
-import { convertDateToString, isValidDate } from '../../../utils/formatter';
+import { dates } from 'shared';
 
 const ModalInnerSectionContainer = styled.div`
   display: flex;
@@ -24,13 +24,15 @@ const UpdateVersionModal = ({
 
   const [updatedVersionText, setUpdatedVersionText] = useState(versionText);
   const [updatedDateAvailabilityText, setUpdatedDateAvailabilityText] =
-    useState(convertDateToString(dateAvailabilityText));
+    useState(dates.convertDateToString(dateAvailabilityText));
   const [isVersionError, setIsVersionError] = useState(false);
   const [isDateError, setIsDateError] = useState(false);
 
   useEffect(() => {
     setUpdatedVersionText(versionText);
-    setUpdatedDateAvailabilityText(convertDateToString(dateAvailabilityText));
+    setUpdatedDateAvailabilityText(
+      dates.convertDateToString(dateAvailabilityText)
+    );
   }, [versionText, dateAvailabilityText]);
 
   const handleVersionTextChange = e => {
@@ -85,7 +87,7 @@ const UpdateVersionModal = ({
     const dateTextError =
       !updatedDateAvailabilityText ||
       updatedDateAvailabilityText.length !== 10 ||
-      !isValidDate(updatedDateAvailabilityText);
+      !dates.isValidDate(updatedDateAvailabilityText);
 
     if (versionTextError || dateTextError) {
       setIsVersionError(versionTextError);

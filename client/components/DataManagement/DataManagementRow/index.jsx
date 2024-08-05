@@ -8,11 +8,7 @@ import {
   UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE
 } from '../queries';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
-import {
-  checkDaysBetweenDates,
-  convertDateToString,
-  convertStringFormatToAnotherFormat
-} from '../../../utils/formatter';
+import { dates } from 'shared';
 import { derivePhaseName } from '@client/utils/aria';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import BasicModal from '@components/common/BasicModal';
@@ -301,7 +297,7 @@ const DataManagementRow = ({
           variables: {
             testPlanVersionId: updateTargetModalData.testPlanVersionId,
             recommendedPhaseTargetDate:
-              convertStringFormatToAnotherFormat(updatedDateText)
+              dates.convertStringFormatToAnotherFormat(updatedDateText)
           }
         });
         const updatedTestPlanVersion =
@@ -373,7 +369,7 @@ const DataManagementRow = ({
           break;
       }
 
-      const dateString = convertDateToString(versionDate, 'MMM D, YYYY');
+      const dateString = dates.convertDateToString(versionDate, 'MMM D, YYYY');
 
       return (
         <>
@@ -647,7 +643,9 @@ const DataManagementRow = ({
               </VersionString>
               <span role="listitem" className="review-complete">
                 Review Completed&nbsp;
-                <b>{convertDateToString(completionDate, 'MMM D, YYYY')}</b>
+                <b>
+                  {dates.convertDateToString(completionDate, 'MMM D, YYYY')}
+                </b>
               </span>
             </PhaseCell>
           );
@@ -776,7 +774,9 @@ const DataManagementRow = ({
               </VersionString>
               <span role="listitem" className="review-complete">
                 Review Completed&nbsp;
-                <b>{convertDateToString(completionDate, 'MMM D, YYYY')}</b>
+                <b>
+                  {dates.convertDateToString(completionDate, 'MMM D, YYYY')}
+                </b>
               </span>
             </PhaseCell>
           );
@@ -837,7 +837,7 @@ const DataManagementRow = ({
           const candidatePhaseReachedDate = new Date(
             latestVersion.candidatePhaseReachedAt
           );
-          const daysInReview = checkDaysBetweenDates(
+          const daysInReview = dates.checkDaysBetweenDates(
             currentDate,
             candidatePhaseReachedDate
           );
@@ -846,13 +846,13 @@ const DataManagementRow = ({
           let timeToTargetDate = 0;
           if (currentDate > recommendedPhaseTargetDate) {
             // Indicates that this is in the past
-            timeToTargetDate = checkDaysBetweenDates(
+            timeToTargetDate = dates.checkDaysBetweenDates(
               currentDate,
               recommendedPhaseTargetDate
             );
             timeToTargetDate = -timeToTargetDate;
           } else
-            timeToTargetDate = checkDaysBetweenDates(
+            timeToTargetDate = dates.checkDaysBetweenDates(
               recommendedPhaseTargetDate,
               currentDate
             );
@@ -984,7 +984,7 @@ const DataManagementRow = ({
             </span>
             <span role="listitem" className="review-complete">
               Approved&nbsp;
-              <b>{convertDateToString(completionDate, 'MMM D, YYYY')}</b>
+              <b>{dates.convertDateToString(completionDate, 'MMM D, YYYY')}</b>
             </span>
           </PhaseCell>
         );

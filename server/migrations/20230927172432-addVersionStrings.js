@@ -1,4 +1,4 @@
-const convertDateToString = require('../util/convertDateToString');
+const { dates } = require('shared');
 
 ('use strict');
 
@@ -26,7 +26,7 @@ module.exports = {
       let currentVersionStringBase;
       let currentCount;
       for (const testPlanVersion of testPlanVersions) {
-        const versionStringBase = `V${convertDateToString(
+        const versionStringBase = `V${dates.convertDateToString(
           testPlanVersion.updatedAt,
           'YY.MM.DD'
         )}`;
