@@ -1,20 +1,20 @@
 const { AuthenticationError } = require('apollo-server-core');
 const {
-    scheduleCollectionJob
+  scheduleCollectionJob
 } = require('../models/services/CollectionJobService');
 
 const scheduleCollectionJobResolver = async (
-    _,
-    { testPlanReportId },
-    context
+  _,
+  { testPlanReportId },
+  context
 ) => {
-    const { user, transaction } = context;
+  const { user, transaction } = context;
 
-    if (!user?.roles.find(role => role.name === 'ADMIN')) {
-        throw new AuthenticationError();
-    }
+  if (!user?.roles.find(role => role.name === 'ADMIN')) {
+    throw new AuthenticationError();
+  }
 
-    return scheduleCollectionJob({ testPlanReportId }, { transaction });
+  return scheduleCollectionJob({ testPlanReportId }, { transaction });
 };
 
 module.exports = scheduleCollectionJobResolver;

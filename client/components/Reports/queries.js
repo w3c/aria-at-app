@@ -1,147 +1,115 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  AT_VERSION_FIELDS,
+  BROWSER_FIELDS,
+  BROWSER_VERSION_FIELDS,
+  SCENARIO_RESULT_FIELDS,
+  TEST_FIELDS,
+  TEST_RESULT_FIELDS
+} from '@components/common/fragments';
 
 export const REPORTS_PAGE_QUERY = gql`
-    query ReportsPageQuery {
-        testPlanVersions(phases: [CANDIDATE, RECOMMENDED]) {
-            id
-            title
-            phase
-            gitSha
-            updatedAt
-            testPlan {
-                directory
-            }
-            metadata
-            testPlanReports(isFinal: true) {
-                id
-                metrics
-                at {
-                    id
-                    name
-                }
-                browser {
-                    id
-                    name
-                }
-            }
+  ${AT_FIELDS}
+  ${BROWSER_FIELDS}
+  query ReportsPageQuery {
+    testPlanVersions(phases: [CANDIDATE, RECOMMENDED]) {
+      id
+      title
+      phase
+      gitSha
+      updatedAt
+      versionString
+      metadata
+      testPlan {
+        directory
+      }
+      testPlanReports(isFinal: true) {
+        id
+        metrics
+        at {
+          ...AtFields
         }
+        browser {
+          ...BrowserFields
+        }
+      }
     }
+  }
 `;
 
 export const REPORT_PAGE_QUERY = gql`
-    query ReportPageQuery($testPlanVersionId: ID) {
-        testPlanVersion(id: $testPlanVersionId) {
-            id
-            title
-            phase
-            gitSha
-            versionString
-            testPlan {
-                directory
-            }
-            metadata
-            testPlanReports(isFinal: true) {
-                id
-                metrics
-                markedFinalAt
-                at {
-                    id
-                    name
-                }
-                browser {
-                    id
-                    name
-                }
-                runnableTests {
-                    id
-                    title
-                    renderedUrl
-                }
-                finalizedTestResults {
-                    id
-                    test {
-                        id
-                        rowNumber
-                        title
-                        renderedUrl
-                    }
-                    scenarioResults {
-                        id
-                        scenario {
-                            commands {
-                                id
-                                text
-                            }
-                        }
-                        output
-                        assertionResults {
-                            id
-                            assertion {
-                                text
-                                phrase
-                            }
-                            passed
-                        }
-                        mustAssertionResults: assertionResults(priority: MUST) {
-                            assertion {
-                                text
-                                phrase
-                            }
-                            passed
-                        }
-                        shouldAssertionResults: assertionResults(
-                            priority: SHOULD
-                        ) {
-                            assertion {
-                                text
-                                phrase
-                            }
-                            passed
-                        }
-                        mayAssertionResults: assertionResults(priority: MAY) {
-                            assertion {
-                                text
-                                phrase
-                            }
-                            passed
-                        }
-                        unexpectedBehaviors {
-                            id
-                            text
-                            impact
-                            details
-                        }
-                    }
-                    atVersion {
-                        name
-                    }
-                    browserVersion {
-                        name
-                    }
-                }
-                draftTestPlanRuns {
-                    tester {
-                        username
-                    }
-                    testPlanReport {
-                        id
-                    }
-                    testResults {
-                        test {
-                            id
-                        }
-                        atVersion {
-                            id
-                            name
-                        }
-                        browserVersion {
-                            id
-                            name
-                        }
-                        completedAt
-                    }
-                }
-            }
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${BROWSER_VERSION_FIELDS}
+  ${SCENARIO_RESULT_FIELDS('all')}
+  ${TEST_FIELDS()}
+  ${TEST_RESULT_FIELDS}
+  query ReportPageQuery($testPlanVersionId: ID) {
+    testPlanVersion(id: $testPlanVersionId) {
+      id
+      title
+      phase
+      gitSha
+      updatedAt
+      versionString
+      metadata
+      testPlan {
+        directory
+      }
+      testPlanReports(isFinal: true) {
+        id
+        metrics
+        markedFinalAt
+        at {
+          ...AtFields
         }
+        browser {
+          ...BrowserFields
+        }
+        recommendedAtVersion {
+          ...AtVersionFields
+        }
+        runnableTests {
+          ...TestFieldsSimple
+        }
+        finalizedTestResults {
+          ...TestResultFields
+          test {
+            ...TestFieldsSimple
+          }
+          scenarioResults {
+            ...ScenarioResultFieldsAll
+          }
+          atVersion {
+            ...AtVersionFields
+          }
+          browserVersion {
+            ...BrowserVersionFields
+          }
+        }
+        draftTestPlanRuns {
+          tester {
+            username
+          }
+          testPlanReport {
+            id
+          }
+          testResults {
+            ...TestResultFields
+            test {
+              id
+            }
+            atVersion {
+              ...AtVersionFields
+            }
+            browserVersion {
+              ...BrowserVersionFields
+            }
+          }
+        }
+      }
     }
+  }
 `;

@@ -1,288 +1,427 @@
-import React, { useEffect, useState } from 'react';
-import { useQuery } from '@apollo/client';
-import { Link } from 'react-router-dom';
-import { Container, Table, Alert } from 'react-bootstrap';
-import { Helmet } from 'react-helmet';
-import nextId from 'react-id-generator';
-import TestQueueRow from '../TestQueueRow';
-import ManageTestQueue from '../ManageTestQueue';
-import DeleteTestPlanReportModal from '../DeleteTestPlanReportModal';
-import DeleteResultsModal from '../DeleteResultsModal';
+import React, { Fragment, useRef } from 'react';
+import { useApolloClient, useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
+import { Alert, Container, Table as BootstrapTable } from 'react-bootstrap';
+import { Helmet } from 'react-helmet';
 import { evaluateAuth } from '../../utils/evaluateAuth';
+import ManageTestQueue from '../ManageTestQueue';
+import DisclosureComponentUnstyled from '../common/DisclosureComponent';
+import useForceUpdate from '../../hooks/useForceUpdate';
+import styled from '@emotion/styled';
+import VersionString from '../common/VersionString';
+import PhasePill from '../common/PhasePill';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import TestPlanReportStatusDialogWithButton from '../TestPlanReportStatusDialog/WithButton';
+import ReportStatusSummary from '../common/ReportStatusSummary';
+import { AtVersion, BrowserVersion } from '../common/AtBrowserVersion';
+import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
+import ProgressBar from '../common/ClippedProgressBar';
+import AssignTesters from './AssignTesters';
+import Actions from './Actions';
+import BotRunTestStatusList from '../BotRunTestStatusList';
 import './TestQueue.css';
 
+const DisclosureComponent = styled(DisclosureComponentUnstyled)`
+  h3 {
+    font-size: 1rem;
+
+    button {
+      font-size: unset;
+      font-weight: unset;
+    }
+  }
+
+  [role='region'] {
+    padding: 0;
+  }
+`;
+
+const MetadataContainer = styled.div`
+  display: flex;
+  gap: 1.25em;
+  margin: 0.5rem 1.25rem;
+  align-items: center;
+  min-height: 40px; /* temp because the status dialog button keeps disappearing */
+
+  & button {
+    margin-bottom: 0;
+    margin-top: 0;
+    font-size: 16px;
+  }
+  & button:hover {
+    color: white;
+  }
+  & button,
+  & button:focus {
+    color: #2e2f33;
+  }
+`;
+
+const TableOverflowContainer = styled.div`
+  width: 100%;
+
+  @media (max-width: 1080px) {
+    overflow-x: scroll;
+  }
+`;
+
+const Table = styled(BootstrapTable)`
+  margin-bottom: 0;
+
+  th {
+    padding: 0.75rem;
+  }
+
+  th:first-of-type,
+  td:first-of-type {
+    border-left: none;
+  }
+  th:last-of-type,
+  td:last-of-type {
+    border-right: none;
+  }
+  tr:last-of-type,
+  tr:last-of-type td {
+    border-bottom: none;
+  }
+
+  th:nth-of-type(1),
+  td:nth-of-type(1) {
+    min-width: 220px;
+  }
+  th:nth-of-type(2),
+  td:nth-of-type(2) {
+    min-width: 150px;
+  }
+  th:nth-of-type(3),
+  td:nth-of-type(3) {
+    min-width: 230px;
+  }
+  th:nth-of-type(4),
+  td:nth-of-type(4) {
+    width: 20%;
+    min-width: 125px;
+  }
+  th:nth-of-type(5),
+  td:nth-of-type(5) {
+    width: 20%;
+    min-width: 175px;
+  }
+`;
+
+const StatusContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+  color: rgb(var(--bs-secondary-rgb));
+`;
+
 const TestQueue = () => {
-    const { loading, data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
-        fetchPolicy: 'cache-and-network'
+  const client = useApolloClient();
+  const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
+    fetchPolicy: 'cache-and-network'
+  });
+
+  const openDisclosuresRef = useRef({});
+  const forceUpdate = useForceUpdate();
+
+  if (error) {
+    return (
+      <PageStatus
+        title="Test Queue | ARIA-AT"
+        heading="Test Queue"
+        message={error.message}
+        isError
+      />
+    );
+  }
+
+  if (!data) {
+    return (
+      <PageStatus title="Loading - Test Queue | ARIA-AT" heading="Test Queue" />
+    );
+  }
+
+  const isSignedIn = !!data.me;
+
+  const { isAdmin } = evaluateAuth(data.me);
+
+  const testPlanVersions = [];
+  data.testPlans.forEach(testPlan => {
+    // testPlan.directory is needed by ManageTestQueue
+    const populatedTestPlanVersions = testPlan.testPlanVersions.map(
+      testPlanVersion => ({
+        ...testPlanVersion,
+        testPlan: { directory: testPlan.directory }
+      })
+    );
+    testPlanVersions.push(...populatedTestPlanVersions);
+  });
+
+  // Remove any test plans or test plan versions without reports and sort
+  const sortTestPlanVersions = testPlanVersions => {
+    return [...testPlanVersions]
+      .filter(testPlanVersion => testPlanVersion.testPlanReports.length)
+      .sort((a, b) => {
+        return b.versionString.localeCompare(a.versionString);
+      })
+      .map(testPlanVersion => {
+        return {
+          ...testPlanVersion,
+          testPlanReports: sortTestPlanReports(testPlanVersion.testPlanReports)
+        };
+      });
+  };
+
+  const sortTestPlanReports = testPlanReports => {
+    return [...testPlanReports].sort((a, b) => {
+      if (a.at.name !== b.at.name) {
+        return a.at.name.localeCompare(b.at.name);
+      }
+      if (a.browser.name !== b.browser.name) {
+        return a.browser.name.localeCompare(b.browser.name);
+      }
+      const dateA = new Date(
+        (a.minimumAtVersion ?? a.exactAtVersion).releasedAt
+      );
+      const dateB = new Date(
+        (a.minimumAtVersion ?? a.exactAtVersion).releasedAt
+      );
+      return dateB - dateA;
+    });
+  };
+
+  const testPlans = data.testPlans
+    .filter(testPlan => {
+      for (const testPlanVersion of testPlan.testPlanVersions) {
+        if (testPlanVersion.testPlanReports.length) return true;
+      }
+    })
+    .map(testPlan => {
+      return {
+        ...testPlan,
+        testPlanVersions: sortTestPlanVersions(testPlan.testPlanVersions)
+      };
+    })
+    .sort((a, b) => {
+      return a.title.localeCompare(b.title);
     });
 
-    const [pageReady, setPageReady] = useState(false);
-    const [testers, setTesters] = useState([]);
-    const [ats, setAts] = useState([]);
-    const [testPlanVersions, setTestPlanVersions] = useState([]);
-    const [testPlanReports, setTestPlanReports] = useState([]);
-    const [latestTestPlanVersions, setLatestTestPlanVersions] = useState([]);
-    const [structuredTestPlanTargets, setStructuredTestPlanTargets] = useState(
-        {}
+  const testers = data.users
+    .filter(user => user.roles.includes('TESTER'))
+    .sort((a, b) => a.username.localeCompare(b.username));
+
+  const renderDisclosure = ({ testPlan }) => {
+    return (
+      // TODO: fix the aria-label of this
+      <DisclosureComponent
+        stacked
+        componentId={testPlan.directory}
+        title={testPlan.testPlanVersions.map(testPlanVersion => (
+          <>
+            <VersionString
+              iconColor="#2BA51C"
+              fullWidth={false}
+              autoWidth={false}
+            >
+              {testPlanVersion.versionString}
+            </VersionString>
+            &nbsp;
+            <PhasePill fullWidth={false}>{testPlanVersion.phase}</PhasePill>
+          </>
+        ))}
+        onClick={testPlan.testPlanVersions.map(testPlanVersion => () => {
+          const isOpen = openDisclosuresRef.current[testPlanVersion.id];
+          openDisclosuresRef.current[testPlanVersion.id] = !isOpen;
+          forceUpdate();
+        })}
+        expanded={testPlan.testPlanVersions.map(
+          testPlanVersion =>
+            openDisclosuresRef.current[testPlanVersion.id] || false
+        )}
+        disclosureContainerView={testPlan.testPlanVersions.map(
+          testPlanVersion =>
+            renderDisclosureContent({ testPlan, testPlanVersion })
+        )}
+      />
     );
-    const [deleteTestPlanReportDetails, setDeleteTestPlanReportDetails] =
-        useState({});
-    const [isShowingDeleteTestPlanReportModal, setDeleteTestPlanReportModal] =
-        useState(false);
-    const [deleteResultsDetails, setDeleteResultsDetails] = useState({});
-    const [isShowingDeleteResultsModal, setDeleteResultsModal] =
-        useState(false);
+  };
 
-    const auth = evaluateAuth(data && data.me ? data.me : {});
-    const { id, isAdmin } = auth;
-    const isSignedIn = !!id;
-
-    useEffect(() => {
-        if (data) {
-            const {
-                users = [],
-                ats = [],
-                testPlanVersions = [],
-                testPlanReports = [],
-                testPlans = []
-            } = data;
-            setTesters(
-                users.filter(
-                    tester =>
-                        tester.roles.includes('TESTER') ||
-                        tester.roles.includes('ADMIN')
-                )
-            );
-            setAts(ats);
-            setTestPlanVersions(testPlanVersions);
-            setTestPlanReports(testPlanReports);
-            setLatestTestPlanVersions(testPlans);
-            setPageReady(true);
-        }
-    }, [data]);
-
-    useEffect(() => {
-        const structuredTestPlanTargets =
-            generateStructuredTestPlanVersions(testPlanReports);
-        setStructuredTestPlanTargets(structuredTestPlanTargets);
-    }, [testPlanReports]);
-
-    const generateStructuredTestPlanVersions = testPlanReports => {
-        const structuredData = {};
-
-        // get all testPlanTargets grouped to make it easier to drop into TestQueue table
-        testPlanReports.forEach(testPlanReport => {
-            const title = `${testPlanReport.at?.name} and ${testPlanReport.browser?.name}`;
-            if (!structuredData[title]) {
-                structuredData[title] = [testPlanReport];
-            } else {
-                structuredData[title].push(testPlanReport);
+  const renderDisclosureContent = ({ testPlan, testPlanVersion }) => {
+    return (
+      <>
+        <MetadataContainer>
+          <a href={`/test-review/${testPlanVersion.id}`}>
+            <FontAwesomeIcon
+              icon={faArrowUpRightFromSquare}
+              size="xs"
+              color="#818F98"
+            />
+            View tests in {testPlanVersion.versionString}
+          </a>
+          <TestPlanReportStatusDialogWithButton
+            triggerUpdate={refetch}
+            testPlanVersionId={testPlanVersion.id}
+          />
+        </MetadataContainer>
+        <TableOverflowContainer>
+          <Table
+            aria-label={
+              `Reports for ${testPlanVersion.title} ` +
+              `${testPlanVersion.versionString} in ` +
+              `${testPlanVersion.phase.toLowerCase()} phase`
             }
-        });
+            bordered
+            hover={false}
+          >
+            <thead>
+              <tr>
+                <th>Assistive Technology</th>
+                <th>Browser</th>
+                <th>Testers</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {testPlanVersion.testPlanReports.map(testPlanReport =>
+                renderRow({
+                  testPlan,
+                  testPlanVersion,
+                  testPlanReport
+                })
+              )}
+            </tbody>
+          </Table>
+        </TableOverflowContainer>
+      </>
+    );
+  };
 
-        return structuredData;
-    };
-
-    const renderAtBrowserList = (title = '', testPlanReports = []) => {
-        // means structuredTestPlanTargets would have been generated
-        if (!testPlanReports.length) return null;
-
-        const tableId = nextId('table_name_');
-
-        return (
-            <div key={title}>
-                <h2 id={tableId}>{title}</h2>
-                <Table
-                    className="test-queue"
-                    aria-labelledby={tableId}
-                    bordered
-                >
-                    <thead>
-                        <tr>
-                            <th className="test-plan">Test Plan</th>
-                            <th className="testers">Testers</th>
-                            <th className="report-status">Report Status</th>
-                            <th className="actions">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {testPlanReports.map(testPlanReport => {
-                            const key = `test_plan_report_${testPlanReport.id}`;
-                            return (
-                                <TestQueueRow
-                                    key={key}
-                                    user={auth}
-                                    testers={testers.sort((a, b) =>
-                                        a.username.localeCompare(b.username)
-                                    )}
-                                    testPlanReportData={testPlanReport}
-                                    latestTestPlanVersions={
-                                        latestTestPlanVersions
-                                    }
-                                    triggerDeleteTestPlanReportModal={
-                                        triggerDeleteTestPlanReportModal
-                                    }
-                                    triggerDeleteResultsModal={
-                                        triggerDeleteResultsModal
-                                    }
-                                    triggerPageUpdate={refetch}
-                                />
-                            );
-                        })}
-                    </tbody>
-                </Table>
-            </div>
-        );
-    };
-
-    const triggerDeleteTestPlanReportModal = (
-        id = null,
-        title = null,
-        deleteFunction = () => {}
-    ) => {
-        setDeleteTestPlanReportDetails({ id, title, deleteFunction });
-        setDeleteTestPlanReportModal(true);
-    };
-
-    const handleDeleteTestPlanReport = async () => {
-        handleCloseDeleteTestPlanReportModal();
-
-        if (deleteTestPlanReportDetails.deleteFunction)
-            await deleteTestPlanReportDetails.deleteFunction();
-
-        // reset deleteTestPlanDetails
-        setDeleteTestPlanReportDetails({});
-    };
-
-    const handleCloseDeleteTestPlanReportModal = () =>
-        setDeleteTestPlanReportModal(false);
-
-    const triggerDeleteResultsModal = (
-        title = null,
-        username = null,
-        deleteFunction = () => {}
-    ) => {
-        setDeleteResultsDetails({
-            title,
-            username,
-            deleteFunction
-        });
-        setDeleteResultsModal(true);
-    };
-
-    const handleDeleteResults = async () => {
-        handleCloseDeleteResultsModal();
-
-        if (deleteResultsDetails.deleteFunction)
-            await deleteResultsDetails.deleteFunction();
-
-        // reset deleteResultsDetails
-        setDeleteResultsDetails({});
-    };
-
-    const handleCloseDeleteResultsModal = () => setDeleteResultsModal(false);
-
-    if (error) {
-        return (
-            <PageStatus
-                title="Test Queue | ARIA-AT"
-                heading="Test Queue"
-                message={error.message}
-                isError
-            />
-        );
-    }
-
-    if (loading || !pageReady) {
-        return (
-            <PageStatus
-                title="Loading - Test Queue | ARIA-AT"
-                heading="Test Queue"
-            />
-        );
-    }
-
-    const emptyTestPlans = !testPlanReports.length;
-    const noTestPlansMessage = 'There are no test plans available';
-    const settingsLink = <Link to="/account/settings">Settings</Link>;
+  const renderRow = ({ testPlan, testPlanVersion, testPlanReport }) => {
+    const percentComplete = calculatePercentComplete(testPlanReport);
+    const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
+      ({ tester }) => tester.isBot
+    );
 
     return (
-        <Container id="main" as="main" tabIndex="-1">
-            <Helmet>
-                <title>{`${
-                    emptyTestPlans ? noTestPlansMessage : 'Test Queue'
-                } | ARIA-AT`}</title>
-            </Helmet>
-            <h1>Test Queue</h1>
-            {emptyTestPlans && (
-                <h2 data-testid="test-queue-no-test-plans-h2">
-                    {noTestPlansMessage}
-                </h2>
-            )}
-            {emptyTestPlans && !isAdmin && isSignedIn && (
-                <Alert
-                    key="alert-configure"
-                    variant="danger"
-                    data-testid="test-queue-no-test-plans-p"
-                >
-                    Please configure your preferred Assistive Technologies in
-                    the {settingsLink} page.
-                </Alert>
-            )}
+      <tr key={testPlanReport.id}>
+        <td>
+          <AtVersion
+            at={testPlanReport.at}
+            minimumAtVersion={testPlanReport.minimumAtVersion}
+            exactAtVersion={testPlanReport.exactAtVersion}
+          />
+        </td>
+        <td>
+          <BrowserVersion browser={testPlanReport.browser} />
+        </td>
+        <td>
+          <AssignTesters
+            me={data.me}
+            testers={testers}
+            testPlanReport={testPlanReport}
+          />
+        </td>
+        <td>
+          <StatusContainer>
+            {<ProgressBar progress={percentComplete} decorative />}
+            <ReportStatusSummary
+              testPlanVersion={testPlanVersion}
+              testPlanReport={testPlanReport}
+              fromTestQueue
+            />
+            {hasBotRun ? (
+              <BotRunTestStatusList testPlanReportId={testPlanReport.id} />
+            ) : null}
+          </StatusContainer>
+        </td>
+        <td>
+          <Actions
+            me={data.me}
+            testers={testers}
+            testPlan={testPlan}
+            testPlanReport={testPlanReport}
+            triggerUpdate={async () => {
+              await client.refetchQueries({
+                include: ['TestQueuePage', 'TestPlanReportStatusDialog']
+              });
 
-            {emptyTestPlans && isAdmin && (
-                <Alert
-                    key="alert-configure"
-                    variant="danger"
-                    data-testid="test-queue-no-test-plans-p"
-                >
-                    Add a Test Plan to the Queue
-                </Alert>
-            )}
-
-            {!emptyTestPlans && (
-                <p data-testid="test-queue-instructions">
-                    {isSignedIn
-                        ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
-                        : 'Select a test plan to view. Your results will not be saved.'}
-                </p>
-            )}
-
-            {isAdmin && (
-                <ManageTestQueue
-                    ats={ats}
-                    testPlanVersions={testPlanVersions}
-                    triggerUpdate={refetch}
-                />
-            )}
-
-            {!emptyTestPlans &&
-                Object.keys(structuredTestPlanTargets).map(key =>
-                    renderAtBrowserList(key, structuredTestPlanTargets[key])
-                )}
-
-            {isSignedIn && (
-                <DeleteResultsModal
-                    show={isShowingDeleteResultsModal}
-                    isAdmin={isAdmin}
-                    details={deleteResultsDetails}
-                    handleClose={handleCloseDeleteResultsModal}
-                    handleAction={handleDeleteResults}
-                />
-            )}
-
-            {isAdmin && isShowingDeleteTestPlanReportModal && (
-                <DeleteTestPlanReportModal
-                    show={isShowingDeleteTestPlanReportModal}
-                    details={deleteTestPlanReportDetails}
-                    handleClose={handleCloseDeleteTestPlanReportModal}
-                    handleAction={handleDeleteTestPlanReport}
-                />
-            )}
-        </Container>
+              // Refocus on testers assignment dropdown button
+              const selector = `#assign-testers-${testPlanReport.id} button`;
+              document.querySelector(selector).focus();
+            }}
+          />
+        </td>
+      </tr>
     );
+  };
+
+  const renderNoReportsMessage = () => {
+    if (isAdmin) {
+      return (
+        <>
+          <h2 data-testid="no-test-plans">
+            There are currently no test plan reports available.
+          </h2>
+          <Alert variant="danger" data-testid="add-test-plans-queue">
+            Add a Test Plan to the Queue
+          </Alert>
+        </>
+      );
+    } else {
+      return (
+        <h2 data-testid="no-test-plans">
+          There are currently no test plan reports available.
+        </h2>
+      );
+    }
+  };
+
+  const hasTestPlanReports = !!testPlans.length;
+
+  return (
+    <Container id="main" as="main" tabIndex="-1">
+      <Helmet>
+        <title>Test Queue | ARIA-AT</title>
+      </Helmet>
+      <h1>Test Queue</h1>
+      {hasTestPlanReports && (
+        <p data-testid="test-queue-instructions">
+          {isAdmin
+            ? 'Manage the test plans, assign yourself a test plan or start executing one that is already assigned to you.'
+            : isSignedIn
+            ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
+            : 'Select a test plan to view. Your results will not be saved.'}
+        </p>
+      )}
+
+      {!testPlans.length ? renderNoReportsMessage() : null}
+
+      {isAdmin && (
+        <ManageTestQueue
+          ats={data.ats}
+          testPlanVersions={testPlanVersions}
+          triggerUpdate={refetch}
+        />
+      )}
+
+      {testPlans.length
+        ? testPlans.map(testPlan => (
+            <Fragment key={testPlan.directory}>
+              {/* ID needed for recovering focus after deleting a report */}
+              <h2 tabIndex="-1" id={testPlan.directory}>
+                {testPlan.title}
+              </h2>
+              {renderDisclosure({ testPlan })}
+            </Fragment>
+          ))
+        : null}
+    </Container>
+  );
 };
 
 export default TestQueue;

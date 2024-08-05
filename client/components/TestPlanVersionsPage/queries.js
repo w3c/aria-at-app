@@ -1,48 +1,39 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  ISSUE_FIELDS,
+  TEST_PLAN_FIELDS,
+  TEST_PLAN_REPORT_FIELDS,
+  TEST_PLAN_VERSION_FIELDS
+} from '@components/common/fragments';
 
 export const TEST_PLAN_VERSIONS_PAGE_QUERY = gql`
-    query TestPlanVersionsPageQuery($testPlanDirectory: ID!) {
-        ats {
-            id
-            name
-        }
-        testPlan(id: $testPlanDirectory) {
-            title
-            issues {
-                author
-                title
-                link
-                feedbackType
-                isOpen
-                createdAt
-                closedAt
-                at {
-                    name
-                }
-            }
-            testPlanVersions {
-                id
-                testPlan {
-                    directory
-                }
-                phase
-                updatedAt
-                versionString
-                deprecatedAt
-                gitSha
-                gitMessage
-                draftPhaseReachedAt
-                candidatePhaseReachedAt
-                recommendedPhaseReachedAt
-                testPlanReports {
-                    id
-                    isFinal
-                    at {
-                        name
-                    }
-                }
-                metadata
-            }
-        }
+  ${AT_FIELDS}
+  ${ISSUE_FIELDS('all')}
+  ${TEST_PLAN_FIELDS}
+  ${TEST_PLAN_REPORT_FIELDS}
+  ${TEST_PLAN_VERSION_FIELDS}
+  query TestPlanVersionsPageQuery($testPlanDirectory: ID!) {
+    ats {
+      ...AtFields
     }
+    testPlan(id: $testPlanDirectory) {
+      ...TestPlanFields
+      issues {
+        ...IssueFieldsAll
+        at {
+          ...AtFields
+        }
+      }
+      testPlanVersions {
+        ...TestPlanVersionFields
+        testPlanReports {
+          ...TestPlanReportFields
+          at {
+            ...AtFields
+          }
+        }
+      }
+    }
+  }
 `;

@@ -1,27 +1,29 @@
 import { gql } from '@apollo/client';
+import { AT_FIELDS, ME_FIELDS } from '@components/common/fragments';
 
 export const CURRENT_SETTINGS_QUERY = gql`
-    query CurrentSettings {
-        me {
-            id
-            username
-            ats {
-                id
-            }
-        }
-        ats {
-            id
-            name
-        }
+  ${AT_FIELDS}
+  ${ME_FIELDS}
+  query CurrentSettings {
+    me {
+      ...MeFields
+      ats {
+        ...AtFields
+      }
     }
+    ats {
+      ...AtFields
+    }
+  }
 `;
 
 export const UPDATE_ME_MUTATION = gql`
-    mutation UpdateMe($input: UserInput) {
-        updateMe(input: $input) {
-            ats {
-                id
-            }
-        }
+  ${AT_FIELDS}
+  mutation UpdateMe($input: UserInput) {
+    updateMe(input: $input) {
+      ats {
+        ...AtFields
+      }
     }
+  }
 `;

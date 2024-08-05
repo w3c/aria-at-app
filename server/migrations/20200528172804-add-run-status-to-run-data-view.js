@@ -83,20 +83,18 @@ WHERE
 `;
 
 module.exports = {
-    up: queryInterface => {
-        return queryInterface.sequelize.query(updateViewQuery);
-    },
-    async down(queryInterface) {
-        const transaction = await queryInterface.sequelize.transaction();
-        try {
-            await queryInterface.sequelize.query(
-                `DROP VIEW IF EXISTS run_data`
-            );
-            await queryInterface.sequelize.query(originalViewQuery);
-            await transaction.commit();
-        } catch (err) {
-            await transaction.rollback();
-            throw err;
-        }
+  up: queryInterface => {
+    return queryInterface.sequelize.query(updateViewQuery);
+  },
+  async down(queryInterface) {
+    const transaction = await queryInterface.sequelize.transaction();
+    try {
+      await queryInterface.sequelize.query(`DROP VIEW IF EXISTS run_data`);
+      await queryInterface.sequelize.query(originalViewQuery);
+      await transaction.commit();
+    } catch (err) {
+      await transaction.rollback();
+      throw err;
     }
+  }
 };

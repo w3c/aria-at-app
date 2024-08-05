@@ -1,10 +1,10 @@
 'use strict';
 
 module.exports = {
-    up: queryInterface => {
-        return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.sequelize.query(
-                `update "TestPlanVersion"
+  up: queryInterface => {
+    return queryInterface.sequelize.transaction(async transaction => {
+      await queryInterface.sequelize.query(
+        `update "TestPlanVersion"
                   set tests = update_data.updated_tests
                   from (select id,
                     jsonb_agg(
@@ -14,15 +14,15 @@ module.exports = {
                         jsonb_array_elements("TestPlanVersion".tests) as elements
                     group by id) update_data
                   where update_data.id = "TestPlanVersion".id;`,
-                { transaction }
-            );
-        });
-    },
+        { transaction }
+      );
+    });
+  },
 
-    down: queryInterface => {
-        return queryInterface.sequelize.transaction(async transaction => {
-            await queryInterface.sequelize.query(
-                `update "TestPlanVersion"
+  down: queryInterface => {
+    return queryInterface.sequelize.transaction(async transaction => {
+      await queryInterface.sequelize.query(
+        `update "TestPlanVersion"
                   set tests = update_data.updated_tests
                   from (select id,
                     jsonb_agg(elements - 'viewers'
@@ -31,8 +31,8 @@ module.exports = {
                         jsonb_array_elements("TestPlanVersion".tests) as elements
                     group by id) update_data
                   where update_data.id = "TestPlanVersion".id;`,
-                { transaction }
-            );
-        });
-    }
+        { transaction }
+      );
+    });
+  }
 };

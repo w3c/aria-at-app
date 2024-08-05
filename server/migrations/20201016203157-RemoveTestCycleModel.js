@@ -1,106 +1,106 @@
 'use strict';
 
 module.exports = {
-    up: queryInterface => {
-        return queryInterface.sequelize.transaction(t => {
-            return Promise.all([
-                queryInterface.dropTable('test_cycle', {
-                    cascade: true,
-                    transaction: t
-                }),
-                queryInterface.sequelize.query('DROP VIEW run_data', {
-                    transaction: t
-                }),
-                queryInterface.removeColumn('run', 'test_cycle_id', {
-                    transaction: t
-                }),
-                queryInterface.removeColumn('run', 'at_version_id', {
-                    transaction: t
-                }),
-                queryInterface.removeColumn('run', 'at_id', {
-                    transaction: t
-                }),
-                queryInterface.removeColumn('run', 'browser_version_id', {
-                    transaction: t
-                })
-            ]);
-        });
-    },
+  up: queryInterface => {
+    return queryInterface.sequelize.transaction(t => {
+      return Promise.all([
+        queryInterface.dropTable('test_cycle', {
+          cascade: true,
+          transaction: t
+        }),
+        queryInterface.sequelize.query('DROP VIEW run_data', {
+          transaction: t
+        }),
+        queryInterface.removeColumn('run', 'test_cycle_id', {
+          transaction: t
+        }),
+        queryInterface.removeColumn('run', 'at_version_id', {
+          transaction: t
+        }),
+        queryInterface.removeColumn('run', 'at_id', {
+          transaction: t
+        }),
+        queryInterface.removeColumn('run', 'browser_version_id', {
+          transaction: t
+        })
+      ]);
+    });
+  },
 
-    down: (queryInterface, Sequelize) => {
-        return queryInterface.sequelize.transaction(t => {
-            return Promise.all([
-                queryInterface.addColumn(
-                    'run',
-                    'test_cycle_id',
-                    {
-                        type: Sequelize.INTEGER
-                    },
-                    { transaction: t }
-                ),
-                queryInterface.addColumn(
-                    'run',
-                    'at_version_id',
-                    {
-                        type: Sequelize.INTEGER
-                    },
-                    { transaction: t }
-                ),
-                queryInterface.addColumn(
-                    'run',
-                    'at_id',
-                    {
-                        type: Sequelize.INTEGER
-                    },
-                    { transaction: t }
-                ),
-                queryInterface.addColumn(
-                    'run',
-                    'browser_version_id',
-                    {
-                        type: Sequelize.INTEGER
-                    },
-                    { transaction: t }
-                ),
-                queryInterface.createTable(
-                    'test_cycle',
-                    {
-                        id: {
-                            type: Sequelize.INTEGER,
-                            allowNull: false,
-                            primaryKey: true,
-                            autoIncrement: true
-                        },
-                        name: {
-                            type: Sequelize.TEXT,
-                            allowNull: true
-                        },
-                        test_version_id: {
-                            type: Sequelize.INTEGER,
-                            allowNull: false,
-                            references: {
-                                model: 'test_version',
-                                key: 'id'
-                            }
-                        },
-                        created_user_id: {
-                            type: Sequelize.INTEGER,
-                            allowNull: false,
-                            references: {
-                                model: 'users',
-                                key: 'id'
-                            }
-                        },
-                        date: {
-                            type: Sequelize.DATEONLY,
-                            allowNull: true
-                        }
-                    },
-                    { transaction: t }
-                ),
+  down: (queryInterface, Sequelize) => {
+    return queryInterface.sequelize.transaction(t => {
+      return Promise.all([
+        queryInterface.addColumn(
+          'run',
+          'test_cycle_id',
+          {
+            type: Sequelize.INTEGER
+          },
+          { transaction: t }
+        ),
+        queryInterface.addColumn(
+          'run',
+          'at_version_id',
+          {
+            type: Sequelize.INTEGER
+          },
+          { transaction: t }
+        ),
+        queryInterface.addColumn(
+          'run',
+          'at_id',
+          {
+            type: Sequelize.INTEGER
+          },
+          { transaction: t }
+        ),
+        queryInterface.addColumn(
+          'run',
+          'browser_version_id',
+          {
+            type: Sequelize.INTEGER
+          },
+          { transaction: t }
+        ),
+        queryInterface.createTable(
+          'test_cycle',
+          {
+            id: {
+              type: Sequelize.INTEGER,
+              allowNull: false,
+              primaryKey: true,
+              autoIncrement: true
+            },
+            name: {
+              type: Sequelize.TEXT,
+              allowNull: true
+            },
+            test_version_id: {
+              type: Sequelize.INTEGER,
+              allowNull: false,
+              references: {
+                model: 'test_version',
+                key: 'id'
+              }
+            },
+            created_user_id: {
+              type: Sequelize.INTEGER,
+              allowNull: false,
+              references: {
+                model: 'users',
+                key: 'id'
+              }
+            },
+            date: {
+              type: Sequelize.DATEONLY,
+              allowNull: true
+            }
+          },
+          { transaction: t }
+        ),
 
-                queryInterface.sequelize.query(
-                    `
+        queryInterface.sequelize.query(
+          `
                     CREATE VIEW public.run_data AS
                      SELECT run.id,
                         run.test_cycle_id,
@@ -124,9 +124,9 @@ module.exports = {
                         public.apg_example
                       WHERE ((run.browser_version_id = browser_version.id) AND (browser_version.browser_id = browser.id) AND (run.at_id = at.id) AND (at.at_name_id = at_name.id) AND (run.at_version_id = at_version.id) AND (run.apg_example_id = apg_example.id));
                     `,
-                    { transaction: t }
-                )
-            ]);
-        });
-    }
+          { transaction: t }
+        )
+      ]);
+    });
+  }
 };

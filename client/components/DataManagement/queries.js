@@ -1,210 +1,178 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  AT_VERSION_FIELDS,
+  BROWSER_FIELDS,
+  BROWSER_VERSION_FIELDS,
+  ISSUE_FIELDS,
+  ME_FIELDS,
+  TEST_PLAN_FIELDS,
+  TEST_PLAN_REPORT_FIELDS,
+  TEST_PLAN_VERSION_FIELDS,
+  TEST_RESULT_FIELDS
+} from '@components/common/fragments';
 
 export const DATA_MANAGEMENT_PAGE_QUERY = gql`
-    query DataManagementPage {
-        me {
-            id
-            username
-            roles
-        }
-        ats {
-            id
-            key
-            name
-            browsers {
-                id
-                key
-                name
-            }
-            atVersions {
-                id
-                name
-                releasedAt
-            }
-            candidateBrowsers {
-                id
-            }
-            recommendedBrowsers {
-                id
-            }
-        }
-        testPlans {
-            id
-            directory
-            title
-        }
-        deprecatedTestPlanVersions: testPlanVersions(phases: [DEPRECATED]) {
-            id
-            phase
-            updatedAt
-            draftPhaseReachedAt
-            candidatePhaseReachedAt
-            recommendedPhaseTargetDate
-            recommendedPhaseReachedAt
-            deprecatedAt
-            testPlan {
-                directory
-            }
-        }
-        testPlanVersions(phases: [RD, DRAFT, CANDIDATE, RECOMMENDED]) {
-            id
-            title
-            phase
-            gitSha
-            gitMessage
-            updatedAt
-            versionString
-            draftPhaseReachedAt
-            candidatePhaseReachedAt
-            recommendedPhaseTargetDate
-            recommendedPhaseReachedAt
-            testPlan {
-                directory
-            }
-            testPlanReports {
-                id
-                metrics
-                isFinal
-                markedFinalAt
-                at {
-                    id
-                    key
-                    name
-                }
-                browser {
-                    id
-                    key
-                    name
-                }
-                issues {
-                    link
-                    isOpen
-                    feedbackType
-                }
-                draftTestPlanRuns {
-                    tester {
-                        username
-                    }
-                    testPlanReport {
-                        id
-                    }
-                    testResults {
-                        test {
-                            id
-                        }
-                        atVersion {
-                            id
-                            name
-                        }
-                        browserVersion {
-                            id
-                            name
-                        }
-                        completedAt
-                    }
-                }
-            }
-            metadata
-        }
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${BROWSER_VERSION_FIELDS}
+  ${ISSUE_FIELDS()}
+  ${ME_FIELDS}
+  ${TEST_PLAN_FIELDS}
+  ${TEST_PLAN_REPORT_FIELDS}
+  ${TEST_RESULT_FIELDS}
+  query DataManagementPage {
+    me {
+      ...MeFields
     }
+    ats {
+      ...AtFields
+      browsers {
+        ...BrowserFields
+      }
+      atVersions {
+        ...AtVersionFields
+      }
+      candidateBrowsers {
+        id
+      }
+      recommendedBrowsers {
+        id
+      }
+    }
+    testPlans {
+      ...TestPlanFields
+    }
+    deprecatedTestPlanVersions: testPlanVersions(phases: [DEPRECATED]) {
+      id
+      phase
+      updatedAt
+      draftPhaseReachedAt
+      candidatePhaseReachedAt
+      recommendedPhaseTargetDate
+      recommendedPhaseReachedAt
+      deprecatedAt
+      testPlan {
+        directory
+      }
+    }
+    testPlanVersions(phases: [RD, DRAFT, CANDIDATE, RECOMMENDED]) {
+      id
+      title
+      phase
+      gitSha
+      gitMessage
+      updatedAt
+      versionString
+      draftPhaseReachedAt
+      candidatePhaseReachedAt
+      recommendedPhaseTargetDate
+      recommendedPhaseReachedAt
+      metadata
+      testPlan {
+        directory
+      }
+      testPlanReports {
+        ...TestPlanReportFields
+        at {
+          ...AtFields
+        }
+        browser {
+          ...BrowserFields
+        }
+        issues {
+          ...IssueFieldsSimple
+        }
+        draftTestPlanRuns {
+          tester {
+            username
+          }
+          testPlanReport {
+            id
+          }
+          testResults {
+            ...TestResultFields
+            test {
+              id
+            }
+            atVersion {
+              ...AtVersionFields
+            }
+            browserVersion {
+              ...BrowserVersionFields
+            }
+          }
+        }
+      }
+    }
+  }
 `;
 
 export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
-    mutation UpdateTestPlanVersionPhase(
-        $testPlanVersionId: ID!
-        $phase: TestPlanVersionPhase!
-        $testPlanVersionDataToIncludeId: ID
-    ) {
-        testPlanVersion(id: $testPlanVersionId) {
-            updatePhase(
-                phase: $phase
-                testPlanVersionDataToIncludeId: $testPlanVersionDataToIncludeId
-            ) {
-                testPlanVersion {
-                    id
-                    title
-                    phase
-                    gitSha
-                    gitMessage
-                    versionString
-                    updatedAt
-                    draftPhaseReachedAt
-                    candidatePhaseReachedAt
-                    recommendedPhaseTargetDate
-                    recommendedPhaseReachedAt
-                    testPlan {
-                        directory
-                    }
-                    testPlanReports {
-                        id
-                        at {
-                            id
-                            key
-                            name
-                        }
-                        browser {
-                            id
-                            key
-                            name
-                        }
-                        issues {
-                            link
-                            isOpen
-                            feedbackType
-                        }
-                    }
-                    metadata
-                }
+  ${AT_FIELDS}
+  ${BROWSER_FIELDS}
+  ${ISSUE_FIELDS()}
+  ${TEST_PLAN_VERSION_FIELDS}
+  mutation UpdateTestPlanVersionPhase(
+    $testPlanVersionId: ID!
+    $phase: TestPlanVersionPhase!
+    $testPlanVersionDataToIncludeId: ID
+  ) {
+    testPlanVersion(id: $testPlanVersionId) {
+      updatePhase(
+        phase: $phase
+        testPlanVersionDataToIncludeId: $testPlanVersionDataToIncludeId
+      ) {
+        testPlanVersion {
+          ...TestPlanVersionFields
+          testPlanReports {
+            id
+            at {
+              ...AtFields
             }
+            browser {
+              ...BrowserFields
+            }
+            issues {
+              ...IssueFieldsSimple
+            }
+          }
         }
+      }
     }
+  }
 `;
 
 export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE = gql`
-    mutation UpdateTestPlanReportRecommendedTargetDate(
-        $testPlanVersionId: ID!
-        $recommendedPhaseTargetDate: Timestamp!
-    ) {
-        testPlanVersion(id: $testPlanVersionId) {
-            updateRecommendedPhaseTargetDate(
-                recommendedPhaseTargetDate: $recommendedPhaseTargetDate
-            ) {
-                testPlanVersion {
-                    id
-                    title
-                    phase
-                    gitSha
-                    gitMessage
-                    versionString
-                    updatedAt
-                    draftPhaseReachedAt
-                    candidatePhaseReachedAt
-                    recommendedPhaseTargetDate
-                    recommendedPhaseReachedAt
-                    testPlan {
-                        directory
-                    }
-                    testPlanReports {
-                        id
-                        at {
-                            id
-                            key
-                            name
-                        }
-                        browser {
-                            id
-                            key
-                            name
-                        }
-                        issues {
-                            link
-                            isOpen
-                            feedbackType
-                        }
-                    }
-                    metadata
-                }
+  ${AT_FIELDS}
+  ${BROWSER_FIELDS}
+  ${ISSUE_FIELDS()}
+  ${TEST_PLAN_VERSION_FIELDS}
+  mutation UpdateTestPlanReportRecommendedTargetDate(
+    $testPlanVersionId: ID!
+    $recommendedPhaseTargetDate: Timestamp!
+  ) {
+    testPlanVersion(id: $testPlanVersionId) {
+      updateRecommendedPhaseTargetDate(
+        recommendedPhaseTargetDate: $recommendedPhaseTargetDate
+      ) {
+        testPlanVersion {
+          ...TestPlanVersionFields
+          testPlanReports {
+            id
+            at {
+              ...AtFields
             }
+            browser {
+              ...BrowserFields
+            }
+            issues {
+              ...IssueFieldsSimple
+            }
+          }
         }
+      }
     }
+  }
 `;

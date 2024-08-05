@@ -1,62 +1,18 @@
 import { gql } from '@apollo/client';
+import {
+  TEST_PLAN_REPORT_STATUS_FIELDS,
+  TEST_PLAN_VERSION_FIELDS
+} from '@components/common/fragments';
 
 export const TEST_PLAN_REPORT_STATUS_DIALOG_QUERY = gql`
-    query TestPlanReportStatusDialog($testPlanVersionId: ID!) {
-        testPlanVersion(id: $testPlanVersionId) {
-            id
-            title
-            phase
-            gitSha
-            gitMessage
-            updatedAt
-            draftPhaseReachedAt
-            candidatePhaseReachedAt
-            recommendedPhaseTargetDate
-            recommendedPhaseReachedAt
-            testPlan {
-                directory
-            }
-            testPlanReports {
-                id
-                metrics
-                isFinal
-                markedFinalAt
-                at {
-                    id
-                    name
-                }
-                browser {
-                    id
-                    name
-                }
-                issues {
-                    link
-                    isOpen
-                    feedbackType
-                }
-                draftTestPlanRuns {
-                    tester {
-                        username
-                    }
-                    testPlanReport {
-                        id
-                    }
-                    testResults {
-                        test {
-                            id
-                        }
-                        atVersion {
-                            id
-                            name
-                        }
-                        browserVersion {
-                            id
-                            name
-                        }
-                        completedAt
-                    }
-                }
-            }
-        }
+  ${TEST_PLAN_REPORT_STATUS_FIELDS('all')}
+  ${TEST_PLAN_VERSION_FIELDS}
+  query TestPlanReportStatusDialog($testPlanVersionId: ID!) {
+    testPlanVersion(id: $testPlanVersionId) {
+      ...TestPlanVersionFields
+      testPlanReportStatuses {
+        ...TestPlanReportStatusFieldsAll
+      }
     }
+  }
 `;

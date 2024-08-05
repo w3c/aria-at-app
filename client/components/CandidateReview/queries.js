@@ -1,53 +1,47 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  AT_VERSION_FIELDS,
+  BROWSER_FIELDS,
+  ISSUE_FIELDS
+} from '@components/common/fragments';
 
 export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
-    query {
-        testPlanVersions(phases: [CANDIDATE]) {
-            id
-            phase
-            title
-            gitSha
-            testPlan {
-                directory
-            }
-            metadata
-            versionString
-            candidatePhaseReachedAt
-            recommendedPhaseTargetDate
-            testPlanReports(isFinal: true) {
-                id
-                metrics
-                at {
-                    id
-                    name
-                }
-                latestAtVersionReleasedAt {
-                    id
-                    name
-                    releasedAt
-                }
-                browser {
-                    id
-                    name
-                }
-                testPlanVersion {
-                    id
-                    title
-                    gitSha
-                    testPlan {
-                        directory
-                    }
-                    metadata
-                    updatedAt
-                }
-                vendorReviewStatus
-                issues {
-                    link
-                    isOpen
-                    isCandidateReview
-                    feedbackType
-                }
-            }
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${ISSUE_FIELDS()}
+  query {
+    testPlanVersions(phases: [CANDIDATE]) {
+      id
+      title
+      phase
+      gitSha
+      versionString
+      updatedAt
+      candidatePhaseReachedAt
+      recommendedPhaseTargetDate
+      metadata
+      testPlan {
+        directory
+      }
+      testPlanReports(isFinal: true) {
+        id
+        metrics
+        vendorReviewStatus
+        at {
+          ...AtFields
         }
+        latestAtVersionReleasedAt {
+          ...AtVersionFields
+        }
+        browser {
+          ...BrowserFields
+        }
+        issues {
+          ...IssueFieldsSimple
+        }
+      }
     }
+  }
 `;

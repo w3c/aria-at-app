@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Test Queue | ARIA-AT</title>
+  </head>
+  <body>
+    <div id="root">
+      <div class="container-fluid">
+        <nav
+          aria-label="Menu"
+          class="navbar navbar-expand-xl navbar-light bg-light">
+          <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
+          ><a href="#main" class="css-32m7ay">Skip to main content</a
+          ><button
+            aria-controls="basic-navbar-nav"
+            type="button"
+            aria-label="Toggle navigation"
+            class="navbar-toggler collapsed">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div
+            class="justify-content-end navbar-collapse collapse"
+            id="basic-navbar-nav">
+            <div class="navbar-nav">
+              <li>
+                <a aria-current="false" class="nav-link" href="/reports"
+                  >AT Interoperability Reports</a
+                >
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/data-management"
+                  >Data Management</a
+                >
+              </li>
+              <li>
+                <a aria-current="true" class="nav-link" href="/test-queue"
+                  >Test Queue</a
+                >
+              </li>
+              <li>
+                <a
+                  aria-current="false"
+                  class="nav-link"
+                  href="/candidate-review"
+                  >Candidate Review</a
+                >
+              </li>
+              <li class="signed-in-wrapper">
+                <div class="signed-in" id="signed-in">
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="circle-user"
+                    class="svg-inline--fa fa-circle-user"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512">
+                    <path
+                      fill="currentColor"
+                      d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z"></path></svg
+                  >Signed in as <b>joe-the-admin</b>
+                </div>
+                <a aria-describedby="signed-in" class="nav-link" href="/"
+                  >Sign out</a
+                >
+              </li>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="container-fluid">
+        <main id="main" tabindex="-1" class="container">
+          <h1>Test Queue</h1>
+          <p data-testid="test-queue-instructions">
+            Manage the test plans, assign yourself a test plan or start
+            executing one that is already assigned to you.
+          </p>
+          <div class="css-5akihl">
+            <h3>
+              <button
+                id="disclosure-btn-manage-test-queue-Manage Assistive Technology Versions"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-manage-test-queue-Manage Assistive Technology Versions"
+                class="css-10jxhio">
+                Manage Assistive Technology Versions<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-manage-test-queue-Manage Assistive Technology Versions"
+              aria-labelledby="disclosure-btn-manage-test-queue-Manage Assistive Technology Versions"
+              class="css-19fsyrg">
+              <div class="css-16uhkdf">
+                <span
+                  >Select an assistive technology and manage its versions in the
+                  ARIA-AT App</span
+                >
+                <div class="disclosure-row-manage-ats">
+                  <div class="ats-container form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Assistive Technology</label
+                    ><select class="form-select">
+                      <option value="1">JAWS</option>
+                      <option value="2">NVDA</option>
+                      <option value="3">VoiceOver for macOS</option>
+                    </select>
+                  </div>
+                  <div class="at-versions-container">
+                    <div class="form-group">
+                      <label class="disclosure-form-label form-label"
+                        >Available Versions</label
+                      ><select class="form-select">
+                        <option value="1">2021.2111.13</option>
+                      </select>
+                    </div>
+                    <div class="disclosure-buttons-row">
+                      <button>Add a New Version</button
+                      ><button>
+                        <svg
+                          aria-hidden="true"
+                          focusable="false"
+                          data-prefix="fas"
+                          data-icon="pen-to-square"
+                          class="svg-inline--fa fa-pen-to-square"
+                          role="img"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 512">
+                          <path
+                            fill="currentColor"
+                            d="M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z"></path></svg
+                        >Edit</button
+                      ><button>
+                        <svg
+                          aria-hidden="true"
+                          focusable="false"
+                          data-prefix="fas"
+                          data-icon="trash-can"
+                          class="svg-inline--fa fa-trash-can"
+                          role="img"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 448 512">
+                          <path
+                            fill="currentColor"
+                            d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                        >Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <h3>
+              <button
+                id="disclosure-btn-manage-test-queue-Add Test Plans to the Test Queue"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-manage-test-queue-Add Test Plans to the Test Queue"
+                class="css-10jxhio">
+                Add Test Plans to the Test Queue<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-manage-test-queue-Add Test Plans to the Test Queue"
+              aria-labelledby="disclosure-btn-manage-test-queue-Add Test Plans to the Test Queue"
+              class="css-19fsyrg">
+              <div class="css-16uhkdf">
+                <span
+                  >Select a test plan, assistive technology and browser to add a
+                  new test plan report to the test queue.</span
+                >
+                <div class="disclosure-row-test-plans">
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Test Plan</label
+                    ><select class="form-select">
+                      <option value="1">Alert Example</option>
+                      <option value="67">Checkbox Example (Mixed-State)</option>
+                      <option value="68">Command Button Example</option>
+                      <option value="85">Modal Dialog Example</option>
+                      <option value="7">Select Only Combobox Example</option>
+                      <option value="31">Toggle Button</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Test Plan Version</label
+                    ><select aria-disabled="false" class="form-select">
+                      <option value="1">
+                        Apr 14, 2022 at 5:59:42 pm UTC Create updated tests for
+                        APG design pattern example: Alert (#685) (c665367)
+                      </option>
+                    </select>
+                  </div>
+                  <div></div>
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Assistive Technology</label
+                    ><select class="form-select">
+                      <option value="" disabled="">
+                        Select an Assistive Technology
+                      </option>
+                      <option value="1">JAWS</option>
+                      <option value="2">NVDA</option>
+                      <option value="3">VoiceOver for macOS</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Assistive Technology Version</label
+                    >
+                    <div class="form-group-at-version">
+                      <div class="css-ov1ktg">
+                        <label class="css-r65lzy"
+                          ><input
+                            type="radio"
+                            name="atVersion"
+                            class="css-1brh7ys"
+                            checked="" /><span style="position: relative"
+                            ><span style="position: absolute; font-weight: bold"
+                              >Exact Version</span
+                            ><span
+                              aria-hidden="true"
+                              style="font-weight: bold; opacity: 0"
+                              >Exact Version</span
+                            ></span
+                          ></label
+                        ><label class="css-1bcjvtp"
+                          ><input
+                            type="radio"
+                            name="atVersion"
+                            class="css-1brh7ys" /><span
+                            style="position: relative"
+                            ><span
+                              style="position: absolute; font-weight: normal"
+                              >Minimum Version</span
+                            ><span
+                              aria-hidden="true"
+                              style="font-weight: bold; opacity: 0"
+                              >Minimum Version</span
+                            ></span
+                          ></label
+                        >
+                      </div>
+                      <select disabled="" class="form-select">
+                        <option value="" disabled="">Select AT Version</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="disclosure-form-label form-label"
+                      >Browser</label
+                    ><select disabled="" class="form-select">
+                      <option value="" disabled="">Select a Browser</option>
+                    </select>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled=""
+                  data-testid="add-button"
+                  class="w-auto btn btn-secondary">
+                  Add to Test Queue
+                </button>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+          </div>
+          <h2 tabindex="-1" id="alert">Alert Example</h2>
+          <div class="css-b7x2fk">
+            <h3>
+              <button
+                id="disclosure-btn-alert-0"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-alert-0"
+                class="css-10jxhio">
+                <span class="css-36z7cz"
+                  ><span
+                    ><svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-check"
+                      class="svg-inline--fa fa-circle-check check"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#2BA51C">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                    ><b>V22.04.14</b></span
+                  ></span
+                >&nbsp;<span class="draft css-be9e2a">Draft</span
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-alert-0"
+              aria-labelledby="disclosure-btn-alert-0"
+              class="css-19fsyrg">
+              <div class="css-25wfk">
+                <a href="/test-review/1"
+                  ><svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="arrow-up-right-from-square"
+                    class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    color="#818F98">
+                    <path
+                      fill="currentColor"
+                      d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                  >View tests in V22.04.14</a
+                ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                  <span
+                    ><span class="reports-not-started css-fidnqg"></span
+                    >Required Reports <strong>Not Started</strong></span
+                  >
+                </button>
+                <div></div>
+              </div>
+              <div class="css-1iwfp5o">
+                <table
+                  aria-label="Reports for Alert Example V22.04.14 in draft phase"
+                  class="css-hfams3 table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Assistive Technology</th>
+                      <th>Browser</th>
+                      <th>Testers</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="css-1rahl5j">
+                          VoiceOver for macOS&nbsp;<span
+                            >11.6 (20G165) or later</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1rahl5j">
+                          Firefox&nbsp;<span>Any version</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1578spe">
+                          <div id="assign-testers-7" class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                              <span class="sr-only">Assign Testers</span
+                              ><svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="user"
+                                class="svg-inline--fa fa-user"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            Assign Yourself
+                          </button>
+                        </div>
+                        <ul class="css-9acwza"></ul>
+                      </td>
+                      <td>
+                        <div class="css-78pgex">
+                          <div class="progress clipped">
+                            <div
+                              class="front"
+                              style="clip-path: inset(0px 0px 0px 0%)"></div>
+                            <div class="back"></div>
+                          </div>
+                          <span>No testers assigned</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1mwhzii">
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-primary">
+                            Start Testing
+                          </button>
+                          <div class="dropdown">
+                            <button
+                              type="button"
+                              disabled=""
+                              aria-expanded="false"
+                              class="dropdown-toggle btn btn-secondary">
+                              <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="file-import"
+                                class="svg-inline--fa fa-file-import"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                              >Open run as...&nbsp;
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="square-check"
+                              class="svg-inline--fa fa-square-check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            >Mark as Final</button
+                          ><button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="trash-can"
+                              class="svg-inline--fa fa-trash-can"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                            >Delete Report
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <h2 tabindex="-1" id="modal-dialog">Modal Dialog Example</h2>
+          <div class="css-b7x2fk">
+            <h3>
+              <button
+                id="disclosure-btn-modal-dialog-0"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-modal-dialog-0"
+                class="css-10jxhio">
+                <span class="css-36z7cz"
+                  ><span
+                    ><svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-check"
+                      class="svg-inline--fa fa-circle-check check"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#2BA51C">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                    ><b>V24.06.07</b></span
+                  ></span
+                >&nbsp;<span class="draft css-be9e2a">Draft</span
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-modal-dialog-0"
+              aria-labelledby="disclosure-btn-modal-dialog-0"
+              class="css-19fsyrg">
+              <div class="css-25wfk">
+                <a href="/test-review/85"
+                  ><svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="arrow-up-right-from-square"
+                    class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    color="#818F98">
+                    <path
+                      fill="currentColor"
+                      d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                  >View tests in V24.06.07</a
+                ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                  <span
+                    ><span class="reports-missing css-fidnqg"></span>Some
+                    Required Reports <strong>Missing</strong></span
+                  >
+                </button>
+                <div></div>
+              </div>
+              <div class="css-1iwfp5o">
+                <table
+                  aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"
+                  class="css-hfams3 table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Assistive Technology</th>
+                      <th>Browser</th>
+                      <th>Testers</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="css-1rahl5j">
+                          NVDA&nbsp;<span>2020.4 or later</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1rahl5j">
+                          Chrome&nbsp;<span>Any version</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1578spe">
+                          <div id="assign-testers-19" class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                              <span class="sr-only">Assign Testers</span
+                              ><svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="user"
+                                class="svg-inline--fa fa-user"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            Assign Yourself
+                          </button>
+                        </div>
+                        <ul class="css-9acwza">
+                          <li>
+                            <a
+                              href="https://github.com/esmeralda-baggins"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >esmeralda-baggins</a
+                            ><em>12 of 12 tests complete</em>
+                          </li>
+                        </ul>
+                      </td>
+                      <td>
+                        <div class="css-78pgex">
+                          <div class="progress clipped">
+                            <div
+                              class="front"
+                              style="clip-path: inset(0px 0px 0px 100%)"></div>
+                            <div class="back"></div>
+                          </div>
+                          <span
+                            >100% complete by&nbsp;<a
+                              href="https://github.com/esmeralda-baggins"
+                              >esmeralda-baggins</a
+                            >&nbsp;with 0 conflicts</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1mwhzii">
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-primary">
+                            Start Testing
+                          </button>
+                          <div class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="dropdown-toggle btn btn-secondary">
+                              <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="file-import"
+                                class="svg-inline--fa fa-file-import"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                              >Open run as...&nbsp;
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="square-check"
+                              class="svg-inline--fa fa-square-check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            >Mark as Final</button
+                          ><button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="trash-can"
+                              class="svg-inline--fa fa-trash-can"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                            >Delete Report
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <h3>
+              <button
+                id="disclosure-btn-modal-dialog-1"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-modal-dialog-1"
+                class="css-10jxhio">
+                <span class="css-36z7cz"
+                  ><span
+                    ><svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-check"
+                      class="svg-inline--fa fa-circle-check check"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#2BA51C">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                    ><b>V22.05.26</b></span
+                  ></span
+                >&nbsp;<span class="candidate css-be9e2a">Candidate</span
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-modal-dialog-1"
+              aria-labelledby="disclosure-btn-modal-dialog-1"
+              class="css-19fsyrg">
+              <div class="css-25wfk">
+                <a href="/test-review/24"
+                  ><svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="arrow-up-right-from-square"
+                    class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    color="#818F98">
+                    <path
+                      fill="currentColor"
+                      d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                  >View tests in V22.05.26</a
+                ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                  <span
+                    ><span class="reports-complete css-fidnqg"></span>Required
+                    Reports <strong>Complete</strong></span
+                  >
+                </button>
+                <div></div>
+              </div>
+              <div class="css-1iwfp5o">
+                <table
+                  aria-label="Reports for Modal Dialog Example V22.05.26 in candidate phase"
+                  class="css-hfams3 table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Assistive Technology</th>
+                      <th>Browser</th>
+                      <th>Testers</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="css-1rahl5j">
+                          JAWS&nbsp;<span>2021.2111.13 or later</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1rahl5j">
+                          Firefox&nbsp;<span>Any version</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1578spe">
+                          <div id="assign-testers-8" class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                              <span class="sr-only">Assign Testers</span
+                              ><svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="user"
+                                class="svg-inline--fa fa-user"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            Assign Yourself
+                          </button>
+                        </div>
+                        <ul class="css-9acwza">
+                          <li>
+                            <a
+                              href="https://github.com/esmeralda-baggins"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >esmeralda-baggins</a
+                            ><em>18 of 18 tests complete</em>
+                          </li>
+                        </ul>
+                      </td>
+                      <td>
+                        <div class="css-78pgex">
+                          <div class="progress clipped">
+                            <div
+                              class="front"
+                              style="clip-path: inset(0px 0px 0px 100%)"></div>
+                            <div class="back"></div>
+                          </div>
+                          <span
+                            >100% complete by&nbsp;<a
+                              href="https://github.com/esmeralda-baggins"
+                              >esmeralda-baggins</a
+                            >&nbsp;with 0 conflicts</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1mwhzii">
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-primary">
+                            Start Testing
+                          </button>
+                          <div class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="dropdown-toggle btn btn-secondary">
+                              <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="file-import"
+                                class="svg-inline--fa fa-file-import"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                              >Open run as...&nbsp;
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="square-check"
+                              class="svg-inline--fa fa-square-check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            >Mark as Final</button
+                          ><button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="trash-can"
+                              class="svg-inline--fa fa-trash-can"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                            >Delete Report
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="css-1rahl5j">
+                          NVDA&nbsp;<span>2020.4 or later</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1rahl5j">
+                          Firefox&nbsp;<span>Any version</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1578spe">
+                          <div id="assign-testers-9" class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                              <span class="sr-only">Assign Testers</span
+                              ><svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="user"
+                                class="svg-inline--fa fa-user"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            Assign Yourself
+                          </button>
+                        </div>
+                        <ul class="css-9acwza">
+                          <li>
+                            <a
+                              href="https://github.com/esmeralda-baggins"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >esmeralda-baggins</a
+                            ><em>18 of 18 tests complete</em>
+                          </li>
+                        </ul>
+                      </td>
+                      <td>
+                        <div class="css-78pgex">
+                          <div class="progress clipped">
+                            <div
+                              class="front"
+                              style="clip-path: inset(0px 0px 0px 100%)"></div>
+                            <div class="back"></div>
+                          </div>
+                          <span
+                            >100% complete by&nbsp;<a
+                              href="https://github.com/esmeralda-baggins"
+                              >esmeralda-baggins</a
+                            >&nbsp;with 0 conflicts</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1mwhzii">
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-primary">
+                            Start Testing
+                          </button>
+                          <div class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="dropdown-toggle btn btn-secondary">
+                              <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="file-import"
+                                class="svg-inline--fa fa-file-import"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                              >Open run as...&nbsp;
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="square-check"
+                              class="svg-inline--fa fa-square-check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            >Mark as Final</button
+                          ><button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="trash-can"
+                              class="svg-inline--fa fa-trash-can"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                            >Delete Report
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="css-1rahl5j">
+                          VoiceOver for macOS&nbsp;<span
+                            >11.6 (20G165) or later</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1rahl5j">
+                          Chrome&nbsp;<span>Any version</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1578spe">
+                          <div id="assign-testers-11" class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                              <span class="sr-only">Assign Testers</span
+                              ><svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="user"
+                                class="svg-inline--fa fa-user"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            Assign Yourself
+                          </button>
+                        </div>
+                        <ul class="css-9acwza">
+                          <li>
+                            <a
+                              href="https://github.com/esmeralda-baggins"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >esmeralda-baggins</a
+                            ><em>11 of 11 tests complete</em>
+                          </li>
+                        </ul>
+                      </td>
+                      <td>
+                        <div class="css-78pgex">
+                          <div class="progress clipped">
+                            <div
+                              class="front"
+                              style="clip-path: inset(0px 0px 0px 100%)"></div>
+                            <div class="back"></div>
+                          </div>
+                          <span
+                            >100% complete by&nbsp;<a
+                              href="https://github.com/esmeralda-baggins"
+                              >esmeralda-baggins</a
+                            >&nbsp;with 0 conflicts</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1mwhzii">
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-primary">
+                            Start Testing
+                          </button>
+                          <div class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="dropdown-toggle btn btn-secondary">
+                              <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="file-import"
+                                class="svg-inline--fa fa-file-import"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                              >Open run as...&nbsp;
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="square-check"
+                              class="svg-inline--fa fa-square-check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            >Mark as Final</button
+                          ><button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="trash-can"
+                              class="svg-inline--fa fa-trash-can"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                            >Delete Report
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="css-1rahl5j">
+                          VoiceOver for macOS&nbsp;<span
+                            >11.6 (20G165) or later</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1rahl5j">
+                          Firefox&nbsp;<span>Any version</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1578spe">
+                          <div id="assign-testers-10" class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                              <span class="sr-only">Assign Testers</span
+                              ><svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="user"
+                                class="svg-inline--fa fa-user"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            Assign Yourself
+                          </button>
+                        </div>
+                        <ul class="css-9acwza">
+                          <li>
+                            <a
+                              href="https://github.com/esmeralda-baggins"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >esmeralda-baggins</a
+                            ><em>11 of 11 tests complete</em>
+                          </li>
+                        </ul>
+                      </td>
+                      <td>
+                        <div class="css-78pgex">
+                          <div class="progress clipped">
+                            <div
+                              class="front"
+                              style="clip-path: inset(0px 0px 0px 100%)"></div>
+                            <div class="back"></div>
+                          </div>
+                          <span
+                            >100% complete by&nbsp;<a
+                              href="https://github.com/esmeralda-baggins"
+                              >esmeralda-baggins</a
+                            >&nbsp;with 0 conflicts</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1mwhzii">
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-primary">
+                            Start Testing
+                          </button>
+                          <div class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="dropdown-toggle btn btn-secondary">
+                              <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="file-import"
+                                class="svg-inline--fa fa-file-import"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                              >Open run as...&nbsp;
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="square-check"
+                              class="svg-inline--fa fa-square-check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            >Mark as Final</button
+                          ><button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="trash-can"
+                              class="svg-inline--fa fa-trash-can"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                            >Delete Report
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <h2 tabindex="-1" id="combobox-select-only">
+            Select Only Combobox Example
+          </h2>
+          <div class="css-b7x2fk">
+            <h3>
+              <button
+                id="disclosure-btn-combobox-select-only-0"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-combobox-select-only-0"
+                class="css-10jxhio">
+                <span class="css-36z7cz"
+                  ><span
+                    ><svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-check"
+                      class="svg-inline--fa fa-circle-check check"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#2BA51C">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                    ><b>V22.03.17</b></span
+                  ></span
+                >&nbsp;<span class="draft css-be9e2a">Draft</span
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-combobox-select-only-0"
+              aria-labelledby="disclosure-btn-combobox-select-only-0"
+              class="css-19fsyrg">
+              <div class="css-25wfk">
+                <a href="/test-review/7"
+                  ><svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="arrow-up-right-from-square"
+                    class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    color="#818F98">
+                    <path
+                      fill="currentColor"
+                      d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                  >View tests in V22.03.17</a
+                ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                  <span
+                    ><span class="reports-not-started css-fidnqg"></span
+                    >Required Reports <strong>Not Started</strong></span
+                  >
+                </button>
+                <div></div>
+              </div>
+              <div class="css-1iwfp5o">
+                <table
+                  aria-label="Reports for Select Only Combobox Example V22.03.17 in draft phase"
+                  class="css-hfams3 table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Assistive Technology</th>
+                      <th>Browser</th>
+                      <th>Testers</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="css-1rahl5j">
+                          NVDA&nbsp;<span>2020.4 or later</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1rahl5j">
+                          Firefox&nbsp;<span>Any version</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1578spe">
+                          <div id="assign-testers-2" class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                              <span class="sr-only">Assign Testers</span
+                              ><svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="user"
+                                class="svg-inline--fa fa-user"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            Assign Yourself
+                          </button>
+                        </div>
+                        <ul class="css-9acwza">
+                          <li>
+                            <a
+                              href="https://github.com/esmeralda-baggins"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >esmeralda-baggins</a
+                            ><em>18 of 21 tests complete</em>
+                          </li>
+                          <br />
+                          <li>
+                            <a
+                              href="https://github.com/tom-proudfeet"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >tom-proudfeet</a
+                            ><em>18 of 21 tests complete</em>
+                          </li>
+                        </ul>
+                      </td>
+                      <td>
+                        <div class="css-78pgex">
+                          <div class="progress clipped">
+                            <div
+                              class="front"
+                              style="clip-path: inset(0px 0px 0px 85%)"></div>
+                            <div class="back"></div>
+                          </div>
+                          <span
+                            >85% complete by&nbsp;2 testers with
+                            3&nbsp;conflicts</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1mwhzii">
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-primary">
+                            Start Testing
+                          </button>
+                          <div class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="dropdown-toggle btn btn-secondary">
+                              <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="file-import"
+                                class="svg-inline--fa fa-file-import"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                              >Open run as...&nbsp;
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="square-check"
+                              class="svg-inline--fa fa-square-check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            >Mark as Final</button
+                          ><button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="trash-can"
+                              class="svg-inline--fa fa-trash-can"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                            >Delete Report
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <h2 tabindex="-1" id="toggle-button">Toggle Button</h2>
+          <div class="css-b7x2fk">
+            <h3>
+              <button
+                id="disclosure-btn-toggle-button-0"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-toggle-button-0"
+                class="css-10jxhio">
+                <span class="css-36z7cz"
+                  ><span
+                    ><svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-check"
+                      class="svg-inline--fa fa-circle-check check"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#2BA51C">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                    ><b>V22.05.18</b></span
+                  ></span
+                >&nbsp;<span class="draft css-be9e2a">Draft</span
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-toggle-button-0"
+              aria-labelledby="disclosure-btn-toggle-button-0"
+              class="css-19fsyrg">
+              <div class="css-25wfk">
+                <a href="/test-review/31"
+                  ><svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="arrow-up-right-from-square"
+                    class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"
+                    color="#818F98">
+                    <path
+                      fill="currentColor"
+                      d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                  >View tests in V22.05.18</a
+                ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                  <span
+                    ><span class="reports-in-progress css-fidnqg"></span
+                    >Required Reports <strong>In Progress</strong></span
+                  >
+                </button>
+                <div></div>
+              </div>
+              <div class="css-1iwfp5o">
+                <table
+                  aria-label="Reports for Toggle Button V22.05.18 in draft phase"
+                  class="css-hfams3 table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Assistive Technology</th>
+                      <th>Browser</th>
+                      <th>Testers</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class="css-1rahl5j">
+                          JAWS&nbsp;<span>2021.2111.13 or later</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1rahl5j">
+                          Chrome&nbsp;<span>Any version</span>
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1578spe">
+                          <div id="assign-testers-1" class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                              <span class="sr-only">Assign Testers</span
+                              ><svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="user"
+                                class="svg-inline--fa fa-user"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <button type="button" class="btn btn-secondary">
+                            Assign Yourself
+                          </button>
+                        </div>
+                        <ul class="css-9acwza">
+                          <li>
+                            <a
+                              href="https://github.com/esmeralda-baggins"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              >esmeralda-baggins</a
+                            ><em>12 of 16 tests complete</em>
+                          </li>
+                        </ul>
+                      </td>
+                      <td>
+                        <div class="css-78pgex">
+                          <div class="progress clipped">
+                            <div
+                              class="front"
+                              style="clip-path: inset(0px 0px 0px 75%)"></div>
+                            <div class="back"></div>
+                          </div>
+                          <span
+                            >75% complete by&nbsp;<a
+                              href="https://github.com/esmeralda-baggins"
+                              >esmeralda-baggins</a
+                            >&nbsp;with 0 conflicts</span
+                          >
+                        </div>
+                      </td>
+                      <td>
+                        <div class="css-1mwhzii">
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-primary">
+                            Start Testing
+                          </button>
+                          <div class="dropdown">
+                            <button
+                              type="button"
+                              aria-expanded="false"
+                              class="dropdown-toggle btn btn-secondary">
+                              <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="file-import"
+                                class="svg-inline--fa fa-file-import"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 512 512">
+                                <path
+                                  fill="currentColor"
+                                  d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                              >Open run as...&nbsp;
+                            </button>
+                          </div>
+                          <button
+                            type="button"
+                            disabled=""
+                            class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="square-check"
+                              class="svg-inline--fa fa-square-check"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
+                            >Mark as Final</button
+                          ><button type="button" class="btn btn-secondary">
+                            <svg
+                              aria-hidden="true"
+                              focusable="false"
+                              data-prefix="fas"
+                              data-icon="trash-can"
+                              class="svg-inline--fa fa-trash-can"
+                              role="img"
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 448 512">
+                              <path
+                                fill="currentColor"
+                                d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"></path></svg
+                            >Delete Report
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+      <span aria-live="polite" aria-atomic="true" class="css-1wkn33"></span>
+    </div>
+    <script src="/bundle.js"></script>
+  </body>
+</html>
