@@ -44,7 +44,14 @@ ScrollFixer.propTypes = {
 };
 
 const pollForElement = async (selector, { timeout }) => {
-  let element = document.querySelector(selector);
+  let element;
+  try {
+    element = document.querySelector(selector);
+  } catch (e) {
+    // Selector is likely invalid. Don't poll
+    return false;
+  }
+
   if (element) return element;
 
   let timeoutExceeded = false;
