@@ -30,6 +30,7 @@ import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
   getIssueSearchLink
 } from '../../../utils/createIssueLink';
+import RunHistory from '../../common/RunHistory';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -63,6 +64,7 @@ const CandidateTestPlanRun = () => {
   const [thankYouModalShowing, setThankYouModalShowing] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showBrowserBools, setShowBrowserBools] = useState([]);
+  const [showRunHistory, setShowRunHistory] = useState(false);
   const [showBrowserClicks, setShowBrowserClicks] = useState([]);
 
   const isLaptopOrLarger = useMediaQuery({
@@ -375,7 +377,8 @@ const CandidateTestPlanRun = () => {
       </span>
       <h1>
         {`${currentTest.seq}. ${currentTest.title}`}{' '}
-        <span className="using">using</span> {`${at}`}
+        <span className="using">using</span> {`${at}`}{' '}
+        {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
         {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
         {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
           <Badge className="viewed-badge" pill variant="secondary">
@@ -391,9 +394,11 @@ const CandidateTestPlanRun = () => {
       <div className="test-info-entity apg-example-name">
         <div className="info-label">
           <b>Candidate Test Plan:</b>{' '}
-          {`${
-            testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
-          }`}
+          <a href={`/test-review/${testPlanVersion.id}`}>
+            {`${
+              testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
+            } ${testPlanVersion.versionString}`}
+          </a>
         </div>
       </div>
       <div className="test-info-entity review-status">
@@ -460,13 +465,15 @@ const CandidateTestPlanRun = () => {
           'Test Instructions',
           ...testPlanReports.map(
             testPlanReport => `Test Results for ${testPlanReport.browser.name}`
-          )
+          ),
+          'Run History'
         ]}
         onClick={[
           () => setShowInstructions(!showInstructions),
-          ...showBrowserClicks
+          ...showBrowserClicks,
+          () => setShowRunHistory(!showRunHistory)
         ]}
-        expanded={[showInstructions, ...showBrowserBools]}
+        expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
         disclosureContainerView={[
           <InstructionsRenderer
             key={`instructions-${currentTest.id}`}
@@ -497,7 +504,12 @@ const CandidateTestPlanRun = () => {
                 />
               </>
             );
-          })
+          }),
+          <RunHistory
+            key="run-history"
+            testPlanReports={testPlanReports}
+            testId={currentTest.id}
+          />
         ]}
         stacked
       ></DisclosureComponent>
