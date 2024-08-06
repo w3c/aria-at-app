@@ -11,9 +11,8 @@ import {
   faHome
 } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
-import { getMetrics } from 'shared';
+import { getMetrics, dates } from 'shared';
 import { none } from './None';
-import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
@@ -59,7 +58,8 @@ const getTestersRunHistory = (
               {tester.username}
             </a>
           </b>{' '}
-          on {convertDateToString(testResult.completedAt, 'MMMM DD, YYYY')}.
+          on{' '}
+          {dates.convertDateToString(testResult.completedAt, 'MMMM DD, YYYY')}.
         </li>
       );
     }
@@ -267,7 +267,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         </li>
         <li>
           Report completed on{' '}
-          {convertDateToString(
+          {dates.convertDateToString(
             new Date(testPlanReport.markedFinalAt),
             'MMMM D, YYYY'
           )}

@@ -1,4 +1,4 @@
-import { gitUpdatedDateToString } from './gitUtils';
+const { gitUpdatedDateToString } = require('../dates');
 
 describe('gitUpdatedDateToString', () => {
   it('returns a formatted string AM', () => {

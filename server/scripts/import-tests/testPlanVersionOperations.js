@@ -15,7 +15,7 @@ const {
   createTestPlan
 } = require('../../models/services/TestPlanService');
 const { hashTests } = require('../../util/aria');
-const convertDateToString = require('../../util/convertDateToString');
+const { dates } = require('shared');
 const { readCommit, readDirectoryGitInfo } = require('./gitOperations');
 const { parseTests } = require('./testParser');
 const {
@@ -452,7 +452,10 @@ async function deprecateOldTestPlanVersions(directory, updatedAt, transaction) {
  * @returns {Promise<string>} The generated version string.
  */
 async function getVersionString({ directory, updatedAt, transaction }) {
-  const versionStringBase = `V${convertDateToString(updatedAt, 'YY.MM.DD')}`;
+  const versionStringBase = `V${dates.convertDateToString(
+    updatedAt,
+    'YY.MM.DD'
+  )}`;
   const result = await sequelize.query(
     `
       SELECT "versionString" FROM "TestPlanVersion"

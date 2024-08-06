@@ -2,8 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import styled from '@emotion/styled';
+import { dates } from 'shared';
 import BasicModal from '../BasicModal';
-import { convertDateToString, isValidDate } from '../../../utils/formatter';
 
 const ModalInnerSectionContainer = styled.div`
   display: flex;
@@ -20,12 +20,12 @@ const UpdateTargetDateModal = ({
   const dateTextRef = useRef();
 
   const [updatedDateText, setUpdatedDateText] = useState(
-    convertDateToString(dateText)
+    dates.convertDateToString(dateText)
   );
   const [isDateError, setIsDateError] = useState(false);
 
   useEffect(() => {
-    setUpdatedDateText(convertDateToString(dateText));
+    setUpdatedDateText(dates.convertDateToString(dateText));
   }, [dateText]);
 
   const handleDateTextChange = e => {
@@ -73,7 +73,7 @@ const UpdateTargetDateModal = ({
     const dateTextError =
       !updatedDateText ||
       updatedDateText.length !== 10 ||
-      !isValidDate(updatedDateText);
+      !dates.isValidDate(updatedDateText);
 
     if (dateTextError) {
       setIsDateError(dateTextError);
