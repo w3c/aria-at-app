@@ -147,7 +147,8 @@ const getPage = async (options, callback) => {
   let consoleErrors = [];
 
   page.on('console', msg => {
-    if (msg.type() === 'error') {
+    // App does not use a favicon, so we can ignore these errors
+    if (msg.type() === 'error' && !msg.text().includes('favicon')) {
       consoleErrors.push(msg.text());
     }
   });
