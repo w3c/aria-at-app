@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { convertDateToString } from '../../../utils/formatter';
+
 import styled from '@emotion/styled';
+import { dates } from 'shared';
 
 const RunListItem = styled.li`
   margin-bottom: 0.5rem;
@@ -38,7 +39,12 @@ const RunHistory = ({ testPlanReports, testId }) => {
                   {tester.username}
                 </a>
               </b>{' '}
-              on {convertDateToString(testResult.completedAt, 'MMMM DD, YYYY')}.
+              on{' '}
+              {dates.convertDateToString(
+                testResult.completedAt,
+                'MMMM DD, YYYY'
+              )}
+              .
             </RunListItem>
           );
         }
