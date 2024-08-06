@@ -3,7 +3,7 @@ import { Form } from 'react-bootstrap';
 import RadioBox from '@components/common/RadioBox';
 import AddTestToQueueWithConfirmation from '@components/AddTestToQueueWithConfirmation';
 import { DisclosureContainer } from '@components/ManageTestQueue/index';
-import { gitUpdatedDateToString } from '@client/utils/gitUtils';
+import { dates } from 'shared';
 import PropTypes from 'prop-types';
 
 const AddTestPlans = ({
@@ -162,8 +162,8 @@ const AddTestPlans = ({
             {matchingTestPlanVersions.length ? (
               matchingTestPlanVersions.map(item => (
                 <option key={`${item.gitSha}-${item.id}`} value={item.id}>
-                  {gitUpdatedDateToString(item.updatedAt)} {item.gitMessage} (
-                  {item.gitSha.substring(0, 7)})
+                  {dates.gitUpdatedDateToString(item.updatedAt)}{' '}
+                  {item.gitMessage} ({item.gitSha.substring(0, 7)})
                 </option>
               ))
             ) : (

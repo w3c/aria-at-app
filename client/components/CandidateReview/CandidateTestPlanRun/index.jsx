@@ -17,12 +17,11 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { getMetrics } from 'shared';
+import { getMetrics, dates } from 'shared';
 import './CandidateTestPlanRun.css';
 import '../../TestRun/TestRun.css';
 import '../../App/App.css';
 import { useMediaQuery } from 'react-responsive';
-import { convertDateToString } from '../../../utils/formatter';
 import TestPlanResultsTable from '../../common/TestPlanResultsTable';
 import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
 import ThankYouModal from '../CandidateModals/ThankYouModal';
@@ -284,7 +283,7 @@ const CandidateTestPlanRun = () => {
 
   const reviewStatusText = vendorReviewStatusMap[reviewStatus];
 
-  const targetCompletionDate = convertDateToString(
+  const targetCompletionDate = dates.convertDateToString(
     new Date(recommendedPhaseTargetDate),
     'MMMM D, YYYY'
   );

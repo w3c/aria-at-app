@@ -12,7 +12,7 @@ import {
 } from '../common/ThemeTable';
 import VersionString from '../common/VersionString';
 import PhasePill from '../common/PhasePill';
-import { convertDateToString } from '../../utils/formatter';
+import { dates } from 'shared';
 import { derivePhaseName } from '../../utils/aria';
 import styled from '@emotion/styled';
 import {
@@ -131,7 +131,7 @@ const TestPlanVersionsPage = () => {
       default:
         throw new Error('Unexpected case');
     }
-    return convertDateToString(date, 'MMM D, YYYY');
+    return dates.convertDateToString(date, 'MMM D, YYYY');
   };
 
   const getIconColor = testPlanVersion => {
@@ -142,7 +142,7 @@ const TestPlanVersionsPage = () => {
   };
 
   const getEventDate = testPlanVersion => {
-    return convertDateToString(
+    return dates.convertDateToString(
       (() => {
         if (testPlanVersion.deprecatedAt) {
           return testPlanVersion.deprecatedAt;
@@ -427,12 +427,14 @@ const TestPlanVersionsPage = () => {
                   </td>
                   <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
                   <td>{issue.at?.name ?? 'AT not specified'}</td>
-                  <td>{convertDateToString(issue.createdAt, 'MMM D, YYYY')}</td>
+                  <td>
+                    {dates.convertDateToString(issue.createdAt, 'MMM D, YYYY')}
+                  </td>
                   <td>
                     {!issue.closedAt ? (
                       <NoneText>N/A</NoneText>
                     ) : (
-                      convertDateToString(issue.closedAt, 'MMM D, YYYY')
+                      dates.convertDateToString(issue.closedAt, 'MMM D, YYYY')
                     )}
                   </td>
                 </tr>
@@ -602,7 +604,9 @@ const TestPlanVersionsPage = () => {
 
                       return events.map(([phase, date]) => (
                         <tr key={phase}>
-                          <th>{convertDateToString(date, 'MMM D, YYYY')}</th>
+                          <th>
+                            {dates.convertDateToString(date, 'MMM D, YYYY')}
+                          </th>
                           <td>{getEventBody(phase)}</td>
                         </tr>
                       ));

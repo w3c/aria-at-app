@@ -18,7 +18,7 @@ import {
   getTestPlanVersionTitle
 } from '@components/Reports/getTitles';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
-import { convertDateToString } from '@client/utils/formatter';
+import { dates } from 'shared';
 import './TestPlans.css';
 import { calculations } from 'shared';
 
@@ -519,7 +519,7 @@ const TestPlans = ({ testPlanVersions }) => {
                         </th>
                         <CenteredTd>
                           <i>
-                            {convertDateToString(
+                            {dates.convertDateToString(
                               candidatePhaseReachedAt,
                               'MMM D, YYYY'
                             )}
@@ -527,7 +527,7 @@ const TestPlans = ({ testPlanVersions }) => {
                         </CenteredTd>
                         <CenteredTd>
                           <i>
-                            {convertDateToString(
+                            {dates.convertDateToString(
                               recommendedPhaseTargetDate,
                               'MMM D, YYYY'
                             )}
