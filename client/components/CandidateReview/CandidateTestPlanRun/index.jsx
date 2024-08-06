@@ -30,6 +30,7 @@ import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
   getIssueSearchLink
 } from '../../../utils/createIssueLink';
+import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -55,7 +56,8 @@ const CandidateTestPlanRun = () => {
   const [reviewStatus, setReviewStatus] = useState('');
   const [firstTimeViewing, setFirstTimeViewing] = useState(false);
   const [viewedTests, setViewedTests] = useState([]);
-  const [currentTestIndex, setCurrentTestIndex] = useState(0);
+  const [testsLength, setTestsLength] = useState(0);
+  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex(testsLength);
   const [showTestNavigator, setShowTestNavigator] = useState(true);
   const [isFirstTest, setIsFirstTest] = useState(true);
   const [isLastTest, setIsLastTest] = useState(false);
@@ -181,7 +183,7 @@ const CandidateTestPlanRun = () => {
           return bools;
         });
       });
-
+      setTestsLength(tests.length);
       setShowBrowserClicks(browserClicks);
     }
   }, [data]);
