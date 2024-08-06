@@ -5,7 +5,7 @@ import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { DisclosureContainer } from '@components/ManageTestQueue/index';
 import BasicModal from '@components/common/BasicModal';
 import UpdateVersionModal from '@components/common/UpdateVersionModal';
-import { convertStringToDate } from '@client/utils/formatter';
+import { dates } from 'shared';
 import { useMutation } from '@apollo/client';
 import {
   ADD_AT_VERSION_MUTATION,
@@ -205,7 +205,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
           variables: {
             atId: selectedAtId,
             name: updatedVersionText,
-            releasedAt: convertStringToDate(updatedDateAvailabilityText)
+            releasedAt: dates.convertStringToDate(updatedDateAvailabilityText)
           }
         });
         setSelectedAtVersionId(
@@ -233,7 +233,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
           variables: {
             atVersionId: selectedAtVersionId,
             name: updatedVersionText,
-            releasedAt: convertStringToDate(updatedDateAvailabilityText)
+            releasedAt: dates.convertStringToDate(updatedDateAvailabilityText)
           }
         });
         await triggerUpdate();

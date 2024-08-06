@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { convertDateToString } from '../../../utils/formatter';
+import { dates } from 'shared';
 import { calculatePercentComplete } from '../../../utils/calculatePercentComplete';
 import { TestPlanVersionPropType, TestPlanRunPropType } from '../proptypes';
 
@@ -16,7 +16,7 @@ const ReportStatusSummary = ({
   fromTestQueue = false
 }) => {
   const renderCompleteReportStatus = testPlanReport => {
-    const formattedDate = convertDateToString(
+    const formattedDate = dates.convertDateToString(
       testPlanReport.markedFinalAt,
       'MMM D, YYYY'
     );

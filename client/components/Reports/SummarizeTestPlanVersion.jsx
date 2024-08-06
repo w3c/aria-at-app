@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { none } from './None';
-import { getMetrics } from 'shared';
+import { getMetrics, dates } from 'shared';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -11,7 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import DisclaimerInfo from '../DisclaimerInfo';
-import { convertDateToString } from '../../utils/formatter';
 import {
   TestPlanReportPropType,
   TestPlanVersionPropType
@@ -115,7 +114,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             <h2>{getTestPlanTargetTitle(testPlanTarget)}</h2>
             <p>
               Report completed on{' '}
-              {convertDateToString(
+              {dates.convertDateToString(
                 new Date(testPlanReport.markedFinalAt),
                 'MMMM D, YYYY'
               )}
