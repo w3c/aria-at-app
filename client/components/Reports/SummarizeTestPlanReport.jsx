@@ -19,7 +19,7 @@ import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
-import { getTestersRunHistory } from './getTestersRunHistory';
+import RunHistory from '../common/RunHistory';
 
 const ResultsContainer = styled.div`
   padding: 1em 1.75em;
@@ -317,11 +317,12 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
             <DisclosureComponent
               componentId={`run-history-${testResult.id}`}
               title="Run History"
-              disclosureContainerView={getTestersRunHistory(
-                testPlanReport,
-                testResult.test.id,
-                testPlanReport.draftTestPlanRuns
-              )}
+              disclosureContainerView={
+                <RunHistory
+                  testPlanReports={[testPlanReport]}
+                  testId={testResult.test.id}
+                />
+              }
             />
           </Fragment>
         );

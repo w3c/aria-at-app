@@ -31,7 +31,7 @@ import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
   getIssueSearchLink
 } from '../../../utils/createIssueLink';
-import { getTestersRunHistory } from '../../Reports/getTestersRunHistory';
+import RunHistory from '../../common/RunHistory';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -506,11 +506,11 @@ const CandidateTestPlanRun = () => {
               </>
             );
           }),
-          getTestersRunHistory(
-            testPlanReport,
-            currentTest.id,
-            testPlanReport.draftTestPlanRuns
-          )
+          <RunHistory
+            key="run-history"
+            testPlanReports={testPlanReports}
+            testId={currentTest.id}
+          />
         ]}
         stacked
       ></DisclosureComponent>
