@@ -204,23 +204,23 @@ describe('Test Run when signed in as tester', () => {
   });
 
   it('inputs results and navigates between tests to confirm saving', async () => {
-    async function getGeneratedCheckedTestCount(page, checkboxSelector) {
-      return await page.$$eval(checkboxSelector, els => {
-        let checkedCount = 0;
-        const filteredCheckboxes = els.filter(
-          checkbox => checkbox.id && !checkbox.id.includes('undesirable')
+    async function getGeneratedCheckedAssertionCount(page) {
+      return await page.evaluate(() => {
+        const radioGroups = document.querySelectorAll(
+          'input[type="radio"][id^="pass-"]'
         );
+        let yesCount = 0;
 
-        filteredCheckboxes.forEach((checkbox, index) => {
-          // avoid checking the undesirable checkboxes which are conditionally
-          // rendered
-          const isChecked = index % 2 === 0;
-          if (isChecked) {
-            checkedCount++;
-            checkbox.click();
+        for (let i = 0; i < radioGroups.length; i += 2) {
+          if (i % 4 === 0) {
+            radioGroups[i].click(); // Click 'Yes' radio
+            yesCount++;
+          } else {
+            radioGroups[i + 1].click(); // Click 'No' radio
           }
-        });
-        return checkedCount;
+        }
+
+        return yesCount;
       });
     }
 
@@ -230,27 +230,23 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('h1 ::-p-text(Test 1)');
       await page.waitForSelector('button ::-p-text(Next Test)');
 
-      const checkboxSelector = 'input[type="checkbox"]';
+      const radioSelector = 'input[type="radio"]';
       const test1NavSelector = 'nav#test-navigator-nav ol li:nth-child(1)';
       const test2NavSelector = 'nav#test-navigator-nav ol li:nth-child(2)';
       const nextTestButtonSelector = 'button ::-p-text(Next Test)';
       const previousTestButtonSelector = 'button ::-p-text(Previous Test)';
 
-      // Randomly check checkboxes on first test
-      const generatedCheckedTest1Count = await getGeneratedCheckedTestCount(
-        page,
-        checkboxSelector
-      );
+      // Randomly select radio buttons on first test
+      const generatedCheckedTest1Count =
+        await getGeneratedCheckedAssertionCount(page, radioSelector);
 
       // Navigate to test 2 with navigation menu
       await page.$eval(test2NavSelector, el => el.querySelector('a').click());
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
-      const generatedCheckedTest2Count = await getGeneratedCheckedTestCount(
-        page,
-        checkboxSelector
-      );
+      const generatedCheckedTest2Count =
+        await getGeneratedCheckedAssertionCount(page, radioSelector);
 
       // Navigate to test 3 with next button
       await page.click(nextTestButtonSelector);
@@ -258,8 +254,8 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('h1 ::-p-text(Test 3:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
       const test3CheckedCount = await page.$$eval(
-        checkboxSelector,
-        els => els.filter(checkbox => checkbox.checked).length
+        radioSelector,
+        els => els.filter(radio => radio.checked).length
       );
 
       // Navigate back to test 2 with previous button
@@ -268,8 +264,8 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
       const test2CheckedCount = await page.$$eval(
-        checkboxSelector,
-        els => els.filter(checkbox => checkbox.checked).length
+        radioSelector,
+        els => els.filter(radio => radio.checked).length
       );
 
       // Navigate back to Test 1 with navigation menu
@@ -278,18 +274,13 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('h1 ::-p-text(Test 1:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
       const test1CheckedCount = await page.$$eval(
-        checkboxSelector,
+        radioSelector,
         els =>
-          els.filter(
-            checkbox =>
-              checkbox.id &&
-              !checkbox.id.includes('undesirable') &&
-              checkbox.checked
-          ).length
+          els.filter(radio => radio.checked && radio.id.includes('-yes')).length
       );
 
       expect(test1CheckedCount).toBe(generatedCheckedTest1Count);
-      expect(test2CheckedCount).toBe(generatedCheckedTest2Count);
+      expect(test2CheckedCount).toBe(generatedCheckedTest2Count * 2); // Both 'Yes' and 'No' are checked
       expect(test3CheckedCount).toBe(0);
     });
   });
@@ -320,30 +311,35 @@ describe('Test Run when signed in as tester', () => {
 
       // Input output for valid submission
       await page.evaluate(() => {
-        const checkboxEls = Array.from(
-          document.querySelectorAll('input[type="checkbox"]')
+        const yesRadios = document.querySelectorAll(
+          'input[data-testid^="radio-yes-"]'
         );
-        const filteredCheckboxes = checkboxEls.filter(
-          checkbox => checkbox.id && !checkbox.id.includes('undesirable')
+        const noRadios = document.querySelectorAll(
+          'input[data-testid^="radio-no-"]'
+        );
+        const noUndesiredRadios = document.querySelectorAll(
+          'input[id^="problem-"][id$="-true"]'
+        );
+        const noOutputCheckboxes = document.querySelectorAll(
+          'input[id^="no-output-checkbox"]'
         );
 
-        filteredCheckboxes.forEach((checkbox, index) => {
-          if (checkbox.id.includes('no-output-checkbox')) checkbox.click();
-          else {
-            // Selecting different assertions to force a conflict
-            const check = index % 2 === 0;
-            if (check) checkbox.click();
+        yesRadios.forEach((radio, index) => {
+          if (index % 2 === 0) {
+            radio.click();
+          } else {
+            noRadios[index].click();
           }
         });
 
-        const radioEls = Array.from(
-          document.querySelectorAll('input[type="radio"]')
-        );
-        radioEls.forEach(radio => {
-          if (radio.id && radio.id.includes('true')) radio.click();
+        noUndesiredRadios.forEach(radio => {
+          radio.click();
+        });
+
+        noOutputCheckboxes.forEach(checkbox => {
+          checkbox.click();
         });
       });
-
       // Submit valid form
       await page.click(submitResultsButtonSelector);
       await page.waitForNetworkIdle();
