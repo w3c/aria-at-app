@@ -28,6 +28,17 @@
       - npm
     state: present
   become: yes
+  when: deployment_mode != 'sandbox'
+
+# TODO: `apt install npm` causes package locking issues on the sandbox that need to be resolved
+- name: Install packages (sandbox)
+  apt:
+    name:
+      - nodejs
+      - yarn
+    state: present
+  become: yes
+  when: deployment_mode == 'sandbox'
 
 - name: Check if Node exists
   command: node --version
