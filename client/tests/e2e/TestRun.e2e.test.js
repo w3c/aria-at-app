@@ -20,8 +20,6 @@ describe('Test Run when not signed in', () => {
         const h1Text = await text(page, 'h1');
         expect(h1Text.includes('Test 1:')).toBe(true);
 
-        const currentUrl = await page.url();
-
         await page.waitForSelector('nav#test-navigator-nav ol');
         const testNavigatorListItemsHandle = await page.evaluateHandle(() => {
           const testNavigatorListSelector = 'nav#test-navigator-nav ol';
