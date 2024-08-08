@@ -16,6 +16,7 @@ import MarkBotRunFinishedButton from './MarkBotRunFinishedButton';
 import RetryCanceledCollectionsButton from './RetryCanceledCollectionsButton';
 import StopRunningCollectionButton from './StopRunningCollectionButton';
 import ViewLogsButton from './ViewLogsButton';
+import { TestPlanRunPropType, UserPropType } from '../common/proptypes';
 
 const ManageBotRunDialog = ({
   testPlanReportId,
@@ -177,10 +178,10 @@ const ManageBotRunDialog = ({
 };
 
 ManageBotRunDialog.propTypes = {
-  testPlanRun: PropTypes.object.isRequired,
+  testPlanRun: TestPlanRunPropType.isRequired,
   show: PropTypes.bool.isRequired,
   setShow: PropTypes.func.isRequired,
-  testers: PropTypes.array.isRequired,
+  testers: PropTypes.arrayOf(UserPropType).isRequired,
   testPlanReportId: PropTypes.string.isRequired,
   runnableTestsLength: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired

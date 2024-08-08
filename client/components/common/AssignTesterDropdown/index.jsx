@@ -19,6 +19,7 @@ import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfir
 import { isSupportedByResponseCollector } from '../../../utils/automation';
 
 import './AssignTesterDropdown.css';
+import { TestPlanRunPropType, UserPropType } from '../proptypes';
 
 const AssignTesterDropdown = ({
   testPlanReportId,
@@ -209,23 +210,11 @@ const AssignTesterDropdown = ({
 
 AssignTesterDropdown.propTypes = {
   testPlanReportId: PropTypes.string.isRequired,
-  possibleTesters: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      username: PropTypes.string.isRequired,
-      isBot: PropTypes.bool.isRequired,
-      ats: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          key: PropTypes.string.isRequired
-        })
-      )
-    })
-  ).isRequired,
+  possibleTesters: PropTypes.arrayOf(UserPropType).isRequired,
   onChange: PropTypes.func.isRequired,
-  testPlanRun: PropTypes.object,
+  testPlanRun: TestPlanRunPropType,
   label: PropTypes.string,
-  draftTestPlanRuns: PropTypes.array,
+  draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType),
   setAlertMessage: PropTypes.func,
   dropdownAssignTesterButtonRef: PropTypes.object
 };

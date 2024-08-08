@@ -15,6 +15,7 @@ import {
 import { useTriggerLoad } from '@components/common/LoadingStatus';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import PropTypes from 'prop-types';
+import { AtPropType } from '../common/proptypes';
 
 const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
   const { triggerLoad } = useTriggerLoad();
@@ -410,20 +411,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
 };
 
 ManageAtVersions.propTypes = {
-  ats: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      key: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      browsers: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          key: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired
-        })
-      ).isRequired
-    })
-  ).isRequired,
+  ats: PropTypes.arrayOf(AtPropType).isRequired,
   triggerUpdate: PropTypes.func
 };
 
