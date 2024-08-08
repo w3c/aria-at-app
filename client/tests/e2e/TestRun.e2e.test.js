@@ -59,6 +59,11 @@ describe('Test Run when not signed in', () => {
           await page.waitForSelector(`h2 ::-p-text(Instructions)`);
           await page.waitForSelector(`h2 ::-p-text(Record Results)`);
           await page.waitForSelector(`h3 ::-p-text(After)`);
+
+          const updatedUrl = await page.url();
+          expect(updatedUrl).toMatch(
+            new RegExp(`/test-plan-report/19#${index + 1}$`)
+          );
         }
 
         expect(currentUrl.includes('/test-plan-report/19')).toBe(true);
@@ -176,6 +181,30 @@ describe('Test Run when signed in as tester', () => {
       }
 
       expect(listItemsLength).toBeGreaterThan(1);
+    });
+  });
+
+  it('clamps the test index to the bounds of the test list', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      const url = await page.url();
+      await page.goto(`${url}#0`);
+      await page.waitForNetworkIdle();
+      let h1Text = await text(page, 'h1');
+      expect(h1Text).toMatch(/^Test 1:/);
+
+      const numberOfTests = await page.$eval(
+        'nav#test-navigator-nav ol',
+        el => {
+          return el.children.length;
+        }
+      );
+      await page.goto(`${url}#${numberOfTests + 10}`);
+      await page.waitForNetworkIdle();
+      h1Text = await text(page, 'h1');
+      expect(h1Text).toMatch(new RegExp(`Test ${numberOfTests}:`));
     });
   });
 
