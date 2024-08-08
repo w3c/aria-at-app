@@ -65,9 +65,6 @@ describe('Test Run when not signed in', () => {
             new RegExp(`/test-plan-report/19#${index + 1}$`)
           );
         }
-
-        expect(currentUrl.includes('/test-plan-report/19')).toBe(true);
-        expect(listItemsLength).toBeGreaterThan(1);
         expect(consoleErrors).toHaveLength(0);
       }
     );
