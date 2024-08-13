@@ -19,7 +19,11 @@ const ScrollFixer = ({ children }) => {
       // location partly down the page.
       document.querySelector('a').focus();
     };
-    if (!location.hash) return scrollTop();
+
+    // Check if the hash is a number (our test index)
+    const isTestIndex = /^#\d+$/.test(location.hash);
+
+    if (!location.hash || isTestIndex) return scrollTop();
     (async () => {
       // The point at which the window jumping down the page would become
       // disorienting. This must include time for the page's API requests
@@ -40,7 +44,14 @@ ScrollFixer.propTypes = {
 };
 
 const pollForElement = async (selector, { timeout }) => {
-  let element = document.querySelector(selector);
+  let element;
+  try {
+    element = document.querySelector(selector);
+  } catch (e) {
+    // Selector is likely invalid. Don't poll
+    return false;
+  }
+
   if (element) return element;
 
   let timeoutExceeded = false;

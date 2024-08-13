@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import BotTestCompletionStatus from './BotTestCompletionStatus';
 import PreviouslyAutomatedTestCompletionStatus from './PreviouslyAutomatedTestCompletionStatus';
+import { TestPlanRunPropType } from '../common/proptypes';
 
 const TestQueueCompletionStatusListItem = ({
   runnableTestsLength,
@@ -77,15 +78,7 @@ const TestQueueCompletionStatusListItem = ({
 
 TestQueueCompletionStatusListItem.propTypes = {
   runnableTestsLength: PropTypes.number.isRequired,
-  testPlanRun: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    testResultsLength: PropTypes.number.isRequired,
-    initiatedByAutomation: PropTypes.bool.isRequired,
-    tester: PropTypes.shape({
-      username: PropTypes.string.isRequired,
-      isBot: PropTypes.bool.isRequired
-    }).isRequired
-  }).isRequired,
+  testPlanRun: TestPlanRunPropType.isRequired,
   id: PropTypes.string.isRequired
 };
 

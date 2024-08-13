@@ -44,41 +44,47 @@ describe('User Settings common traits', () => {
   });
 
   it('renders testable assistive technologies status and update on save', async () => {
-    await getPage({ role: 'tester', url: '/account/settings' }, async page => {
-      const testableAtsStatusTextBeforeSave = await text(
-        page,
-        'p[data-testid="testable-ats-status"]'
-      );
-      const jawsOptionSelector = 'input[id="1"][type="checkbox"]';
-      const nvdaOptionSelector = 'input[id="2"][type="checkbox"]';
-      const saveButtonSelector = 'button[type="submit"]';
-      const saveButtonText = await text(page, saveButtonSelector);
+    await getPage(
+      { role: 'tester', url: '/account/settings' },
+      async (page, { consoleErrors }) => {
+        const testableAtsStatusTextBeforeSave = await text(
+          page,
+          'p[data-testid="testable-ats-status"]'
+        );
+        expect(testableAtsStatusTextBeforeSave).toBe(
+          'You have not yet selected any assistive technologies.'
+        );
 
-      await page.click(jawsOptionSelector);
-      await page.click(nvdaOptionSelector);
-      await page.click(saveButtonSelector);
+        const jawsOptionSelector = 'input[id="1"][type="checkbox"]';
+        const nvdaOptionSelector = 'input[id="2"][type="checkbox"]';
+        const saveButtonSelector = 'button[type="submit"]';
+        const saveButtonText = await text(page, saveButtonSelector);
 
-      await page.waitForNetworkIdle();
+        await page.click(jawsOptionSelector);
+        await page.click(nvdaOptionSelector);
+        await page.click(saveButtonSelector);
 
-      const testableAtsStatusTextAfterSave = await text(
-        page,
-        'p[data-testid="testable-ats-status"]'
-      );
-      const selectedAtsListItems = await page.$eval('ul', el => {
-        const liElements = el.querySelectorAll('li');
-        return Array.from(liElements, li => li.innerText.trim());
-      });
+        await page.waitForNetworkIdle();
 
-      expect(saveButtonText).toBe('Save');
-      expect(testableAtsStatusTextBeforeSave).toBe(
-        'You have not yet selected any assistive technologies.'
-      );
-      expect(testableAtsStatusTextAfterSave).toBe(
-        'You can currently test the following assistive technologies:'
-      );
-      expect(selectedAtsListItems.length).toBe(2);
-      expect(selectedAtsListItems.includes('JAWS')).toBe(true);
-      expect(selectedAtsListItems.includes('NVDA')).toBe(true);
-    });
+        const testableAtsStatusTextAfterSave = await text(
+          page,
+          'p[data-testid="testable-ats-status"]'
+        );
+        const selectedAtsListItems = await page.$eval('ul', el => {
+          const liElements = el.querySelectorAll('li');
+          return Array.from(liElements, li => li.innerText.trim());
+        });
+
+        expect(saveButtonText).toBe('Save');
+        expect(testableAtsStatusTextAfterSave).toBe(
+          'You can currently test the following assistive technologies:'
+        );
+        expect(selectedAtsListItems.length).toBe(2);
+        expect(selectedAtsListItems.includes('JAWS')).toBe(true);
+        expect(selectedAtsListItems.includes('NVDA')).toBe(true);
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
   });
 });

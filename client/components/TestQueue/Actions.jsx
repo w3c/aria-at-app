@@ -22,6 +22,11 @@ import BasicThemedModal from '../common/BasicThemedModal';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
 import ManageBotRunDialogWithButton from '@components/ManageBotRunDialog/WithButton';
+import {
+  TestPlanPropType,
+  TestPlanReportPropType,
+  UserPropType
+} from '../common/proptypes';
 
 const ActionContainer = styled.div`
   display: flex;
@@ -296,42 +301,10 @@ const Actions = ({
 };
 
 Actions.propTypes = {
-  me: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    username: PropTypes.string.isRequired
-  }),
-  testPlan: PropTypes.shape({
-    directory: PropTypes.string.isRequired
-  }).isRequired,
-  testPlanReport: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    runnableTestsLength: PropTypes.number.isRequired,
-    conflictsLength: PropTypes.number.isRequired,
-    draftTestPlanRuns: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        testResultsLength: PropTypes.number.isRequired,
-        tester: PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          username: PropTypes.string.isRequired,
-          isBot: PropTypes.bool.isRequired
-        })
-      })
-    ).isRequired
-  }).isRequired,
-  testers: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      username: PropTypes.string.isRequired,
-      isBot: PropTypes.bool.isRequired,
-      ats: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          key: PropTypes.string.isRequired
-        })
-      )
-    })
-  ).isRequired,
+  me: UserPropType,
+  testPlan: TestPlanPropType.isRequired,
+  testPlanReport: TestPlanReportPropType.isRequired,
+  testers: PropTypes.arrayOf(UserPropType).isRequired,
   triggerUpdate: PropTypes.func.isRequired
 };
 

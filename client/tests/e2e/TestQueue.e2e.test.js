@@ -19,14 +19,19 @@ describe('Test Queue admin traits when reports exist', () => {
   });
 
   it('renders page with instructions', async () => {
-    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      const instructionsSelector = '[data-testid="test-queue-instructions"]';
-      const instructionsText = await text(page, instructionsSelector);
+    await getPage(
+      { role: 'admin', url: '/test-queue' },
+      async (page, { consoleErrors }) => {
+        const instructionsSelector = '[data-testid="test-queue-instructions"]';
+        const instructionsText = await text(page, instructionsSelector);
 
-      expect(instructionsText).toBe(
-        'Manage the test plans, assign yourself a test plan or start executing one that is already assigned to you.'
-      );
-    });
+        expect(instructionsText).toBe(
+          'Manage the test plans, assign yourself a test plan or start executing one that is already assigned to you.'
+        );
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
   });
 
   it('renders page with known pattern sections', async () => {

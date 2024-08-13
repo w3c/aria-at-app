@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { dates } from 'shared';
 import { calculatePercentComplete } from '../../../utils/calculatePercentComplete';
+import { TestPlanVersionPropType, TestPlanRunPropType } from '../proptypes';
 
 const IncompleteStatusReport = styled.span`
   min-width: 5rem;
@@ -74,20 +75,12 @@ const ReportStatusSummary = ({
 };
 
 ReportStatusSummary.propTypes = {
-  testPlanVersion: PropTypes.shape({
-    id: PropTypes.string.isRequired
-  }).isRequired,
+  testPlanVersion: TestPlanVersionPropType.isRequired,
   testPlanReport: PropTypes.shape({
     id: PropTypes.string.isRequired,
     markedFinalAt: PropTypes.string,
     metrics: PropTypes.object,
-    draftTestPlanRuns: PropTypes.arrayOf(
-      PropTypes.shape({
-        tester: PropTypes.shape({
-          username: PropTypes.string.isRequired
-        }).isRequired
-      })
-    ).isRequired
+    draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType).isRequired
   }),
   fromTestQueue: PropTypes.bool
 };

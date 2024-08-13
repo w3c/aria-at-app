@@ -9,6 +9,7 @@ import { derivePhaseName } from '../../utils/aria';
 import { none } from './None';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import ClippedProgressBar from '@components/common/ClippedProgressBar';
+import { TestPlanVersionPropType } from '../common/proptypes';
 
 const FullHeightContainer = styled(Container)`
   min-height: calc(100vh - 64px);
@@ -151,26 +152,7 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
 };
 
 SummarizeTestPlanReports.propTypes = {
-  testPlanVersions: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      title: PropTypes.string.isRequired,
-      phase: PropTypes.string.isRequired,
-      gitSha: PropTypes.string,
-      testPlan: PropTypes.shape({
-        directory: PropTypes.string
-      }),
-      metadata: PropTypes.object,
-      testPlanReports: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          metrics: PropTypes.object.isRequired,
-          at: PropTypes.object.isRequired,
-          browser: PropTypes.object.isRequired
-        })
-      )
-    })
-  ).isRequired
+  testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType).isRequired
 };
 
 export default SummarizeTestPlanReports;
