@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import styled from '@emotion/styled';
 import { dates } from 'shared';
+import { TestPlanReportPropType } from '../proptypes';
 
 const RunListItem = styled.li`
   margin-bottom: 0.5rem;
@@ -68,9 +69,8 @@ const RunHistory = ({ testPlanReports, testId }) => {
   );
 };
 
-// TODO: Add prop types when the proptypes definitions are merged
 RunHistory.propTypes = {
-  testPlanReports: PropTypes.arrayOf(PropTypes.object),
+  testPlanReports: PropTypes.arrayOf(TestPlanReportPropType),
   testId: PropTypes.string
 };
 
