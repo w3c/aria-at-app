@@ -82,6 +82,37 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
   }
 `;
 
+export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
+  ${TEST_PLAN_REPORT_FIELDS}
+  ${TEST_PLAN_RUN_FIELDS}
+  query TestQueueConflictsPage($testPlanReportId: ID!) {
+    testPlanReport(id: $testPlanReportId) {
+      ...TestPlanReportFields
+      conflicts {
+        conflictingResults {
+          testPlanRun {
+            ...TestPlanRunFields
+          }
+          test {
+            id
+            rowNumber
+            title
+          }
+          scenarioResult {
+            output
+            assertionResults {
+              assertion {
+                text
+              }
+              passed
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export const ASSIGN_TESTER_MUTATION = gql`
   ${TEST_PLAN_RUN_FIELDS}
   mutation AssignTester(
