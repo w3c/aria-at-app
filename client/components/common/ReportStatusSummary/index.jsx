@@ -32,6 +32,14 @@ const ReportStatusSummary = ({
 
     const conflictsCount = metrics.conflictsCount ?? 0;
     const percentComplete = calculatePercentComplete(testPlanReport);
+    const conflictsAnchor = (
+      <a
+        style={{ color: 'salmon' }}
+        href={`/test-queue/${testPlanReport.id}/conflicts`}
+      >
+        with {conflictsCount} conflicts
+      </a>
+    );
     switch (draftTestPlanRuns?.length) {
       case 0:
         return fromTestQueue ? (
@@ -48,15 +56,16 @@ const ReportStatusSummary = ({
             >
               {draftTestPlanRuns[0].tester.username}
             </a>
-            &nbsp;with {conflictsCount} conflicts
+            &nbsp;
+            {conflictsAnchor}
           </span>
         );
       default:
         return (
           <span>
             {percentComplete}% complete by&nbsp;
-            {draftTestPlanRuns.length} testers with {conflictsCount}
-            &nbsp;conflicts
+            {draftTestPlanRuns.length} testers&nbsp;
+            {conflictsAnchor}
           </span>
         );
     }
