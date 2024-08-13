@@ -19,6 +19,11 @@ import VersionString from '../../common/VersionString';
 import PhasePill from '../../common/PhasePill';
 import { differenceBy, uniq as unique, uniqBy as uniqueBy } from 'lodash';
 import { getVersionData } from '../utils';
+import {
+  AtPropType,
+  TestPlanPropType,
+  TestPlanVersionPropType
+} from '../../common/proptypes';
 
 const StatusCell = styled.div`
   display: flex;
@@ -1089,32 +1094,16 @@ const DataManagementRow = ({
 
 DataManagementRow.propTypes = {
   isAdmin: PropTypes.bool,
-  ats: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string,
-      name: PropTypes.string
-    })
-  ),
-  testPlan: PropTypes.shape({
-    id: PropTypes.string,
-    title: PropTypes.string,
-    directory: PropTypes.string
-  }).isRequired,
+  ats: PropTypes.arrayOf(AtPropType),
+  testPlan: TestPlanPropType.isRequired,
   testPlanVersions: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.string,
+      ...TestPlanVersionPropType,
+      // Optional in this component
       title: PropTypes.string,
-      phase: PropTypes.string,
-      gitSha: PropTypes.string,
-      testPlan: PropTypes.shape({
-        directory: PropTypes.string
-      }),
-      updatedAt: PropTypes.string,
-      draftPhaseReachedAt: PropTypes.string,
-      candidatePhaseReachedAt: PropTypes.string,
-      recommendedPhaseReachedAt: PropTypes.string
+      isRequired: PropTypes.bool
     })
-  ).isRequired,
+  ),
   tableRowIndex: PropTypes.number.isRequired,
   setTestPlanVersions: PropTypes.func
 };

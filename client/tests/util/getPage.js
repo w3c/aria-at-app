@@ -143,6 +143,14 @@ const getPage = async (options, callback) => {
     page.setDefaultTimeout(604800000 /* a week should be enough */);
   }
 
+  let consoleErrors = [];
+
+  page.on('console', msg => {
+    if (msg.type() === 'error') {
+      consoleErrors.push(msg.text());
+    }
+  });
+
   await page.goto(`${baseUrl}${url}`);
 
   await page.waitForNetworkIdle();
@@ -177,7 +185,11 @@ const getPage = async (options, callback) => {
   }
 
   try {
-    await callback(page, { browser: global.browser, baseUrl });
+    await callback(page, {
+      browser: global.browser,
+      baseUrl,
+      consoleErrors
+    });
   } finally {
     await page.evaluate('endTestTransaction()');
   }

@@ -39,13 +39,18 @@ describe('Test Review page', () => {
   };
 
   it('renders page for review page before test format v2', async () => {
-    await getPage({ role: false, url: '/test-review/1' }, async page => {
-      await text(
-        page,
-        'h1 ::-p-text(Alert Example Test Plan V22.04.14 (Deprecated))'
-      );
-      await getReviewPageElements(page);
-    });
+    await getPage(
+      { role: false, url: '/test-review/1' },
+      async (page, { consoleErrors }) => {
+        await text(
+          page,
+          'h1 ::-p-text(Alert Example Test Plan V22.04.14 (Deprecated))'
+        );
+
+        await getReviewPageElements(page);
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
   });
 
   it('renders page for review page after test format v2', async () => {

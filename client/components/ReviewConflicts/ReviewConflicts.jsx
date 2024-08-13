@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import TurndownService from 'turndown';
+import { TestPlanReportPropType, TestPropType } from '../common/proptypes';
 
 const Wrapper = styled.div`
   & h2 {
@@ -119,58 +120,8 @@ const ReviewConflicts = ({
 };
 
 ReviewConflicts.propTypes = {
-  testPlanReport: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    conflicts: PropTypes.arrayOf(
-      PropTypes.shape({
-        source: PropTypes.shape({
-          test: PropTypes.shape({
-            id: PropTypes.string.isRequired
-          }).isRequired,
-          scenario: PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            commands: PropTypes.arrayOf(
-              PropTypes.shape({
-                text: PropTypes.string.isRequired
-              })
-            ).isRequired
-          }).isRequired,
-          assertion: PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            text: PropTypes.string.isRequired
-          })
-        }).isRequired,
-        conflictingResults: PropTypes.arrayOf(
-          PropTypes.shape({
-            testPlanRun: PropTypes.shape({
-              id: PropTypes.string.isRequired,
-              tester: PropTypes.shape({
-                username: PropTypes.string.isRequired
-              }).isRequired
-            }).isRequired,
-            scenarioResult: PropTypes.shape({
-              output: PropTypes.string.isRequired,
-              unexpectedBehaviors: PropTypes.arrayOf(
-                PropTypes.shape({
-                  text: PropTypes.string.isRequired,
-                  impact: PropTypes.string.isRequired,
-                  details: PropTypes.string.isRequired
-                })
-              ).isRequired
-            }),
-            assertionResult: PropTypes.shape({
-              passed: PropTypes.bool.isRequired
-            })
-          })
-        ).isRequired
-      })
-    ).isRequired
-  }),
-  test: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    rowNumber: PropTypes.number.isRequired
-  }),
+  testPlanReport: TestPlanReportPropType.isRequired,
+  test: TestPropType.isRequired,
   hideHeadline: PropTypes.bool,
   conflictMarkdownRef: PropTypes.shape({
     current: PropTypes.string
