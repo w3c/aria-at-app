@@ -18,6 +18,7 @@ import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
+import RunHistory from '../common/RunHistory';
 import {
   TestPlanReportPropType,
   TestPlanVersionPropType
@@ -30,55 +31,6 @@ const ResultsContainer = styled.div`
   border-bottom: 1px solid #dee2e6;
   margin-bottom: 0.5em;
 `;
-
-const getTestersRunHistory = (
-  testPlanReport,
-  testId,
-  draftTestPlanRuns = []
-) => {
-  const { id: testPlanReportId, at, browser } = testPlanReport;
-  let lines = [];
-
-  draftTestPlanRuns.forEach(draftTestPlanRun => {
-    const { testPlanReport, testResults, tester } = draftTestPlanRun;
-
-    const testResult = testResults.find(item => item.test.id === testId);
-    if (testPlanReportId === testPlanReport.id && testResult?.completedAt) {
-      lines.push(
-        <li
-          key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
-        >
-          Tested with{' '}
-          <b>
-            {at.name} {testResult.atVersion.name}
-          </b>{' '}
-          and{' '}
-          <b>
-            {browser.name} {testResult.browserVersion.name}
-          </b>{' '}
-          by{' '}
-          <b>
-            <a href={`https://github.com/${tester.username}`}>
-              {tester.username}
-            </a>
-          </b>{' '}
-          on{' '}
-          {dates.convertDateToString(testResult.completedAt, 'MMMM DD, YYYY')}.
-        </li>
-      );
-    }
-  });
-
-  return (
-    <ul
-      style={{
-        marginBottom: '0'
-      }}
-    >
-      {lines}
-    </ul>
-  );
-};
 
 const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
   const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
@@ -368,11 +320,12 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
             <DisclosureComponent
               componentId={`run-history-${testResult.id}`}
               title="Run History"
-              disclosureContainerView={getTestersRunHistory(
-                testPlanReport,
-                testResult.test.id,
-                testPlanReport.draftTestPlanRuns
-              )}
+              disclosureContainerView={
+                <RunHistory
+                  testPlanReports={[testPlanReport]}
+                  testId={testResult.test.id}
+                />
+              }
             />
           </Fragment>
         );
