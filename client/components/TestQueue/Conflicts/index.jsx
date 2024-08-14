@@ -24,21 +24,30 @@ const TestQueueConflicts = () => {
     }
   }, [data]);
 
+  const getConflictTestNumberFilteredByAt = conflict => {
+    const testIndex = data.testPlanReport.runnableTests.findIndex(
+      test => test.id === conflict.conflictingResults[0].test.id
+    );
+    return testIndex + 1;
+  };
+
   const disclosureLabels = useMemo(() => {
     return data?.testPlanReport?.conflicts?.map(conflict => {
-      const testIndex = data.testPlanReport.runnableTests.findIndex(
-        test => test.id === conflict.conflictingResults[0].test.id
-      );
-      return `Test ${testIndex + 1}: ${
-        conflict.conflictingResults[0].test.title
-      }`;
+      const testIndex = getConflictTestNumberFilteredByAt(conflict);
+      return `Test ${testIndex}: ${conflict.conflictingResults[0].test.title}`;
     });
   }, [data?.testPlanReport?.conflicts]);
 
   const disclosureContents = useMemo(() => {
     return data?.testPlanReport?.conflicts?.map(conflict => {
+      const issues = data?.testPlanReport?.issues?.filter(
+        issue =>
+          issue.testNumberFilteredByAt ===
+          getConflictTestNumberFilteredByAt(conflict)
+      );
       return (
         <ConflictSummaryTable
+          issues={issues}
           key={conflict.conflictingResults[0].test.id}
           conflictingResults={conflict.conflictingResults}
         />
@@ -103,7 +112,8 @@ const TestQueueConflicts = () => {
           : ` (${minimumAtVersionName} and above)`}
       </h1>
       <p>
-        There are currently {data?.testPlanReport?.conflicts?.length} conflicts.
+        There are currently {data?.testPlanReport?.conflicts?.length} conflicts
+        for this test plan report.
       </p>
       <DisclosureComponent
         title={disclosureLabels}

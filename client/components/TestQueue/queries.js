@@ -10,6 +10,7 @@ import {
   TEST_PLAN_RUN_FIELDS,
   TEST_PLAN_VERSION_FIELDS,
   TEST_RESULT_FIELDS,
+  ISSUE_FIELDS,
   USER_FIELDS
 } from '@components/common/fragments';
 
@@ -84,6 +85,7 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
 
 export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
   ${TEST_PLAN_REPORT_FIELDS}
+  ${ISSUE_FIELDS('all')}
   ${TEST_PLAN_RUN_FIELDS}
   query TestQueueConflictsPage($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
@@ -107,6 +109,9 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
       }
       runnableTests {
         id
+      }
+      issues {
+        ...IssueFieldsAll
       }
       conflicts {
         conflictingResults {
