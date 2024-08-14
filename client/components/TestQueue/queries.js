@@ -88,6 +88,23 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
   query TestQueueConflictsPage($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       ...TestPlanReportFields
+      testPlanVersion {
+        title
+        versionString
+        id
+      }
+      minimumAtVersion {
+        name
+      }
+      recommendedAtVersion {
+        name
+      }
+      browser {
+        name
+      }
+      at {
+        name
+      }
       runnableTests {
         id
       }
@@ -103,6 +120,11 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
           }
           scenarioResult {
             output
+            unexpectedBehaviors {
+              text
+              details
+              impact
+            }
             assertionResults {
               assertion {
                 text

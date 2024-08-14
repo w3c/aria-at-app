@@ -73,13 +73,38 @@ const TestQueueConflicts = () => {
     );
   }
 
+  const {
+    title,
+    versionString,
+    id: testPlanVersionId
+  } = data?.testPlanReport.testPlanVersion ?? {};
+  const { name: browserName } = data?.testPlanReport.browser ?? {};
+  const { name: atName } = data?.testPlanReport.at ?? {};
+  const { name: requiredAtVersionName } =
+    data?.testPlanReport.requiredAtVersion ?? {};
+  const { name: minimumAtVersionName } =
+    data?.testPlanReport.minimumAtVersion ?? {};
+
   return (
     <Container id="main" as="main" tabIndex="-1">
       <Helmet>
-        <title>Conflicts | ARIA-AT</title>
+        <title>
+          Conflicts {title} {versionString} | ARIA-AT
+        </title>
       </Helmet>
-      <h1>Conflicts</h1>
-      <p>Currently {data.testPlanReport.conflictsLength} conflicts</p>
+      <h1>
+        Conflicts:{' '}
+        <a href={`/test-review/${testPlanVersionId}`}>
+          {title} {versionString}
+        </a>{' '}
+        using {browserName} and {atName}
+        {requiredAtVersionName
+          ? ` (${requiredAtVersionName})`
+          : ` (${minimumAtVersionName} and above)`}
+      </h1>
+      <p>
+        There are currently {data?.testPlanReport?.conflicts?.length} conflicts.
+      </p>
       <DisclosureComponent
         title={disclosureLabels}
         stacked
