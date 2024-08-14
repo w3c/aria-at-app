@@ -28,9 +28,9 @@ describe('Test Review page', () => {
     const openTestPageButtonSelector = 'button ::-p-text(Open Test Page)';
     await page.click(openTestPageButtonSelector);
 
+    // Allow additional time for popup to open
     await page.waitForNetworkIdle();
 
-    // Allow additional time for popup to open
     const pages = await global.browser.pages();
     const popupPage = pages[pages.length - 1];
 
