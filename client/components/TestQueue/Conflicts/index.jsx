@@ -26,7 +26,12 @@ const TestQueueConflicts = () => {
 
   const disclosureLabels = useMemo(() => {
     return data?.testPlanReport?.conflicts?.map(conflict => {
-      return `Test ${conflict.conflictingResults[0].test.rowNumber}: ${conflict.conflictingResults[0].test.title}`;
+      const testIndex = data.testPlanReport.runnableTests.findIndex(
+        test => test.id === conflict.conflictingResults[0].test.id
+      );
+      return `Test ${testIndex + 1}: ${
+        conflict.conflictingResults[0].test.title
+      }`;
     });
   }, [data?.testPlanReport?.conflicts]);
 

@@ -88,6 +88,9 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
   query TestQueueConflictsPage($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       ...TestPlanReportFields
+      runnableTests {
+        id
+      }
       conflicts {
         conflictingResults {
           testPlanRun {
