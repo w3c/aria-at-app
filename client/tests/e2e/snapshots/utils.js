@@ -41,11 +41,21 @@ async function cleanAndNormalizeSnapshot(page) {
         ) {
           el.remove();
         }
+
+        // Confirm text is from Run History component
+        if (
+          text.includes('Tested with') &&
+          text.includes('and') &&
+          text.includes('by') &&
+          text.includes('on')
+        ) {
+          el.innerHTML = el.innerHTML.replace(/on [^<]*$/, '');
+        }
       });
     }
 
     removeElements(
-      '.ready-for-review, .in-progress, .target-days-container button'
+      '.ready-for-review, .in-progress, .target-days-container button, .run-history-item'
     );
   });
 

@@ -24,6 +24,7 @@ const RunHistory = ({ testPlanReports, testId }) => {
         if (testResult?.completedAt) {
           l.push(
             <RunListItem
+              className="run-history-item"
               key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
             >
               Tested with{' '}
