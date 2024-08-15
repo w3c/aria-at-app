@@ -28,12 +28,11 @@ describe('Test Review page', () => {
     const openTestPageButtonSelector = 'button ::-p-text(Open Test Page)';
     await page.click(openTestPageButtonSelector);
 
-    const popupTarget = await new Promise(resolve =>
-      page.browser().once('targetcreated', resolve)
-    );
-
     // Allow additional time for popup to open
-    const popupPage = await popupTarget.page();
+    await page.waitForNetworkIdle();
+
+    const pages = await global.browser.pages();
+    const popupPage = pages[pages.length - 1];
 
     // Check for 'Run Test Setup' button
     await popupPage.waitForSelector('button ::-p-text(Run Test Setup)');
