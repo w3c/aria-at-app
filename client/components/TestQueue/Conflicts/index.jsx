@@ -10,42 +10,59 @@ import ConflictSummaryTable from './ConflictSummaryTable';
 import createIssueLink from '../../../utils/createIssueLink';
 import { dates } from 'shared';
 import styled from '@emotion/styled';
+import { evaluateAuth } from '../../../utils/evaluateAuth';
 
-const PageHeader = styled.div`
+const PageContainer = styled(Container)`
+  max-width: 1200px;
+  padding: 2rem;
+`;
+
+const PageHeader = styled.header`
   margin-bottom: 2rem;
+  padding-bottom: 1rem;
 `;
 
 const Title = styled.h1`
+  margin-bottom: 0.5rem;
+`;
+
+const Section = styled.section`
+  margin-bottom: 3rem;
+`;
+
+const SectionTitle = styled.h2`
   margin-bottom: 1rem;
-`;
-
-const SubTitle = styled.h2`
-  font-size: 1.25rem;
-  color: #6c757d;
-  margin-bottom: 1.5rem;
-`;
-
-const Section = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const ConflictCount = styled.p`
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-`;
-
-const Introduction = styled.div`
-  margin-bottom: 2rem;
+  color: #495057;
 `;
 
 const MetadataList = styled.ul`
   list-style-type: none;
   padding-left: 0;
   margin-bottom: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 1rem;
 `;
 
 const MetadataItem = styled.li`
   margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+`;
+
+const MetadataLabel = styled.span`
+  font-weight: bold;
+  margin-right: 0.5rem;
+  min-width: 200px;
+`;
+
+const ConflictCount = styled.p`
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  background-color: #e9ecef;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  display: inline-block;
 `;
 
 const TestQueueConflicts = () => {
@@ -92,6 +109,8 @@ const TestQueueConflicts = () => {
     });
   };
 
+  const { isAdmin } = useMemo(() => evaluateAuth(data?.me), [data?.me]);
+
   const disclosureLabels = useMemo(() => {
     return data?.testPlanReport?.conflicts?.map(conflict => {
       const testIndex = getConflictTestNumberFilteredByAt(conflict);
@@ -110,8 +129,10 @@ const TestQueueConflicts = () => {
         <ConflictSummaryTable
           issues={issues}
           issueLink={getIssueLink(conflict)}
+          isAdmin={isAdmin}
           key={conflict.conflictingResults[0].test.id}
           conflictingResults={conflict.conflictingResults}
+          testIndex={getConflictTestNumberFilteredByAt(conflict)}
         />
       );
     });
@@ -157,7 +178,7 @@ const TestQueueConflicts = () => {
     data?.testPlanReport.minimumAtVersion ?? {};
 
   return (
-    <Container id="main" as="main" tabIndex="-1">
+    <PageContainer id="main" as="main" tabIndex="-1">
       <Helmet>
         <title>
           Conflicts {title} {versionString} | ARIA-AT
@@ -168,40 +189,42 @@ const TestQueueConflicts = () => {
       </PageHeader>
 
       <Section>
-        <h2>Introduction</h2>
+        <SectionTitle>Introduction</SectionTitle>
         <p>
-          This page shows conflicts in test results for a specific test plan
+          This page displays conflicts identified in the current test plan
           report. Conflicts occur when different testers report different
           outcomes for the same test assertions or unexpected behaviors.
         </p>
       </Section>
 
       <Section>
-        <h2>Test Plan Report</h2>
+        <SectionTitle>Test Plan Report</SectionTitle>
         <MetadataList>
           <MetadataItem>
-            <strong>Test Plan Version:</strong>{' '}
+            <MetadataLabel>Test Plan Version:</MetadataLabel>
             <a href={`/test-review/${testPlanVersionId}`}>
               {title} {versionString}
             </a>
           </MetadataItem>
           <MetadataItem>
-            <strong>Assistive Technology:</strong> {atName}
+            <MetadataLabel>Assistive Technology:</MetadataLabel>
+            {atName}
             {requiredAtVersionName
               ? ` (${requiredAtVersionName})`
               : ` (${minimumAtVersionName} and above)`}
           </MetadataItem>
           <MetadataItem>
-            <strong>Browser:</strong> {browserName}
+            <MetadataLabel>Browser:</MetadataLabel>
+            {browserName}
           </MetadataItem>
         </MetadataList>
       </Section>
 
       <Section>
-        <h2>Conflicts</h2>
+        <SectionTitle>Conflicts</SectionTitle>
         <ConflictCount>
           There are currently
-          <b> {data?.testPlanReport?.conflicts?.length} conflicts </b>
+          <strong> {data?.testPlanReport?.conflicts?.length} conflicts </strong>
           for this test plan report.
         </ConflictCount>
         <DisclosureComponent
@@ -212,7 +235,7 @@ const TestQueueConflicts = () => {
           expanded={openDisclosures}
         />
       </Section>
-    </Container>
+    </PageContainer>
   );
 };
 

@@ -84,10 +84,14 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
 `;
 
 export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
+  ${ME_FIELDS}
   ${TEST_PLAN_REPORT_FIELDS}
   ${ISSUE_FIELDS('all')}
   ${TEST_PLAN_RUN_FIELDS}
   query TestQueueConflictsPage($testPlanReportId: ID!) {
+    me {
+      ...MeFields
+    }
     testPlanReport(id: $testPlanReportId) {
       ...TestPlanReportFields
       testPlanVersion {

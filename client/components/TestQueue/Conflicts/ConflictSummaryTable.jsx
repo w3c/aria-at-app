@@ -6,11 +6,13 @@ import { IssuePropType } from '../../common/proptypes';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faExclamationCircle,
-  faExternalLinkAlt
+  faExternalLinkAlt,
+  faFileImport
 } from '@fortawesome/free-solid-svg-icons';
-import { Button } from 'react-bootstrap';
+import { Button, Dropdown } from 'react-bootstrap';
+import AssertionConflictsTable from './AssertionConflictsTable';
 
-const StyledThemeTable = styled(ThemeTable)`
+export const ConflictTable = styled(ThemeTable)`
   th,
   td {
     text-align: left;
@@ -19,7 +21,7 @@ const StyledThemeTable = styled(ThemeTable)`
   margin-bottom: 2rem;
 `;
 
-const ConflictCell = styled.td`
+export const ConflictCell = styled.td`
   background-color: ${props => (props.conflict ? '#FFEBEE' : 'inherit')};
   font-weight: ${props => (props.conflict ? 'bold' : 'normal')};
 `;
@@ -73,7 +75,33 @@ const IssueLink = styled.a`
   }
 `;
 
-const ConflictSummaryTable = ({ conflictingResults, issues, issueLink }) => {
+const ActionContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  max-width: 500px;
+  & > * {
+    flex-grow: 1;
+    flex-basis: 0;
+    min-width: 0;
+  }
+`;
+
+const ActionButton = styled(Button)`
+  flex-grow: 1;
+  flex-basis: 0;
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+`;
+
+const ConflictSummaryTable = ({
+  conflictingResults,
+  issues,
+  issueLink,
+  isAdmin,
+  testIndex
+}) => {
   const testers = useMemo(
     () => conflictingResults.map(result => result.testPlanRun.tester.username),
     [conflictingResults]
@@ -96,47 +124,6 @@ const ConflictSummaryTable = ({ conflictingResults, issues, issueLink }) => {
       ),
     [conflictingResults]
   );
-
-  const renderAssertionConflicts = () => {
-    const allAssertions =
-      conflictingResults[0].scenarioResult.assertionResults.map(
-        ar => ar.assertion.text
-      );
-
-    return (
-      <>
-        <StyledThemeTable bordered responsive>
-          <thead>
-            <tr>
-              <th>Assertion</th>
-              {testers.map(tester => (
-                <th key={tester}>{tester}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {allAssertions.map((assertion, index) => {
-              const results = conflictingResults.map(
-                cr => cr.scenarioResult.assertionResults[index].passed
-              );
-              const hasConflict = results.some(r => r !== results[0]);
-
-              return (
-                <tr key={index}>
-                  <td>{assertion}</td>
-                  {results.map((result, i) => (
-                    <ConflictCell key={i} conflict={hasConflict}>
-                      {result ? 'Passed' : 'Failed'}
-                    </ConflictCell>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </StyledThemeTable>
-      </>
-    );
-  };
 
   const renderIssues = () => {
     if (!issues || issues.length === 0) return null;
@@ -178,7 +165,7 @@ const ConflictSummaryTable = ({ conflictingResults, issues, issueLink }) => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              View on GitHub{' '}
+              View on GitHub&nbsp;
               <FontAwesomeIcon
                 icon={faExternalLinkAlt}
                 size="sm"
@@ -192,9 +179,30 @@ const ConflictSummaryTable = ({ conflictingResults, issues, issueLink }) => {
   };
 
   const renderActions = () => (
-    <Button variant="secondary" target="_blank" href={issueLink}>
-      Raise an Issue for Conflict
-    </Button>
+    <ActionContainer>
+      <Button variant="secondary" target="_blank" href={issueLink}>
+        <FontAwesomeIcon icon={faExclamationCircle} />
+        Raise an Issue for Conflict
+      </Button>
+      {isAdmin && (
+        <Dropdown>
+          <Dropdown.Toggle variant="secondary" as={ActionButton}>
+            <FontAwesomeIcon icon={faFileImport} />
+            Open run as...
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {conflictingResults.map(result => (
+              <Dropdown.Item
+                key={result.testPlanRun.tester.id}
+                href={`/run/${result.testPlanRun.id}?user=${result.testPlanRun.tester.id}#${testIndex}`}
+              >
+                {result.testPlanRun.tester.username}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
+    </ActionContainer>
   );
 
   const renderUnexpectedBehaviorConflicts = () => {
@@ -208,7 +216,7 @@ const ConflictSummaryTable = ({ conflictingResults, issues, issueLink }) => {
 
     return (
       <>
-        <StyledThemeTable bordered responsive>
+        <ConflictTable bordered responsive>
           <thead>
             <tr>
               <th>Unexpected Behavior</th>
@@ -244,13 +252,18 @@ const ConflictSummaryTable = ({ conflictingResults, issues, issueLink }) => {
               </tr>
             ))}
           </tbody>
-        </StyledThemeTable>
+        </ConflictTable>
       </>
     );
   };
   return (
     <>
-      {hasAssertionConflicts && renderAssertionConflicts()}
+      {hasAssertionConflicts && (
+        <AssertionConflictsTable
+          conflictingResults={conflictingResults}
+          testers={testers}
+        />
+      )}
       {hasUnexpectedBehaviorConflicts && renderUnexpectedBehaviorConflicts()}
       {renderIssues()}
       {renderActions()}
@@ -261,7 +274,9 @@ const ConflictSummaryTable = ({ conflictingResults, issues, issueLink }) => {
 ConflictSummaryTable.propTypes = {
   conflictingResults: PropTypes.arrayOf(PropTypes.object).isRequired,
   issues: PropTypes.arrayOf(IssuePropType).isRequired,
-  issueLink: PropTypes.string.isRequired
+  issueLink: PropTypes.string.isRequired,
+  isAdmin: PropTypes.bool.isRequired,
+  testIndex: PropTypes.number.isRequired
 };
 
 export default ConflictSummaryTable;
