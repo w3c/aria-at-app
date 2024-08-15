@@ -129,8 +129,7 @@ const getPage = async (options, callback) => {
   const foundExistingIncognitoContext = !!incognitoContexts[role];
 
   if (!foundExistingIncognitoContext) {
-    incognitoContexts[role] =
-      await global.browser.createIncognitoBrowserContext();
+    incognitoContexts[role] = await global.browser.createBrowserContext();
   }
   const incognitoContext = incognitoContexts[role];
 
@@ -143,6 +142,14 @@ const getPage = async (options, callback) => {
   if (isDebugMode) {
     page.setDefaultTimeout(604800000 /* a week should be enough */);
   }
+
+  let consoleErrors = [];
+
+  page.on('console', msg => {
+    if (msg.type() === 'error') {
+      consoleErrors.push(msg.text());
+    }
+  });
 
   await page.goto(`${baseUrl}${url}`);
 
@@ -178,7 +185,11 @@ const getPage = async (options, callback) => {
   }
 
   try {
-    await callback(page, { browser: global.browser, baseUrl });
+    await callback(page, {
+      browser: global.browser,
+      baseUrl,
+      consoleErrors
+    });
   } finally {
     await page.evaluate('endTestTransaction()');
   }

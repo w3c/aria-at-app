@@ -19,6 +19,7 @@ import {
 } from './queries';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../AddTestToQueueWithConfirmation/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
+import { TestPlanReportPropType, UserPropType } from '../common/proptypes';
 
 const AssignTestersContainer = styled.div`
   display: flex;
@@ -328,56 +329,9 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
 };
 
 AssignTesters.propTypes = {
-  me: PropTypes.shape({
-    id: PropTypes.string.isRequired
-  }),
-  testers: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      username: PropTypes.string.isRequired,
-      isBot: PropTypes.bool.isRequired,
-      ats: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          key: PropTypes.string.isRequired
-        })
-      )
-    })
-  ).isRequired,
-  testPlanReport: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    runnableTestsLength: PropTypes.number.isRequired,
-    draftTestPlanRuns: PropTypes.arrayOf(
-      PropTypes.shape({
-        tester: PropTypes.shape({ id: PropTypes.string.isRequired }).isRequired
-      })
-    ).isRequired,
-    at: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      key: PropTypes.string.isRequired,
-      atVersions: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired,
-          supportedByAutomation: PropTypes.bool.isRequired
-        })
-      )
-    }).isRequired,
-    browser: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      key: PropTypes.string.isRequired
-    }).isRequired,
-    minimumAtVersion: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired
-    }),
-    exactAtVersion: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired
-    })
-  }).isRequired
+  me: UserPropType,
+  testers: PropTypes.arrayOf(UserPropType).isRequired,
+  testPlanReport: TestPlanReportPropType.isRequired
 };
 
 export default AssignTesters;

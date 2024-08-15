@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import { uniqueId } from 'lodash';
+import { ActionButtonPropType } from '../proptypes';
 
 const ModalTitleStyle = styled.h1`
   border: 0;
@@ -122,12 +123,7 @@ BasicThemedModal.propTypes = {
   dialogClassName: PropTypes.string,
   title: PropTypes.node.isRequired,
   content: PropTypes.node.isRequired,
-  actionButtons: PropTypes.arrayOf(
-    PropTypes.shape({
-      text: PropTypes.string,
-      action: PropTypes.func
-    })
-  ),
+  actionButtons: PropTypes.arrayOf(ActionButtonPropType),
   closeLabel: PropTypes.string,
   handleClose: PropTypes.func,
   showCloseAction: PropTypes.bool

@@ -11,14 +11,18 @@ import {
   faHome
 } from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
-import { getMetrics } from 'shared';
+import { getMetrics, dates } from 'shared';
 import { none } from './None';
-import { convertDateToString } from '../../utils/formatter';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
+import RunHistory from '../common/RunHistory';
+import {
+  TestPlanReportPropType,
+  TestPlanVersionPropType
+} from '../common/proptypes';
 
 const ResultsContainer = styled.div`
   padding: 1em 1.75em;
@@ -27,54 +31,6 @@ const ResultsContainer = styled.div`
   border-bottom: 1px solid #dee2e6;
   margin-bottom: 0.5em;
 `;
-
-const getTestersRunHistory = (
-  testPlanReport,
-  testId,
-  draftTestPlanRuns = []
-) => {
-  const { id: testPlanReportId, at, browser } = testPlanReport;
-  let lines = [];
-
-  draftTestPlanRuns.forEach(draftTestPlanRun => {
-    const { testPlanReport, testResults, tester } = draftTestPlanRun;
-
-    const testResult = testResults.find(item => item.test.id === testId);
-    if (testPlanReportId === testPlanReport.id && testResult?.completedAt) {
-      lines.push(
-        <li
-          key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
-        >
-          Tested with{' '}
-          <b>
-            {at.name} {testResult.atVersion.name}
-          </b>{' '}
-          and{' '}
-          <b>
-            {browser.name} {testResult.browserVersion.name}
-          </b>{' '}
-          by{' '}
-          <b>
-            <a href={`https://github.com/${tester.username}`}>
-              {tester.username}
-            </a>
-          </b>{' '}
-          on {convertDateToString(testResult.completedAt, 'MMMM DD, YYYY')}.
-        </li>
-      );
-    }
-  });
-
-  return (
-    <ul
-      style={{
-        marginBottom: '0'
-      }}
-    >
-      {lines}
-    </ul>
-  );
-};
 
 const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
   const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
@@ -267,7 +223,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         </li>
         <li>
           Report completed on{' '}
-          {convertDateToString(
+          {dates.convertDateToString(
             new Date(testPlanReport.markedFinalAt),
             'MMMM D, YYYY'
           )}
@@ -364,11 +320,12 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
             <DisclosureComponent
               componentId={`run-history-${testResult.id}`}
               title="Run History"
-              disclosureContainerView={getTestersRunHistory(
-                testPlanReport,
-                testResult.test.id,
-                testPlanReport.draftTestPlanRuns
-              )}
+              disclosureContainerView={
+                <RunHistory
+                  testPlanReports={[testPlanReport]}
+                  testId={testResult.test.id}
+                />
+              }
             />
           </Fragment>
         );
@@ -378,60 +335,8 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
 };
 
 SummarizeTestPlanReport.propTypes = {
-  testPlanVersion: PropTypes.object.isRequired,
-  testPlanReports: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      runnableTests: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
-      at: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired
-      }).isRequired,
-      browser: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired
-      }).isRequired,
-      finalizedTestResults: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          test: PropTypes.shape({
-            title: PropTypes.string.isRequired,
-            renderedUrl: PropTypes.string.isRequired
-          }).isRequired,
-          scenarioResults: PropTypes.arrayOf(
-            PropTypes.shape({
-              id: PropTypes.string.isRequired,
-              output: PropTypes.string.isRequired,
-              assertionResults: PropTypes.arrayOf(
-                PropTypes.shape({
-                  id: PropTypes.string.isRequired,
-                  passed: PropTypes.bool.isRequired,
-                  assertion: PropTypes.shape({
-                    text: PropTypes.string.isRequired
-                  }).isRequired
-                }).isRequired
-              ).isRequired,
-              unexpectedBehaviors: PropTypes.arrayOf(
-                PropTypes.shape({
-                  id: PropTypes.string.isRequired,
-                  text: PropTypes.string.isRequired,
-                  impact: PropTypes.string.isRequired,
-                  details: PropTypes.string.isRequired
-                }).isRequired
-              ).isRequired
-            }).isRequired
-          ).isRequired
-        }).isRequired
-      ).isRequired,
-      draftTestPlanRuns: PropTypes.arrayOf(
-        PropTypes.shape({
-          tester: PropTypes.shape({
-            username: PropTypes.string.isRequired
-          })
-        })
-      )
-    }).isRequired
-  )
+  testPlanVersion: TestPlanVersionPropType.isRequired,
+  testPlanReports: PropTypes.arrayOf(TestPlanReportPropType).isRequired
 };
 
 export default SummarizeTestPlanReport;

@@ -9,7 +9,7 @@ import InstructionsRenderer from '../CandidateReview/CandidateTestPlanRun/Instru
 import FilterButtons from '../common/FilterButtons';
 import styled from '@emotion/styled';
 import { derivePhaseName } from '../../utils/aria';
-import { convertDateToString } from '../../utils/formatter';
+import { dates } from 'shared';
 import supportJson from '../../resources/support.json';
 
 const Ul = styled.ul`
@@ -139,7 +139,7 @@ const TestReview = () => {
           <strong>Version History:&nbsp;</strong>
           <Ul>
             <li>
-              {`R&D completed on ${convertDateToString(
+              {`R&D completed on ${dates.convertDateToString(
                 testPlanVersion.updatedAt,
                 'MMM D, YYYY'
               )}.`}
@@ -147,7 +147,7 @@ const TestReview = () => {
             {!testPlanVersion.draftPhaseReachedAt ? null : (
               <li>
                 {`ARIA-AT draft review process started on ` +
-                  `${convertDateToString(
+                  `${dates.convertDateToString(
                     testPlanVersion.draftPhaseReachedAt,
                     'MMM D, YYYY'
                   )} ` +
@@ -157,7 +157,7 @@ const TestReview = () => {
             {!testPlanVersion.candidatePhaseReachedAt ? null : (
               <li>
                 {`ARIA-AT candidate review process started on ` +
-                  `${convertDateToString(
+                  `${dates.convertDateToString(
                     testPlanVersion.candidatePhaseReachedAt,
                     'MMM D, YYYY'
                   )} ` +
@@ -167,7 +167,7 @@ const TestReview = () => {
             {!testPlanVersion.recommendedPhaseReachedAt ? null : (
               <li>
                 {`Version reached ARIA-AT recommended status on ` +
-                  `${convertDateToString(
+                  `${dates.convertDateToString(
                     testPlanVersion.recommendedPhaseReachedAt,
                     'MMM D, YYYY'
                   )}.`}
@@ -176,7 +176,7 @@ const TestReview = () => {
             {!testPlanVersion.deprecatedAt ? null : (
               <li>
                 {`Version deprecated on ` +
-                  `${convertDateToString(
+                  `${dates.convertDateToString(
                     testPlanVersion.deprecatedAt,
                     'MMM D, YYYY'
                   )}.`}

@@ -4,6 +4,7 @@ import { Button } from 'react-bootstrap';
 import { useMutation } from '@apollo/client';
 import { CANCEL_COLLECTION_JOB } from '../queries';
 import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
+import { CollectionJobPropType } from '../../common/proptypes';
 
 const StopRunningCollectionButton = ({ collectionJob, onClick = () => {} }) => {
   if (!collectionJob) {
@@ -44,16 +45,7 @@ const StopRunningCollectionButton = ({ collectionJob, onClick = () => {} }) => {
 };
 
 StopRunningCollectionButton.propTypes = {
-  collectionJob: PropTypes.shape({
-    id: PropTypes.string,
-    status: PropTypes.oneOf([
-      'QUEUED',
-      'RUNNING',
-      'CANCELLED',
-      'COMPLETED',
-      'ERROR'
-    ]).isRequired
-  }),
+  collectionJob: CollectionJobPropType,
   onClick: PropTypes.func
 };
 

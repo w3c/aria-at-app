@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import { useMutation } from '@apollo/client';
 import { RETRY_CANCELED_COLLECTIONS } from '../queries';
+import { CollectionJobPropType } from '../../common/proptypes';
 
 const RetryCanceledCollectionsButton = ({
   collectionJob,
@@ -33,16 +34,7 @@ const RetryCanceledCollectionsButton = ({
 };
 
 RetryCanceledCollectionsButton.propTypes = {
-  collectionJob: PropTypes.shape({
-    id: PropTypes.string,
-    status: PropTypes.oneOf([
-      'QUEUED',
-      'RUNNING',
-      'CANCELLED',
-      'COMPLETED',
-      'ERROR'
-    ])
-  }),
+  collectionJob: CollectionJobPropType,
   onClick: PropTypes.func
 };
 

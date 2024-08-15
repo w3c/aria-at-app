@@ -14,53 +14,58 @@ describe('Test Run when not signed in', () => {
 
   it('renders /test-plan-report/:id and can navigate between tests', async () => {
     // This should be NVDA + Chrome + Modal Dialog Example with 12 tests
-    await getPage({ role: false, url: '/test-plan-report/19' }, async page => {
-      const h1Text = await text(page, 'h1');
-      const currentUrl = await page.url();
+    await getPage(
+      { role: false, url: '/test-plan-report/19' },
+      async (page, { consoleErrors }) => {
+        const h1Text = await text(page, 'h1');
+        expect(h1Text.includes('Test 1:')).toBe(true);
 
-      await page.waitForSelector('nav#test-navigator-nav ol');
-      const testNavigatorListItemsHandle = await page.evaluateHandle(() => {
-        const testNavigatorListSelector = 'nav#test-navigator-nav ol';
-        const testNavigatorList = document.querySelector(
-          testNavigatorListSelector
-        );
-        return Array.from(testNavigatorList.querySelectorAll('li'));
-      });
+        await page.waitForSelector('nav#test-navigator-nav ol');
+        const testNavigatorListItemsHandle = await page.evaluateHandle(() => {
+          const testNavigatorListSelector = 'nav#test-navigator-nav ol';
+          const testNavigatorList = document.querySelector(
+            testNavigatorListSelector
+          );
+          return Array.from(testNavigatorList.querySelectorAll('li'));
+        });
 
-      const testNavigatorListItemsMap =
-        await testNavigatorListItemsHandle.getProperties();
-      const testNavigatorListItems = Array.from(
-        testNavigatorListItemsMap.values()
-      );
-      const listItemsLength = testNavigatorListItems.length;
+        const testNavigatorListItemsMap =
+          await testNavigatorListItemsHandle.getProperties();
+        const testNavigatorListItems = Array.from(
+          testNavigatorListItemsMap.values()
+        );
+        const listItemsLength = testNavigatorListItems.length;
 
-      // Click each navigation item and confirm the h1 on page has changed
-      for (const [index, li] of testNavigatorListItems.entries()) {
-        // Randomly navigate using the navigation link or the next button
-        if (Math.random())
-          await li.evaluate(el => el.querySelector('a').click());
-        else await page.click('button ::-p-text(Next Test)');
+        // Click each navigation item and confirm the h1 on page has changed
+        for (const [index, li] of testNavigatorListItems.entries()) {
+          // Randomly navigate using the navigation link or the next button
+          if (Math.random())
+            await li.evaluate(el => el.querySelector('a').click());
+          else await page.click('button ::-p-text(Next Test)');
 
-        await page.waitForSelector(`h1 ::-p-text(Test ${index + 1}:)`);
-        await page.waitForSelector(
-          `div[class="info-label"] ::-p-text(Test Plan:)`
-        );
-        await page.waitForSelector(`div[class="info-label"] ::-p-text(AT:)`);
-        await page.waitForSelector(
-          `div[class="info-label"] ::-p-text(Browser:)`
-        );
-        await page.waitForSelector(
-          `div[class="info-label"] ::-p-text(${listItemsLength} tests to view)`
-        );
-        await page.waitForSelector(`h2 ::-p-text(Instructions)`);
-        await page.waitForSelector(`h2 ::-p-text(Record Results)`);
-        await page.waitForSelector(`h3 ::-p-text(After)`);
+          await page.waitForSelector(`h1 ::-p-text(Test ${index + 1}:)`);
+          await page.waitForSelector(
+            `div[class="info-label"] ::-p-text(Test Plan:)`
+          );
+          await page.waitForSelector(`div[class="info-label"] ::-p-text(AT:)`);
+          await page.waitForSelector(
+            `div[class="info-label"] ::-p-text(Browser:)`
+          );
+          await page.waitForSelector(
+            `div[class="info-label"] ::-p-text(${listItemsLength} tests to view)`
+          );
+          await page.waitForSelector(`h2 ::-p-text(Instructions)`);
+          await page.waitForSelector(`h2 ::-p-text(Record Results)`);
+          await page.waitForSelector(`h3 ::-p-text(After)`);
+
+          const updatedUrl = await page.url();
+          expect(updatedUrl).toMatch(
+            new RegExp(`/test-plan-report/19#${index + 1}$`)
+          );
+        }
+        expect(consoleErrors).toHaveLength(0);
       }
-
-      expect(h1Text.includes('Test 1:')).toBe(true);
-      expect(currentUrl.includes('/test-plan-report/19')).toBe(true);
-      expect(listItemsLength).toBeGreaterThan(1);
-    });
+    );
   });
 });
 
@@ -171,6 +176,30 @@ describe('Test Run when signed in as tester', () => {
       }
 
       expect(listItemsLength).toBeGreaterThan(1);
+    });
+  });
+
+  it('clamps the test index to the bounds of the test list', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      const url = await page.url();
+      await page.goto(`${url}#0`);
+      await page.waitForNetworkIdle();
+      let h1Text = await text(page, 'h1');
+      expect(h1Text).toMatch(/^Test 1:/);
+
+      const numberOfTests = await page.$eval(
+        'nav#test-navigator-nav ol',
+        el => {
+          return el.children.length;
+        }
+      );
+      await page.goto(`${url}#${numberOfTests + 10}`);
+      await page.waitForNetworkIdle();
+      h1Text = await text(page, 'h1');
+      expect(h1Text).toMatch(new RegExp(`Test ${numberOfTests}:`));
     });
   });
 
@@ -337,12 +366,11 @@ describe('Test Run when signed in as tester', () => {
       const openTestPageButtonSelector = 'button ::-p-text(Open Test Page)';
       await page.click(openTestPageButtonSelector);
 
-      const popupTarget = await new Promise(resolve =>
-        page.browser().once('targetcreated', resolve)
-      );
-
       // Allow additional time for popup to open
-      const popupPage = await popupTarget.page();
+      await page.waitForNetworkIdle();
+
+      const pages = await global.browser.pages();
+      const popupPage = pages[pages.length - 1];
 
       // Check for 'Run Test Setup' button
       await popupPage.waitForSelector('button ::-p-text(Run Test Setup)');
