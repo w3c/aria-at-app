@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { ThemeTable } from '../../common/ThemeTable';
@@ -8,6 +8,7 @@ import {
   faExclamationCircle,
   faExternalLinkAlt
 } from '@fortawesome/free-solid-svg-icons';
+import { Button } from 'react-bootstrap';
 
 const StyledThemeTable = styled(ThemeTable)`
   th,
@@ -72,20 +73,28 @@ const IssueLink = styled.a`
   }
 `;
 
-const ConflictSummaryTable = ({ conflictingResults, issues }) => {
-  const testers = conflictingResults.map(
-    result => result.testPlanRun.tester.username
+const ConflictSummaryTable = ({ conflictingResults, issues, issueLink }) => {
+  const testers = useMemo(
+    () => conflictingResults.map(result => result.testPlanRun.tester.username),
+    [conflictingResults]
   );
 
-  const hasAssertionConflicts =
-    conflictingResults[0].scenarioResult.assertionResults.some((ar, index) =>
-      conflictingResults.some(
-        cr => cr.scenarioResult.assertionResults[index].passed !== ar.passed
-      )
-    );
+  const hasAssertionConflicts = useMemo(
+    () =>
+      conflictingResults[0].scenarioResult.assertionResults.some((ar, index) =>
+        conflictingResults.some(
+          cr => cr.scenarioResult.assertionResults[index].passed !== ar.passed
+        )
+      ),
+    [conflictingResults]
+  );
 
-  const hasUnexpectedBehaviorConflicts = conflictingResults.some(
-    result => result.scenarioResult.unexpectedBehaviors.length > 0
+  const hasUnexpectedBehaviorConflicts = useMemo(
+    () =>
+      conflictingResults.some(
+        result => result.scenarioResult.unexpectedBehaviors.length > 0
+      ),
+    [conflictingResults]
   );
 
   const renderAssertionConflicts = () => {
@@ -182,6 +191,12 @@ const ConflictSummaryTable = ({ conflictingResults, issues }) => {
     );
   };
 
+  const renderActions = () => (
+    <Button variant="secondary" target="_blank" href={issueLink}>
+      Raise an Issue for Conflict
+    </Button>
+  );
+
   const renderUnexpectedBehaviorConflicts = () => {
     const allUnexpectedBehaviors = Array.from(
       new Set(
@@ -238,13 +253,15 @@ const ConflictSummaryTable = ({ conflictingResults, issues }) => {
       {hasAssertionConflicts && renderAssertionConflicts()}
       {hasUnexpectedBehaviorConflicts && renderUnexpectedBehaviorConflicts()}
       {renderIssues()}
+      {renderActions()}
     </>
   );
 };
 
 ConflictSummaryTable.propTypes = {
   conflictingResults: PropTypes.arrayOf(PropTypes.object).isRequired,
-  issues: PropTypes.arrayOf(IssuePropType).isRequired
+  issues: PropTypes.arrayOf(IssuePropType).isRequired,
+  issueLink: PropTypes.string.isRequired
 };
 
 export default ConflictSummaryTable;

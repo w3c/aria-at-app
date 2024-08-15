@@ -94,6 +94,9 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
         title
         versionString
         id
+        testPlan {
+          directory
+        }
       }
       minimumAtVersion {
         name
@@ -122,6 +125,7 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
             id
             rowNumber
             title
+            renderedUrl
           }
           scenarioResult {
             output

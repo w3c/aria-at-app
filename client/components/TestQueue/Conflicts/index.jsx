@@ -7,6 +7,8 @@ import { TEST_QUEUE_CONFLICTS_PAGE_QUERY } from '../queries';
 import PageStatus from '../../common/PageStatus';
 import DisclosureComponent from '../../common/DisclosureComponent';
 import ConflictSummaryTable from './ConflictSummaryTable';
+import createIssueLink from '../../../utils/createIssueLink';
+import { dates } from 'shared';
 
 const TestQueueConflicts = () => {
   const [openDisclosures, setOpenDisclosures] = useState([]);
@@ -31,6 +33,27 @@ const TestQueueConflicts = () => {
     return testIndex + 1;
   };
 
+  const getIssueLink = conflict => {
+    if (!conflict) return;
+
+    const { testPlanVersion } = data.testPlanReport;
+    return createIssueLink({
+      testPlanTitle: testPlanVersion.title,
+      testPlanDirectory: testPlanVersion.testPlan.directory,
+      versionString: `V${dates.convertDateToString(
+        testPlanVersion.updatedAt,
+        'YY.MM.DD'
+      )}`,
+      testTitle: conflict.conflictingResults[0].test.title,
+      testRowNumber: conflict.conflictingResults[0].test.rowNumber,
+      testSequenceNumber: getConflictTestNumberFilteredByAt(conflict),
+      testRenderedUrl: conflict.conflictingResults[0].test.renderedUrl,
+      atName: data.testPlanReport.at.name,
+      browserName: data.testPlanReport.browser.name,
+      atVersionName: data.testPlanReport.requiredAtVersion?.name
+    });
+  };
+
   const disclosureLabels = useMemo(() => {
     return data?.testPlanReport?.conflicts?.map(conflict => {
       const testIndex = getConflictTestNumberFilteredByAt(conflict);
@@ -48,6 +71,7 @@ const TestQueueConflicts = () => {
       return (
         <ConflictSummaryTable
           issues={issues}
+          issueLink={getIssueLink(conflict)}
           key={conflict.conflictingResults[0].test.id}
           conflictingResults={conflict.conflictingResults}
         />
