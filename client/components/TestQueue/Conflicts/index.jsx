@@ -9,6 +9,44 @@ import DisclosureComponent from '../../common/DisclosureComponent';
 import ConflictSummaryTable from './ConflictSummaryTable';
 import createIssueLink from '../../../utils/createIssueLink';
 import { dates } from 'shared';
+import styled from '@emotion/styled';
+
+const PageHeader = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const Title = styled.h1`
+  margin-bottom: 1rem;
+`;
+
+const SubTitle = styled.h2`
+  font-size: 1.25rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+`;
+
+const Section = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const ConflictCount = styled.p`
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+`;
+
+const Introduction = styled.div`
+  margin-bottom: 2rem;
+`;
+
+const MetadataList = styled.ul`
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 2rem;
+`;
+
+const MetadataItem = styled.li`
+  margin-bottom: 0.5rem;
+`;
 
 const TestQueueConflicts = () => {
   const [openDisclosures, setOpenDisclosures] = useState([]);
@@ -125,27 +163,55 @@ const TestQueueConflicts = () => {
           Conflicts {title} {versionString} | ARIA-AT
         </title>
       </Helmet>
-      <h1>
-        Conflicts:{' '}
-        <a href={`/test-review/${testPlanVersionId}`}>
-          {title} {versionString}
-        </a>{' '}
-        using {browserName} and {atName}
-        {requiredAtVersionName
-          ? ` (${requiredAtVersionName})`
-          : ` (${minimumAtVersionName} and above)`}
-      </h1>
-      <p>
-        There are currently {data?.testPlanReport?.conflicts?.length} conflicts
-        for this test plan report.
-      </p>
-      <DisclosureComponent
-        title={disclosureLabels}
-        stacked
-        onClick={disclosureClickHandlers}
-        disclosureContainerView={disclosureContents}
-        expanded={openDisclosures}
-      />
+      <PageHeader>
+        <Title>Conflicts for Test Plan Report</Title>
+      </PageHeader>
+
+      <Section>
+        <h2>Introduction</h2>
+        <p>
+          This page shows conflicts in test results for a specific test plan
+          report. Conflicts occur when different testers report different
+          outcomes for the same test assertions or unexpected behaviors.
+        </p>
+      </Section>
+
+      <Section>
+        <h2>Test Plan Report</h2>
+        <MetadataList>
+          <MetadataItem>
+            <strong>Test Plan Version:</strong>{' '}
+            <a href={`/test-review/${testPlanVersionId}`}>
+              {title} {versionString}
+            </a>
+          </MetadataItem>
+          <MetadataItem>
+            <strong>Assistive Technology:</strong> {atName}
+            {requiredAtVersionName
+              ? ` (${requiredAtVersionName})`
+              : ` (${minimumAtVersionName} and above)`}
+          </MetadataItem>
+          <MetadataItem>
+            <strong>Browser:</strong> {browserName}
+          </MetadataItem>
+        </MetadataList>
+      </Section>
+
+      <Section>
+        <h2>Conflicts</h2>
+        <ConflictCount>
+          There are currently
+          <b> {data?.testPlanReport?.conflicts?.length} conflicts </b>
+          for this test plan report.
+        </ConflictCount>
+        <DisclosureComponent
+          title={disclosureLabels}
+          stacked
+          onClick={disclosureClickHandlers}
+          disclosureContainerView={disclosureContents}
+          expanded={openDisclosures}
+        />
+      </Section>
     </Container>
   );
 };
