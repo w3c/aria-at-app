@@ -129,8 +129,7 @@ const getPage = async (options, callback) => {
   const foundExistingIncognitoContext = !!incognitoContexts[role];
 
   if (!foundExistingIncognitoContext) {
-    incognitoContexts[role] =
-      await global.browser.createIncognitoBrowserContext();
+    incognitoContexts[role] = await global.browser.createBrowserContext();
   }
   const incognitoContext = incognitoContexts[role];
 
