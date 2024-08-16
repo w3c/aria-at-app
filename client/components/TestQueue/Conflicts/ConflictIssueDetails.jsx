@@ -7,6 +7,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import { IssuePropType } from '../../common/proptypes';
+import { dates } from 'shared';
 
 const IssuesContainer = styled.div`
   margin-bottom: 2rem;
@@ -81,13 +82,13 @@ const ConflictIssueDetails = ({ issues }) => {
             <IssueValue>{issue.feedbackType}</IssueValue>
             <IssueLabel>Created:</IssueLabel>
             <IssueValue>
-              {new Date(issue.createdAt).toLocaleDateString()}
+              {dates.convertDateToString(issue.createdAt)}
             </IssueValue>
             {issue.closedAt && (
               <>
                 <IssueLabel>Closed:</IssueLabel>
                 <IssueValue>
-                  {new Date(issue.closedAt).toLocaleDateString()}
+                  {dates.convertDateToString(issue.closedAt)}
                 </IssueValue>
               </>
             )}
