@@ -17,22 +17,12 @@ const PageContainer = styled(Container)`
   padding: 2rem;
 `;
 
-const PageHeader = styled.header`
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-`;
-
-const Title = styled.h1`
-  margin-bottom: 0.5rem;
-`;
-
 const Section = styled.section`
   margin-bottom: 3rem;
 `;
 
 const SectionTitle = styled.h2`
   margin-bottom: 1rem;
-  color: #495057;
 `;
 
 const MetadataList = styled.ul`
@@ -184,9 +174,7 @@ const TestQueueConflicts = () => {
           Conflicts {title} {versionString} | ARIA-AT
         </title>
       </Helmet>
-      <PageHeader>
-        <Title>Conflicts for Test Plan Report</Title>
-      </PageHeader>
+      <h1>Conflicts for Test Plan Report</h1>
 
       <Section>
         <SectionTitle>Introduction</SectionTitle>
