@@ -32,17 +32,14 @@ const ReportStatusSummary = ({
 
     const conflictsCount = metrics.conflictsCount ?? 0;
     const percentComplete = calculatePercentComplete(testPlanReport);
-    const conflictsEl =
-      conflictsCount > 0 ? (
-        <a
-          style={{ color: '#ce1b4c' }}
-          href={`/test-queue/${testPlanReport.id}/conflicts`}
-        >
-          with {conflictsCount} conflicts
-        </a>
-      ) : (
-        `with ${conflictsCount} conflicts`
-      );
+    const conflictsEl = conflictsCount > 0 && (
+      <a
+        style={{ color: '#ce1b4c' }}
+        href={`/test-queue/${testPlanReport.id}/conflicts`}
+      >
+        with {conflictsCount} conflicts
+      </a>
+    );
     switch (draftTestPlanRuns?.length) {
       case 0:
         return fromTestQueue ? (
