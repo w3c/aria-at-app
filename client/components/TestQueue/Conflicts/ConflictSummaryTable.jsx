@@ -23,7 +23,6 @@ export const ConflictTable = styled(ThemeTable)`
 `;
 
 export const ConflictCell = styled.td`
-  background-color: ${props => (props.conflict ? '#FFEBEE' : 'inherit')};
   font-weight: ${props => (props.conflict ? 'bold' : 'normal')};
 `;
 
