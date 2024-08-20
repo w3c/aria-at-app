@@ -16,7 +16,7 @@ const AssertionConflictsTable = ({ conflictingResults, testers }) => {
           <tr>
             <th>Assertion</th>
             {testers.map(tester => (
-              <th key={tester}>{tester}</th>
+              <th key={tester.username}>{tester.username}</th>
             ))}
           </tr>
         </thead>

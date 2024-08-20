@@ -55,7 +55,7 @@ const ConflictSummaryTable = ({
   testIndex
 }) => {
   const testers = useMemo(
-    () => conflictingResults.map(result => result.testPlanRun.tester.username),
+    () => conflictingResults.map(result => result.testPlanRun.tester),
     [conflictingResults]
   );
 

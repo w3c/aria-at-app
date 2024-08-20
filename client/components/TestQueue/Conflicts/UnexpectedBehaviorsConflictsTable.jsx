@@ -23,7 +23,7 @@ const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
           <tr>
             <th>Unexpected Behavior</th>
             {testers.map(tester => (
-              <th key={tester}>{tester}</th>
+              <th key={tester.username}>{tester.username}</th>
             ))}
           </tr>
         </thead>
