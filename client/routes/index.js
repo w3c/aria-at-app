@@ -42,7 +42,11 @@ export default () => (
     <Route
       exact
       path="/test-queue/:testPlanReportId/conflicts"
-      element={<TestQueueConflicts />}
+      element={
+        <ConfirmAuth requiredPermission="TESTER">
+          <TestQueueConflicts />
+        </ConfirmAuth>
+      }
     />
     <Route
       exact

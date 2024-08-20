@@ -3,7 +3,12 @@ import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { dates } from 'shared';
 import { calculatePercentComplete } from '../../../utils/calculatePercentComplete';
-import { TestPlanVersionPropType, TestPlanRunPropType } from '../proptypes';
+import {
+  TestPlanVersionPropType,
+  TestPlanRunPropType,
+  UserPropType
+} from '../proptypes';
+import { evaluateAuth } from '../../../utils/evaluateAuth';
 
 const IncompleteStatusReport = styled.span`
   min-width: 5rem;
@@ -13,8 +18,11 @@ const IncompleteStatusReport = styled.span`
 const ReportStatusSummary = ({
   testPlanVersion,
   testPlanReport,
+  me,
   fromTestQueue = false
 }) => {
+  const { isSignedIn, isAdmin, isTester, isVendor } = evaluateAuth(me);
+
   const renderCompleteReportStatus = testPlanReport => {
     const formattedDate = dates.convertDateToString(
       testPlanReport.markedFinalAt,
@@ -27,12 +35,11 @@ const ReportStatusSummary = ({
     );
   };
 
-  const renderPartialCompleteReportStatus = testPlanReport => {
-    const { metrics, draftTestPlanRuns } = testPlanReport;
-
-    const conflictsCount = metrics.conflictsCount ?? 0;
-    const percentComplete = calculatePercentComplete(testPlanReport);
-    const conflictsEl = conflictsCount > 0 && (
+  const getConflictsAnchor = conflictsCount => {
+    if (conflictsCount === 0) return null;
+    if (!isSignedIn) return null;
+    if (!isTester && !isVendor && !isAdmin) return null;
+    return (
       <a
         style={{ color: '#ce1b4c' }}
         href={`/test-queue/${testPlanReport.id}/conflicts`}
@@ -40,6 +47,13 @@ const ReportStatusSummary = ({
         with {conflictsCount} conflicts
       </a>
     );
+  };
+
+  const renderPartialCompleteReportStatus = testPlanReport => {
+    const { metrics, draftTestPlanRuns } = testPlanReport;
+
+    const conflictsCount = metrics.conflictsCount ?? 0;
+    const percentComplete = calculatePercentComplete(testPlanReport);
     switch (draftTestPlanRuns?.length) {
       case 0:
         return fromTestQueue ? (
@@ -57,7 +71,7 @@ const ReportStatusSummary = ({
               {draftTestPlanRuns[0].tester.username}
             </a>
             &nbsp;
-            {conflictsEl}
+            {getConflictsAnchor(conflictsCount)}
           </span>
         );
       default:
@@ -65,7 +79,7 @@ const ReportStatusSummary = ({
           <span>
             {percentComplete}% complete by&nbsp;
             {draftTestPlanRuns.length} testers&nbsp;
-            {conflictsEl}
+            {getConflictsAnchor(conflictsCount)}
           </span>
         );
     }
@@ -91,6 +105,7 @@ ReportStatusSummary.propTypes = {
     metrics: PropTypes.object,
     draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType).isRequired
   }),
+  me: UserPropType,
   fromTestQueue: PropTypes.bool
 };
 

@@ -60,6 +60,7 @@ const TestPlanReportStatusDialog = ({
           <ReportStatusSummary
             testPlanVersion={testPlanVersion}
             testPlanReport={testPlanReport}
+            me={me}
           />
           {isSignedIn && isAdmin && !testPlanReport ? (
             <AddTestToQueueWithConfirmation
