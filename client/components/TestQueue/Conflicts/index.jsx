@@ -174,7 +174,9 @@ const TestQueueConflicts = () => {
           Conflicts {title} {versionString} | ARIA-AT
         </title>
       </Helmet>
-      <h1>Conflicts for Test Plan Report</h1>
+      <h1>
+        Conflicts for Test Plan Report {title} {versionString}
+      </h1>
 
       <Section>
         <SectionTitle>Introduction</SectionTitle>
