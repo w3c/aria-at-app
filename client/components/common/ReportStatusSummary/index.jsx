@@ -35,7 +35,7 @@ const ReportStatusSummary = ({
     const conflictsEl =
       conflictsCount > 0 ? (
         <a
-          style={{ color: 'salmon' }}
+          style={{ color: '#ce1b4c' }}
           href={`/test-queue/${testPlanReport.id}/conflicts`}
         >
           with {conflictsCount} conflicts
