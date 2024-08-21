@@ -94,7 +94,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
 
   const onKeyDown = event => {
     const { key } = event;
-    if (key.match(/[0-9a-zA-Z]/)) {
+    if (key.length === 1 && key.match(/[a-zA-Z0-9]/)) {
       const container = event.target.closest('[role=menu]');
       const matchingMenuItem = Array.from(container.children).find(menuItem => {
         return menuItem.innerText
