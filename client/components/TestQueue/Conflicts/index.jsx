@@ -102,7 +102,11 @@ const TestQueueConflicts = () => {
   const disclosureLabels = useMemo(() => {
     return data?.testPlanReport?.conflicts?.map(conflict => {
       const testIndex = getConflictTestNumberFilteredByAt(conflict);
-      return `Test ${testIndex}: ${conflict.conflictingResults[0].test.title}`;
+      return `Test ${testIndex}: ${
+        conflict.conflictingResults[0].test.title
+      } (${conflict.conflictingResults[0].scenario.commands
+        .map(({ text }) => text)
+        .join(' then ')})`;
     });
   }, [data?.testPlanReport?.conflicts]);
 

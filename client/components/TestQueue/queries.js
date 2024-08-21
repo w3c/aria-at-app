@@ -131,6 +131,11 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
             title
             renderedUrl
           }
+          scenario {
+            commands {
+              text
+            }
+          }
           scenarioResult {
             output
             unexpectedBehaviors {
