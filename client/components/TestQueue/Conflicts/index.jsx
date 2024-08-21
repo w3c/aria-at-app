@@ -3,13 +3,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
+import styled from '@emotion/styled';
 import { TEST_QUEUE_CONFLICTS_PAGE_QUERY } from '../queries';
 import PageStatus from '../../common/PageStatus';
 import DisclosureComponent from '../../common/DisclosureComponent';
 import ConflictSummaryTable from './ConflictSummaryTable';
 import createIssueLink from '../../../utils/createIssueLink';
-import { dates } from 'shared';
-import styled from '@emotion/styled';
 import { evaluateAuth } from '../../../utils/evaluateAuth';
 
 const PageContainer = styled(Container)`
@@ -85,17 +84,16 @@ const TestQueueConflicts = () => {
     return createIssueLink({
       testPlanTitle: testPlanVersion.title,
       testPlanDirectory: testPlanVersion.testPlan.directory,
-      versionString: `V${dates.convertDateToString(
-        testPlanVersion.updatedAt,
-        'YY.MM.DD'
-      )}`,
+      versionString: testPlanVersion.versionString,
       testTitle: conflict.conflictingResults[0].test.title,
       testRowNumber: conflict.conflictingResults[0].test.rowNumber,
       testSequenceNumber: getConflictTestNumberFilteredByAt(conflict),
       testRenderedUrl: conflict.conflictingResults[0].test.renderedUrl,
       atName: data.testPlanReport.at.name,
       browserName: data.testPlanReport.browser.name,
-      atVersionName: data.testPlanReport.requiredAtVersion?.name
+      atVersionName: data.testPlanReport.exactAtVersion?.name
+        ? data.testPlanReport.exactAtVersion?.name
+        : `${data.testPlanReport.minimumAtVersion?.name} and above`
     });
   };
 
@@ -162,8 +160,8 @@ const TestQueueConflicts = () => {
   } = data?.testPlanReport.testPlanVersion ?? {};
   const { name: browserName } = data?.testPlanReport.browser ?? {};
   const { name: atName } = data?.testPlanReport.at ?? {};
-  const { name: requiredAtVersionName } =
-    data?.testPlanReport.requiredAtVersion ?? {};
+  const { name: exactAtVersionName } =
+    data?.testPlanReport.exactAtVersion ?? {};
   const { name: minimumAtVersionName } =
     data?.testPlanReport.minimumAtVersion ?? {};
 
@@ -199,8 +197,8 @@ const TestQueueConflicts = () => {
           <MetadataItem>
             <MetadataLabel>Assistive Technology:</MetadataLabel>
             {atName}
-            {requiredAtVersionName
-              ? ` (${requiredAtVersionName})`
+            {exactAtVersionName
+              ? ` (${exactAtVersionName})`
               : ` (${minimumAtVersionName} and above)`}
           </MetadataItem>
           <MetadataItem>
