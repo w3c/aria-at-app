@@ -56,6 +56,8 @@ const ConflictCount = styled.p`
 
 const TestQueueConflicts = () => {
   const [openDisclosures, setOpenDisclosures] = useState([]);
+  const [uniqueConflictsByTest, setUniqueConflictsByTest] = useState([]);
+
   const { testPlanReportId } = useParams();
   const { data, error, loading } = useQuery(TEST_QUEUE_CONFLICTS_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network',
@@ -66,7 +68,25 @@ const TestQueueConflicts = () => {
 
   useEffect(() => {
     if (data) {
-      setOpenDisclosures(data.testPlanReport.conflicts.map(() => false));
+      // Each conflict per test is counted so it could cause duplicate
+      // disclosures
+      //
+      // eg. tester1 and tester2 marking 2 assertions in test1 the opposite way
+      //     would create 2 disclosures
+      let uniqueConflictsByTestId = [];
+      data?.testPlanReport?.conflicts?.map(conflict => {
+        const conflictTestId = conflict.conflictingResults[0].test.id;
+        if (
+          !uniqueConflictsByTestId.find(
+            conflict =>
+              conflict.conflictingResults[0].test.id === conflictTestId
+          )
+        ) {
+          uniqueConflictsByTestId.push(conflict);
+        }
+      });
+      setUniqueConflictsByTest(uniqueConflictsByTestId);
+      setOpenDisclosures(uniqueConflictsByTestId.map(() => false));
     }
   }, [data]);
 
@@ -100,7 +120,7 @@ const TestQueueConflicts = () => {
   const { isAdmin } = useMemo(() => evaluateAuth(data?.me), [data?.me]);
 
   const disclosureLabels = useMemo(() => {
-    return data?.testPlanReport?.conflicts?.map(conflict => {
+    return uniqueConflictsByTest.map(conflict => {
       const testIndex = getConflictTestNumberFilteredByAt(conflict);
       return `Test ${testIndex}: ${
         conflict.conflictingResults[0].test.title
@@ -108,10 +128,10 @@ const TestQueueConflicts = () => {
         .map(({ text }) => text)
         .join(' then ')})`;
     });
-  }, [data?.testPlanReport?.conflicts]);
+  }, [uniqueConflictsByTest]);
 
   const disclosureContents = useMemo(() => {
-    return data?.testPlanReport?.conflicts?.map(conflict => {
+    return uniqueConflictsByTest.map(conflict => {
       const issues = data?.testPlanReport?.issues?.filter(
         issue =>
           issue.testNumberFilteredByAt ===
@@ -128,17 +148,17 @@ const TestQueueConflicts = () => {
         />
       );
     });
-  }, [data?.testPlanReport?.conflicts]);
+  }, [uniqueConflictsByTest]);
 
   const disclosureClickHandlers = useMemo(() => {
-    return data?.testPlanReport?.conflicts?.map((_, index) => () => {
+    return uniqueConflictsByTest.map((_, index) => () => {
       setOpenDisclosures(prevState => {
         const newOpenDisclosures = [...prevState];
         newOpenDisclosures[index] = !newOpenDisclosures[index];
         return newOpenDisclosures;
       });
     });
-  }, [data?.testPlanReport?.conflicts]);
+  }, [uniqueConflictsByTest]);
 
   if (error) {
     return (
@@ -217,6 +237,8 @@ const TestQueueConflicts = () => {
         <ConflictCount>
           There are currently
           <strong> {data?.testPlanReport?.conflicts?.length} conflicts </strong>
+          across
+          <strong> {uniqueConflictsByTest.length} tests </strong>
           for this test plan report.
         </ConflictCount>
         <DisclosureComponent
