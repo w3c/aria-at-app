@@ -56,7 +56,9 @@ const ConflictCount = styled.p`
 
 const TestQueueConflicts = () => {
   const [openDisclosures, setOpenDisclosures] = useState([]);
-  const [uniqueConflictsByTest, setUniqueConflictsByTest] = useState([]);
+  const [uniqueConflictsByAssertion, setUniqueConflictsByAssertion] = useState(
+    []
+  );
 
   const { testPlanReportId } = useParams();
   const { data, error, loading } = useQuery(TEST_QUEUE_CONFLICTS_PAGE_QUERY, {
@@ -73,20 +75,30 @@ const TestQueueConflicts = () => {
       //
       // eg. tester1 and tester2 marking 2 assertions in test1 the opposite way
       //     would create 2 disclosures
-      let uniqueConflictsByTestId = [];
+      const createUniqueConflictId = (testId = '', commands = []) =>
+        `${testId}-${commands.map(({ text }) => text).join('')}`;
+
+      const uniqueConflictsByAssertions = [];
       data?.testPlanReport?.conflicts?.map(conflict => {
-        const conflictTestId = conflict.conflictingResults[0].test.id;
+        const conflictId = createUniqueConflictId(
+          conflict.conflictingResults[0].test.id,
+          conflict.conflictingResults[0].scenario.commands
+        );
+
         if (
-          !uniqueConflictsByTestId.find(
+          !uniqueConflictsByAssertions.find(
             conflict =>
-              conflict.conflictingResults[0].test.id === conflictTestId
+              createUniqueConflictId(
+                conflict.conflictingResults[0].test.id,
+                conflict.conflictingResults[0].scenario.commands
+              ) === conflictId
           )
         ) {
-          uniqueConflictsByTestId.push(conflict);
+          uniqueConflictsByAssertions.push(conflict);
         }
       });
-      setUniqueConflictsByTest(uniqueConflictsByTestId);
-      setOpenDisclosures(uniqueConflictsByTestId.map(() => false));
+      setUniqueConflictsByAssertion(uniqueConflictsByAssertions);
+      setOpenDisclosures(uniqueConflictsByAssertions.map(() => false));
     }
   }, [data]);
 
@@ -120,7 +132,7 @@ const TestQueueConflicts = () => {
   const { isAdmin } = useMemo(() => evaluateAuth(data?.me), [data?.me]);
 
   const disclosureLabels = useMemo(() => {
-    return uniqueConflictsByTest.map(conflict => {
+    return uniqueConflictsByAssertion.map(conflict => {
       const testIndex = getConflictTestNumberFilteredByAt(conflict);
       return `Test ${testIndex}: ${
         conflict.conflictingResults[0].test.title
@@ -128,10 +140,10 @@ const TestQueueConflicts = () => {
         .map(({ text }) => text)
         .join(' then ')})`;
     });
-  }, [uniqueConflictsByTest]);
+  }, [uniqueConflictsByAssertion]);
 
   const disclosureContents = useMemo(() => {
-    return uniqueConflictsByTest.map(conflict => {
+    return uniqueConflictsByAssertion.map(conflict => {
       const issues = data?.testPlanReport?.issues?.filter(
         issue =>
           issue.testNumberFilteredByAt ===
@@ -148,17 +160,17 @@ const TestQueueConflicts = () => {
         />
       );
     });
-  }, [uniqueConflictsByTest]);
+  }, [uniqueConflictsByAssertion]);
 
   const disclosureClickHandlers = useMemo(() => {
-    return uniqueConflictsByTest.map((_, index) => () => {
+    return uniqueConflictsByAssertion.map((_, index) => () => {
       setOpenDisclosures(prevState => {
         const newOpenDisclosures = [...prevState];
         newOpenDisclosures[index] = !newOpenDisclosures[index];
         return newOpenDisclosures;
       });
     });
-  }, [uniqueConflictsByTest]);
+  }, [uniqueConflictsByAssertion]);
 
   if (error) {
     return (
@@ -188,6 +200,12 @@ const TestQueueConflicts = () => {
     data?.testPlanReport.exactAtVersion ?? {};
   const { name: minimumAtVersionName } =
     data?.testPlanReport.minimumAtVersion ?? {};
+
+  const uniqueTestsLength = new Set(
+    data?.testPlanReport?.conflicts.map(
+      conflict => conflict.conflictingResults[0].test.id
+    )
+  ).size;
 
   return (
     <PageContainer id="main" as="main" tabIndex="-1">
@@ -238,7 +256,9 @@ const TestQueueConflicts = () => {
           There are currently
           <strong> {data?.testPlanReport?.conflicts?.length} conflicts </strong>
           across
-          <strong> {uniqueConflictsByTest.length} tests </strong>
+          <strong> {uniqueTestsLength} tests </strong>
+          and
+          <strong> {uniqueConflictsByAssertion.length} assertions </strong>
           for this test plan report.
         </ConflictCount>
         <DisclosureComponent
