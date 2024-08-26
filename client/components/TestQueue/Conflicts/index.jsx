@@ -3,13 +3,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
+import styled from '@emotion/styled';
 import { TEST_QUEUE_CONFLICTS_PAGE_QUERY } from '../queries';
 import PageStatus from '../../common/PageStatus';
 import DisclosureComponent from '../../common/DisclosureComponent';
 import ConflictSummaryTable from './ConflictSummaryTable';
 import createIssueLink from '../../../utils/createIssueLink';
-import { dates } from 'shared';
-import styled from '@emotion/styled';
 import { evaluateAuth } from '../../../utils/evaluateAuth';
 
 const PageContainer = styled(Container)`
@@ -57,6 +56,10 @@ const ConflictCount = styled.p`
 
 const TestQueueConflicts = () => {
   const [openDisclosures, setOpenDisclosures] = useState([]);
+  const [uniqueConflictsByAssertion, setUniqueConflictsByAssertion] = useState(
+    []
+  );
+
   const { testPlanReportId } = useParams();
   const { data, error, loading } = useQuery(TEST_QUEUE_CONFLICTS_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network',
@@ -67,7 +70,35 @@ const TestQueueConflicts = () => {
 
   useEffect(() => {
     if (data) {
-      setOpenDisclosures(data.testPlanReport.conflicts.map(() => false));
+      // Each conflict per test is counted so it could cause duplicate
+      // disclosures
+      //
+      // eg. tester1 and tester2 marking 2 assertions in test1 the opposite way
+      //     would create 2 disclosures
+      const createUniqueConflictId = (testId = '', commands = []) =>
+        `${testId}-${commands.map(({ text }) => text).join('')}`;
+
+      const uniqueConflictsByAssertions = [];
+      data?.testPlanReport?.conflicts?.map(conflict => {
+        const conflictId = createUniqueConflictId(
+          conflict.conflictingResults[0].test.id,
+          conflict.conflictingResults[0].scenario.commands
+        );
+
+        if (
+          !uniqueConflictsByAssertions.find(
+            conflict =>
+              createUniqueConflictId(
+                conflict.conflictingResults[0].test.id,
+                conflict.conflictingResults[0].scenario.commands
+              ) === conflictId
+          )
+        ) {
+          uniqueConflictsByAssertions.push(conflict);
+        }
+      });
+      setUniqueConflictsByAssertion(uniqueConflictsByAssertions);
+      setOpenDisclosures(uniqueConflictsByAssertions.map(() => false));
     }
   }, [data]);
 
@@ -81,35 +112,147 @@ const TestQueueConflicts = () => {
   const getIssueLink = conflict => {
     if (!conflict) return;
 
+    let markdownConflictCount = 1;
+    // Standardize on format currently supported in ReviewConflicts
+    let conflictMarkdown = `
+## Review Conflicts for "${conflict.conflictingResults[0].test.title}"`;
+
+    // Setup conflicting assertions handling
+    const conflictingAssertions = [];
+    conflict.conflictingResults[0].scenarioResult.assertionResults.forEach(
+      (ar, index) => {
+        conflict.conflictingResults.forEach(cr => {
+          const hasConflict =
+            cr.scenarioResult.assertionResults[index].passed !== ar.passed;
+
+          if (hasConflict) {
+            conflictingAssertions.push({
+              index,
+              assertion: cr.scenarioResult.assertionResults[index].assertion
+            });
+          }
+        });
+      }
+    );
+    const hasAssertionConflicts = conflictingAssertions.length > 0;
+
+    if (hasAssertionConflicts) {
+      for (const conflictingAssertion of conflictingAssertions) {
+        // Standardize on format currently supported in ReviewConflicts
+        conflictMarkdown = `${conflictMarkdown}
+
+${markdownConflictCount}. ### Assertion Results for "${conflict.conflictingResults[0].scenario.commands
+          .map(({ text }) => text)
+          .join(' then ')}" Command and "${
+          conflictingAssertion.assertion.text
+        }" Assertion`;
+        markdownConflictCount++;
+
+        conflict.conflictingResults.forEach(result => {
+          const { testPlanRun, scenarioResult } = result;
+          let assertionResultFormatted;
+          assertionResultFormatted = scenarioResult.assertionResults[
+            conflictingAssertion.index
+          ].passed
+            ? 'passing'
+            : 'failing';
+
+          conflictMarkdown = `${conflictMarkdown}
+- Tester ${testPlanRun.tester.username} recorded output "${scenarioResult.output}" and marked assertion as ${assertionResultFormatted}`;
+        });
+      }
+    }
+
+    // Setup conflicting unexpected behaviors handling
+    const conflictingUnexpectedBehaviorsByTester = {};
+    conflict.conflictingResults.forEach(result => {
+      result.scenarioResult.unexpectedBehaviors.forEach(
+        ({ text, details, impact }) => {
+          const username = result.testPlanRun.tester.username;
+          const conflict = {
+            text,
+            details,
+            impact,
+            output: result.scenarioResult.output,
+            tester: result.testPlanRun.tester,
+            command: result.scenario.commands
+              .map(({ text }) => text)
+              .join(' then ')
+          };
+
+          if (!conflictingUnexpectedBehaviorsByTester[username]) {
+            conflictingUnexpectedBehaviorsByTester[username] = [conflict];
+          } else {
+            conflictingUnexpectedBehaviorsByTester[username].push(conflict);
+          }
+        }
+      );
+    });
+    const hasUnexpectedBehaviorConflicts =
+      Object.keys(conflictingUnexpectedBehaviorsByTester).length > 0;
+
+    if (hasUnexpectedBehaviorConflicts) {
+      conflictMarkdown = `${conflictMarkdown}
+
+${markdownConflictCount}. ### Unexpected Behaviors Results for "${conflict.conflictingResults[0].scenario.commands
+        .map(({ text }) => text)
+        .join(' then ')}" Command`;
+      markdownConflictCount++;
+
+      for (const key in conflictingUnexpectedBehaviorsByTester) {
+        const unexpectedBehaviorsForTester =
+          conflictingUnexpectedBehaviorsByTester[key];
+
+        const commonUnexpectedBehaviorForTester =
+          unexpectedBehaviorsForTester[0];
+        const unexpectedBehaviorText = unexpectedBehaviorsForTester
+          .map((unexpectedBehavior, index) => {
+            let note = `"${unexpectedBehavior.text} (Details: ${unexpectedBehavior.details}, Impact: ${unexpectedBehavior.impact})"`;
+            if (index + 1 < unexpectedBehaviorsForTester.length)
+              note = `${note} and`;
+
+            return note;
+          })
+          .join(' ');
+
+        conflictMarkdown = `${conflictMarkdown}
+- Tester ${commonUnexpectedBehaviorForTester.tester.username} recorded output "${commonUnexpectedBehaviorForTester.output}" and noted ${unexpectedBehaviorText}`;
+      }
+    }
+
     const { testPlanVersion } = data.testPlanReport;
     return createIssueLink({
       testPlanTitle: testPlanVersion.title,
       testPlanDirectory: testPlanVersion.testPlan.directory,
-      versionString: `V${dates.convertDateToString(
-        testPlanVersion.updatedAt,
-        'YY.MM.DD'
-      )}`,
+      versionString: testPlanVersion.versionString,
       testTitle: conflict.conflictingResults[0].test.title,
       testRowNumber: conflict.conflictingResults[0].test.rowNumber,
       testSequenceNumber: getConflictTestNumberFilteredByAt(conflict),
       testRenderedUrl: conflict.conflictingResults[0].test.renderedUrl,
       atName: data.testPlanReport.at.name,
       browserName: data.testPlanReport.browser.name,
-      atVersionName: data.testPlanReport.requiredAtVersion?.name
+      atVersionName: data.testPlanReport.exactAtVersion?.name
+        ? data.testPlanReport.exactAtVersion?.name
+        : `${data.testPlanReport.minimumAtVersion?.name} and above`,
+      conflictMarkdown
     });
   };
 
   const { isAdmin } = useMemo(() => evaluateAuth(data?.me), [data?.me]);
 
   const disclosureLabels = useMemo(() => {
-    return data?.testPlanReport?.conflicts?.map(conflict => {
+    return uniqueConflictsByAssertion.map(conflict => {
       const testIndex = getConflictTestNumberFilteredByAt(conflict);
-      return `Test ${testIndex}: ${conflict.conflictingResults[0].test.title}`;
+      return `Test ${testIndex}: ${
+        conflict.conflictingResults[0].test.title
+      } (${conflict.conflictingResults[0].scenario.commands
+        .map(({ text }) => text)
+        .join(' then ')})`;
     });
-  }, [data?.testPlanReport?.conflicts]);
+  }, [uniqueConflictsByAssertion]);
 
   const disclosureContents = useMemo(() => {
-    return data?.testPlanReport?.conflicts?.map(conflict => {
+    return uniqueConflictsByAssertion.map(conflict => {
       const issues = data?.testPlanReport?.issues?.filter(
         issue =>
           issue.testNumberFilteredByAt ===
@@ -126,17 +269,17 @@ const TestQueueConflicts = () => {
         />
       );
     });
-  }, [data?.testPlanReport?.conflicts]);
+  }, [uniqueConflictsByAssertion]);
 
   const disclosureClickHandlers = useMemo(() => {
-    return data?.testPlanReport?.conflicts?.map((_, index) => () => {
+    return uniqueConflictsByAssertion.map((_, index) => () => {
       setOpenDisclosures(prevState => {
         const newOpenDisclosures = [...prevState];
         newOpenDisclosures[index] = !newOpenDisclosures[index];
         return newOpenDisclosures;
       });
     });
-  }, [data?.testPlanReport?.conflicts]);
+  }, [uniqueConflictsByAssertion]);
 
   if (error) {
     return (
@@ -162,10 +305,16 @@ const TestQueueConflicts = () => {
   } = data?.testPlanReport.testPlanVersion ?? {};
   const { name: browserName } = data?.testPlanReport.browser ?? {};
   const { name: atName } = data?.testPlanReport.at ?? {};
-  const { name: requiredAtVersionName } =
-    data?.testPlanReport.requiredAtVersion ?? {};
+  const { name: exactAtVersionName } =
+    data?.testPlanReport.exactAtVersion ?? {};
   const { name: minimumAtVersionName } =
     data?.testPlanReport.minimumAtVersion ?? {};
+
+  const uniqueTestsLength = new Set(
+    data?.testPlanReport?.conflicts.map(
+      conflict => conflict.conflictingResults[0].test.id
+    )
+  ).size;
 
   return (
     <PageContainer id="main" as="main" tabIndex="-1">
@@ -199,8 +348,8 @@ const TestQueueConflicts = () => {
           <MetadataItem>
             <MetadataLabel>Assistive Technology:</MetadataLabel>
             {atName}
-            {requiredAtVersionName
-              ? ` (${requiredAtVersionName})`
+            {exactAtVersionName
+              ? ` (${exactAtVersionName})`
               : ` (${minimumAtVersionName} and above)`}
           </MetadataItem>
           <MetadataItem>
@@ -215,6 +364,10 @@ const TestQueueConflicts = () => {
         <ConflictCount>
           There are currently
           <strong> {data?.testPlanReport?.conflicts?.length} conflicts </strong>
+          across
+          <strong> {uniqueTestsLength} tests </strong>
+          and
+          <strong> {uniqueConflictsByAssertion.length} assertions </strong>
           for this test plan report.
         </ConflictCount>
         <DisclosureComponent
