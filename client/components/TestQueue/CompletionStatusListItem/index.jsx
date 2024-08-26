@@ -4,6 +4,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import BotTestCompletionStatus from '@components/TestQueueCompletionStatusListItem/BotTestCompletionStatus';
 import PreviouslyAutomatedTestCompletionStatus from '@components/TestQueueCompletionStatusListItem/PreviouslyAutomatedTestCompletionStatus';
+import {
+  TestPlanReportPropType,
+  TestPlanRunPropType,
+  UserPropType
+} from '../../common/proptypes';
 
 const CompletionStatusListItem = ({
   rowId,
@@ -67,20 +72,11 @@ const CompletionStatusListItem = ({
   );
 };
 
-// TODO: Update shape for testPlanReport and tester
 CompletionStatusListItem.propTypes = {
   rowId: PropTypes.string.isRequired,
-  testPlanReport: PropTypes.object.isRequired,
-  testPlanRun: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    testResultsLength: PropTypes.number.isRequired,
-    initiatedByAutomation: PropTypes.bool.isRequired,
-    tester: PropTypes.shape({
-      username: PropTypes.string.isRequired,
-      isBot: PropTypes.bool.isRequired
-    }).isRequired
-  }).isRequired,
-  tester: PropTypes.object.isRequired
+  testPlanReport: TestPlanReportPropType.isRequired,
+  testPlanRun: TestPlanRunPropType.isRequired,
+  tester: UserPropType.isRequired
 };
 
 export default CompletionStatusListItem;

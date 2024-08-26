@@ -28,25 +28,29 @@ describe('Test Review page', () => {
     const openTestPageButtonSelector = 'button ::-p-text(Open Test Page)';
     await page.click(openTestPageButtonSelector);
 
-    const popupTarget = await new Promise(resolve =>
-      page.browser().once('targetcreated', resolve)
-    );
-
     // Allow additional time for popup to open
-    const popupPage = await popupTarget.page();
+    await page.waitForNetworkIdle();
+
+    const pages = await global.browser.pages();
+    const popupPage = pages[pages.length - 1];
 
     // Check for 'Run Test Setup' button
     await popupPage.waitForSelector('button ::-p-text(Run Test Setup)');
   };
 
   it('renders page for review page before test format v2', async () => {
-    await getPage({ role: false, url: '/test-review/1' }, async page => {
-      await text(
-        page,
-        'h1 ::-p-text(Alert Example Test Plan V22.04.14 (Deprecated))'
-      );
-      await getReviewPageElements(page);
-    });
+    await getPage(
+      { role: false, url: '/test-review/1' },
+      async (page, { consoleErrors }) => {
+        await text(
+          page,
+          'h1 ::-p-text(Alert Example Test Plan V22.04.14 (Deprecated))'
+        );
+
+        await getReviewPageElements(page);
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
   });
 
   it('renders page for review page after test format v2', async () => {

@@ -3,30 +3,36 @@ import { text } from './util';
 
 describe('Reports page', () => {
   it('renders reports page', async () => {
-    await getPage({ role: false, url: '/reports' }, async page => {
-      await page.waitForSelector(
-        'h1 ::-p-text(Assistive Technology Interoperability Reports)'
-      );
-      await page.waitForSelector('h2 ::-p-text(Introduction)');
-      await page.waitForSelector('h2 ::-p-text(Support Levels)');
+    await getPage(
+      { role: false, url: '/reports' },
+      async (page, { consoleErrors }) => {
+        await page.waitForSelector(
+          'h1 ::-p-text(Assistive Technology Interoperability Reports)'
+        );
 
-      const tableRowsLength = await page.$eval(
-        'table[aria-label="Support Levels"]',
-        el => Array.from(el.rows).length
-      );
+        await page.waitForSelector('h2 ::-p-text(Introduction)');
+        await page.waitForSelector('h2 ::-p-text(Support Levels)');
 
-      // Check that the currently 'required' reports combinations exist; these
-      // combinations must exist in the table to be on this page
-      await page.waitForSelector('th ::-p-text(Test Plan)');
-      await page.waitForSelector('th ::-p-text(JAWS and Chrome)');
-      await page.waitForSelector('th ::-p-text(NVDA and Chrome)');
-      await page.waitForSelector(
-        'th ::-p-text(VoiceOver for macOS and Safari)'
-      );
+        const tableRowsLength = await page.$eval(
+          'table[aria-label="Support Levels"]',
+          el => Array.from(el.rows).length
+        );
 
-      // There is more than just the thead row
-      expect(tableRowsLength).toBeGreaterThan(1);
-    });
+        // Check that the currently 'required' reports combinations exist; these
+        // combinations must exist in the table to be on this page
+        await page.waitForSelector('th ::-p-text(Test Plan)');
+        await page.waitForSelector('th ::-p-text(JAWS and Chrome)');
+        await page.waitForSelector('th ::-p-text(NVDA and Chrome)');
+        await page.waitForSelector(
+          'th ::-p-text(VoiceOver for macOS and Safari)'
+        );
+
+        // There is more than just the thead row
+        expect(tableRowsLength).toBeGreaterThan(1);
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
   });
 });
 

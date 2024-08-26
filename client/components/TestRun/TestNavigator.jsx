@@ -60,7 +60,7 @@ const TestNavigator = ({
           aria-labelledby="test-navigator-heading"
           className="test-navigator-list"
         >
-          {tests.map(test => {
+          {tests.map((test, index) => {
             let resultClassName = 'not-started';
             let resultStatus = 'Not Started';
 
@@ -126,8 +126,11 @@ const TestNavigator = ({
                 key={`TestNavigatorItem_${test.id}`}
               >
                 <a
-                  href="#"
-                  onClick={async () => await handleTestClick(test.index)}
+                  onClick={async e => {
+                    e.preventDefault();
+                    await handleTestClick(test.index);
+                  }}
+                  href={`#${index + 1}`}
                   className="test-name"
                   aria-current={test.index === currentTestIndex}
                 >

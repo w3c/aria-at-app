@@ -9,11 +9,13 @@ const atVersionsResolver = async (testPlanReport, _, context) => {
     transaction
   });
 
-  return results.map(({ atVersionId, name, releasedAt }) => ({
-    id: atVersionId,
-    name,
-    releasedAt
-  }));
+  return results.map(
+    ({ atVersionId: id, atVersionName: name, releasedAt }) => ({
+      id,
+      name,
+      releasedAt
+    })
+  );
 };
 
 module.exports = atVersionsResolver;

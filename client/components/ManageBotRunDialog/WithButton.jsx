@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import ManageBotRunDialog from '.';
 import { useTestPlanRunIsFinished } from '../../hooks/useTestPlanRunIsFinished';
+import { TestPlanRunPropType, UserPropType } from '../common/proptypes';
 
 const ManageBotRunDialogWithButton = ({
   testPlanRun,
@@ -49,10 +50,10 @@ const ManageBotRunDialogWithButton = ({
 };
 
 ManageBotRunDialogWithButton.propTypes = {
-  testPlanRun: PropTypes.object.isRequired,
+  testPlanRun: TestPlanRunPropType.isRequired,
   testPlanReportId: PropTypes.string.isRequired,
   runnableTestsLength: PropTypes.number.isRequired,
-  testers: PropTypes.array.isRequired,
+  testers: PropTypes.arrayOf(UserPropType).isRequired,
   onChange: PropTypes.func.isRequired
 };
 

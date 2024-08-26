@@ -9,6 +9,7 @@ import BasicModal from '../common/BasicModal';
 import './TestPlanReportStatusDialog.css';
 import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion } from '../common/AtBrowserVersion';
+import { TestPlanVersionPropType } from '../common/proptypes';
 
 const TestPlanReportStatusDialog = ({
   testPlanVersion,
@@ -147,37 +148,7 @@ const TestPlanReportStatusDialog = ({
 };
 
 TestPlanReportStatusDialog.propTypes = {
-  testPlanVersion: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    phase: PropTypes.string.isRequired,
-    testPlanReportStatuses: PropTypes.arrayOf(
-      PropTypes.shape({
-        at: PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired
-        }).isRequired,
-        browser: PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired
-        }).isRequired,
-        minimumAtVersion: PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired
-        }),
-        exactAtVersion: PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired
-        }),
-        testPlanReport: PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          status: PropTypes.string,
-          runnableTests: PropTypes.arrayOf(PropTypes.object),
-          finalizedTestResults: PropTypes.arrayOf(PropTypes.object)
-        })
-      }).isRequired
-    ).isRequired
-  }).isRequired,
+  testPlanVersion: TestPlanVersionPropType.isRequired,
   handleHide: PropTypes.func.isRequired,
   triggerUpdate: PropTypes.func,
   show: PropTypes.bool.isRequired

@@ -66,7 +66,13 @@ function AddTestToQueueWithConfirmation({
   );
 
   const existingTestPlanReports =
-    existingTestPlanReportsData?.existingTestPlanVersion?.testPlanReports;
+    existingTestPlanReportsData?.existingTestPlanVersion?.testPlanReports.filter(
+      tpr =>
+        tpr.at?.id === at?.id &&
+        tpr.browser?.id === browser?.id &&
+        tpr.minimumAtVersion?.id === minimumAtVersion?.id &&
+        tpr.exactAtVersion?.id === exactAtVersion?.id
+    );
 
   let latestOldVersion;
   let oldReportToCopyResultsFrom;

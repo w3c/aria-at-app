@@ -26,6 +26,7 @@ import AssertionsFieldset from './AssertionsFieldset';
 import UnexpectedBehaviorsFieldset from './UnexpectedBehaviorsFieldset';
 import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
+import { AtPropType, TestResultPropType } from '../common/proptypes/index.js';
 
 const Container = styled.div`
   width: 100%;
@@ -578,8 +579,8 @@ ErrorComponent.propTypes = {
 };
 
 TestRenderer.propTypes = {
-  at: PropTypes.object,
-  testResult: PropTypes.object,
+  at: AtPropType,
+  testResult: TestResultPropType,
   support: PropTypes.object,
   testPageUrl: PropTypes.string,
   testFormatVersion: PropTypes.number,

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
@@ -39,8 +39,9 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
-import { convertDateToString } from '../../utils/formatter';
+import { dates } from 'shared';
 import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
+import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
 
 const TestRun = () => {
   const params = useParams();
@@ -119,7 +120,7 @@ const TestRun = () => {
   const [testPlanReport, setTestPlanReport] = useState({});
   const [testPlanVersion, setTestPlanVersion] = useState();
   const [currentTest, setCurrentTest] = useState({});
-  const [currentTestIndex, setCurrentTestIndex] = useState(0);
+  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex(tests.length);
   const [currentTestAtVersionId, setCurrentTestAtVersionId] = useState('');
   const [currentTestBrowserVersionId, setCurrentTestBrowserVersionId] =
     useState('');
@@ -144,6 +145,22 @@ const TestRun = () => {
   const isAdminReviewer = !!(isAdmin && openAsUserId);
   const openAsUser = users?.find(user => user.id === openAsUserId);
 
+  // Define createTestResultForRenderer as a memoized function
+  const createTestResultForRenderer = useCallback(
+    async (testId, atVersionId, browserVersionId) => {
+      const result = await createTestResult({
+        variables: {
+          testPlanRunId,
+          testId,
+          atVersionId,
+          browserVersionId
+        }
+      });
+      return result.data.testPlanRun.findOrCreateTestResult;
+    },
+    [createTestResult, testPlanRunId]
+  );
+
   useEffect(() => {
     reset();
 
@@ -153,13 +170,14 @@ const TestRun = () => {
       setPageReady(false);
       if (isSignedIn) {
         (async () => {
-          const { testPlanRun, testPlanReport } =
+          const { testPlanRun: updatedTestPlanRun } =
             await createTestResultForRenderer(
               currentTest.id,
               currentTestAtVersionId,
               currentTestBrowserVersionId
             );
-          updateLocalState(testPlanRun, testPlanReport);
+          const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+          updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
           setPageReady(true);
         })();
       } else {
@@ -168,7 +186,7 @@ const TestRun = () => {
         setPageReady(true);
       }
     } else if (data) setup(data);
-  }, [currentTestIndex]);
+  }, [currentTestIndex, createTestResultForRenderer]);
 
   const setup = data => {
     const { testPlanRun, users } = data;
@@ -312,22 +330,6 @@ const TestRun = () => {
 
   const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
 
-  const createTestResultForRenderer = async (
-    testId,
-    atVersionId,
-    browserVersionId
-  ) => {
-    const result = await createTestResult({
-      variables: {
-        testPlanRunId,
-        testId,
-        atVersionId,
-        browserVersionId
-      }
-    });
-    return result.data.testPlanRun.findOrCreateTestResult;
-  };
-
   // Check to see if there are tests to run
   const testCount = tests.length;
 
@@ -353,7 +355,7 @@ const TestRun = () => {
     issueLink = createIssueLink({
       testPlanTitle: testPlanVersion.title,
       testPlanDirectory: testPlanVersion.testPlan.directory,
-      versionString: `V${convertDateToString(
+      versionString: `V${dates.convertDateToString(
         testPlanVersion.updatedAt,
         'YY.MM.DD'
       )}`,
@@ -605,12 +607,14 @@ const TestRun = () => {
 
     reset();
     setPageReady(false);
-    const { testPlanRun, testPlanReport } = await createTestResultForRenderer(
-      currentTest.id,
-      currentTestAtVersionId,
-      currentTestBrowserVersionId
-    );
-    updateLocalState(testPlanRun, testPlanReport);
+    const { testPlanRun: updatedTestPlanRun } =
+      await createTestResultForRenderer(
+        currentTest.id,
+        currentTestAtVersionId,
+        currentTestBrowserVersionId
+      );
+    const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+    updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
     setPageReady(true);
 
     // close modal after action
@@ -681,14 +685,16 @@ const TestRun = () => {
 
     if (isSubmit) {
       const result = await submitTestResult({ variables });
-      const { testPlanRun, testPlanReport } =
+      const { testPlanRun: updatedTestPlanRun } =
         result.data.testResult.submitTestResult;
-      updateLocalState(testPlanRun, testPlanReport);
+      const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+      updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
     } else {
       const result = await saveTestResult({ variables });
-      const { testPlanRun, testPlanReport } =
+      const { testPlanRun: updatedTestPlanRun } =
         result.data.testResult.saveTestResult;
-      updateLocalState(testPlanRun, testPlanReport);
+      const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+      updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
     }
   };
 
@@ -850,13 +856,14 @@ const TestRun = () => {
     setCurrentBrowserVersion(browserVersion);
     setUpdateMessageComponent(updateMessageComponent);
 
-    const { testPlanRun: _testPlanRun, testPlanReport: _testPlanReport } =
+    const { testPlanRun: updatedTestPlanRun } =
       await createTestResultForRenderer(
         currentTest.id,
         atVersion.id,
         browserVersion.id
       );
-    updateLocalState(_testPlanRun, _testPlanReport);
+    const { testPlanReport: updatedTestPlanReport } = updatedTestPlanRun;
+    updateLocalState(updatedTestPlanRun, updatedTestPlanReport);
     handleAtAndBrowserDetailsModalCloseAction();
   };
 

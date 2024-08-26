@@ -1,18 +1,19 @@
 import { gql } from '@apollo/client';
+import { AT_VERSION_FIELDS } from '@components/common/fragments';
 
 export const ADD_AT_VERSION_MUTATION = gql`
+  ${AT_VERSION_FIELDS}
   mutation AddAtVersion($atId: ID!, $name: String!, $releasedAt: Timestamp!) {
     at(id: $atId) {
       findOrCreateAtVersion(input: { name: $name, releasedAt: $releasedAt }) {
-        id
-        name
-        releasedAt
+        ...AtVersionFields
       }
     }
   }
 `;
 
 export const EDIT_AT_VERSION_MUTATION = gql`
+  ${AT_VERSION_FIELDS}
   mutation EditAtVersion(
     $atVersionId: ID!
     $name: String!
@@ -20,9 +21,7 @@ export const EDIT_AT_VERSION_MUTATION = gql`
   ) {
     atVersion(id: $atVersionId) {
       updateAtVersion(input: { name: $name, releasedAt: $releasedAt }) {
-        id
-        name
-        releasedAt
+        ...AtVersionFields
       }
     }
   }
@@ -38,11 +37,9 @@ export const DELETE_AT_VERSION_MUTATION = gql`
             id
             title
           }
-          # To be used when listing the conflicting results
           testResult {
             id
           }
-          # To be used when providing more details on the conflicting results
           testPlanReport {
             at {
               name

@@ -1,6 +1,12 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  BROWSER_FIELDS,
+  USER_FIELDS
+} from '@components/common/fragments';
 
 export const ASSIGN_TESTER_MUTATION = gql`
+  ${USER_FIELDS}
   mutation AssignTester(
     $testReportId: ID!
     $testerId: ID!
@@ -12,9 +18,7 @@ export const ASSIGN_TESTER_MUTATION = gql`
           draftTestPlanRuns {
             initiatedByAutomation
             tester {
-              id
-              username
-              isBot
+              ...UserFields
             }
           }
         }
@@ -24,15 +28,14 @@ export const ASSIGN_TESTER_MUTATION = gql`
 `;
 
 export const REMOVE_TESTER_MUTATION = gql`
+  ${USER_FIELDS}
   mutation RemoveTester($testReportId: ID!, $testerId: ID!) {
     testPlanReport(id: $testReportId) {
       deleteTestPlanRun(userId: $testerId) {
         testPlanReport {
           draftTestPlanRuns {
             tester {
-              id
-              username
-              isBot
+              ...UserFields
             }
           }
         }
@@ -42,18 +45,16 @@ export const REMOVE_TESTER_MUTATION = gql`
 `;
 
 export const TEST_PLAN_REPORT_AT_BROWSER_QUERY = gql`
+  ${AT_FIELDS}
+  ${BROWSER_FIELDS}
   query TestPlanReportAtBrowser($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       id
       at {
-        id
-        key
-        name
+        ...AtFields
       }
       browser {
-        id
-        key
-        name
+        ...BrowserFields
       }
     }
   }

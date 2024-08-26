@@ -5,7 +5,7 @@ import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { DisclosureContainer } from '@components/ManageTestQueue/index';
 import BasicModal from '@components/common/BasicModal';
 import UpdateVersionModal from '@components/common/UpdateVersionModal';
-import { convertStringToDate } from '@client/utils/formatter';
+import { dates } from 'shared';
 import { useMutation } from '@apollo/client';
 import {
   ADD_AT_VERSION_MUTATION,
@@ -15,6 +15,7 @@ import {
 import { useTriggerLoad } from '@components/common/LoadingStatus';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import PropTypes from 'prop-types';
+import { AtPropType } from '../common/proptypes';
 
 const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
   const { triggerLoad } = useTriggerLoad();
@@ -204,7 +205,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
           variables: {
             atId: selectedAtId,
             name: updatedVersionText,
-            releasedAt: convertStringToDate(updatedDateAvailabilityText)
+            releasedAt: dates.convertStringToDate(updatedDateAvailabilityText)
           }
         });
         setSelectedAtVersionId(
@@ -232,7 +233,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
           variables: {
             atVersionId: selectedAtVersionId,
             name: updatedVersionText,
-            releasedAt: convertStringToDate(updatedDateAvailabilityText)
+            releasedAt: dates.convertStringToDate(updatedDateAvailabilityText)
           }
         });
         await triggerUpdate();
@@ -410,20 +411,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
 };
 
 ManageAtVersions.propTypes = {
-  ats: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      key: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      browsers: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          key: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired
-        })
-      ).isRequired
-    })
-  ).isRequired,
+  ats: PropTypes.arrayOf(AtPropType).isRequired,
   triggerUpdate: PropTypes.func
 };
 
