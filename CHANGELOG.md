@@ -1,3 +1,20 @@
+## [1.7.0](https://github.com/w3c/aria-at-app/compare/v1.6.0...v1.7.0) (2024-08-26)
+
+
+### Features
+
+* Content updates to Candidate Review page ([#1186](https://github.com/w3c/aria-at-app/issues/1186)) ([c64e584](https://github.com/w3c/aria-at-app/commit/c64e5843443f94949e2fca0c62499c9386ad5f07))
+* Test navigation via URI fragment ([#1188](https://github.com/w3c/aria-at-app/issues/1188)) ([b2b0560](https://github.com/w3c/aria-at-app/commit/b2b056087ffca4a596566ad6f264198b22987dc4))
+* Use standardized gql fragments in queries.js files ([#1147](https://github.com/w3c/aria-at-app/issues/1147)) ([dd4b8c2](https://github.com/w3c/aria-at-app/commit/dd4b8c26fff84600db05f89a58de76eef5135861)), closes [#876](https://github.com/w3c/aria-at-app/issues/876)
+
+
+### Bug Fixes
+
+* Basic snapshot testing ([#1175](https://github.com/w3c/aria-at-app/issues/1175)) ([84e269d](https://github.com/w3c/aria-at-app/commit/84e269d213169369cdf33a93b9144b04aabd4fa3))
+* Only match with single alphanumeric keys in "Assign Testers" dropdown search, ignore Tab ([#1196](https://github.com/w3c/aria-at-app/issues/1196)) ([a80b80b](https://github.com/w3c/aria-at-app/commit/a80b80b447be82eaac7dbc0e15724ebae0c51cca))
+* Radio buttons for assertion verdicts ([#1161](https://github.com/w3c/aria-at-app/issues/1161)) ([eb8f9ea](https://github.com/w3c/aria-at-app/commit/eb8f9ea86a450644da3795f3e2d1325f766504d0)), closes [#1045](https://github.com/w3c/aria-at-app/issues/1045)
+* Update and expand `/client` tests ([#1169](https://github.com/w3c/aria-at-app/issues/1169)) ([abe3086](https://github.com/w3c/aria-at-app/commit/abe3086feb8b7cdc5eff72890c88b3717d08ccc6))
+
 ## [1.6.0](https://github.com/w3c/aria-at-app/compare/v1.5.0...v1.6.0) (2024-07-29)
 
 
