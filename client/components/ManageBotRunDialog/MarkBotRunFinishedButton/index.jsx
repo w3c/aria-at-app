@@ -10,6 +10,7 @@ import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import { useTestPlanRunValidatedAssertionCounts } from '../../../hooks/useTestPlanRunValidatedAssertionCounts';
 import BasicModal from '../../common/BasicModal';
 import { useTestPlanRunIsFinished } from '../../../hooks/useTestPlanRunIsFinished';
+import { TestPlanRunPropType } from '../../common/proptypes';
 
 const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
   const {
@@ -86,7 +87,7 @@ const MarkBotRunFinishedButton = ({ testPlanRun, onClick = () => {} }) => {
 };
 
 MarkBotRunFinishedButton.propTypes = {
-  testPlanRun: PropTypes.object.isRequired,
+  testPlanRun: TestPlanRunPropType.isRequired,
   onClick: PropTypes.func
 };
 

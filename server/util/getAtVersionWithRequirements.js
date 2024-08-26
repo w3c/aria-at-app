@@ -18,13 +18,11 @@ const getAtVersionWithRequirements = async (
       );
     }
 
-    const isMinimumVersionSupported =
-      await minimumAtVersion.supportedByAutomation;
-    if (isMinimumVersionSupported) {
+    if (minimumAtVersion.supportedByAutomation) {
       return minimumAtVersion;
     }
 
-    const matchingAts = await getAtVersions({
+    const matchingAtVersions = await getAtVersions({
       where: {
         atId,
         releasedAt: { [Op.gte]: minimumAtVersion.releasedAt }
@@ -35,23 +33,20 @@ const getAtVersionWithRequirements = async (
       transaction
     });
 
-    const supportedAts = await Promise.all(
-      matchingAts.map(async version => {
-        const supportedByAutomation = await version.supportedByAutomation;
-        return supportedByAutomation ? version.toJSON() : null;
-      })
-    );
+    const latestSupportedAtVersion = matchingAtVersions.find(async atv => {
+      // supportedByAutomation is a computed graphql field,
+      // so we need to compute directly here
+      return atv.supportedByAutomation;
+    });
 
-    const latestSupportedAt = supportedAts.find(Boolean);
-
-    if (!latestSupportedAt) {
+    if (!latestSupportedAtVersion) {
       throw new Error(
         `No suitable AT version found for automation for AT ${atId} ` +
           `with minimumAtVersion ${minimumAtVersion?.name}`
       );
     }
 
-    return latestSupportedAt;
+    return latestSupportedAtVersion;
   } catch (error) {
     console.error('Error while determining AT version:', error);
     throw error;

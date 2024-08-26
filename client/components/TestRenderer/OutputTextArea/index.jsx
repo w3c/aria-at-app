@@ -4,6 +4,7 @@ import styled from '@emotion/styled';
 import { Feedback } from '..';
 import { Form } from 'react-bootstrap';
 import { NO_OUTPUT_STRING } from './constants';
+import { AtOutputPropType } from '../../common/proptypes';
 
 const OutputTextAreaWrapper = styled.div`
   > textarea {
@@ -85,21 +86,7 @@ const OutputTextArea = ({
 
 OutputTextArea.propTypes = {
   commandIndex: PropTypes.number.isRequired,
-  atOutput: PropTypes.shape({
-    description: PropTypes.arrayOf(
-      PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.shape({
-          required: PropTypes.bool.isRequired,
-          highlightRequired: PropTypes.bool.isRequired,
-          description: PropTypes.string.isRequired
-        })
-      ])
-    ).isRequired,
-    value: PropTypes.string.isRequired,
-    change: PropTypes.func.isRequired,
-    focus: PropTypes.bool.isRequired
-  }).isRequired,
+  atOutput: AtOutputPropType.isRequired,
   readOnly: PropTypes.bool,
   isSubmitted: PropTypes.bool.isRequired
 };

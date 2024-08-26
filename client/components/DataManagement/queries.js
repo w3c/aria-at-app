@@ -1,26 +1,38 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  AT_VERSION_FIELDS,
+  BROWSER_FIELDS,
+  BROWSER_VERSION_FIELDS,
+  ISSUE_FIELDS,
+  ME_FIELDS,
+  TEST_PLAN_FIELDS,
+  TEST_PLAN_REPORT_FIELDS,
+  TEST_PLAN_VERSION_FIELDS,
+  TEST_RESULT_FIELDS
+} from '@components/common/fragments';
 
 export const DATA_MANAGEMENT_PAGE_QUERY = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${BROWSER_VERSION_FIELDS}
+  ${ISSUE_FIELDS()}
+  ${ME_FIELDS}
+  ${TEST_PLAN_FIELDS}
+  ${TEST_PLAN_REPORT_FIELDS}
+  ${TEST_RESULT_FIELDS}
   query DataManagementPage {
     me {
-      id
-      username
-      roles
+      ...MeFields
     }
     ats {
-      id
-      key
-      name
+      ...AtFields
       browsers {
-        id
-        key
-        name
+        ...BrowserFields
       }
       atVersions {
-        id
-        name
-        releasedAt
-        supportedByAutomation
+        ...AtVersionFields
       }
       candidateBrowsers {
         id
@@ -30,9 +42,7 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
       }
     }
     testPlans {
-      id
-      directory
-      title
+      ...TestPlanFields
     }
     deprecatedTestPlanVersions: testPlanVersions(phases: [DEPRECATED]) {
       id
@@ -59,28 +69,20 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
       candidatePhaseReachedAt
       recommendedPhaseTargetDate
       recommendedPhaseReachedAt
+      metadata
       testPlan {
         directory
       }
       testPlanReports {
-        id
-        metrics
-        isFinal
-        markedFinalAt
+        ...TestPlanReportFields
         at {
-          id
-          key
-          name
+          ...AtFields
         }
         browser {
-          id
-          key
-          name
+          ...BrowserFields
         }
         issues {
-          link
-          isOpen
-          feedbackType
+          ...IssueFieldsSimple
         }
         draftTestPlanRuns {
           tester {
@@ -90,27 +92,28 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
             id
           }
           testResults {
+            ...TestResultFields
             test {
               id
             }
             atVersion {
-              id
-              name
+              ...AtVersionFields
             }
             browserVersion {
-              id
-              name
+              ...BrowserVersionFields
             }
-            completedAt
           }
         }
       }
-      metadata
     }
   }
 `;
 
 export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
+  ${AT_FIELDS}
+  ${BROWSER_FIELDS}
+  ${ISSUE_FIELDS()}
+  ${TEST_PLAN_VERSION_FIELDS}
   mutation UpdateTestPlanVersionPhase(
     $testPlanVersionId: ID!
     $phase: TestPlanVersionPhase!
@@ -122,39 +125,19 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
         testPlanVersionDataToIncludeId: $testPlanVersionDataToIncludeId
       ) {
         testPlanVersion {
-          id
-          title
-          phase
-          gitSha
-          gitMessage
-          versionString
-          updatedAt
-          draftPhaseReachedAt
-          candidatePhaseReachedAt
-          recommendedPhaseTargetDate
-          recommendedPhaseReachedAt
-          testPlan {
-            directory
-          }
+          ...TestPlanVersionFields
           testPlanReports {
             id
             at {
-              id
-              key
-              name
+              ...AtFields
             }
             browser {
-              id
-              key
-              name
+              ...BrowserFields
             }
             issues {
-              link
-              isOpen
-              feedbackType
+              ...IssueFieldsSimple
             }
           }
-          metadata
         }
       }
     }
@@ -162,6 +145,10 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
 `;
 
 export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE = gql`
+  ${AT_FIELDS}
+  ${BROWSER_FIELDS}
+  ${ISSUE_FIELDS()}
+  ${TEST_PLAN_VERSION_FIELDS}
   mutation UpdateTestPlanReportRecommendedTargetDate(
     $testPlanVersionId: ID!
     $recommendedPhaseTargetDate: Timestamp!
@@ -171,39 +158,19 @@ export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE = gql`
         recommendedPhaseTargetDate: $recommendedPhaseTargetDate
       ) {
         testPlanVersion {
-          id
-          title
-          phase
-          gitSha
-          gitMessage
-          versionString
-          updatedAt
-          draftPhaseReachedAt
-          candidatePhaseReachedAt
-          recommendedPhaseTargetDate
-          recommendedPhaseReachedAt
-          testPlan {
-            directory
-          }
+          ...TestPlanVersionFields
           testPlanReports {
             id
             at {
-              id
-              key
-              name
+              ...AtFields
             }
             browser {
-              id
-              key
-              name
+              ...BrowserFields
             }
             issues {
-              link
-              isOpen
-              feedbackType
+              ...IssueFieldsSimple
             }
           }
-          metadata
         }
       }
     }

@@ -1,45 +1,35 @@
 import { gql } from '@apollo/client';
+import {
+  AT_FIELDS,
+  TEST_PLAN_VERSION_FIELDS
+} from '@components/common/fragments';
 
 export const TEST_REVIEW_PAGE_QUERY = gql`
+  ${AT_FIELDS}
+  ${TEST_PLAN_VERSION_FIELDS}
   query TestReviewPageQuery($testPlanVersionId: ID!) {
     testPlanVersion(id: $testPlanVersionId) {
-      id
-      title
-      versionString
-      gitSha
-      gitMessage
-      testPageUrl
-      phase
-      updatedAt
-      draftPhaseReachedAt
-      candidatePhaseReachedAt
-      recommendedPhaseReachedAt
-      deprecatedAt
-      testPlan {
-        directory
-      }
+      ...TestPlanVersionFields
       tests {
         id
-        rowNumber
         title
+        rowNumber
         ats {
-          id
-          name
+          ...AtFields
         }
         renderedUrls {
           at {
-            id
+            ...AtFields
           }
           renderedUrl
         }
         renderableContents {
           at {
-            id
+            ...AtFields
           }
           renderableContent
         }
       }
-      metadata
     }
   }
 `;

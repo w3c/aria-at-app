@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+    <title>ARIA-AT App</title>
+  </head>
+  <body>
+    <div id="root">
+      <div class="container-fluid">
+        <nav
+          aria-label="Menu"
+          class="navbar navbar-expand-xl navbar-light bg-light">
+          <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
+          ><a href="#main" class="css-32m7ay">Skip to main content</a
+          ><button
+            aria-controls="basic-navbar-nav"
+            type="button"
+            aria-label="Toggle navigation"
+            class="navbar-toggler collapsed">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div
+            class="justify-content-end navbar-collapse collapse"
+            id="basic-navbar-nav">
+            <div class="navbar-nav">
+              <li>
+                <a aria-current="false" class="nav-link" href="/reports"
+                  >AT Interoperability Reports</a
+                >
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/data-management"
+                  >Data Management</a
+                >
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/test-queue"
+                  >Test Queue</a
+                >
+              </li>
+              <li>
+                <a
+                  aria-current="false"
+                  class="nav-link"
+                  href="/candidate-review"
+                  >Candidate Review</a
+                >
+              </li>
+              <li class="signed-in-wrapper">
+                <div class="signed-in" id="signed-in">
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="circle-user"
+                    class="svg-inline--fa fa-circle-user"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512">
+                    <path
+                      fill="currentColor"
+                      d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z"></path></svg
+                  >Signed in as <b>joe-the-admin</b>
+                </div>
+                <a aria-describedby="signed-in" class="nav-link" href="/"
+                  >Sign out</a
+                >
+              </li>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="container-fluid">
+        <main id="main" tabindex="-1" class="container">
+          <p>
+            You are not yet registered to participate! Let us know you want to
+            help by&nbsp;<a href="https://github.com/w3c/aria-at-app/issues/new"
+              >opening an issue on GitHub</a
+            >.
+          </p>
+        </main>
+      </div>
+      <span aria-live="polite" aria-atomic="true" class="css-1wkn33"></span>
+    </div>
+    <script src="/bundle.js"></script>
+  </body>
+</html>

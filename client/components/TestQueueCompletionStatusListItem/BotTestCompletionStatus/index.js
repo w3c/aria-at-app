@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTestPlanRunValidatedAssertionCounts } from '../../../hooks/useTestPlanRunValidatedAssertionCounts';
+import { TestPlanRunPropType } from '../../common/proptypes';
 
 const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
   const {
@@ -31,22 +32,7 @@ const BotTestCompletionStatus = ({ testPlanRun, id, runnableTestsLength }) => {
 };
 
 BotTestCompletionStatus.propTypes = {
-  testPlanRun: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    testResults: PropTypes.arrayOf(
-      PropTypes.shape({
-        scenarioResults: PropTypes.arrayOf(
-          PropTypes.shape({
-            assertionResults: PropTypes.arrayOf(
-              PropTypes.shape({
-                passed: PropTypes.bool
-              })
-            )
-          })
-        )
-      })
-    )
-  }).isRequired,
+  testPlanRun: TestPlanRunPropType.isRequired,
   id: PropTypes.string.isRequired,
   runnableTestsLength: PropTypes.number.isRequired
 };

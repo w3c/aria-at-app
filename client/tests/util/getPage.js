@@ -129,8 +129,7 @@ const getPage = async (options, callback) => {
   const foundExistingIncognitoContext = !!incognitoContexts[role];
 
   if (!foundExistingIncognitoContext) {
-    incognitoContexts[role] =
-      await global.browser.createIncognitoBrowserContext();
+    incognitoContexts[role] = await global.browser.createBrowserContext();
   }
   const incognitoContext = incognitoContexts[role];
 
@@ -143,6 +142,14 @@ const getPage = async (options, callback) => {
   if (isDebugMode) {
     page.setDefaultTimeout(604800000 /* a week should be enough */);
   }
+
+  let consoleErrors = [];
+
+  page.on('console', msg => {
+    if (msg.type() === 'error') {
+      consoleErrors.push(msg.text());
+    }
+  });
 
   await page.goto(`${baseUrl}${url}`);
 
@@ -168,8 +175,21 @@ const getPage = async (options, callback) => {
     await page.waitForSelector('::-p-text(Signed in)');
   }
 
+  // Re-attempt If the url wasn't meant to be accessed by a certain role and was
+  // initially redirected away from proper link; eg. 'false' role accessing
+  // /account/settings
+  const currentUrl = await page.url();
+  if (currentUrl.includes('/404') || currentUrl.includes('/invalid-request')) {
+    await page.goto(`${baseUrl}${url}`);
+    await page.waitForNetworkIdle();
+  }
+
   try {
-    await callback(page, { baseUrl });
+    await callback(page, {
+      browser: global.browser,
+      baseUrl,
+      consoleErrors
+    });
   } finally {
     await page.evaluate('endTestTransaction()');
   }

@@ -67,12 +67,12 @@ const UserSettings = () => {
 
   return (
     <Container id="main" as="main" tabIndex="-1">
-      <Container fluid data-test="user-settings-contents">
+      <Container fluid>
         <Helmet>
           <title>Settings | ARIA-AT</title>
         </Helmet>
         <h1>Settings</h1>
-        <section data-test="user-settings-authorized">
+        <section>
           <h2>User Details</h2>
           <p>
             <a
@@ -87,30 +87,31 @@ const UserSettings = () => {
           <div aria-atomic="true" aria-live="polite">
             {savedAts.length > 0 ? (
               <div>
-                <p>
+                <p data-testid="testable-ats-status">
                   You can currently test the following assistive technologies:
                 </p>
                 <ul>
                   {ats
                     .filter(({ id: atId }) => savedAts.includes(atId))
                     .map(at => (
-                      <li key={at.id}>{at.name}</li>
+                      <li style={{ listStyle: 'disc' }} key={at.id}>
+                        {at.name}
+                      </li>
                     ))}
                 </ul>
               </div>
             ) : (
-              <p>
-                You currently are not configured to run any assistive
-                technologies.
+              <p data-testid="testable-ats-status">
+                You have not yet selected any assistive technologies.
               </p>
             )}
           </div>
           <p>
-            Submit the form below to update the assistive technologies you can
-            test:
+            Update the assistive technologies you can test by selecting from the
+            options below:
           </p>
           <Form>
-            <h3 id="at-group-label">ATs</h3>
+            <h3 id="at-group-label">Assistive Technologies</h3>
             <Form.Group
               controlId="formBasicCheckbox"
               role="group"

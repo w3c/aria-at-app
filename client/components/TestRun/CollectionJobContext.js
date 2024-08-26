@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { COLLECTION_JOB_UPDATES_QUERY } from './queries';
 import { isJobStatusFinal } from '../../utils/collectionJobStatus';
+import { TestPlanRunPropType } from '../common/proptypes';
 const pollInterval = 5000;
 
 export const Context = createContext({
@@ -60,12 +61,5 @@ export const Provider = ({ children, testPlanRun }) => {
 
 Provider.propTypes = {
   children: PropTypes.node,
-  testPlanRun: PropTypes.shape({
-    id: PropTypes.string,
-    collectionJob: PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      status: PropTypes.string.isRequired,
-      testStatus: PropTypes.arrayOf(PropTypes.object).isRequired
-    })
-  })
+  testPlanRun: TestPlanRunPropType
 };
