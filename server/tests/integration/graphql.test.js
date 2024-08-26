@@ -944,54 +944,54 @@ const getMutationInputs = async () => {
     testPlanRun: { empty, toBePassing, toBeDeleted }
   } = await mutate(
     gql`
-            fragment TestResultFields on TestResult {
-                id
-                scenarioResults {
-                    id
-                    output
-                    assertionResults {
-                        id
-                        passed
-                    }
-                    unexpectedBehaviors {
-                        id
-                        details
-                    }
-                }
-            }
+      fragment TestResultFields on TestResult {
+        id
+        scenarioResults {
+          id
+          output
+          assertionResults {
+            id
+            passed
+          }
+          unexpectedBehaviors {
+            id
+            details
+          }
+        }
+      }
 
-            mutation {
-                testPlanRun(id: 1) {
-                    empty: findOrCreateTestResult(
-                        testId: "${runnableTests[0].id}",
-                        atVersionId: "${atVersion.id}",
-                        browserVersionId: "${browserVersion.id}"
-                    ) {
-                        testResult {
-                            ...TestResultFields
-                        }
-                    }
-                    toBePassing: findOrCreateTestResult(
-                        testId: "${runnableTests[1].id}",
-                        atVersionId: "${atVersion.id}",
-                        browserVersionId: "${browserVersion.id}"
-                    ) {
-                        testResult {
-                            ...TestResultFields
-                        }
-                    }
-                    toBeDeleted:  findOrCreateTestResult(
-                        testId: "${runnableTests[2].id}",
-                        atVersionId: "${atVersion.id}",
-                        browserVersionId: "${browserVersion.id}"
-                    ) {
-                        testResult {
-                            id
-                        }
-                    }
-                }
+      mutation {
+        testPlanRun(id: 1) {
+          empty: findOrCreateTestResult(
+            testId: "${runnableTests[0].id}",
+            atVersionId: "${atVersion.id}",
+            browserVersionId: "${browserVersion.id}"
+          ) {
+            testResult {
+              ...TestResultFields
             }
-        `,
+          }
+          toBePassing: findOrCreateTestResult(
+            testId: "${runnableTests[1].id}",
+            atVersionId: "${atVersion.id}",
+            browserVersionId: "${browserVersion.id}"
+          ) {
+            testResult {
+              ...TestResultFields
+            }
+          }
+          toBeDeleted:  findOrCreateTestResult(
+            testId: "${runnableTests[2].id}",
+            atVersionId: "${atVersion.id}",
+            browserVersionId: "${browserVersion.id}"
+          ) {
+            testResult {
+              id
+            }
+          }
+        }
+      }
+    `,
     { transaction: false }
   );
 

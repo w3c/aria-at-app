@@ -13,10 +13,11 @@ export const EXISTING_TEST_PLAN_REPORTS = gql`
   query ExistingTestPlanReports($testPlanVersionId: ID!, $directory: String!) {
     existingTestPlanVersion: testPlanVersion(id: $testPlanVersionId) {
       id
+      metadata
       testPlanReports {
         id
-        markedFinalAt
         isFinal
+        markedFinalAt
         draftTestPlanRuns {
           initiatedByAutomation
         }
@@ -27,7 +28,6 @@ export const EXISTING_TEST_PLAN_REPORTS = gql`
           id
         }
       }
-      metadata
     }
     oldTestPlanVersions: testPlanVersions(
       phases: [CANDIDATE, RECOMMENDED]
@@ -35,6 +35,7 @@ export const EXISTING_TEST_PLAN_REPORTS = gql`
     ) {
       id
       updatedAt
+      metadata
       testPlanReports {
         id
         at {
@@ -44,7 +45,6 @@ export const EXISTING_TEST_PLAN_REPORTS = gql`
           id
         }
       }
-      metadata
     }
   }
 `;

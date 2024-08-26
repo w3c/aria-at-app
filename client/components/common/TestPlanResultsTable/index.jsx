@@ -4,6 +4,7 @@ import { Table } from 'react-bootstrap';
 import nextId from 'react-id-generator';
 import { getMetrics } from 'shared';
 import './TestPlanResultsTable.css';
+import { TestPropType, TestResultPropType } from '../proptypes';
 
 const getAssertionResultText = (passed, priority) => {
   if (priority === 'MAY') {
@@ -191,15 +192,8 @@ const TestPlanResultsTable = ({
 };
 
 TestPlanResultsTable.propTypes = {
-  test: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    at: PropTypes.shape({
-      name: PropTypes.string.isRequired
-    }).isRequired
-  }),
-  testResult: PropTypes.shape({
-    scenarioResults: PropTypes.array.isRequired
-  }),
+  test: TestPropType.isRequired,
+  testResult: TestResultPropType.isRequired,
   tableClassName: PropTypes.string,
   optionalHeader: PropTypes.node,
   commandHeadingLevel: PropTypes.number

@@ -6,6 +6,7 @@ import FocusTrapper from '../FocusTrapper';
 import { uniqueId } from 'lodash';
 
 import './BasicModal.css';
+import { ModalActionPropType } from '../proptypes';
 
 const ModalTitleStyle = styled.h1`
   border: 0;
@@ -133,17 +134,7 @@ BasicModal.propTypes = {
   handleHide: PropTypes.func,
   staticBackdrop: PropTypes.bool,
   useOnHide: PropTypes.bool,
-  actions: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string,
-      onClick: PropTypes.func,
-      variant: PropTypes.string,
-      className: PropTypes.string,
-      testId: PropTypes.string,
-      component: PropTypes.elementType,
-      props: PropTypes.object
-    })
-  ),
+  actions: PropTypes.arrayOf(ModalActionPropType),
   initialFocusRef: PropTypes.shape({
     current: PropTypes.any
   })

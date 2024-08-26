@@ -17,12 +17,11 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { getMetrics } from 'shared';
+import { getMetrics, dates } from 'shared';
 import './CandidateTestPlanRun.css';
 import '../../TestRun/TestRun.css';
 import '../../App/App.css';
 import { useMediaQuery } from 'react-responsive';
-import { convertDateToString } from '../../../utils/formatter';
 import TestPlanResultsTable from '../../common/TestPlanResultsTable';
 import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
 import ThankYouModal from '../CandidateModals/ThankYouModal';
@@ -31,6 +30,8 @@ import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
   getIssueSearchLink
 } from '../../../utils/createIssueLink';
+import RunHistory from '../../common/RunHistory';
+import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -56,7 +57,8 @@ const CandidateTestPlanRun = () => {
   const [reviewStatus, setReviewStatus] = useState('');
   const [firstTimeViewing, setFirstTimeViewing] = useState(false);
   const [viewedTests, setViewedTests] = useState([]);
-  const [currentTestIndex, setCurrentTestIndex] = useState(0);
+  const [testsLength, setTestsLength] = useState(0);
+  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex(testsLength);
   const [showTestNavigator, setShowTestNavigator] = useState(true);
   const [isFirstTest, setIsFirstTest] = useState(true);
   const [isLastTest, setIsLastTest] = useState(false);
@@ -64,6 +66,7 @@ const CandidateTestPlanRun = () => {
   const [thankYouModalShowing, setThankYouModalShowing] = useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showBrowserBools, setShowBrowserBools] = useState([]);
+  const [showRunHistory, setShowRunHistory] = useState(false);
   const [showBrowserClicks, setShowBrowserClicks] = useState([]);
 
   const isLaptopOrLarger = useMediaQuery({
@@ -182,7 +185,7 @@ const CandidateTestPlanRun = () => {
           return bools;
         });
       });
-
+      setTestsLength(tests.length);
       setShowBrowserClicks(browserClicks);
     }
   }, [data]);
@@ -282,7 +285,7 @@ const CandidateTestPlanRun = () => {
 
   const reviewStatusText = vendorReviewStatusMap[reviewStatus];
 
-  const targetCompletionDate = convertDateToString(
+  const targetCompletionDate = dates.convertDateToString(
     new Date(recommendedPhaseTargetDate),
     'MMMM D, YYYY'
   );
@@ -376,7 +379,8 @@ const CandidateTestPlanRun = () => {
       </span>
       <h1>
         {`${currentTest.seq}. ${currentTest.title}`}{' '}
-        <span className="using">using</span> {`${at}`}
+        <span className="using">using</span> {`${at}`}{' '}
+        {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
         {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
         {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
           <Badge className="viewed-badge" pill variant="secondary">
@@ -392,9 +396,11 @@ const CandidateTestPlanRun = () => {
       <div className="test-info-entity apg-example-name">
         <div className="info-label">
           <b>Candidate Test Plan:</b>{' '}
-          {`${
-            testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
-          }`}
+          <a href={`/test-review/${testPlanVersion.id}`}>
+            {`${
+              testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
+            } ${testPlanVersion.versionString}`}
+          </a>
         </div>
       </div>
       <div className="test-info-entity review-status">
@@ -461,13 +467,15 @@ const CandidateTestPlanRun = () => {
           'Test Instructions',
           ...testPlanReports.map(
             testPlanReport => `Test Results for ${testPlanReport.browser.name}`
-          )
+          ),
+          'Run History'
         ]}
         onClick={[
           () => setShowInstructions(!showInstructions),
-          ...showBrowserClicks
+          ...showBrowserClicks,
+          () => setShowRunHistory(!showRunHistory)
         ]}
-        expanded={[showInstructions, ...showBrowserBools]}
+        expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
         disclosureContainerView={[
           <InstructionsRenderer
             key={`instructions-${currentTest.id}`}
@@ -498,7 +506,12 @@ const CandidateTestPlanRun = () => {
                 />
               </>
             );
-          })
+          }),
+          <RunHistory
+            key="run-history"
+            testPlanReports={testPlanReports}
+            testId={currentTest.id}
+          />
         ]}
         stacked
       ></DisclosureComponent>

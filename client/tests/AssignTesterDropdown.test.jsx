@@ -75,16 +75,19 @@ useMutation.mockImplementation(mutation => {
 const getMocks = (atKey, browserKey) => {
   const at = {
     nvda: {
+      __typename: 'At',
       id: '2',
       name: 'NVDA',
       key: 'nvda'
     },
     jaws: {
+      __typename: 'At',
       id: '1',
       name: 'JAWS',
       key: 'jaws'
     },
     voiceover_macos: {
+      __typename: 'At',
       id: '3',
       name: 'VoiceOver for MacOS',
       key: 'voiceover_macos'
@@ -93,16 +96,19 @@ const getMocks = (atKey, browserKey) => {
 
   const browser = {
     chrome: {
+      __typename: 'Browser',
       id: '2',
       name: 'Chrome',
       key: 'chrome'
     },
     safari_macos: {
+      __typename: 'Browser',
       id: '3',
       name: 'Safari for MacOS',
       key: 'safari_macos'
     },
     voiceover_macos: {
+      __typename: 'Browser',
       id: '3',
       name: 'VoiceOver for MacOS',
       key: 'voiceover_macos'

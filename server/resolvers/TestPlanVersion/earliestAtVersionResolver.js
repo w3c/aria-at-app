@@ -57,7 +57,8 @@ const earliestAtVersionResolver = async (
         earliestAtVersion = {
           id: atVersion.id,
           name: atVersion.name,
-          releasedAt: atVersion.releasedAt
+          releasedAt: atVersion.releasedAt,
+          supportedByAutomation: atVersion.supportedByAutomation
         };
       }
     }

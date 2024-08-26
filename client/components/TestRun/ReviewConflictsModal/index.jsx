@@ -3,6 +3,11 @@ import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import styled from '@emotion/styled';
 import ReviewConflicts from '../../ReviewConflicts';
+import {
+  TestPlanReportPropType,
+  TestPlanVersionPropType,
+  TestPropType
+} from '../../common/proptypes';
 
 const H2 = styled.h2`
   margin-top: 0;
@@ -57,9 +62,9 @@ const ReviewConflictsModal = ({
 
 ReviewConflictsModal.propTypes = {
   show: PropTypes.bool,
-  testPlanVersion: PropTypes.object.isRequired,
-  testPlanReport: PropTypes.object.isRequired,
-  test: PropTypes.object.isRequired,
+  testPlanVersion: TestPlanVersionPropType.isRequired,
+  testPlanReport: TestPlanReportPropType.isRequired,
+  test: TestPropType.isRequired,
   handleClose: PropTypes.func,
   conflictMarkdown: PropTypes.string,
   issueLink: PropTypes.string.isRequired

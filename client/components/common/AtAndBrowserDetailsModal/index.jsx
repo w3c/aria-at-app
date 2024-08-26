@@ -10,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useDetectUa } from '../../../hooks/useDetectUa';
 import BasicModal from '../BasicModal';
+import { AtVersionPropType } from '../proptypes';
 
 const ModalInnerSectionContainer = styled.div`
   display: flex;
@@ -346,6 +347,7 @@ const AtAndBrowserDetailsModal = ({
                         onChange={handleAtVersionChange}
                         isInvalid={isAtVersionError}
                         required
+                        data-testid="at-browser-modal-select"
                       >
                         {['Select a Version', ...atVersions].map(item => (
                           <option
@@ -545,6 +547,7 @@ const AtAndBrowserDetailsModal = ({
                     onChange={handleBrowserVersionChange}
                     isInvalid={isBrowserVersionError}
                     required
+                    data-testid="at-browser-modal-input"
                   />
                   {isBrowserVersionError && (
                     <Form.Control.Feedback
@@ -594,10 +597,7 @@ AtAndBrowserDetailsModal.propTypes = {
   browserVersions: PropTypes.arrayOf(PropTypes.string),
   patternName: PropTypes.string,
   testerName: PropTypes.string,
-  exactAtVersion: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired
-  }),
+  exactAtVersion: AtVersionPropType,
   handleClose: PropTypes.func,
   handleAction: PropTypes.func
 };
