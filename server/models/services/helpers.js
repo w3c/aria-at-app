@@ -12,7 +12,8 @@ const {
   UserRoles,
   UserAts,
   CollectionJob,
-  CollectionJobTestStatus
+  CollectionJobTestStatus,
+  AtBrowsers
 } = require('../index');
 
 /**
@@ -32,6 +33,7 @@ module.exports = {
   AT_VERSION_ATTRIBUTES: getSequelizeModelAttributes(AtVersion),
   BROWSER_ATTRIBUTES: getSequelizeModelAttributes(Browser),
   BROWSER_VERSION_ATTRIBUTES: getSequelizeModelAttributes(BrowserVersion),
+  AT_BROWSERS_ATTRIBUTES: getSequelizeModelAttributes(AtBrowsers),
   ROLE_ATTRIBUTES: getSequelizeModelAttributes(Role),
   TEST_PLAN_ATTRIBUTES: getSequelizeModelAttributes(TestPlan),
   TEST_PLAN_VERSION_ATTRIBUTES: getSequelizeModelAttributes(TestPlanVersion),

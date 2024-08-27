@@ -15,6 +15,7 @@ const addViewer = require('./addViewerResolver');
 const mutateAt = require('./mutateAtResolver');
 const mutateAtVersion = require('./mutateAtVersionResolver');
 const mutateBrowser = require('./mutateBrowserResolver');
+const mutateRequiredReport = require('./mutateRequiredReportResolver');
 const mutateTestPlanReport = require('./mutateTestPlanReportResolver');
 const mutateTestPlanRun = require('./mutateTestPlanRunResolver');
 const mutateTestResult = require('./mutateTestResultResolver');
@@ -34,6 +35,7 @@ const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
 const BrowserOperations = require('./BrowserOperations');
 const TestPlan = require('./TestPlan');
+const RequiredReportOperations = require('./RequiredReportOperations');
 const TestPlanVersion = require('./TestPlanVersion');
 const TestPlanReport = require('./TestPlanReport');
 const TestPlanReportOperations = require('./TestPlanReportOperations');
@@ -75,6 +77,7 @@ const resolvers = {
     testResult: mutateTestResult,
     testPlanVersion: mutateTestPlanVersion,
     collectionJob: mutateCollectionJob,
+    requiredReport: mutateRequiredReport,
     createTestPlanReport,
     updateMe,
     addViewer,
@@ -99,6 +102,7 @@ const resolvers = {
   TestResultOperations,
   TestPlanVersionOperations,
   CollectionJobOperations,
+  RequiredReportOperations,
   AtVersion
 };
 

@@ -736,7 +736,7 @@ const graphqlSchema = gql`
   """
   input TestResultInput {
     """
-    See TestResult type for more information.
+    The version for a given assistive technology.
     """
     id: ID!
     """
@@ -784,6 +784,31 @@ const graphqlSchema = gql`
     Submitted test results require this field to be filled in.
     """
     unexpectedBehaviors: [UnexpectedBehavior]
+  }
+
+  """
+  See TestResult type for more information.
+  The return type for createRequiredReport.
+  """
+  type RequiredReport {
+    atId: ID!
+    browserId: ID!
+    phase: RequiredReportPhase!
+  }
+
+  """
+  The fields on the RequiredReportOperations type which can be used or update the
+  RequiredReports.
+  """
+  input RequiredReportOperationsInput {
+    """
+    See AtVersion type for more information.
+    """
+    inputAtId: ID!
+    """
+    See AtVersion type for more information.
+    """
+    inputBrowserId: ID!
   }
 
   """
@@ -838,6 +863,31 @@ const graphqlSchema = gql`
     NOTE: This has been deprecated, legacy use = when passed is false, a failedReason must be given.
     """
     failedReason: AssertionFailedReason
+  }
+
+  enum TestPlanVersionPhase {
+    """
+    Accepting new TestPlanRuns from testers.
+    """
+    RD
+    """
+    Accepting new TestPlanRuns from testers.
+    """
+    DRAFT
+    """
+    Testing is complete and consistent, and ready to be displayed in the
+    Candidate Tests and Reports section of the app.
+    """
+    CANDIDATE
+    """
+    Testing is complete and consistent, and ready to be displayed in the
+    Reports section of the app as being recommended.
+    """
+    RECOMMENDED
+    """
+    The TestPlanVersion is now outdated and replaced by another version.
+    """
+    DEPRECATED
   }
 
   """
@@ -1316,6 +1366,17 @@ const graphqlSchema = gql`
     findOrCreateAtVersion(input: AtVersionInput!): AtVersion!
   }
 
+  enum RequiredReportPhase {
+    IS_CANDIDATE
+    IS_RECOMMENDED
+  }
+
+  type RequiredReportOperations {
+    createRequiredReport: RequiredReport!
+    updateRequiredReport(atId: ID!, browserId: ID!): RequiredReport!
+    deleteRequiredReport: RequiredReport!
+  }
+
   """
   Mutations scoped to an existing AtVersion.
   """
@@ -1571,6 +1632,14 @@ const graphqlSchema = gql`
     Delete a CollectionJob
     """
     deleteCollectionJob(id: ID!): NoResponse!
+    """
+    Get the available mutations for the given RequiredReport.
+    """
+    requiredReport(
+      atId: ID!
+      browserId: ID!
+      phase: RequiredReportPhase!
+    ): RequiredReportOperations!
   }
 `;
 
