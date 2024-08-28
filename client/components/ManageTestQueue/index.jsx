@@ -63,24 +63,21 @@ export const DisclosureContainer = styled.div`
   }
 
   .disclosure-row-test-plans {
-  .disclosure-row-controls {
-    display: grid;
     display: grid;
     row-gap: 0.5rem;
-    grid-auto-flow: column;
     grid-template-columns: 2fr 2fr 1fr;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
     column-gap: 2rem;
-    grid-gap: 1rem;
-    align-items: end;
+
     & > :nth-of-type(3) {
       display: block;
     }
     & > :nth-of-type(5) {
       grid-column: span 2;
     }
+
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
+
       & > :nth-of-type(3) {
         display: none;
       }
@@ -89,6 +86,7 @@ export const DisclosureContainer = styled.div`
       }
     }
   }
+
   .form-group-at-version {
     display: flex;
     flex-wrap: wrap;
@@ -100,6 +98,7 @@ export const DisclosureContainer = styled.div`
         flex-grow: 1;
       }
     }
+  }
 
   .disclosure-row-controls {
     display: grid;
