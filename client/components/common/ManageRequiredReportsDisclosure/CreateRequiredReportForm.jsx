@@ -17,7 +17,6 @@ const CustomToggleButton = styled.button`
 
   .icon-container {
     background-color: red;
-    /* position: relative; */
     float: right;
     margin-top: 2px;
     margin-right: 3px;

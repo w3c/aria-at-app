@@ -17,11 +17,8 @@ export const DisclosureContainer = styled.div`
 
   // Add Test Plan to Test Queue button
   > button {
-    display: flex;
     padding: 0.5rem 1rem;
     margin-top: 1rem;
-    margin-left: auto;
-    margin-right: 0;
   }
 
   .disclosure-row-manage-ats {
@@ -64,6 +61,45 @@ export const DisclosureContainer = styled.div`
       }
     }
   }
+
+  .disclosure-row-test-plans {
+  .disclosure-row-controls {
+    display: grid;
+    display: grid;
+    row-gap: 0.5rem;
+    grid-auto-flow: column;
+    grid-template-columns: 2fr 2fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    column-gap: 2rem;
+    grid-gap: 1rem;
+    align-items: end;
+    & > :nth-of-type(3) {
+      display: block;
+    }
+    & > :nth-of-type(5) {
+      grid-column: span 2;
+    }
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      & > :nth-of-type(3) {
+        display: none;
+      }
+      & > :nth-of-type(5) {
+        grid-column: initial;
+      }
+    }
+  }
+  .form-group-at-version {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+    row-gap: 0.75rem;
+    select {
+      width: inherit;
+      @media (max-width: 767px) {
+        flex-grow: 1;
+      }
+    }
 
   .disclosure-row-controls {
     display: grid;

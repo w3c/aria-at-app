@@ -736,7 +736,7 @@ const graphqlSchema = gql`
   """
   input TestResultInput {
     """
-    The version for a given assistive technology.
+    See TestResult type for more information.
     """
     id: ID!
     """
