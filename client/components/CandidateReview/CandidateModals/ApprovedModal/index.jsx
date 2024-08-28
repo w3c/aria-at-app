@@ -4,9 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import '../common.css';
-import './ThankYouModal.css';
 
-const ThankYouModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
+const ApprovedModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
   return (
     <BasicModal
       show={true}
@@ -14,9 +13,13 @@ const ThankYouModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
       closeButton={false}
       content={
         <>
-          <p className="thank-you-content">Your Review has been submitted!</p>
-          <p className="thank-you-share">Do you have anything else to share?</p>
-          <p className="thank-you-issue">
+          <p className="review-confirmation-content">
+            Your Review has been submitted!
+          </p>
+          <p className="review-confirmation-share">
+            Do you have anything else to share?
+          </p>
+          <p className="review-confirmation-issue">
             <a href={githubUrl} target="_blank" rel="noreferrer">
               Open a GitHub issue
             </a>{' '}
@@ -24,7 +27,7 @@ const ThankYouModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
           </p>
         </>
       }
-      dialogClassName="thank-you"
+      dialogClassName="review-confirmation"
       actions={[
         {
           label: 'Close',
@@ -32,10 +35,10 @@ const ThankYouModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
         }
       ]}
       title={
-        <div className="thank-you-title">
+        <div className="review-confirmation-title">
           <FontAwesomeIcon
             icon={faCheck}
-            className="thank-you-check"
+            className="review-confirmation-check"
             color="green"
           />
           <h1>Thank you!</h1>
@@ -45,9 +48,9 @@ const ThankYouModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
   );
 };
 
-ThankYouModal.propTypes = {
+ApprovedModal.propTypes = {
   handleAction: PropTypes.func,
   githubUrl: PropTypes.string
 };
 
-export default ThankYouModal;
+export default ApprovedModal;
