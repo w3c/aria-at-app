@@ -486,3 +486,190 @@ describe('Test Queue tester traits when reports exist', () => {
     });
   });
 });
+
+describe('Manage Required Reports Disclosure', () => {
+  const disclosureSelector =
+    '#disclosure-btn-manage-test-queue-Manage\\ Required\\ Reports';
+
+  it('renders the disclosure container and can be expanded', async () => {
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      await page.waitForSelector(disclosureSelector);
+
+      const disclosureButton = await page.$(disclosureSelector);
+      expect(disclosureButton).toBeTruthy();
+
+      await disclosureButton.click();
+
+      const expandedContent = await page.$(
+        '#disclosure-container-manage-test-queue-Manage\\ Required\\ Reports'
+      );
+      expect(expandedContent).toBeTruthy();
+    });
+  });
+
+  it('can create a new required report', async () => {
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      await page.waitForSelector(disclosureSelector);
+      await page.click(disclosureSelector);
+
+      // Wait for the disclosure row controls to be rendered
+      await page.waitForSelector('.disclosure-row-controls');
+
+      // Find the phase dropdown and select Candidate
+      const phaseDropdownSelector =
+        '.disclosure-row-controls .form-group:first-child .dropdown';
+      await page.waitForSelector(phaseDropdownSelector);
+      await page.click(`${phaseDropdownSelector} button`);
+      await page.waitForSelector(`${phaseDropdownSelector} .dropdown-menu`);
+      await page.click(
+        `${phaseDropdownSelector} .dropdown-menu .phase-option:first-child`
+      );
+
+      // Find the Assistive Technology dropdown and select VoiceOver
+      const atSelectSelector =
+        '.disclosure-row-controls .form-group:nth-child(2) select.form-select';
+      await page.waitForSelector(atSelectSelector);
+      await page.select(atSelectSelector, '3');
+
+      // Find the Browser dropdown and select Chrome
+      const browserSelectSelector =
+        '.disclosure-row-controls .form-group:nth-child(3) select.form-select';
+      await page.waitForSelector(browserSelectSelector);
+      await page.select(browserSelectSelector, '2');
+
+      await page.waitForSelector(
+        '.disclosure-row-controls .form-group:nth-child(4) button'
+      );
+
+      // Click the "Add" button
+      await page.click(
+        '.disclosure-row-controls .form-group:nth-child(4) button'
+      );
+
+      // Wait for the row to be added
+      await page.waitForFunction(() => {
+        const rows = document.querySelectorAll('tbody tr');
+        return Array.from(rows).some(
+          row =>
+            row.textContent.includes('VoiceOver for macOS') &&
+            row.textContent.includes('Chrome') &&
+            row.textContent.includes('Candidate')
+        );
+      }, 1000);
+    });
+  });
+
+  it('can update an existing required report', async () => {
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      await page.waitForSelector(disclosureSelector);
+      await page.click(disclosureSelector);
+
+      // Find the edit button for the NVDA/Chrome/Candidate row
+      const editButtonSelector = await page.evaluate(() => {
+        const rows = Array.from(document.querySelectorAll('tbody tr'));
+        const targetRow = rows.find(
+          row =>
+            row.textContent.includes('NVDA') &&
+            row.textContent.includes('Chrome') &&
+            row.textContent.includes('Candidate')
+        );
+        if (targetRow) {
+          const editButton = targetRow.querySelector(
+            '.edit-required-report-button'
+          );
+          return editButton
+            ? `tbody tr:nth-child(${
+                rows.indexOf(targetRow) + 1
+              }) .edit-required-report-button`
+            : null;
+        }
+        return null;
+      });
+
+      if (editButtonSelector) {
+        await page.click(editButtonSelector);
+      } else {
+        throw new Error('Edit button not found');
+      }
+
+      await page.waitForSelector('div[role="dialog"].modal.show');
+      const modalTitle = await page.$eval('.modal-title', el => el.textContent);
+      expect(modalTitle).toContain('Edit the following AT/Browser pair');
+
+      const browserSelectSelector =
+        '.modal-body select[data-testid="required-report-browser-select"]';
+      await page.waitForSelector(browserSelectSelector);
+      await page.select(browserSelectSelector, '1'); // Firefox
+
+      // Save changes
+      await page.click('.modal-footer button.btn-primary');
+
+      await page.waitForFunction(
+        () => !document.querySelector('div[role="dialog"].modal.show')
+      );
+
+      // Wait for the table to update
+      await page.waitForFunction(() => {
+        const rows = document.querySelectorAll('tbody tr');
+        return Array.from(rows).some(
+          row =>
+            row.textContent.includes('NVDA') &&
+            row.textContent.includes('Firefox') &&
+            row.textContent.includes('Candidate')
+        );
+      }, 1000);
+    });
+  });
+
+  it('can delete an existing required report', async () => {
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      await page.waitForSelector(disclosureSelector);
+      await page.click(disclosureSelector);
+
+      // Find and click the delete button for the NVDA/Chrome/Candidate row
+      const deleteButtonSelector = await page.evaluate(() => {
+        const rows = Array.from(document.querySelectorAll('tbody tr'));
+        const targetRow = rows.find(
+          row =>
+            row.textContent.includes('NVDA') &&
+            row.textContent.includes('Chrome') &&
+            row.textContent.includes('Candidate')
+        );
+        if (targetRow) {
+          const deleteButton = targetRow.querySelector(
+            '.delete-required-report-button'
+          );
+          return deleteButton
+            ? `tbody tr:nth-child(${
+                rows.indexOf(targetRow) + 1
+              }) .delete-required-report-button`
+            : null;
+        }
+        return null;
+      });
+
+      if (deleteButtonSelector) {
+        await page.click(deleteButtonSelector);
+      } else {
+        throw new Error('Delete button not found');
+      }
+
+      await page.waitForSelector(
+        'text=Delete NVDA and Chrome pair for Candidate required reports'
+      );
+      // Confirm deletion
+      await page.click('.modal-footer button.btn-primary');
+
+      // Ensure the row is deleted
+      await page.waitForFunction(() => {
+        const rows = document.querySelectorAll('tbody tr');
+        return !Array.from(rows).some(
+          row =>
+            row.textContent.includes('NVDA') &&
+            row.textContent.includes('Chrome') &&
+            row.textContent.includes('Candidate')
+        );
+      }, 1000);
+    });
+  });
+});

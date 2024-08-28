@@ -84,6 +84,7 @@ const UpdateRequiredReportModal = ({
                 <Form.Select
                   value={browserSelection}
                   onChange={handleBrowserChange}
+                  data-testid="required-report-browser-select"
                   required
                 >
                   <option value={''} disabled>

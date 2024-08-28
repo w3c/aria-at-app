@@ -182,7 +182,7 @@ const ManageRequiredReportsDisclosure = ({
 
   return (
     <>
-      <DisclosureContainer key={`manage-test-queue-required-reports`}>
+      <DisclosureContainer data-testid="manage-required-reports-disclosure">
         <span>Add required reports for a specific AT and Browser pair</span>
         <CreateRequiredReportForm
           ats={ats}
@@ -213,6 +213,7 @@ const ManageRequiredReportsDisclosure = ({
                   <td>{browser.name}</td>
                   <td>
                     <TransparentButton
+                      className="edit-required-report-button"
                       onClick={() => {
                         setPendingUpdateReport({
                           atId: at.id,
@@ -225,6 +226,7 @@ const ManageRequiredReportsDisclosure = ({
                       <span className="sr-only">Edit</span>
                     </TransparentButton>
                     <TransparentButton
+                      className="delete-required-report-button"
                       onClick={() => {
                         setPendingDeleteReport({
                           at,
