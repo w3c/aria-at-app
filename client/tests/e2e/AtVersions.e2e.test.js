@@ -22,8 +22,8 @@ describe('AT Version UI', () => {
       await page.click('.modal-footer button ::-p-text(Add Version)');
       await page.waitForNetworkIdle({ idleTime: 5000 });
       await page.click('.modal-footer button ::-p-text(Ok)');
-      await page.waitForSelector('.at-versions-container option:nth-child(2) ::-p-text(99.0.1)');
-      const optionValue = await page.$eval('.at-versions-container option:nth-child(2)', option => option.value);
+      await page.waitForSelector('.at-versions-container option:nth-child(1) ::-p-text(99.0.1)');
+      const optionValue = await page.$eval('.at-versions-container option:nth-child(1)', option => option.value);
       await page.select('.at-versions-container select', optionValue);
       await page.click('.at-versions-container button ::-p-text(Edit)');
       const input = await page.waitForSelector('.modal-body .form-group:nth-child(1) input');
