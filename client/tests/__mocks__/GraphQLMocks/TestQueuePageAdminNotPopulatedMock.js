@@ -40,7 +40,8 @@ export default testQueuePageQuery => [
         ats: [],
         testPlans: [],
         testPlanVersions: [],
-        testPlanReports: []
+        testPlanReports: [],
+        browsers: []
       }
     }
   }
