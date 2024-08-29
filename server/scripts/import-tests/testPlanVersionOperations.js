@@ -21,7 +21,8 @@ const { parseTests } = require('./testParser');
 const {
   gitCloneDirectory,
   builtTestsDirectory,
-  testsDirectory
+  testsDirectory,
+  resourcesDirectory
 } = require('./settings');
 const { getAppUrl } = require('./utils');
 
@@ -66,8 +67,6 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
   await updateAtsJson({ ats, supportAts: support.ats });
 
   for (const directory of fse.readdirSync(builtTestsDirectory)) {
-    if (directory === 'resources') continue;
-
     const builtDirectoryPath = path.join(builtTestsDirectory, directory);
     const sourceDirectoryPath = path.join(testsDirectory, directory);
 
@@ -235,7 +234,7 @@ const processTestPlanVersion = async ({
  * Imports the harness files from the test directory to the client resources.
  */
 const importHarness = () => {
-  const sourceFolder = path.resolve(`${testsDirectory}/resources`);
+  const sourceFolder = path.resolve(`${resourcesDirectory}`);
   const targetFolder = path.resolve('../', 'client/resources');
   console.info(`Updating harness directory, ${targetFolder} ...`);
   fse.rmSync(targetFolder, { recursive: true, force: true });
@@ -330,9 +329,7 @@ const flattenObject = (obj, parentKey = '') => {
  */
 const updateJsons = async () => {
   // Commands path info for v1 format
-  const keysMjsPath = pathToFileURL(
-    path.join(testsDirectory, 'resources', 'keys.mjs')
-  );
+  const keysMjsPath = pathToFileURL(path.join(resourcesDirectory, 'keys.mjs'));
   const commands = Object.entries(await import(keysMjsPath)).map(
     ([id, text]) => ({ id, text })
   );
