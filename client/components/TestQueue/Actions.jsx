@@ -270,6 +270,28 @@ const Actions = ({
             </Dropdown.Menu>
           </Dropdown>
         )}
+        {!isAdmin && (
+          <Dropdown focusFirstItemOnShow>
+            <Dropdown.Toggle
+              variant="secondary"
+              disabled={!nonSelfAssignedRuns.length}
+            >
+              <FontAwesomeIcon icon={faFileImport} />
+              View Results for...&nbsp;
+            </Dropdown.Toggle>
+            <Dropdown.Menu role="menu">
+              {nonSelfAssignedRuns.map(testPlanRun => (
+                <Dropdown.Item
+                  key={testPlanRun.id}
+                  role="menuitem"
+                  href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`}
+                >
+                  {testPlanRun.tester.username}
+                </Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
         {isAdmin && assignedBotRun && (
           <ManageBotRunDialogWithButton
             testPlanRun={assignedBotRun}
