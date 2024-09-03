@@ -19,10 +19,12 @@ const { dates } = require('shared');
 const { readCommit, readDirectoryGitInfo } = require('./gitOperations');
 const { parseTests } = require('./testParser');
 const {
+  buildRemovalDate,
+  resourcesMovedDate,
   gitCloneDirectory,
   builtTestsDirectory,
   testsDirectory,
-  resourcesDirectory
+  getResourcesDirectory
 } = require('./settings');
 const { getAppUrl } = require('./utils');
 
@@ -36,6 +38,7 @@ const { getAppUrl } = require('./utils');
 const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
   const { gitCommitDate } = await readCommit(gitCloneDirectory, commit);
 
+  console.log(`Using commit \`${commit ?? 'latest'}\`...\n`);
   console.log('Running `npm install` ...\n');
   const installOutput = spawn.sync('npm', ['install'], {
     cwd: gitCloneDirectory
@@ -59,24 +62,22 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
 
   console.log('`npm run build` output', buildOutput.stdout.toString());
 
-  importHarness();
+  const useBuildInAppUrlPath =
+    gitCommitDate.getTime() <= buildRemovalDate.getTime();
+  const useResourcesInTestsFolder =
+    gitCommitDate.getTime() <= resourcesMovedDate.getTime();
 
-  const { support } = await updateJsons();
+  importHarness(useResourcesInTestsFolder);
+  const { support } = await updateJsons(useResourcesInTestsFolder);
 
   const ats = await At.findAll();
   await updateAtsJson({ ats, supportAts: support.ats });
 
   for (const directory of fse.readdirSync(builtTestsDirectory)) {
+    if (directory === 'resources') continue;
+
     const builtDirectoryPath = path.join(builtTestsDirectory, directory);
     const sourceDirectoryPath = path.join(testsDirectory, directory);
-
-    // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
-    // This is the date of the last commit before the build folder removal.
-    // Meant to support backward compatability until the existing tests can
-    // be updated to the current structure
-    const buildRemovalDate = new Date('2022-03-10 18:08:36.000000 +00:00');
-    const useBuildInAppAppUrlPath =
-      gitCommitDate.getTime() <= buildRemovalDate.getTime();
 
     if (
       !(
@@ -92,7 +93,7 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
       builtDirectoryPath,
       sourceDirectoryPath,
       gitCommitDate,
-      useBuildInAppAppUrlPath,
+      useBuildInAppUrlPath,
       ats,
       transaction
     });
@@ -113,7 +114,7 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
  * @param {string} options.directory - The directory name.
  * @param {string} options.builtDirectoryPath - Path to the built directory.
  * @param {string} options.sourceDirectoryPath - Path to the source directory.
- * @param {boolean} options.useBuildInAppAppUrlPath - Whether to use build path in app URL.
+ * @param {boolean} options.useBuildInAppUrlPath - Whether to use build path in app URL.
  * @param {Array} options.ats - Array of AT objects.
  * @param {import('sequelize').Transaction} options.transaction - The database transaction.
  * @returns {Promise<void>}
@@ -122,7 +123,7 @@ const processTestPlanVersion = async ({
   directory,
   builtDirectoryPath,
   sourceDirectoryPath,
-  useBuildInAppAppUrlPath,
+  useBuildInAppUrlPath,
   ats,
   transaction
 }) => {
@@ -209,7 +210,7 @@ const processTestPlanVersion = async ({
       directory,
       testPageUrl: getAppUrl(testPageUrl, {
         gitSha,
-        directoryPath: useBuildInAppAppUrlPath
+        directoryPath: useBuildInAppUrlPath
           ? builtDirectoryPath
           : sourceDirectoryPath
       }),
@@ -232,9 +233,10 @@ const processTestPlanVersion = async ({
 
 /**
  * Imports the harness files from the test directory to the client resources.
+ * @param {boolean} useResourcesInTestsFolder - whether to use <ROOT>/tests/resources vs <ROOT>/resources
  */
-const importHarness = () => {
-  const sourceFolder = path.resolve(`${resourcesDirectory}`);
+const importHarness = useResourcesInTestsFolder => {
+  const sourceFolder = getResourcesDirectory(useResourcesInTestsFolder);
   const targetFolder = path.resolve('../', 'client/resources');
   console.info(`Updating harness directory, ${targetFolder} ...`);
   fse.rmSync(targetFolder, { recursive: true, force: true });
@@ -325,11 +327,14 @@ const flattenObject = (obj, parentKey = '') => {
 
 /**
  * Updates JSON files for commands and support.
+ * @param {boolean} useResourcesInTestsFolder - whether to use <ROOT>/tests/resources vs <ROOT>/resources
  * @returns {Promise<Object>} An object containing the parsed support data.
  */
-const updateJsons = async () => {
+const updateJsons = async useResourcesInTestsFolder => {
   // Commands path info for v1 format
-  const keysMjsPath = pathToFileURL(path.join(resourcesDirectory, 'keys.mjs'));
+  const keysMjsPath = pathToFileURL(
+    path.join(getResourcesDirectory(useResourcesInTestsFolder), 'keys.mjs')
+  );
   const commands = Object.entries(await import(keysMjsPath)).map(
     ([id, text]) => ({ id, text })
   );
