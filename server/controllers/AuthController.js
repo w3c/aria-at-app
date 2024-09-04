@@ -83,13 +83,19 @@ const oauthRedirectFromGithubController = async (req, res) => {
     );
     if (vendorEntry) {
       const [, companyName] = vendorEntry.split('|');
-      const vendor = await findVendorByName(companyName, req.transaction);
+      const vendor = await findVendorByName({
+        name: companyName,
+        transaction: req.transaction
+      });
       if (vendor) {
         await addUserVendor(user.id, vendor.id, {
           transaction: req.transaction
         });
       } else {
-        const vendor = await getOrCreateVendor(companyName, req.transaction);
+        const vendor = await getOrCreateVendor({
+          where: { name: companyName },
+          transaction: req.transaction
+        });
         await addUserVendor(user.id, vendor.id, {
           transaction: req.transaction
         });

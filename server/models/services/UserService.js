@@ -68,6 +68,7 @@ const getUserById = async ({
   roleAttributes = ROLE_ATTRIBUTES,
   atAttributes = AT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  vendorAttributes = VENDOR_ATTRIBUTES,
   transaction
 }) => {
   return ModelService.getById(User, {
@@ -76,7 +77,17 @@ const getUserById = async ({
     include: [
       roleAssociation(roleAttributes),
       atAssociation(atAttributes),
-      testPlanRunAssociation(testPlanRunAttributes)
+      testPlanRunAssociation(testPlanRunAttributes),
+      // TODO: avoid fetching this deeply always
+      {
+        ...vendorAssociation(vendorAttributes),
+        include: [
+          {
+            association: 'ats',
+            attributes: atAttributes
+          }
+        ]
+      }
     ],
     transaction
   });

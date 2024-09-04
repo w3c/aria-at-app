@@ -6,6 +6,12 @@ const ME_FIELDS = gql`
     id
     username
     roles
+    company {
+      id
+      ats {
+        id
+      }
+    }
   }
 `;
 
