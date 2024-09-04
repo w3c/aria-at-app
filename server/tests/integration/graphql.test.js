@@ -153,6 +153,7 @@ describe('graphql', () => {
       ['CollectionJob', 'testPlanRun'],
       ['CollectionJob', 'externalLogsUrl'],
       ['CollectionJob', 'testStatus'],
+      ['User', 'company'],
       // These interact with Response Scheduler API
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
@@ -290,16 +291,6 @@ describe('graphql', () => {
           vendorByName(name: "apple") {
             id
             name
-          }
-          user(id: 1) {
-            id
-            username
-            roles
-            isBot
-            company {
-              id
-              name
-            }
           }
           v2TestPlanVersion: testPlanVersion(id: 80) {
             __typename
