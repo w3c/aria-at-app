@@ -40,14 +40,14 @@ describe('AtModel', () => {
       // A3
       expect(Model.hasMany).toHaveBeenCalledWith(
         AtVersionModel,
-        expect.objectContaining(Model.AT_VERSION_ASSOCIATION)
+        expect.objectContaining(AT_VERSION_ASSOCIATION)
       );
     });
 
     it('defined a belongsTo association with Vendor', () => {
       expect(Model.belongsTo).toHaveBeenCalledWith(
         VendorModel,
-        expect.objectContaining(Model.VENDOR_ASSOCIATION)
+        expect.objectContaining(VENDOR_ASSOCIATION)
       );
     });
   });

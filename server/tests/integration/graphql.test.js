@@ -291,6 +291,16 @@ describe('graphql', () => {
             id
             name
           }
+          user(id: 1) {
+            id
+            username
+            roles
+            isBot
+            company {
+              id
+              name
+            }
+          }
           v2TestPlanVersion: testPlanVersion(id: 80) {
             __typename
             id
