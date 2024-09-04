@@ -32,7 +32,7 @@ export default () => (
       exact
       path="/candidate-test-plan/:testPlanVersionId/:atId"
       element={
-        <ConfirmAuth requiredPermission="VENDOR">
+        <ConfirmAuth requiredPermission="VENDOR" requireVendorForAt={true}>
           <CandidateTestPlanRun />
         </ConfirmAuth>
       }

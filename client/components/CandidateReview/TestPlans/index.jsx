@@ -21,6 +21,7 @@ import ClippedProgressBar from '@components/common/ClippedProgressBar';
 import { dates } from 'shared';
 import './TestPlans.css';
 import { calculations } from 'shared';
+import { UserPropType } from '../../common/proptypes';
 
 const FullHeightContainer = styled(Container)`
   min-height: calc(100vh - 64px);
@@ -177,7 +178,7 @@ const None = styled.span`
   }
 `;
 
-const TestPlans = ({ testPlanVersions }) => {
+const TestPlans = ({ testPlanVersions, me }) => {
   const [atExpandTableItems, setAtExpandTableItems] = useState({
     1: true,
     2: true,
@@ -503,20 +504,39 @@ const TestPlans = ({ testPlanVersions }) => {
                     .filter(t => t.isCandidateReview === true)
                     .filter(t => uniqueFilter(t, uniqueLinks, 'link'));
 
+                  const canReview =
+                    me.roles.includes('ADMIN') ||
+                    (me.roles.includes('VENDOR') &&
+                      me.company.ats.some(at => at.id === atId));
+
+                  const getTitleEl = () => {
+                    if (canReview) {
+                      return (
+                        <Link
+                          to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
+                        >
+                          {getTestPlanVersionTitle(testPlanVersion, {
+                            includeVersionString: true
+                          })}{' '}
+                          ({testsCount} Test
+                          {testsCount === 0 || testsCount > 1 ? `s` : ''})
+                        </Link>
+                      );
+                    }
+                    return (
+                      <>
+                        {getTestPlanVersionTitle(testPlanVersion, {
+                          includeVersionString: true
+                        })}{' '}
+                        ({testsCount} Test
+                        {testsCount === 0 || testsCount > 1 ? `s` : ''})
+                      </>
+                    );
+                  };
                   return (
                     dataExists && (
                       <tr key={testPlanVersion.id}>
-                        <th>
-                          <Link
-                            to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
-                          >
-                            {getTestPlanVersionTitle(testPlanVersion, {
-                              includeVersionString: true
-                            })}{' '}
-                            ({testsCount} Test
-                            {testsCount === 0 || testsCount > 1 ? `s` : ''})
-                          </Link>
-                        </th>
+                        <th>{getTitleEl()}</th>
                         <CenteredTd>
                           <i>
                             {dates.convertDateToString(
@@ -778,6 +798,7 @@ TestPlans.propTypes = {
       )
     })
   ).isRequired,
+  me: UserPropType.isRequired,
   triggerPageUpdate: PropTypes.func
 };
 
