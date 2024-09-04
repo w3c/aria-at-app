@@ -242,6 +242,10 @@ describe('graphql', () => {
             username
             roles
             isBot
+            company {
+              id
+              name
+            }
           }
           me {
             __typename
@@ -249,6 +253,10 @@ describe('graphql', () => {
             username
             roles
             ats {
+              id
+              name
+            }
+            company {
               id
               name
             }
@@ -330,6 +338,18 @@ describe('graphql', () => {
             }
             testPlanVersions {
               id
+            }
+            vendors {
+              id
+              name
+            }
+            vendor(id: 1) {
+              id
+              name
+            }
+            vendorByName(name: "apple") {
+              id
+              name
             }
             issues {
               __typename
