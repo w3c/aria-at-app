@@ -10,7 +10,8 @@ const ConfirmAuth = ({ children, requiredPermission, requireVendorForAt }) => {
   const { atId } = useParams();
 
   const auth = evaluateAuth(data && data.me ? data.me : {});
-  const { roles, username, isAdmin, isSignedIn, company } = auth;
+  const { roles, username, isAdmin, isSignedIn } = auth;
+  const company = data && data.me ? data.me.company : null;
 
   if (!username) return <Navigate to={{ pathname: '/invalid-request' }} />;
 
