@@ -1260,17 +1260,17 @@ const graphqlSchema = gql`
       directory: String
     ): [TestPlanVersion]!
     """
-    Get a vendor by ID. Only available to admins.
+    Get a vendor by ID.
     """
     vendor(id: ID!): Vendor
     """
-    Get a vendor by name. Only available to admins.
+    Get a vendor by name.
     """
     vendorByName(name: String!): Vendor
     """
-    Get all vendors. Only available to admins.
+    Get all vendors.
     """
-    vendors: [Vendor]
+    vendors: [Vendor]!
     """
     Get a particular TestPlanVersion by ID.
     """
