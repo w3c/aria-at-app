@@ -1,7 +1,8 @@
 const { User } = require('../models');
 const {
   getOrCreateUser,
-  addUserVendor
+  addUserVendor,
+  getUserById
 } = require('../models/services/UserService');
 const { GithubService } = require('../services');
 const getUsersFromFile = require('../util/getUsersFromFile');
@@ -100,6 +101,14 @@ const oauthRedirectFromGithubController = async (req, res) => {
           transaction: req.transaction
         });
       }
+      // Fetch the user again with vendor and AT information
+      user = await getUserById({
+        id: user.id,
+        vendorAttributes: ['id', 'name'],
+        atAttributes: ['id', 'name'],
+        includeVendorAts: true,
+        transaction: req.transaction
+      });
     }
   }
 
