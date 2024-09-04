@@ -279,6 +279,18 @@ describe('graphql', () => {
             id
             status
           }
+          vendors {
+            id
+            name
+          }
+          vendor(id: 1) {
+            id
+            name
+          }
+          vendorByName(name: "apple") {
+            id
+            name
+          }
           v2TestPlanVersion: testPlanVersion(id: 80) {
             __typename
             id
@@ -338,18 +350,6 @@ describe('graphql', () => {
             }
             testPlanVersions {
               id
-            }
-            vendors {
-              id
-              name
-            }
-            vendor(id: 1) {
-              id
-              name
-            }
-            vendorByName(name: "apple") {
-              id
-              name
             }
             issues {
               __typename
