@@ -1,7 +1,14 @@
 const { User } = require('../models');
-const { getOrCreateUser } = require('../models/services/UserService');
+const {
+  getOrCreateUser,
+  addUserVendor
+} = require('../models/services/UserService');
 const { GithubService } = require('../services');
 const getUsersFromFile = require('../util/getUsersFromFile');
+const {
+  findVendorByName,
+  getOrCreateVendor
+} = require('../models/services/VendorService');
 
 const APP_SERVER = process.env.APP_SERVER;
 
@@ -69,6 +76,26 @@ const oauthRedirectFromGithubController = async (req, res) => {
     testPlanRunAttributes: [],
     transaction: req.transaction
   });
+
+  if (roles.some(role => role.name === User.VENDOR)) {
+    const vendorEntry = vendors.find(
+      vendor => vendor.split('|')[0] === githubUsername
+    );
+    if (vendorEntry) {
+      const [, companyName] = vendorEntry.split('|');
+      const vendor = await findVendorByName(companyName, req.transaction);
+      if (vendor) {
+        await addUserVendor(user.id, vendor.id, {
+          transaction: req.transaction
+        });
+      } else {
+        const vendor = await getOrCreateVendor(companyName, req.transaction);
+        await addUserVendor(user.id, vendor.id, {
+          transaction: req.transaction
+        });
+      }
+    }
+  }
 
   req.session.user = user;
 

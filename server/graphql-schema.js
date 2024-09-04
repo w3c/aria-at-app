@@ -59,6 +59,10 @@ const graphqlSchema = gql`
     The ATs the user has indicated they are able to test.
     """
     ats: [At]!
+    """
+    The vendor the user is associated with.
+    """
+    company: Vendor
   }
 
   """
@@ -1256,6 +1260,18 @@ const graphqlSchema = gql`
       directory: String
     ): [TestPlanVersion]!
     """
+    Get a vendor by ID. Only available to admins.
+    """
+    vendor(id: ID!): Vendor
+    """
+    Get a vendor by name. Only available to admins.
+    """
+    vendorByName(name: String!): Vendor
+    """
+    Get all vendors. Only available to admins.
+    """
+    vendors: [Vendor]
+    """
     Get a particular TestPlanVersion by ID.
     """
     testPlanVersion(id: ID): TestPlanVersion
@@ -1478,6 +1494,28 @@ const graphqlSchema = gql`
     retryCanceledCollections: CollectionJob!
   }
 
+  """
+  Vendor company that makes an AT
+  """
+  type Vendor {
+    """
+    Postgres-provided numeric ID.
+    """
+    id: ID!
+    """
+    The name of the vendor company.
+    """
+    name: String!
+    """
+    The ATs associated with this vendor.
+    """
+    ats: [At]!
+    """
+    The users associated with this vendor.
+    """
+    users: [User]!
+  }
+
   type Mutation {
     """
     Get the available mutations for the given AT.
@@ -1571,6 +1609,22 @@ const graphqlSchema = gql`
     Delete a CollectionJob
     """
     deleteCollectionJob(id: ID!): NoResponse!
+    """
+    Associate a user with a vendor.
+    """
+    addUserVendor(userId: ID!, vendorId: ID!): User!
+    """
+    Remove a user's association with a vendor.
+    """
+    removeUserVendor(userId: ID!): User!
+    """
+    Create a new vendor.
+    """
+    createVendor(name: String!): Vendor!
+    """
+    Delete a vendor. Only available to admins.
+    """
+    deleteVendor(id: ID!): Boolean!
   }
 `;
 
