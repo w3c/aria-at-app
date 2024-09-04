@@ -1,19 +1,11 @@
 'use strict';
-const fs = require('fs').promises;
-const path = require('path');
-const { VENDOR_NAME_TO_AT_MAPPING } = require('../util/constants');
 
-const getVendorsFromFile = async () => {
-  const vendorsFilePath = path.join(__dirname, '..', '..', 'vendors.txt');
-  const vendorsContent = await fs.readFile(vendorsFilePath, 'utf-8');
-  return vendorsContent
-    .split('\n')
-    .filter(line => line.trim() && !line.startsWith('#'));
-};
+const { VENDOR_NAME_TO_AT_MAPPING } = require('../util/constants');
+const getUsersFromFile = require('../util/getUsersFromFile');
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const vendorLines = await getVendorsFromFile();
+    const vendorLines = await getUsersFromFile('vendors.txt');
 
     for (const line of vendorLines) {
       const [username, companyName] = line.split('|');
@@ -57,7 +49,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    const vendorLines = await getVendorsFromFile();
+    const vendorLines = await getUsersFromFile('vendors.txt');
 
     await queryInterface.sequelize.query(
       `DELETE FROM "Vendor" WHERE name IN (:vendorNames)`,

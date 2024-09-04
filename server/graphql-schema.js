@@ -1609,22 +1609,6 @@ const graphqlSchema = gql`
     Delete a CollectionJob
     """
     deleteCollectionJob(id: ID!): NoResponse!
-    """
-    Associate a user with a vendor.
-    """
-    addUserVendor(userId: ID!, vendorId: ID!): User!
-    """
-    Remove a user's association with a vendor.
-    """
-    removeUserVendor(userId: ID!): User!
-    """
-    Create a new vendor.
-    """
-    createVendor(name: String!): Vendor!
-    """
-    Delete a vendor. Only available to admins.
-    """
-    deleteVendor(id: ID!): Boolean!
   }
 `;
 
