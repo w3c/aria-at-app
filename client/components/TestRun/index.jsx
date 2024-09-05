@@ -134,6 +134,8 @@ const TestRun = () => {
   const auth = evaluateAuth(data && data.me ? data.me : {});
   let { id: userId, isSignedIn, isAdmin } = auth;
 
+  const isReadOnly = !isSignedIn && isViewingRun;
+
   // check to ensure an admin that manually went to a test run url doesn't
   // run the test as themselves
   const openAsUserId =
@@ -936,7 +938,7 @@ const TestRun = () => {
         <Button
           variant="primary"
           onClick={handleSaveClick}
-          disabled={!isSignedIn && isViewingRun}
+          disabled={isReadOnly}
         >
           Submit Results
         </Button>
@@ -1033,7 +1035,7 @@ const TestRun = () => {
                   testRunResultRef={testRunResultRef}
                   submitButtonRef={testRendererSubmitButtonRef}
                   isReviewingBot={openAsUser?.isBot}
-                  isReadOnly={!isSignedIn && isViewingRun}
+                  isReadOnly={isReadOnly}
                   isSubmitted={isTestSubmitClicked}
                   isEdit={isTestEditClicked}
                   setIsRendererReady={setIsRendererReady}
@@ -1142,6 +1144,7 @@ const TestRun = () => {
       editAtBrowserDetailsButtonRef={editAtBrowserDetailsButtonRef}
       handleEditAtBrowserDetailsClick={handleEditAtBrowserDetailsClick}
       isSignedIn={isViewingRun}
+      isReadOnly={isReadOnly}
     />
   );
 
@@ -1229,40 +1232,43 @@ const TestRun = () => {
               handleClose={onThemedModalClose}
             />
           )}
-          {isSignedIn && isShowingAtBrowserModal && (
-            <AtAndBrowserDetailsModal
-              show={isShowingAtBrowserModal}
-              firstLoad={!currentTest.testResult}
-              isAdmin={isAdminReviewer}
-              atName={testPlanReport.at.name}
-              atVersion={currentTest.testResult?.atVersion?.name}
-              atVersions={testPlanReport.at.atVersions
-                .filter(item => {
-                  // Only provide at version options that released
-                  // at the same time or later than the minimum
-                  // AT version
-                  let earliestReleasedAt = null;
-                  if (testPlanReport.minimumAtVersion) {
-                    earliestReleasedAt = new Date(
-                      testPlanReport.minimumAtVersion.releasedAt
-                    );
-                    return new Date(item.releasedAt) >= earliestReleasedAt;
-                  }
-                  return item;
-                })
-                .map(item => item.name)}
-              exactAtVersion={testPlanReport.exactAtVersion}
-              browserName={testPlanReport.browser.name}
-              browserVersion={currentTest.testResult?.browserVersion?.name}
-              browserVersions={testPlanReport.browser.browserVersions.map(
-                item => item.name
-              )}
-              patternName={testPlanVersion.title}
-              testerName={tester.username}
-              handleAction={handleAtAndBrowserDetailsModalAction}
-              handleClose={handleAtAndBrowserDetailsModalCloseAction}
-            />
-          )}
+          {isSignedIn &&
+            isShowingAtBrowserModal &&
+            !openAsUser &&
+            !isReadOnly && (
+              <AtAndBrowserDetailsModal
+                show={isShowingAtBrowserModal}
+                firstLoad={!currentTest.testResult}
+                isAdmin={isAdminReviewer}
+                atName={testPlanReport.at.name}
+                atVersion={currentTest.testResult?.atVersion?.name}
+                atVersions={testPlanReport.at.atVersions
+                  .filter(item => {
+                    // Only provide at version options that released
+                    // at the same time or later than the minimum
+                    // AT version
+                    let earliestReleasedAt = null;
+                    if (testPlanReport.minimumAtVersion) {
+                      earliestReleasedAt = new Date(
+                        testPlanReport.minimumAtVersion.releasedAt
+                      );
+                      return new Date(item.releasedAt) >= earliestReleasedAt;
+                    }
+                    return item;
+                  })
+                  .map(item => item.name)}
+                exactAtVersion={testPlanReport.exactAtVersion}
+                browserName={testPlanReport.browser.name}
+                browserVersion={currentTest.testResult?.browserVersion?.name}
+                browserVersions={testPlanReport.browser.browserVersions.map(
+                  item => item.name
+                )}
+                patternName={testPlanVersion.title}
+                testerName={tester.username}
+                handleAction={handleAtAndBrowserDetailsModalAction}
+                handleClose={handleAtAndBrowserDetailsModalCloseAction}
+              />
+            )}
         </Container>
       </CollectionJobContextProvider>
     )

@@ -24,7 +24,8 @@ const TestRunHeading = ({
   showEditAtBrowser,
   testPlanTitle,
   testResults,
-  testCount
+  testCount,
+  isReadOnly
 }) => {
   const {
     state: { collectionJob }
@@ -95,13 +96,15 @@ const TestRunHeading = ({
   if (openAsUser?.isBot) {
     openAsUserHeading = (
       <div className="test-info-entity reviewing-as bot">
-        Reviewing tests of <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
+        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of&nbsp;
+        <FontAwesomeIcon icon={faRobot} className="m-0" />
+        &nbsp;
         <b>{`${openAsUser.username}`}.</b>
         {!isJobStatusFinal(collectionJob.status) && (
           <>
             <br />
             The collection bot is still updating information on this page.
-            Changes may be lost when updates arrive.
+            {isReadOnly ? '' : 'Changes may be lost when updates arrive.'}
           </>
         )}
       </div>
@@ -109,8 +112,11 @@ const TestRunHeading = ({
   } else if (openAsUser) {
     openAsUserHeading = (
       <div className="test-info-entity reviewing-as">
-        Reviewing tests of <b>{`${openAsUser.username}`}.</b>
-        <p>{`All changes will be saved as performed by ${openAsUser.username}.`}</p>
+        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of{' '}
+        <b>{`${openAsUser.username}`}.</b>
+        {!isReadOnly && (
+          <p>{`All changes will be saved as performed by ${openAsUser.username}.`}</p>
+        )}
       </div>
     );
   }
