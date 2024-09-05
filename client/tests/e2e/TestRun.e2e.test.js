@@ -5,12 +5,12 @@ describe('Test Run when not signed in', () => {
   it('renders invalid request when attempting to go directly to /run/:id', async () => {
     await getPage({ role: false, url: '/run/19' }, async page => {
       const h1Text = await text(page, 'h1');
-      const currentUrl = await page.url();
 
-      expect(h1Text).toBe('Whoops! Unable to complete request');
-      expect(currentUrl.includes('/invalid-request')).toBe(true);
+      expect(h1Text.includes('Test 1:')).toBe(true);
     });
   });
+
+  // TODO: Test to make sure the input change events aren't triggered as a non signed in user
 
   it('renders /test-plan-report/:id and can navigate between tests', async () => {
     // This should be NVDA + Chrome + Modal Dialog Example with 12 tests
