@@ -14,7 +14,12 @@ const Label = styled.label`
   }
 `;
 
-const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
+const AssertionsFieldset = ({
+  assertions,
+  commandIndex,
+  assertionsHeader,
+  readOnly = false
+}) => {
   // Handle case where build process didn't include assertionResponseQuestion
   const normalizedHeader = useMemo(() => {
     return assertionsHeader?.descriptionHeader?.replace(
@@ -39,7 +44,7 @@ const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
                 id={`pass-${commandIndex}-${assertionIndex}-yes`}
                 name={`assertion-${commandIndex}-${assertionIndex}`}
                 checked={passed === true}
-                onChange={() => click(true)}
+                onChange={() => (!readOnly ? click(true) : false)}
                 data-testid={`radio-yes-${commandIndex}-${assertionIndex}`}
               />
               Yes
@@ -50,7 +55,7 @@ const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
                 id={`pass-${commandIndex}-${assertionIndex}-no`}
                 name={`assertion-${commandIndex}-${assertionIndex}`}
                 checked={passed === false}
-                onChange={() => click(false)}
+                onChange={() => (!readOnly ? click(false) : false)}
                 data-testid={`radio-no-${commandIndex}-${assertionIndex}`}
               />
               No
@@ -65,7 +70,8 @@ const AssertionsFieldset = ({ assertions, commandIndex, assertionsHeader }) => {
 AssertionsFieldset.propTypes = {
   assertions: PropTypes.array.isRequired,
   commandIndex: PropTypes.number.isRequired,
-  assertionsHeader: PropTypes.object.isRequired
+  assertionsHeader: PropTypes.object.isRequired,
+  readOnly: PropTypes.bool
 };
 
 export default AssertionsFieldset;

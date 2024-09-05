@@ -161,6 +161,7 @@ const TestRenderer = ({
   submitButtonRef,
   isSubmitted = false,
   isReviewingBot = false,
+  isReadOnly = false,
   isEdit = false,
   setIsRendererReady = false
 }) => {
@@ -540,17 +541,19 @@ const TestRenderer = ({
                     commandIndex={commandIndex}
                     atOutput={atOutput}
                     isSubmitted={isSubmitted}
-                    readOnly={isReviewingBot}
+                    readOnly={isReviewingBot || isReadOnly}
                   />
                   <AssertionsFieldset
                     assertions={assertions}
                     commandIndex={commandIndex}
                     assertionsHeader={assertionsHeader}
+                    readOnly={isReadOnly}
                   />
                   <UnexpectedBehaviorsFieldset
                     commandIndex={commandIndex}
                     unexpectedBehaviors={unexpectedBehaviors}
                     isSubmitted={isSubmitted}
+                    readOnly={isReadOnly}
                   />
                 </Fragment>
               );

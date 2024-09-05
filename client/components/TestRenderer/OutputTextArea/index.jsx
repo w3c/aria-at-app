@@ -65,7 +65,9 @@ const OutputTextArea = ({
       </label>
       <NoOutputCheckbox
         checked={noOutput}
-        disabled={atOutput.value && atOutput.value !== NO_OUTPUT_STRING}
+        disabled={
+          (atOutput.value && atOutput.value !== NO_OUTPUT_STRING) || readOnly
+        }
         label="No output"
         id={`no-output-checkbox-${commandIndex}`}
         type="checkbox"

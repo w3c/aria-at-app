@@ -68,8 +68,11 @@ const TestRun = () => {
 
   const { runId: testPlanRunId, testPlanReportId } = params;
 
+  // vs viewing a page rendered by a test plan report id
+  const isViewingRun = !!testPlanRunId;
+
   const { loading, data, error } = useQuery(
-    testPlanRunId ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
+    isViewingRun ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
     {
       fetchPolicy: 'cache-and-network',
       variables: { testPlanRunId, testPlanReportId },
@@ -131,10 +134,6 @@ const TestRun = () => {
   const auth = evaluateAuth(data && data.me ? data.me : {});
   let { id: userId, isSignedIn, isAdmin } = auth;
 
-  // if a signed in user navigates to this page, treat them as anon to prevent
-  // invalid save attempts
-  if (testPlanReportId) isSignedIn = false;
-
   // check to ensure an admin that manually went to a test run url doesn't
   // run the test as themselves
   const openAsUserId =
@@ -168,7 +167,7 @@ const TestRun = () => {
     const currentTest = tests[currentTestIndex];
     if (currentTest) {
       setPageReady(false);
-      if (isSignedIn) {
+      if (isViewingRun && isSignedIn) {
         (async () => {
           const { testPlanRun: updatedTestPlanRun } =
             await createTestResultForRenderer(
@@ -193,10 +192,7 @@ const TestRun = () => {
     const { tester, testResults = [] } = testPlanRun || {};
     let { testPlanReport } = testPlanRun || {};
 
-    // if a signed in user navigates to this page, treat them as anon to prevent
-    // invalid save attempts
-    if (testPlanReportId) isSignedIn = false;
-    if (!isSignedIn) testPlanReport = data.testPlanReport;
+    if (!isViewingRun) testPlanReport = data.testPlanReport;
 
     const {
       testPlanVersion,
@@ -317,7 +313,7 @@ const TestRun = () => {
     );
   }
 
-  if (isSignedIn && !testPlanRun) {
+  if (isViewingRun && !testPlanRun) {
     return (
       <PageStatus
         title="Error - Test Results | ARIA-AT"
@@ -937,7 +933,11 @@ const TestRun = () => {
     } else {
       // same key to maintain focus
       const saveResultsButton = (
-        <Button variant="primary" onClick={handleSaveClick}>
+        <Button
+          variant="primary"
+          onClick={handleSaveClick}
+          disabled={!isSignedIn && isViewingRun}
+        >
           Submit Results
         </Button>
       );
@@ -993,9 +993,7 @@ const TestRun = () => {
       </div>
     );
 
-    // we are ready enough to show the page and all the buttons when the above code is
-    // pageReady and we have an anon view, bot test run, or a test result to display
-    const completeRender = pageReady && (!isSignedIn || currentTest.testResult);
+    // const enableInteractions = isSignedIn || !isViewingRun;
 
     return (
       <>
@@ -1009,7 +1007,7 @@ const TestRun = () => {
           hasConflicts={currentTest.hasConflicts}
           handleReviewConflictsButtonClick={handleReviewConflictsButtonClick}
         />
-        {completeRender && (
+        {pageReady && (
           <Row>
             <Col className="test-iframe-container" md={9}>
               <Row>
@@ -1017,18 +1015,16 @@ const TestRun = () => {
                   key={nextId()}
                   at={testPlanReport.at}
                   testResult={
-                    !isSignedIn
-                      ? {
-                          test: currentTest,
-                          // force the summary to be shown for an anonymous user
-                          completedAt: !!(
-                            !isSignedIn && testRunResultRef.current
-                          )
-                        }
-                      : remapState(
+                    isViewingRun && currentTest.testResult
+                      ? remapState(
                           testRunStateRef.current,
                           currentTest.testResult
                         )
+                      : {
+                          test: currentTest,
+                          // force the summary to be shown for an anonymous user
+                          completedAt: !!testRunResultRef.current
+                        }
                   }
                   testPageUrl={testPlanVersion.testPageUrl}
                   testFormatVersion={testPlanVersion.metadata.testFormatVersion}
@@ -1037,6 +1033,7 @@ const TestRun = () => {
                   testRunResultRef={testRunResultRef}
                   submitButtonRef={testRendererSubmitButtonRef}
                   isReviewingBot={openAsUser?.isBot}
+                  isReadOnly={!isSignedIn && isViewingRun}
                   isSubmitted={isTestSubmitClicked}
                   isEdit={isTestEditClicked}
                   setIsRendererReady={setIsRendererReady}
@@ -1133,18 +1130,18 @@ const TestRun = () => {
         testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
       }
       at={`${testPlanReport.at?.name}${
-        isSignedIn ? ` ${currentAtVersion?.name}` : ''
+        isViewingRun ? ` ${currentAtVersion?.name}` : ''
       }`}
       browser={`${testPlanReport.browser?.name}${
-        isSignedIn ? ` ${currentBrowserVersion?.name || ''}` : ''
+        isViewingRun ? ` ${currentBrowserVersion?.name || ''}` : ''
       }`}
-      showEditAtBrowser={isSignedIn && !testPlanRun.initiatedByAutomation}
+      showEditAtBrowser={isViewingRun && !testPlanRun.initiatedByAutomation}
       openAsUser={openAsUser}
       testResults={testResults}
       testCount={testCount}
       editAtBrowserDetailsButtonRef={editAtBrowserDetailsButtonRef}
       handleEditAtBrowserDetailsClick={handleEditAtBrowserDetailsClick}
-      isSignedIn={isSignedIn}
+      isSignedIn={isViewingRun}
     />
   );
 
