@@ -56,8 +56,8 @@ const TestRunHeading = ({
             <b>{`${Math.max(
               countTestResults,
               countCompleteCollection
-            )} of ${testCount}`}</b>{' '}
-            responses collected.
+            )} of ${testCount}`}</b>
+            &nbsp;responses collected
           </p>
           <p>
             Collection Job Status: <b>{collectionJob.status}</b>
@@ -69,12 +69,11 @@ const TestRunHeading = ({
     } else if (testCount) {
       content = (
         <>
-          {' '}
           <b>{`${testResults.reduce(
             (acc, { completedAt }) => acc + (completedAt ? 1 : 0),
             0
-          )} of ${testCount}`}</b>{' '}
-          tests completed
+          )} of ${testCount}`}</b>
+          &nbsp;tests completed
         </>
       );
     } else {
@@ -112,10 +111,16 @@ const TestRunHeading = ({
   } else if (openAsUser) {
     openAsUserHeading = (
       <div className="test-info-entity reviewing-as">
-        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of{' '}
-        <b>{`${openAsUser.username}`}.</b>
-        {!isReadOnly && (
-          <p>{`All changes will be saved as performed by ${openAsUser.username}.`}</p>
+        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of&nbsp;
+        <b>{`${openAsUser.username}`}</b>
+        {isReadOnly && ' in read-only mode'}.
+        {isReadOnly ? (
+          <em>&nbsp;No changes can be made or saved.</em>
+        ) : (
+          <em>
+            &nbsp;All changes will be saved as performed by&nbsp;
+            {openAsUser.username}.
+          </em>
         )}
       </div>
     );
@@ -172,7 +177,8 @@ TestRunHeading.propTypes = {
   }),
   testResults: PropTypes.arrayOf(PropTypes.shape({})),
   testCount: PropTypes.number.isRequired,
-  handleEditAtBrowserDetailsClick: PropTypes.func.isRequired
+  handleEditAtBrowserDetailsClick: PropTypes.func.isRequired,
+  isReadOnly: PropTypes.bool
 };
 
 export default TestRunHeading;

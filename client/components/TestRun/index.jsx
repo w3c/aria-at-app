@@ -68,7 +68,8 @@ const TestRun = () => {
 
   const { runId: testPlanRunId, testPlanReportId } = params;
 
-  // vs viewing a page rendered by a test plan report id
+  // TODO: Separate these flows to be handle in different components?
+  // Versus viewing a page rendered by testPlanReportId: `/test-plan-report/:id`
   const isViewingRun = !!testPlanRunId;
 
   const { loading, data, error } = useQuery(
@@ -134,8 +135,6 @@ const TestRun = () => {
   const auth = evaluateAuth(data && data.me ? data.me : {});
   let { id: userId, isSignedIn, isAdmin } = auth;
 
-  const isReadOnly = !isSignedIn && isViewingRun;
-
   // check to ensure an admin that manually went to a test run url doesn't
   // run the test as themselves
   const openAsUserId =
@@ -145,6 +144,20 @@ const TestRun = () => {
   const testerId = openAsUserId || userId;
   const isAdminReviewer = !!(isAdmin && openAsUserId);
   const openAsUser = users?.find(user => user.id === openAsUserId);
+
+  let isReadOnly = false;
+  if (!isSignedIn) {
+    // Definitely read only if the user isn't signed in and viewing a user's run
+    isReadOnly = isViewingRun;
+  } else {
+    // Admins can view and edit as they please
+    if (isAdmin) isReadOnly = false;
+    else if (!isAdmin && isViewingRun) {
+      // Checks that the run is being viewed by the assigned tester; read only
+      // mode if not
+      isReadOnly = testerId !== userId;
+    }
+  }
 
   // Define createTestResultForRenderer as a memoized function
   const createTestResultForRenderer = useCallback(
@@ -169,7 +182,7 @@ const TestRun = () => {
     const currentTest = tests[currentTestIndex];
     if (currentTest) {
       setPageReady(false);
-      if (isViewingRun && isSignedIn) {
+      if (isViewingRun && isSignedIn && !isReadOnly) {
         (async () => {
           const { testPlanRun: updatedTestPlanRun } =
             await createTestResultForRenderer(
@@ -342,9 +355,9 @@ const TestRun = () => {
     isAdminReviewer &&
     currentTest.testResult &&
     !adminReviewerCheckedRef.current
-  )
+  ) {
     adminReviewerOriginalTestRef.current = currentTest;
-
+  }
   adminReviewerCheckedRef.current = true;
 
   let issueLink;
@@ -909,6 +922,7 @@ const TestRun = () => {
           className="edit-results"
           variant="secondary"
           onClick={handleEditResultsClick}
+          disabled={isReadOnly}
         >
           <FontAwesomeIcon icon={faPen} />
           Edit Results
@@ -1232,43 +1246,40 @@ const TestRun = () => {
               handleClose={onThemedModalClose}
             />
           )}
-          {isSignedIn &&
-            isShowingAtBrowserModal &&
-            !openAsUser &&
-            !isReadOnly && (
-              <AtAndBrowserDetailsModal
-                show={isShowingAtBrowserModal}
-                firstLoad={!currentTest.testResult}
-                isAdmin={isAdminReviewer}
-                atName={testPlanReport.at.name}
-                atVersion={currentTest.testResult?.atVersion?.name}
-                atVersions={testPlanReport.at.atVersions
-                  .filter(item => {
-                    // Only provide at version options that released
-                    // at the same time or later than the minimum
-                    // AT version
-                    let earliestReleasedAt = null;
-                    if (testPlanReport.minimumAtVersion) {
-                      earliestReleasedAt = new Date(
-                        testPlanReport.minimumAtVersion.releasedAt
-                      );
-                      return new Date(item.releasedAt) >= earliestReleasedAt;
-                    }
-                    return item;
-                  })
-                  .map(item => item.name)}
-                exactAtVersion={testPlanReport.exactAtVersion}
-                browserName={testPlanReport.browser.name}
-                browserVersion={currentTest.testResult?.browserVersion?.name}
-                browserVersions={testPlanReport.browser.browserVersions.map(
-                  item => item.name
-                )}
-                patternName={testPlanVersion.title}
-                testerName={tester.username}
-                handleAction={handleAtAndBrowserDetailsModalAction}
-                handleClose={handleAtAndBrowserDetailsModalCloseAction}
-              />
-            )}
+          {isSignedIn && isShowingAtBrowserModal && !isReadOnly && (
+            <AtAndBrowserDetailsModal
+              show={isShowingAtBrowserModal}
+              firstLoad={!currentTest.testResult}
+              isAdmin={isAdminReviewer}
+              atName={testPlanReport.at.name}
+              atVersion={currentTest.testResult?.atVersion?.name}
+              atVersions={testPlanReport.at.atVersions
+                .filter(item => {
+                  // Only provide at version options that released
+                  // at the same time or later than the minimum
+                  // AT version
+                  let earliestReleasedAt = null;
+                  if (testPlanReport.minimumAtVersion) {
+                    earliestReleasedAt = new Date(
+                      testPlanReport.minimumAtVersion.releasedAt
+                    );
+                    return new Date(item.releasedAt) >= earliestReleasedAt;
+                  }
+                  return item;
+                })
+                .map(item => item.name)}
+              exactAtVersion={testPlanReport.exactAtVersion}
+              browserName={testPlanReport.browser.name}
+              browserVersion={currentTest.testResult?.browserVersion?.name}
+              browserVersions={testPlanReport.browser.browserVersions.map(
+                item => item.name
+              )}
+              patternName={testPlanVersion.title}
+              testerName={tester.username}
+              handleAction={handleAtAndBrowserDetailsModalAction}
+              handleClose={handleAtAndBrowserDetailsModalCloseAction}
+            />
+          )}
         </Container>
       </CollectionJobContextProvider>
     )
