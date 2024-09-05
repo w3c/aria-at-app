@@ -592,6 +592,7 @@ TestRenderer.propTypes = {
   testRunResultRef: PropTypes.any,
   submitButtonRef: PropTypes.any,
   isSubmitted: PropTypes.bool,
+  isReadOnly: PropTypes.bool,
   isEdit: PropTypes.bool,
   isReviewingBot: PropTypes.bool,
   setIsRendererReady: PropTypes.func
