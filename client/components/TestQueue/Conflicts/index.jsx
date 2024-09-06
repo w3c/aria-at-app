@@ -172,7 +172,6 @@ const TestQueueConflicts = () => {
   }, [conflictsByTest, data]);
 
   const disclosureContents = useMemo(() => {
-    const issues = [];
     const uniqueTestPlanRuns = Object.values(conflictsByTest)
       .flatMap(({ conflicts }) =>
         Object.values(conflicts).map(conflict =>
@@ -187,26 +186,32 @@ const TestQueueConflicts = () => {
           index === self.findIndex(t => t.id === testPlanRun.id)
       );
 
-    return Object.values(conflictsByTest).map(({ test, conflicts }) => (
-      <div key={test.id}>
-        {Object.entries(conflicts).map(([commandKey, conflict]) => (
-          <ConflictSummaryTable
-            key={`${test.id}-${commandKey}`}
-            issueLink={getIssueLink(conflict)}
+    return Object.values(conflictsByTest).map(({ test, conflicts }) => {
+      const issues = data?.testPlanReport?.issues?.filter(
+        issue =>
+          issue.testNumberFilteredByAt === getTestNumberFilteredByAt(test)
+      );
+      return (
+        <div key={test.id}>
+          {Object.entries(conflicts).map(([commandKey, conflict]) => (
+            <ConflictSummaryTable
+              key={`${test.id}-${commandKey}`}
+              issueLink={getIssueLink(conflict)}
+              isAdmin={isAdmin}
+              conflictingResults={conflict.conflictingResults}
+              testIndex={getTestNumberFilteredByAt(test)}
+            />
+          ))}
+          {issues.length > 0 && <ConflictIssueDetails issues={issues} />}
+          <TestConflictsActions
+            issueLink={getIssueLink(test)}
             isAdmin={isAdmin}
-            conflictingResults={conflict.conflictingResults}
+            testPlanRuns={uniqueTestPlanRuns}
             testIndex={getTestNumberFilteredByAt(test)}
           />
-        ))}
-        {issues.length > 0 && <ConflictIssueDetails issues={issues} />}
-        <TestConflictsActions
-          issueLink={getIssueLink(test)}
-          isAdmin={isAdmin}
-          testPlanRuns={uniqueTestPlanRuns}
-          testIndex={getTestNumberFilteredByAt(test)}
-        />
-      </div>
-    ));
+        </div>
+      );
+    });
   }, [conflictsByTest, data, isAdmin]);
 
   const disclosureClickHandlers = useMemo(() => {
