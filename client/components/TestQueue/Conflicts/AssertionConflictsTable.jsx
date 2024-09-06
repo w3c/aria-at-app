@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConflictCell, ConflictTable } from './ConflictSummaryTable';
+import { ConflictTable } from './ConflictSummaryTable';
 import { UserPropType } from '../../common/proptypes';
 import PropTypes from 'prop-types';
 
@@ -26,14 +26,14 @@ const AssertionConflictsTable = ({ conflictingResults, testers }) => {
               cr => cr.scenarioResult.assertionResults[index].passed
             );
             const hasConflict = results.some(r => r !== results[0]);
-
+            if (!hasConflict) {
+              return null;
+            }
             return (
               <tr key={index}>
                 <td>{assertion}</td>
                 {results.map((result, i) => (
-                  <ConflictCell key={i} conflict={hasConflict}>
-                    {result ? 'Passed' : 'Failed'}
-                  </ConflictCell>
+                  <td key={i}>{result ? 'Passed' : 'Failed'}</td>
                 ))}
               </tr>
             );

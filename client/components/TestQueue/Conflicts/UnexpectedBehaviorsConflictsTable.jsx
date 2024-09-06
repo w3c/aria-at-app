@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
-import { ConflictCell, ConflictTable } from './ConflictSummaryTable';
+import { ConflictTable } from './ConflictSummaryTable';
 import { UserPropType } from '../../common/proptypes';
 
 const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
@@ -36,9 +36,8 @@ const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
                   result.scenarioResult.unexpectedBehaviors.find(
                     ub => ub.text === behaviorText
                   );
-                const hasConflict = !matchingBehavior;
                 return (
-                  <ConflictCell key={i} conflict={hasConflict}>
+                  <td key={i}>
                     {matchingBehavior ? (
                       <>
                         Impact: {matchingBehavior.impact}
@@ -48,7 +47,7 @@ const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
                     ) : (
                       'Not reported'
                     )}
-                  </ConflictCell>
+                  </td>
                 );
               })}
             </tr>

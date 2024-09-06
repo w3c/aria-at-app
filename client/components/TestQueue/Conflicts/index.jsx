@@ -10,6 +10,8 @@ import DisclosureComponent from '../../common/DisclosureComponent';
 import ConflictSummaryTable from './ConflictSummaryTable';
 import createIssueLink from '../../../utils/createIssueLink';
 import { evaluateAuth } from '../../../utils/evaluateAuth';
+import ConflictIssueDetails from './ConflictIssueDetails';
+import TestConflictsActions from './TestConflictsActions';
 
 const PageContainer = styled(Container)`
   max-width: 1200px;
@@ -60,6 +62,8 @@ const TestQueueConflicts = () => {
     []
   );
 
+  const [conflictsByTest, setConflictsByTest] = useState({});
+
   const { testPlanReportId } = useParams();
   const { data, error, loading } = useQuery(TEST_QUEUE_CONFLICTS_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network',
@@ -99,6 +103,27 @@ const TestQueueConflicts = () => {
       });
       setUniqueConflictsByAssertion(uniqueConflictsByAssertions);
       setOpenDisclosures(uniqueConflictsByAssertions.map(() => false));
+
+      const conflictsByTestObj = {};
+      data?.testPlanReport?.conflicts?.forEach(conflict => {
+        const testId = conflict.conflictingResults[0].test.id;
+        const commandKey = conflict.conflictingResults[0].scenario.commands
+          .map(cmd => cmd.text)
+          .join(' then ');
+
+        if (!conflictsByTestObj[testId]) {
+          conflictsByTestObj[testId] = {
+            test: conflict.conflictingResults[0].test,
+            conflicts: {}
+          };
+        }
+
+        if (!conflictsByTestObj[testId].conflicts[commandKey]) {
+          conflictsByTestObj[testId].conflicts[commandKey] = conflict;
+        }
+      });
+      setConflictsByTest(conflictsByTestObj);
+      setOpenDisclosures(Object.keys(conflictsByTestObj).map(() => false));
     }
   }, [data]);
 
@@ -241,45 +266,59 @@ ${markdownConflictCount}. ### Unexpected Behaviors Results for "${conflict.confl
   const { isAdmin } = useMemo(() => evaluateAuth(data?.me), [data?.me]);
 
   const disclosureLabels = useMemo(() => {
-    return uniqueConflictsByAssertion.map(conflict => {
-      const testIndex = getConflictTestNumberFilteredByAt(conflict);
-      return `Test ${testIndex}: ${
-        conflict.conflictingResults[0].test.title
-      } (${conflict.conflictingResults[0].scenario.commands
-        .map(({ text }) => text)
-        .join(' then ')})`;
+    return Object.values(conflictsByTest).map(({ test }) => {
+      const testIndex =
+        data.testPlanReport.runnableTests.findIndex(t => t.id === test.id) + 1;
+      return `Test ${testIndex}: ${test.title}`;
     });
-  }, [uniqueConflictsByAssertion]);
+  }, [conflictsByTest, data]);
 
   const disclosureContents = useMemo(() => {
-    return uniqueConflictsByAssertion.map(conflict => {
-      const issues = data?.testPlanReport?.issues?.filter(
-        issue =>
-          issue.testNumberFilteredByAt ===
-          getConflictTestNumberFilteredByAt(conflict)
+    const issues = [];
+    const uniqueTestPlanRuns = Object.values(conflictsByTest)
+      .flatMap(({ conflicts }) =>
+        Object.values(conflicts).map(conflict =>
+          conflict.conflictingResults.map(
+            conflictingResult => conflictingResult.testPlanRun
+          )
+        )
+      )
+      .flat()
+      .filter(
+        (testPlanRun, index, self) =>
+          index === self.findIndex(t => t.id === testPlanRun.id)
       );
-      return (
-        <ConflictSummaryTable
-          issues={issues}
-          issueLink={getIssueLink(conflict)}
+
+    return Object.values(conflictsByTest).map(({ test, conflicts }) => (
+      <div key={test.id}>
+        {Object.entries(conflicts).map(([commandKey, conflict]) => (
+          <ConflictSummaryTable
+            key={`${test.id}-${commandKey}`}
+            issueLink={getIssueLink(conflict)}
+            isAdmin={isAdmin}
+            conflictingResults={conflict.conflictingResults}
+            testIndex={getConflictTestNumberFilteredByAt(conflict)}
+          />
+        ))}
+        {issues.length > 0 && <ConflictIssueDetails issues={issues} />}
+        <TestConflictsActions
+          issueLink={''}
           isAdmin={isAdmin}
-          key={conflict.conflictingResults[0].test.id}
-          conflictingResults={conflict.conflictingResults}
-          testIndex={getConflictTestNumberFilteredByAt(conflict)}
+          testPlanRuns={uniqueTestPlanRuns}
         />
-      );
-    });
-  }, [uniqueConflictsByAssertion]);
+      </div>
+    ));
+  }, [conflictsByTest, data, isAdmin]);
 
   const disclosureClickHandlers = useMemo(() => {
-    return uniqueConflictsByAssertion.map((_, index) => () => {
+    return Object.keys(conflictsByTest).map((_, index) => () => {
       setOpenDisclosures(prevState => {
         const newOpenDisclosures = [...prevState];
         newOpenDisclosures[index] = !newOpenDisclosures[index];
         return newOpenDisclosures;
       });
     });
-  }, [uniqueConflictsByAssertion]);
+  }, [conflictsByTest]);
 
   if (error) {
     return (
@@ -310,11 +349,7 @@ ${markdownConflictCount}. ### Unexpected Behaviors Results for "${conflict.confl
   const { name: minimumAtVersionName } =
     data?.testPlanReport.minimumAtVersion ?? {};
 
-  const uniqueTestsLength = new Set(
-    data?.testPlanReport?.conflicts.map(
-      conflict => conflict.conflictingResults[0].test.id
-    )
-  ).size;
+  const uniqueTestsLength = Object.keys(conflictsByTest).length;
 
   return (
     <PageContainer id="main" as="main" tabIndex="-1">
