@@ -12,6 +12,7 @@ import createIssueLink from '../../../utils/createIssueLink';
 import { evaluateAuth } from '../../../utils/evaluateAuth';
 import ConflictIssueDetails from './ConflictIssueDetails';
 import TestConflictsActions from './TestConflictsActions';
+import generateConflictMarkdown from '../../../utils/generateConflictMarkdown';
 
 const PageContainer = styled(Container)`
   max-width: 1200px;
@@ -102,7 +103,6 @@ const TestQueueConflicts = () => {
         }
       });
       setUniqueConflictsByAssertion(uniqueConflictsByAssertions);
-      setOpenDisclosures(uniqueConflictsByAssertions.map(() => false));
 
       const conflictsByTestObj = {};
       data?.testPlanReport?.conflicts?.forEach(conflict => {
@@ -127,133 +127,31 @@ const TestQueueConflicts = () => {
     }
   }, [data]);
 
-  const getConflictTestNumberFilteredByAt = conflict => {
+  const getTestNumberFilteredByAt = test => {
     const testIndex = data.testPlanReport.runnableTests.findIndex(
-      test => test.id === conflict.conflictingResults[0].test.id
+      t => t.id === test.id
     );
     return testIndex + 1;
   };
 
-  const getIssueLink = conflict => {
-    if (!conflict) return;
-
-    let markdownConflictCount = 1;
-    // Standardize on format currently supported in ReviewConflicts
-    let conflictMarkdown = `
-## Review Conflicts for "${conflict.conflictingResults[0].test.title}"`;
-
-    // Setup conflicting assertions handling
-    const conflictingAssertions = [];
-    conflict.conflictingResults[0].scenarioResult.assertionResults.forEach(
-      (ar, index) => {
-        conflict.conflictingResults.forEach(cr => {
-          const hasConflict =
-            cr.scenarioResult.assertionResults[index].passed !== ar.passed;
-
-          if (hasConflict) {
-            conflictingAssertions.push({
-              index,
-              assertion: cr.scenarioResult.assertionResults[index].assertion
-            });
-          }
-        });
-      }
-    );
-    const hasAssertionConflicts = conflictingAssertions.length > 0;
-
-    if (hasAssertionConflicts) {
-      for (const conflictingAssertion of conflictingAssertions) {
-        // Standardize on format currently supported in ReviewConflicts
-        conflictMarkdown = `${conflictMarkdown}
-
-${markdownConflictCount}. ### Assertion Results for "${conflict.conflictingResults[0].scenario.commands
-          .map(({ text }) => text)
-          .join(' then ')}" Command and "${
-          conflictingAssertion.assertion.text
-        }" Assertion`;
-        markdownConflictCount++;
-
-        conflict.conflictingResults.forEach(result => {
-          const { testPlanRun, scenarioResult } = result;
-          let assertionResultFormatted;
-          assertionResultFormatted = scenarioResult.assertionResults[
-            conflictingAssertion.index
-          ].passed
-            ? 'passing'
-            : 'failing';
-
-          conflictMarkdown = `${conflictMarkdown}
-- Tester ${testPlanRun.tester.username} recorded output "${scenarioResult.output}" and marked assertion as ${assertionResultFormatted}`;
-        });
-      }
-    }
-
-    // Setup conflicting unexpected behaviors handling
-    const conflictingUnexpectedBehaviorsByTester = {};
-    conflict.conflictingResults.forEach(result => {
-      result.scenarioResult.unexpectedBehaviors.forEach(
-        ({ text, details, impact }) => {
-          const username = result.testPlanRun.tester.username;
-          const conflict = {
-            text,
-            details,
-            impact,
-            output: result.scenarioResult.output,
-            tester: result.testPlanRun.tester,
-            command: result.scenario.commands
-              .map(({ text }) => text)
-              .join(' then ')
-          };
-
-          if (!conflictingUnexpectedBehaviorsByTester[username]) {
-            conflictingUnexpectedBehaviorsByTester[username] = [conflict];
-          } else {
-            conflictingUnexpectedBehaviorsByTester[username].push(conflict);
-          }
-        }
-      );
-    });
-    const hasUnexpectedBehaviorConflicts =
-      Object.keys(conflictingUnexpectedBehaviorsByTester).length > 0;
-
-    if (hasUnexpectedBehaviorConflicts) {
-      conflictMarkdown = `${conflictMarkdown}
-
-${markdownConflictCount}. ### Unexpected Behaviors Results for "${conflict.conflictingResults[0].scenario.commands
-        .map(({ text }) => text)
-        .join(' then ')}" Command`;
-      markdownConflictCount++;
-
-      for (const key in conflictingUnexpectedBehaviorsByTester) {
-        const unexpectedBehaviorsForTester =
-          conflictingUnexpectedBehaviorsByTester[key];
-
-        const commonUnexpectedBehaviorForTester =
-          unexpectedBehaviorsForTester[0];
-        const unexpectedBehaviorText = unexpectedBehaviorsForTester
-          .map((unexpectedBehavior, index) => {
-            let note = `"${unexpectedBehavior.text} (Details: ${unexpectedBehavior.details}, Impact: ${unexpectedBehavior.impact})"`;
-            if (index + 1 < unexpectedBehaviorsForTester.length)
-              note = `${note} and`;
-
-            return note;
-          })
-          .join(' ');
-
-        conflictMarkdown = `${conflictMarkdown}
-- Tester ${commonUnexpectedBehaviorForTester.tester.username} recorded output "${commonUnexpectedBehaviorForTester.output}" and noted ${unexpectedBehaviorText}`;
-      }
+  const getIssueLink = test => {
+    if (!test) {
+      return;
     }
 
     const { testPlanVersion } = data.testPlanReport;
+    const conflictMarkdown = generateConflictMarkdown(
+      data.testPlanReport,
+      test
+    );
     return createIssueLink({
       testPlanTitle: testPlanVersion.title,
       testPlanDirectory: testPlanVersion.testPlan.directory,
       versionString: testPlanVersion.versionString,
-      testTitle: conflict.conflictingResults[0].test.title,
-      testRowNumber: conflict.conflictingResults[0].test.rowNumber,
-      testSequenceNumber: getConflictTestNumberFilteredByAt(conflict),
-      testRenderedUrl: conflict.conflictingResults[0].test.renderedUrl,
+      testTitle: test.title,
+      testRenderedUrl: test.renderedUrl,
+      testRowNumber: test.rowNumber,
+      testSequenceNumber: getTestNumberFilteredByAt(test),
       atName: data.testPlanReport.at.name,
       browserName: data.testPlanReport.browser.name,
       atVersionName: data.testPlanReport.exactAtVersion?.name
@@ -297,14 +195,15 @@ ${markdownConflictCount}. ### Unexpected Behaviors Results for "${conflict.confl
             issueLink={getIssueLink(conflict)}
             isAdmin={isAdmin}
             conflictingResults={conflict.conflictingResults}
-            testIndex={getConflictTestNumberFilteredByAt(conflict)}
+            testIndex={getTestNumberFilteredByAt(test)}
           />
         ))}
         {issues.length > 0 && <ConflictIssueDetails issues={issues} />}
         <TestConflictsActions
-          issueLink={''}
+          issueLink={getIssueLink(test)}
           isAdmin={isAdmin}
           testPlanRuns={uniqueTestPlanRuns}
+          testIndex={getTestNumberFilteredByAt(test)}
         />
       </div>
     ));

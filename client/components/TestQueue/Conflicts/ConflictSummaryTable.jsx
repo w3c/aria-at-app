@@ -92,7 +92,7 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
 
 ConflictSummaryTable.propTypes = {
   conflictingResults: PropTypes.arrayOf(PropTypes.object).isRequired,
-  issues: PropTypes.arrayOf(IssuePropType).isRequired,
+  issues: PropTypes.arrayOf(IssuePropType),
   issueLink: PropTypes.string.isRequired,
   isAdmin: PropTypes.bool.isRequired,
   testIndex: PropTypes.number.isRequired
