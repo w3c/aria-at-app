@@ -261,9 +261,7 @@ const TestRenderer = ({
         let assertionForCommandIndex = commands[i].assertions.findIndex(
           ({ description }) => description === assertion?.text
         );
-        commands[i].assertions[assertionForCommandIndex].result = passed
-          ? 'pass'
-          : 'fail';
+        commands[i].assertions[assertionForCommandIndex].result = passed;
         commands[i].assertions[assertionForCommandIndex].highlightRequired =
           highlightRequired;
       }
