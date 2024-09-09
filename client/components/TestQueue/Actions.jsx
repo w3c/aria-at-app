@@ -255,7 +255,7 @@ const Actions = ({
               disabled={!nonSelfAssignedRuns.length}
             >
               <FontAwesomeIcon icon={faFileImport} />
-              Open run as...&nbsp;
+              Open run as...
             </Dropdown.Toggle>
             <Dropdown.Menu role="menu">
               {nonSelfAssignedRuns.map(testPlanRun => (
@@ -277,7 +277,7 @@ const Actions = ({
               disabled={!nonSelfAssignedRuns.length}
             >
               <FontAwesomeIcon icon={faFileImport} />
-              View Results for...&nbsp;
+              View Results for...
             </Dropdown.Toggle>
             <Dropdown.Menu role="menu">
               {nonSelfAssignedRuns.map(testPlanRun => (

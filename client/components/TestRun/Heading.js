@@ -56,8 +56,8 @@ const TestRunHeading = ({
             <b>{`${Math.max(
               countTestResults,
               countCompleteCollection
-            )} of ${testCount}`}</b>
-            &nbsp;responses collected
+            )} of ${testCount}`}</b>{' '}
+            responses collected
           </p>
           <p>
             Collection Job Status: <b>{collectionJob.status}</b>
@@ -72,8 +72,8 @@ const TestRunHeading = ({
           <b>{`${testResults.reduce(
             (acc, { completedAt }) => acc + (completedAt ? 1 : 0),
             0
-          )} of ${testCount}`}</b>
-          &nbsp;tests completed
+          )} of ${testCount}`}</b>{' '}
+          tests completed
         </>
       );
     } else {
@@ -95,15 +95,14 @@ const TestRunHeading = ({
   if (openAsUser?.isBot) {
     openAsUserHeading = (
       <div className="test-info-entity reviewing-as bot">
-        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of&nbsp;
-        <FontAwesomeIcon icon={faRobot} className="m-0" />
-        &nbsp;
+        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of{' '}
+        <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
         <b>{`${openAsUser.username}`}.</b>
         {!isJobStatusFinal(collectionJob.status) && (
           <>
             <br />
             The collection bot is still updating information on this page.
-            {isReadOnly ? '' : 'Changes may be lost when updates arrive.'}
+            {isReadOnly ? '' : ' Changes may be lost when updates arrive.'}
           </>
         )}
       </div>
@@ -111,15 +110,15 @@ const TestRunHeading = ({
   } else if (openAsUser) {
     openAsUserHeading = (
       <div className="test-info-entity reviewing-as">
-        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of&nbsp;
+        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of{' '}
         <b>{`${openAsUser.username}`}</b>
         {isReadOnly && ' in read-only mode'}.
         {isReadOnly ? (
-          <em>&nbsp;No changes can be made or saved.</em>
+          <em> No changes can be made or saved.</em>
         ) : (
           <em>
-            &nbsp;All changes will be saved as performed by&nbsp;
-            {openAsUser.username}.
+            {' '}
+            All changes will be saved as performed by {openAsUser.username}.
           </em>
         )}
       </div>
