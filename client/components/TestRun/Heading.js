@@ -112,12 +112,11 @@ const TestRunHeading = ({
       <div className="test-info-entity reviewing-as">
         {isReadOnly ? 'Viewing' : 'Reviewing'} tests of{' '}
         <b>{`${openAsUser.username}`}</b>
-        {isReadOnly && ' in read-only mode'}.
+        {isReadOnly && ' in read-only mode'}.{' '}
         {isReadOnly ? (
-          <em> No changes can be made or saved.</em>
+          <em>No changes can be made or saved.</em>
         ) : (
           <em>
-            {' '}
             All changes will be saved as performed by {openAsUser.username}.
           </em>
         )}
