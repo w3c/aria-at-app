@@ -98,7 +98,7 @@ module.exports = {
     const response = await axios.post(
       this.graphQLEndpoint,
       { query },
-      { headers: { Authorization: `bearer ${githubAccessToken}` } }
+      { headers: { Authorization: `Bearer ${githubAccessToken}` } }
     );
     return (
       response &&

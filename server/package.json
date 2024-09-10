@@ -29,7 +29,7 @@
         "apollo-server": "^3.13.0",
         "apollo-server-core": "^3.13.0",
         "apollo-server-express": "^3.13.0",
-        "axios": "^0.27.2",
+        "axios": "^1.7.7",
         "body-parser": "^1.20.2",
         "connect-history-api-fallback": "^2.0.0",
         "connect-pg-simple": "^9.0.1",
