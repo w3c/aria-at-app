@@ -9,3 +9,56 @@
 .modal-header {
   border-bottom: none;
 }
+
+.review-confirmation {
+  justify-content: center;
+}
+
+.review-confirmation .modal-content {
+  align-items: center;
+  width: 360px;
+  padding-top: 2em;
+  padding-bottom: 2em;
+}
+
+.review-confirmation-check {
+  font-size: 100px;
+  margin-right: 0 !important;
+  margin-bottom: 20px;
+}
+
+.review-confirmation-title {
+  text-align: center;
+}
+
+.review-confirmation-title h1 {
+  border-bottom: none;
+  font-size: 1.5em;
+}
+
+.review-confirmation-content {
+  font-weight: bold;
+  text-align: center;
+}
+
+.review-confirmation-share {
+  margin-bottom: 0;
+}
+
+.review-confirmation-issue {
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 0;
+}
+
+.review-confirmation .modal-header {
+  padding-bottom: 0;
+}
+
+.review-confirmation .modal-footer {
+  padding-bottom: 30px;
+}
+
+.review-confirmation .modal-footer .btn {
+  width: 100px;
+}
