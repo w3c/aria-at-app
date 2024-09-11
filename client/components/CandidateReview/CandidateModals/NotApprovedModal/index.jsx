@@ -1,7 +1,7 @@
 import React from 'react';
 import BasicModal from '../../../common/BasicModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
 import '../common.css';
 
@@ -32,9 +32,9 @@ const NotApprovedModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
       title={
         <div className="review-confirmation-title">
           <FontAwesomeIcon
-            icon={faCheck}
+            icon={faExclamationTriangle}
             className="review-confirmation-check"
-            color="green"
+            color="orange"
           />
           <h1>Thank you!</h1>
         </div>

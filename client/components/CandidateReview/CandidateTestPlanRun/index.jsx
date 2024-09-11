@@ -674,7 +674,7 @@ const CandidateTestPlanRun = () => {
           handleHide={() => setFeedbackModalShowing(false)}
         />
       )}
-      {confirmationModal && confirmationModal}
+      {!!confirmationModal && confirmationModal}
     </Container>
   );
 };
