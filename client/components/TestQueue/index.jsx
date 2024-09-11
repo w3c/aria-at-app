@@ -406,7 +406,7 @@ const TestQueue = () => {
           ats={data.ats}
           testPlanVersions={testPlanVersions}
           triggerUpdate={refetch}
-          enableManageRequiredReports={true}
+          includeManageRequiredReports={true}
           browsers={data.browsers}
         />
       )}
