@@ -865,31 +865,6 @@ const graphqlSchema = gql`
     failedReason: AssertionFailedReason
   }
 
-  enum TestPlanVersionPhase {
-    """
-    Accepting new TestPlanRuns from testers.
-    """
-    RD
-    """
-    Accepting new TestPlanRuns from testers.
-    """
-    DRAFT
-    """
-    Testing is complete and consistent, and ready to be displayed in the
-    Candidate Tests and Reports section of the app.
-    """
-    CANDIDATE
-    """
-    Testing is complete and consistent, and ready to be displayed in the
-    Reports section of the app as being recommended.
-    """
-    RECOMMENDED
-    """
-    The TestPlanVersion is now outdated and replaced by another version.
-    """
-    DEPRECATED
-  }
-
   """
   Minimal plain representation of an AssertionResult.
   """
