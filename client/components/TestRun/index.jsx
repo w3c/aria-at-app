@@ -1009,8 +1009,6 @@ const TestRun = () => {
       </div>
     );
 
-    // const enableInteractions = isSignedIn || !isViewingRun;
-
     return (
       <>
         <h1 ref={titleRef} data-testid="testing-task" tabIndex={-1}>

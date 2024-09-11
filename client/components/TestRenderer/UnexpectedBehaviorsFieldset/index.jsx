@@ -44,6 +44,15 @@ const UnexpectedBehaviorsFieldset = ({
 }) => {
   const impactOptions = ['Moderate', 'Severe'];
 
+  const handleUnexpectedBehaviorsExistRadioClick = e => {
+    if (readOnly) e.preventDefault();
+    else {
+      const elId = e.target.id;
+      if (elId.includes('-true')) unexpectedBehaviors.passChoice.click();
+      else if (elId.includes('-false')) unexpectedBehaviors.failChoice.click();
+    }
+  };
+
   return (
     <Fieldset id={`cmd-${commandIndex}-problems`}>
       <legend>{unexpectedBehaviors.description[0]}</legend>
@@ -68,10 +77,7 @@ const UnexpectedBehaviorsFieldset = ({
           name={`problem-${commandIndex}`}
           autoFocus={isSubmitted && unexpectedBehaviors.passChoice.focus}
           defaultChecked={unexpectedBehaviors.passChoice.checked}
-          onClick={e => {
-            if (readOnly) e.preventDefault();
-            else unexpectedBehaviors.passChoice.click();
-          }}
+          onClick={handleUnexpectedBehaviorsExistRadioClick}
         />
         <label
           id={`problem-${commandIndex}-true-label`}
@@ -88,10 +94,7 @@ const UnexpectedBehaviorsFieldset = ({
           name={`problem-${commandIndex}`}
           autoFocus={isSubmitted && unexpectedBehaviors.failChoice.focus}
           defaultChecked={unexpectedBehaviors.failChoice.checked}
-          onClick={e => {
-            if (readOnly) e.preventDefault();
-            else unexpectedBehaviors.failChoice.click();
-          }}
+          onClick={handleUnexpectedBehaviorsExistRadioClick}
         />
         <label
           id={`problem-${commandIndex}-false-label`}
