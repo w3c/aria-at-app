@@ -226,6 +226,8 @@ const Actions = ({
     );
   };
 
+  const openResultsLabel = isAdmin ? 'Open run as...' : 'View Results for...';
+
   return (
     <LoadingStatus message={loadingMessage}>
       <ActionContainer>
@@ -248,50 +250,26 @@ const Actions = ({
               : 'Start Testing'}
           </Button>
         )}
-        {isAdmin && (
-          <Dropdown focusFirstItemOnShow>
-            <Dropdown.Toggle
-              variant="secondary"
-              disabled={!nonSelfAssignedRuns.length}
-            >
-              <FontAwesomeIcon icon={faFileImport} />
-              Open run as...
-            </Dropdown.Toggle>
-            <Dropdown.Menu role="menu">
-              {nonSelfAssignedRuns.map(testPlanRun => (
-                <Dropdown.Item
-                  key={testPlanRun.id}
-                  role="menuitem"
-                  href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`}
-                >
-                  {testPlanRun.tester.username}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
-        )}
-        {!isAdmin && (
-          <Dropdown focusFirstItemOnShow>
-            <Dropdown.Toggle
-              variant="secondary"
-              disabled={!nonSelfAssignedRuns.length}
-            >
-              <FontAwesomeIcon icon={faFileImport} />
-              View Results for...
-            </Dropdown.Toggle>
-            <Dropdown.Menu role="menu">
-              {nonSelfAssignedRuns.map(testPlanRun => (
-                <Dropdown.Item
-                  key={testPlanRun.id}
-                  role="menuitem"
-                  href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`}
-                >
-                  {testPlanRun.tester.username}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
-        )}
+        <Dropdown focusFirstItemOnShow>
+          <Dropdown.Toggle
+            variant="secondary"
+            disabled={!nonSelfAssignedRuns.length}
+          >
+            <FontAwesomeIcon icon={faFileImport} />
+            {openResultsLabel}
+          </Dropdown.Toggle>
+          <Dropdown.Menu role="menu">
+            {nonSelfAssignedRuns.map(testPlanRun => (
+              <Dropdown.Item
+                key={testPlanRun.id}
+                role="menuitem"
+                href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`}
+              >
+                {testPlanRun.tester.username}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
         {isAdmin && assignedBotRun && (
           <ManageBotRunDialogWithButton
             testPlanRun={assignedBotRun}
