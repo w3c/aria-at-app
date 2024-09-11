@@ -479,14 +479,10 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
     throw new Error('collectionJob is required to retry cancelled tests');
   }
 
-  const cancelledTests = collectionJob.testPlanRun.testResults.filter(
-    testResult =>
-      // Find tests that don't have complete output
-      !testResult?.scenarioResults?.every(scenario => scenario?.output !== null)
-  );
+  const cancelledTests = collectionJob.testStatus.filter(testStatus => testStatus.status === COLLECTION_JOB_STATUS.CANCELLED);
 
   const testPlanReport = await getTestPlanReportById({
-    id: job.testPlanRun.testPlanReportId,
+    id: collectionJob.testPlanRun.testPlanReportId,
     transaction
   });
 
@@ -497,10 +493,22 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
     transaction
   );
 
-  const testIds = cancelledTests.map(test => test.id);
+  const testIds = cancelledTests.map(test => test.testId);
 
-  const job = await getCollectionJobById({
+  const job = await updateCollectionJobById({
     id: collectionJob.id,
+    values: { status: COLLECTION_JOB_STATUS.QUEUED },
+    transaction
+  });
+
+  await updateCollectionJobTestStatusByQuery({
+    where: {
+      collectionJobId: job.id,
+      status: COLLECTION_JOB_STATUS.CANCELLED
+    },
+    values: {
+      status: COLLECTION_JOB_STATUS.QUEUED
+    },
     transaction
   });
 
