@@ -183,7 +183,10 @@ const ManageRequiredReportsDisclosure = ({
   return (
     <>
       <DisclosureContainer data-testid="manage-required-reports-disclosure">
-        <span>Add required reports for a specific AT and Browser pair</span>
+        <span>
+          Update which assistive technology and browser combinations require
+          reports for the Candidate and Recommended phases
+        </span>
         <CreateRequiredReportForm
           ats={ats}
           handleCreate={handleCreateRequiredReport}
