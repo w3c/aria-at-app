@@ -24,7 +24,7 @@ import '../../App/App.css';
 import { useMediaQuery } from 'react-responsive';
 import TestPlanResultsTable from '../../common/TestPlanResultsTable';
 import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
-import ThankYouModal from '../CandidateModals/ThankYouModal';
+import ApprovedModal from '../CandidateModals/ApprovedModal';
 import FeedbackListItem from '../FeedbackListItem';
 import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
@@ -32,6 +32,7 @@ import createIssueLink, {
 } from '../../../utils/createIssueLink';
 import RunHistory from '../../common/RunHistory';
 import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
+import NotApprovedModal from '../CandidateModals/NotApprovedModal';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -63,7 +64,7 @@ const CandidateTestPlanRun = () => {
   const [isFirstTest, setIsFirstTest] = useState(true);
   const [isLastTest, setIsLastTest] = useState(false);
   const [feedbackModalShowing, setFeedbackModalShowing] = useState(false);
-  const [thankYouModalShowing, setThankYouModalShowing] = useState(false);
+  const [confirmationModal, setConfirmationModal] = useState(null);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showBrowserBools, setShowBrowserBools] = useState([]);
   const [showRunHistory, setShowRunHistory] = useState(false);
@@ -151,9 +152,27 @@ const CandidateTestPlanRun = () => {
   const submitApproval = async (status = '') => {
     if (status === 'APPROVED') {
       updateVendorStatus(true);
+      setConfirmationModal(
+        <ApprovedModal
+          handleAction={async () => {
+            setConfirmationModal(null);
+            navigate('/candidate-review');
+          }}
+          githubUrl={generalFeedbackUrl}
+        />
+      );
+    } else {
+      setConfirmationModal(
+        <NotApprovedModal
+          handleAction={async () => {
+            setConfirmationModal(null);
+            navigate('/candidate-review');
+          }}
+          githubUrl={generalFeedbackUrl}
+        />
+      );
     }
     setFeedbackModalShowing(false);
-    setThankYouModalShowing(true);
   };
 
   useEffect(() => {
@@ -631,7 +650,7 @@ const CandidateTestPlanRun = () => {
           </Row>
         </Col>
       </Row>
-      {feedbackModalShowing ? (
+      {feedbackModalShowing && (
         <ProvideFeedbackModal
           at={at}
           show={true}
@@ -654,21 +673,8 @@ const CandidateTestPlanRun = () => {
           handleAction={submitApproval}
           handleHide={() => setFeedbackModalShowing(false)}
         />
-      ) : (
-        <></>
       )}
-      {thankYouModalShowing ? (
-        <ThankYouModal
-          show={true}
-          handleAction={async () => {
-            setThankYouModalShowing(false);
-            navigate('/candidate-review');
-          }}
-          githubUrl={generalFeedbackUrl}
-        />
-      ) : (
-        <></>
-      )}
+      {!!confirmationModal && confirmationModal}
     </Container>
   );
 };
