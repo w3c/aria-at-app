@@ -515,15 +515,11 @@ describe('Manage Required Reports Disclosure', () => {
       // Wait for the disclosure row controls to be rendered
       await page.waitForSelector('.disclosure-row-controls');
 
-      // Find the phase dropdown and select Candidate
-      const phaseDropdownSelector =
-        '.disclosure-row-controls .form-group:first-child .dropdown';
-      await page.waitForSelector(phaseDropdownSelector);
-      await page.click(`${phaseDropdownSelector} button`);
-      await page.waitForSelector(`${phaseDropdownSelector} .dropdown-menu`);
-      await page.click(
-        `${phaseDropdownSelector} .dropdown-menu .phase-option:first-child`
-      );
+      // Find the phase select and choose Candidate
+      const phaseSelectSelector =
+        '.disclosure-row-controls .form-group:first-child select';
+      await page.waitForSelector(phaseSelectSelector);
+      await page.select(phaseSelectSelector, 'Candidate');
 
       // Find the Assistive Technology dropdown and select VoiceOver
       const atSelectSelector =
@@ -541,7 +537,7 @@ describe('Manage Required Reports Disclosure', () => {
         '.disclosure-row-controls .form-group:nth-child(4) button'
       );
 
-      // Click the "Add" button
+      // Click the "Add Required Reports" button
       await page.click(
         '.disclosure-row-controls .form-group:nth-child(4) button'
       );
