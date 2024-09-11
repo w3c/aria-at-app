@@ -13,10 +13,10 @@ const deleteRequiredReportResolver = async (
 
   let updateParams = {};
 
-  if (phase === 'IS_CANDIDATE') {
+  if (phase === 'CANDIDATE') {
     updateParams = { isCandidate: false };
   }
-  if (phase === 'IS_RECOMMENDED') {
+  if (phase === 'RECOMMENDED') {
     updateParams = { isRecommended: false };
   }
 

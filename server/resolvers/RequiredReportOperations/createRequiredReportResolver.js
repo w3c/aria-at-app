@@ -13,10 +13,10 @@ const createRequiredReportResolver = async (
 
   let updateParams = {};
 
-  if (phase === 'IS_CANDIDATE') {
+  if (phase === 'CANDIDATE') {
     updateParams = { isCandidate: true };
   }
-  if (phase === 'IS_RECOMMENDED') {
+  if (phase === 'RECOMMENDED') {
     updateParams = { isRecommended: true };
   }
 

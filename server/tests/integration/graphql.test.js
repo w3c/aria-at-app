@@ -801,7 +801,7 @@ describe('graphql', () => {
               }
             }
             deleteCollectionJob(id: 1)
-            requiredReport(atId: 1, browserId: 1, phase: IS_CANDIDATE) {
+            requiredReport(atId: 1, browserId: 1, phase: CANDIDATE) {
               __typename
               createRequiredReport {
                 __typename

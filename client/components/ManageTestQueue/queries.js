@@ -58,7 +58,7 @@ export const CREATE_REQUIRED_REPORT_MUTATION = gql`
   mutation CreateRequiredReport(
     $atId: ID!
     $browserId: ID!
-    $phase: RequiredReportPhase!
+    $phase: TestPlanVersionPhase!
   ) {
     requiredReport(atId: $atId, browserId: $browserId, phase: $phase) {
       createRequiredReport {
@@ -74,7 +74,7 @@ export const UPDATE_REQUIRED_REPORT_MUTATION = gql`
   mutation UpdateRequiredReport(
     $atId: ID!
     $browserId: ID!
-    $phase: RequiredReportPhase!
+    $phase: TestPlanVersionPhase!
     $updateAtId: ID!
     $updateBrowserId: ID!
   ) {
@@ -92,7 +92,7 @@ export const DELETE_REQUIRED_REPORT_MUTATION = gql`
   mutation DeleteRequiredReport(
     $atId: ID!
     $browserId: ID!
-    $phase: RequiredReportPhase!
+    $phase: TestPlanVersionPhase!
   ) {
     requiredReport(atId: $atId, browserId: $browserId, phase: $phase) {
       deleteRequiredReport {

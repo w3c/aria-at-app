@@ -793,7 +793,7 @@ const graphqlSchema = gql`
   type RequiredReport {
     atId: ID!
     browserId: ID!
-    phase: RequiredReportPhase!
+    phase: TestPlanVersionPhase!
   }
 
   """
@@ -1341,11 +1341,6 @@ const graphqlSchema = gql`
     findOrCreateAtVersion(input: AtVersionInput!): AtVersion!
   }
 
-  enum RequiredReportPhase {
-    IS_CANDIDATE
-    IS_RECOMMENDED
-  }
-
   type RequiredReportOperations {
     createRequiredReport: RequiredReport!
     updateRequiredReport(atId: ID!, browserId: ID!): RequiredReport!
@@ -1613,7 +1608,7 @@ const graphqlSchema = gql`
     requiredReport(
       atId: ID!
       browserId: ID!
-      phase: RequiredReportPhase!
+      phase: TestPlanVersionPhase!
     ): RequiredReportOperations!
   }
 `;

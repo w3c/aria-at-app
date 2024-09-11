@@ -17,7 +17,7 @@ const updateRequiredReportResolver = async (
   // in the database. Each updateAtBrowser() call changes the boolean value
   // for a particular row in the database. The booleans for two row need to be
   // changed. So we call updateAtBrowser() twice.
-  if (phase === 'IS_CANDIDATE') {
+  if (phase === 'CANDIDATE') {
     updateParams = { isCandidate: false };
     await updateAtBrowser({ atId, browserId, updateParams, transaction });
     updateParams = { isCandidate: true };
@@ -28,7 +28,7 @@ const updateRequiredReportResolver = async (
       transaction
     });
   }
-  if (phase === 'IS_RECOMMENDED') {
+  if (phase === 'RECOMMENDED') {
     updateParams = { isRecommended: false };
     await updateAtBrowser({ atId, browserId, updateParams, transaction });
     updateParams = { isRecommended: true };

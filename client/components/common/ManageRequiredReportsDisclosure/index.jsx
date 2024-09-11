@@ -111,7 +111,7 @@ const ManageRequiredReportsDisclosure = ({
           const { data } = await mutationFn({
             variables: {
               ...actionData,
-              phase: `IS_${actionData.phase}`
+              phase: actionData.phase
             }
           });
 
@@ -139,7 +139,7 @@ const ManageRequiredReportsDisclosure = ({
     createData =>
       handleRequiredReportAction(
         'create',
-        createData,
+        { ...createData, phase: createData.phase.toUpperCase() },
         createRequiredReport,
         'Adding Phase requirement to the required reports table'
       ),
@@ -206,7 +206,7 @@ const ManageRequiredReportsDisclosure = ({
                 <tr key={`${at.id}-${browser.id}-${phase}`}>
                   <td>
                     <PhasePill fullWidth={false} forHeader={true}>
-                      {phase}
+                      {phase.toUpperCase()}
                     </PhasePill>
                   </td>
                   <td>{at.name}</td>
