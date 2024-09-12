@@ -236,8 +236,15 @@ const processTestPlanVersion = async ({
  */
 const importHarness = () => {
   const sourceFolder = path.resolve(`${testsDirectory}/resources`);
-  const targetFolder = path.resolve('../', 'client/resources');
-  console.info(`Updating harness directory, ${targetFolder} ...`);
+  const targetFolder = path.resolve(
+    __dirname,
+    '../../../',
+    'client',
+    'resources'
+  );
+  console.info(
+    `Updating harness directory, copying from ${sourceFolder} to ${targetFolder} ...`
+  );
   fse.rmSync(targetFolder, { recursive: true, force: true });
 
   // Copy source folder
