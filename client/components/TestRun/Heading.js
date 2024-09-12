@@ -13,6 +13,7 @@ import {
   COLLECTION_JOB_STATUS,
   isJobStatusFinal
 } from '../../utils/collectionJobStatus';
+import { TestResultPropType } from '../common/proptypes';
 
 const TestRunHeading = ({
   at,
@@ -24,6 +25,7 @@ const TestRunHeading = ({
   showEditAtBrowser,
   testPlanTitle,
   testResults,
+  testIndex,
   testCount,
   isReadOnly
 }) => {
@@ -108,17 +110,28 @@ const TestRunHeading = ({
       </div>
     );
   } else if (openAsUser) {
+    let readOnlyStatus;
+    if (isReadOnly) {
+      const test = testResults[testIndex];
+      if (!test) readOnlyStatus = 'unopened';
+      else if (test.completedAt) readOnlyStatus = 'completed';
+      else if (test.startedAt) readOnlyStatus = 'in progress';
+    }
+
     openAsUserHeading = (
       <div className="test-info-entity reviewing-as">
-        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of{' '}
-        <b>{`${openAsUser.username}`}</b>
-        {isReadOnly && ' in read-only mode'}.{' '}
         {isReadOnly ? (
-          <em>No changes can be made or saved.</em>
+          <>
+            Viewing {readOnlyStatus} tests of <b>{openAsUser.username}</b> in
+            read-only mode. <em>No changes can be made or saved.</em>
+          </>
         ) : (
-          <em>
-            All changes will be saved as performed by {openAsUser.username}.
-          </em>
+          <>
+            Reviewing tests of <b>{openAsUser.username}</b>.{' '}
+            <em>
+              All changes will be saved as performed by {openAsUser.username}.
+            </em>
+          </>
         )}
       </div>
     );
@@ -173,7 +186,8 @@ TestRunHeading.propTypes = {
     isBot: PropTypes.bool.isRequired,
     username: PropTypes.string.isRequired
   }),
-  testResults: PropTypes.arrayOf(PropTypes.shape({})),
+  testResults: PropTypes.arrayOf(TestResultPropType),
+  testIndex: PropTypes.number.isRequired,
   testCount: PropTypes.number.isRequired,
   handleEditAtBrowserDetailsClick: PropTypes.func.isRequired,
   isReadOnly: PropTypes.bool

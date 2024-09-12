@@ -42,6 +42,7 @@ import createIssueLink from '../../utils/createIssueLink';
 import { dates } from 'shared';
 import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
 import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
+import testResult from '@components/common/fragments/TestResult';
 
 const TestRun = () => {
   const params = useParams();
@@ -1155,6 +1156,7 @@ const TestRun = () => {
       testCount={testCount}
       editAtBrowserDetailsButtonRef={editAtBrowserDetailsButtonRef}
       handleEditAtBrowserDetailsClick={handleEditAtBrowserDetailsClick}
+      testIndex={currentTestIndex}
       isSignedIn={isViewingRun}
       isReadOnly={isReadOnly}
     />
@@ -1210,6 +1212,7 @@ const TestRun = () => {
               toggleShowClick={toggleTestNavigator}
               handleTestClick={handleTestClick}
               testPlanRun={testPlanRun}
+              isReadOnly={isReadOnly}
             />
             <Col className="main-test-area" id="main" as="main" tabIndex="-1">
               <Row>
