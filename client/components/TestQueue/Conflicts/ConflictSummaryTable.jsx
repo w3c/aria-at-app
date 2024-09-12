@@ -17,7 +17,7 @@ export const ConflictTable = styled(ThemeTable)`
 
 const ConflictSummaryTable = ({ conflictingResults }) => {
   const commandString = scenario => {
-    return `After '${scenario.commands
+    return `Output for 'After ${scenario.commands
       .map(command => command.text)
       .join(', then ')}'`;
   };

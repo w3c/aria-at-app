@@ -4,6 +4,12 @@ import { ConflictTable } from './ConflictSummaryTable';
 import { UserPropType } from '../../common/proptypes';
 
 const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
+  const commandString = scenario => {
+    return `Unexpected Behaviors for 'After ${scenario.commands
+      .map(command => command.text)
+      .join(', then ')}'`;
+  };
+
   const allUnexpectedBehaviors = useMemo(
     () =>
       Array.from(
@@ -18,6 +24,10 @@ const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
 
   return (
     <>
+      <h3 style={{ marginBottom: '1rem' }}>
+        {commandString(conflictingResults[0].scenario)}
+      </h3>
+
       <ConflictTable bordered responsive>
         <thead>
           <tr>

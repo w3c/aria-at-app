@@ -4,6 +4,12 @@ import { UserPropType } from '../../common/proptypes';
 import PropTypes from 'prop-types';
 
 const AssertionConflictsTable = ({ conflictingResults, testers }) => {
+  const commandString = scenario => {
+    return `Assertions for 'After ${scenario.commands
+      .map(command => command.text)
+      .join(', then ')}'`;
+  };
+
   const allAssertions =
     conflictingResults[0].scenarioResult.assertionResults.map(
       ar => ar.assertion.text
@@ -11,6 +17,10 @@ const AssertionConflictsTable = ({ conflictingResults, testers }) => {
 
   return (
     <>
+      <h3 style={{ marginBottom: '1rem' }}>
+        {commandString(conflictingResults[0].scenario)}
+      </h3>
+
       <ConflictTable bordered responsive>
         <thead>
           <tr>
