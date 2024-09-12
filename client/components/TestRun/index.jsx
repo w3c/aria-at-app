@@ -42,7 +42,6 @@ import createIssueLink from '../../utils/createIssueLink';
 import { dates } from 'shared';
 import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
 import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
-import testResult from '@components/common/fragments/TestResult';
 
 const TestRun = () => {
   const params = useParams();
