@@ -43,15 +43,7 @@ export default () => (
       path="/test-plan-report/:testPlanReportId"
       element={<TestRun />}
     />
-    <Route
-      exact
-      path="/run/:runId"
-      element={
-        <ConfirmAuth requiredPermission="TESTER">
-          <TestRun />
-        </ConfirmAuth>
-      }
-    />
+    <Route exact path="/run/:runId" element={<TestRun />} />
     <Route
       exact
       path="/test-review/:testPlanVersionId"
