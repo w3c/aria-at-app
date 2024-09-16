@@ -7,7 +7,7 @@ const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
   const commandString = scenario => {
     return `Unexpected Behaviors for 'After ${scenario.commands
       .map(command => command.text)
-      .join(', then ')}'`;
+      .join(' then ')}'`;
   };
 
   const allUnexpectedBehaviors = useMemo(
