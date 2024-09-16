@@ -19,7 +19,7 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
   const commandString = scenario => {
     return `Output for 'After ${scenario.commands
       .map(command => command.text)
-      .join(', then ')}'`;
+      .join(' then ')}'`;
   };
 
   const testers = useMemo(
