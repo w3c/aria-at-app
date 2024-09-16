@@ -6,7 +6,7 @@ const generateConflictMarkdown = (testPlanReport, test) => {
   if (conflicts.length === 0) return '';
 
   const commandString = scenario => {
-    return scenario.commands.map(command => command.text).join(', then ');
+    return scenario.commands.map(command => command.text).join(' then ');
   };
 
   const renderConflict = (conflict, index) => {
