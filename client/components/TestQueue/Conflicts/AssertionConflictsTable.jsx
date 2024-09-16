@@ -7,7 +7,7 @@ const AssertionConflictsTable = ({ conflictingResults, testers }) => {
   const commandString = scenario => {
     return `Assertions for 'After ${scenario.commands
       .map(command => command.text)
-      .join(', then ')}'`;
+      .join(' then ')}'`;
   };
 
   const allAssertions =
