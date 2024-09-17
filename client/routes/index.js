@@ -14,6 +14,7 @@ import CandidateTestPlanRun from '@components/CandidateReview/CandidateTestPlanR
 import DataManagement from 'client/components/DataManagement';
 import TestPlanVersionsPage from '../components/TestPlanVersionsPage';
 import TestReview from '../components/TestReview';
+import TestQueueConflicts from '../components/TestQueue/Conflicts';
 
 export default () => (
   <Routes>
@@ -38,6 +39,15 @@ export default () => (
       }
     />
     <Route exact path="/test-queue" element={<TestQueue />} />
+    <Route
+      exact
+      path="/test-queue/:testPlanReportId/conflicts"
+      element={
+        <ConfirmAuth requiredPermission="TESTER">
+          <TestQueueConflicts />
+        </ConfirmAuth>
+      }
+    />
     <Route
       exact
       path="/test-plan-report/:testPlanReportId"
