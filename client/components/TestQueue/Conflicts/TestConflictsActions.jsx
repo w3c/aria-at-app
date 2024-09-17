@@ -29,31 +29,36 @@ const ActionButton = styled(Button)`
   margin: 0;
 `;
 
-const TestConflictsActions = ({ issueLink, isAdmin, testPlanRuns }) => {
+const TestConflictsActions = ({
+  issueLink,
+  isAdmin,
+  testPlanRuns,
+  testIndex
+}) => {
+  const openResultsLabel = isAdmin ? 'Open run as...' : 'View Results for...';
+
   return (
     <ActionContainer>
       <Button variant="secondary" target="_blank" href={issueLink}>
         <FontAwesomeIcon icon={faExclamationCircle} />
         Raise an Issue for Conflict
       </Button>
-      {isAdmin && (
-        <Dropdown>
-          <Dropdown.Toggle variant="secondary" as={ActionButton}>
-            <FontAwesomeIcon icon={faFileImport} />
-            Open run as...
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {testPlanRuns.map(testPlanRun => (
-              <Dropdown.Item
-                key={testPlanRun.id}
-                href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`}
-              >
-                {testPlanRun.tester.username}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
-      )}
+      <Dropdown>
+        <Dropdown.Toggle variant="secondary" as={ActionButton}>
+          <FontAwesomeIcon icon={faFileImport} />
+          {openResultsLabel}
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          {testPlanRuns.map(testPlanRun => (
+            <Dropdown.Item
+              key={testPlanRun.id}
+              href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}#${testIndex}`}
+            >
+              {testPlanRun.tester.username}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
     </ActionContainer>
   );
 };

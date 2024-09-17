@@ -8,7 +8,6 @@ import {
   TestPlanRunPropType,
   UserPropType
 } from '../proptypes';
-import { evaluateAuth } from '../../../utils/evaluateAuth';
 
 const IncompleteStatusReport = styled.span`
   min-width: 5rem;
@@ -18,11 +17,8 @@ const IncompleteStatusReport = styled.span`
 const ReportStatusSummary = ({
   testPlanVersion,
   testPlanReport,
-  me,
   fromTestQueue = false
 }) => {
-  const { isSignedIn, isAdmin, isTester, isVendor } = evaluateAuth(me);
-
   const renderCompleteReportStatus = testPlanReport => {
     const formattedDate = dates.convertDateToString(
       testPlanReport.markedFinalAt,
@@ -37,8 +33,6 @@ const ReportStatusSummary = ({
 
   const getConflictsAnchor = conflictsCount => {
     if (conflictsCount === 0) return null;
-    if (!isSignedIn) return null;
-    if (!isTester && !isVendor && !isAdmin) return null;
     return (
       <a
         style={{ color: '#ce1b4c' }}
