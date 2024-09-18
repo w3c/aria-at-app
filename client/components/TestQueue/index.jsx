@@ -332,7 +332,6 @@ const TestQueue = () => {
             <ReportStatusSummary
               testPlanVersion={testPlanVersion}
               testPlanReport={testPlanReport}
-              me={data.me}
               fromTestQueue
             />
             {hasBotRun ? (
