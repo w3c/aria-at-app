@@ -2,14 +2,52 @@ import getPage from '../util/getPage';
 import { text } from './util';
 
 describe('Test Run when not signed in', () => {
-  it('renders invalid request when attempting to go directly to /run/:id', async () => {
-    await getPage({ role: false, url: '/run/19' }, async page => {
-      const h1Text = await text(page, 'h1');
-      const currentUrl = await page.url();
+  it('renders /run/:id page but unable to make changes', async () => {
+    await getPage(
+      { role: false, url: '/run/19' },
+      async (page, { baseUrl }) => {
+        await page.waitForSelector('h1 ::-p-text(Test 1:)');
+        await page.waitForSelector('button[disabled] ::-p-text(Edit Results)');
 
-      expect(h1Text).toBe('Whoops! Unable to complete request');
-      expect(currentUrl.includes('/invalid-request')).toBe(true);
-    });
+        // Go to another pre-populated run with a form that hasn't yet been submitted
+        await page.goto(`${baseUrl}/run/3#8`);
+        await page.waitForSelector('h1 ::-p-text(Test 8:)');
+
+        // Check that assertion output cannot be changed
+        const textareaSelector = 'textarea';
+        const originalTextAreaValue = await page.$eval(
+          textareaSelector,
+          el => el.value
+        );
+        await page.focus(textareaSelector);
+        await page.keyboard.type('test sample input');
+        const newTextAreaValue = await page.$eval(
+          textareaSelector,
+          el => el.value
+        );
+
+        // Check that assertion radio buttons cannot be changed
+        const yesAssertionRadioSelector = 'input[type="radio"]#pass-0-0-yes';
+        const noAssertionRadioSelector = 'input[type="radio"]#pass-0-0-no';
+        const isYesAssertionCheckedBefore = await page.$eval(
+          yesAssertionRadioSelector,
+          el => el.checked
+        );
+        // Then compare with the other being checked to see if the values have changed after any action is taken
+        if (isYesAssertionCheckedBefore) {
+          await page.click(noAssertionRadioSelector);
+        } else {
+          await page.click(yesAssertionRadioSelector);
+        }
+        const isYesAssertionCheckedAfter = await page.$eval(
+          yesAssertionRadioSelector,
+          el => el.checked
+        );
+
+        expect(originalTextAreaValue).toEqual(newTextAreaValue);
+        expect(isYesAssertionCheckedBefore).toEqual(isYesAssertionCheckedAfter);
+      }
+    );
   });
 
   it('renders /test-plan-report/:id and can navigate between tests', async () => {

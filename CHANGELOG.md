@@ -1,3 +1,22 @@
+## [1.8.0](https://github.com/w3c/aria-at-app/compare/v1.7.0...v1.8.0) (2024-09-18)
+
+
+### Features
+
+* Allows testers' results to be publicly viewable ([#1209](https://github.com/w3c/aria-at-app/issues/1209)) ([afede8d](https://github.com/w3c/aria-at-app/commit/afede8d9dae02e963cdd21e5fd950ba2de390017))
+* Enhanced conflict review ([#1195](https://github.com/w3c/aria-at-app/issues/1195)) ([fbae626](https://github.com/w3c/aria-at-app/commit/fbae626e2e3905b558a40dd1cb8d2285741b3eb2)), closes [#975](https://github.com/w3c/aria-at-app/issues/975)
+
+
+### Bug Fixes
+
+* Conditionally present 'conflict' or 'conflicts' on TestQueue Status column ([#1215](https://github.com/w3c/aria-at-app/issues/1215)) ([4e51862](https://github.com/w3c/aria-at-app/commit/4e51862244670fbac9aef72c55ccd7a3911e80ed))
+* Vendor review approval modal content edit and close button fix ([#1206](https://github.com/w3c/aria-at-app/issues/1206)) ([733f446](https://github.com/w3c/aria-at-app/commit/733f44691e71eadacff3ef778b2b345c626bfb3b)), closes [#1202](https://github.com/w3c/aria-at-app/issues/1202) [#1203](https://github.com/w3c/aria-at-app/issues/1203)
+
+
+### Reverts
+
+* Revert "Move from `express` v5-beta to `express` v5 (#1210)" ([08b2a91](https://github.com/w3c/aria-at-app/commit/08b2a9101e86c621dce96f6846bbd6ac71128540)), closes [#1210](https://github.com/w3c/aria-at-app/issues/1210)
+
 ## [1.7.0](https://github.com/w3c/aria-at-app/compare/v1.6.0...v1.7.0) (2024-08-26)
 
 

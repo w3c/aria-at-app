@@ -285,7 +285,7 @@ export const TestResultPropType = PropTypes.shape({
 
 export const UserPropType = PropTypes.shape({
   __typename: PropTypes.string,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.string,
   username: PropTypes.string.isRequired,
   isBot: PropTypes.bool
 });

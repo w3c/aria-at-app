@@ -39,9 +39,19 @@ const Label = styled.label`
 const UnexpectedBehaviorsFieldset = ({
   commandIndex,
   unexpectedBehaviors,
-  isSubmitted
+  isSubmitted,
+  readOnly = false
 }) => {
   const impactOptions = ['Moderate', 'Severe'];
+
+  const handleUnexpectedBehaviorsExistRadioClick = e => {
+    if (readOnly) e.preventDefault();
+    else {
+      const elId = e.target.id;
+      if (elId.includes('-true')) unexpectedBehaviors.passChoice.click();
+      else if (elId.includes('-false')) unexpectedBehaviors.failChoice.click();
+    }
+  };
 
   return (
     <Fieldset id={`cmd-${commandIndex}-problems`}>
@@ -67,7 +77,7 @@ const UnexpectedBehaviorsFieldset = ({
           name={`problem-${commandIndex}`}
           autoFocus={isSubmitted && unexpectedBehaviors.passChoice.focus}
           defaultChecked={unexpectedBehaviors.passChoice.checked}
-          onClick={unexpectedBehaviors.passChoice.click}
+          onClick={handleUnexpectedBehaviorsExistRadioClick}
         />
         <label
           id={`problem-${commandIndex}-true-label`}
@@ -84,7 +94,7 @@ const UnexpectedBehaviorsFieldset = ({
           name={`problem-${commandIndex}`}
           autoFocus={isSubmitted && unexpectedBehaviors.failChoice.focus}
           defaultChecked={unexpectedBehaviors.failChoice.checked}
-          onClick={unexpectedBehaviors.failChoice.click}
+          onClick={handleUnexpectedBehaviorsExistRadioClick}
         />
         <label
           id={`problem-${commandIndex}-false-label`}
@@ -129,7 +139,10 @@ const UnexpectedBehaviorsFieldset = ({
                     className={`undesirable-${commandIndex}`}
                     autoFocus={isSubmitted && focus}
                     checked={checked}
-                    onChange={e => change(e.target.checked)}
+                    onChange={e => {
+                      if (readOnly) e.preventDefault();
+                      else change(e.target.checked);
+                    }}
                   />
                   {description} behavior occurred
                 </Label>
@@ -150,6 +163,9 @@ const UnexpectedBehaviorsFieldset = ({
                       <option
                         key={`${descriptionId}-${commandIndex}-impact-${option}`}
                         value={option.toUpperCase()}
+                        disabled={
+                          readOnly ? option.toUpperCase() !== impact : false
+                        }
                       >
                         {option}
                       </option>
@@ -173,6 +189,7 @@ const UnexpectedBehaviorsFieldset = ({
                         value={more.value}
                         onChange={e => more.change(e.target.value)}
                         disabled={!checked}
+                        readOnly={readOnly}
                       />
                       {isSubmitted && (
                         <Feedback
@@ -202,7 +219,8 @@ const UnexpectedBehaviorsFieldset = ({
 UnexpectedBehaviorsFieldset.propTypes = {
   commandIndex: PropTypes.number.isRequired,
   unexpectedBehaviors: PropTypes.object.isRequired,
-  isSubmitted: PropTypes.bool
+  isSubmitted: PropTypes.bool,
+  readOnly: PropTypes.bool
 };
 
 export default UnexpectedBehaviorsFieldset;
