@@ -120,6 +120,27 @@ button.test-navigator-toggle:focus {
   border: 2px solid #1e8f37;
 }
 
+.test-name-wrapper.missing .progress-indicator {
+  background: #d2d5d9;
+  border: 2px solid #94979b;
+}
+
+.test-name-wrapper.missing a[aria-current='true'] + .progress-indicator {
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #94979b;
+}
+
+.test-name-wrapper.missing .progress-indicator:before {
+  content: '\f128';
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  color: #94979b;
+  font-size: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 .test-name-wrapper.changes-requested .progress-indicator {
   background: #f87f1c;
 }
@@ -216,6 +237,10 @@ button.test-navigator-toggle:focus {
 
 .test-name-wrapper.conflicts .progress-indicator {
   background: #ffcd00;
+}
+
+.test-name-wrapper.conflicts a[aria-current='true'] + .progress-indicator {
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #ffcd00;
 }
 
 .test-name-wrapper.conflicts .progress-indicator:before,

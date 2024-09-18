@@ -13,6 +13,7 @@ import {
   COLLECTION_JOB_STATUS,
   isJobStatusFinal
 } from '../../utils/collectionJobStatus';
+import { TestResultPropType } from '../common/proptypes';
 
 const TestRunHeading = ({
   at,
@@ -24,7 +25,9 @@ const TestRunHeading = ({
   showEditAtBrowser,
   testPlanTitle,
   testResults,
-  testCount
+  testIndex,
+  testCount,
+  isReadOnly
 }) => {
   const {
     state: { collectionJob }
@@ -56,7 +59,7 @@ const TestRunHeading = ({
               countTestResults,
               countCompleteCollection
             )} of ${testCount}`}</b>{' '}
-            responses collected.
+            responses collected
           </p>
           <p>
             Collection Job Status: <b>{collectionJob.status}</b>
@@ -68,7 +71,6 @@ const TestRunHeading = ({
     } else if (testCount) {
       content = (
         <>
-          {' '}
           <b>{`${testResults.reduce(
             (acc, { completedAt }) => acc + (completedAt ? 1 : 0),
             0
@@ -95,22 +97,42 @@ const TestRunHeading = ({
   if (openAsUser?.isBot) {
     openAsUserHeading = (
       <div className="test-info-entity reviewing-as bot">
-        Reviewing tests of <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
+        {isReadOnly ? 'Viewing' : 'Reviewing'} tests of{' '}
+        <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
         <b>{`${openAsUser.username}`}.</b>
         {!isJobStatusFinal(collectionJob.status) && (
           <>
             <br />
             The collection bot is still updating information on this page.
-            Changes may be lost when updates arrive.
+            {isReadOnly ? '' : ' Changes may be lost when updates arrive.'}
           </>
         )}
       </div>
     );
   } else if (openAsUser) {
+    let readOnlyStatus;
+    if (isReadOnly) {
+      const test = testResults[testIndex];
+      if (!test) readOnlyStatus = 'unopened';
+      else if (test.completedAt) readOnlyStatus = 'completed';
+      else if (test.startedAt) readOnlyStatus = 'in progress';
+    }
+
     openAsUserHeading = (
       <div className="test-info-entity reviewing-as">
-        Reviewing tests of <b>{`${openAsUser.username}`}.</b>
-        <p>{`All changes will be saved as performed by ${openAsUser.username}.`}</p>
+        {isReadOnly ? (
+          <>
+            Viewing {readOnlyStatus} tests of <b>{openAsUser.username}</b> in
+            read-only mode. <em>No changes can be made or saved.</em>
+          </>
+        ) : (
+          <>
+            Reviewing tests of <b>{openAsUser.username}</b>.{' '}
+            <em>
+              All changes will be saved as performed by {openAsUser.username}.
+            </em>
+          </>
+        )}
       </div>
     );
   }
@@ -164,9 +186,11 @@ TestRunHeading.propTypes = {
     isBot: PropTypes.bool.isRequired,
     username: PropTypes.string.isRequired
   }),
-  testResults: PropTypes.arrayOf(PropTypes.shape({})),
+  testResults: PropTypes.arrayOf(TestResultPropType),
+  testIndex: PropTypes.number.isRequired,
   testCount: PropTypes.number.isRequired,
-  handleEditAtBrowserDetailsClick: PropTypes.func.isRequired
+  handleEditAtBrowserDetailsClick: PropTypes.func.isRequired,
+  isReadOnly: PropTypes.bool
 };
 
 export default TestRunHeading;

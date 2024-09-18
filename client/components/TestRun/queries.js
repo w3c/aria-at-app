@@ -82,6 +82,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
         }
         runnableTests {
           ...TestFieldsAll
+          renderableContent
         }
       }
     }
