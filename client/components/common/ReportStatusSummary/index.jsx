@@ -33,12 +33,13 @@ const ReportStatusSummary = ({
 
   const getConflictsAnchor = conflictsCount => {
     if (conflictsCount === 0) return null;
+    const conflictsText = `conflict${conflictsCount === 1 ? '' : 's'}`;
     return (
       <a
         style={{ color: '#ce1b4c' }}
         href={`/test-queue/${testPlanReport.id}/conflicts`}
       >
-        with {conflictsCount} conflicts
+        with {conflictsCount} {conflictsText}
       </a>
     );
   };
