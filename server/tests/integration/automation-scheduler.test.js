@@ -1,7 +1,8 @@
 const startSupertestServer = require('../util/api-server');
 const automationRoutes = require('../../routes/automation');
 const {
-  setupMockAutomationSchedulerServer
+  setupMockAutomationSchedulerServer,
+  startCollectionJobSimulation
 } = require('../util/mock-automation-scheduler-server');
 const db = require('../../models/index');
 const { query, mutate } = require('../util/graphql-test-utilities');
@@ -197,6 +198,22 @@ const restartCollectionJobByMutation = async (jobId, { transaction }) =>
     { transaction }
   );
 
+const retryCanceledCollectionJobByMutation = async (jobId, { transaction }) =>
+  await mutate(
+    `
+  mutation {
+    collectionJob(id: "${jobId}") {
+      retryCanceledCollections {
+        id
+        status
+        testStatus {
+          status
+        }
+      }
+    }
+  }  `,
+    { transaction }
+  );
 const cancelCollectionJobByMutation = async (jobId, { transaction }) =>
   await mutate(
     `
@@ -237,6 +254,12 @@ describe('Automation controller', () => {
       expect(storedJob.status).toEqual('QUEUED');
       expect(storedJob.testPlanRun.testPlanReport.id).toEqual(testPlanReportId);
       expect(storedJob.testPlanRun.testResults.length).toEqual(0);
+      // check testIds
+      expect(startCollectionJobSimulation.lastCallParams.testIds).toEqual([
+        'MjY4NeyIyIjoiNzIifQ2E1ND',
+        'YTIyYeyIyIjoiNzIifQ2MzY2',
+        'MDY5MeyIyIjoiNzIifQDA0YW'
+      ]);
     });
   });
 
@@ -257,6 +280,108 @@ describe('Automation controller', () => {
       for (const test of storedCollectionJob.testStatus) {
         expect(test.status).toEqual('CANCELLED');
       }
+    });
+  });
+
+  it('should retry a cancelled job with only remaining tests', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      const { scheduleCollectionJob: job } =
+        await scheduleCollectionJobByMutation({ transaction });
+      const collectionJob = await getCollectionJobById({
+        id: job.id,
+        transaction
+      });
+      const secret = await getJobSecret(collectionJob.id, { transaction });
+
+      // start "RUNNING" the job
+      const response1 = await sessionAgent
+        .post(`/api/jobs/${collectionJob.id}`)
+        .send({ status: 'RUNNING' })
+        .set('x-automation-secret', secret)
+        .set('x-transaction-id', transaction.id);
+      expect(response1.statusCode).toBe(200);
+
+      // simulate a response for a test
+      const automatedTestResponse = 'AUTOMATED TEST RESPONSE';
+      const ats = await AtLoader().getAll({ transaction });
+      const browsers = await BrowserLoader().getAll({ transaction });
+      const at = ats.find(
+        at => at.id === collectionJob.testPlanRun.testPlanReport.at.id
+      );
+      const browser = browsers.find(
+        browser =>
+          browser.id === collectionJob.testPlanRun.testPlanReport.browser.id
+      );
+      const { tests } =
+        collectionJob.testPlanRun.testPlanReport.testPlanVersion;
+      const selectedTestIndex = 2;
+
+      const selectedTest = tests[selectedTestIndex];
+      const selectedTestRowNumber = selectedTest.rowNumber;
+
+      const numberOfScenarios = selectedTest.scenarios.filter(
+        scenario => scenario.atId === at.id
+      ).length;
+      const response2 = await sessionAgent
+        .post(`/api/jobs/${collectionJob.id}/test/${selectedTestRowNumber}`)
+        .send({
+          capabilities: {
+            atName: at.name,
+            atVersion: at.atVersions[0].name,
+            browserName: browser.name,
+            browserVersion: browser.browserVersions[0].name
+          },
+          responses: new Array(numberOfScenarios).fill(automatedTestResponse)
+        })
+        .set('x-automation-secret', secret)
+        .set('x-transaction-id', transaction.id);
+      expect(response2.statusCode).toBe(200);
+      // cancel the job
+      const {
+        collectionJob: { cancelCollectionJob: cancelledCollectionJob }
+      } = await cancelCollectionJobByMutation(collectionJob.id, {
+        transaction
+      });
+
+      // check canceled status
+
+      expect(cancelledCollectionJob.status).toEqual('CANCELLED');
+      const { collectionJob: storedCollectionJob } = await getTestCollectionJob(
+        collectionJob.id,
+        { transaction }
+      );
+      expect(storedCollectionJob.status).toEqual('CANCELLED');
+      for (const test of storedCollectionJob.testStatus) {
+        const expectedStatus =
+          test.test.id == selectedTest.id ? 'COMPLETED' : 'CANCELLED';
+        expect(test.status).toEqual(expectedStatus);
+      }
+
+      // retry job
+      const data = await retryCanceledCollectionJobByMutation(
+        collectionJob.id,
+        { transaction }
+      );
+      expect(data.collectionJob.retryCancelledCollections.status).toBe(
+        'QUEUED'
+      );
+      const { collectionJob: restartedCollectionJob } =
+        await getTestCollectionJob(collectionJob.id, { transaction });
+      // check restarted status
+      expect(restartedCollectionJob.status).toEqual('QUEUED');
+      for (const test of restartedCollectionJob.testStatus) {
+        const expectedStatus =
+          test.test.id == selectedTest.id ? 'COMPLETED' : 'QUEUED';
+        expect(test.status).toEqual(expectedStatus);
+      }
+
+      // check test ids
+      expect(startCollectionJobSimulation.lastCallParams.testIds).toEqual([
+        // this was the "completed" test id
+        // 'MjY4NeyIyIjoiNzIifQ2E1ND',
+        'YTIyYeyIyIjoiNzIifQ2MzY2',
+        'MDY5MeyIyIjoiNzIifQDA0YW'
+      ]);
     });
   });
 

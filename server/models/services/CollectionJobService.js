@@ -388,12 +388,13 @@ const getCollectionJobs = async ({
 const triggerWorkflow = async (job, testIds, atVersion, { transaction }) => {
   const { testPlanVersion } = job.testPlanRun.testPlanReport;
   const { gitSha, directory } = testPlanVersion;
+
   try {
     if (isGithubWorkflowEnabled()) {
       // TODO: pass the reduced list of testIds along / deal with them somehow
       await createGithubWorkflow({ job, directory, gitSha, atVersion });
     } else {
-      await startCollectionJobSimulation(job, atVersion, transaction);
+      await startCollectionJobSimulation(job, testIds, atVersion, transaction);
     }
   } catch (error) {
     console.error(error);
@@ -479,7 +480,9 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
     throw new Error('collectionJob is required to retry cancelled tests');
   }
 
-  const cancelledTests = collectionJob.testStatus.filter(testStatus => testStatus.status === COLLECTION_JOB_STATUS.CANCELLED);
+  const cancelledTests = collectionJob.testStatus.filter(
+    testStatus => testStatus.status === COLLECTION_JOB_STATUS.CANCELLED
+  );
 
   const testPlanReport = await getTestPlanReportById({
     id: collectionJob.testPlanRun.testPlanReportId,
@@ -660,6 +663,15 @@ const restartCollectionJob = async ({ id }, { transaction }) => {
     },
     transaction
   });
+  await updateCollectionJobTestStatusByQuery({
+    where: {
+      collectionJobId: id
+    },
+    values: {
+      status: COLLECTION_JOB_STATUS.QUEUED
+    },
+    transaction
+  });
 
   if (!job) {
     return null;
@@ -677,7 +689,16 @@ const restartCollectionJob = async ({ id }, { transaction }) => {
     transaction
   );
 
-  return triggerWorkflow(job, [], atVersion, { transaction });
+  const tests = await runnableTestsResolver(testPlanReport, null, {
+    transaction
+  });
+
+  return triggerWorkflow(
+    job,
+    tests.map(test => test.id),
+    atVersion,
+    { transaction }
+  );
 };
 
 /**
