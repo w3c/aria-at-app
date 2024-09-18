@@ -262,10 +262,10 @@ describe('Automation controller', () => {
         collectionJob.testPlanRun.testPlanReport.testPlanVersion.tests.filter(
           test => test.at.key === 'voiceover_macos'
         );
-      // check testIds
-      expect(startCollectionJobSimulation.lastCallParams.testIds).toEqual(
-        tests.map(test => test.id)
-      );
+      // check testIds - order doesn't matter, so we sort them
+      expect(
+        startCollectionJobSimulation.lastCallParams.testIds.sort()
+      ).toEqual(tests.map(test => test.id).sort());
     });
   });
 
@@ -368,9 +368,7 @@ describe('Automation controller', () => {
         collectionJob.id,
         { transaction }
       );
-      expect(data.collectionJob.retryCanceledCollections.status).toBe(
-        'QUEUED'
-      );
+      expect(data.collectionJob.retryCanceledCollections.status).toBe('QUEUED');
       const { collectionJob: restartedCollectionJob } =
         await getTestCollectionJob(collectionJob.id, { transaction });
       // check restarted status
@@ -383,10 +381,10 @@ describe('Automation controller', () => {
       const expectedTests = tests.filter(
         test => test.at.key === 'voiceover_macos' && test.id != selectedTest.id
       );
-      // check test ids
-      expect(startCollectionJobSimulation.lastCallParams.testIds).toEqual(
-        expectedTests.map(test => test.id)
-      );
+      // check testIds - order doesn't matter, so we sort them
+      expect(
+        startCollectionJobSimulation.lastCallParams.testIds.sort()
+      ).toEqual(expectedTests.map(test => test.id).sort());
     });
   });
 
