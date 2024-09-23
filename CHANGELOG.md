@@ -1,3 +1,10 @@
+### [1.8.1](https://github.com/w3c/aria-at-app/compare/v1.8.0...v1.8.1) (2024-09-23)
+
+
+### Bug Fixes
+
+* Change testNumberFilteredByAt type from Int to Float ([#1219](https://github.com/w3c/aria-at-app/issues/1219)) ([9b023f9](https://github.com/w3c/aria-at-app/commit/9b023f95e73d1c86e1f1bb5aa3f9a8571d9097ed))
+
 ## [1.8.0](https://github.com/w3c/aria-at-app/compare/v1.7.0...v1.8.0) (2024-09-18)
 
 
