@@ -1013,7 +1013,7 @@ const graphqlSchema = gql`
     """
     Test Number the issue was raised for.
     """
-    testNumberFilteredByAt: Int
+    testNumberFilteredByAt: Float
     """
     The time the issue was created, according to GitHub.
     """
