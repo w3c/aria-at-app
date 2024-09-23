@@ -17,7 +17,7 @@
     line: 'aria-bot ALL=(ALL) NOPASSWD:{{source_dir}}/deploy/scripts/export-and-exec.sh'
     validate: 'visudo -cf %s'
   become: yes
-  when: deployment_mode == 'sandbox'
+  when: deployment_mode != 'development'
 
 # TODO: these permissions changes are a workaround solution
 

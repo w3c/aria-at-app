@@ -11,7 +11,13 @@ async function runImportScript(git_hash) {
     let importScriptDirectoryPrefix = isDevelopmentProcess ? '.' : './server';
     let command = `${deployDirectoryPrefix}/deploy/scripts/export-and-exec.sh ${process.env.IMPORT_CONFIG} node ${importScriptDirectoryPrefix}/scripts/import-tests/index.js`;
     if (git_hash) command += ` -c ${git_hash}`;
-    if (process.env.ENVIRONMENT === 'sandbox') command = `sudo ${command}`;
+    if (
+      process.env.ENVIRONMENT === 'sandbox' ||
+      process.env.ENVIRONMENT === 'staging' ||
+      process.env.ENVIRONMENT === 'production'
+    ) {
+      command = `sudo ${command}`;
+    }
     exec(command, (error, stdout, stderr) => {
       if (error) {
         reject(error);
