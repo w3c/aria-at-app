@@ -10,6 +10,7 @@ import {
   TEST_PLAN_RUN_FIELDS,
   TEST_PLAN_VERSION_FIELDS,
   TEST_RESULT_FIELDS,
+  ISSUE_FIELDS,
   USER_FIELDS
 } from '@components/common/fragments';
 
@@ -76,6 +77,79 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         }
         testPlanReportStatuses {
           ...TestPlanReportStatusFieldsSimple
+        }
+      }
+    }
+  }
+`;
+
+export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
+  ${ME_FIELDS}
+  ${TEST_PLAN_REPORT_FIELDS}
+  ${ISSUE_FIELDS('all')}
+  ${TEST_PLAN_RUN_FIELDS}
+  query TestQueueConflictsPage($testPlanReportId: ID!) {
+    me {
+      ...MeFields
+    }
+    testPlanReport(id: $testPlanReportId) {
+      ...TestPlanReportFields
+      testPlanVersion {
+        title
+        versionString
+        id
+        testPlan {
+          directory
+        }
+      }
+      minimumAtVersion {
+        name
+      }
+      recommendedAtVersion {
+        name
+      }
+      browser {
+        name
+      }
+      at {
+        name
+      }
+      runnableTests {
+        id
+      }
+      issues {
+        ...IssueFieldsAll
+      }
+      conflicts {
+        conflictingResults {
+          testPlanRun {
+            ...TestPlanRunFields
+          }
+          test {
+            id
+            rowNumber
+            title
+            renderedUrl
+          }
+          scenario {
+            commands {
+              text
+            }
+          }
+          scenarioResult {
+            output
+            unexpectedBehaviors {
+              text
+              details
+              impact
+            }
+            assertionResults {
+              assertion {
+                text
+              }
+              passed
+            }
+          }
         }
       }
     }

@@ -128,7 +128,7 @@ describe('Test Queue admin traits when reports exist', () => {
         const statusColumn = cells[3];
         const statusColumnText = sanitizedText(statusColumn.innerText);
         const statusColumnCondition = statusColumnText.includes(
-          '100% complete by esmeralda-baggins with 0 conflicts'
+          '100% complete by esmeralda-baggins'
         );
 
         // Actions Column
@@ -350,7 +350,7 @@ describe('Test Queue tester traits when reports exist', () => {
         const statusColumn = cells[3];
         const statusColumnText = sanitizedText(statusColumn.innerText);
         const statusColumnCondition = statusColumnText.includes(
-          '100% complete by esmeralda-baggins with 0 conflicts'
+          '100% complete by esmeralda-baggins'
         );
 
         // Actions Column
