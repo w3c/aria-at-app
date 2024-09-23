@@ -10,7 +10,7 @@ async function importTests(req, res) {
     console.log(error.message);
     // This is when the script fails because the git hash is invalid
     // Sending semantic error.
-    res.sendStatus(422);
+    res.status(422).send(error.message);
   }
 }
 
