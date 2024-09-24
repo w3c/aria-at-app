@@ -103,12 +103,17 @@ UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2024-05
 
 INSERT INTO "User" (id, username, "createdAt", "updatedAt") VALUES (1, 'esmeralda-baggins', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
 INSERT INTO "User" (id, username, "createdAt", "updatedAt") VALUES (2, 'tom-proudfeet', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
+INSERT INTO "User" (id, username, "createdAt", "updatedAt") VALUES (3, 'foo-bar', '2021-05-14 13:57:16.232-05', '2021-05-14 13:57:20.473-05');
 INSERT INTO "UserAts" ("userId", "atId") VALUES (1, 1);
 INSERT INTO "UserAts" ("userId", "atId") VALUES (1, 2);
 INSERT INTO "UserAts" ("userId", "atId") VALUES (2, 3);
+INSERT INTO "UserAts" ("userId", "atId") VALUES (3, 1);
+INSERT INTO "UserAts" ("userId", "atId") VALUES (3, 2);
+INSERT INTO "UserAts" ("userId", "atId") VALUES (3, 3);
 INSERT INTO "UserRoles" ("userId", "roleName") VALUES (1, 'ADMIN');
 INSERT INTO "UserRoles" ("userId", "roleName") VALUES (1, 'TESTER');
 INSERT INTO "UserRoles" ("userId", "roleName") VALUES (2, 'TESTER');
+INSERT INTO "UserRoles" ("userId", "roleName") VALUES (3, 'TESTER');
 
 --
 -- Data for Name: TestPlanRun; Type: TABLE DATA; Schema: public; Owner: atr

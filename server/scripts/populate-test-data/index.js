@@ -159,7 +159,9 @@ const populateTestDatabase = async transaction => {
     transaction
   });
 
-  // Slightly different from older already recommended TestPlanRun 13
+  // Slightly different from older already recommended TestPlanRun 13 to get
+  // multiple results shown for:
+  // Recommended Report + Checkbox Example (Mixed-State) + NVDA + Chrome
   await populateFakeTestResults(
     20,
     [
