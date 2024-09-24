@@ -84,6 +84,13 @@ INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinal
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (18, get_test_plan_version_id(text 'Command Button Example', '2'), '2023-12-13 14:18:23.602-05', '2023-12-14', 3, 3, 3, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (19, get_test_plan_version_id(text 'Modal Dialog Example', '2'), '2024-05-14 14:18:23.602-05', 2, 2, 2, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (20, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', '1'), '2021-05-14 14:18:23.602-05', '2022-08-07', 2, 4, 2, 'READY');
+-- Fully recommended TestPlanVersion
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (21, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 1, 1, 1, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (22, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 1, 1, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (23, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 2, 4, 1, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (24, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 2, 4, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (25, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 3, 5, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (26, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 3, 5, 3, 'READY');
 
 --
 -- Data for Name: TestPlanVersion; Type: TABLE DATA; Schema: public; Owner: atr
@@ -92,10 +99,11 @@ INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinal
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Toggle Button', '1');
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Select Only Combobox Example', '1');
 UPDATE "TestPlanVersion" SET "phase" = 'CANDIDATE', "draftPhaseReachedAt" = '2022-07-06', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02' WHERE id = get_test_plan_version_id(text 'Modal Dialog Example', '1');
-UPDATE "TestPlanVersion" SET "phase" = 'RECOMMENDED', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02', "recommendedPhaseReachedAt" = '2023-01-03' WHERE id = get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', '1');
+UPDATE "TestPlanVersion" SET "phase" = 'RECOMMENDED', "draftPhaseReachedAt" = '2022-07-07', "candidatePhaseReachedAt" = '2022-07-06', "recommendedPhaseTargetDate" = '2023-01-02', "recommendedPhaseReachedAt" = '2023-01-03' WHERE id = get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', '1');
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07-06' WHERE id = get_test_plan_version_id(text 'Alert Example', '1');
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2023-12-14' WHERE id = get_test_plan_version_id(text 'Command Button Example', '2');
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2024-05-14' WHERE id = get_test_plan_version_id(text 'Modal Dialog Example', '2');
+UPDATE "TestPlanVersion" SET "phase" = 'RECOMMENDED', "draftPhaseReachedAt" = '2024-09-20', "candidatePhaseReachedAt" = '2024-09-22', "recommendedPhaseTargetDate" = '2025-03-21', "recommendedPhaseReachedAt" = '2024-09-23' WHERE id = get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2');
 
 --
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: atr
@@ -140,6 +148,12 @@ INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults"
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (19, 1, 19, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (20, 1, 20, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (21, 2, 1, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (22, 2, 21, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (23, 2, 22, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (24, 2, 23, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (25, 2, 24, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (26, 2, 25, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (27, 2, 26, '[]');
 
 --
 -- Data for Name: CollectionJob; Type: TABLE DATA; Schema: public; Owner: atr

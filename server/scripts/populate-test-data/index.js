@@ -189,6 +189,30 @@ const populateTestDatabase = async transaction => {
     }
   );
 
+  await populateFakeTestResults(22, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(23, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(24, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(25, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(26, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(27, ['completeAndPassing'], {
+    transaction
+  });
+
   console.info(
     'Successfully populated. Please wait a moment for the process to close.'
   );
