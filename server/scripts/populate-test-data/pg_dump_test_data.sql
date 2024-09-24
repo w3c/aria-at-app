@@ -83,6 +83,7 @@ INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinal
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (17, get_test_plan_version_id(text 'Command Button Example', '2'), '2023-12-13 14:18:23.602-05', '2023-12-14', 2, 2, 2, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (18, get_test_plan_version_id(text 'Command Button Example', '2'), '2023-12-13 14:18:23.602-05', '2023-12-14', 3, 3, 3, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (19, get_test_plan_version_id(text 'Modal Dialog Example', '2'), '2024-05-14 14:18:23.602-05', 2, 2, 2, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (20, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', '1'), '2021-05-14 14:18:23.602-05', '2022-08-07', 2, 4, 2, 'READY');
 
 --
 -- Data for Name: TestPlanVersion; Type: TABLE DATA; Schema: public; Owner: atr
@@ -109,7 +110,6 @@ INSERT INTO "UserRoles" ("userId", "roleName") VALUES (1, 'ADMIN');
 INSERT INTO "UserRoles" ("userId", "roleName") VALUES (1, 'TESTER');
 INSERT INTO "UserRoles" ("userId", "roleName") VALUES (2, 'TESTER');
 
-
 --
 -- Data for Name: TestPlanRun; Type: TABLE DATA; Schema: public; Owner: atr
 --
@@ -133,6 +133,8 @@ INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults"
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (17, 1, 17, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (18, 1, 18, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (19, 1, 19, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (20, 1, 20, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (21, 2, 8, '[]');
 
 --
 -- Data for Name: CollectionJob; Type: TABLE DATA; Schema: public; Owner: atr

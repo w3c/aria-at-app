@@ -5,31 +5,49 @@ const {
 } = require('../../models/services/BrowserService');
 const { query, mutate } = require('../../tests/util/graphql-test-utilities');
 
+/**
+ *
+ * @param {number} testPlanRunId
+ * @param {string['completeAndPassing' |
+ * 'completeAndFailingDueToIncorrectAssertions' |
+ * 'completeAndFailingDueToNoOutputAssertions' |
+ * 'completeAndFailingDueToUnexpectedBehaviors' |
+ * 'completeAndFailingDueToMultiple' |
+ * 'incompleteAndEmpty' |
+ * 'incompleteAndPassing' |
+ * 'incompleteAndFailingDueToIncorrectAssertions' |
+ * 'incompleteAndFailingDueToNoOutputAssertions' |
+ * 'incompleteAndFailingDueToUnexpectedBehaviors' |
+ * 'incompleteAndFailingDueToMultiple']} fakeTestResultTypes
+ * @param {import('sequelize').Transaction} transaction
+ * @param {'SINGLE' | 'ALL' | number} numFakeTestResultConflicts
+ * @returns {Promise<void>}
+ */
 const populateFakeTestResults = async (
   testPlanRunId,
   fakeTestResultTypes,
-  { transaction }
+  { transaction, numFakeTestResultConflicts = 'SINGLE' }
 ) => {
   const {
     populateData: { testPlanReport }
   } = await query(
     gql`
-            query {
-                populateData(locationOfData: { testPlanRunId: ${testPlanRunId} }) {
-                    testPlanReport {
-                        at {
-                            id
-                        }
-                        browser {
-                            id
-                        }
-                        runnableTests {
-                            id
-                        }
-                    }
-                }
+      query {
+        populateData(locationOfData: { testPlanRunId: ${testPlanRunId} }) {
+          testPlanReport {
+            at {
+              id
             }
-        `,
+            browser {
+              id
+            }
+            runnableTests {
+              id
+            }
+          }
+        }
+      }
+    `,
     { transaction }
   );
 
@@ -64,6 +82,7 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'failingDueToIncorrectAssertions',
           submit: true,
+          numFakeTestResultConflicts,
           transaction
         });
         break;
@@ -74,6 +93,7 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'failingDueToNoOutputAssertions',
           submit: true,
+          numFakeTestResultConflicts,
           transaction
         });
         break;
@@ -84,6 +104,7 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'failingDueToUnexpectedBehaviors',
           submit: true,
+          numFakeTestResultConflicts,
           transaction
         });
         break;
@@ -94,6 +115,7 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'failingDueToMultiple',
           submit: true,
+          numFakeTestResultConflicts,
           transaction
         });
         break;
@@ -124,6 +146,7 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'failingDueToIncorrectAssertions',
           submit: false,
+          numFakeTestResultConflicts,
           transaction
         });
         break;
@@ -134,6 +157,7 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'failingDueToNoOutputAssertions',
           submit: false,
+          numFakeTestResultConflicts,
           transaction
         });
         break;
@@ -144,6 +168,7 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'failingDueToUnexpectedBehaviors',
           submit: false,
+          numFakeTestResultConflicts,
           transaction
         });
         break;
@@ -154,6 +179,7 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'failingDueToMultiple',
           submit: false,
+          numFakeTestResultConflicts,
           transaction
         });
         break;
@@ -190,6 +216,7 @@ const getFake = async ({
   index,
   fakeTestResultType,
   submit,
+  numFakeTestResultConflicts,
   transaction
 }) => {
   const testId = testPlanReport.runnableTests[index].id;
@@ -211,28 +238,28 @@ const getFake = async ({
     }
   } = await mutate(
     gql`
-            mutation {
-                testPlanRun(id: ${testPlanRunId}) {
-                    findOrCreateTestResult(
-                        testId: "${testId}",
-                        atVersionId: "${atVersion.id}",
-                        browserVersionId: "${browserVersion.id}"
-                    ) {
-                        testResult {
-                            id
-                            scenarioResults {
-                                id
-                                output
-                                assertionResults {
-                                    id
-                                    passed
-                                }
-                            }
-                        }
-                    }
+      mutation {
+        testPlanRun(id: ${testPlanRunId}) {
+          findOrCreateTestResult(
+            testId: "${testId}",
+            atVersionId: "${atVersion.id}",
+            browserVersionId: "${browserVersion.id}"
+          ) {
+            testResult {
+              id
+              scenarioResults {
+                id
+                output
+                assertionResults {
+                  id
+                  passed
                 }
+              }
             }
-        `,
+          }
+        }
+      }
+    `,
     { transaction }
   );
 
@@ -255,58 +282,73 @@ const getFake = async ({
 
   const testResult = getPassing();
 
-  switch (fakeTestResultType) {
-    case 'empty':
-      return;
-    case 'passing':
-      break;
-    case 'failingDueToIncorrectAssertions':
-      testResult.scenarioResults[0].assertionResults[0].passed = false;
-      testResult.scenarioResults[0].assertionResults[0].failedReason =
-        'INCORRECT_OUTPUT';
-      break;
-    case 'failingDueToNoOutputAssertions':
-      testResult.scenarioResults[0].assertionResults[0].passed = false;
-      testResult.scenarioResults[0].assertionResults[0].failedReason =
-        'NO_OUTPUT';
-      break;
-    case 'failingDueToUnexpectedBehaviors':
-      testResult.scenarioResults[0].unexpectedBehaviors.push({
-        id: 'OTHER',
-        impact: 'MODERATE',
-        details: 'Seeded other unexpected behavior'
-      });
-      break;
-    case 'failingDueToMultiple':
-      testResult.scenarioResults[0].assertionResults[0].passed = false;
-      testResult.scenarioResults[0].assertionResults[0].failedReason =
-        'INCORRECT_OUTPUT';
-      testResult.scenarioResults[0].unexpectedBehaviors.push({
-        id: 'EXCESSIVELY_VERBOSE',
-        impact: 'MODERATE',
-        details: 'N/A'
-      });
-      testResult.scenarioResults[0].unexpectedBehaviors.push({
-        id: 'OTHER',
-        impact: 'SEVERE',
-        details: 'Seeded other unexpected behavior'
-      });
-      break;
-    default:
-      throw new Error();
+  const applyResult = (scenarioResult, type) => {
+    switch (type) {
+      case 'failingDueToIncorrectAssertions':
+        scenarioResult.assertionResults[0].passed = false;
+        scenarioResult.assertionResults[0].failedReason = 'INCORRECT_OUTPUT';
+        break;
+      case 'failingDueToNoOutputAssertions':
+        scenarioResult.assertionResults[0].passed = false;
+        scenarioResult.assertionResults[0].failedReason = 'NO_OUTPUT';
+        break;
+      case 'failingDueToUnexpectedBehaviors':
+        scenarioResult.unexpectedBehaviors.push({
+          id: 'OTHER',
+          impact: 'MODERATE',
+          details: 'Seeded other unexpected behavior'
+        });
+        break;
+      case 'failingDueToMultiple':
+        scenarioResult.assertionResults[0].passed = false;
+        scenarioResult.assertionResults[0].failedReason = 'INCORRECT_OUTPUT';
+        scenarioResult.unexpectedBehaviors.push(
+          { id: 'EXCESSIVELY_VERBOSE', impact: 'MODERATE', details: 'N/A' },
+          {
+            id: 'OTHER',
+            impact: 'SEVERE',
+            details: 'Seeded other unexpected behavior'
+          }
+        );
+        break;
+      default:
+        throw new Error();
+    }
+  };
+
+  if (fakeTestResultType === 'empty') {
+    return;
+  } else if (fakeTestResultType === 'passing') {
+    // Do nothing
+  } else {
+    const setResult = scenarioResult =>
+      applyResult(scenarioResult, fakeTestResultType);
+
+    if (numFakeTestResultConflicts === 'ALL') {
+      testResult.scenarioResults.forEach(setResult);
+    } else if (numFakeTestResultConflicts === 'SINGLE') {
+      setResult(testResult.scenarioResults[0]);
+    } else if (
+      typeof numFakeTestResultConflicts === 'number' &&
+      numFakeTestResultConflicts > 0
+    ) {
+      testResult.scenarioResults
+        .slice(0, numFakeTestResultConflicts)
+        .forEach(setResult);
+    }
   }
 
   const persistTestResult = submit ? 'submitTestResult' : 'saveTestResult';
   await mutate(
     gql`
-            mutation PersistTestResult($input: TestResultInput!) {
-                testResult(id: "${testResult.id}") {
-                    ${persistTestResult}(input: $input) {
-                        locationOfData
-                    }
-                }
-            }
-        `,
+      mutation PersistTestResult($input: TestResultInput!) {
+        testResult(id: "${testResult.id}") {
+          ${persistTestResult}(input: $input) {
+            locationOfData
+          }
+        }
+      }
+    `,
     { variables: { input: testResult }, transaction }
   );
 };

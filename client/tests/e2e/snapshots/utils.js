@@ -14,7 +14,8 @@ const snapshotRoutes = [
   '/run/2',
   '/data-management/meter',
   '/candidate-test-plan/24/1',
-  '/test-queue/2/conflicts'
+  '/test-queue/2/conflicts',
+  '/report/67/targets/20'
 ];
 
 async function cleanAndNormalizeSnapshot(page) {
