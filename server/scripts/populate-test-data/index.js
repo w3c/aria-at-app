@@ -11,21 +11,6 @@ const populateTestDatabase = async transaction => {
 
   await sequelize.query(testDataScript, { transaction });
 
-  await populateFakeTestResults(
-    1,
-    [
-      'completeAndPassing',
-      'incompleteAndPassing',
-      'incompleteAndFailingDueToNoOutputAssertions',
-      'incompleteAndEmpty',
-      null,
-      'completeAndFailingDueToIncorrectAssertions',
-      'completeAndFailingDueToNoOutputAssertions',
-      'completeAndFailingDueToUnexpectedBehaviors'
-    ],
-    { transaction }
-  );
-
   // Convenient way to generate conflicts between TestPlanRuns attached to
   // the same TestPlanReport
   const conflicts = [
@@ -40,6 +25,21 @@ const populateTestDatabase = async transaction => {
       'completeAndFailingDueToMultiple'
     ]
   ];
+
+  await populateFakeTestResults(
+    1,
+    [
+      'completeAndPassing',
+      'incompleteAndPassing',
+      'incompleteAndFailingDueToNoOutputAssertions',
+      'incompleteAndEmpty',
+      null,
+      'completeAndFailingDueToIncorrectAssertions',
+      'completeAndFailingDueToNoOutputAssertions',
+      'completeAndFailingDueToUnexpectedBehaviors'
+    ],
+    { transaction, numFakeTestResultConflicts: 'ALL' }
+  );
 
   await populateFakeTestResults(
     2,
@@ -123,17 +123,7 @@ const populateTestDatabase = async transaction => {
     { transaction }
   );
 
-  await populateFakeTestResults(
-    8,
-    [
-      'completeAndPassing',
-      conflicts[0][0],
-      'completeAndPassing',
-      'completeAndPassing',
-      conflicts[2][0]
-    ],
-    { transaction, numFakeTestResultConflicts: 'ALL' }
-  );
+  await populateFakeTestResults(8, ['completeAndPassing'], { transaction });
 
   await populateFakeTestResults(9, ['completeAndPassing'], { transaction });
 
@@ -180,15 +170,16 @@ const populateTestDatabase = async transaction => {
     { transaction }
   );
 
-  // Conflicting with TestPlanRun 8
+  // Conflicting with TestPlanRun 1
   await populateFakeTestResults(
     21,
     [
+      'completeAndFailingDueToIncorrectAssertions',
+      'incompleteAndPassing',
+      'incompleteAndFailingDueToNoOutputAssertions',
+      'incompleteAndEmpty',
       'completeAndPassing',
-      conflicts[0][1],
-      'incompleteAndFailingDueToUnexpectedBehaviors',
-      'completeAndPassing',
-      conflicts[2][1]
+      'completeAndFailingDueToUnexpectedBehaviors'
     ],
     {
       transaction,

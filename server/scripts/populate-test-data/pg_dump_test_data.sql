@@ -134,7 +134,7 @@ INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults"
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (18, 1, 18, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (19, 1, 19, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (20, 1, 20, '[]');
-INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (21, 2, 8, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (21, 2, 1, '[]');
 
 --
 -- Data for Name: CollectionJob; Type: TABLE DATA; Schema: public; Owner: atr
