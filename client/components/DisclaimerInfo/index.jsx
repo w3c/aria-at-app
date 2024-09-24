@@ -104,7 +104,6 @@ const DisclaimerInfo = ({ phase }) => {
     <Container>
       <details>
         <summary
-          id="disclaimer-title"
           aria-expanded={expanded}
           aria-controls="description"
           onClick={() => setExpanded(!expanded)}
