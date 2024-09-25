@@ -25,6 +25,7 @@ const ProvideFeedbackModal = ({
       show={true}
       centered={true}
       cancelButton={false}
+      useOnHide={true}
       handleHide={handleHide}
       content={
         <div className="feedback-content">

@@ -52,6 +52,9 @@ export const RETRY_CANCELED_COLLECTIONS = gql`
       retryCanceledCollections {
         id
         status
+        testStatus {
+          status
+        }
       }
     }
   }

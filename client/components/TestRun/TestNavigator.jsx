@@ -20,7 +20,8 @@ const TestNavigator = ({
   currentTestIndex = 0,
   toggleShowClick = () => {},
   handleTestClick = () => {},
-  testPlanRun = null
+  testPlanRun = null,
+  isReadOnly = false
 }) => {
   const isBotCompletedTest = testPlanRun?.tester?.isBot;
 
@@ -61,8 +62,8 @@ const TestNavigator = ({
           className="test-navigator-list"
         >
           {tests.map((test, index) => {
-            let resultClassName = 'not-started';
-            let resultStatus = 'Not Started';
+            let resultClassName = isReadOnly ? 'missing' : 'not-started';
+            let resultStatus = isReadOnly ? 'Missing' : 'Not Started';
 
             const issuesExist = testPlanReport.issues?.filter(
               issue =>
@@ -95,6 +96,9 @@ const TestNavigator = ({
                 if (test.hasConflicts) {
                   resultClassName = 'conflicts';
                   resultStatus = 'Has Conflicts';
+                } else if (!test.testResult && isReadOnly) {
+                  resultClassName = 'missing';
+                  resultStatus = 'Missing';
                 } else if (test.testResult) {
                   resultClassName = test.testResult.completedAt
                     ? 'complete'
@@ -108,7 +112,7 @@ const TestNavigator = ({
                   test.index === currentTestIndex
                 ) {
                   resultClassName = 'in-progress';
-                  resultStatus = 'In Progress:';
+                  resultStatus = 'In Progress';
                 } else if (isVendor) {
                   if (issuesExist) {
                     resultClassName = 'changes-requested';
@@ -161,7 +165,8 @@ TestNavigator.propTypes = {
   viewedTests: PropTypes.array,
   toggleShowClick: PropTypes.func,
   handleTestClick: PropTypes.func,
-  testPlanRun: PropTypes.object
+  testPlanRun: PropTypes.object,
+  isReadOnly: PropTypes.bool
 };
 
 export default TestNavigator;

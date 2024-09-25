@@ -10,6 +10,15 @@
 
 - include: upload-source-code.yml
 
+- name: Allow aria-bot user to run import script as admin on sandbox
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    line: 'aria-bot ALL=(ALL) NOPASSWD:{{source_dir}}/deploy/scripts/export-and-exec.sh'
+    validate: 'visudo -cf %s'
+  become: yes
+  when: deployment_mode != 'development'
+
 # TODO: these permissions changes are a workaround solution
 
 - name: Make server scripts folder writable for import tests API endpoint
