@@ -42,6 +42,15 @@ const testPlanRunAssociation = testPlanRunAttributes => ({
 });
 
 /**
+ * @param vendorAttributes - Vendor attributes
+ * @returns {{association: string, attributes: string[]}}
+ */
+const vendorAssociation = vendorAttributes => ({
+  association: 'company',
+  attributes: vendorAttributes
+});
+
+/**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {object} options
  * @param {number} options.id - id of User to be retrieved
@@ -58,16 +67,33 @@ const getUserById = async ({
   roleAttributes = ROLE_ATTRIBUTES,
   atAttributes = AT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  vendorAttributes = [],
+  includeVendorAts = false,
   transaction
 }) => {
+  const include = [
+    roleAssociation(roleAttributes),
+    atAssociation(atAttributes),
+    testPlanRunAssociation(testPlanRunAttributes)
+  ];
+
+  if (vendorAttributes.length > 0) {
+    const vendorInclude = vendorAssociation(vendorAttributes);
+    if (includeVendorAts) {
+      vendorInclude.include = [
+        {
+          association: 'ats',
+          attributes: atAttributes
+        }
+      ];
+    }
+    include.push(vendorInclude);
+  }
+
   return ModelService.getById(User, {
     id,
     attributes: userAttributes,
-    include: [
-      roleAssociation(roleAttributes),
-      atAssociation(atAttributes),
-      testPlanRunAssociation(testPlanRunAttributes)
-    ],
+    include,
     transaction
   });
 };
@@ -89,6 +115,7 @@ const getUserByUsername = async ({
   roleAttributes = ROLE_ATTRIBUTES,
   atAttributes = AT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  vendorAttributes = [],
   transaction
 }) => {
   return ModelService.getByQuery(User, {
@@ -97,7 +124,8 @@ const getUserByUsername = async ({
     include: [
       roleAssociation(roleAttributes),
       atAssociation(atAttributes),
-      testPlanRunAssociation(testPlanRunAttributes)
+      testPlanRunAssociation(testPlanRunAttributes),
+      vendorAssociation(vendorAttributes)
     ],
     transaction
   });
@@ -126,6 +154,7 @@ const getUsers = async ({
   roleAttributes = ROLE_ATTRIBUTES,
   atAttributes = AT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  vendorAttributes = [],
   pagination = {},
   transaction
 }) => {
@@ -141,7 +170,8 @@ const getUsers = async ({
     include: [
       roleAssociation(roleAttributes),
       atAssociation(atAttributes),
-      testPlanRunAssociation(testPlanRunAttributes)
+      testPlanRunAssociation(testPlanRunAttributes),
+      vendorAssociation(vendorAttributes)
     ],
     pagination,
     transaction
@@ -247,6 +277,7 @@ const createUser = async ({
   roleAttributes = ROLE_ATTRIBUTES,
   atAttributes = AT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  vendorAttributes = [],
   transaction
 }) => {
   const userResult = await ModelService.create(User, {
@@ -262,7 +293,8 @@ const createUser = async ({
     include: [
       roleAssociation(roleAttributes),
       atAssociation(atAttributes),
-      testPlanRunAssociation(testPlanRunAttributes)
+      testPlanRunAssociation(testPlanRunAttributes),
+      vendorAssociation(vendorAttributes)
     ],
     transaction
   });
@@ -286,6 +318,7 @@ const updateUserById = async ({
   roleAttributes = ROLE_ATTRIBUTES,
   atAttributes = AT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  vendorAttributes = [],
   transaction
 }) => {
   await ModelService.update(User, {
@@ -300,7 +333,8 @@ const updateUserById = async ({
     include: [
       roleAssociation(roleAttributes),
       atAssociation(atAttributes),
-      testPlanRunAssociation(testPlanRunAttributes)
+      testPlanRunAssociation(testPlanRunAttributes),
+      vendorAssociation(vendorAttributes)
     ],
     transaction
   });
@@ -412,6 +446,7 @@ const getOrCreateUser = async ({
   roleAttributes = ROLE_ATTRIBUTES,
   atAttributes = AT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  vendorAttributes = [],
   transaction
 }) => {
   const accumulatedResults = await ModelService.nestedGetOrCreate({
@@ -443,6 +478,7 @@ const getOrCreateUser = async ({
     roleAttributes,
     atAttributes,
     testPlanRunAttributes,
+    vendorAttributes,
     transaction
   });
 
@@ -480,6 +516,22 @@ const removeUserRole = async (userId, roleName, { transaction }) => {
   });
 };
 
+/**
+ * @param {number} userId - id of the User that the vendor will be added to
+ * @param {number} vendorId - id of the Vendor that the User will be associated with
+ * @param {object} options
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const addUserVendor = async (userId, vendorId, { transaction }) => {
+  // Set the company Vendor association for the user
+  return ModelService.update(User, {
+    where: { id: userId },
+    values: { vendorId },
+    transaction
+  });
+};
+
 module.exports = {
   // Basic CRUD
   getUserById,
@@ -497,5 +549,6 @@ module.exports = {
 
   // Custom Functions
   addUserRole,
-  removeUserRole
+  removeUserRole,
+  addUserVendor
 };

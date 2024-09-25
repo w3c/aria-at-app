@@ -9,7 +9,14 @@ const AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS = {
   NVDA: ['2024.1', '2023.3.3', '2023.3']
 };
 
+const VENDOR_NAME_TO_AT_MAPPING = {
+  vispero: ['JAWS'],
+  nvAccess: ['NVDA'],
+  apple: ['VoiceOver for macOS']
+};
+
 module.exports = {
   NO_OUTPUT_STRING,
-  AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS
+  AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS,
+  VENDOR_NAME_TO_AT_MAPPING
 };
