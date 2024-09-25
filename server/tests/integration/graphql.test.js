@@ -801,6 +801,27 @@ describe('graphql', () => {
               }
             }
             deleteCollectionJob(id: 1)
+            requiredReport(atId: 1, browserId: 1, phase: CANDIDATE) {
+              __typename
+              createRequiredReport {
+                __typename
+                atId
+                browserId
+                phase
+              }
+              updateRequiredReport(atId: 1, browserId: 1) {
+                __typename
+                atId
+                browserId
+                phase
+              }
+              deleteRequiredReport {
+                __typename
+                atId
+                browserId
+                phase
+              }
+            }
           }
         `,
         {

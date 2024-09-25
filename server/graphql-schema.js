@@ -787,6 +787,31 @@ const graphqlSchema = gql`
   }
 
   """
+  See TestResult type for more information.
+  The return type for createRequiredReport.
+  """
+  type RequiredReport {
+    atId: ID!
+    browserId: ID!
+    phase: TestPlanVersionPhase!
+  }
+
+  """
+  The fields on the RequiredReportOperations type which can be used or update the
+  RequiredReports.
+  """
+  input RequiredReportOperationsInput {
+    """
+    See AtVersion type for more information.
+    """
+    inputAtId: ID!
+    """
+    See AtVersion type for more information.
+    """
+    inputBrowserId: ID!
+  }
+
+  """
   Minimal plain representation of a ScenarioResult.
   """
   input ScenarioResultInput {
@@ -1316,6 +1341,12 @@ const graphqlSchema = gql`
     findOrCreateAtVersion(input: AtVersionInput!): AtVersion!
   }
 
+  type RequiredReportOperations {
+    createRequiredReport: RequiredReport!
+    updateRequiredReport(atId: ID!, browserId: ID!): RequiredReport!
+    deleteRequiredReport: RequiredReport!
+  }
+
   """
   Mutations scoped to an existing AtVersion.
   """
@@ -1571,6 +1602,14 @@ const graphqlSchema = gql`
     Delete a CollectionJob
     """
     deleteCollectionJob(id: ID!): NoResponse!
+    """
+    Get the available mutations for the given RequiredReport.
+    """
+    requiredReport(
+      atId: ID!
+      browserId: ID!
+      phase: TestPlanVersionPhase!
+    ): RequiredReportOperations!
   }
 `;
 

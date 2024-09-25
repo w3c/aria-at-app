@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import DisclosureComponent from '../common/DisclosureComponent';
 import ManageAtVersions from '@components/ManageTestQueue/ManageAtVersions';
 import AddTestPlans from '@components/ManageTestQueue/AddTestPlans';
 import { AtPropType, TestPlanVersionPropType } from '../common/proptypes';
+import ManageRequiredReportsDisclosure from '../common/ManageRequiredReportsDisclosure';
+import styled from '@emotion/styled';
 
 export const DisclosureContainer = styled.div`
   // Following directives are related to the ManageTestQueue component
@@ -91,13 +92,20 @@ export const DisclosureContainer = styled.div`
     flex-wrap: wrap;
     column-gap: 1rem;
     row-gap: 0.75rem;
-
     select {
       width: inherit;
       @media (max-width: 767px) {
         flex-grow: 1;
       }
     }
+  }
+
+  .disclosure-row-controls {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 1rem;
+    align-items: end;
   }
 
   .disclosure-form-label {
@@ -109,39 +117,64 @@ export const DisclosureContainer = styled.div`
 const ManageTestQueue = ({
   ats = [],
   testPlanVersions = [],
-  triggerUpdate = () => {}
+  triggerUpdate = () => {},
+  browsers = [],
+  includeManageRequiredReports = false
 }) => {
   const { loadingMessage } = useTriggerLoad();
-
   const [showManageATs, setShowManageATs] = useState(false);
   const [showAddTestPlans, setShowAddTestPlans] = useState(false);
+  const [showManageReqReports, setShowManageReqReports] = useState(false);
 
   const onManageAtsClick = () => setShowManageATs(!showManageATs);
   const onAddTestPlansClick = () => setShowAddTestPlans(!showAddTestPlans);
+  const onManageReqReportsClick = () =>
+    setShowManageReqReports(!showManageReqReports);
+
+  const titles = [
+    'Manage Assistive Technology Versions',
+    'Add Test Plans to the Test Queue'
+  ];
+
+  const disclosureViews = [
+    <ManageAtVersions
+      key="ManageAtVersions"
+      ats={ats}
+      triggerUpdate={triggerUpdate}
+    />,
+    <AddTestPlans
+      key="AddTestPlans"
+      ats={ats}
+      testPlanVersions={testPlanVersions}
+      triggerUpdate={triggerUpdate}
+    />
+  ];
+
+  const onClickHandlers = [onManageAtsClick, onAddTestPlansClick];
+  const expandedStates = [showManageATs, showAddTestPlans];
+
+  if (includeManageRequiredReports) {
+    titles.push('Manage Required Reports');
+    disclosureViews.push(
+      <ManageRequiredReportsDisclosure
+        key="ManageRequiredReportsDisclosure"
+        ats={ats}
+        triggerUpdate={triggerUpdate}
+        browsers={browsers}
+      />
+    );
+    onClickHandlers.push(onManageReqReportsClick);
+    expandedStates.push(showManageReqReports);
+  }
 
   return (
     <LoadingStatus message={loadingMessage}>
       <DisclosureComponent
         componentId="manage-test-queue"
-        title={[
-          'Manage Assistive Technology Versions',
-          'Add Test Plans to the Test Queue'
-        ]}
-        disclosureContainerView={[
-          <ManageAtVersions
-            key="ManageAtVersions"
-            ats={ats}
-            triggerUpdate={triggerUpdate}
-          />,
-          <AddTestPlans
-            key="AddTestPlans"
-            ats={ats}
-            testPlanVersions={testPlanVersions}
-            triggerUpdate={triggerUpdate}
-          />
-        ]}
-        onClick={[onManageAtsClick, onAddTestPlansClick]}
-        expanded={[showManageATs, showAddTestPlans]}
+        title={titles}
+        disclosureContainerView={disclosureViews}
+        onClick={onClickHandlers}
+        expanded={expandedStates}
         stacked
       />
     </LoadingStatus>
@@ -151,7 +184,9 @@ const ManageTestQueue = ({
 ManageTestQueue.propTypes = {
   ats: PropTypes.arrayOf(AtPropType).isRequired,
   testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType),
-  triggerUpdate: PropTypes.func
+  triggerUpdate: PropTypes.func,
+  browsers: PropTypes.array,
+  includeManageRequiredReports: PropTypes.bool
 };
 
 export default ManageTestQueue;

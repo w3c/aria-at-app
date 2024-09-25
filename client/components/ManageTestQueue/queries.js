@@ -53,3 +53,53 @@ export const DELETE_AT_VERSION_MUTATION = gql`
     }
   }
 `;
+
+export const CREATE_REQUIRED_REPORT_MUTATION = gql`
+  mutation CreateRequiredReport(
+    $atId: ID!
+    $browserId: ID!
+    $phase: TestPlanVersionPhase!
+  ) {
+    requiredReport(atId: $atId, browserId: $browserId, phase: $phase) {
+      createRequiredReport {
+        atId
+        browserId
+        phase
+      }
+    }
+  }
+`;
+
+export const UPDATE_REQUIRED_REPORT_MUTATION = gql`
+  mutation UpdateRequiredReport(
+    $atId: ID!
+    $browserId: ID!
+    $phase: TestPlanVersionPhase!
+    $updateAtId: ID!
+    $updateBrowserId: ID!
+  ) {
+    requiredReport(atId: $atId, browserId: $browserId, phase: $phase) {
+      updateRequiredReport(atId: $updateAtId, browserId: $updateBrowserId) {
+        atId
+        browserId
+        phase
+      }
+    }
+  }
+`;
+
+export const DELETE_REQUIRED_REPORT_MUTATION = gql`
+  mutation DeleteRequiredReport(
+    $atId: ID!
+    $browserId: ID!
+    $phase: TestPlanVersionPhase!
+  ) {
+    requiredReport(atId: $atId, browserId: $browserId, phase: $phase) {
+      deleteRequiredReport {
+        atId
+        browserId
+        phase
+      }
+    }
+  }
+`;

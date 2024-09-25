@@ -45,6 +45,15 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
       browsers {
         ...BrowserFields
       }
+      candidateBrowsers {
+        ...BrowserFields
+      }
+      recommendedBrowsers {
+        ...BrowserFields
+      }
+    }
+    browsers {
+      ...BrowserFields
     }
     testPlans(testPlanVersionPhases: [DRAFT, CANDIDATE, RECOMMENDED]) {
       ...TestPlanFields
