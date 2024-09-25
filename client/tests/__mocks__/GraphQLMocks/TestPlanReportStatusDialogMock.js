@@ -827,12 +827,7 @@ export default (
         me: {
           id: '1',
           username: 'foo-bar',
-          roles: ['ADMIN', 'TESTER'],
-          company: {
-            id: '1',
-            name: 'Company',
-            ats: []
-          }
+          roles: ['ADMIN', 'TESTER']
         }
       }
     }
