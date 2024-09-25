@@ -136,10 +136,18 @@ const simulateResultCompletion = async (
   }
 };
 
-const startCollectionJobSimulation = async (job, atVersion, transaction) => {
+const startCollectionJobSimulation = async (
+  job,
+  testIds,
+  atVersion,
+  transaction
+) => {
   if (!mockSchedulerEnabled) throw new Error('mock scheduler is not enabled');
   if (process.env.ENVIRONMENT === 'test') {
     // stub behavior in test suite
+
+    startCollectionJobSimulation.lastCallParams = { job, testIds, atVersion };
+
     return { status: COLLECTION_JOB_STATUS.QUEUED };
   } else {
     const { data } = await apolloServer.executeOperation(
