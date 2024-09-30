@@ -5,6 +5,11 @@ const {
 } = require('../../models/services/BrowserService');
 const { query, mutate } = require('../../tests/util/graphql-test-utilities');
 
+const FAKE_RESULT_CONFLICTS_OPTIONS = {
+  SINGLE: 1,
+  ALL: Infinity
+};
+
 /**
  *
  * @param {number} testPlanRunId
@@ -20,13 +25,16 @@ const { query, mutate } = require('../../tests/util/graphql-test-utilities');
  * 'incompleteAndFailingDueToUnexpectedBehaviors' |
  * 'incompleteAndFailingDueToMultiple']} fakeTestResultTypes
  * @param {import('sequelize').Transaction} transaction
- * @param {'SINGLE' | 'ALL' | number} numFakeTestResultConflicts
+ * @param {number} numFakeTestResultConflicts
  * @returns {Promise<void>}
  */
 const populateFakeTestResults = async (
   testPlanRunId,
   fakeTestResultTypes,
-  { transaction, numFakeTestResultConflicts = 'SINGLE' }
+  {
+    transaction,
+    numFakeTestResultConflicts = FAKE_RESULT_CONFLICTS_OPTIONS.SINGLE
+  }
 ) => {
   const {
     populateData: { testPlanReport }
@@ -324,14 +332,7 @@ const getFake = async ({
     const setResult = scenarioResult =>
       applyResult(scenarioResult, fakeTestResultType);
 
-    if (numFakeTestResultConflicts === 'ALL') {
-      testResult.scenarioResults.forEach(setResult);
-    } else if (numFakeTestResultConflicts === 'SINGLE') {
-      setResult(testResult.scenarioResults[0]);
-    } else if (
-      typeof numFakeTestResultConflicts === 'number' &&
-      numFakeTestResultConflicts > 0
-    ) {
+    if (numFakeTestResultConflicts > 0) {
       testResult.scenarioResults
         .slice(0, numFakeTestResultConflicts)
         .forEach(setResult);
@@ -353,4 +354,4 @@ const getFake = async ({
   );
 };
 
-module.exports = populateFakeTestResults;
+module.exports = { populateFakeTestResults, FAKE_RESULT_CONFLICTS_OPTIONS };

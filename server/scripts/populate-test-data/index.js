@@ -1,7 +1,10 @@
 /* eslint-disable no-console */
 const fs = require('fs');
 const { sequelize } = require('../../models');
-const populateFakeTestResults = require('./populateFakeTestResults');
+const {
+  populateFakeTestResults,
+  FAKE_RESULT_CONFLICTS_OPTIONS
+} = require('./populateFakeTestResults');
 
 const populateTestDatabase = async transaction => {
   const testDataScript = fs.readFileSync(
@@ -38,7 +41,10 @@ const populateTestDatabase = async transaction => {
       'completeAndFailingDueToNoOutputAssertions',
       'completeAndFailingDueToUnexpectedBehaviors'
     ],
-    { transaction, numFakeTestResultConflicts: 'ALL' }
+    {
+      transaction,
+      numFakeTestResultConflicts: FAKE_RESULT_CONFLICTS_OPTIONS.ALL
+    }
   );
 
   await populateFakeTestResults(
@@ -185,7 +191,7 @@ const populateTestDatabase = async transaction => {
     ],
     {
       transaction,
-      numFakeTestResultConflicts: 'ALL'
+      numFakeTestResultConflicts: FAKE_RESULT_CONFLICTS_OPTIONS.ALL
     }
   );
 
