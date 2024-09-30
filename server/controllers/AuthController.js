@@ -1,7 +1,15 @@
 const { User } = require('../models');
-const { getOrCreateUser } = require('../models/services/UserService');
+const {
+  getOrCreateUser,
+  addUserVendor,
+  getUserById
+} = require('../models/services/UserService');
 const { GithubService } = require('../services');
 const getUsersFromFile = require('../util/getUsersFromFile');
+const {
+  findVendorByName,
+  getOrCreateVendor
+} = require('../models/services/VendorService');
 
 const APP_SERVER = process.env.APP_SERVER;
 
@@ -69,6 +77,40 @@ const oauthRedirectFromGithubController = async (req, res) => {
     testPlanRunAttributes: [],
     transaction: req.transaction
   });
+
+  if (roles.some(role => role.name === User.VENDOR)) {
+    const vendorEntry = vendors.find(
+      vendor => vendor.split('|')[0] === githubUsername
+    );
+    if (vendorEntry) {
+      const [, companyName] = vendorEntry.split('|').trim();
+      const vendor = await findVendorByName({
+        name: companyName,
+        transaction: req.transaction
+      });
+      if (vendor) {
+        await addUserVendor(user.id, vendor.id, {
+          transaction: req.transaction
+        });
+      } else {
+        const vendor = await getOrCreateVendor({
+          where: { name: companyName },
+          transaction: req.transaction
+        });
+        await addUserVendor(user.id, vendor.id, {
+          transaction: req.transaction
+        });
+      }
+      // Fetch the user again with vendor and AT information
+      user = await getUserById({
+        id: user.id,
+        vendorAttributes: ['id', 'name'],
+        atAttributes: ['id', 'name'],
+        includeVendorAts: true,
+        transaction: req.transaction
+      });
+    }
+  }
 
   req.session.user = user;
 

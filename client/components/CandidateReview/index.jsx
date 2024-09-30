@@ -3,11 +3,15 @@ import { useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import TestPlans from './TestPlans';
 import { CANDIDATE_REVIEW_PAGE_QUERY } from './queries';
+import { ME_QUERY } from '../App/queries';
 
 const CandidateReview = () => {
   const { loading, data, error } = useQuery(CANDIDATE_REVIEW_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network'
   });
+
+  const { data: meData } = useQuery(ME_QUERY);
+  const { me } = meData;
 
   if (error) {
     return (
@@ -33,7 +37,7 @@ const CandidateReview = () => {
 
   const testPlanVersions = data.testPlanVersions;
 
-  return <TestPlans testPlanVersions={testPlanVersions} />;
+  return <TestPlans testPlanVersions={testPlanVersions} me={me} />;
 };
 
 export default CandidateReview;

@@ -8,6 +8,7 @@ const {
 const UserModel = require('../../models/User');
 const RoleModel = require('../../models/Role');
 const TestPlanRunModel = require('../../models/TestPlanRun');
+const VendorModel = require('../../models/Vendor');
 
 describe('UserModel Schema Checks', () => {
   // A1
@@ -28,11 +29,13 @@ describe('UserModel Schema Checks', () => {
     // A1
     const ROLE_ASSOCIATION = { through: 'UserRoles', as: 'roles' };
     const TEST_PLAN_RUN_ASSOCIATION = { as: 'testPlanRuns' };
+    const VENDOR_ASSOCIATION = { as: 'company' };
 
     // A2
     beforeAll(() => {
       Model.belongsToMany(RoleModel, ROLE_ASSOCIATION);
       Model.hasMany(TestPlanRunModel, TEST_PLAN_RUN_ASSOCIATION);
+      Model.belongsTo(VendorModel, VENDOR_ASSOCIATION);
     });
 
     // A3
@@ -47,6 +50,13 @@ describe('UserModel Schema Checks', () => {
       expect(Model.hasMany).toHaveBeenCalledWith(
         TestPlanRunModel,
         expect.objectContaining(Model.TEST_PLAN_RUN_ASSOCIATION)
+      );
+    });
+
+    it('defined a belongsTo association with Vendor', () => {
+      expect(Model.belongsTo).toHaveBeenCalledWith(
+        VendorModel,
+        expect.objectContaining(Model.VENDOR_ASSOCIATION)
       );
     });
   });

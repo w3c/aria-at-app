@@ -51,7 +51,20 @@ window.signMeInAsTester = username => {
 };
 
 window.signMeInAsVendor = username => {
-  return signMeInCommon({ username, roles: [{ name: 'VENDOR' }] });
+  return signMeInCommon({
+    username,
+    roles: [{ name: 'VENDOR' }],
+    company: {
+      id: '1',
+      name: 'vispero',
+      ats: [
+        {
+          id: '1',
+          name: 'JAWS'
+        }
+      ]
+    }
+  });
 };
 
 window.startTestTransaction = async () => {

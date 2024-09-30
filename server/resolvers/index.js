@@ -10,6 +10,9 @@ const testPlanVersion = require('./testPlanVersionResolver');
 const testPlanVersions = require('./testPlanVersionsResolver');
 const testPlanRun = require('./testPlanRunResolver');
 const testPlanRuns = require('./testPlanRunsResolver');
+const vendors = require('./vendorsResolver');
+const vendor = require('./vendorResolver');
+const vendorByName = require('./vendorByNameResolver');
 const createTestPlanReport = require('./createTestPlanReportResolver');
 const addViewer = require('./addViewerResolver');
 const mutateAt = require('./mutateAtResolver');
@@ -64,7 +67,10 @@ const resolvers = {
     populateData,
     collectionJob,
     collectionJobs,
-    collectionJobByTestPlanRunId
+    collectionJobByTestPlanRunId,
+    vendors,
+    vendor,
+    vendorByName
   },
   Mutation: {
     at: mutateAt,
