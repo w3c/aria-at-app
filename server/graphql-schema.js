@@ -644,19 +644,26 @@ const graphqlSchema = gql`
   Some assertions are more akin to recommendations or best practices, and,
   while we want to record whether they are passing or failing, we do not want
   to count the entire test as failing when they fail.
+
+  These definitions for MUST, SHOULD and MAY are described at
+  https://github.com/w3c/aria-at/wiki/Glossary#assertion-priority in more
+  detail
   """
   enum AssertionPriority {
     """
-    All required assertions must pass for the test to pass. This should be
-    considered as 'MUST Behaviors'.
+    The assertion is an absolute requirement for the test to pass. This should
+    be considered as 'MUST Behaviors'.
     """
     MUST
     """
-    This assertion is not considered when deciding if a test is passing.
-    This should be considered as 'SHOULD Behaviors'.
+    This assertion is a strongly recommended requirement. This should be
+    considered as 'SHOULD Behaviors'.
     """
     SHOULD
-    # TODO Define MAY
+    """
+    This assertion is truly optional. This should be considered as 'MAY
+    Behaviors'.
+    """
     MAY
     """
     This assertion should not be included in the test and should not be
