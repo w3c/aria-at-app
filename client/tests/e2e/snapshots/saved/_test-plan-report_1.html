@@ -122,13 +122,13 @@
                 <ol
                   aria-labelledby="test-navigator-heading"
                   class="test-navigator-list">
-                  <li class="test-name-wrapper in-progress">
+                  <li class="test-name-wrapper conflicts">
                     <a href="#1" class="test-name" aria-current="true"
                       >Navigate forwards to a not pressed toggle button in
                       reading mode</a
                     ><span
                       class="progress-indicator"
-                      title="In Progress"></span>
+                      title="Has Conflicts"></span>
                   </li>
                   <li class="test-name-wrapper not-started">
                     <a href="#2" class="test-name" aria-current="false"
@@ -162,29 +162,29 @@
                       class="progress-indicator"
                       title="Not Started"></span>
                   </li>
-                  <li class="test-name-wrapper not-started">
+                  <li class="test-name-wrapper conflicts">
                     <a href="#6" class="test-name" aria-current="false"
                       >Navigate backwards to a pressed toggle button in reading
                       mode</a
                     ><span
                       class="progress-indicator"
-                      title="Not Started"></span>
+                      title="Has Conflicts"></span>
                   </li>
-                  <li class="test-name-wrapper not-started">
+                  <li class="test-name-wrapper conflicts">
                     <a href="#7" class="test-name" aria-current="false"
                       >Navigate forwards to a pressed toggle button in
                       interaction mode</a
                     ><span
                       class="progress-indicator"
-                      title="Not Started"></span>
+                      title="Has Conflicts"></span>
                   </li>
-                  <li class="test-name-wrapper not-started">
+                  <li class="test-name-wrapper conflicts">
                     <a href="#8" class="test-name" aria-current="false"
                       >Navigate backwards to a pressed toggle button in
                       interaction mode</a
                     ><span
                       class="progress-indicator"
-                      title="Not Started"></span>
+                      title="Has Conflicts"></span>
                   </li>
                   <li class="test-name-wrapper not-started">
                     <a href="#9" class="test-name" aria-current="false"
@@ -293,6 +293,26 @@
                       </div>
                     </div></span
                   >
+                  <div
+                    role="alert"
+                    class="fade status-bar alert alert-warning show">
+                    <svg
+                      version="1.1"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      aria-hidden="true"
+                      class="octicon octicon-alert me-2">
+                      <path
+                        fill-rule="evenodd"
+                        d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z"></path>
+                    </svg>
+                    This test has conflicting results<button
+                      type="button"
+                      class="ms-auto btn btn-warning">
+                      Review Conflicts
+                    </button>
+                  </div>
                   <div class="row">
                     <div class="test-iframe-container col-md-9">
                       <div class="row">
@@ -1403,7 +1423,7 @@
                             <a
                               role="button"
                               tabindex="0"
-                              href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20forwards%20to%20a%20not%20pressed%20toggle%20button%20in%20reading%20mode%22%20(Toggle%20Button,%20Test%201,%20V22.05.18)&amp;labels=jaws,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-01-navigate-forwards-to-not-pressed-toggle-button-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Ftoggle-button%2Ftest-01-navigate-forwards-to-not-pressed-toggle-button-reading-jaws.collected.html)%0A-%20AT%3A%20JAWS%20(Version%202021.2111.13)%0A-%20Browser%3A%20Chrome%20(Version%2099)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22toggle-button%22%2C%22versionString%22%3A%22V22.05.18%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A1%2C%22testSequenceNumber%22%3A1%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                              href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20forwards%20to%20a%20not%20pressed%20toggle%20button%20in%20reading%20mode%22%20(Toggle%20Button,%20Test%201,%20V22.05.18)&amp;labels=jaws,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-01-navigate-forwards-to-not-pressed-toggle-button-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Ftoggle-button%2Ftest-01-navigate-forwards-to-not-pressed-toggle-button-reading-jaws.collected.html)%0A-%20AT%3A%20JAWS%20(Version%202021.2111.13)%0A-%20Browser%3A%20Chrome%20(Version%2099)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22toggle-button%22%2C%22versionString%22%3A%22V22.05.18%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A1%2C%22testSequenceNumber%22%3A1%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E%0A%23%23%20Review%20Conflicts%20for%20%22Navigate%20forwards%20to%20a%20not%20pressed%20toggle%20button%20in%20reading%20mode%22%0A%0A1.%20%20%23%23%23%20Assertion%20Results%20for%20%22Down%20Arrow%22%20Command%20and%20%22Role%20'button'%20is%20conveyed%22%20Assertion%0A%20%20%20%20%0A%20%20%20%20*%20%20%20Tester%20esmeralda-baggins%20recorded%20output%20%22automatically%20seeded%20sample%20output%22%20and%20marked%20assertion%20as%20passing.%0A%20%20%20%20*%20%20%20Tester%20tom-proudfeet%20recorded%20output%20%22automatically%20seeded%20sample%20output%22%20and%20marked%20assertion%20as%20failing.%0A2.%20%20%23%23%23%20Assertion%20Results%20for%20%22B%22%20Command%20and%20%22Role%20'button'%20is%20conveyed%22%20Assertion%0A%20%20%20%20%0A%20%20%20%20*%20%20%20Tester%20esmeralda-baggins%20recorded%20output%20%22automatically%20seeded%20sample%20output%22%20and%20marked%20assertion%20as%20passing.%0A%20%20%20%20*%20%20%20Tester%20tom-proudfeet%20recorded%20output%20%22automatically%20seeded%20sample%20output%22%20and%20marked%20assertion%20as%20failing.%0A3.%20%20%23%23%23%20Assertion%20Results%20for%20%22F%22%20Command%20and%20%22Role%20'button'%20is%20conveyed%22%20Assertion%0A%20%20%20%20%0A%20%20%20%20*%20%20%20Tester%20esmeralda-baggins%20recorded%20output%20%22automatically%20seeded%20sample%20output%22%20and%20marked%20assertion%20as%20passing.%0A%20%20%20%20*%20%20%20Tester%20tom-proudfeet%20recorded%20output%20%22automatically%20seeded%20sample%20output%22%20and%20marked%20assertion%20as%20failing.%0A4.%20%20%23%23%23%20Assertion%20Results%20for%20%22Tab%22%20Command%20and%20%22Role%20'button'%20is%20conveyed%22%20Assertion%0A%20%20%20%20%0A%20%20%20%20*%20%20%20Tester%20esmeralda-baggins%20recorded%20output%20%22automatically%20seeded%20sample%20output%22%20and%20marked%20assertion%20as%20passing.%0A%20%20%20%20*%20%20%20Tester%20tom-proudfeet%20recorded%20output%20%22automatically%20seeded%20sample%20output%22%20and%20marked%20assertion%20as%20failing."
                               target="_blank"
                               aria-disabled="false"
                               class="btn-options btn btn-secondary"
@@ -1462,7 +1482,88 @@
                       </div>
                     </div>
                   </div>
-                  <div style="display: none"></div>
+                  <div style="display: none">
+                    <div class="css-1eszik">
+                      <h2>
+                        Review Conflicts for "Navigate forwards to a not pressed
+                        toggle button in reading mode"
+                      </h2>
+                      <ol>
+                        <li>
+                          <h3>
+                            Assertion Results for "Down Arrow" Command and "Role
+                            'button' is conveyed" Assertion
+                          </h3>
+                          <ul>
+                            <li>
+                              Tester esmeralda-baggins recorded output
+                              "automatically seeded sample output" and marked
+                              assertion as passing.
+                            </li>
+                            <li>
+                              Tester tom-proudfeet recorded output
+                              "automatically seeded sample output" and marked
+                              assertion as failing.
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <h3>
+                            Assertion Results for "B" Command and "Role 'button'
+                            is conveyed" Assertion
+                          </h3>
+                          <ul>
+                            <li>
+                              Tester esmeralda-baggins recorded output
+                              "automatically seeded sample output" and marked
+                              assertion as passing.
+                            </li>
+                            <li>
+                              Tester tom-proudfeet recorded output
+                              "automatically seeded sample output" and marked
+                              assertion as failing.
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <h3>
+                            Assertion Results for "F" Command and "Role 'button'
+                            is conveyed" Assertion
+                          </h3>
+                          <ul>
+                            <li>
+                              Tester esmeralda-baggins recorded output
+                              "automatically seeded sample output" and marked
+                              assertion as passing.
+                            </li>
+                            <li>
+                              Tester tom-proudfeet recorded output
+                              "automatically seeded sample output" and marked
+                              assertion as failing.
+                            </li>
+                          </ul>
+                        </li>
+                        <li>
+                          <h3>
+                            Assertion Results for "Tab" Command and "Role
+                            'button' is conveyed" Assertion
+                          </h3>
+                          <ul>
+                            <li>
+                              Tester esmeralda-baggins recorded output
+                              "automatically seeded sample output" and marked
+                              assertion as passing.
+                            </li>
+                            <li>
+                              Tester tom-proudfeet recorded output
+                              "automatically seeded sample output" and marked
+                              assertion as failing.
+                            </li>
+                          </ul>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
                 </div>
               </div>
             </main>
