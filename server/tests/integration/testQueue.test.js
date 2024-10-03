@@ -85,19 +85,19 @@ describe('test queue', () => {
     await dbCleaner(async transaction => {
       // A1
       const testReportId = '1';
-      const newTesterId = '2';
+      const newTesterId = '3';
       const previous = await query(
         gql`
-                    query {
-                        testPlanReport(id: ${testReportId}) {
-                            draftTestPlanRuns {
-                                tester {
-                                    id
-                                }
-                            }
-                        }
-                    }
-                `,
+          query {
+            testPlanReport(id: ${testReportId}) {
+              draftTestPlanRuns {
+                tester {
+                  id
+                }
+              }
+            }
+          }
+        `,
         { transaction }
       );
       const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
@@ -107,30 +107,30 @@ describe('test queue', () => {
       // A2
       const result = await mutate(
         gql`
-                    mutation {
-                        testPlanReport(id: ${testReportId}) {
-                            assignTester(userId: ${newTesterId}) {
-                                testPlanReport {
-                                    draftTestPlanRuns {
-                                        tester {
-                                            id
-                                            username
-                                        }
-                                    }
-                                }
-                            }
-                        }
+          mutation {
+            testPlanReport(id: ${testReportId}) {
+              assignTester(userId: ${newTesterId}) {
+                testPlanReport {
+                  draftTestPlanRuns {
+                    tester {
+                      id
+                      username
                     }
-                `,
+                  }
+                }
+              }
+            }
+          }
+        `,
         { transaction }
       );
 
       // prettier-ignore
       const resultTesterIds = result
-                .testPlanReport
-                .assignTester
-                .testPlanReport
-                .draftTestPlanRuns.map(testPlanRun => testPlanRun.tester.id);
+        .testPlanReport
+        .assignTester
+        .testPlanReport
+        .draftTestPlanRuns.map(testPlanRun => testPlanRun.tester.id);
 
       // A3
       expect(previousTesterIds).not.toEqual(
@@ -147,16 +147,16 @@ describe('test queue', () => {
       const previousTesterId = '1';
       const previous = await query(
         gql`
-                    query {
-                        testPlanReport(id: ${testPlanReportId}) {
-                            draftTestPlanRuns {
-                                tester {
-                                    id
-                                }
-                            }
-                        }
-                    }
-                `,
+          query {
+            testPlanReport(id: ${testPlanReportId}) {
+              draftTestPlanRuns {
+                tester {
+                  id
+                }
+              }
+            }
+          }
+        `,
         { transaction }
       );
       const previousTesterIds = previous.testPlanReport.draftTestPlanRuns.map(
@@ -166,29 +166,29 @@ describe('test queue', () => {
       // A2
       const result = await mutate(
         gql`
-                    mutation {
-                        testPlanReport(id: ${testPlanReportId}) {
-                            deleteTestPlanRun(userId: ${previousTesterId}) {
-                                testPlanReport {
-                                    draftTestPlanRuns {
-                                        tester {
-                                            username
-                                        }
-                                    }
-                                }
-                            }
-                        }
+          mutation {
+            testPlanReport(id: ${testPlanReportId}) {
+              deleteTestPlanRun(userId: ${previousTesterId}) {
+                testPlanReport {
+                  draftTestPlanRuns {
+                    tester {
+                      username
                     }
-                `,
+                  }
+                }
+              }
+            }
+          }
+        `,
         { transaction }
       );
 
       // prettier-ignore
       const resultTesterIds = result
-                .testPlanReport
-                .deleteTestPlanRun
-                .testPlanReport
-                .draftTestPlanRuns.map((run) => run.tester.id);
+        .testPlanReport
+        .deleteTestPlanRun
+        .testPlanReport
+        .draftTestPlanRuns.map((run) => run.tester.id);
 
       // A3
       expect(previousTesterIds).toEqual(
@@ -280,29 +280,29 @@ describe('test queue', () => {
       // A2
       const result = await mutate(
         gql`
-                    mutation {
-                        createTestPlanReport(input: {
-                            testPlanVersionId: ${testPlanVersionId}
-                            atId: ${atId}
-                            minimumAtVersionId: ${minimumAtVersionId}
-                            browserId: ${browserId}
-                        }) {
-                            testPlanReport {
-                                id
-                                at {
-                                    id
-                                }
-                                browser {
-                                    id
-                                }
-                            }
-                            testPlanVersion {
-                                id
-                                phase
-                            }
-                        }
-                    }
-                `,
+          mutation {
+            createTestPlanReport(input: {
+              testPlanVersionId: ${testPlanVersionId}
+              atId: ${atId}
+              minimumAtVersionId: ${minimumAtVersionId}
+              browserId: ${browserId}
+            }) {
+              testPlanReport {
+                id
+                at {
+                  id
+                }
+                browser {
+                  id
+                }
+              }
+              testPlanVersion {
+                id
+                phase
+              }
+            }
+          }
+        `,
         { transaction }
       );
       const { testPlanReport, testPlanVersion } = result.createTestPlanReport;
@@ -333,39 +333,39 @@ describe('test queue', () => {
       const testPlanReportId = '4';
       const queryBefore = await query(
         gql`
-                    query {
-                        testPlanReport(id: ${testPlanReportId}) {
-                            id
-                            draftTestPlanRuns {
-                                id
-                            }
-                        }
-                    }
-                `,
+          query {
+            testPlanReport(id: ${testPlanReportId}) {
+              id
+              draftTestPlanRuns {
+                id
+              }
+            }
+          }
+        `,
         { transaction }
       );
       const { draftTestPlanRuns } = queryBefore.testPlanReport;
       await mutate(
         gql`
-                    mutation {
-                        testPlanReport(id: ${testPlanReportId}) {
-                            deleteTestPlanReport
-                        }
-                    }
-                `,
+          mutation {
+            testPlanReport(id: ${testPlanReportId}) {
+              deleteTestPlanReport
+            }
+          }
+        `,
         { transaction }
       );
       const queryAfter = await query(
         gql`
-                    query {
-                        testPlanReport(id: ${testPlanReportId}) {
-                            id
-                        }
-                        testPlanRun(id: ${draftTestPlanRuns[0].id}) {
-                            id
-                        }
-                    }
-                `,
+          query {
+            testPlanReport(id: ${testPlanReportId}) {
+              id
+            }
+            testPlanRun(id: ${draftTestPlanRuns[0].id}) {
+              id
+            }
+          }
+        `,
         { transaction }
       );
 
@@ -381,45 +381,45 @@ describe('test queue', () => {
 
     const result = await query(
       gql`
-                query {
-                    testPlanReport(id: ${conflictingReportId}) {
-                        conflicts {
-                            source {
-                                test {
-                                    title
-                                    rowNumber
-                                }
-                                scenario {
-                                    commands {
-                                        text
-                                    }
-                                }
-                                assertion {
-                                    text
-                                }
-                            }
-                            conflictingResults {
-                                testPlanRun {
-                                    id
-                                    tester {
-                                        username
-                                    }
-                                }
-                                scenarioResult {
-                                    output
-                                    unexpectedBehaviors {
-                                        text
-                                        details
-                                    }
-                                }
-                                assertionResult {
-                                    passed
-                                }
-                            }
-                        }
-                    }
+        query {
+          testPlanReport(id: ${conflictingReportId}) {
+            conflicts {
+              source {
+                test {
+                  title
+                  rowNumber
                 }
-            `,
+                scenario {
+                  commands {
+                    text
+                  }
+                }
+                assertion {
+                  text
+                }
+              }
+              conflictingResults {
+                testPlanRun {
+                  id
+                  tester {
+                    username
+                  }
+                }
+                scenarioResult {
+                  output
+                  unexpectedBehaviors {
+                    text
+                    details
+                  }
+                }
+                assertionResult {
+                  passed
+                }
+              }
+            }
+          }
+        }
+      `,
       { transaction: false }
     );
 

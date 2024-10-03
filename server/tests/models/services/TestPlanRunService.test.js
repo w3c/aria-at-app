@@ -103,7 +103,7 @@ describe('TestPlanRunModel Data Checks', () => {
   it('should create testPlanRun if none exists for tester', async () => {
     await dbCleaner(async transaction => {
       const _testPlanReportId = 1;
-      const _testerUserId = 2;
+      const _testerUserId = 3;
 
       const testPlanRuns = await TestPlanRunService.getTestPlanRuns({
         transaction

@@ -1,0 +1,3771 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+    <title>
+      NVDA 2023.3.3 and Chrome&nbsp;for&nbsp;Checkbox Example (Mixed-State) |
+      ARIA-AT Reports
+    </title>
+  </head>
+  <body>
+    <div id="root">
+      <div class="container-fluid">
+        <nav
+          aria-label="Menu"
+          class="navbar navbar-expand-xl navbar-light bg-light">
+          <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
+          ><a href="#main" class="css-32m7ay">Skip to main content</a
+          ><button
+            aria-controls="basic-navbar-nav"
+            type="button"
+            aria-label="Toggle navigation"
+            class="navbar-toggler collapsed">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div
+            class="justify-content-end navbar-collapse collapse"
+            id="basic-navbar-nav">
+            <div class="navbar-nav">
+              <li>
+                <a aria-current="true" class="nav-link" href="/reports"
+                  >AT Interoperability Reports</a
+                >
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/data-management"
+                  >Data Management</a
+                >
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/test-queue"
+                  >Test Queue</a
+                >
+              </li>
+              <li>
+                <a
+                  aria-current="false"
+                  class="nav-link"
+                  href="/candidate-review"
+                  >Candidate Review</a
+                >
+              </li>
+              <li class="signed-in-wrapper">
+                <div class="signed-in" id="signed-in">
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="circle-user"
+                    class="svg-inline--fa fa-circle-user"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512">
+                    <path
+                      fill="currentColor"
+                      d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z"></path></svg
+                  >Signed in as <b>joe-the-admin</b>
+                </div>
+                <a aria-describedby="signed-in" class="nav-link" href="/"
+                  >Sign out</a
+                >
+              </li>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="container-fluid">
+        <main id="main" tabindex="-1" class="container">
+          <h1>
+            Checkbox Example (Mixed-State)&nbsp;with&nbsp;NVDA 2023.3.3 and
+            Chrome
+          </h1>
+          <nav aria-label="Breadcrumb">
+            <ol aria-label="Breadcrumb Navigation" class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="/reports"
+                  ><svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="house"
+                    class="svg-inline--fa fa-house"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 576 512">
+                    <path
+                      fill="currentColor"
+                      d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"></path></svg
+                  >AT Interoperability Reports</a
+                >
+              </li>
+              <li class="breadcrumb-item">
+                <a href="/report/67">Checkbox Example (Mixed-State)</a>
+              </li>
+              <li class="breadcrumb-item active" aria-current="page">
+                NVDA 2023.3.3 and Chrome
+              </li>
+            </ol>
+          </nav>
+          <h2>Introduction</h2>
+          <p>
+            This page shows detailed results for each test, including individual
+            commands that the tester entered into the AT, the output which was
+            captured from the AT in response, and whether that output was deemed
+            passing or failing for each of the assertions. The open test button
+            next to each test allows you to preview the test in your browser.
+          </p>
+          <h2>Metadata</h2>
+          <ul>
+            <li>
+              Generated from&nbsp;<a href="/test-review/67"
+                >V23.08.23 of Checkbox Example (Mixed-State) Test Plan</a
+              >
+            </li>
+            <li>Report completed on August 7, 2022</li>
+            <li>
+              <a
+                href="https://w3c.github.io/aria-practices/examples/checkbox/checkbox-mixed.html"
+                target="_blank"
+                rel="noreferrer"
+                >Example Under Test</a
+              >
+            </li>
+            <li>
+              <a
+                href="https://w3c.github.io/aria-practices/#checkbox"
+                target="_blank"
+                rel="noreferrer"
+                >Design Pattern</a
+              >
+            </li>
+          </ul>
+          <h2>NVDA Versions Summary</h2>
+          <p>
+            The following table displays a summary of data for all versions of
+            NVDA that have been tested.
+          </p>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Versions</th>
+                  <th>Must-Have Behaviors</th>
+                  <th>Should-Have Behaviors</th>
+                  <th>May-Have Behaviors</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2023.3.3</td>
+                  <td>124 of 124 passed</td>
+                  <td>35 of 36 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td><a href="/report/67/targets/13">2020.4</a></td>
+                  <td>124 of 124 passed</td>
+                  <td>36 of 36 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h2>Results for NVDA 2023.3.3 and Chrome</h2>
+          <div class="table-responsive">
+            <table
+              aria-label="Results for NVDA 2023.3.3 and Chrome"
+              class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Test Name</th>
+                  <th>Must-Have Behaviors</th>
+                  <th>Should-Have Behaviors</th>
+                  <th>May-Have Behaviors</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-NjAyYeyIxMiI6MjB92VjN2"
+                      >Navigate forwards to a mixed checkbox in reading mode</a
+                    >
+                  </td>
+                  <td>24 of 24 passed</td>
+                  <td>4 of 4 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-YWJlZeyIxMiI6MjB9jEzNm"
+                      >Navigate forwards to a mixed checkbox in interaction
+                      mode</a
+                    >
+                  </td>
+                  <td>6 of 6 passed</td>
+                  <td>1 of 1 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-ODhiYeyIxMiI6MjB9TRkYW"
+                      >Navigate backwards to a mixed checkbox in reading mode</a
+                    >
+                  </td>
+                  <td>24 of 24 passed</td>
+                  <td>3 of 4 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-NDZmYeyIxMiI6MjB9jg3Nm"
+                      >Navigate backwards to a mixed checkbox in interaction
+                      mode</a
+                    >
+                  </td>
+                  <td>6 of 6 passed</td>
+                  <td>1 of 1 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-OTBlYeyIxMiI6MjB9jY5Mz"
+                      >Read information about a mixed checkbox in reading
+                      mode</a
+                    >
+                  </td>
+                  <td>8 of 8 passed</td>
+                  <td>6 of 6 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-ZDg3NeyIxMiI6MjB9zcwMj"
+                      >Read information about a mixed checkbox in interaction
+                      mode</a
+                    >
+                  </td>
+                  <td>8 of 8 passed</td>
+                  <td>6 of 6 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-MjJhZeyIxMiI6MjB9TRiZG"
+                      >Operate a mixed checkbox in reading mode</a
+                    >
+                  </td>
+                  <td>2 of 2 passed</td>
+                  <td>1 of 1 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-MjNmMeyIxMiI6MjB9zIwOD"
+                      >Operate a mixed checkbox in interaction mode</a
+                    >
+                  </td>
+                  <td>2 of 2 passed</td>
+                  <td>1 of 1 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-OTNhZeyIxMiI6MjB9jAwMT"
+                      >Operate an unchecked checkbox in reading mode</a
+                    >
+                  </td>
+                  <td>2 of 2 passed</td>
+                  <td>1 of 1 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-ZDUzZeyIxMiI6MjB9GM0MD"
+                      >Operate an unchecked checkbox in interaction mode</a
+                    >
+                  </td>
+                  <td>2 of 2 passed</td>
+                  <td>1 of 1 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-YTMzNeyIxMiI6MjB9mNjMz"
+                      >Navigate forwards out of a checkbox group in reading
+                      mode</a
+                    >
+                  </td>
+                  <td>16 of 16 passed</td>
+                  <td>4 of 4 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-YzJlYeyIxMiI6MjB9jdkZG"
+                      >Navigate forwards out of a checkbox group in interaction
+                      mode</a
+                    >
+                  </td>
+                  <td>4 of 4 passed</td>
+                  <td>1 of 1 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-MmM4OeyIxMiI6MjB9DBjZD"
+                      >Navigate backwards out of a checkbox group in reading
+                      mode</a
+                    >
+                  </td>
+                  <td>16 of 16 passed</td>
+                  <td>4 of 4 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      href="/report/67/targets/20#result-YjM4MeyIxMiI6MjB9mU0OW"
+                      >Navigate backwards out of a checkbox group in interaction
+                      mode</a
+                    >
+                  </td>
+                  <td>4 of 4 passed</td>
+                  <td>1 of 1 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+                <tr>
+                  <td>All Tests</td>
+                  <td>124 of 124 passed</td>
+                  <td>35 of 36 passed</td>
+                  <td><span class="css-1nk3kjj">None</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-NjAyYeyIxMiI6MjB92VjN2" tabindex="-1">
+              Test 1: Navigate forwards to a mixed checkbox in reading
+              mode&nbsp;(28&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20forwards%20to%20a%20mixed%20checkbox%20in%20reading%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%201,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-01-navigate-forwards-to-a-mixed-checkbox-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-01-navigate-forwards-to-a-mixed-checkbox-reading-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-NjAyYeyIxMiI6MjB92VjN2)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A1%2C%22testSequenceNumber%22%3A1%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-01-navigate-forwards-to-a-mixed-checkbox-reading-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>X&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards to a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  X Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name ' All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>F&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards to a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  F Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name ' All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>Tab&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards to a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name ' All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>
+              Down Arrow then Down Arrow&nbsp;Results:&nbsp;7 passed,&nbsp;0
+              failed
+            </h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards to a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Down Arrow then Down Arrow Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name ' All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-NjAyYeyIxMiI6MjB92VjN2"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-NjAyYeyIxMiI6MjB92VjN2"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-NjAyYeyIxMiI6MjB92VjN2"
+              aria-labelledby="disclosure-btn-run-history-NjAyYeyIxMiI6MjB92VjN2"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-YWJlZeyIxMiI6MjB9jEzNm" tabindex="-1">
+              Test 2: Navigate forwards to a mixed checkbox in interaction
+              mode&nbsp;(7&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20forwards%20to%20a%20mixed%20checkbox%20in%20interaction%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%202,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-02-navigate-forwards-to-a-mixed-checkbox-interaction-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-02-navigate-forwards-to-a-mixed-checkbox-interaction-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-YWJlZeyIxMiI6MjB9jEzNm)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A2%2C%22testSequenceNumber%22%3A2%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-02-navigate-forwards-to-a-mixed-checkbox-interaction-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Tab&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards to a mixed checkbox in interaction mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name ' All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-YWJlZeyIxMiI6MjB9jEzNm"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-YWJlZeyIxMiI6MjB9jEzNm"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-YWJlZeyIxMiI6MjB9jEzNm"
+              aria-labelledby="disclosure-btn-run-history-YWJlZeyIxMiI6MjB9jEzNm"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-ODhiYeyIxMiI6MjB9TRkYW" tabindex="-1">
+              Test 3: Navigate backwards to a mixed checkbox in reading
+              mode&nbsp;(27&nbsp;passed, 1 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20backwards%20to%20a%20mixed%20checkbox%20in%20reading%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%203,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-04-navigate-backwards-to-a-mixed-checkbox-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-04-navigate-backwards-to-a-mixed-checkbox-reading-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-ODhiYeyIxMiI6MjB9TRkYW)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A4%2C%22testSequenceNumber%22%3A3%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-04-navigate-backwards-to-a-mixed-checkbox-reading-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Shift+X&nbsp;Results:&nbsp;6 passed,&nbsp;1 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards to a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Shift+X Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Failed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact:
+            <div class="table-responsive">
+              <table
+                aria-label="Undesirable behaviors for test Navigate backwards to a mixed checkbox in reading mode"
+                class="test-plan-unexpected-behaviors-table table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Behavior</th>
+                    <th>Details</th>
+                    <th>Impact</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Other</td>
+                    <td>Seeded other unexpected behavior</td>
+                    <td>MODERATE</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <hr aria-hidden="true" />
+            <h4>Shift+F&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards to a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Shift+F Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>Shift+Tab&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards to a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Shift+Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>
+              Up Arrow then Up Arrow&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed
+            </h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards to a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Up Arrow then Up Arrow Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-ODhiYeyIxMiI6MjB9TRkYW"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-ODhiYeyIxMiI6MjB9TRkYW"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-ODhiYeyIxMiI6MjB9TRkYW"
+              aria-labelledby="disclosure-btn-run-history-ODhiYeyIxMiI6MjB9TRkYW"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-NDZmYeyIxMiI6MjB9jg3Nm" tabindex="-1">
+              Test 4: Navigate backwards to a mixed checkbox in interaction
+              mode&nbsp;(7&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20backwards%20to%20a%20mixed%20checkbox%20in%20interaction%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%204,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-05-navigate-backwards-to-a-mixed-checkbox-interaction-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-05-navigate-backwards-to-a-mixed-checkbox-interaction-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-NDZmYeyIxMiI6MjB9jg3Nm)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A5%2C%22testSequenceNumber%22%3A4%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-05-navigate-backwards-to-a-mixed-checkbox-interaction-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Shift+Tab&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards to a mixed checkbox in interaction mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Shift+Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-NDZmYeyIxMiI6MjB9jg3Nm"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-NDZmYeyIxMiI6MjB9jg3Nm"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-NDZmYeyIxMiI6MjB9jg3Nm"
+              aria-labelledby="disclosure-btn-run-history-NDZmYeyIxMiI6MjB9jg3Nm"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-OTBlYeyIxMiI6MjB9jY5Mz" tabindex="-1">
+              Test 5: Read information about a mixed checkbox in reading
+              mode&nbsp;(14&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Read%20information%20about%20a%20mixed%20checkbox%20in%20reading%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%205,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-07-read-information-about-a-mixed-checkbox-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-07-read-information-about-a-mixed-checkbox-reading-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-OTBlYeyIxMiI6MjB9jY5Mz)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A7%2C%22testSequenceNumber%22%3A5%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-07-read-information-about-a-mixed-checkbox-reading-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Insert+Tab&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Read information about a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Insert+Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>Insert+Up&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Read information about a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Insert+Up Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-OTBlYeyIxMiI6MjB9jY5Mz"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-OTBlYeyIxMiI6MjB9jY5Mz"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-OTBlYeyIxMiI6MjB9jY5Mz"
+              aria-labelledby="disclosure-btn-run-history-OTBlYeyIxMiI6MjB9jY5Mz"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-ZDg3NeyIxMiI6MjB9zcwMj" tabindex="-1">
+              Test 6: Read information about a mixed checkbox in interaction
+              mode&nbsp;(14&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Read%20information%20about%20a%20mixed%20checkbox%20in%20interaction%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%206,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-08-read-information-about-a-mixed-checkbox-interaction-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-08-read-information-about-a-mixed-checkbox-interaction-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-ZDg3NeyIxMiI6MjB9zcwMj)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A8%2C%22testSequenceNumber%22%3A6%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-08-read-information-about-a-mixed-checkbox-interaction-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Insert+Tab&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Read information about a mixed checkbox in interaction mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Insert+Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>Insert+Up&nbsp;Results:&nbsp;7 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Read information about a mixed checkbox in interaction mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Insert+Up Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'checkbox' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'All condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>State 'mixed' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>Role 'group' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>Name 'Sandwich Condiments' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-ZDg3NeyIxMiI6MjB9zcwMj"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-ZDg3NeyIxMiI6MjB9zcwMj"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-ZDg3NeyIxMiI6MjB9zcwMj"
+              aria-labelledby="disclosure-btn-run-history-ZDg3NeyIxMiI6MjB9zcwMj"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-MjJhZeyIxMiI6MjB9TRiZG" tabindex="-1">
+              Test 7: Operate a mixed checkbox in reading
+              mode&nbsp;(3&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Operate%20a%20mixed%20checkbox%20in%20reading%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%207,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-10-operate-a-mixed-checkbox-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-10-operate-a-mixed-checkbox-reading-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-MjJhZeyIxMiI6MjB9TRiZG)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A10%2C%22testSequenceNumber%22%3A7%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-10-operate-a-mixed-checkbox-reading-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Space&nbsp;Results:&nbsp;3 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Operate a mixed checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Space Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Change in state, to 'checked', is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-MjJhZeyIxMiI6MjB9TRiZG"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-MjJhZeyIxMiI6MjB9TRiZG"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-MjJhZeyIxMiI6MjB9TRiZG"
+              aria-labelledby="disclosure-btn-run-history-MjJhZeyIxMiI6MjB9TRiZG"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-MjNmMeyIxMiI6MjB9zIwOD" tabindex="-1">
+              Test 8: Operate a mixed checkbox in interaction
+              mode&nbsp;(3&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Operate%20a%20mixed%20checkbox%20in%20interaction%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%208,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-11-operate-a-mixed-checkbox-interaction-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-11-operate-a-mixed-checkbox-interaction-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-MjNmMeyIxMiI6MjB9zIwOD)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A11%2C%22testSequenceNumber%22%3A8%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-11-operate-a-mixed-checkbox-interaction-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Space&nbsp;Results:&nbsp;3 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Operate a mixed checkbox in interaction mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Space Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Change in state, to 'checked', is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-MjNmMeyIxMiI6MjB9zIwOD"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-MjNmMeyIxMiI6MjB9zIwOD"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-MjNmMeyIxMiI6MjB9zIwOD"
+              aria-labelledby="disclosure-btn-run-history-MjNmMeyIxMiI6MjB9zIwOD"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-OTNhZeyIxMiI6MjB9jAwMT" tabindex="-1">
+              Test 9: Operate an unchecked checkbox in reading
+              mode&nbsp;(3&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Operate%20an%20unchecked%20checkbox%20in%20reading%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%209,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-13-operate-an-unchecked-checkbox-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-13-operate-an-unchecked-checkbox-reading-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-OTNhZeyIxMiI6MjB9jAwMT)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A13%2C%22testSequenceNumber%22%3A9%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-13-operate-an-unchecked-checkbox-reading-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Space&nbsp;Results:&nbsp;3 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Operate an unchecked checkbox in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Space Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Change in state, to 'mixed', is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-OTNhZeyIxMiI6MjB9jAwMT"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-OTNhZeyIxMiI6MjB9jAwMT"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-OTNhZeyIxMiI6MjB9jAwMT"
+              aria-labelledby="disclosure-btn-run-history-OTNhZeyIxMiI6MjB9jAwMT"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-ZDUzZeyIxMiI6MjB9GM0MD" tabindex="-1">
+              Test 10: Operate an unchecked checkbox in interaction
+              mode&nbsp;(3&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Operate%20an%20unchecked%20checkbox%20in%20interaction%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%2010,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-14-operate-an-unchecked-checkbox-interaction-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-14-operate-an-unchecked-checkbox-interaction-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-ZDUzZeyIxMiI6MjB9GM0MD)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A14%2C%22testSequenceNumber%22%3A10%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-14-operate-an-unchecked-checkbox-interaction-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Space&nbsp;Results:&nbsp;3 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Operate an unchecked checkbox in interaction mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Space Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Change in state, to 'mixed', is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-ZDUzZeyIxMiI6MjB9GM0MD"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-ZDUzZeyIxMiI6MjB9GM0MD"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-ZDUzZeyIxMiI6MjB9GM0MD"
+              aria-labelledby="disclosure-btn-run-history-ZDUzZeyIxMiI6MjB9GM0MD"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-YTMzNeyIxMiI6MjB9mNjMz" tabindex="-1">
+              Test 11: Navigate forwards out of a checkbox group in reading
+              mode&nbsp;(20&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20forwards%20out%20of%20a%20checkbox%20group%20in%20reading%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%2011,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-16-navigate-forwards-out-of-a-checkbox-group-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-16-navigate-forwards-out-of-a-checkbox-group-reading-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-YTMzNeyIxMiI6MjB9mNjMz)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A16%2C%22testSequenceNumber%22%3A11%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-16-navigate-forwards-out-of-a-checkbox-group-reading-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Down Arrow&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards out of a checkbox group in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Down Arrow Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate backwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>U&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards out of a checkbox group in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  U Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate backwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>K&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards out of a checkbox group in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  K Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate backwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>Tab&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards out of a checkbox group in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate backwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-YTMzNeyIxMiI6MjB9mNjMz"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-YTMzNeyIxMiI6MjB9mNjMz"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-YTMzNeyIxMiI6MjB9mNjMz"
+              aria-labelledby="disclosure-btn-run-history-YTMzNeyIxMiI6MjB9mNjMz"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-YzJlYeyIxMiI6MjB9jdkZG" tabindex="-1">
+              Test 12: Navigate forwards out of a checkbox group in interaction
+              mode&nbsp;(5&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20forwards%20out%20of%20a%20checkbox%20group%20in%20interaction%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%2012,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-17-navigate-forwards-out-of-a-checkbox-group-interaction-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-17-navigate-forwards-out-of-a-checkbox-group-interaction-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-YzJlYeyIxMiI6MjB9jdkZG)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A17%2C%22testSequenceNumber%22%3A12%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-17-navigate-forwards-out-of-a-checkbox-group-interaction-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Tab&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate forwards out of a checkbox group in interaction mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate backwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-YzJlYeyIxMiI6MjB9jdkZG"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-YzJlYeyIxMiI6MjB9jdkZG"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-YzJlYeyIxMiI6MjB9jdkZG"
+              aria-labelledby="disclosure-btn-run-history-YzJlYeyIxMiI6MjB9jdkZG"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-MmM4OeyIxMiI6MjB9DBjZD" tabindex="-1">
+              Test 13: Navigate backwards out of a checkbox group in reading
+              mode&nbsp;(20&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20backwards%20out%20of%20a%20checkbox%20group%20in%20reading%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%2013,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-19-navigate-backwards-out-of-a-checkbox-group-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-19-navigate-backwards-out-of-a-checkbox-group-reading-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-MmM4OeyIxMiI6MjB9DBjZD)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A19%2C%22testSequenceNumber%22%3A13%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-19-navigate-backwards-out-of-a-checkbox-group-reading-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>
+              Up Arrow then Up Arrow&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed
+            </h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards out of a checkbox group in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Up Arrow then Up Arrow Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate forwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>Shift+K&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards out of a checkbox group in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Shift+K Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate forwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>Shift+U&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards out of a checkbox group in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Shift+U Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate forwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+            <hr aria-hidden="true" />
+            <h4>Shift+Tab&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards out of a checkbox group in reading mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Shift+Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate forwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-MmM4OeyIxMiI6MjB9DBjZD"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-MmM4OeyIxMiI6MjB9DBjZD"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-MmM4OeyIxMiI6MjB9DBjZD"
+              aria-labelledby="disclosure-btn-run-history-MmM4OeyIxMiI6MjB9DBjZD"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="test-result-heading">
+            <h2 id="result-YjM4MeyIxMiI6MjB9mU0OW" tabindex="-1">
+              Test 14: Navigate backwards out of a checkbox group in interaction
+              mode&nbsp;(5&nbsp;passed, 0 failed)
+              <div class="css-9b7rl3">
+                <details>
+                  <summary
+                    aria-expanded="false"
+                    aria-controls="description"
+                    aria-label="Warning! Approved Report">
+                    <svg
+                      aria-hidden="true"
+                      focusable="false"
+                      data-prefix="fas"
+                      data-icon="circle-exclamation"
+                      class="svg-inline--fa fa-circle-exclamation fa-lg"
+                      role="img"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 512 512"
+                      color="#94979b">
+                      <path
+                        fill="currentColor"
+                        d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                    >Approved Report
+                  </summary>
+                  The information in this report is generated from recommended
+                  tests. Recommended ARIA-AT tests have been reviewed by
+                  assistive technology developers and represent consensus
+                  regarding: applicability and validity of the tests, and
+                  accuracy of test results.
+                </details>
+              </div>
+            </h2>
+            <div class="test-result-buttons">
+              <a
+                role="button"
+                tabindex="0"
+                href="https://github.com/bocoup/aria-at/issues/new?title=Feedback:%20%22Navigate%20backwards%20out%20of%20a%20checkbox%20group%20in%20interaction%20mode%22%20(Checkbox%20Example%20(Mixed-State),%20Test%2014,%20V23.08.23)&amp;labels=nvda,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-20-navigate-backwards-out-of-a-checkbox-group-interaction-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fcheckbox-tri-state%2Ftest-20-navigate-backwards-out-of-a-checkbox-group-interaction-jaws.collected.html)%0A-%20Report%20Page%3A%20%5BLink%5D(https%3A%2F%2Faria-at.w3.org%2Freport%2F67%2Ftargets%2F20%23result-YjM4MeyIxMiI6MjB9mU0OW)%0A-%20AT%3A%20NVDA%20(Version%202020.4)%0A-%20Browser%3A%20Chrome%20(Version%2099.0.4844.84)%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22checkbox-tri-state%22%2C%22versionString%22%3A%22V23.08.23%22%2C%22atName%22%3A%22NVDA%22%2C%22browserName%22%3A%22Chrome%22%2C%22testRowNumber%22%3A20%2C%22testSequenceNumber%22%3A14%2C%22isCandidateReview%22%3Afalse%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="circle-exclamation"
+                  class="svg-inline--fa fa-circle-exclamation"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path></svg
+                >Raise an Issue</a
+              ><a
+                role="button"
+                tabindex="0"
+                href="https://aria-at.netlify.app/tests/checkbox-tri-state/test-20-navigate-backwards-out-of-a-checkbox-group-interaction-jaws.collected.html"
+                target="_blank"
+                rel="noreferrer"
+                class="btn btn-secondary"
+                ><svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="up-right-from-square"
+                  class="svg-inline--fa fa-up-right-from-square"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512"
+                  color="#94979b">
+                  <path
+                    fill="currentColor"
+                    d="M352 0c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9L370.7 96 201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L416 141.3l41.4 41.4c9.2 9.2 22.9 11.9 34.9 6.9s19.8-16.6 19.8-29.6V32c0-17.7-14.3-32-32-32H352zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
+                >Open Test</a
+              >
+            </div>
+          </div>
+          <div class="css-1l6ouvs">
+            <h3>Results for each command</h3>
+            <h4>Shift+Tab&nbsp;Results:&nbsp;5 passed,&nbsp;0 failed</h4>
+            <p class="test-plan-results-response-p">NVDA Response:</p>
+            <blockquote class="test-plan-results-blockquote">
+              automatically seeded sample output
+            </blockquote>
+            <div class="table-responsive">
+              <table
+                aria-label="Results for test Navigate backwards out of a checkbox group in interaction mode"
+                class="test-plan-results-table table table-bordered">
+                <caption>
+                  Shift+Tab Results
+                </caption>
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Assertion</th>
+                    <th>Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Group boundary is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Role 'link' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>Name 'Navigate forwards from here' is conveyed</td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>MUST</td>
+                    <td>
+                      Other behaviors that create severe negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                  <tr>
+                    <td>SHOULD</td>
+                    <td>
+                      Other behaviors that create moderate negative impacts are
+                      not exhibited
+                    </td>
+                    <td>Passed</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            Other behaviors that create negative impact: None
+          </div>
+          <div class="css-pi9pv2">
+            <h3>
+              <button
+                id="disclosure-btn-run-history-YjM4MeyIxMiI6MjB9mU0OW"
+                type="button"
+                aria-expanded="false"
+                aria-controls="disclosure-btn-controls-run-history-YjM4MeyIxMiI6MjB9mU0OW"
+                class="css-k983ef">
+                Run History<svg
+                  aria-hidden="true"
+                  focusable="false"
+                  data-prefix="fas"
+                  data-icon="chevron-down"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                  role="img"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 512 512">
+                  <path
+                    fill="currentColor"
+                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                </svg>
+              </button>
+            </h3>
+            <div
+              role="region"
+              id="disclosure-container-run-history-YjM4MeyIxMiI6MjB9mU0OW"
+              aria-labelledby="disclosure-btn-run-history-YjM4MeyIxMiI6MjB9mU0OW"
+              class="css-u06emd">
+              <ul style="margin-bottom: 0px">
+                <li class="run-history-item css-j662fd">
+                  Tested with <b>NVDA 2020.4</b> and
+                  <b>Chrome 99.0.4844.84</b> by
+                  <b
+                    ><a href="https://github.com/esmeralda-baggins"
+                      >esmeralda-baggins</a
+                    ></b
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+        </main>
+      </div>
+      <span aria-live="polite" aria-atomic="true" class="css-1wkn33"></span>
+    </div>
+    <script src="/bundle.js"></script>
+  </body>
+</html>
