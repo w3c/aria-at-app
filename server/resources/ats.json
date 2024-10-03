@@ -1,38 +1,8 @@
 [
     {
-        "id": 2,
-        "name": "NVDA",
-        "key": "nvda",
-        "vendorId": null,
-        "defaultConfigurationInstructionsHTML": "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
-        "assertionTokens": {
-            "screenReader": "NVDA",
-            "interactionMode": "focus mode",
-            "readingMode": "browse mode",
-            "readingCursor": "browse mode caret"
-        },
-        "settings": {
-            "browseMode": {
-                "screenText": "browse mode on",
-                "instructions": [
-                    "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
-                    "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
-                ]
-            },
-            "focusMode": {
-                "screenText": "focus mode on",
-                "instructions": [
-                    "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
-                    "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
-                ]
-            }
-        }
-    },
-    {
         "id": 1,
         "name": "JAWS",
         "key": "jaws",
-        "vendorId": 1,
         "defaultConfigurationInstructionsHTML": "Configure JAWS with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
         "assertionTokens": {
             "screenReader": "JAWS",
@@ -58,10 +28,37 @@
         }
     },
     {
+        "id": 2,
+        "name": "NVDA",
+        "key": "nvda",
+        "defaultConfigurationInstructionsHTML": "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
+        "assertionTokens": {
+            "screenReader": "NVDA",
+            "interactionMode": "focus mode",
+            "readingMode": "browse mode",
+            "readingCursor": "browse mode caret"
+        },
+        "settings": {
+            "browseMode": {
+                "screenText": "browse mode on",
+                "instructions": [
+                    "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+                    "If NVDA made the focus mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn browse mode back on."
+                ]
+            },
+            "focusMode": {
+                "screenText": "focus mode on",
+                "instructions": [
+                    "Press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt;.",
+                    "If NVDA made the browse mode sound, press &lt;kbd&gt;Insert&lt;/kbd&gt;+&lt;kbd&gt;Space&lt;/kbd&gt; again to turn focus mode back on."
+                ]
+            }
+        }
+    },
+    {
         "id": 3,
         "name": "VoiceOver for macOS",
         "key": "voiceover_macos",
-        "vendorId": 4,
         "defaultConfigurationInstructionsHTML": "Configure VoiceOver with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
         "assertionTokens": {
             "screenReader": "VoiceOver",
