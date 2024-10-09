@@ -1,7 +1,10 @@
 /* eslint-disable no-console */
 const fs = require('fs');
 const { sequelize } = require('../../models');
-const populateFakeTestResults = require('./populateFakeTestResults');
+const {
+  populateFakeTestResults,
+  FAKE_RESULT_CONFLICTS_OPTIONS
+} = require('./populateFakeTestResults');
 
 const populateTestDatabase = async transaction => {
   const testDataScript = fs.readFileSync(
@@ -11,23 +14,8 @@ const populateTestDatabase = async transaction => {
 
   await sequelize.query(testDataScript, { transaction });
 
-  await populateFakeTestResults(
-    1,
-    [
-      'completeAndPassing',
-      'incompleteAndPassing',
-      'incompleteAndFailingDueToNoOutputAssertions',
-      'incompleteAndEmpty',
-      null,
-      'completeAndFailingDueToIncorrectAssertions',
-      'completeAndFailingDueToNoOutputAssertions',
-      'completeAndFailingDueToUnexpectedBehaviors',
-      'completeAndPassing'
-    ],
-    { transaction }
-  );
-
-  // Report 2 contains conflicts which is convenient to have in sample data
+  // Convenient way to generate conflicts between TestPlanRuns attached to
+  // the same TestPlanReport
   const conflicts = [
     ['completeAndPassing', 'completeAndFailingDueToIncorrectAssertions'],
     [
@@ -42,6 +30,24 @@ const populateTestDatabase = async transaction => {
   ];
 
   await populateFakeTestResults(
+    1,
+    [
+      'completeAndPassing',
+      'incompleteAndPassing',
+      'incompleteAndFailingDueToNoOutputAssertions',
+      'incompleteAndEmpty',
+      null,
+      'completeAndFailingDueToIncorrectAssertions',
+      'completeAndFailingDueToNoOutputAssertions',
+      'completeAndFailingDueToUnexpectedBehaviors'
+    ],
+    {
+      transaction,
+      numFakeTestResultConflicts: FAKE_RESULT_CONFLICTS_OPTIONS.ALL
+    }
+  );
+
+  await populateFakeTestResults(
     2,
     [
       'completeAndPassing',
@@ -51,7 +57,7 @@ const populateTestDatabase = async transaction => {
       conflicts[1][0],
       conflicts[2][0],
       conflicts[3][0],
-      'incompleteAndPassing'
+      'incompleteAndFailingDueToUnexpectedBehaviors'
     ],
     { transaction }
   );
@@ -66,10 +72,7 @@ const populateTestDatabase = async transaction => {
       conflicts[1][1],
       conflicts[2][1],
       conflicts[3][1],
-      'incompleteAndFailingDueToUnexpectedBehaviors',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing'
+      'incompleteAndFailingDueToUnexpectedBehaviors'
     ],
     { transaction }
   );
@@ -81,13 +84,7 @@ const populateTestDatabase = async transaction => {
       'completeAndPassing',
       'completeAndFailingDueToIncorrectAssertions',
       'completeAndFailingDueToNoOutputAssertions',
-      'completeAndFailingDueToUnexpectedBehaviors',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing'
+      'completeAndFailingDueToUnexpectedBehaviors'
     ],
     { transaction }
   );
@@ -101,8 +98,7 @@ const populateTestDatabase = async transaction => {
       'completeAndPassing',
       'completeAndFailingDueToNoOutputAssertions',
       'completeAndPassing',
-      'completeAndFailingDueToUnexpectedBehaviors',
-      'completeAndPassing'
+      'completeAndFailingDueToUnexpectedBehaviors'
     ],
     { transaction }
   );
@@ -115,8 +111,7 @@ const populateTestDatabase = async transaction => {
       'completeAndFailingDueToIncorrectAssertions',
       'completeAndPassing',
       'completeAndFailingDueToIncorrectAssertions',
-      'completeAndFailingDueToUnexpectedBehaviors',
-      'completeAndPassing'
+      'completeAndFailingDueToUnexpectedBehaviors'
     ],
     { transaction }
   );
@@ -129,103 +124,98 @@ const populateTestDatabase = async transaction => {
       'completeAndPassing',
       'completeAndFailingDueToIncorrectAssertions',
       'completeAndPassing',
-      'completeAndFailingDueToNoOutputAssertions',
-      'completeAndPassing'
+      'completeAndFailingDueToNoOutputAssertions'
     ],
     { transaction }
   );
 
+  await populateFakeTestResults(8, ['completeAndPassing'], { transaction });
+
+  await populateFakeTestResults(9, ['completeAndPassing'], { transaction });
+
+  await populateFakeTestResults(10, ['completeAndPassing'], { transaction });
+
+  await populateFakeTestResults(11, ['completeAndPassing'], { transaction });
+
+  await populateFakeTestResults(12, ['completeAndPassing'], { transaction });
+
+  await populateFakeTestResults(13, ['completeAndPassing'], { transaction });
+
+  await populateFakeTestResults(14, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(15, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(16, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(17, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(18, ['completeAndPassing'], {
+    transaction
+  });
+
+  await populateFakeTestResults(19, ['completeAndPassing'], {
+    transaction
+  });
+
+  // Slightly different from older already recommended TestPlanRun 13 to get
+  // multiple results shown for:
+  // Recommended Report + Checkbox Example (Mixed-State) + NVDA + Chrome
   await populateFakeTestResults(
-    8,
+    20,
     [
       'completeAndPassing',
       'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing'
+      'completeAndFailingDueToUnexpectedBehaviors'
     ],
     { transaction }
   );
 
+  // Conflicting with TestPlanRun 1
   await populateFakeTestResults(
-    9,
+    21,
     [
+      'completeAndFailingDueToIncorrectAssertions',
+      'incompleteAndPassing',
+      'incompleteAndFailingDueToNoOutputAssertions',
+      'incompleteAndEmpty',
       'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing'
+      'completeAndFailingDueToUnexpectedBehaviors'
     ],
-    { transaction }
+    {
+      transaction,
+      numFakeTestResultConflicts: FAKE_RESULT_CONFLICTS_OPTIONS.ALL
+    }
   );
 
-  await populateFakeTestResults(
-    10,
-    [
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing'
-    ],
-    { transaction }
-  );
-
-  await populateFakeTestResults(
-    11,
-    [
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing',
-      'completeAndPassing'
-    ],
-    { transaction }
-  );
-
-  await populateFakeTestResults(
-    12,
-    ['completeAndPassing', 'completeAndPassing', 'completeAndPassing'],
-    { transaction }
-  );
-
-  await populateFakeTestResults(
-    13,
-    ['completeAndPassing', 'completeAndPassing', 'completeAndPassing'],
-    { transaction }
-  );
-
-  await populateFakeTestResults(14, new Array(16).fill('completeAndPassing'), {
+  await populateFakeTestResults(22, ['completeAndPassing'], {
     transaction
   });
 
-  await populateFakeTestResults(15, new Array(8).fill('completeAndPassing'), {
+  await populateFakeTestResults(23, ['completeAndPassing'], {
     transaction
   });
 
-  await populateFakeTestResults(16, new Array(3).fill('completeAndPassing'), {
+  await populateFakeTestResults(24, ['completeAndPassing'], {
     transaction
   });
 
-  await populateFakeTestResults(17, new Array(3).fill('completeAndPassing'), {
+  await populateFakeTestResults(25, ['completeAndPassing'], {
     transaction
   });
 
-  await populateFakeTestResults(18, new Array(3).fill('completeAndPassing'), {
+  await populateFakeTestResults(26, ['completeAndPassing'], {
     transaction
   });
 
-  await populateFakeTestResults(19, new Array(12).fill('completeAndPassing'), {
+  await populateFakeTestResults(27, ['completeAndPassing'], {
     transaction
   });
 

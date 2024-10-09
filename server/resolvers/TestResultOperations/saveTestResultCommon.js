@@ -60,7 +60,7 @@ const saveTestResultCommon = async ({
   }
 
   if (isSubmit) {
-    assertTestResultIsValid(newTestResult);
+    assertTestResultIsValid(newTestResult, test.assertions);
     newTestResult.completedAt = new Date();
   } else {
     newTestResult.completedAt = null;
@@ -115,15 +115,22 @@ const saveTestResultCommon = async ({
   return populateData({ testResultId }, { context });
 };
 
-const assertTestResultIsValid = newTestResult => {
+const assertTestResultIsValid = (newTestResult, assertions = []) => {
   let failed = false;
 
   const checkAssertionResult = assertionResult => {
+    const isExcluded = assertions.find(
+      assertion =>
+        assertion.id === assertionResult.assertionId &&
+        assertion.priority === 'EXCLUDE'
+    );
+
     if (
       assertionResult.passed === null ||
       assertionResult.passed === undefined
     ) {
-      failed = true;
+      if (isExcluded) assertionResult.passed = false;
+      else failed = true;
     }
   };
 
