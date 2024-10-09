@@ -26,7 +26,7 @@ test('correctly displays statuses for single COMPLETED test run', async () => {
     {
       id: '0',
       testResults: new Array(3).fill(null),
-      tester: { username: 'bot' },
+      tester: { username: 'bot', isBot: true },
       collectionJob: {
         status: COLLECTION_JOB_STATUS.COMPLETED,
         testStatus: [
@@ -59,7 +59,7 @@ test('correctly ignores test results from a human-submitted test plan run', asyn
     {
       id: '0',
       testResults: new Array(2).fill(null),
-      tester: { username: 'bot' },
+      tester: { username: 'bot', isBot: true },
       collectionJob: {
         status: COLLECTION_JOB_STATUS.COMPLETED,
         testStatus: [
@@ -71,7 +71,7 @@ test('correctly ignores test results from a human-submitted test plan run', asyn
     {
       id: '1',
       testResults: new Array(2).fill(null),
-      tester: { username: 'human' },
+      tester: { username: 'human', isBot: false },
       collectionJob: null
     }
   ];
@@ -95,7 +95,7 @@ test('correctly displays statuses for CANCELLED test run', async () => {
     {
       id: '0',
       testResults: new Array(2).fill(null),
-      tester: { username: 'bot' },
+      tester: { username: 'bot', isBot: true },
       collectionJob: {
         status: COLLECTION_JOB_STATUS.CANCELLED,
         testStatus: [
@@ -127,7 +127,7 @@ test('correctly displays statuses for multiple RUNNING and QUEUED test runs', as
     {
       id: '0',
       testResults: new Array(2).fill(null),
-      tester: { username: 'bot' },
+      tester: { username: 'bot', isBot: true },
       collectionJob: {
         status: COLLECTION_JOB_STATUS.RUNNING,
         testStatus: [
@@ -140,7 +140,7 @@ test('correctly displays statuses for multiple RUNNING and QUEUED test runs', as
     {
       id: '1',
       testResults: new Array(2).fill(null),
-      tester: { username: 'bot' },
+      tester: { username: 'bot', isBot: true },
       collectionJob: {
         status: COLLECTION_JOB_STATUS.CANCELLED,
         testStatus: [
