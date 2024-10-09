@@ -34,75 +34,75 @@ const testPlanVersionsQuery = ({
 }) => {
   return query(
     gql`
-            query {
-                testPlanVersions(
-                    directory: ${directory}
-                    phases: ${phases}
-                ) {
-                    id
-                    phase
-                    gitSha
-                    metadata
-                    testPlan {
-                        directory
-                    }
-                    testPlanReports {
-                        id
-                        markedFinalAt
-                        at {
-                            id
-                        }
-                        browser {
-                            id
-                        }
-                        draftTestPlanRuns {
-                            testResults {
-                                id
-                                completedAt
-                                test {
-                                    id
-                                    rowNumber
-                                    title
-                                    ats {
-                                        id
-                                        name
-                                    }
-                                    scenarios {
-                                        id
-                                        commands {
-                                            id
-                                            text
-                                        }
-                                    }
-                                    assertions {
-                                        id
-                                        priority
-                                        text
-                                    }
-                                }
-                                scenarioResults {
-                                    output
-                                    assertionResults {
-                                        id
-                                        assertion {
-                                            text
-                                        }
-                                        passed
-                                    }
-                                    scenario {
-                                        id
-                                        commands {
-                                            id
-                                            text
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+      query {
+        testPlanVersions(
+          directory: ${directory}
+          phases: ${phases}
+        ) {
+          id
+          phase
+          gitSha
+          metadata
+          testPlan {
+            directory
+          }
+          testPlanReports {
+            id
+            markedFinalAt
+            at {
+              id
             }
-        `,
+            browser {
+              id
+            }
+            draftTestPlanRuns {
+              testResults {
+                id
+                completedAt
+                test {
+                  id
+                  rowNumber
+                  title
+                  ats {
+                    id
+                    name
+                  }
+                  scenarios {
+                    id
+                    commands {
+                      id
+                      text
+                    }
+                  }
+                  assertions {
+                    id
+                    priority
+                    text
+                  }
+                }
+                scenarioResults {
+                  output
+                  assertionResults {
+                    id
+                    assertion {
+                      text
+                    }
+                    passed
+                  }
+                  scenario {
+                    id
+                    commands {
+                      id
+                      text
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
     { transaction }
   );
 };
@@ -114,87 +114,87 @@ const updateVersionToPhaseQuery = (
 ) => {
   return mutate(
     gql`
-            mutation {
-                testPlanVersion(id: ${testPlanVersionId}) {
-                    updatePhase(
-                        phase: ${phase}
-                        testPlanVersionDataToIncludeId: ${
-                          testPlanVersionDataToIncludeId ?? null
-                        }
-                    ) {
-                        testPlanVersion {
-                            id
-                            phase
-                            gitSha
-                            metadata
-                            testPlan {
-                                directory
-                            }
-                            testPlanReports {
-                                id
-                                markedFinalAt
-                                at {
-                                    id
-                                }
-                                minimumAtVersion {
-                                    id
-                                }
-                                exactAtVersion {
-                                    id
-                                }
-                                browser {
-                                    id
-                                }
-                                draftTestPlanRuns {
-                                    testResults {
-                                        id
-                                        completedAt
-                                        test {
-                                            id
-                                            rowNumber
-                                            title
-                                            ats {
-                                                id
-                                                name
-                                            }
-                                            scenarios {
-                                                id
-                                                commands {
-                                                    id
-                                                    text
-                                                }
-                                            }
-                                            assertions {
-                                                id
-                                                priority
-                                                text
-                                            }
-                                        }
-                                        scenarioResults {
-                                            output
-                                            assertionResults {
-                                                id
-                                                assertion {
-                                                    text
-                                                }
-                                                passed
-                                            }
-                                            scenario {
-                                                id
-                                                commands {
-                                                    id
-                                                    text
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+      mutation {
+        testPlanVersion(id: ${testPlanVersionId}) {
+          updatePhase(
+            phase: ${phase}
+            testPlanVersionDataToIncludeId: ${
+              testPlanVersionDataToIncludeId ?? null
             }
-        `,
+          ) {
+            testPlanVersion {
+              id
+              phase
+              gitSha
+              metadata
+              testPlan {
+                directory
+              }
+              testPlanReports {
+                id
+                markedFinalAt
+                at {
+                  id
+                }
+                minimumAtVersion {
+                  id
+                }
+                exactAtVersion {
+                  id
+                }
+                browser {
+                  id
+                }
+                draftTestPlanRuns {
+                  testResults {
+                    id
+                    completedAt
+                    test {
+                      id
+                      rowNumber
+                      title
+                      ats {
+                        id
+                        name
+                      }
+                      scenarios {
+                        id
+                        commands {
+                          id
+                          text
+                        }
+                      }
+                      assertions {
+                        id
+                        priority
+                        text
+                      }
+                    }
+                    scenarioResults {
+                      output
+                      assertionResults {
+                        id
+                        assertion {
+                          text
+                        }
+                        passed
+                      }
+                      scenario {
+                        id
+                        commands {
+                          id
+                          text
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    `,
     { transaction }
   );
 };
@@ -208,32 +208,32 @@ const createTestPlanReportQuery = (
 ) => {
   return mutate(
     gql`
-            mutation {
-                createTestPlanReport(input: {
-                    testPlanVersionId: ${testPlanVersionId}
-                    atId: ${atId}
-                    minimumAtVersionId: ${minimumAtVersionId}
-                    browserId: ${browserId}
-                }) {
-                    testPlanReport {
-                        id
-                        at {
-                            id
-                        }
-                        browser {
-                            id
-                        }
-                    }
-                    testPlanVersion {
-                        id
-                        phase
-                        testPlanReports {
-                            id
-                        }
-                    }
-                }
+      mutation {
+        createTestPlanReport(input: {
+          testPlanVersionId: ${testPlanVersionId}
+          atId: ${atId}
+          minimumAtVersionId: ${minimumAtVersionId}
+          browserId: ${browserId}
+        }) {
+          testPlanReport {
+            id
+            at {
+              id
             }
-        `,
+            browser {
+              id
+            }
+          }
+          testPlanVersion {
+            id
+            phase
+            testPlanReports {
+              id
+            }
+          }
+        }
+      }
+    `,
     { transaction }
   );
 };
@@ -241,17 +241,17 @@ const createTestPlanReportQuery = (
 const markAsFinal = (testPlanReportId, { transaction }) => {
   return mutate(
     gql`
-            mutation {
-                testPlanReport(id: ${testPlanReportId}) {
-                    markAsFinal {
-                        testPlanReport {
-                            id
-                            markedFinalAt
-                        }
-                    }
-                }
+      mutation {
+        testPlanReport(id: ${testPlanReportId}) {
+          markAsFinal {
+            testPlanReport {
+              id
+              markedFinalAt
             }
-        `,
+          }
+        }
+      }
+    `,
     { transaction }
   );
 };
@@ -306,8 +306,12 @@ const getTestableTestPlanVersions = async ({
     // remove any newer version that deprecated it
     await rawQuery(
       `
-                    delete from "TestPlanReport" where "testPlanVersionId" = ${newTestPlanVersion.id};
-                    delete from "TestPlanVersion" where id = ${newTestPlanVersion.id};`,
+        delete
+        from "TestPlanReport"
+        where "testPlanVersionId" = ${newTestPlanVersion.id};
+        delete
+        from "TestPlanVersion"
+        where id = ${newTestPlanVersion.id};`,
       { transaction }
     );
 
@@ -405,15 +409,15 @@ describe('data management', () => {
 
       const previous = await query(
         gql`
-                    query {
-                        testPlanVersion(id: ${testPlanVersionId}) {
-                            phase
-                            testPlanReports {
-                                id
-                            }
-                        }
-                    }
-                `,
+          query {
+            testPlanVersion(id: ${testPlanVersionId}) {
+              phase
+              testPlanReports {
+                id
+              }
+            }
+          }
+        `,
         { transaction }
       );
       const previousPhase = previous.testPlanVersion.phase;
@@ -435,12 +439,12 @@ describe('data management', () => {
 
       const testPlanReportsToMarkAsFinalResult = await query(
         gql`
-                    query {
-                        testPlanReports(testPlanVersionId: ${testPlanVersionId}) {
-                            id
-                        }
-                    }
-                `,
+          query {
+            testPlanReports(testPlanVersionId: ${testPlanVersionId}) {
+              id
+            }
+          }
+        `,
         { transaction }
       );
 

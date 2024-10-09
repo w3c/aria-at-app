@@ -9,7 +9,12 @@ export default testQueuePageQuery => [
           __typename: 'User',
           id: '4',
           username: 'bar-foo',
-          roles: ['TESTER']
+          roles: ['TESTER'],
+          company: {
+            id: '1',
+            name: 'Company',
+            ats: []
+          }
         },
         users: [
           {
@@ -18,7 +23,12 @@ export default testQueuePageQuery => [
             username: 'foo-bar',
             roles: ['ADMIN', 'TESTER'],
             isBot: false,
-            ats: []
+            ats: [],
+            company: {
+              id: '1',
+              name: 'Company',
+              ats: []
+            }
           },
           {
             __typename: 'User',
@@ -26,7 +36,12 @@ export default testQueuePageQuery => [
             username: 'bar-foo',
             roles: ['TESTER'],
             isBot: false,
-            ats: []
+            ats: [],
+            company: {
+              id: '1',
+              name: 'Company',
+              ats: []
+            }
           },
           {
             __typename: 'User',
@@ -34,7 +49,12 @@ export default testQueuePageQuery => [
             username: 'boo-far',
             roles: ['TESTER'],
             isBot: false,
-            ats: []
+            ats: [],
+            company: {
+              id: '1',
+              name: 'Company',
+              ats: []
+            }
           }
         ],
         ats: [],

@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { getAtVersions } = require('../models/services/AtService');
+const { AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS } = require('./constants');
 
 const getAtVersionWithRequirements = async (
   atId,
@@ -33,11 +34,16 @@ const getAtVersionWithRequirements = async (
       transaction
     });
 
-    const latestSupportedAtVersion = matchingAtVersions.find(async atv => {
-      // supportedByAutomation is a computed graphql field,
-      // so we need to compute directly here
-      return atv.supportedByAutomation;
-    });
+    const supportedVersions =
+      AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[
+        matchingAtVersions[0]?.at?.name
+      ] || [];
+
+    const latestSupportedAtVersion = matchingAtVersions.find(
+      atv =>
+        supportedVersions.includes(atv.name) &&
+        new Date(atv.releasedAt) >= new Date(minimumAtVersion.releasedAt)
+    );
 
     if (!latestSupportedAtVersion) {
       throw new Error(
