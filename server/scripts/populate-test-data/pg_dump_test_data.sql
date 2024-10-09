@@ -84,13 +84,15 @@ INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinal
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (18, get_test_plan_version_id(text 'Command Button Example', '2'), '2023-12-13 14:18:23.602-05', '2023-12-14', 3, 3, 3, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (19, get_test_plan_version_id(text 'Modal Dialog Example', '2'), '2024-05-14 14:18:23.602-05', 2, 2, 2, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (20, get_test_plan_version_id(text 'Checkbox Example (Mixed-State)', '1'), '2021-05-14 14:18:23.602-05', '2022-08-07', 2, 4, 2, 'READY');
--- Fully recommended TestPlanVersion
+-- Fully recommended TestPlanVersion [START]
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (21, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 1, 1, 1, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (22, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 1, 1, 2, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (23, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 2, 4, 1, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (24, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 2, 4, 2, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (25, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 3, 5, 2, 'READY');
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (26, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 3, 5, 3, 'READY');
+--- Fully recommended TestPlanVersion [END]
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (27, get_test_plan_version_id(text 'Color Viewer Slider', '2'), '2024-10-02 14:18:23.602-05', 3, 3, 3, 'READY');
 
 --
 -- Data for Name: TestPlanVersion; Type: TABLE DATA; Schema: public; Owner: atr
@@ -104,6 +106,7 @@ UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2022-07
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2023-12-14' WHERE id = get_test_plan_version_id(text 'Command Button Example', '2');
 UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2024-05-14' WHERE id = get_test_plan_version_id(text 'Modal Dialog Example', '2');
 UPDATE "TestPlanVersion" SET "phase" = 'RECOMMENDED', "draftPhaseReachedAt" = '2024-09-20', "candidatePhaseReachedAt" = '2024-09-22', "recommendedPhaseTargetDate" = '2025-03-21', "recommendedPhaseReachedAt" = '2024-09-23' WHERE id = get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2');
+UPDATE "TestPlanVersion" SET "phase" = 'DRAFT', "draftPhaseReachedAt" = '2024-10-02' WHERE id = get_test_plan_version_id(text 'Color Viewer Slider', '2');
 
 --
 -- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: atr
@@ -154,6 +157,7 @@ INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults"
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (25, 2, 24, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (26, 2, 25, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (27, 2, 26, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (28, 1, 27, '[]');
 
 --
 -- Data for Name: CollectionJob; Type: TABLE DATA; Schema: public; Owner: atr

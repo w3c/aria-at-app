@@ -108,22 +108,24 @@ describe('Test Run when not signed in', () => {
 });
 
 describe('Test Run when signed in as tester', () => {
-  const assignSelfAndNavigateToRun = async page => {
-    const modalDialogSectionButtonSelector =
-      'button#disclosure-btn-modal-dialog-0';
-    const modalDialogTableSelector =
-      'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+  const assignSelfAndNavigateToRun = async (
+    page,
+    {
+      testPlanSectionButtonSelector = 'button#disclosure-btn-modal-dialog-0',
+      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]'
+    } = {}
+  ) => {
     const startTestingButtonSelector =
       'a[role="button"] ::-p-text(Start Testing)';
 
     // Expand Modal Dialog's V24.06.07 section
-    await page.waitForSelector(modalDialogSectionButtonSelector);
-    await page.click(modalDialogSectionButtonSelector);
+    await page.waitForSelector(testPlanSectionButtonSelector);
+    await page.click(testPlanSectionButtonSelector);
 
     // Wait for the table to render
-    await page.waitForSelector(modalDialogTableSelector);
+    await page.waitForSelector(testPlanTableSelector);
 
-    await page.$eval(modalDialogTableSelector, el => {
+    await page.$eval(testPlanTableSelector, el => {
       // First button found on table would be 'Assign Yourself'
       el.querySelector('button').click();
     });
@@ -159,6 +161,72 @@ describe('Test Run when signed in as tester', () => {
     );
     await page.click(atBrowserModalSaveButtonSelector);
     await page.waitForNetworkIdle();
+  };
+
+  const handlePageSubmit = async (page, { expectConflicts = true } = {}) => {
+    await page.waitForSelector('h1 ::-p-text(Test 1)');
+
+    // Confirm that submission cannot happen with empty form
+    // Specificity with selector because there's a 2nd 'hidden' button coming
+    // from the harness which is what is actually called for the submit event
+    const submitResultsButtonSelector =
+      'button[class="btn btn-primary"] ::-p-text(Submit Results)';
+    await page.waitForSelector(submitResultsButtonSelector);
+    await page.click(submitResultsButtonSelector);
+    await page.waitForNetworkIdle();
+    await page.waitForSelector('::-p-text((required))');
+
+    // Should refocus on topmost output textarea on page
+    const activeElementAfterEmptySubmit = await page.evaluate(() => {
+      return {
+        id: document.activeElement.id,
+        nodeName: document.activeElement.nodeName.toLowerCase()
+      };
+    });
+
+    // Input output for valid submission
+    await page.evaluate(() => {
+      const yesRadios = document.querySelectorAll(
+        'input[data-testid^="radio-yes-"]'
+      );
+      const noRadios = document.querySelectorAll(
+        'input[data-testid^="radio-no-"]'
+      );
+      const noUndesiredRadios = document.querySelectorAll(
+        'input[id^="problem-"][id$="-true"]'
+      );
+      const noOutputCheckboxes = document.querySelectorAll(
+        'input[id^="no-output-checkbox"]'
+      );
+
+      yesRadios.forEach((radio, index) => {
+        if (index % 2 === 0) {
+          radio.click();
+        } else {
+          noRadios[index].click();
+        }
+      });
+
+      noUndesiredRadios.forEach(radio => {
+        radio.click();
+      });
+
+      noOutputCheckboxes.forEach(checkbox => {
+        checkbox.click();
+      });
+    });
+    // Submit valid form
+    await page.click(submitResultsButtonSelector);
+    await page.waitForNetworkIdle();
+    if (expectConflicts)
+      await page.waitForSelector(
+        '::-p-text(This test has conflicting results)'
+      );
+    await page.waitForSelector('h2 ::-p-text(Test Results)');
+    await page.waitForSelector('button ::-p-text(Edit Results)');
+
+    expect(activeElementAfterEmptySubmit.id).toBe('speechoutput-0');
+    expect(activeElementAfterEmptySubmit.nodeName).toBe('textarea');
   };
 
   it('self assigns tester on Test Queue page and opens test run', async () => {
@@ -324,72 +392,25 @@ describe('Test Run when signed in as tester', () => {
   });
 
   it('inputs results and successfully submits', async () => {
-    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      await assignSelfAndNavigateToRun(page);
+    await getPage(
+      { role: 'tester', url: '/test-queue' },
+      async (page, { baseUrl }) => {
+        await assignSelfAndNavigateToRun(page);
+        await handlePageSubmit(page);
 
-      await page.waitForSelector('h1 ::-p-text(Test 1)');
-
-      // Confirm that submission cannot happen with empty form
-      // Specificity with selector because there's a 2nd 'hidden' button coming
-      // from the harness which is what is actually called for the submit event
-      const submitResultsButtonSelector =
-        'button[class="btn btn-primary"] ::-p-text(Submit Results)';
-      await page.waitForSelector(submitResultsButtonSelector);
-      await page.click(submitResultsButtonSelector);
-      await page.waitForNetworkIdle();
-      await page.waitForSelector('::-p-text((required))');
-
-      // Should refocus on topmost output textarea on page
-      const activeElementAfterEmptySubmit = await page.evaluate(() => {
-        return {
-          id: document.activeElement.id,
-          nodeName: document.activeElement.nodeName.toLowerCase()
-        };
-      });
-
-      // Input output for valid submission
-      await page.evaluate(() => {
-        const yesRadios = document.querySelectorAll(
-          'input[data-testid^="radio-yes-"]'
-        );
-        const noRadios = document.querySelectorAll(
-          'input[data-testid^="radio-no-"]'
-        );
-        const noUndesiredRadios = document.querySelectorAll(
-          'input[id^="problem-"][id$="-true"]'
-        );
-        const noOutputCheckboxes = document.querySelectorAll(
-          'input[id^="no-output-checkbox"]'
-        );
-
-        yesRadios.forEach((radio, index) => {
-          if (index % 2 === 0) {
-            radio.click();
-          } else {
-            noRadios[index].click();
-          }
+        // Do the same for Color Viewer Slider which has specially handled
+        // exclusions;
+        // Excluded in tests.csv and re-included in *-commands.csv
+        await page.goto(`${baseUrl}/test-queue`);
+        await assignSelfAndNavigateToRun(page, {
+          testPlanSectionButtonSelector:
+            'button#disclosure-btn-horizontal-slider-0',
+          testPlanTableSelector:
+            'table[aria-label="Reports for Color Viewer Slider V24.06.26 in draft phase"]'
         });
-
-        noUndesiredRadios.forEach(radio => {
-          radio.click();
-        });
-
-        noOutputCheckboxes.forEach(checkbox => {
-          checkbox.click();
-        });
-      });
-      // Submit valid form
-      await page.click(submitResultsButtonSelector);
-      await page.waitForNetworkIdle();
-      await page.waitForSelector(
-        '::-p-text(This test has conflicting results)'
-      );
-      await page.waitForSelector('h2 ::-p-text(Test Results)');
-      await page.waitForSelector('button ::-p-text(Edit Results)');
-
-      expect(activeElementAfterEmptySubmit.id).toBe('speechoutput-0');
-      expect(activeElementAfterEmptySubmit.nodeName).toBe('textarea');
-    });
+        await handlePageSubmit(page, { expectConflicts: false });
+      }
+    );
   });
 
   it('opens popup with content after clicking "Open Test Page" button', async () => {
