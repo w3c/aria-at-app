@@ -1,3 +1,16 @@
+## [1.9.0](https://github.com/w3c/aria-at-app/compare/v1.8.1...v1.9.0) (2024-10-09)
+
+
+### Features
+
+* Vendor verification ([#1208](https://github.com/w3c/aria-at-app/issues/1208)) ([b8b13d4](https://github.com/w3c/aria-at-app/commit/b8b13d48a5e05e31613bfea54678a30b525d18c6))
+
+
+### Bug Fixes
+
+* Add tests for retry cancelled collection jobs ([#1214](https://github.com/w3c/aria-at-app/issues/1214)) ([34d7aac](https://github.com/w3c/aria-at-app/commit/34d7aac53492b5077fe487ef51e2a7bd5c536afc))
+* Assertion with EXCLUDE priority causing test result submit errors ([#1229](https://github.com/w3c/aria-at-app/issues/1229)) ([d7cc1fd](https://github.com/w3c/aria-at-app/commit/d7cc1fd6efe3a72b3df6158a5d1fb9580f3f6de2))
+
 ### [1.8.1](https://github.com/w3c/aria-at-app/compare/v1.8.0...v1.8.1) (2024-09-23)
 
 
