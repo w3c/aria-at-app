@@ -60,8 +60,11 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
     };
     let anyPossibleUpdates = false;
     if (testPlanRunsQueryResult?.testPlanRuns) {
-      for (const { collectionJob } of testPlanRunsQueryResult.testPlanRuns) {
-        if (collectionJob?.testStatus) {
+      for (const {
+        collectionJob,
+        tester
+      } of testPlanRunsQueryResult.testPlanRuns) {
+        if (collectionJob?.testStatus && tester?.isBot) {
           for (const { status } of collectionJob.testStatus) {
             counter[status]++;
             if (status === 'QUEUED' || status === 'RUNNING') {
