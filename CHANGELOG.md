@@ -1,3 +1,10 @@
+### [1.9.1](https://github.com/w3c/aria-at-app/compare/v1.9.0...v1.9.1) (2024-10-10)
+
+
+### Bug Fixes
+
+* Only include CollectionJob metrics in Bot Status calculation on Test Queue page when `tester.isBot` is true ([#1237](https://github.com/w3c/aria-at-app/issues/1237)) ([84e0bd0](https://github.com/w3c/aria-at-app/commit/84e0bd0b46e80bea8c5c43eae3b5b4e6ffdce5b9))
+
 ## [1.9.0](https://github.com/w3c/aria-at-app/compare/v1.8.1...v1.9.0) (2024-10-09)
 
 
