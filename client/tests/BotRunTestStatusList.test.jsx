@@ -111,12 +111,14 @@ test('correctly ignores test results from a human-submitted test plan run with a
       id: '1',
       testResults: new Array(3).fill(null),
       tester: { username: 'human', isBot: false },
+      collectionJob: {
         status: COLLECTION_JOB_STATUS.COMPLETED,
         testStatus: [
           { status: COLLECTION_JOB_STATUS.COMPLETED },
           { status: COLLECTION_JOB_STATUS.COMPLETED },
           { status: COLLECTION_JOB_STATUS.COMPLETED }
         ]
+      }
     }
   ];
 
