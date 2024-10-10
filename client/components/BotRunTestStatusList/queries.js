@@ -6,6 +6,7 @@ export const TEST_PLAN_RUNS_TEST_RESULTS_QUERY = gql`
       id
       tester {
         username
+        isBot
       }
       testResults {
         id
