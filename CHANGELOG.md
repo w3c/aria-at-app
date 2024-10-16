@@ -1,3 +1,10 @@
+### [1.9.2](https://github.com/w3c/aria-at-app/compare/v1.9.1...v1.9.2) (2024-10-16)
+
+
+### Bug Fixes
+
+* Remove errant trim in vendor auth ([#1244](https://github.com/w3c/aria-at-app/issues/1244)) ([25edf06](https://github.com/w3c/aria-at-app/commit/25edf06156fe8f2e09bde72c093b61b3b03953ad))
+
 ### [1.9.1](https://github.com/w3c/aria-at-app/compare/v1.9.0...v1.9.1) (2024-10-10)
 
 

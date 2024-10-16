@@ -83,7 +83,7 @@ const oauthRedirectFromGithubController = async (req, res) => {
       vendor => vendor.split('|')[0] === githubUsername
     );
     if (vendorEntry) {
-      const [, companyName] = vendorEntry.split('|').trim();
+      const [, companyName] = vendorEntry.trim().split(/\s*\|\s*/);
       const vendor = await findVendorByName({
         name: companyName,
         transaction: req.transaction
