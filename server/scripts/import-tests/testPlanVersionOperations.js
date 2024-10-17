@@ -62,7 +62,9 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
 
   const { support } = await updateJsons();
 
-  const ats = await At.findAll();
+  const ats = await At.findAll({
+    order: [['id', 'ASC']]
+  });
   await updateAtsJson({ ats, supportAts: support.ats });
 
   for (const directory of fse.readdirSync(builtTestsDirectory)) {
