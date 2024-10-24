@@ -22,12 +22,14 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
   // the assertionStatement, assertionPhrase, settings or instructions content
   // being changed
   if (forUpdateCompare) {
-    // Don't factor in settings and instructions changes during update
-    // eligibility in the case where ONLY the instructions has changed,
-    // so that the updated instructions or settings are shown when the
-    // copy process happens
+    // Don't factor in settings, instructions and references changes for
+    // update eligibility in the case where ONLY the settings, instructions or
+    // references has changed.
+    // The updated settings, instructions or references should be shown when
+    // the copy process is done
     propertiesToOmit.push('renderableContent.target.at.settings');
     propertiesToOmit.push('renderableContent.instructions');
+    propertiesToOmit.push('renderableContent.info.references');
     // for v1 format since structure is:
     // { ..., renderableContent: { 1: ..., 2: ... }, ... }
     for (let key in test.renderableContent) {
