@@ -33,7 +33,7 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). The 
     ```
     yarn sequelize db:seed:all
     ```
-4. Import the most recent tests from the [aria-at repository](https://github.com/w3c/aria-at):
+4. Import the most recent tests and files from the [aria-at repository](https://github.com/w3c/aria-at):
     ```
     yarn db-import-tests:dev -c "5fe7afd82fe51c185b8661276105190a59d47322 1aa3b74d24d340362e9f511eae33788d55487d12 ab77d47ab19db71c635c9bb459ba5c34182e1400 d34eddbb8e751f07bd28d952de15fa7fe5f07353";
     yarn db-import-tests:dev;
@@ -61,11 +61,11 @@ The sample data which is used in test environments can also be populated on deve
 yarn workspace server db-populate-sample-data:dev;
 ```
 
-### Cloning the Production Database
+### Cloning and using live environments database dumps locally
 
-The prerequisite for the following steps is SSH access to the production server.
+The prerequisite for the following steps is SSH access to the `staging` or `production` server.
 
-1. Follow the [manual backup instructions](../deploy/README.md#manual-db-backup) which will produce a local database dump of the production database.
+1. Follow the [manual backup instructions](../deploy/README.md#manual-db-backup) which will produce a local database dump of the `staging` or `production` database.
 2. Drop your **local** aria_at_report database using your preferred tool.
 3. Initialize the database in an empty state:
     ```
@@ -85,6 +85,11 @@ The prerequisite for the following steps is SSH access to the production server.
     yarn sequelize db:migrate;
     yarn sequelize db:seed:all;
     ```
+6. Ensure you have the most recent tests and files from the [aria-at repository](https://github.com/w3c/aria-at):
+    ```
+    yarn db-import-tests:dev;
+    ```
+7. Run the application.
 
 ## Test Database
 
