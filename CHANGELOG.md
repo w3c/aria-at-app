@@ -1,3 +1,10 @@
+### [1.9.3](https://github.com/w3c/aria-at-app/compare/v1.9.2...v1.9.3) (2024-10-28)
+
+
+### Bug Fixes
+
+* Ignore `renderableContent.info.references` changes when doing test results copy ([#1261](https://github.com/w3c/aria-at-app/issues/1261)) ([41c968b](https://github.com/w3c/aria-at-app/commit/41c968bf8163132c6f8fcb8852487fb8652e0680))
+
 ### [1.9.2](https://github.com/w3c/aria-at-app/compare/v1.9.1...v1.9.2) (2024-10-16)
 
 
