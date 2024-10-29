@@ -42,6 +42,7 @@ const FilterButtons = ({
         return (
           <li key={value}>
             <StyledFilterButton
+              data-test={`filter-${value.toLowerCase()}`}
               variant="secondary"
               aria-pressed={isActive}
               active={isActive}

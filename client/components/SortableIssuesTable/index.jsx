@@ -56,9 +56,9 @@ const SortableIssuesTable = ({ issues }) => {
   const compareByStatus = (a, b) => {
     if (a.isOpen !== b.isOpen) {
       if (sortOrder === TABLE_SORT_ORDERS.ASC) {
-        return a.isOpen ? 1 : -1; // Closed first for ascending
+        return a.isOpen ? -1 : 1; // Open first for ascending
       }
-      return a.isOpen ? -1 : 1; // Open first for descending
+      return a.isOpen ? 1 : -1; // Closed first for descending
     }
     // If status is the same, sort by date created (newest first)
     return new Date(b.createdAt) - new Date(a.createdAt);
@@ -116,6 +116,7 @@ const SortableIssuesTable = ({ issues }) => {
             title={title}
             active={activeSort === field}
             onSort={handleSort(field)}
+            data-test={`sort-${field.toLowerCase()}`}
           />
         ))}
       </tr>
@@ -125,7 +126,11 @@ const SortableIssuesTable = ({ issues }) => {
   const renderTableBody = () => (
     <tbody>
       {sortedAndFilteredIssues.map(issue => (
-        <tr key={issue.link}>
+        <tr
+          key={issue.link}
+          data-test="issue-row"
+          data-status={issue.isOpen ? 'open' : 'closed'}
+        >
           <td>
             <a
               target="_blank"
@@ -140,7 +145,7 @@ const SortableIssuesTable = ({ issues }) => {
               {issue.title}
             </a>
           </td>
-          <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
+          <td data-test="issue-status">{issue.isOpen ? 'Open' : 'Closed'}</td>
           <td>{issue.at?.name ?? 'AT not specified'}</td>
           <td>{dates.convertDateToString(issue.createdAt, 'MMM D, YYYY')}</td>
           <td>
@@ -162,7 +167,7 @@ const SortableIssuesTable = ({ issues }) => {
         &nbsp;closed)
       </h2>
       <FilterButtons
-        filterLabel="Show:"
+        filterLabel="Filter"
         filterAriaLabel="Filter GitHub issues"
         filterOptions={FILTER_OPTIONS}
         activeFilter={activeFilter}
@@ -173,7 +178,11 @@ const SortableIssuesTable = ({ issues }) => {
           No GitHub Issues
         </ThemeTableUnavailable>
       ) : (
-        <ThemeTable bordered aria-labelledby="github-issues">
+        <ThemeTable
+          bordered
+          aria-labelledby="github-issues"
+          data-test="issues-table"
+        >
           {renderTableHeader()}
           {renderTableBody()}
         </ThemeTable>
