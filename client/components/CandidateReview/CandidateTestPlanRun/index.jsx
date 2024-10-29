@@ -121,7 +121,7 @@ const CandidateTestPlanRun = () => {
       setFirstTimeViewing(true);
       setViewedTests(tests => [...tests, currentTest.id]);
       await addViewerToTest(currentTest.id);
-      refetch();
+      await refetch();
     } else {
       setFirstTimeViewing(false);
     }
@@ -151,7 +151,7 @@ const CandidateTestPlanRun = () => {
 
   const submitApproval = async (status = '') => {
     if (status === 'APPROVED') {
-      updateVendorStatus(true);
+      await updateVendorStatus(true);
       setConfirmationModal(
         <ApprovedModal
           handleAction={async () => {
@@ -180,8 +180,9 @@ const CandidateTestPlanRun = () => {
       if (
         !tests[0].viewers?.find(viewer => viewer.username === data.me.username)
       ) {
-        addViewerToTest(tests[0].id);
-        setFirstTimeViewing(true);
+        addViewerToTest(tests[0].id).then(() => {
+          setFirstTimeViewing(true);
+        });
       }
       const viewedTests = [
         tests[0].id,
@@ -212,23 +213,17 @@ const CandidateTestPlanRun = () => {
   useEffect(() => {
     if (data) {
       updateVendorStatus();
-    }
-  }, [reviewStatus]);
-
-  useEffect(() => {
-    if (data) {
       updateTestViewed();
+      if (currentTestIndex !== 0) setIsFirstTest(false);
+      if (tests?.length === 1) setIsLastTest(true);
+      if (currentTestIndex + 1 === tests?.length) setIsLastTest(true);
     }
-  }, [currentTestIndex]);
+  }, [reviewStatus, currentTestIndex]);
 
   useEffect(() => {
-    if (data) {
-      setIsLastTest(tests?.length === 1);
-    }
-  }, [data, tests]);
-
-  useEffect(() => {
-    if (isLastTest) finishButtonRef.current.focus();
+    // Prevent a plan with only 1 test from immediately pushing the focus to the
+    // submit button
+    if (isLastTest && tests?.length !== 1) finishButtonRef.current.focus();
   }, [isLastTest]);
 
   if (error)
@@ -377,9 +372,9 @@ const CandidateTestPlanRun = () => {
     NVDA: 'nvda'
   };
 
-  if (githubAtLabelMap[at] == 'vo') {
+  if (githubAtLabelMap[at] === 'vo') {
     fileBugUrl = 'https://bugs.webkit.org/buglist.cgi?quicksearch=voiceover';
-  } else if (githubAtLabelMap[at] == 'nvda') {
+  } else if (githubAtLabelMap[at] === 'nvda') {
     fileBugUrl = 'https://github.com/nvaccess/nvda/issues';
   } else {
     fileBugUrl =
@@ -660,14 +655,14 @@ const CandidateTestPlanRun = () => {
             issue =>
               issue.isCandidateReview &&
               issue.feedbackType === 'FEEDBACK' &&
-              issue.author == data.me.username
+              issue.author === data.me.username
           )}
           feedbackGithubUrl={feedbackGithubUrl}
           changesRequestedIssues={testPlanReport.issues?.filter(
             issue =>
               issue.isCandidateReview &&
               issue.feedbackType === 'CHANGES_REQUESTED' &&
-              issue.author == data.me.username
+              issue.author === data.me.username
           )}
           changesRequestedGithubUrl={changesRequestedGithubUrl}
           handleAction={submitApproval}
