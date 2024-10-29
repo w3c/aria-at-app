@@ -29,6 +29,12 @@ const SortableIssuesTable = ({ issues }) => {
   const [sortOrder, setSortOrder] = useState(TABLE_SORT_ORDERS.ASC);
   const [activeFilter, setActiveFilter] = useState('OPEN');
 
+  const issueStats = useMemo(() => {
+    const openIssues = issues.filter(issue => issue.isOpen).length;
+    const closedIssues = issues.length - openIssues;
+    return { openIssues, closedIssues };
+  }, [issues]);
+
   // Helper function to get sortable value from issue
   const getSortableValue = (issue, sortField) => {
     switch (sortField) {
@@ -47,7 +53,6 @@ const SortableIssuesTable = ({ issues }) => {
     }
   };
 
-  // Helper function to compare two issues by status
   const compareByStatus = (a, b) => {
     if (a.isOpen !== b.isOpen) {
       if (sortOrder === TABLE_SORT_ORDERS.ASC) {
@@ -59,7 +64,6 @@ const SortableIssuesTable = ({ issues }) => {
     return new Date(b.createdAt) - new Date(a.createdAt);
   };
 
-  // Helper function to compare two values based on sort order
   const compareValues = (aValue, bValue) => {
     return sortOrder === TABLE_SORT_ORDERS.ASC
       ? aValue < bValue
@@ -153,7 +157,10 @@ const SortableIssuesTable = ({ issues }) => {
 
   return (
     <>
-      <h2 id="github-issues">GitHub Issues</h2>
+      <h2 id="github-issues">
+        GitHub Issues ({issueStats.openIssues} open, {issueStats.closedIssues}
+        &nbsp;closed)
+      </h2>
       <FilterButtons
         filterLabel="Show:"
         filterAriaLabel="Filter GitHub issues"
