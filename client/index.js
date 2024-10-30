@@ -50,20 +50,57 @@ window.signMeInAsTester = username => {
   return signMeInCommon({ username, roles: [{ name: 'TESTER' }] });
 };
 
-window.signMeInAsVendor = username => {
+/**
+ * @param {string} username
+ * @param {'vispero'|'nvAccess'|'apple'} vendor
+ * @returns {Promise<void>}
+ */
+window.signMeInAsVendor = (username, vendor = 'vispero') => {
+  let company = {
+    id: '1',
+    name: 'vispero',
+    ats: [
+      {
+        id: '1',
+        name: 'JAWS'
+      }
+    ]
+  };
+
+  switch (vendor.trim()) {
+    case 'nvAccess':
+      company = {
+        id: '6',
+        name: 'nvAccess',
+        ats: [
+          {
+            id: '2',
+            name: 'NVDA'
+          }
+        ]
+      };
+      break;
+    case 'apple':
+      company = {
+        id: '4',
+        name: 'apple',
+        ats: [
+          {
+            id: '3',
+            name: 'VoiceOver for macOS'
+          }
+        ]
+      };
+      break;
+    default:
+      // maintain default vispero selection
+      break;
+  }
+
   return signMeInCommon({
     username,
     roles: [{ name: 'VENDOR' }],
-    company: {
-      id: '1',
-      name: 'vispero',
-      ats: [
-        {
-          id: '1',
-          name: 'JAWS'
-        }
-      ]
-    }
+    company
   });
 };
 
