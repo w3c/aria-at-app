@@ -328,10 +328,42 @@ const updateTestPlanVersionById = async ({
   });
 };
 
+/**
+ * @param {object} options
+ * @param {number} id - id of the TestPlanVersion record to be updated
+ * @param {number} testId
+ * @param {object[]} viewers
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<void>}
+ */
+const updateTestViewersOnTestPlanVersion = async ({
+  id,
+  testId,
+  viewers = [],
+  transaction
+}) => {
+  await ModelService.rawQuery(
+    `
+      update "TestPlanVersion"
+      set tests = ( select jsonb_agg(case when element ->> 'id' = '${testId}'
+                                            then jsonb_set(element, '{viewers}', '${JSON.stringify(
+                                              viewers
+                                            )}'::jsonb) else element end)
+                    from jsonb_array_elements(tests) as element )
+      where id = ${id}
+        and tests @> '[{"id": "${testId}"}]';
+    `,
+    { transaction }
+  );
+};
+
 module.exports = {
   // Basic CRUD
   getTestPlanVersionById,
   getTestPlanVersions,
   createTestPlanVersion,
-  updateTestPlanVersionById
+  updateTestPlanVersionById,
+
+  // Custom functions
+  updateTestViewersOnTestPlanVersion
 };
