@@ -107,7 +107,7 @@ const SortableIssuesTable = ({ issues }) => {
           { field: SORT_FIELDS.AUTHOR, title: 'Author' },
           { field: SORT_FIELDS.TITLE, title: 'Issue' },
           { field: SORT_FIELDS.STATUS, title: 'Status' },
-          { field: SORT_FIELDS.AT, title: 'AT' },
+          { field: SORT_FIELDS.AT, title: 'Assistive Technology' },
           { field: SORT_FIELDS.CREATED_AT, title: 'Created On' },
           { field: SORT_FIELDS.CLOSED_AT, title: 'Closed On' }
         ].map(({ field, title }) => (
