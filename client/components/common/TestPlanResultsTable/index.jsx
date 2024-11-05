@@ -44,10 +44,15 @@ const TestPlanResultsTable = ({
       {testResult.scenarioResults.map((scenarioResult, index) => {
         const {
           assertionsPassedCount,
-          assertionsFailedCount,
+          mustAssertionsFailedCount,
+          shouldAssertionsFailedCount,
+          mayAssertionsFailedCount,
           severeImpactPassedAssertionCount,
           moderateImpactPassedAssertionCount
         } = getMetrics({ scenarioResult });
+
+        const mustShouldAssertionsFailedCount =
+          mustAssertionsFailedCount + shouldAssertionsFailedCount;
 
         const hasNoSevereUnexpectedBehavior =
           severeImpactPassedAssertionCount > 0;
@@ -119,7 +124,8 @@ const TestPlanResultsTable = ({
             <CommandHeading>
               {commandsString}&nbsp;Results:&nbsp;
               {assertionsPassedCount} passed,&nbsp;
-              {assertionsFailedCount} failed
+              {mustShouldAssertionsFailedCount} failed,&nbsp;
+              {mayAssertionsFailedCount} unsupported
             </CommandHeading>
             <p className="test-plan-results-response-p">
               {test.at?.name} Response:
