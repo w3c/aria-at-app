@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { TEST_REVIEW_PAGE_QUERY } from './queries';
 import { Container } from 'react-bootstrap';
@@ -11,6 +11,7 @@ import styled from '@emotion/styled';
 import { derivePhaseName } from '../../utils/aria';
 import { dates } from 'shared';
 import supportJson from '../../resources/support.json';
+import SortableIssuesTable from '../SortableIssuesTable';
 
 const Ul = styled.ul`
   li {
@@ -34,6 +35,12 @@ const TestReview = () => {
     fetchPolicy: 'cache-and-network'
   });
   const [activeFilter, setActiveFilter] = useState('All ATs');
+
+  // GraphQL results are read only so they need to be cloned
+  // before passing to SortableIssuesTable
+  const issues = useMemo(() => {
+    return [...data.testPlanVersion.testPlan.issues];
+  }, [data]);
 
   if (loading) {
     return (
@@ -230,6 +237,7 @@ const TestReview = () => {
           }
         )}
       </ul>
+      <SortableIssuesTable issues={issues} />
       <h2>Tests</h2>
       <FilterButtonContainer>
         <FilterButtons
