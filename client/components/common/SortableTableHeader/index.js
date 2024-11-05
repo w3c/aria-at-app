@@ -10,39 +10,37 @@ import {
 import { useAriaLiveRegion } from '../../providers/AriaLiveRegionProvider';
 
 const SortableTableHeaderWrapper = styled.th`
-  position: relative;
-  padding: 0;
+  background: #e9ebee;
+  padding: 0 !important;
+  height: 100%;
 `;
 
 const SortableTableHeaderButton = styled(Button)`
-  background: #e9ebee;
+  background: transparent;
   border: none;
   color: black;
   font-size: 1rem;
-  padding: 0;
   font-weight: 700;
   text-align: left;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
+  min-height: 100%;
+  display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  padding: 8px 12px;
+  padding: 0.5rem;
   border-radius: 0;
-  z-index: 0;
-  display: flex;
+  margin: 0;
+
+  // Force the button to stretch
+  position: relative;
+  height: stretch;
+  height: -webkit-fill-available;
+  height: -moz-available;
+
   &:hover,
   &:focus {
-    background: #e9ebee;
-    z-index: 1;
     color: #0b60ab;
     background-color: var(--bs-table-hover-bg);
-  }
-
-  &:hover {
-    border: none;
   }
 `;
 

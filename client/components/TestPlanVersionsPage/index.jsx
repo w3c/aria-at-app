@@ -7,7 +7,6 @@ import { Helmet } from 'react-helmet';
 import { Container } from 'react-bootstrap';
 import {
   ThemeTable,
-  ThemeTableUnavailable,
   ThemeTableHeaderH3 as UnstyledThemeTableHeader
 } from '../common/ThemeTable';
 import VersionString from '../common/VersionString';
@@ -22,6 +21,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DisclosureComponentUnstyled from '../common/DisclosureComponent';
 import useForceUpdate from '../../hooks/useForceUpdate';
+import SortableIssuesTable from '../SortableIssuesTable';
 
 const DisclosureContainer = styled.div`
   .timeline-for-version-table {
@@ -40,7 +40,7 @@ const DisclosureComponent = styled(DisclosureComponentUnstyled)`
   }
 `;
 
-const NoneText = styled.span`
+export const NoneText = styled.span`
   font-style: italic;
   color: #6a7989;
 `;
@@ -390,59 +390,7 @@ const TestPlanVersionsPage = () => {
           <PageSpacer />
         </>
       )}
-      <ThemeTableHeader id="github-issues">GitHub Issues</ThemeTableHeader>
-      {!issues.length ? (
-        <ThemeTableUnavailable aria-labelledby="github-issues">
-          No GitHub Issues
-        </ThemeTableUnavailable>
-      ) : (
-        <ThemeTable bordered responsive aria-labelledby="github-issues">
-          <thead>
-            <tr>
-              <th>Author</th>
-              <th>Issue</th>
-              <th>Status</th>
-              <th>AT</th>
-              <th>Created On</th>
-              <th>Closed On</th>
-            </tr>
-          </thead>
-          <tbody>
-            {issues.map(issue => {
-              return (
-                <tr key={issue.link}>
-                  <td>
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href={`https://github.com/${issue.author}`}
-                    >
-                      {issue.author}
-                    </a>
-                  </td>
-                  <td>
-                    <a target="_blank" rel="noreferrer" href={issue.link}>
-                      {issue.title}
-                    </a>
-                  </td>
-                  <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
-                  <td>{issue.at?.name ?? 'AT not specified'}</td>
-                  <td>
-                    {dates.convertDateToString(issue.createdAt, 'MMM D, YYYY')}
-                  </td>
-                  <td>
-                    {!issue.closedAt ? (
-                      <NoneText>N/A</NoneText>
-                    ) : (
-                      dates.convertDateToString(issue.closedAt, 'MMM D, YYYY')
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </ThemeTable>
-      )}
+      <SortableIssuesTable issues={issues} />
       <PageSpacer />
       <ThemeTableHeader id="timeline-for-all-versions">
         Timeline for All Versions
