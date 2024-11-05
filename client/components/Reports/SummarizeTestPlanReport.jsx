@@ -272,17 +272,26 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
           'https://aria-at.netlify.app'
         );
 
-        const { assertionsPassedCount, assertionsFailedCount } = getMetrics({
+        const {
+          assertionsPassedCount,
+          mustAssertionsFailedCount,
+          shouldAssertionsFailedCount,
+          mayAssertionsFailedCount
+        } = getMetrics({
           testResult
         });
+
+        const mustShouldAssertionsFailedCount =
+          mustAssertionsFailedCount + shouldAssertionsFailedCount;
 
         return (
           <Fragment key={testResult.id}>
             <div className="test-result-heading">
               <h2 id={`result-${testResult.id}`} tabIndex="-1">
                 Test {index + 1}: {test.title}&nbsp;(
-                {assertionsPassedCount}
-                &nbsp;passed, {assertionsFailedCount} failed)
+                {assertionsPassedCount} passed,&nbsp;
+                {mustShouldAssertionsFailedCount} failed,&nbsp;
+                {mayAssertionsFailedCount} unsupported)
                 <DisclaimerInfo phase={testPlanVersion.phase} />
               </h2>
               <div className="test-result-buttons">

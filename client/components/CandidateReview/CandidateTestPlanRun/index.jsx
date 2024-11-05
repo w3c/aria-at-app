@@ -507,16 +507,23 @@ const CandidateTestPlanRun = () => {
             const testResult =
               testPlanReport.finalizedTestResults[currentTestIndex];
 
-            const { assertionsPassedCount, assertionsFailedCount } = getMetrics(
-              { testResult }
-            );
+            const {
+              assertionsPassedCount,
+              mustAssertionsFailedCount,
+              shouldAssertionsFailedCount,
+              mayAssertionsFailedCount
+            } = getMetrics({ testResult });
+
+            const mustShouldAssertionsFailedCount =
+              mustAssertionsFailedCount + shouldAssertionsFailedCount;
 
             return (
               <>
                 <h2 className="test-results-header">
                   Test Results&nbsp;(
                   {assertionsPassedCount} passed,&nbsp;
-                  {assertionsFailedCount} failed)
+                  {mustShouldAssertionsFailedCount} failed,&nbsp;
+                  {mayAssertionsFailedCount} unsupported)
                 </h2>
                 <TestPlanResultsTable
                   key={`${testPlanReport.id} + ${testResult.id}`}

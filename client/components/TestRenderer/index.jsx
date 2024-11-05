@@ -476,9 +476,17 @@ const TestRenderer = ({
     const { results } = submitResult;
     const { header } = results;
 
-    const { assertionsPassedCount, assertionsFailedCount } = getMetrics({
+    const {
+      assertionsPassedCount,
+      mustAssertionsFailedCount,
+      shouldAssertionsFailedCount,
+      mayAssertionsFailedCount
+    } = getMetrics({
       testResult
     });
+
+    const mustShouldAssertionsFailedCount =
+      mustAssertionsFailedCount + shouldAssertionsFailedCount;
 
     return (
       <>
@@ -486,7 +494,8 @@ const TestRenderer = ({
         <SubHeadingText id="overallstatus">
           Test Results&nbsp;(
           {assertionsPassedCount} passed,&nbsp;
-          {assertionsFailedCount} failed)
+          {mustShouldAssertionsFailedCount} failed,&nbsp;
+          {mayAssertionsFailedCount} unsupported)
         </SubHeadingText>
         <TestPlanResultsTable
           test={{ title: header, at }}
