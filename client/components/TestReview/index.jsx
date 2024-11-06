@@ -39,7 +39,7 @@ const TestReview = () => {
   // GraphQL results are read only so they need to be cloned
   // before passing to SortableIssuesTable
   const issues = useMemo(() => {
-    return [...data.testPlanVersion.testPlan.issues];
+    return data ? [...data.testPlanVersion.testPlan.issues] : [];
   }, [data]);
 
   if (loading) {
