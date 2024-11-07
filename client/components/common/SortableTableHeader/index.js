@@ -31,11 +31,13 @@ const SortableTableHeaderButton = styled(Button)`
   border-radius: 0;
   margin: 0;
 
-  // Force the button to stretch
   position: relative;
-  height: stretch;
-  height: -webkit-fill-available;
-  height: -moz-available;
+  height: 100%;
+  min-height: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
 
   &:hover,
   &:focus {
