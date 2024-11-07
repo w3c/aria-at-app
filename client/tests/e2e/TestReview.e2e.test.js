@@ -35,7 +35,7 @@ describe('Test Review page', () => {
     const popupPage = pages[pages.length - 1];
 
     // Check for 'Run Test Setup' button
-    await popupPage.waitForSelector('button ::-p-text(Run Test Setup)');
+    await popupPage.waitForSelector('button.button-run-test-setup');
   };
 
   it('renders page for review page before test format v2', async () => {

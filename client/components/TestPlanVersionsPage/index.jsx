@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useQuery } from '@apollo/client';
 import { TEST_PLAN_VERSIONS_PAGE_QUERY } from './queries';
 import PageStatus from '../common/PageStatus';
@@ -7,7 +7,6 @@ import { Helmet } from 'react-helmet';
 import { Container } from 'react-bootstrap';
 import {
   ThemeTable,
-  ThemeTableUnavailable,
   ThemeTableHeaderH3 as UnstyledThemeTableHeader
 } from '../common/ThemeTable';
 import VersionString from '../common/VersionString';
@@ -22,6 +21,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import DisclosureComponentUnstyled from '../common/DisclosureComponent';
 import useForceUpdate from '../../hooks/useForceUpdate';
+import SortableIssuesTable from '../SortableIssuesTable';
 
 const DisclosureContainer = styled.div`
   .timeline-for-version-table {
@@ -40,7 +40,7 @@ const DisclosureComponent = styled(DisclosureComponentUnstyled)`
   }
 `;
 
-const NoneText = styled.span`
+export const NoneText = styled.span`
   font-style: italic;
   color: #6a7989;
 `;
@@ -87,6 +87,12 @@ const TestPlanVersionsPage = () => {
 
   const expandedVersionSections = useRef();
   const toggleVersionSections = useRef();
+
+  // GraphQL results are read only so they need to be cloned
+  // before passing to SortableIssuesTable
+  const issues = useMemo(() => {
+    return data ? [...data.testPlan.issues] : [];
+  }, [data]);
 
   if (error) {
     return (
@@ -192,22 +198,11 @@ const TestPlanVersionsPage = () => {
     return derivedPhaseDeprecatedDuring;
   };
 
-  const testPlan = data.testPlan;
+  const { testPlan, ats } = data;
 
-  // GraphQL results are read only so they need to be cloned before sorting
-  const issues = [...testPlan.issues].sort((a, b) => {
-    const aCreatedAt = new Date(a.createdAt);
-    const bCreatedAt = new Date(b.createdAt);
-    return bCreatedAt - aCreatedAt;
+  const testPlanVersions = testPlan.testPlanVersions.slice().sort((a, b) => {
+    return new Date(b.updatedAt) - new Date(a.updatedAt);
   });
-
-  const ats = data.ats;
-
-  const testPlanVersions = data.testPlan.testPlanVersions
-    .slice()
-    .sort((a, b) => {
-      return new Date(b.updatedAt) - new Date(a.updatedAt);
-    });
 
   const timelineForAllVersions = [];
 
@@ -390,59 +385,7 @@ const TestPlanVersionsPage = () => {
           <PageSpacer />
         </>
       )}
-      <ThemeTableHeader id="github-issues">GitHub Issues</ThemeTableHeader>
-      {!issues.length ? (
-        <ThemeTableUnavailable aria-labelledby="github-issues">
-          No GitHub Issues
-        </ThemeTableUnavailable>
-      ) : (
-        <ThemeTable bordered responsive aria-labelledby="github-issues">
-          <thead>
-            <tr>
-              <th>Author</th>
-              <th>Issue</th>
-              <th>Status</th>
-              <th>AT</th>
-              <th>Created On</th>
-              <th>Closed On</th>
-            </tr>
-          </thead>
-          <tbody>
-            {issues.map(issue => {
-              return (
-                <tr key={issue.link}>
-                  <td>
-                    <a
-                      target="_blank"
-                      rel="noreferrer"
-                      href={`https://github.com/${issue.author}`}
-                    >
-                      {issue.author}
-                    </a>
-                  </td>
-                  <td>
-                    <a target="_blank" rel="noreferrer" href={issue.link}>
-                      {issue.title}
-                    </a>
-                  </td>
-                  <td>{issue.isOpen ? 'Open' : 'Closed'}</td>
-                  <td>{issue.at?.name ?? 'AT not specified'}</td>
-                  <td>
-                    {dates.convertDateToString(issue.createdAt, 'MMM D, YYYY')}
-                  </td>
-                  <td>
-                    {!issue.closedAt ? (
-                      <NoneText>N/A</NoneText>
-                    ) : (
-                      dates.convertDateToString(issue.closedAt, 'MMM D, YYYY')
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </ThemeTable>
-      )}
+      <SortableIssuesTable issues={issues} />
       <PageSpacer />
       <ThemeTableHeader id="timeline-for-all-versions">
         Timeline for All Versions
