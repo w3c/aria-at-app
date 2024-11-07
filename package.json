@@ -1,6 +1,6 @@
 {
   "name": "aria-at-app",
-  "version": "1.9.3",
+  "version": "1.10.0",
   "description": "Run ARIA-AT tests and report results",
   "main": "server/index.js",
   "private": true,

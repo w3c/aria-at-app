@@ -1,3 +1,17 @@
+## [1.10.0](https://github.com/w3c/aria-at-app/compare/v1.9.3...v1.10.0) (2024-11-07)
+
+
+### Features
+
+* Issues table for Test Plan Review page ([#1269](https://github.com/w3c/aria-at-app/issues/1269)) ([cdd212d](https://github.com/w3c/aria-at-app/commit/cdd212d6a3cf9f1f673a5c445d8893fbdcc0520f))
+* Sortable issues table, improved issues table heading ([#1266](https://github.com/w3c/aria-at-app/issues/1266)) ([18fd21c](https://github.com/w3c/aria-at-app/commit/18fd21c1eda8adddca77b4f8edb62a9844e6ee11))
+
+
+### Bug Fixes
+
+* Exclude unsupported assertion results from failure count in report headings; use separate "unsupported" metric ([#1265](https://github.com/w3c/aria-at-app/issues/1265)) ([9c54e2d](https://github.com/w3c/aria-at-app/commit/9c54e2d12e471c69f3bb5e79a11193df33c7fbe9))
+* sortable table th rendering bug ([#1272](https://github.com/w3c/aria-at-app/issues/1272)) ([77ba7cf](https://github.com/w3c/aria-at-app/commit/77ba7cf0cad94ff2a795f615cdc3fd7558d89713))
+
 ### [1.9.3](https://github.com/w3c/aria-at-app/compare/v1.9.2...v1.9.3) (2024-10-28)
 
 
