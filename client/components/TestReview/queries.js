@@ -15,6 +15,9 @@ export const TEST_REVIEW_PAGE_QUERY = gql`
       testPlan {
         issues {
           ...IssueFieldsAll
+          at {
+            ...AtFields
+          }
         }
       }
       tests {
