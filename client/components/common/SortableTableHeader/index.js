@@ -21,23 +21,16 @@ const SortableTableHeaderButton = styled(Button)`
   color: black;
   font-size: 1rem;
   font-weight: 700;
-  text-align: left;
   width: 100%;
-  min-height: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  padding: 0.5rem;
-  border-radius: 0;
-  margin: 0;
-
-  position: relative;
   height: 100%;
   min-height: 100%;
   flex: 1 1 auto;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
+  padding: 0.5rem;
+  border-radius: 0;
+  margin: 0;
 
   &:hover,
   &:focus {
