@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useQuery } from '@apollo/client';
 import { TEST_PLAN_VERSIONS_PAGE_QUERY } from './queries';
 import PageStatus from '../common/PageStatus';
@@ -87,6 +87,12 @@ const TestPlanVersionsPage = () => {
 
   const expandedVersionSections = useRef();
   const toggleVersionSections = useRef();
+
+  // GraphQL results are read only so they need to be cloned
+  // before passing to SortableIssuesTable
+  const issues = useMemo(() => {
+    return data ? [...data.testPlan.issues] : [];
+  }, [data]);
 
   if (error) {
     return (
@@ -192,22 +198,11 @@ const TestPlanVersionsPage = () => {
     return derivedPhaseDeprecatedDuring;
   };
 
-  const testPlan = data.testPlan;
+  const { testPlan, ats } = data;
 
-  // GraphQL results are read only so they need to be cloned before sorting
-  const issues = [...testPlan.issues].sort((a, b) => {
-    const aCreatedAt = new Date(a.createdAt);
-    const bCreatedAt = new Date(b.createdAt);
-    return bCreatedAt - aCreatedAt;
+  const testPlanVersions = testPlan.testPlanVersions.slice().sort((a, b) => {
+    return new Date(b.updatedAt) - new Date(a.updatedAt);
   });
-
-  const ats = data.ats;
-
-  const testPlanVersions = data.testPlan.testPlanVersions
-    .slice()
-    .sort((a, b) => {
-      return new Date(b.updatedAt) - new Date(a.updatedAt);
-    });
 
   const timelineForAllVersions = [];
 
