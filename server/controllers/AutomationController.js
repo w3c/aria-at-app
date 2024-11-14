@@ -18,11 +18,7 @@ const {
   findOrCreateBrowserVersion
 } = require('../models/services/BrowserService');
 const { HttpQueryError } = require('apollo-server-core');
-const {
-  COLLECTION_JOB_STATUS,
-  isJobStatusFinal,
-  AUTOMATION_SERVICE
-} = require('../util/enums');
+const { COLLECTION_JOB_STATUS, isJobStatusFinal } = require('../util/enums');
 const populateData = require('../services/PopulatedData/populateData');
 const {
   getFinalizedTestResults
