@@ -1,3 +1,5 @@
+const { AUTOMATION_SERVICE } = require('../util/enums');
+
 const MODEL_NAME = 'TestPlanRun';
 
 module.exports = function (sequelize, DataTypes) {
@@ -18,6 +20,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         defaultValue: false
       },
+      automationService: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null
+      },
       isPrimary: {
         type: DataTypes.BOOLEAN,
         allowNull: true,
@@ -29,6 +36,9 @@ module.exports = function (sequelize, DataTypes) {
       tableName: MODEL_NAME
     }
   );
+
+  Model.GITHUB_ACTIONS = AUTOMATION_SERVICE.GITHUB_ACTIONS;
+  Model.AZURE_PIPELINES = AUTOMATION_SERVICE.AZURE_PIPELINES;
 
   Model.TEST_RESULT_ASSOCIATION = { as: 'testResults' };
 
