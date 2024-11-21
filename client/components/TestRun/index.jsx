@@ -39,7 +39,6 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
-import { dates } from 'shared';
 import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
 import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
 
