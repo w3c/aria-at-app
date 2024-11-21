@@ -131,6 +131,7 @@ const nestedTestPlanRunAssociation = (
 
 /**
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanVersionAssociation = (
@@ -143,7 +144,7 @@ const testPlanVersionAssociation = (
 });
 
 /**
- * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanAssociation = testPlanAttributes => ({
@@ -152,7 +153,7 @@ const testPlanAssociation = testPlanAttributes => ({
 });
 
 /**
- * @param browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} browserAttributes - Browser attributes to be returned in the result
  * @returns {{association: string, attributes: string[]}}
  */
 const browserAssociation = browserAttributes => ({
@@ -161,7 +162,7 @@ const browserAssociation = browserAttributes => ({
 });
 
 /**
- * @param atAttributes - At attributes to be returned in the result
+ * @param {string[]} atAttributes - At attributes to be returned in the result
  * @returns {{association: string, attributes: string[]}}
  */
 const atAssociation = atAttributes => ({
