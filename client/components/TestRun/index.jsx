@@ -366,10 +366,7 @@ const TestRun = () => {
     issueLink = createIssueLink({
       testPlanTitle: testPlanVersion.title,
       testPlanDirectory: testPlanVersion.testPlan.directory,
-      versionString: `V${dates.convertDateToString(
-        testPlanVersion.updatedAt,
-        'YY.MM.DD'
-      )}`,
+      versionString: testPlanVersion.versionString,
       testTitle: currentTest.title,
       testRowNumber: currentTest.rowNumber,
       testSequenceNumber: currentTest.seq,
@@ -969,7 +966,7 @@ const TestRun = () => {
         <ul className="options-wrapper" aria-labelledby="test-options-heading">
           <li>
             <OptionButton
-              text="Raise An Issue"
+              text="Raise an Issue"
               icon={
                 <FontAwesomeIcon icon={faExclamationCircle} color="#94979b" />
               }
@@ -1143,6 +1140,8 @@ const TestRun = () => {
       testPlanTitle={
         testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
       }
+      testPlanVersionString={testPlanVersion.versionString}
+      testPlanVersionReviewLink={`/test-review/${testPlanVersion.id}`}
       at={`${testPlanReport.at?.name}${
         isViewingRun ? ` ${currentAtVersion?.name}` : ''
       }`}
