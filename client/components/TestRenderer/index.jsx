@@ -498,7 +498,7 @@ const TestRenderer = ({
           {mayAssertionsFailedCount} unsupported)
         </SubHeadingText>
         <TestPlanResultsTable
-          test={{ title: header, at }}
+          test={{ id: test.id, title: header, at }}
           testResult={testResult}
         />
       </>
