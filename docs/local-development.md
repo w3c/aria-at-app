@@ -157,6 +157,10 @@ yarn storybook
 
 Any changes in the component will be picked up by the Storybook server.
 
+#### Snapshot Testing
+
+We use snapshot testing to detect regressions. These require upkeep since snapshots can become outdated by upstream test changes in aria-at. It is a good practice to routinely run `yarn update-snapshots` on your working branch.
+
 ### Accessibility testing
 
 #### Manual accessibilty testing
