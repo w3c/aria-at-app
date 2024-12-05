@@ -269,7 +269,7 @@ const TestRun = () => {
     setCurrentBrowserVersion(currentBrowserVersion);
     // Testers do not need to change AT/Browser versions
     // while assigning verdicts for previously automated tests
-    if (testPlanRun?.initiatedByAutomation) {
+    if (!isSignedIn || tester?.isBot) {
       setIsShowingAtBrowserModal(false);
     }
     setPageReady(true);
@@ -1147,7 +1147,7 @@ const TestRun = () => {
       browser={`${testPlanReport.browser?.name}${
         isViewingRun ? ` ${currentBrowserVersion?.name || ''}` : ''
       }`}
-      showEditAtBrowser={isViewingRun && !testPlanRun.initiatedByAutomation}
+      showEditAtBrowser={isSignedIn && isViewingRun && !openAsUser?.isBot}
       openAsUser={openAsUser}
       testResults={testResults}
       testCount={testCount}
