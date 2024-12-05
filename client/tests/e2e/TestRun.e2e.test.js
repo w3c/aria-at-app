@@ -406,7 +406,7 @@ describe('Test Run when signed in as tester', () => {
           testPlanSectionButtonSelector:
             'button#disclosure-btn-horizontal-slider-0',
           testPlanTableSelector:
-            'table[aria-label="Reports for Color Viewer Slider V24.06.26 in draft phase"]'
+            'table[aria-label="Reports for Color Viewer Slider V24.12.04 in draft phase"]'
         });
         await handlePageSubmit(page, { expectConflicts: false });
       }
