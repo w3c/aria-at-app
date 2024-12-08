@@ -2,7 +2,7 @@ import React, { Fragment, useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { TEST_REVIEW_PAGE_QUERY } from './queries';
 import { Container } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import PageStatus from '../common/PageStatus';
 import InstructionsRenderer from '../CandidateReview/CandidateTestPlanRun/InstructionsRenderer';
@@ -12,6 +12,7 @@ import { derivePhaseName } from '../../utils/aria';
 import { dates } from 'shared';
 import supportJson from '../../resources/support.json';
 import SortableIssuesTable from '../SortableIssuesTable';
+import createIssueLink from '../../utils/createIssueLink';
 
 const Ul = styled.ul`
   li {
@@ -28,6 +29,7 @@ const FilterButtonContainer = styled.div`
 `;
 
 const TestReview = () => {
+  const location = useLocation();
   const { testPlanVersionId } = useParams();
 
   const { loading, data, error } = useQuery(TEST_REVIEW_PAGE_QUERY, {
@@ -237,7 +239,15 @@ const TestReview = () => {
           }
         )}
       </ul>
-      <SortableIssuesTable issues={issues} />
+      <SortableIssuesTable
+        issues={issues}
+        issueLink={createIssueLink({
+          testPlanTitle: testPlanVersion.title,
+          testPlanDirectory: testPlanVersion.testPlan.directory,
+          versionString: testPlanVersion.versionString,
+          testReviewLink: `https://aria-at-.w3.org${location.pathname}`
+        })}
+      />
       <h2>Tests</h2>
       <FilterButtonContainer>
         <FilterButtons
