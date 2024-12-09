@@ -217,6 +217,7 @@ const getTestPlanRuns = async ({
 /**
  * @param {object} options
  * @param {object} options.values - values to be used to create the TestPlanRun
+ * @param {string} options.values.automationService
  * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.nestedTestPlanRunAttributes - TestPlanRun attributes associated to the TestPlanReport model to be returned
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
@@ -233,7 +234,8 @@ const createTestPlanRun = async ({
     testerUserId,
     testPlanReportId,
     testResults = [],
-    isAutomated = false
+    isAutomated = false,
+    automationService = null
   },
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
   nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -270,7 +272,8 @@ const createTestPlanRun = async ({
       testerUserId,
       testPlanReportId,
       testResults,
-      initiatedByAutomation: isAutomated
+      initiatedByAutomation: isAutomated,
+      automationService
     },
     transaction
   });
