@@ -3,6 +3,7 @@ const GITHUB_ISSUES_URL =
     ? 'https://github.com/w3c/aria-at'
     : 'https://github.com/bocoup/aria-at';
 
+// TODO: Use At.key
 const atLabelMap = {
   'VoiceOver for macOS': 'vo',
   JAWS: 'jaws',
@@ -46,7 +47,8 @@ const createIssueLink = ({
   browserName = null,
   browserVersionName = null,
   conflictMarkdown = null,
-  reportLink = null
+  reportLink = null,
+  testReviewLink = null
 }) => {
   if (!(testPlanDirectory || testPlanTitle || versionString || atName)) {
     throw new Error('Cannot create issue link due to missing parameters');
@@ -74,7 +76,8 @@ const createIssueLink = ({
       `${titleStart}: "${testTitle}" (${testPlanTitle}, ` +
       `Test ${testSequenceNumber}, ${versionString})`;
   } else {
-    title = `${atName} General Feedback: ${testPlanTitle} ${versionString}`;
+    title = `General Feedback: ${testPlanTitle} ${versionString}`;
+    if (atName) title = `${atName} ${title}`;
   }
 
   const labels =
@@ -121,6 +124,13 @@ const createIssueLink = ({
       '\n';
   }
 
+  let metadataFormatted = '';
+  let testReviewLinkFormatted = '';
+  if (testReviewLink) {
+    testReviewLinkFormatted = `- Test Review Page: [Link](${testReviewLink})\n`;
+    metadataFormatted = `## Metadata\n\n` + testReviewLinkFormatted + '\n';
+  }
+
   const hiddenIssueMetadata = JSON.stringify({
     testPlanDirectory,
     versionString,
@@ -136,6 +146,7 @@ const createIssueLink = ({
     `## Description of Behavior\n\n` +
     `<!-- Write your description here -->\n\n` +
     testSetupFormatted +
+    metadataFormatted +
     `<!-- The following data allows the issue to be imported into the ` +
     `ARIA AT App -->\n` +
     `<!-- ARIA_AT_APP_ISSUE_DATA = ${hiddenIssueMetadata} -->`;
@@ -172,6 +183,7 @@ export const getIssueSearchLink = ({
   versionString,
   testSequenceNumber = null
 }) => {
+  // TODO: Use At.key
   let atKey;
   if (atName === 'JAWS' || atName === 'NVDA') {
     atKey = atName.toLowerCase();

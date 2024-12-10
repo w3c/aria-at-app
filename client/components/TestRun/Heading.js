@@ -24,6 +24,8 @@ const TestRunHeading = ({
   openAsUser,
   showEditAtBrowser,
   testPlanTitle,
+  testPlanVersionString,
+  testPlanVersionReviewLink,
   testResults,
   testIndex,
   testCount,
@@ -137,6 +139,7 @@ const TestRunHeading = ({
     );
   }
 
+  const testPlanName = `${testPlanTitle} ${testPlanVersionString}`;
   return (
     <>
       <div className="test-info-wrapper">
@@ -145,7 +148,8 @@ const TestRunHeading = ({
           data-testid="apg-example-name"
         >
           <div className="info-label">
-            <b>Test Plan:</b> {testPlanTitle}
+            <b>Test Plan:</b>&nbsp;
+            <a href={testPlanVersionReviewLink}>{testPlanName}</a>
           </div>
         </div>
         <div className="test-info-entity at-browser" data-testid="at-browser">
@@ -177,6 +181,8 @@ const TestRunHeading = ({
 
 TestRunHeading.propTypes = {
   testPlanTitle: PropTypes.string.isRequired,
+  testPlanVersionString: PropTypes.string.isRequired,
+  testPlanVersionReviewLink: PropTypes.string.isRequired,
   at: PropTypes.string.isRequired,
   browser: PropTypes.string.isRequired,
   showEditAtBrowser: PropTypes.bool.isRequired,
