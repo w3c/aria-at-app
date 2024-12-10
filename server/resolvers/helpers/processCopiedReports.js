@@ -1,5 +1,6 @@
 const {
-  getTestPlanVersionById
+  getTestPlanVersionById,
+  updateTestViewersOnTestPlanVersion
 } = require('../../models/services/TestPlanVersionService');
 const {
   getTestPlanReports,
@@ -328,6 +329,9 @@ const processCopiedReports = async ({
     );
 
     for (const oldTestPlanRun of oldTestPlanReport.testPlanRuns) {
+      const oldTestPlanRunVendorReviewStatus =
+        oldTestPlanReport.vendorReviewStatus;
+
       // Track which old test results need to be preserved
       const keptTestResultsByTestId = getKeptTestResultsByTestId(
         oldTestPlanRun.testResults,
@@ -358,6 +362,7 @@ const processCopiedReports = async ({
         },
         transaction
       });
+      let allResultsPreserved = true;
       const newTestResults = [];
 
       for (const testResultToSaveTestId of Object.keys(
@@ -373,6 +378,10 @@ const processCopiedReports = async ({
 
         const { test } = await populateData(
           { testId: testResultToSaveTestId },
+          { context }
+        );
+        const { test: oldTest } = await populateData(
+          { testResultId: oldTestResult.id },
           { context }
         );
 
@@ -403,6 +412,7 @@ const processCopiedReports = async ({
           // Unknown combination of command + settings when compared with last version
           const oldScenarioResult = scenarioResultsByScenarioIds[rawScenarioId];
           if (!oldScenarioResult) {
+            allResultsPreserved = false;
             newTestResult.completedAt = null;
             continue;
           }
@@ -428,8 +438,22 @@ const processCopiedReports = async ({
             const oldAssertionResult =
               assertionResultsByAssertionIds[rawAssertionId];
             if (!oldAssertionResult) {
+              allResultsPreserved = false;
               newTestResult.completedAt = null;
               continue;
+            }
+
+            // Update TestPlanVersion.tests to include the viewers from the old
+            // TestPlanVersion.tests
+            // TODO: Move viewers to TestPlanReport; more appropriate and
+            //  understandable database structure
+            if (oldTest.viewers) {
+              await updateTestViewersOnTestPlanVersion({
+                id: newTestPlanVersionId,
+                testId: testResultToSaveTestId,
+                viewers: oldTest.viewers,
+                transaction
+              });
             }
 
             eachAssertionResult.passed = oldAssertionResult.passed;
@@ -437,6 +461,18 @@ const processCopiedReports = async ({
         }
 
         newTestResults.push(newTestResult);
+      }
+
+      // Since no substantive changes, preserve the TestPlanReport's
+      // vendorReviewStatus if exists
+      if (allResultsPreserved && oldTestPlanRunVendorReviewStatus) {
+        await updateTestPlanReportById({
+          id: newTestPlanReport.id,
+          values: {
+            vendorReviewStatus: oldTestPlanRunVendorReviewStatus
+          },
+          transaction
+        });
       }
 
       // Run updated metrics calculations for new TestPlanRun test results to be used in metrics calculations

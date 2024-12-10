@@ -225,9 +225,13 @@ const updatePhaseResolver = async (
       if (phase === 'CANDIDATE') {
         updateParams = {
           ...updateParams,
-          metrics: { ...testPlanReport.metrics, ...metrics },
-          vendorReviewStatus: 'READY'
+          metrics: { ...testPlanReport.metrics, ...metrics }
         };
+
+        // In the instance where an older result's status is being copied over
+        if (!testPlanReport.vendorReviewStatus) {
+          updateParams = { ...updateParams, vendorReviewStatus: 'READY' };
+        }
       } else if (phase === 'RECOMMENDED') {
         updateParams = {
           ...updateParams,

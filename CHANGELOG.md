@@ -1,3 +1,15 @@
+## [1.11.0](https://github.com/w3c/aria-at-app/compare/v1.10.0...v1.11.0) (2024-12-10)
+
+
+### Features
+
+* Track vendor approvals across version updates through result copy process ([#1267](https://github.com/w3c/aria-at-app/issues/1267)) ([90807df](https://github.com/w3c/aria-at-app/commit/90807df4b71ea13b25b2e2dd1a0ca03a5976c743))
+
+
+### Bug Fixes
+
+* Allow AT and Browser versions to be edited when bot run is assigned to manual tester for evaluation ([#1279](https://github.com/w3c/aria-at-app/issues/1279)) ([a6c0bda](https://github.com/w3c/aria-at-app/commit/a6c0bda680b9be6ac10966c9cad9603adf6c24ac))
+
 ## [1.10.0](https://github.com/w3c/aria-at-app/compare/v1.9.3...v1.10.0) (2024-11-07)
 
 
