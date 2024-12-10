@@ -46,6 +46,14 @@ Another way to log in as either a tester or admin, useful for quick testing and 
         ```
           signMeInAsVendor("joe-the-vendor")
         ```
+      By default, you will be signed in as a "vispero (JAWS)" vendor but to sign in as any others, you can provide the vendor's company name as the second parameter. eg:
+        ```
+          signMeInAsVendor("joe-the-vendor", "apple")
+        ```
+      The list of applicable constants is currently:
+        1. vispero (JAWS)
+        2. nvAccess (NVDA)
+        3. apple (VoiceOver for macOS)
 
 The part in quotes is the username, feel free to change the username to whatever you prefer.
 
@@ -156,6 +164,10 @@ yarn storybook
 - Run the Storybook server
 
 Any changes in the component will be picked up by the Storybook server.
+
+#### Snapshot Testing
+
+We use snapshot testing to detect regressions. These require upkeep since snapshots can become outdated by upstream test changes in aria-at. It is a good practice to routinely run `yarn update-snapshots` on your working branch.
 
 ### Accessibility testing
 
