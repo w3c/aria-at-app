@@ -11,7 +11,10 @@ const {
   USER_ATTRIBUTES,
   COLLECTION_JOB_TEST_STATUS_ATTRIBUTES
 } = require('./helpers');
-const { COLLECTION_JOB_STATUS } = require('../../util/enums');
+const {
+  COLLECTION_JOB_STATUS,
+  AUTOMATION_SERVICE
+} = require('../../util/enums');
 const { Op } = require('sequelize');
 const {
   createTestPlanRun,
@@ -24,7 +27,10 @@ const {
   default: createGithubWorkflow,
   isEnabled: isGithubWorkflowEnabled
 } = require('../../services/GithubWorkflowService');
-
+const {
+  default: triggerAzurePipeline,
+  isEnabled: isAzurePipelinesEnabled
+} = require('../../services/AzurePipelinesService');
 const {
   startCollectionJobSimulation
 } = require('../../tests/util/mock-automation-scheduler-server');
@@ -125,6 +131,7 @@ const nestedTestPlanRunAssociation = (
 
 /**
  * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanVersionAssociation = (
@@ -137,7 +144,7 @@ const testPlanVersionAssociation = (
 });
 
 /**
- * @param {string[]} testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} testPlanAttributes - TestPlan attributes to be returned in the result
  * @returns {{association: string, attributes: string[]}}
  */
 const testPlanAssociation = testPlanAttributes => ({
@@ -146,7 +153,7 @@ const testPlanAssociation = testPlanAttributes => ({
 });
 
 /**
- * @param browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} browserAttributes - Browser attributes to be returned in the result
  * @returns {{association: string, attributes: string[]}}
  */
 const browserAssociation = browserAttributes => ({
@@ -155,7 +162,7 @@ const browserAssociation = browserAttributes => ({
 });
 
 /**
- * @param atAttributes - At attributes to be returned in the result
+ * @param {string[]} atAttributes - At attributes to be returned in the result
  * @returns {{association: string, attributes: string[]}}
  */
 const atAssociation = atAttributes => ({
@@ -381,18 +388,41 @@ const getCollectionJobs = async ({
  * @param {object} job - CollectionJob to trigger workflow for.
  * @param {number[]} testIds - Array of testIds
  * @param {object} atVersion - AtVersion to use for the workflow
+ * @param {string} workflowService - Use GitHub Actions or Azure Pipelines
  * @param {object} options
  * @param {*} options.transaction - Sequelize transaction
  * @returns Promise<CollectionJob>
  */
-const triggerWorkflow = async (job, testIds, atVersion, { transaction }) => {
+const triggerWorkflow = async (
+  job,
+  testIds,
+  atVersion,
+  workflowService,
+  { transaction }
+) => {
   const { testPlanVersion } = job.testPlanRun.testPlanReport;
   const { gitSha, directory } = testPlanVersion;
 
   try {
-    if (isGithubWorkflowEnabled()) {
-      // TODO: pass the reduced list of testIds along / deal with them somehow
-      await createGithubWorkflow({ job, directory, gitSha, atVersion });
+    if (workflowService === AUTOMATION_SERVICE.GITHUB_ACTIONS) {
+      if (isGithubWorkflowEnabled()) {
+        // TODO: pass the reduced list of testIds along / deal with them somehow
+        await createGithubWorkflow({ job, directory, gitSha, atVersion });
+      } else {
+        console.error(
+          'GitHub Workflow Service is not enabled. Starting simulation job.'
+        );
+        await startCollectionJobSimulation(job, atVersion, transaction);
+      }
+    } else if (workflowService === AUTOMATION_SERVICE.AZURE_PIPELINES) {
+      if (isAzurePipelinesEnabled()) {
+        await triggerAzurePipeline({ job, directory, gitSha, atVersion });
+      } else {
+        console.error(
+          'Azure Pipelines Service is not enabled. Starting simulation job.'
+        );
+        await startCollectionJobSimulation(job, atVersion, transaction);
+      }
     } else {
       await startCollectionJobSimulation(job, testIds, atVersion, transaction);
     }
@@ -515,20 +545,25 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
     transaction
   });
 
-  return triggerWorkflow(job, testIds, atVersion, { transaction });
+  const { automationService } = collectionJob.testPlanRun;
+
+  return triggerWorkflow(job, testIds, atVersion, automationService, {
+    transaction
+  });
 };
 
 /**
  * Schedule a collection job with Response Scheduler
  * @param {object} input object for request to schedule job
  * @param {string} input.testPlanReportId id of test plan report to use for scheduling
+ * @param {string} input.workflowService
  * @param {Array<string>} input.testIds optional: ids of tests to run
  * @param {object} options
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const scheduleCollectionJob = async (
-  { testPlanReportId, testIds = null },
+  { testPlanReportId, workflowService, testIds = null },
   { transaction }
 ) => {
   const context = getGraphQLContext({ req: { transaction } });
@@ -596,6 +631,7 @@ const scheduleCollectionJob = async (
     job,
     testIds ?? tests.map(test => test.id),
     atVersion,
+    workflowService,
     {
       transaction
     }
@@ -693,10 +729,13 @@ const restartCollectionJob = async ({ id }, { transaction }) => {
     transaction
   });
 
+  const { automationService } = job.testPlanRun;
+
   return triggerWorkflow(
     job,
     tests.map(test => test.id),
     atVersion,
+    automationService,
     { transaction }
   );
 };
