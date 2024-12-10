@@ -256,6 +256,43 @@ const markAsFinal = (testPlanReportId, { transaction }) => {
   );
 };
 
+const updateVendorReviewStatus = (
+  testPlanReportId,
+  reviewStatus,
+  { transaction }
+) => {
+  return mutate(
+    gql`
+      mutation {
+        testPlanReport(id: ${testPlanReportId}) {
+          promoteVendorReviewStatus(vendorReviewStatus: "${reviewStatus}") {
+            testPlanReport {
+              id
+              vendorReviewStatus
+            }
+          }
+        }
+      }
+    `,
+    { transaction }
+  );
+};
+
+const submitTestResult = (testResultId, testResult, { transaction }) => {
+  return mutate(
+    gql`
+      mutation SubmitTestResult($input: TestResultInput!) {
+        testResult(id: "${testResultId}") {
+          submitTestResult(input: $input) {
+            locationOfData
+          }
+        }
+      }
+    `,
+    { variables: { input: testResult }, transaction }
+  );
+};
+
 const countCompletedTests = testPlanReports => {
   return testPlanReports.reduce((acc, testPlanReport) => {
     return (
@@ -933,6 +970,221 @@ describe('data management', () => {
       expect(newVOAssertionsCollectedCount).toEqual(
         oldVOAssertionsCollectedCount - 4
       );
+    });
+  });
+
+  it('keeps approval status across version updates if no substantial changes', async () => {
+    await dbCleaner(async transaction => {
+      // The difference between them is that there have been updated settings for VoiceOver tests;
+      // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn'
+      //
+      // Based on https://github.com/w3c/aria-at/compare/d9a19f8...565a87b#diff-4e3dcd0a202f268ebec2316344f136c3a83d6e03b3f726775cb46c57322ff3a0,
+      // only 'navForwardsToButton' and 'navBackToButton' tests were affected. The individual tests for
+      // 'reqInfoAboutButton' should still match.
+      //
+      // This means that only VO + Safari tests will have changed and that vendor approval result cannot
+      // be brought forward if the results are copied.
+      //
+      // The JAWS and NVDA reports should have unaffected results and their vendor approval status can be copied.
+      const [oldCommandButtonVersion, newCommandButtonVersion] =
+        await getTestableCommandButtonVersions(transaction);
+
+      // Move the old version to CANDIDATE (all the reports are already final)
+      await updateVersionToPhaseQuery(oldCommandButtonVersion.id, 'CANDIDATE', {
+        transaction
+      });
+
+      // Make sure the reports are all approved
+      for (const testPlanReport of oldCommandButtonVersion.testPlanReports) {
+        // Have to pass 'READY' first for it to move to 'IN_PROGRESS', then
+        // 'IN_PROGRESS' to move to 'APPROVED'
+        //
+        // TODO: Avoid this unnecessary state management based way to avoid
+        //  confusion; better to just pass the intended status
+        await updateVendorReviewStatus(testPlanReport.id, 'READY', {
+          transaction
+        });
+        await updateVendorReviewStatus(testPlanReport.id, 'IN_PROGRESS', {
+          transaction
+        });
+      }
+
+      const afterOldVersionVendorUpdateStatus = await query(
+        gql`
+          query {
+            testPlanVersion(id: ${oldCommandButtonVersion.id}) {
+              id
+              phase
+              testPlanReports {
+                id
+                markedFinalAt
+                vendorReviewStatus
+              }
+            }
+          }
+        `,
+        { transaction }
+      );
+
+      // Move the new version to DRAFT
+      await updateVersionToPhaseQuery(newCommandButtonVersion.id, 'DRAFT', {
+        testPlanVersionDataToIncludeId: oldCommandButtonVersion.id,
+        transaction
+      });
+
+      // Confirm all the reports have been copied and marked as final
+      const afterNewVersionPhaseUpdateStatus = await query(
+        gql`
+          query {
+            testPlanVersion(id: ${newCommandButtonVersion.id}) {
+              id
+              phase
+              testPlanReports {
+                id
+                markedFinalAt
+                vendorReviewStatus
+                draftTestPlanRuns {
+                  id
+                  testResults {
+                    id
+                    scenarioResults {
+                      id
+                      output
+                      assertionResults {
+                        id
+                        passed
+                      }
+                    }
+                    test {
+                      id
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `,
+        { transaction }
+      );
+
+      // Confirm that a few on VO still need to be updated to be marked as final
+      for (const testPlanReport of afterNewVersionPhaseUpdateStatus
+        .testPlanVersion.testPlanReports) {
+        // The 'copied' vendor review status would be available with the results
+        // copy process
+        if (!testPlanReport.vendorReviewStatus) {
+          // Only 1 tester is assigned in this test scenario
+          const testPlanRun = testPlanReport.draftTestPlanRuns[0];
+
+          for (const testResult of testPlanRun.testResults) {
+            let baseTestResult = {
+              id: testResult.id,
+              scenarioResults: testResult.scenarioResults
+            };
+
+            // This needs to be populated since some tests will be missing data
+            if (
+              baseTestResult.scenarioResults.some(
+                scenarioResult => scenarioResult.output === null
+              )
+            ) {
+              baseTestResult = {
+                ...baseTestResult,
+                atVersionId: 3, // for this test, we know it uses a specific VO version
+                browserVersionId: 3, // for this test, we know it uses a specific Safari version
+                scenarioResults: baseTestResult.scenarioResults.map(
+                  scenarioResult => {
+                    if (scenarioResult.output === null) {
+                      return {
+                        ...scenarioResult,
+                        output: 'sample output',
+                        assertionResults: scenarioResult.assertionResults.map(
+                          assertionResult => ({
+                            ...assertionResult,
+                            passed: false
+                          })
+                        ),
+                        unexpectedBehaviors: []
+                      };
+                    } else return scenarioResult;
+                  }
+                )
+              };
+            }
+            await submitTestResult(testResult.id, baseTestResult, {
+              transaction
+            });
+          }
+        }
+        // Mark all reports as final
+        await markAsFinal(testPlanReport.id, { transaction });
+      }
+
+      // Advance new version to CANDIDATE as well
+      await updateVersionToPhaseQuery(newCommandButtonVersion.id, 'CANDIDATE', {
+        transaction
+      });
+
+      // Confirm the NVDA and JAWS versions are still approved but VO is marked as "In Progress"
+      const { testPlanVersion: newCommandButtonVersionAfterFinalPhaseUpdate } =
+        await query(
+          gql`
+        query {
+          testPlanVersion(id: ${newCommandButtonVersion.id}) {
+            id
+            phase
+            testPlanReports {
+              id
+              at {
+                id
+              }
+              browser {
+                id
+              }
+              vendorReviewStatus
+            }
+          }
+        }
+        `,
+          { transaction }
+        );
+
+      expect(
+        afterOldVersionVendorUpdateStatus.testPlanVersion.testPlanReports.every(
+          report => report.vendorReviewStatus === 'APPROVED'
+        )
+      ).toBe(true);
+      expect(
+        afterOldVersionVendorUpdateStatus.testPlanVersion.testPlanReports.length
+      ).toEqual(3);
+      expect(
+        afterNewVersionPhaseUpdateStatus.testPlanVersion.testPlanReports.filter(
+          report => report.vendorReviewStatus === 'APPROVED'
+        ).length
+      ).toEqual(2);
+      expect(
+        afterNewVersionPhaseUpdateStatus.testPlanVersion.testPlanReports.length
+      ).toEqual(3);
+      expect(newCommandButtonVersionAfterFinalPhaseUpdate.phase).toBe(
+        'CANDIDATE'
+      );
+      expect(
+        newCommandButtonVersionAfterFinalPhaseUpdate.testPlanReports.length
+      ).toEqual(3);
+      expect(
+        newCommandButtonVersionAfterFinalPhaseUpdate.testPlanReports.filter(
+          report => report.vendorReviewStatus === 'APPROVED'
+        ).length
+      ).toEqual(2);
+      // Confirm only the Safari + VO combination is not marked as approved
+      expect(
+        newCommandButtonVersionAfterFinalPhaseUpdate.testPlanReports.find(
+          report => report.vendorReviewStatus !== 'APPROVED'
+        ).at.id === '3' &&
+          newCommandButtonVersionAfterFinalPhaseUpdate.testPlanReports.find(
+            report => report.vendorReviewStatus !== 'APPROVED'
+          ).browser.id === '3'
+      ).toBe(true);
     });
   });
 });

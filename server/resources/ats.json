@@ -32,7 +32,7 @@
         "id": 2,
         "name": "NVDA",
         "key": "nvda",
-        "vendorId": null,
+        "vendorId": 6,
         "defaultConfigurationInstructionsHTML": "Configure NVDA with default settings. For help, read &lt;a href=&quot;https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing&quot;&gt;Configuring Screen Readers for Testing&lt;/a&gt;.",
         "assertionTokens": {
             "screenReader": "NVDA",

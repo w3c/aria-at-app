@@ -3,16 +3,14 @@ const {
   getTestPlanVersionById,
   updateTestPlanVersionById
 } = require('../models/services/TestPlanVersionService');
+const checkUserRole = require('./helpers/checkUserRole');
 
 const addViewerResolver = async (_, { testPlanVersionId, testId }, context) => {
   const { user, transaction } = context;
 
-  if (
-    !(
-      user?.roles.find(role => role.name === 'ADMIN') ||
-      user?.roles.find(role => role.name === 'VENDOR')
-    )
-  ) {
+  const isAdmin = checkUserRole.isAdmin(user?.roles);
+  const isVendor = checkUserRole.isVendor(user?.roles);
+  if (!(isAdmin || isVendor)) {
     throw new AuthenticationError();
   }
 
