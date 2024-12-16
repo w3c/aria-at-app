@@ -131,7 +131,8 @@ const createIssueLink = ({
       browserFormatted;
 
     if (commandString) {
-      testSetupFormatted = `${testSetupFormatted}` + `- Command: ${commandString}\n`;
+      testSetupFormatted =
+        `${testSetupFormatted}` + `- Command: \`${commandString}\`\n`;
     }
 
     testSetupFormatted = `${testSetupFormatted}\n`;
