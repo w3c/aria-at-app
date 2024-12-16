@@ -130,6 +130,8 @@ const TestRun = () => {
   const [currentAtVersion, setCurrentAtVersion] = useState('');
   const [currentBrowserVersion, setCurrentBrowserVersion] = useState('');
   const [pageReady, setPageReady] = useState(false);
+  const [selectedIssueType, setSelectedIssueType] = useState('test');
+  const [selectedCommandForIssue, setSelectedCommandForIssue] = useState('');
 
   const auth = evaluateAuth(data && data.me ? data.me : {});
   let { id: userId, isSignedIn, isAdmin } = auth;
@@ -374,7 +376,8 @@ const TestRun = () => {
       browserName: testPlanReport.browser.name,
       atVersionName: currentAtVersion?.name,
       browserVersionName: currentBrowserVersion?.name,
-      conflictMarkdown: conflictMarkdownRef.current
+      conflictMarkdown: conflictMarkdownRef.current,
+      commandString: selectedCommandForIssue
     });
   }
 
@@ -885,6 +888,25 @@ const TestRun = () => {
     editAtBrowserDetailsButtonRef.current.focus();
   };
 
+  const onIssueTypeChange = e => {
+    const type = e.target.value;
+    if (type === 'command') {
+      const scenario = currentTest.scenarios[0];
+      const commandText = scenario.commands
+        .map(command => command.text)
+        .join(' then ');
+      if (!selectedCommandForIssue) setSelectedCommandForIssue(commandText);
+    } else {
+      setSelectedCommandForIssue('');
+    }
+    setSelectedIssueType(type);
+  };
+
+  const onSelectedCommandForIssueChange = e => {
+    const command = e.target.value;
+    setSelectedCommandForIssue(command);
+  };
+
   const renderTestContent = (testPlanReport, currentTest, heading) => {
     const { index } = currentTest;
     const isComplete = currentTest.testResult
@@ -963,7 +985,60 @@ const TestRun = () => {
       <div role="complementary">
         <h2 id="test-options-heading">Test Options</h2>
         <ul className="options-wrapper" aria-labelledby="test-options-heading">
-          <li>
+          <li className="raise-issue-container">
+            <span className="title">Raise an issue for ...</span>
+            <div className="options type" onChange={onIssueTypeChange}>
+              <label>
+                <input
+                  id="testIssueType"
+                  name="issueTypeOption"
+                  type="radio"
+                  value="test"
+                  defaultChecked
+                />
+                test
+              </label>
+              <label>
+                <input
+                  id="commandIssueType"
+                  name="issueTypeOption"
+                  type="radio"
+                  value="command"
+                />
+                command
+              </label>
+            </div>
+            {selectedIssueType === 'command' && (
+              <>
+                <span className="title">Select command ...</span>
+                <div
+                  className="options command"
+                  onChange={onSelectedCommandForIssueChange}
+                >
+                  {currentTest.scenarios.map((scenario, index) => {
+                    const commandKey = `${scenario.id}-${scenario.commands
+                      .map(command => command.id)
+                      .join('_')}`;
+                    const commandText = scenario.commands
+                      .map(command => command.text)
+                      .join(' then ');
+
+                    return (
+                      <label key={commandKey}>
+                        <input
+                          id={commandKey}
+                          name="commandOption"
+                          type="radio"
+                          value={commandText}
+                          defaultChecked={index === 0}
+                        />
+                        {commandText}
+                      </label>
+                    );
+                  })}
+                </div>
+              </>
+            )}
             <OptionButton
               text="Raise an Issue"
               icon={

@@ -29,6 +29,7 @@ const atLabelMap = {
  * @param {string|null} [options.browserVersionName=null] - The version name of the browser
  * @param {string|null} [options.conflictMarkdown=null] - The conflict markdown
  * @param {string|null} [options.reportLink=null] - The link to the report
+ * @param {string|null} [options.command=null] - The command to be included in the report
  * @returns {string} The URL for creating a new issue on the GitHub repository
  * @throws {Error} If required parameters are missing
  */
@@ -48,7 +49,8 @@ const createIssueLink = ({
   browserVersionName = null,
   conflictMarkdown = null,
   reportLink = null,
-  testReviewLink = null
+  testReviewLink = null,
+  commandString = null
 }) => {
   if (!(testPlanDirectory || testPlanTitle || versionString || atName)) {
     throw new Error('Cannot create issue link due to missing parameters');
@@ -72,9 +74,15 @@ const createIssueLink = ({
       titleStart = 'Feedback';
     }
 
-    title =
-      `${titleStart}: "${testTitle}" (${testPlanTitle}, ` +
-      `Test ${testSequenceNumber}, ${versionString})`;
+    if (commandString) {
+      title =
+        `${titleStart}: "${testTitle}" (${testPlanTitle}, ` +
+        `Test ${testSequenceNumber}, Command "${commandString}", ${versionString})`;
+    } else {
+      title =
+        `${titleStart}: "${testTitle}" (${testPlanTitle}, ` +
+        `Test ${testSequenceNumber}, ${versionString})`;
+    }
   } else {
     title = `General Feedback: ${testPlanTitle} ${versionString}`;
     if (atName) title = `${atName} ${title}`;
@@ -120,8 +128,13 @@ const createIssueLink = ({
       `[${shortenedUrl}](${modifiedRenderedUrl})\n` +
       reportLinkFormatted +
       atFormatted +
-      browserFormatted +
-      '\n';
+      browserFormatted;
+
+    if (commandString) {
+      testSetupFormatted = `${testSetupFormatted}` + `- Command: ${commandString}\n`;
+    }
+
+    testSetupFormatted = `${testSetupFormatted}\n`;
   }
 
   let metadataFormatted = '';
