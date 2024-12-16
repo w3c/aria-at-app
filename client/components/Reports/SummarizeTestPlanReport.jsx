@@ -23,6 +23,7 @@ import {
   TestPlanReportPropType,
   TestPlanVersionPropType
 } from '../common/proptypes';
+import FailingAssertionsSummary from '../FailingAssertionsSummary';
 
 const ResultsContainer = styled.div`
   padding: 1em 1.75em;
@@ -172,6 +173,15 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     );
   };
 
+  const renderFailingAssertionsSummary = () => {
+    return (
+      <FailingAssertionsSummary
+        testPlanReport={testPlanReport}
+        atName={testPlanReport.at.name}
+      />
+    );
+  };
+
   return (
     <Container id="main" as="main" tabIndex="-1">
       <Helmet>
@@ -246,7 +256,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
 
       {renderVersionsSummaryTable()}
       {renderResultsForTargetTable()}
-
+      {renderFailingAssertionsSummary()}
       {testPlanReport.finalizedTestResults.map((testResult, index) => {
         const test = testResult.test;
 
