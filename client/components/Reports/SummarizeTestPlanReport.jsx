@@ -24,6 +24,7 @@ import {
   TestPlanVersionPropType
 } from '../common/proptypes';
 import FailingAssertionsSummaryTable from '../FailingAssertionsSummary/Table';
+import FailingAssertionsSummaryHeading from '../FailingAssertionsSummary/Heading';
 
 const ResultsContainer = styled.div`
   padding: 1em 1.75em;
@@ -175,10 +176,16 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
 
   const renderFailingAssertionsSummary = () => {
     return (
-      <FailingAssertionsSummaryTable
-        testPlanReport={testPlanReport}
-        atName={testPlanReport.at.name}
-      />
+      <>
+        <FailingAssertionsSummaryHeading metrics={testPlanReport.metrics} />
+        <FailingAssertionsSummaryTable
+          testPlanReport={testPlanReport}
+          atName={testPlanReport.at.name}
+          getLinkUrl={assertion =>
+            `/report/${testPlanVersion.id}/targets/${testPlanReport.id}#result-${assertion.testResultId}`
+          }
+        />
+      </>
     );
   };
 

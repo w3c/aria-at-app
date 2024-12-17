@@ -5,7 +5,12 @@ import { Link } from 'react-router-dom';
 import { useFailingAssertions } from '../../hooks/useFailingAssertions';
 import { TestPlanReportPropType } from '../common/proptypes';
 
-const FailingAssertionsSummaryTable = ({ testPlanReport, atName }) => {
+const FailingAssertionsSummaryTable = ({
+  testPlanReport,
+  atName,
+  getLinkUrl = assertion => `#result-${assertion.testId}`,
+  LinkComponent = Link
+}) => {
   const failingAssertions = useFailingAssertions(testPlanReport);
   const { metrics } = testPlanReport;
 
@@ -32,9 +37,9 @@ const FailingAssertionsSummaryTable = ({ testPlanReport, atName }) => {
           {failingAssertions.map((assertion, index) => (
             <tr key={`failing-assertion-${index}`}>
               <td>
-                <Link to={`#result-${assertion.testId}`}>
+                <LinkComponent to={getLinkUrl(assertion)}>
                   {assertion.testTitle}
-                </Link>
+                </LinkComponent>
               </td>
               <td>{assertion.scenarioCommands}</td>
               <td>{assertion.priority}</td>
@@ -50,7 +55,9 @@ const FailingAssertionsSummaryTable = ({ testPlanReport, atName }) => {
 
 FailingAssertionsSummaryTable.propTypes = {
   testPlanReport: TestPlanReportPropType.isRequired,
-  atName: PropTypes.string.isRequired
+  atName: PropTypes.string.isRequired,
+  getLinkUrl: PropTypes.func,
+  LinkComponent: PropTypes.elementType
 };
 
 export default FailingAssertionsSummaryTable;
