@@ -5,18 +5,14 @@ import { Link } from 'react-router-dom';
 import { useFailingAssertions } from '../../hooks/useFailingAssertions';
 import { TestPlanReportPropType } from '../common/proptypes';
 
-const FailingAssertionsSummary = ({ testPlanReport, atName }) => {
+const FailingAssertionsSummaryTable = ({ testPlanReport, atName }) => {
   const failingAssertions = useFailingAssertions(testPlanReport);
   const { metrics } = testPlanReport;
 
   if (failingAssertions.length === 0) return null;
 
   return (
-    <section>
-      <h2 id="failing-assertions-heading">
-        Summary of Failing Assertions ({metrics.mustAssertionsFailedCount} must,{' '}
-        {metrics.shouldAssertionsFailedCount} should)
-      </h2>
+    <>
       <p>
         {metrics.assertionsFailedCount} assertions failed for{' '}
         {metrics.commandsCount} commands in {metrics.testsFailedCount} tests.
@@ -48,13 +44,13 @@ const FailingAssertionsSummary = ({ testPlanReport, atName }) => {
           ))}
         </tbody>
       </Table>
-    </section>
+    </>
   );
 };
 
-FailingAssertionsSummary.propTypes = {
+FailingAssertionsSummaryTable.propTypes = {
   testPlanReport: TestPlanReportPropType.isRequired,
   atName: PropTypes.string.isRequired
 };
 
-export default FailingAssertionsSummary;
+export default FailingAssertionsSummaryTable;

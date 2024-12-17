@@ -33,7 +33,8 @@ import createIssueLink, {
 import RunHistory from '../../common/RunHistory';
 import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
 import NotApprovedModal from '../CandidateModals/NotApprovedModal';
-import FailingAssertionsSummary from '../../FailingAssertionsSummary';
+import FailingAssertionsSummaryTable from '../../FailingAssertionsSummary/Table';
+import FailingAssertionsSummaryHeading from '../../FailingAssertionsSummary/Heading';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -394,34 +395,41 @@ const CandidateTestPlanRun = () => {
   }
 
   const getHeading = () => {
-    if (isSummaryView) {
-      return (
-        <div className="test-info-heading">
-          <h1>Summary of Failing Assertions</h1>
-        </div>
-      );
-    }
     return (
       <div className="test-info-heading">
-        <div className="sr-only" aria-live="polite" aria-atomic="true">
-          Viewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
-          {tests.length}
-          {currentTest.seq === tests.length ? 'You are on the last test.' : ''}
-        </div>
-        <span className="task-label">
-          Reviewing Test {currentTest.seq} of {tests.length}:
-        </span>
-        <h1>
-          {`${currentTest.seq}. ${currentTest.title}`}{' '}
-          <span className="using">using</span> {`${at}`}{' '}
-          {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
-          {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
-          {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
-            <Badge className="viewed-badge" pill variant="secondary">
-              Previously Viewed
-            </Badge>
-          )}
-        </h1>
+        {isSummaryView ? (
+          <>
+            <span className="task-label">Candidate Test Plan Review</span>
+            <FailingAssertionsSummaryHeading
+              metrics={testPlanReport.metrics}
+              as="h1"
+            />
+          </>
+        ) : (
+          <>
+            <div className="sr-only" aria-live="polite" aria-atomic="true">
+              Viewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
+              {tests.length}
+              {currentTest.seq === tests.length
+                ? 'You are on the last test.'
+                : ''}
+            </div>
+            <span className="task-label">
+              Reviewing Test {currentTest.seq} of {tests.length}:
+            </span>
+            <h1>
+              {`${currentTest.seq}. ${currentTest.title}`}{' '}
+              <span className="using">using</span> {`${at}`}{' '}
+              {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
+              {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
+              {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
+                <Badge className="viewed-badge" pill variant="secondary">
+                  Previously Viewed
+                </Badge>
+              )}
+            </h1>
+          </>
+        )}
       </div>
     );
   };
@@ -511,7 +519,7 @@ const CandidateTestPlanRun = () => {
     return (
       <div className="results-container">
         {isSummaryView ? (
-          <FailingAssertionsSummary
+          <FailingAssertionsSummaryTable
             testPlanReport={testPlanReports[0]}
             atName={at}
           />

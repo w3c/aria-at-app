@@ -23,7 +23,7 @@ import {
   TestPlanReportPropType,
   TestPlanVersionPropType
 } from '../common/proptypes';
-import FailingAssertionsSummary from '../FailingAssertionsSummary';
+import FailingAssertionsSummaryTable from '../FailingAssertionsSummary/Table';
 
 const ResultsContainer = styled.div`
   padding: 1em 1.75em;
@@ -175,7 +175,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
 
   const renderFailingAssertionsSummary = () => {
     return (
-      <FailingAssertionsSummary
+      <FailingAssertionsSummaryTable
         testPlanReport={testPlanReport}
         atName={testPlanReport.at.name}
       />
