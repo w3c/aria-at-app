@@ -33,6 +33,7 @@ import createIssueLink, {
 import RunHistory from '../../common/RunHistory';
 import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
 import NotApprovedModal from '../CandidateModals/NotApprovedModal';
+import FailingAssertionsSummary from '../../FailingAssertionsSummary';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -59,7 +60,10 @@ const CandidateTestPlanRun = () => {
   const [firstTimeViewing, setFirstTimeViewing] = useState(false);
   const [viewedTests, setViewedTests] = useState([]);
   const [testsLength, setTestsLength] = useState(0);
-  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex(testsLength);
+  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex({
+    minTestIndex: -1,
+    maxTestIndex: testsLength
+  });
   const [showTestNavigator, setShowTestNavigator] = useState(true);
   const [isFirstTest, setIsFirstTest] = useState(true);
   const [isLastTest, setIsLastTest] = useState(false);
@@ -78,7 +82,11 @@ const CandidateTestPlanRun = () => {
 
   const handleTestClick = async index => {
     setCurrentTestIndex(index);
-    if (index === 0) {
+    if (index === -1) {
+      // Summary view
+      setIsFirstTest(false);
+      setIsLastTest(false);
+    } else if (index === 0) {
       setIsFirstTest(true);
       setIsLastTest(false);
     } else if (index === tests.length - 1) {
@@ -89,6 +97,7 @@ const CandidateTestPlanRun = () => {
       setIsLastTest(false);
     }
   };
+
   const handleNextTestClick = async () => {
     navigateTests(
       false,
@@ -116,6 +125,7 @@ const CandidateTestPlanRun = () => {
   };
 
   const updateTestViewed = async () => {
+    if (!currentTest) return;
     const userPreviouslyViewedTest = viewedTests.includes(currentTest.id);
     if (!userPreviouslyViewedTest) {
       setFirstTimeViewing(true);
@@ -309,14 +319,14 @@ const CandidateTestPlanRun = () => {
     issue =>
       issue.isCandidateReview &&
       issue.feedbackType === 'CHANGES_REQUESTED' &&
-      issue.testNumberFilteredByAt === currentTest.seq
+      issue.testNumberFilteredByAt === currentTest?.seq
   );
 
   const feedbackIssues = testPlanReport.issues?.filter(
     issue =>
       issue.isCandidateReview &&
       issue.feedbackType === 'FEEDBACK' &&
-      issue.testNumberFilteredByAt === currentTest.seq
+      issue.testNumberFilteredByAt === currentTest?.seq
   );
 
   const issue = {
@@ -325,10 +335,10 @@ const CandidateTestPlanRun = () => {
     testPlanTitle: testPlanVersion.title,
     testPlanDirectory: testPlanVersion.testPlan.directory,
     versionString: testPlanVersion.versionString,
-    testTitle: currentTest.title,
-    testRowNumber: currentTest.rowNumber,
-    testSequenceNumber: currentTest.seq,
-    testRenderedUrl: currentTest.renderedUrl,
+    testTitle: currentTest?.title,
+    testRowNumber: currentTest?.rowNumber,
+    testSequenceNumber: currentTest?.seq,
+    testRenderedUrl: currentTest?.renderedUrl,
     atName: testPlanReport.at.name
   };
 
@@ -352,7 +362,7 @@ const CandidateTestPlanRun = () => {
     isCandidateReviewChangesRequested: false,
     testPlanTitle: testPlanVersion.title,
     versionString: testPlanVersion.versionString,
-    testRowNumber: currentTest.rowNumber,
+    testRowNumber: currentTest?.rowNumber,
     username: data.me.username,
     atName: testPlanReport.at.name
   };
@@ -381,163 +391,180 @@ const CandidateTestPlanRun = () => {
       'https://github.com/FreedomScientific/VFO-standards-support/issues';
   }
 
-  const heading = (
-    <div className="test-info-heading">
-      <div className="sr-only" aria-live="polite" aria-atomic="true">
-        Viewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
-        {tests.length}
-        {currentTest.seq === tests.length ? 'You are on the last test.' : ''}
+  const getHeading = () => {
+    return (
+      <div className="test-info-heading">
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          Viewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
+          {tests.length}
+          {currentTest.seq === tests.length ? 'You are on the last test.' : ''}
+        </div>
+        <span className="task-label">
+          Reviewing Test {currentTest.seq} of {tests.length}:
+        </span>
+        <h1>
+          {`${currentTest.seq}. ${currentTest.title}`}{' '}
+          <span className="using">using</span> {`${at}`}{' '}
+          {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
+          {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
+          {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
+            <Badge className="viewed-badge" pill variant="secondary">
+              Previously Viewed
+            </Badge>
+          )}
+        </h1>
       </div>
-      <span className="task-label">
-        Reviewing Test {currentTest.seq} of {tests.length}:
-      </span>
-      <h1>
-        {`${currentTest.seq}. ${currentTest.title}`}{' '}
-        <span className="using">using</span> {`${at}`}{' '}
-        {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
-        {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
-        {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
-          <Badge className="viewed-badge" pill variant="secondary">
-            Previously Viewed
-          </Badge>
-        )}
-      </h1>
-    </div>
-  );
+    );
+  };
 
-  const testInfo = (
-    <div className="test-info-wrapper">
-      <div className="test-info-entity apg-example-name">
-        <div className="info-label">
-          <b>Candidate Test Plan:</b>{' '}
-          <a href={`/test-review/${testPlanVersion.id}`}>
-            {`${
-              testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
-            } ${testPlanVersion.versionString}`}
-          </a>
+  const getTestInfo = () => {
+    return (
+      <div className="test-info-wrapper">
+        <div className="test-info-entity apg-example-name">
+          <div className="info-label">
+            <b>Candidate Test Plan:</b>{' '}
+            <a href={`/test-review/${testPlanVersion.id}`}>
+              {`${
+                testPlanVersion.title ||
+                testPlanVersion.testPlan?.directory ||
+                ''
+              } ${testPlanVersion.versionString}`}
+            </a>
+          </div>
+        </div>
+        <div className="test-info-entity review-status">
+          <div className="info-label">
+            <b>Review status by {at} Representative:</b>{' '}
+            {`${reviewStatusText} `}
+          </div>
+        </div>
+        <div className="test-info-entity target-date">
+          <div className="info-label">
+            <b>Target Completion Date: </b>
+            {targetCompletionDate}
+          </div>
         </div>
       </div>
-      <div className="test-info-entity review-status">
-        <div className="info-label">
-          <b>Review status by {at} Representative:</b> {`${reviewStatusText} `}
+    );
+  };
+
+  const getFeedback = () => {
+    return (
+      testPlanReport.issues.filter(
+        issue =>
+          issue.isCandidateReview &&
+          issue.testNumberFilteredByAt == currentTest.seq
+      ).length > 0 && (
+        <div className="issues-container">
+          <h2>
+            <span className="feedback-from-text">Feedback from</span>{' '}
+            <b>{at} Representative</b>
+          </h2>
+          <ul className="feedback-list">
+            {[changesRequestedIssues, feedbackIssues].map((list, index) => {
+              if (list.length > 0) {
+                const uniqueAuthors = [
+                  ...new Set(list.map(issue => issue.author))
+                ];
+                const differentAuthors = !(
+                  uniqueAuthors.length === 1 &&
+                  uniqueAuthors[0] === data.me.username
+                );
+                return (
+                  <FeedbackListItem
+                    key={`${index}-issues`}
+                    differentAuthors={differentAuthors}
+                    type={index === 0 ? 'changes-requested' : 'feedback'}
+                    issues={list}
+                    individualTest={true}
+                    githubUrl={getIssueSearchLink({
+                      isCandidateReview: true,
+                      isCandidateReviewChangesRequested: index === 0,
+                      atName: testPlanReport.at.name,
+                      testPlanTitle: testPlanVersion.title,
+                      versionString: testPlanVersion.versionString,
+                      testSequenceNumber: currentTest.seq
+                    })}
+                  />
+                );
+              }
+            })}
+          </ul>
         </div>
+      )
+    );
+  };
+
+  const getResults = () => {
+    return (
+      <div className="results-container">
+        <h1 className="current-test-title">{currentTest.title}</h1>
+        <DisclosureComponent
+          componentId="test-instructions-and-results"
+          headingLevel="1"
+          title={[
+            'Test Instructions',
+            ...testPlanReports.map(
+              testPlanReport =>
+                `Test Results for ${testPlanReport.browser.name}`
+            ),
+            'Run History'
+          ]}
+          onClick={[
+            () => setShowInstructions(!showInstructions),
+            ...showBrowserClicks,
+            () => setShowRunHistory(!showRunHistory)
+          ]}
+          expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
+          disclosureContainerView={[
+            <InstructionsRenderer
+              key={`instructions-${currentTest.id}`}
+              at={testPlanReport.at}
+              test={currentTest}
+              testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
+              testFormatVersion={testPlanVersion.metadata.testFormatVersion}
+            />,
+            ...testPlanReports.map(testPlanReport => {
+              const testResult =
+                testPlanReport.finalizedTestResults[currentTestIndex];
+
+              const {
+                assertionsPassedCount,
+                mustAssertionsFailedCount,
+                shouldAssertionsFailedCount,
+                mayAssertionsFailedCount
+              } = getMetrics({ testResult });
+
+              const mustShouldAssertionsFailedCount =
+                mustAssertionsFailedCount + shouldAssertionsFailedCount;
+
+              return (
+                <>
+                  <h2 className="test-results-header">
+                    Test Results&nbsp;(
+                    {assertionsPassedCount} passed,&nbsp;
+                    {mustShouldAssertionsFailedCount} failed,&nbsp;
+                    {mayAssertionsFailedCount} unsupported)
+                  </h2>
+                  <TestPlanResultsTable
+                    key={`${testPlanReport.id} + ${testResult.id}`}
+                    test={{ ...currentTest, at: { name: at } }}
+                    testResult={testResult}
+                  />
+                </>
+              );
+            }),
+            <RunHistory
+              key="run-history"
+              testPlanReports={testPlanReports}
+              testId={currentTest.id}
+            />
+          ]}
+          stacked
+        ></DisclosureComponent>
       </div>
-      <div className="test-info-entity target-date">
-        <div className="info-label">
-          <b>Target Completion Date: </b>
-          {targetCompletionDate}
-        </div>
-      </div>
-    </div>
-  );
-
-  const feedback = testPlanReport.issues.filter(
-    issue =>
-      issue.isCandidateReview && issue.testNumberFilteredByAt == currentTest.seq
-  ).length > 0 && (
-    <div className="issues-container">
-      <h2>
-        <span className="feedback-from-text">Feedback from</span>{' '}
-        <b>{at} Representative</b>
-      </h2>
-      <ul className="feedback-list">
-        {[changesRequestedIssues, feedbackIssues].map((list, index) => {
-          if (list.length > 0) {
-            const uniqueAuthors = [...new Set(list.map(issue => issue.author))];
-            const differentAuthors = !(
-              uniqueAuthors.length === 1 &&
-              uniqueAuthors[0] === data.me.username
-            );
-            return (
-              <FeedbackListItem
-                key={`${index}-issues`}
-                differentAuthors={differentAuthors}
-                type={index === 0 ? 'changes-requested' : 'feedback'}
-                issues={list}
-                individualTest={true}
-                githubUrl={getIssueSearchLink({
-                  isCandidateReview: true,
-                  isCandidateReviewChangesRequested: index === 0,
-                  atName: testPlanReport.at.name,
-                  testPlanTitle: testPlanVersion.title,
-                  versionString: testPlanVersion.versionString,
-                  testSequenceNumber: currentTest.seq
-                })}
-              />
-            );
-          }
-        })}
-      </ul>
-    </div>
-  );
-
-  const results = (
-    <div className="results-container">
-      <h1 className="current-test-title">{currentTest.title}</h1>
-      <DisclosureComponent
-        componentId="test-instructions-and-results"
-        headingLevel="1"
-        title={[
-          'Test Instructions',
-          ...testPlanReports.map(
-            testPlanReport => `Test Results for ${testPlanReport.browser.name}`
-          ),
-          'Run History'
-        ]}
-        onClick={[
-          () => setShowInstructions(!showInstructions),
-          ...showBrowserClicks,
-          () => setShowRunHistory(!showRunHistory)
-        ]}
-        expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
-        disclosureContainerView={[
-          <InstructionsRenderer
-            key={`instructions-${currentTest.id}`}
-            at={testPlanReport.at}
-            test={currentTest}
-            testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
-            testFormatVersion={testPlanVersion.metadata.testFormatVersion}
-          />,
-          ...testPlanReports.map(testPlanReport => {
-            const testResult =
-              testPlanReport.finalizedTestResults[currentTestIndex];
-
-            const {
-              assertionsPassedCount,
-              mustAssertionsFailedCount,
-              shouldAssertionsFailedCount,
-              mayAssertionsFailedCount
-            } = getMetrics({ testResult });
-
-            const mustShouldAssertionsFailedCount =
-              mustAssertionsFailedCount + shouldAssertionsFailedCount;
-
-            return (
-              <>
-                <h2 className="test-results-header">
-                  Test Results&nbsp;(
-                  {assertionsPassedCount} passed,&nbsp;
-                  {mustShouldAssertionsFailedCount} failed,&nbsp;
-                  {mayAssertionsFailedCount} unsupported)
-                </h2>
-                <TestPlanResultsTable
-                  key={`${testPlanReport.id} + ${testResult.id}`}
-                  test={{ ...currentTest, at: { name: at } }}
-                  testResult={testResult}
-                />
-              </>
-            );
-          }),
-          <RunHistory
-            key="run-history"
-            testPlanReports={testPlanReports}
-            testId={currentTest.id}
-          />
-        ]}
-        stacked
-      ></DisclosureComponent>
-    </div>
-  );
+    );
+  };
 
   return (
     <Container className="test-run-container">
@@ -557,98 +584,109 @@ const CandidateTestPlanRun = () => {
         />
         <Col className="candidate-test-area" id="main" as="main" tabIndex="-1">
           <Row>
-            {heading}
-            {testInfo}
-            <Col className="results-container-col">
-              <Row xs={1} s={1} md={2}>
-                <Col
-                  className="results-container"
-                  md={isLaptopOrLarger ? 9 : 12}
-                >
-                  <Row>{feedback}</Row>
-                  <Row className="results-container-row">{results}</Row>
-                  <Row>
-                    <ul
-                      aria-labelledby="test-toolbar-heading"
-                      className="test-run-toolbar mt-1"
+            {currentTestIndex === -1 ? (
+              <FailingAssertionsSummary
+                testPlanReport={testPlanReports[0]}
+                atName={at}
+              />
+            ) : (
+              <>
+                {getHeading()}
+                {getTestInfo()}
+                <Col className="results-container-col">
+                  <Row xs={1} s={1} md={2}>
+                    <Col
+                      className="results-container"
+                      md={isLaptopOrLarger ? 9 : 12}
                     >
-                      <li>
-                        <Button
-                          variant="secondary"
-                          onClick={handlePreviousTestClick}
-                          disabled={isFirstTest}
+                      <Row>{getFeedback()}</Row>
+                      <Row className="results-container-row">
+                        {getResults()}
+                      </Row>
+                      <Row>
+                        <ul
+                          aria-labelledby="test-toolbar-heading"
+                          className="test-run-toolbar mt-1"
                         >
-                          Previous Test
-                        </Button>
-                      </li>
-                      <li>
-                        <Button
-                          ref={nextButtonRef}
-                          variant="primary"
-                          onClick={handleNextTestClick}
-                          disabled={isLastTest}
+                          <li>
+                            <Button
+                              variant="secondary"
+                              onClick={handlePreviousTestClick}
+                              disabled={isFirstTest}
+                            >
+                              Previous Test
+                            </Button>
+                          </li>
+                          <li>
+                            <Button
+                              ref={nextButtonRef}
+                              variant="primary"
+                              onClick={handleNextTestClick}
+                              disabled={isLastTest}
+                            >
+                              Next Test
+                            </Button>
+                          </li>
+                          <li>
+                            <Button
+                              ref={finishButtonRef}
+                              variant="primary"
+                              onClick={() => {
+                                setFeedbackModalShowing(true);
+                              }}
+                              disabled={!isLastTest}
+                            >
+                              Finish
+                            </Button>
+                          </li>
+                        </ul>
+                      </Row>
+                    </Col>
+                    <Col
+                      className={`current-test-options ${
+                        getFeedback() ? 'options-feedback' : ''
+                      }`}
+                      md={isLaptopOrLarger ? 3 : 8}
+                    >
+                      <div role="complementary">
+                        <h2 id="test-options-heading">Test Review Options</h2>
+                        <ul
+                          className="options-wrapper"
+                          aria-labelledby="test-options-heading"
                         >
-                          Next Test
-                        </Button>
-                      </li>
-                      <li>
-                        <Button
-                          ref={finishButtonRef}
-                          variant="primary"
-                          onClick={() => {
-                            setFeedbackModalShowing(true);
-                          }}
-                          disabled={!isLastTest}
-                        >
-                          Finish
-                        </Button>
-                      </li>
-                    </ul>
+                          <li>
+                            <OptionButton
+                              text="Request Changes"
+                              target="_blank"
+                              href={requestChangesUrl}
+                            />
+                          </li>
+                          <li>
+                            <OptionButton
+                              text="Leave Feedback"
+                              target="_blank"
+                              href={feedbackUrl}
+                            />
+                          </li>
+                          <li>
+                            <OptionButton
+                              text="File an AT bug"
+                              target="_blank"
+                              href={fileBugUrl}
+                            />
+                          </li>
+                          <li>
+                            <a href="mailto:public-aria-at@w3.org">
+                              Email us if you need help
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    </Col>
                   </Row>
                 </Col>
-                <Col
-                  className={`current-test-options ${
-                    feedback ? 'options-feedback' : ''
-                  }`}
-                  md={isLaptopOrLarger ? 3 : 8}
-                >
-                  <div role="complementary">
-                    <h2 id="test-options-heading">Test Review Options</h2>
-                    <ul
-                      className="options-wrapper"
-                      aria-labelledby="test-options-heading"
-                    >
-                      <li>
-                        <OptionButton
-                          text="Request Changes"
-                          target="_blank"
-                          href={requestChangesUrl}
-                        />
-                      </li>
-                      <li>
-                        <OptionButton
-                          text="Leave Feedback"
-                          target="_blank"
-                          href={feedbackUrl}
-                        />
-                      </li>
-                      <li>
-                        <OptionButton
-                          text="File an AT bug"
-                          target="_blank"
-                          href={fileBugUrl}
-                        />
-                      </li>
-                      <li>
-                        <a href="mailto:public-aria-at@w3.org">
-                          Email us if you need help
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </Col>
-              </Row>
-            </Col>
+              </>
+            )}
           </Row>
         </Col>
       </Row>
