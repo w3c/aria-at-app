@@ -74,6 +74,8 @@ const CandidateTestPlanRun = () => {
   const [showRunHistory, setShowRunHistory] = useState(false);
   const [showBrowserClicks, setShowBrowserClicks] = useState([]);
 
+  const isSummaryView = currentTestIndex === -1;
+
   const isLaptopOrLarger = useMediaQuery({
     query: '(min-width: 792px)'
   });
@@ -392,6 +394,13 @@ const CandidateTestPlanRun = () => {
   }
 
   const getHeading = () => {
+    if (isSummaryView) {
+      return (
+        <div className="test-info-heading">
+          <h1>Summary of Failing Assertions</h1>
+        </div>
+      );
+    }
     return (
       <div className="test-info-heading">
         <div className="sr-only" aria-live="polite" aria-atomic="true">
@@ -449,6 +458,9 @@ const CandidateTestPlanRun = () => {
   };
 
   const getFeedback = () => {
+    if (isSummaryView) {
+      return null;
+    }
     return (
       testPlanReport.issues.filter(
         issue =>
@@ -495,73 +507,82 @@ const CandidateTestPlanRun = () => {
     );
   };
 
-  const getResults = () => {
+  const getContent = () => {
     return (
       <div className="results-container">
-        <h1 className="current-test-title">{currentTest.title}</h1>
-        <DisclosureComponent
-          componentId="test-instructions-and-results"
-          headingLevel="1"
-          title={[
-            'Test Instructions',
-            ...testPlanReports.map(
-              testPlanReport =>
-                `Test Results for ${testPlanReport.browser.name}`
-            ),
-            'Run History'
-          ]}
-          onClick={[
-            () => setShowInstructions(!showInstructions),
-            ...showBrowserClicks,
-            () => setShowRunHistory(!showRunHistory)
-          ]}
-          expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
-          disclosureContainerView={[
-            <InstructionsRenderer
-              key={`instructions-${currentTest.id}`}
-              at={testPlanReport.at}
-              test={currentTest}
-              testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
-              testFormatVersion={testPlanVersion.metadata.testFormatVersion}
-            />,
-            ...testPlanReports.map(testPlanReport => {
-              const testResult =
-                testPlanReport.finalizedTestResults[currentTestIndex];
+        {isSummaryView ? (
+          <FailingAssertionsSummary
+            testPlanReport={testPlanReports[0]}
+            atName={at}
+          />
+        ) : (
+          <>
+            <h1 className="current-test-title">{currentTest.title}</h1>
+            <DisclosureComponent
+              componentId="test-instructions-and-results"
+              headingLevel="1"
+              title={[
+                'Test Instructions',
+                ...testPlanReports.map(
+                  testPlanReport =>
+                    `Test Results for ${testPlanReport.browser.name}`
+                ),
+                'Run History'
+              ]}
+              onClick={[
+                () => setShowInstructions(!showInstructions),
+                ...showBrowserClicks,
+                () => setShowRunHistory(!showRunHistory)
+              ]}
+              expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
+              disclosureContainerView={[
+                <InstructionsRenderer
+                  key={`instructions-${currentTest.id}`}
+                  at={testPlanReport.at}
+                  test={currentTest}
+                  testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
+                  testFormatVersion={testPlanVersion.metadata.testFormatVersion}
+                />,
+                ...testPlanReports.map(testPlanReport => {
+                  const testResult =
+                    testPlanReport.finalizedTestResults[currentTestIndex];
 
-              const {
-                assertionsPassedCount,
-                mustAssertionsFailedCount,
-                shouldAssertionsFailedCount,
-                mayAssertionsFailedCount
-              } = getMetrics({ testResult });
+                  const {
+                    assertionsPassedCount,
+                    mustAssertionsFailedCount,
+                    shouldAssertionsFailedCount,
+                    mayAssertionsFailedCount
+                  } = getMetrics({ testResult });
 
-              const mustShouldAssertionsFailedCount =
-                mustAssertionsFailedCount + shouldAssertionsFailedCount;
+                  const mustShouldAssertionsFailedCount =
+                    mustAssertionsFailedCount + shouldAssertionsFailedCount;
 
-              return (
-                <>
-                  <h2 className="test-results-header">
-                    Test Results&nbsp;(
-                    {assertionsPassedCount} passed,&nbsp;
-                    {mustShouldAssertionsFailedCount} failed,&nbsp;
-                    {mayAssertionsFailedCount} unsupported)
-                  </h2>
-                  <TestPlanResultsTable
-                    key={`${testPlanReport.id} + ${testResult.id}`}
-                    test={{ ...currentTest, at: { name: at } }}
-                    testResult={testResult}
-                  />
-                </>
-              );
-            }),
-            <RunHistory
-              key="run-history"
-              testPlanReports={testPlanReports}
-              testId={currentTest.id}
-            />
-          ]}
-          stacked
-        ></DisclosureComponent>
+                  return (
+                    <>
+                      <h2 className="test-results-header">
+                        Test Results&nbsp;(
+                        {assertionsPassedCount} passed,&nbsp;
+                        {mustShouldAssertionsFailedCount} failed,&nbsp;
+                        {mayAssertionsFailedCount} unsupported)
+                      </h2>
+                      <TestPlanResultsTable
+                        key={`${testPlanReport.id} + ${testResult.id}`}
+                        test={{ ...currentTest, at: { name: at } }}
+                        testResult={testResult}
+                      />
+                    </>
+                  );
+                }),
+                <RunHistory
+                  key="run-history"
+                  testPlanReports={testPlanReports}
+                  testId={currentTest.id}
+                />
+              ]}
+              stacked
+            ></DisclosureComponent>
+          </>
+        )}
       </div>
     );
   };
@@ -584,109 +605,113 @@ const CandidateTestPlanRun = () => {
         />
         <Col className="candidate-test-area" id="main" as="main" tabIndex="-1">
           <Row>
-            {currentTestIndex === -1 ? (
-              <FailingAssertionsSummary
-                testPlanReport={testPlanReports[0]}
-                atName={at}
-              />
-            ) : (
-              <>
-                {getHeading()}
-                {getTestInfo()}
-                <Col className="results-container-col">
-                  <Row xs={1} s={1} md={2}>
-                    <Col
-                      className="results-container"
-                      md={isLaptopOrLarger ? 9 : 12}
+            {getHeading()}
+            {getTestInfo()}
+            <Col className="results-container-col">
+              <Row xs={1} s={1} md={2}>
+                <Col
+                  className="results-container"
+                  md={isLaptopOrLarger ? 9 : 12}
+                >
+                  <Row>{getFeedback()}</Row>
+                  <Row className="results-container-row">{getContent()}</Row>
+                  <Row>
+                    <ul
+                      aria-labelledby="test-toolbar-heading"
+                      className="test-run-toolbar mt-1"
                     >
-                      <Row>{getFeedback()}</Row>
-                      <Row className="results-container-row">
-                        {getResults()}
-                      </Row>
-                      <Row>
-                        <ul
-                          aria-labelledby="test-toolbar-heading"
-                          className="test-run-toolbar mt-1"
+                      {isSummaryView ? null : (
+                        <li>
+                          <Button
+                            variant="secondary"
+                            onClick={handlePreviousTestClick}
+                            disabled={isSummaryView}
+                          >
+                            {isFirstTest ? 'Summary' : 'Previous Test'}
+                          </Button>
+                        </li>
+                      )}
+                      {isSummaryView ? (
+                        <li style={{ marginLeft: 'auto', flexGrow: 0 }}>
+                          <Button
+                            ref={nextButtonRef}
+                            variant="primary"
+                            onClick={handleNextTestClick}
+                            disabled={isLastTest}
+                          >
+                            Begin Review
+                          </Button>
+                        </li>
+                      ) : (
+                        <li>
+                          <Button
+                            ref={nextButtonRef}
+                            variant="secondary"
+                            onClick={handleNextTestClick}
+                            disabled={isLastTest}
+                          >
+                            Next Test
+                          </Button>
+                        </li>
+                      )}
+                      <li>
+                        <Button
+                          ref={finishButtonRef}
+                          variant="primary"
+                          onClick={() => {
+                            setFeedbackModalShowing(true);
+                          }}
+                          disabled={!isLastTest}
                         >
-                          <li>
-                            <Button
-                              variant="secondary"
-                              onClick={handlePreviousTestClick}
-                              disabled={isFirstTest}
-                            >
-                              Previous Test
-                            </Button>
-                          </li>
-                          <li>
-                            <Button
-                              ref={nextButtonRef}
-                              variant="primary"
-                              onClick={handleNextTestClick}
-                              disabled={isLastTest}
-                            >
-                              Next Test
-                            </Button>
-                          </li>
-                          <li>
-                            <Button
-                              ref={finishButtonRef}
-                              variant="primary"
-                              onClick={() => {
-                                setFeedbackModalShowing(true);
-                              }}
-                              disabled={!isLastTest}
-                            >
-                              Finish
-                            </Button>
-                          </li>
-                        </ul>
-                      </Row>
-                    </Col>
-                    <Col
-                      className={`current-test-options ${
-                        getFeedback() ? 'options-feedback' : ''
-                      }`}
-                      md={isLaptopOrLarger ? 3 : 8}
-                    >
-                      <div role="complementary">
-                        <h2 id="test-options-heading">Test Review Options</h2>
-                        <ul
-                          className="options-wrapper"
-                          aria-labelledby="test-options-heading"
-                        >
-                          <li>
-                            <OptionButton
-                              text="Request Changes"
-                              target="_blank"
-                              href={requestChangesUrl}
-                            />
-                          </li>
-                          <li>
-                            <OptionButton
-                              text="Leave Feedback"
-                              target="_blank"
-                              href={feedbackUrl}
-                            />
-                          </li>
-                          <li>
-                            <OptionButton
-                              text="File an AT bug"
-                              target="_blank"
-                              href={fileBugUrl}
-                            />
-                          </li>
-                          <li>
-                            <a href="mailto:public-aria-at@w3.org">
-                              Email us if you need help
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-                    </Col>
+                          Finish
+                        </Button>
+                      </li>
+                    </ul>
                   </Row>
                 </Col>
-              </>
-            )}
+                <Col
+                  className={`current-test-options ${
+                    getFeedback() ? 'options-feedback' : ''
+                  }`}
+                  md={isLaptopOrLarger ? 3 : 8}
+                >
+                  <div role="complementary">
+                    <h2 id="test-options-heading">Test Review Options</h2>
+                    <ul
+                      className="options-wrapper"
+                      aria-labelledby="test-options-heading"
+                    >
+                      <li>
+                        <OptionButton
+                          text="Request Changes"
+                          target="_blank"
+                          href={requestChangesUrl}
+                        />
+                      </li>
+                      <li>
+                        <OptionButton
+                          text="Leave Feedback"
+                          target="_blank"
+                          href={feedbackUrl}
+                        />
+                      </li>
+                      <li>
+                        <OptionButton
+                          text="File an AT bug"
+                          target="_blank"
+                          href={fileBugUrl}
+                        />
+                      </li>
+                      <li>
+                        <a href="mailto:public-aria-at@w3.org">
+                          Email us if you need help
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </Col>
+              </Row>
+            </Col>
           </Row>
         </Col>
       </Row>
