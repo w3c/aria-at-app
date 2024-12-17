@@ -93,6 +93,15 @@ const createIssueLink = ({
     if (atName) title = `${atName} ${title}`;
   }
 
+  if (
+    isCandidateReview ||
+    isCandidateReviewChangesRequested ||
+    versionPhase === 'CANDIDATE'
+  ) {
+    title = `${title} for Candidate Report`;
+  }
+  if (versionPhase === 'RECOMMENDED') title = `${title} for Recommended Report`;
+
   const labels =
     (isCandidateReview ? 'candidate-review,' : '') +
     `${atLabelMap[atName]},` +
