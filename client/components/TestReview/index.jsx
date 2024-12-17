@@ -245,7 +245,8 @@ const TestReview = () => {
           testPlanTitle: testPlanVersion.title,
           testPlanDirectory: testPlanVersion.testPlan.directory,
           versionString: testPlanVersion.versionString,
-          testReviewLink: `https://aria-at-.w3.org${location.pathname}`
+          testReviewLink: `https://aria-at-.w3.org${location.pathname}`,
+          versionPhase: testPlanVersion.versionPhase
         })}
       />
       <h2>Tests</h2>

@@ -29,7 +29,8 @@ const atLabelMap = {
  * @param {string|null} [options.browserVersionName=null] - The version name of the browser
  * @param {string|null} [options.conflictMarkdown=null] - The conflict markdown
  * @param {string|null} [options.reportLink=null] - The link to the report
- * @param {string|null} [options.command=null] - The command to be included in the report
+ * @param {string|null} [options.commandString=null] - The command string to be included in the report
+ * @param {string|null} [options.versionPhase=null] - The phase of the test plan version in case the report has to reflect that
  * @returns {string} The URL for creating a new issue on the GitHub repository
  * @throws {Error} If required parameters are missing
  */
@@ -50,8 +51,12 @@ const createIssueLink = ({
   conflictMarkdown = null,
   reportLink = null,
   testReviewLink = null,
-  commandString = null
+  commandString = null,
+  versionPhase = null
 }) => {
+  if (!isCandidateReview && versionPhase)
+    isCandidateReview = versionPhase === 'CANDIDATE';
+
   if (!(testPlanDirectory || testPlanTitle || versionString || atName)) {
     throw new Error('Cannot create issue link due to missing parameters');
   }
