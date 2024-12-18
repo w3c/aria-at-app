@@ -4,7 +4,6 @@
   padding: 0;
 }
 
-/* Add these rules */
 .failing-assertions-summary-table-container table {
   table-layout: fixed;
   width: 100%;

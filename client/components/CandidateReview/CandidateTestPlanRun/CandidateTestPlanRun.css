@@ -152,3 +152,8 @@
   position: relative;
   top: -5px;
 }
+
+.begin-review-button-container {
+  margin-left: auto;
+  flex-grow: 0;
+}

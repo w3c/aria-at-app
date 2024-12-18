@@ -54,7 +54,6 @@ button.test-navigator-toggle:focus {
   margin-top: 1em;
   font-size: 0.9em;
   padding-left: 3.25em;
-  counter-reset: list-counter;
 }
 
 .test-name-wrapper {
@@ -297,16 +296,6 @@ button.test-navigator-toggle:focus {
   padding-bottom: 0.5rem;
   list-style: none; /* Hide the number for just this item */
   counter-increment: none;
-}
-
-/* Reset counter after summary */
-.test-name-wrapper.summary + .test-name-wrapper {
-  counter-reset: list-counter;
-}
-
-/* Resume counting for non-summary items */
-.test-name-wrapper:not(.summary) {
-  counter-increment: list-counter;
 }
 
 .test-name-wrapper.summary .progress-indicator {

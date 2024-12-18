@@ -643,7 +643,7 @@ const CandidateTestPlanRun = () => {
                         </li>
                       )}
                       {isSummaryView ? (
-                        <li style={{ marginLeft: 'auto', flexGrow: 0 }}>
+                        <li className="begin-review-button-container">
                           <Button
                             ref={nextButtonRef}
                             variant="secondary"
