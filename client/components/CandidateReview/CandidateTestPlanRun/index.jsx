@@ -519,11 +519,13 @@ const CandidateTestPlanRun = () => {
     return (
       <div className="results-container">
         {isSummaryView ? (
-          <FailingAssertionsSummaryTable
-            testPlanReport={testPlanReports[0]}
-            atName={at}
-            getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
-          />
+          <div className="failing-assertions-summary-table-container">
+            <FailingAssertionsSummaryTable
+              testPlanReport={testPlanReports[0]}
+              atName={at}
+              getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
+            />
+          </div>
         ) : (
           <>
             <h1 className="current-test-title">{currentTest.title}</h1>

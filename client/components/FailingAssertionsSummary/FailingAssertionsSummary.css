@@ -1,0 +1,17 @@
+.failing-assertions-summary-table-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+}
+
+/* Add these rules */
+.failing-assertions-summary-table-container table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.failing-assertions-summary-table-container th,
+.failing-assertions-summary-table-container td {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
