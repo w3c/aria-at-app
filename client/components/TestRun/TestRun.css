@@ -62,7 +62,7 @@ button.test-navigator-toggle:focus {
   list-style: unset;
 }
 
-.test-name-wrapper:before {
+.test-name-wrapper:not(.summary):before {
   content: '';
   height: 100%;
   left: -2.8em;
@@ -288,6 +288,45 @@ button.test-navigator-toggle:focus {
   height: 9px;
   top: 5px;
   left: 9px;
+}
+
+.test-name-wrapper.summary {
+  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  list-style: none; /* Hide the number for just this item */
+  counter-increment: none;
+}
+
+.test-name-wrapper.summary .progress-indicator {
+  background: #295fa6;
+}
+
+.test-name-wrapper.summary .progress-indicator:before {
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  content: '\f03a'; /* List icon */
+  color: white;
+  font-size: 10px;
+  position: relative;
+  top: -3px;
+  left: 4px;
+}
+
+.test-name-wrapper.summary .test-name {
+  font-weight: normal;
+}
+
+.test-name-wrapper.summary .test-name[aria-current='true'] {
+  font-weight: bold;
+}
+
+/* Reset the counter after the summary */
+.test-name-wrapper.summary + li {
+  counter-reset: list-counter;
 }
 
 .test-iframe-container {

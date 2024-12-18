@@ -110,4 +110,101 @@ describe('Candidate Review when signed in as vendor', () => {
       expect(afterClickTestResultDisclosureDisplay).not.toBe('none');
     });
   });
+
+  it('shows summary view as first page and navigates correctly', async () => {
+    await getPage(
+      { role: 'vendor', url: '/candidate-review' },
+      async (page, { consoleErrors }) => {
+        await page.waitForSelector('h1 ::-p-text(Candidate Review)');
+
+        // Select first possible link from the table in the Candidate Test Plans
+        // column
+        await page.click('table[aria-label] a');
+
+        await page.waitForSelector('nav#test-navigator-nav ol');
+        await page.waitForSelector('h1 ::-p-text(1.)');
+        await page.waitForSelector('h1[class="current-test-title"]');
+
+        await page.click('a[href="#summary"]');
+
+        // Check navigation buttons in summary view
+        const previousButton = await page.$('button::-p-text(Previous Test)');
+        expect(previousButton).toBeNull(); // No Previous button on summary
+
+        const nextButton = await page.waitForSelector(
+          'button::-p-text(Begin Review)'
+        );
+        await nextButton.click();
+
+        // Should navigate to first test
+        await page.waitForSelector('h1::-p-text(1.)');
+        // Check summary link aria-current attribute
+        const summaryLinkAriaCurrent = await page.$eval(
+          'a[href="#summary"]',
+          el => el.getAttribute('aria-current')
+        );
+        expect(summaryLinkAriaCurrent).toBe('false');
+
+        // Previous button should go back to summary from first test
+        const previousFromFirstTest = await page.waitForSelector(
+          'button::-p-text(Summary)'
+        );
+        await previousFromFirstTest.click();
+
+        // Should be back on summary
+        await page.waitForSelector('a[href="#summary"][aria-current="true"]');
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
+  });
+
+  it('shows failing assertions summary content', async () => {
+    await getPage(
+      { role: 'vendor', url: '/candidate-review' },
+      async (page, { consoleErrors }) => {
+        await page.waitForSelector('h1 ::-p-text(Candidate Review)');
+
+        // Select first possible link from the table in the Candidate Test Plans
+        // column
+        await page.click('table[aria-label] a');
+
+        await page.waitForSelector('nav#test-navigator-nav ol');
+        await page.waitForSelector('h1 ::-p-text(1.)');
+        await page.waitForSelector('h1[class="current-test-title"]');
+
+        // Check for summary specific content
+        await page.click('a[href="#summary"]');
+        await page.waitForSelector(
+          'h1::-p-text(Summary of Failing Assertions)'
+        );
+
+        // Check for table
+        await page.waitForSelector(
+          'table[aria-labelledby="failing-assertions-heading"]'
+        );
+
+        // Get the text from the first link in the table
+        const firstLinkText = await page.$eval(
+          'table[aria-labelledby="failing-assertions-heading"] a',
+          el => el.textContent
+        );
+
+        // Click on the first link in the table
+        await page.click(
+          'table[aria-labelledby="failing-assertions-heading"] a'
+        );
+
+        // Ensure we are on the correct test
+        await page.waitForSelector('nav#test-navigator-nav ol');
+
+        // Check if the text from the first link in the table is in the h1
+        // So that we know we are on the correct test
+        const h1Text = await text(page, 'h1');
+        expect(h1Text).toContain(firstLinkText);
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
+  });
 });
