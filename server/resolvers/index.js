@@ -8,6 +8,7 @@ const testPlanReport = require('./testPlanReportResolver');
 const testPlanReports = require('./testPlanReportsResolver');
 const testPlanVersion = require('./testPlanVersionResolver');
 const testPlanVersions = require('./testPlanVersionsResolver');
+const latestTestPlanVersion = require('./latestTestPlanVersionResolver');
 const testPlanRun = require('./testPlanRunResolver');
 const testPlanRuns = require('./testPlanRunsResolver');
 const vendors = require('./vendorsResolver');
@@ -60,6 +61,7 @@ const resolvers = {
     testPlans,
     testPlanVersion,
     testPlanVersions,
+    latestTestPlanVersion,
     testPlanReport,
     testPlanReports,
     testPlanRun,

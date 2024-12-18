@@ -25,8 +25,14 @@ const ColorStrip = styled.div`
   width: 100%;
   height: 10px;
   ${props => props.hideHeadline && `display: none;`}
-  background-color: ${({ theme }) =>
-    theme === 'danger' ? '#ce1b4c' : '#fab700'};
+  background-color: ${
+    ({ theme }) =>
+      theme === 'danger'
+        ? '#ce1b4c'
+        : theme === 'warning'
+        ? '#fab700'
+        : '#2ba51c' // success
+  };
 
   border-top-left-radius: calc(0.3rem - 1px);
   border-top-right-radius: calc(0.3rem - 1px);
@@ -36,7 +42,7 @@ const BasicThemedModal = ({
   show = false,
   centered = false,
   animation = true,
-  theme = 'warning', // warning, danger
+  theme = 'warning', // warning, danger, success
   dialogClassName = '',
   title = null,
   content = null,
@@ -80,7 +86,13 @@ const BasicThemedModal = ({
               <FontAwesomeIcon
                 icon={faExclamationTriangle}
                 size="lg"
-                color={theme === 'danger' ? '#ce1b4c' : '#fab700'}
+                color={
+                  theme === 'danger'
+                    ? '#ce1b4c'
+                    : theme === 'warning'
+                    ? '#fab700'
+                    : '#2ba51c' // success
+                }
               />
               {title}
             </ModalInnerSectionContainer>
