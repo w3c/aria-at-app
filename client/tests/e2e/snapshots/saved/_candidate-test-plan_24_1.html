@@ -116,6 +116,13 @@
                 <ol
                   aria-labelledby="test-navigator-heading"
                   class="test-navigator-list">
+                  <div class="test-name-wrapper summary">
+                    <a href="#summary" class="test-name" aria-current="false"
+                      >Summary of Failing Assertions</a
+                    ><span
+                      class="progress-indicator"
+                      title="Summary of Failing Assertions"></span>
+                  </div>
                   <li class="test-name-wrapper changes-requested">
                     <a href="#1" class="test-name" aria-current="true"
                       >Open a Modal Dialog in reading mode</a
@@ -654,9 +661,9 @@
                               <button
                                 id="disclosure-btn-test-instructions-and-results-Run History"
                                 type="button"
+                                aria-expanded="false"
                                 aria-controls="disclosure-btn-controls-test-instructions-and-results-Run History"
-                                class="css-10jxhio"
-                                aria-expanded="false">
+                                class="css-10jxhio">
                                 Run History<svg
                                   aria-hidden="true"
                                   focusable="false"
@@ -698,14 +705,11 @@
                           aria-labelledby="test-toolbar-heading"
                           class="test-run-toolbar mt-1">
                           <li>
-                            <button
-                              type="button"
-                              disabled=""
-                              class="btn btn-secondary">
+                            <button type="button" class="btn btn-secondary">
                               Previous Test
                             </button>
                           </li>
-                          <li>
+                          <li style="">
                             <button type="button" class="btn btn-primary">
                               Next Test
                             </button>

@@ -644,7 +644,7 @@ const CandidateTestPlanRun = () => {
                         <li style={{ marginLeft: 'auto', flexGrow: 0 }}>
                           <Button
                             ref={nextButtonRef}
-                            variant="primary"
+                            variant="secondary"
                             onClick={handleNextTestClick}
                             disabled={isLastTest}
                           >
@@ -655,7 +655,7 @@ const CandidateTestPlanRun = () => {
                         <li>
                           <Button
                             ref={nextButtonRef}
-                            variant="secondary"
+                            variant="primary"
                             onClick={handleNextTestClick}
                             disabled={isLastTest}
                           >
