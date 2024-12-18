@@ -16,7 +16,7 @@ const AdminSettings = ({ latestTestPlanVersion, refetch }) => {
     setThemedModalType
   } = useThemedModal({
     type: THEMES.SUCCESS,
-    title: 'Error Updating Test Plan Status'
+    title: 'Success!'
   });
 
   const handleImportTests = async () => {
@@ -44,7 +44,7 @@ const AdminSettings = ({ latestTestPlanVersion, refetch }) => {
         setThemedModalContent(<>{e.message}</>);
         setShowThemedModal(true);
       }
-    }, 'Importing Tests');
+    }, 'Importing latest Test Plan Versions');
   };
 
   return (
