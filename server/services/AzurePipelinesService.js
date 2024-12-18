@@ -1,8 +1,8 @@
-const axios = require('axios');
+const { WebApi, getBearerHandler } = require('azure-devops-node-api');
+const { ClientSecretCredential } = require('@azure/identity');
 const {
   promises: { resolve }
 } = require('dns');
-const qs = require('querystring');
 
 let azureClientId = null;
 let azureClientSecret = null;
@@ -10,6 +10,7 @@ let azureTenantId = null;
 let azureOrganization = null;
 let azureProject = null;
 let callbackUrlHostname = null;
+let azureAppToken = null;
 
 exports.setup = async () => {
   azureClientId = process.env.AZURE_CLIENT_ID;
@@ -17,13 +18,15 @@ exports.setup = async () => {
   azureTenantId = process.env.AZURE_TENANT_ID;
   azureOrganization = process.env.AZURE_DEVOPS_ORGANIZATION;
   azureProject = process.env.AZURE_DEVOPS_PROJECT;
+  azureAppToken = process.env.AZURE_APP_TOKEN;
 
   if (
     !azureClientId ||
     !azureClientSecret ||
     !azureTenantId ||
     !azureOrganization ||
-    !azureProject
+    !azureProject ||
+    !azureAppToken
   ) {
     throw new Error(
       'Azure DevOps configuration is incomplete. Please check your environment variables.'
@@ -59,38 +62,28 @@ exports.isEnabled = () =>
   azureProject &&
   callbackUrlHostname;
 
-const getAccessToken = async () => {
-  const tokenEndpoint = `https://login.microsoftonline.com/${azureTenantId}/oauth2/v2.0/token`;
-  const data = {
-    client_id: azureClientId,
-    client_secret: azureClientSecret,
-    scope: 'https://management.azure.com/.default',
-    grant_type: 'client_credentials'
-  };
+const getAzureDevOpsConnection = async () => {
+  const credential = new ClientSecretCredential(
+    azureTenantId,
+    azureClientId,
+    azureClientSecret
+  );
 
-  const response = await axios.post(tokenEndpoint, qs.stringify(data), {
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
-  });
-  if (response.status < 200 || response.status >= 300) {
-    throw new Error(
-      response.data ?? 'Unable to retrieve installation access token'
-    );
-  }
-  return response.data.access_token;
+  const token = await credential.getToken(azureAppToken);
+  const orgUrl = `https://dev.azure.com/${azureOrganization}`;
+  return new WebApi(orgUrl, getBearerHandler(token.token));
 };
 
 const triggerAzurePipeline = async ({ job, directory, gitSha, atVersion }) => {
-  const accessToken = await getAccessToken();
+  const connection = await getAzureDevOpsConnection();
+  const buildApi = await connection.getBuildApi();
 
   const atKey = job.testPlanRun.testPlanReport.at.key;
-  const pipelineName = {
-    nvda: 'nvda-test',
-    voiceover_macos: 'voiceover-test'
+  const pipelineId = {
+    nvda: 5
   }[atKey];
 
-  if (!pipelineName) {
+  if (!pipelineId) {
     throw new Error(`Unsupported AT pipeline for ${atKey}`);
   }
 
@@ -101,49 +94,35 @@ const triggerAzurePipeline = async ({ job, directory, gitSha, atVersion }) => {
     callback_header: `x-automation-secret:${job.secret}`,
     work_dir: `tests/${directory}`,
     aria_at_ref: gitSha,
-    browser: browser
+    browser
   };
 
   if (atKey === 'nvda') {
     variables.test_pattern = '{reference/**,test-*-nvda.*}';
     variables.nvda_version = atVersion?.name;
   }
-  if (atKey === 'voiceover_macos') {
-    variables.macos_version = atVersion?.name?.split('.')[0];
-  }
 
-  const axiosConfig = {
-    method: 'POST',
-    url: `https://dev.azure.com/${azureOrganization}/${azureProject}/_apis/pipelines/${pipelineName}/runs?api-version=6.0-preview.1`,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`
+  // Mac unsupported for now
+  // if (atKey === 'voiceover_macos') {
+  //   variables.macos_version = atVersion?.name?.split('.')[0];
+  // }
+
+  const definition = {
+    definition: {
+      id: pipelineId
     },
-    data: JSON.stringify({
-      resources: {
-        repositories: {
-          self: {
-            refName: 'refs/heads/main'
-          }
-        }
-      },
-      variables: Object.fromEntries(
-        Object.entries(variables).map(([key, value]) => [key, { value }])
-      )
-    }),
-    validateStatus: () => true,
-    responseType: 'json'
+    sourceBranch: `refs/heads/main`,
+    variables: Object.fromEntries(
+      Object.entries(variables).map(([key, value]) => [key, { value }])
+    )
   };
 
-  const response = await axios(axiosConfig);
-  if (response.status < 200 || response.status >= 300) {
-    throw new Error(
-      response.data
-        ? JSON.stringify(response.data)
-        : 'Unable to initiate Azure pipeline'
-    );
+  try {
+    await buildApi.queueBuild(definition, azureProject);
+    return true;
+  } catch (error) {
+    throw new Error(error.message || 'Unable to initiate Azure pipeline');
   }
-  return true;
 };
 
 exports.default = triggerAzurePipeline;
