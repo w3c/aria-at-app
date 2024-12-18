@@ -2,15 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import BasicThemedModal from '@components/common/BasicThemedModal';
 
 const THEMES = {
+  SUCCESS: 'success',
   WARNING: 'warning',
   DANGER: 'danger'
 };
 
-function useThemedModal({ show, type, title, content }) {
+function useThemedModal({ show, type = THEMES.WARNING, title, content }) {
   const focusElementRef = useRef();
 
   const [showThemedModal, setShowThemedModal] = useState(false);
-  const [themedModalType, setThemedModalType] = useState(THEMES.WARNING);
+  const [themedModalType, setThemedModalType] = useState(type);
   const [themedModalTitle, setThemedModalTitle] = useState('');
   const [themedModalContent, setThemedModalContent] = useState(<></>);
   const [themedModalActions, setThemedModalActions] = useState(null);
@@ -26,7 +27,7 @@ function useThemedModal({ show, type, title, content }) {
 
   const hideThemedModal = () => {
     setShowThemedModal(false);
-    setThemedModalType(THEMES.WARNING);
+    setThemedModalType(type);
     setThemedModalTitle('');
     setThemedModalContent(<></>);
     setThemedModalActions(null);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { Container, Table, Alert } from 'react-bootstrap';
+import { Container, Table, Alert, Button } from 'react-bootstrap';
 import { useQuery } from '@apollo/client';
 import { DATA_MANAGEMENT_PAGE_QUERY } from './queries';
 import PageStatus from '../common/PageStatus';
@@ -12,6 +12,7 @@ import SortableTableHeader, {
   TABLE_SORT_ORDERS
 } from '../common/SortableTableHeader';
 import FilterButtons from '../common/FilterButtons';
+import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import {
   useDataManagementTableFiltering,
   useDataManagementTableSorting
@@ -22,6 +23,7 @@ import {
 } from './utils';
 
 const DataManagement = () => {
+  const { triggerLoad, loadingMessage } = useTriggerLoad();
   const { loading, data, error, refetch } = useQuery(
     DATA_MANAGEMENT_PAGE_QUERY,
     { fetchPolicy: 'cache-and-network' }
@@ -71,6 +73,25 @@ const DataManagement = () => {
       TABLE_SORT_ORDERS.DESC
     );
 
+  const handleImportTests = async () => {
+    await triggerLoad(async () => {
+      try {
+        const response = await fetch('/api/test/import', { method: 'POST' });
+        if (!response.ok) {
+          throw new Error(
+            `Failed to import the latest Test Plan Versions: ${response.status}`
+          );
+        }
+
+        // Success
+        await refetch();
+      } catch (e) {
+        // Failed
+        console.error(e);
+      }
+    }, 'Importing latest Test Plan Versions');
+  };
+
   if (error) {
     return (
       <PageStatus
@@ -94,143 +115,154 @@ const DataManagement = () => {
   const emptyTestPlans = !testPlans.length;
 
   return (
-    <Container id="main" as="main" tabIndex="-1">
-      <Helmet>
-        <title>Data Management | ARIA-AT</title>
-      </Helmet>
-      <h1>Data Management</h1>
+    <LoadingStatus message={loadingMessage}>
+      <Container id="main" as="main" tabIndex="-1">
+        <Helmet>
+          <title>Data Management | ARIA-AT</title>
+        </Helmet>
+        <h1>Data Management</h1>
 
-      {emptyTestPlans && (
-        <h2 data-testid="data-management-no-test-plans-h2">
-          There are no Test Plans available
-        </h2>
-      )}
+        {emptyTestPlans && (
+          <h2 data-testid="data-management-no-test-plans-h2">
+            There are no Test Plans available
+          </h2>
+        )}
 
-      {emptyTestPlans && isAdmin && (
-        <Alert
-          key="alert-configure"
-          variant="danger"
-          data-testid="data-management-no-test-plans-p"
+        {emptyTestPlans && isAdmin && (
+          <Alert
+            key="alert-configure"
+            variant="danger"
+            data-testid="data-management-no-test-plans-p"
+          >
+            Add a Test Plan to the Queue
+          </Alert>
+        )}
+
+        {isAdmin ? (
+          <>
+            <h2>Introduction</h2>
+            <p data-testid="data-management-instructions">
+              This page provides a view of the latest test plan version
+              information, and where they currently are in the{' '}
+              <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
+                ARIA-AT Community Group’s review process
+              </a>
+              .<br />
+              Use this page to manage Test Plans in the Test Queue and their
+              phases.
+            </p>
+
+            <ManageTestQueue
+              ats={ats}
+              testPlanVersions={testPlanVersions}
+              triggerUpdate={refetch}
+            />
+          </>
+        ) : (
+          <>
+            <h2>Introduction</h2>
+            <p data-testid="data-management-instructions">
+              This page provides a view of the latest test plan version
+              information, and where they currently are in the{' '}
+              <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
+                ARIA-AT Community Group’s review process
+              </a>
+              .
+            </p>
+          </>
+        )}
+
+        <h2>Test Plans Status Summary</h2>
+        <FilterButtons
+          filterLabel="Filter"
+          filterAriaLabel="Filter tests plans by status"
+          filterOptions={filterLabels}
+          activeFilter={filter}
+          onFilterChange={setFilter}
+        />
+
+        {isAdmin && (
+          <Button variant="primary" onClick={handleImportTests}>
+            Import Latest Test Plan Versions
+          </Button>
+        )}
+
+        <Table
+          className="data-management"
+          aria-label="Test Plans Status Summary Table"
+          bordered
+          hover
+          aria-rowcount={sortedTestPlans.length}
         >
-          Add a Test Plan to the Queue
-        </Alert>
-      )}
-
-      {isAdmin ? (
-        <>
-          <h2>Introduction</h2>
-          <p data-testid="data-management-instructions">
-            This page provides a view of the latest test plan version
-            information, and where they currently are in the{' '}
-            <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
-              ARIA-AT Community Group’s review process
-            </a>
-            .<br />
-            Use this page to manage Test Plans in the Test Queue and their
-            phases.
-          </p>
-
-          <ManageTestQueue
-            ats={ats}
-            testPlanVersions={testPlanVersions}
-            triggerUpdate={refetch}
-          />
-        </>
-      ) : (
-        <>
-          <h2>Introduction</h2>
-          <p data-testid="data-management-instructions">
-            This page provides a view of the latest test plan version
-            information, and where they currently are in the{' '}
-            <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
-              ARIA-AT Community Group’s review process
-            </a>
-            .
-          </p>
-        </>
-      )}
-
-      <h2>Test Plans Status Summary</h2>
-      <FilterButtons
-        filterLabel="Filter"
-        filterAriaLabel="Filter tests plans by status"
-        filterOptions={filterLabels}
-        activeFilter={filter}
-        onFilterChange={setFilter}
-      />
-      <Table
-        className="data-management"
-        aria-label="Test Plans Status Summary Table"
-        bordered
-        hover
-        aria-rowcount={sortedTestPlans.length}
-      >
-        <thead>
-          <tr>
-            <SortableTableHeader
-              title="Test Plan"
-              active={
-                activeSort.key === DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME
-              }
-              onSort={direction =>
-                updateSort({
-                  key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME,
-                  direction
-                })
-              }
-            />
-            <SortableTableHeader
-              title="Covered AT"
-              active={activeSort.key === DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS}
-              onSort={direction =>
-                updateSort({
-                  key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS,
-                  direction
-                })
-              }
-            />
-            <SortableTableHeader
-              title="Overall Status"
-              active={
-                activeSort.key === DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE
-              }
-              onSort={direction =>
-                updateSort({
-                  key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
-                  direction
-                })
-              }
-              initialSortDirection={TABLE_SORT_ORDERS.DESC}
-            />
-            <th>R&D Version</th>
-            <th>Draft Review</th>
-            <th>Candidate Review</th>
-            <th>Recommended Version</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedTestPlans.map((testPlan, index) => {
-            return (
-              <DataManagementRow
-                key={testPlan.id}
-                isAdmin={isAdmin}
-                ats={ats}
-                testPlan={testPlan}
-                testPlanVersions={[
-                  ...deprecatedTestPlanVersions,
-                  ...testPlanVersions
-                ].filter(
-                  testPlanVersion =>
-                    testPlanVersion.testPlan.directory === testPlan.directory
-                )}
-                tableRowIndex={index}
-                setTestPlanVersions={setTestPlanVersions}
+          <thead>
+            <tr>
+              <SortableTableHeader
+                title="Test Plan"
+                active={
+                  activeSort.key === DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME
+                }
+                onSort={direction =>
+                  updateSort({
+                    key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.NAME,
+                    direction
+                  })
+                }
               />
-            );
-          })}
-        </tbody>
-      </Table>
-    </Container>
+              <SortableTableHeader
+                title="Covered AT"
+                active={
+                  activeSort.key === DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS
+                }
+                onSort={direction =>
+                  updateSort({
+                    key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.ATS,
+                    direction
+                  })
+                }
+              />
+              <SortableTableHeader
+                title="Overall Status"
+                active={
+                  activeSort.key === DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE
+                }
+                onSort={direction =>
+                  updateSort({
+                    key: DATA_MANAGEMENT_TABLE_SORT_OPTIONS.PHASE,
+                    direction
+                  })
+                }
+                initialSortDirection={TABLE_SORT_ORDERS.DESC}
+              />
+              <th>R&D Version</th>
+              <th>Draft Review</th>
+              <th>Candidate Review</th>
+              <th>Recommended Version</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedTestPlans.map((testPlan, index) => {
+              return (
+                <DataManagementRow
+                  key={testPlan.id}
+                  isAdmin={isAdmin}
+                  ats={ats}
+                  testPlan={testPlan}
+                  testPlanVersions={[
+                    ...deprecatedTestPlanVersions,
+                    ...testPlanVersions
+                  ].filter(
+                    testPlanVersion =>
+                      testPlanVersion.testPlan.directory === testPlan.directory
+                  )}
+                  tableRowIndex={index}
+                  setTestPlanVersions={setTestPlanVersions}
+                />
+              );
+            })}
+          </tbody>
+        </Table>
+      </Container>
+    </LoadingStatus>
   );
 };
 
