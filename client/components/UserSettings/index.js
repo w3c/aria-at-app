@@ -4,14 +4,35 @@ import { Container } from 'react-bootstrap';
 import { useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import TesterSettings from './TesterSettings';
-import { CURRENT_SETTINGS_QUERY } from './queries';
+import AdminSettings from './AdminSettings';
+import { ME_QUERY } from '../App/queries';
+import { TESTER_SETTINGS_QUERY, ADMIN_SETTINGS_QUERY } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import AdminSettings from '@components/UserSettings/AdminSettings';
 
 const UserSettings = () => {
-  const { loading, data, error } = useQuery(CURRENT_SETTINGS_QUERY);
+  const { loading, data, error } = useQuery(ME_QUERY);
 
-  if (error) {
+  const auth = evaluateAuth(data?.me ? data?.me : {});
+  const { username, isAdmin, isVendor, isTester } = auth;
+
+  const {
+    data: testerQueryData,
+    loading: testerQueryLoading,
+    error: testerQueryError
+  } = useQuery(TESTER_SETTINGS_QUERY, {
+    skip: isAdmin || isVendor // no need to query if admin or vendor
+  });
+
+  const {
+    data: adminQueryData,
+    loading: adminQueryLoading,
+    error: adminQueryError,
+    refetch: adminQueryRefetch
+  } = useQuery(ADMIN_SETTINGS_QUERY, {
+    skip: !isAdmin // no need to query if not admin
+  });
+
+  if (error || testerQueryError || adminQueryError) {
     return (
       <PageStatus
         title="Settings | ARIA-AT"
@@ -22,17 +43,11 @@ const UserSettings = () => {
     );
   }
 
-  if (loading) {
+  if (loading || testerQueryLoading || adminQueryLoading) {
     return (
       <PageStatus title="Loading - Settings | ARIA-AT" heading="Settings" />
     );
   }
-
-  if (!data) return null;
-
-  const { ats, me } = data;
-  const auth = evaluateAuth(me ? me : {});
-  const { username, isAdmin, isVendor, isTester } = auth;
 
   return (
     <Container id="main" as="main" tabIndex="-1">
@@ -54,9 +69,17 @@ const UserSettings = () => {
           </p>
         </section>
         {!isAdmin && isTester && !isVendor && (
-          <TesterSettings ats={ats} meAts={data.me.ats} />
+          <TesterSettings
+            ats={testerQueryData.ats}
+            meAts={testerQueryData.me.ats}
+          />
         )}
-        {isAdmin && <AdminSettings ats={ats} meAts={data.me.ats} />}
+        {isAdmin && (
+          <AdminSettings
+            latestTestPlanVersion={adminQueryData.latestTestPlanVersion}
+            refetch={adminQueryRefetch}
+          />
+        )}
       </Container>
     </Container>
   );

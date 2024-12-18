@@ -2,12 +2,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Form } from 'react-bootstrap';
 import { useMutation } from '@apollo/client';
-import { CURRENT_SETTINGS_QUERY, UPDATE_ME_MUTATION } from './queries';
+import { TESTER_SETTINGS_QUERY, UPDATE_ME_MUTATION } from './queries';
 import { AtPropType } from '../common/proptypes';
 
-const TesterSettings = ({ ats = [], meAts = [] }) => {
+const TesterSettings = ({ ats, meAts }) => {
   const [updateMe] = useMutation(UPDATE_ME_MUTATION, {
-    refetchQueries: [{ query: CURRENT_SETTINGS_QUERY }]
+    refetchQueries: [{ query: TESTER_SETTINGS_QUERY }]
   });
 
   const [checkedAts, setCheckedAts] = useState([]);

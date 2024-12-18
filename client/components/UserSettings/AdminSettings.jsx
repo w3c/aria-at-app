@@ -1,9 +1,11 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
-import { useThemedModal, THEMES } from '@client/hooks/useThemedModal';
+import { useThemedModal, THEMES } from '../../hooks/useThemedModal';
+import { dates } from 'shared';
 
-const AdminSettings = () => {
+const AdminSettings = ({ latestTestPlanVersion, refetch }) => {
   const { triggerLoad, loadingMessage } = useTriggerLoad();
   const {
     themedModal,
@@ -34,6 +36,7 @@ const AdminSettings = () => {
           <>The latest Test Plan Versions have been imported.</>
         );
         setShowThemedModal(true);
+        await refetch();
       } catch (e) {
         // Failed, show themed message
         setThemedModalType(THEMES.DANGER);
@@ -52,12 +55,25 @@ const AdminSettings = () => {
         <Button variant="primary" onClick={handleImportTests}>
           Import Latest Test Plan Versions
         </Button>
+        <p>
+          Date of latest test plan version:{' '}
+          {dates.convertDateToString(
+            latestTestPlanVersion?.updatedAt,
+            'MMMM D, YYYY HH:mm z'
+          )}
+        </p>
       </section>
       {showThemedModal && themedModal}
     </LoadingStatus>
   );
 };
 
-AdminSettings.propTypes = {};
+AdminSettings.propTypes = {
+  latestTestPlanVersion: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    updatedAt: PropTypes.string.isRequired
+  }),
+  refetch: PropTypes.func
+};
 
 export default AdminSettings;
