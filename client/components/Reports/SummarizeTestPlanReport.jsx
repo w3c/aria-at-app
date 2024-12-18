@@ -175,6 +175,13 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
   };
 
   const renderFailingAssertionsSummary = () => {
+    if (
+      testPlanReport.metrics.mustAssertionsFailedCount === 0 &&
+      testPlanReport.metrics.shouldAssertionsFailedCount === 0
+    ) {
+      return null;
+    }
+
     return (
       <>
         <FailingAssertionsSummaryHeading metrics={testPlanReport.metrics} />
