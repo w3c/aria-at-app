@@ -1267,6 +1267,10 @@ const graphqlSchema = gql`
       directory: String
     ): [TestPlanVersion]!
     """
+    Get the most recently imported TestPlanVersion.
+    """
+    latestTestPlanVersion: TestPlanVersion!
+    """
     Get a vendor by ID.
     """
     vendor(id: ID!): Vendor
