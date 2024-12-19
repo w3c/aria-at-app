@@ -263,6 +263,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
           atVersionName: testResult.atVersion.name,
           browserName: testPlanReport.browser.name,
           browserVersionName: testResult.browserVersion.name,
+          versionPhase: testPlanVersion.phase,
           reportLink
         });
 

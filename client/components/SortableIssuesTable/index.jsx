@@ -24,7 +24,7 @@ const SORT_FIELDS = {
   CLOSED_AT: 'closedAt'
 };
 
-const SortableIssuesTable = ({ issues }) => {
+const SortableIssuesTable = ({ issues, issueLink }) => {
   const [activeSort, setActiveSort] = useState(SORT_FIELDS.STATUS);
   const [sortOrder, setSortOrder] = useState(TABLE_SORT_ORDERS.ASC);
   const [activeFilter, setActiveFilter] = useState('OPEN');
@@ -187,12 +187,20 @@ const SortableIssuesTable = ({ issues }) => {
           {renderTableBody()}
         </ThemeTable>
       )}
+      {issueLink && (
+        <div style={{ marginTop: '1rem' }}>
+          <a href={issueLink} target="_blank" rel="noreferrer">
+            Raise an Issue
+          </a>
+        </div>
+      )}
     </>
   );
 };
 
 SortableIssuesTable.propTypes = {
-  issues: PropTypes.arrayOf(IssuePropType).isRequired
+  issues: PropTypes.arrayOf(IssuePropType).isRequired,
+  issueLink: PropTypes.string
 };
 
 export default SortableIssuesTable;
