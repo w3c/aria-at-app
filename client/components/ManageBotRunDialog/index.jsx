@@ -17,6 +17,7 @@ import RetryCanceledCollectionsButton from './RetryCanceledCollectionsButton';
 import StopRunningCollectionButton from './StopRunningCollectionButton';
 import ViewLogsButton from './ViewLogsButton';
 import { TestPlanRunPropType, UserPropType } from '../common/proptypes';
+import { COLLECTION_JOB_STATUS } from '../../utils/collectionJobStatus';
 
 const ManageBotRunDialog = ({
   testPlanReportId,
@@ -68,6 +69,19 @@ const ManageBotRunDialog = ({
     [testers, testPlanReportAssignedTestersQuery]
   );
 
+  const isBotRunFinished = useMemo(() => {
+    const status = collectionJobQuery?.collectionJobByTestPlanRunId?.status;
+    if (!status) return false;
+    switch (status) {
+      case COLLECTION_JOB_STATUS.COMPLETED:
+      case COLLECTION_JOB_STATUS.ERROR:
+      case COLLECTION_JOB_STATUS.CANCELLED:
+        return true;
+      default:
+        return false;
+    }
+  }, [collectionJobQuery]);
+
   const actions = useMemo(() => {
     return [
       {
@@ -77,6 +91,7 @@ const ManageBotRunDialog = ({
           testPlanRun: testPlanRun,
           possibleTesters: possibleReassignees,
           label: 'Assign To ...',
+          disabled: !isBotRunFinished,
           onChange
         }
       },
