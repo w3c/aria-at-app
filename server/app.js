@@ -45,7 +45,8 @@ listener.route('/aria-at/:branch*').get(
   proxyMiddleware.proxyPath(baseUrl)
 );
 
-// Conditionally initialize github workflow service, or mock automation scheduler
+// Conditionally initialize github workflow and azure pipelines services,
+// or mock automation scheduler
 if (
   process.env.ENVIRONMENT === 'production' ||
   process.env.ENVIRONMENT === 'staging' ||
@@ -53,6 +54,7 @@ if (
   process.env.AUTOMATION_CALLBACK_FQDN
 ) {
   require('./services/GithubWorkflowService').setup();
+  require('./services/AzurePipelinesService').setup();
 } else {
   setupMockAutomationSchedulerServer().catch(error => {
     console.error('Failed to initialize mock automation server:', error);
