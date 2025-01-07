@@ -88,7 +88,7 @@ const triggerAzurePipeline = async ({ job, directory, gitSha, atVersion }) => {
   }
 
   const browser = job.testPlanRun.testPlanReport.browser.name.toLowerCase();
-  const variables = {
+  const parameters = {
     callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/test/:testRowNumber`,
     status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}`,
     callback_header: `x-automation-secret:${job.secret}`,
@@ -98,13 +98,13 @@ const triggerAzurePipeline = async ({ job, directory, gitSha, atVersion }) => {
   };
 
   if (atKey === 'nvda') {
-    variables.test_pattern = '{reference/**,test-*-nvda.*}';
-    variables.nvda_version = atVersion?.name;
+    parameters.test_pattern = '{reference/**,test-*-nvda.*}';
+    parameters.nvda_version = atVersion?.name;
   }
 
   // Mac unsupported for now
   // if (atKey === 'voiceover_macos') {
-  //   variables.macos_version = atVersion?.name?.split('.')[0];
+  //   parameters.macos_version = atVersion?.name?.split('.')[0];
   // }
 
   const definition = {
@@ -112,8 +112,8 @@ const triggerAzurePipeline = async ({ job, directory, gitSha, atVersion }) => {
       id: pipelineId
     },
     sourceBranch: `refs/heads/main`,
-    variables: Object.fromEntries(
-      Object.entries(variables).map(([key, value]) => [key, { value }])
+    parameters: Object.fromEntries(
+      Object.entries(parameters).map(([key, value]) => [key, value])
     )
   };
 
