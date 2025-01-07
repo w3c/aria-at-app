@@ -112,9 +112,7 @@ const triggerAzurePipeline = async ({ job, directory, gitSha, atVersion }) => {
       id: pipelineId
     },
     sourceBranch: `refs/heads/main`,
-    parameters: Object.fromEntries(
-      Object.entries(parameters).map(([key, value]) => [key, value])
-    )
+    parameters: JSON.stringify(parameters)
   };
 
   try {
