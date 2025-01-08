@@ -1,15 +1,33 @@
 ---
 # Create a cron to import the most recent tests from aria-at
-- name: Set a cron job to build test results
+- name: Set a cron job to build and import latest test versions from aria-at
   cron:
     name: "import latest aria-at tests"
     minute: "15"
     job: "curl -X POST https://{{fqdn}}/api/test/import"
-  when: deployment_mode != 'development' 
+  when: deployment_mode != 'development'
 
-- name: Set a cron job to build test results in development
+- name: Set a cron job to build and import latest test versions from aria-at in development
   cron:
     name: "import latest aria-at tests"
     minute: "15"
     job: "curl -X POST http://localhost:5000/api/test/import"
   when: deployment_mode == 'development'
+
+# Create a cron to dump the database in staging and production
+- name: Set a cron job to create a new database dump
+  cron:
+    name: "create new database dump"
+    hour: "0"
+    minute: "0"
+    job: "curl -X POST https://{{fqdn}}/api/database/dump"
+  when: deployment_mode == 'staging' or deployment_mode == 'production'
+
+# Create a cron to clean up the database dumps folder in staging and production
+- name: Set a cron job to clean up the database dumps folder
+  cron:
+    name: "clean up the database dumps folder is necessary"
+    hour: "0"
+    minute: "5"
+    job: "curl -X POST https://{{fqdn}}/api/database/cleanFolder"
+  when: deployment_mode == 'staging' or deployment_mode == 'production'
