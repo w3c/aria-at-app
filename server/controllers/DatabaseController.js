@@ -190,8 +190,10 @@ const cleanFolder = (req, res) => {
     // continue
   }
 
+  // Default the output directory to ~/db_dumps if no path provided
   const OUTPUT_DIR = dumpOutputDirectory || path.join(os.homedir(), 'db_dumps');
-  const MAX_FILES = Number(maxFiles) || 20;
+  // Default the number of max files to 28 if no value provided
+  const MAX_FILES = Number(maxFiles) || 28;
 
   try {
     // Read all files in the folder
