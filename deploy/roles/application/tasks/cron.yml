@@ -14,7 +14,7 @@
     job: "curl -X POST http://localhost:5000/api/test/import"
   when: deployment_mode == 'development'
 
-# Create a cron to dump the database in staging and production
+# Create a cron to dump the database in staging and production (run every day at 00:00)
 - name: Set a cron job to create a new database dump
   cron:
     name: "create new database dump"
@@ -23,10 +23,10 @@
     job: "curl -X POST https://{{fqdn}}/api/database/dump"
   when: deployment_mode == 'staging' or deployment_mode == 'production'
 
-# Create a cron to clean up the database dumps folder in staging and production
+# Create a cron to clean up the database dumps folder in staging and production (run every day at 00:05)
 - name: Set a cron job to clean up the database dumps folder
   cron:
-    name: "clean up the database dumps folder is necessary"
+    name: "clean up the database dumps folder if necessary"
     hour: "0"
     minute: "5"
     job: "curl -X POST https://{{fqdn}}/api/database/cleanFolder"
