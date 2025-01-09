@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import uaParser from 'ua-parser-js';
+import { UAParser } from 'ua-parser-js';
 
 export function useDetectUa() {
   const [uaBrowser, setUaBrowser] = useState();
@@ -9,7 +9,7 @@ export function useDetectUa() {
 
   useEffect(() => {
     // Detect UA information
-    const ua = uaParser();
+    const ua = UAParser();
     const uaBrowser = ua?.browser?.name || 'Unknown';
     const uaMajor = ua?.browser?.major || '0';
     const uaMinor = ua?.browser?.version?.split('.')?.[1] || '0';
