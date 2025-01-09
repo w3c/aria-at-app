@@ -51,9 +51,17 @@
   },
   "lint-staged": {
     "*": "prettier --ignore-unknown --write",
-    "client": [
+    "client/*": [
       "yarn workspace client prettier",
       "yarn workspace client lint"
+    ],
+    "server/*": [
+      "yarn workspace server prettier",
+      "yarn workspace server lint"
+    ],
+    "shared/*": [
+      "yarn workspace shared prettier",
+      "yarn workspace shared lint"
     ]
   }
 }
