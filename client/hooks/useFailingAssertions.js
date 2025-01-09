@@ -14,7 +14,7 @@ export const useFailingAssertions = testPlanReport => {
               .filter(assertionResult => !assertionResult.passed)
               // We only want to show MUST and SHOULD assertions
               .filter(
-                assertionResult => assertionResult.assertion.priority !== 'MAY'
+                assertionResult => assertionResult.assertion.priority !== 'MAY' && assertionResult.assertion.priority !== 'EXCLUDE'
               )
               .map(assertionResult => ({
                 testResultId: testResult.id,
