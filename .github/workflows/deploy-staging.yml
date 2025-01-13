@@ -3,7 +3,7 @@ name: Deploy to staging (aria-at-staging.w3.org)
 on:
   push:
     branches:
-      - ansible-bump
+      - development
 
 jobs:
   deploy-staging:
