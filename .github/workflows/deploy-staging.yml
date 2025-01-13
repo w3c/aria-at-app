@@ -3,7 +3,7 @@ name: Deploy to staging (aria-at-staging.w3.org)
 on:
   push:
     branches:
-      - development
+      - ansible-bump
 
 jobs:
   deploy-staging:
@@ -22,7 +22,7 @@ jobs:
           python-version: '3.10'
       - name: Install ansible and deploy to staging
         run: |
-          python -m pip install --user ansible-core==2.11.1
+          python -m pip install --user ansible-core==2.16.14
           cd deploy
           echo ${{ secrets.ANSIBLE_VAULT_PASSWORD }} > ansible-vault-password.txt
           ansible-vault view --vault-password-file ansible-vault-password.txt files/jwt-signing-key.pem.enc > ../jwt-signing-key.pem
