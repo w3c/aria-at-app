@@ -29,8 +29,11 @@ machine will not have all the capabilities of the production system.
    ```
 3. Open a terminal and navigate to the directory containing this text file
 4. Run the following command:
-   `bash vagrant up `
-   This will initiate the creation of a virtual machine. You will be prompted for your sudo password. Further documentation on using Vagrant can be found in [the "Getting Started" guide by the maintainers of that project](https://www.vagrantup.com/intro/getting-started/index.html).
+   ```bash
+   vagrant up
+   ```
+
+This will initiate the creation of a virtual machine. You will be prompted for your sudo password. Further documentation on using Vagrant can be found in [the "Getting Started" guide by the maintainers of that project](https://www.vagrantup.com/intro/getting-started/index.html).
 
 Once the vagrant box is up you can test by running by going to the ip configured
 in the `Vagrantfile` [192.168.10.40](192.168.10.40).
