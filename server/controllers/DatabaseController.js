@@ -27,8 +27,43 @@ const sanitizeError = message => {
     .replace(dbHostRegex, redacted);
 };
 
+const dumpPostgresDatabaseToFile = (dumpFileName = null) => {
+  const OUTPUT_DIR = path.join(os.homedir(), 'db_dumps');
+  const DUMP_FILE = path.join(
+    OUTPUT_DIR,
+    dumpFileName ||
+      `${process.env.ENVIRONMENT}_dump_${dates.convertDateToString(
+        new Date(),
+        'YYYYMMDD_HHmmss'
+      )}.sql`
+  );
+
+  return new Promise((resolve, reject) => {
+    try {
+      // pg_dump command that ignores the table "session" because it causes unnecessary conflicts when being used to restore a db
+      const pgDumpCommand = `PGPASSWORD=${DB_PASSWORD} pg_dump -U ${DB_USER} -h ${DB_HOST} -d ${DB_NAME} --exclude-table=session > ${DUMP_FILE}`;
+      exec(pgDumpCommand, (error, stdout, stderr) => {
+        if (error) {
+          return reject(
+            new Error(
+              `Error executing pg_dump: ${sanitizeError(error.message)}`
+            )
+          );
+        }
+        if (stderr) {
+          return reject(new Error(`pg_dump stderr: ${sanitizeError(stderr)}`));
+        }
+        return resolve(`Database dump completed successfully: ${DUMP_FILE}`);
+      });
+    } catch (error) {
+      return reject(
+        new Error(`Unable to dump database: ${sanitizeError(error.message)}`)
+      );
+    }
+  });
+};
+
 const removeDatabaseTablesAndFunctions = async res => {
-  // Database connection configuration
   const client = new Client({
     user: DB_USER,
     host: DB_HOST,
@@ -37,7 +72,6 @@ const removeDatabaseTablesAndFunctions = async res => {
   });
 
   try {
-    // Init database connection
     await client.connect();
     res.write('Connected to the database.\n');
 
@@ -50,14 +84,17 @@ const removeDatabaseTablesAndFunctions = async res => {
     `;
     const tablesResult = await client.query(tablesQuery);
 
-    // Build and execute DROP TABLE commands
+    // Execute DROP TABLE commands
     const tableNames = tablesResult.rows
+      // Ignore 'session' because dropping it may cause unnecessary conflicts
+      // when restoring
       .filter(row => row.tablename !== 'session')
       .map(row => `"${row.tablename}"`);
     if (tableNames.length === 0) {
       res.write('No tables found to drop.\n');
     } else {
-      res.write(`Dropping tables: ${tableNames.join(', ')}\n`);
+      // eslint-disable-next-line no-console
+      console.info(`Dropping tables: ${tableNames.join(', ')}`);
       await client.query(`DROP TABLE ${tableNames.join(', ')} CASCADE;`);
       res.write('All tables have been dropped successfully.\n');
     }
@@ -78,7 +115,8 @@ const removeDatabaseTablesAndFunctions = async res => {
 
     // Execute each DROP FUNCTION statement
     for (const dropStatement of dropStatements) {
-      res.write(`Executing: ${dropStatement}\n`);
+      // eslint-disable-next-line no-console
+      console.info(`Executing: ${dropStatement}`);
       await client.query(dropStatement);
     }
     res.write('All functions removed successfully!\n');
@@ -94,52 +132,27 @@ const removeDatabaseTablesAndFunctions = async res => {
 };
 
 const dumpPostgresDatabase = async (req, res) => {
-  const { dumpOutputDirectory, dumpFileName } = req.body;
+  const { dumpFileName } = req.body;
 
-  if (dumpFileName && !dumpFileName.includes('.sql'))
+  if (dumpFileName && path.extname(dumpFileName) !== '.sql')
     return res.status(400).send("Provided file name does not include '.sql'");
 
-  const OUTPUT_DIR = dumpOutputDirectory || path.join(os.homedir(), 'db_dumps');
-  const DUMP_FILE = path.join(
-    OUTPUT_DIR,
-    dumpFileName ||
-      `${process.env.ENVIRONMENT}_dump_${dates.convertDateToString(
-        new Date(),
-        'YYYYMMDD_HHmmss'
-      )}.sql`
-  );
-
   try {
-    // pg_dump command
-    const pgDumpCommand = `PGPASSWORD=${DB_PASSWORD} pg_dump -U ${DB_USER} -h ${DB_HOST} -d ${DB_NAME} --exclude-table=session > ${DUMP_FILE}`;
-
-    // Execute the command
-    exec(pgDumpCommand, (error, stdout, stderr) => {
-      if (error) {
-        return res
-          .status(400)
-          .send(`Error executing pg_dump: ${sanitizeError(error.message)}`);
-      }
-      if (stderr) {
-        return res
-          .status(400)
-          .send(`pg_dump stderr:: ${sanitizeError(stderr)}`);
-      }
-      return res
-        .status(200)
-        .send(`Database dump completed successfully: ${DUMP_FILE}`);
-    });
+    const result = await dumpPostgresDatabaseToFile();
+    return res.status(200).send(result);
   } catch (error) {
-    return res
-      .status(400)
-      .send(`Unable to dump database: ${sanitizeError(error.message)}`);
+    return res.status(400).send(error.message);
   }
 };
 
 const restorePostgresDatabase = async (req, res) => {
   // Prevent unintentionally dropping or restoring database tables if ran on
   // production unless manually done
-  if (process.env.ENVIRONMENT === 'production') {
+  if (
+    process.env.ENVIRONMENT === 'production' ||
+    process.env.API_SERVER === 'https://aria-at.w3.org' ||
+    req.hostname.includes('aria-at.w3.org')
+  ) {
     return res.status(405).send('This request is not permitted');
   }
 
@@ -147,12 +160,35 @@ const restorePostgresDatabase = async (req, res) => {
   if (!pathToFile)
     return res.status(400).send("'pathToFile' is missing. Please provide.");
 
+  if (path.extname(pathToFile) !== '.sql')
+    return res
+      .status(400)
+      .send("The provided path is not in the expected '.sql' format.");
+
+  // Backup current db before running restore in case there is a need to revert
+  const dumpFileName = `${
+    process.env.ENVIRONMENT
+  }_dump_${dates.convertDateToString(
+    new Date(),
+    'YYYYMMDD_HHmmss'
+  )}_before_restore.sql`;
+
+  try {
+    const result = await dumpPostgresDatabaseToFile(dumpFileName);
+    res.status(200).write(`${result}\n\n`);
+  } catch (error) {
+    return res
+      .status(400)
+      .send(
+        `Unable to continue restore. Failed to backup current data:\n${error.message}`
+      );
+  }
+
   // Purge the database's tables and functions to make restoring with the
   // pg import easier
   await removeDatabaseTablesAndFunctions(res);
 
   try {
-    // delete the tables currently in the db
     const pgImportCommand = `PGPASSWORD=${DB_PASSWORD} psql -U ${DB_USER} -h ${DB_HOST} -d ${DB_NAME} -f ${pathToFile}`;
 
     // Execute the command
@@ -176,37 +212,48 @@ const restorePostgresDatabase = async (req, res) => {
   }
 };
 
-// Function to clean up the dump folder
 const cleanFolder = (req, res) => {
-  const { dumpOutputDirectory, maxFiles } = req.body;
+  const { maxFiles } = req.body;
 
   if (maxFiles) {
     if (!isNaN(maxFiles) && Number.isInteger(Number(maxFiles))) {
       // continue
     } else {
-      return res.status(400).send('Unable to parse maxFiles value provided');
+      return res
+        .status(400)
+        .send("Unable to parse the 'maxFiles' value provided.");
     }
   } else {
     // continue
   }
 
-  // Default the output directory to ~/db_dumps if no path provided
-  const OUTPUT_DIR = dumpOutputDirectory || path.join(os.homedir(), 'db_dumps');
+  const CLEAN_DIR = path.join(os.homedir(), 'db_dumps');
   // Default the number of max files to 28 if no value provided
   const MAX_FILES = Number(maxFiles) || 28;
 
+  if (
+    process.env.ENVIRONMENT === 'production' ||
+    process.env.API_SERVER === 'https://aria-at.w3.org' ||
+    req.hostname.includes('aria-at.w3.org')
+  ) {
+    if (!CLEAN_DIR.includes('/home/aria-bot/db_dumps')) {
+      return res
+        .status(500)
+        .send("Please ensure the 'db_dumps' folder is properly set.");
+    }
+  }
+
   try {
     // Read all files in the folder
-    const files = fs.readdirSync(OUTPUT_DIR).map(file => {
-      const filePath = path.join(OUTPUT_DIR, file);
+    const files = fs.readdirSync(CLEAN_DIR).map(file => {
+      const filePath = path.join(CLEAN_DIR, file);
       return {
         name: file,
         path: filePath,
-        time: fs.statSync(filePath).mtime.getTime() // Get last modified time
+        time: fs.statSync(filePath).mtime.getTime()
       };
     });
 
-    // Sort files by modification time (oldest first)
     files.sort((a, b) => a.time - b.time);
 
     // Delete files if there are more than maxFiles
@@ -215,7 +262,7 @@ const cleanFolder = (req, res) => {
 
       const filesToDelete = files.slice(0, files.length - MAX_FILES);
       filesToDelete.forEach(file => {
-        fs.unlinkSync(file.path); // Delete the file
+        fs.unlinkSync(file.path);
         removedFiles.push(file);
       });
       return res
