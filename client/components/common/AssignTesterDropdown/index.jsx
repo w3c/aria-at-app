@@ -28,6 +28,7 @@ const AssignTesterDropdown = ({
   possibleTesters,
   onChange,
   label,
+  disabled = false,
   dropdownAssignTesterButtonRef,
   setAlertMessage = () => {}
 }) => {
@@ -139,6 +140,7 @@ const AssignTesterDropdown = ({
           aria-label="Assign testers"
           className="assign-tester"
           variant="secondary"
+          disabled={disabled}
         >
           {renderLabel()}
         </Dropdown.Toggle>
@@ -216,7 +218,8 @@ AssignTesterDropdown.propTypes = {
   label: PropTypes.string,
   draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType),
   setAlertMessage: PropTypes.func,
-  dropdownAssignTesterButtonRef: PropTypes.object
+  dropdownAssignTesterButtonRef: PropTypes.object,
+  disabled: PropTypes.bool
 };
 
 export default AssignTesterDropdown;
