@@ -8,7 +8,7 @@
   set_fact:
     source_dir: /home/{{application_user}}/aria-at-report
 
-- include: upload-source-code.yml
+- include_tasks: upload-source-code.yml
 
 - name: Allow aria-bot user to run import script as admin on sandbox
   lineinfile:
@@ -28,7 +28,7 @@
     recurse: yes
   become: yes
   when: deployment_mode != 'development'
-  notify: "restart server"
+  notify: 'restart server'
 
 - name: Make server resources folder writable for import tests API endpoint
   file:
@@ -37,7 +37,7 @@
     recurse: yes
   become: yes
   when: deployment_mode != 'development'
-  notify: "restart server"
+  notify: 'restart server'
 
 - name: Make client resources folder writable for import harness
   file:
@@ -46,7 +46,7 @@
     recurse: yes
   become: yes
   when: deployment_mode != 'development'
-  notify: "restart server"
+  notify: 'restart server'
 
 - name: Link application code
   file:
@@ -108,6 +108,6 @@
   args:
     chdir: '{{source_dir}}'
 
-- include: service.yml
+- import_tasks: service.yml
 
-- include: cron.yml
+- include_tasks: cron.yml
