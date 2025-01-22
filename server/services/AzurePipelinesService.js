@@ -79,6 +79,8 @@ const triggerAzurePipeline = async ({ job, directory, gitSha, atVersion }) => {
   const buildApi = await connection.getBuildApi();
 
   const atKey = job.testPlanRun.testPlanReport.at.key;
+  // find this by looking at the url for the pipeline in the Azure Pipelines web UI
+  // e.g. https://dev.azure.com/bocoup/aria-at-automation/_build?definitionId=5 means it should be 5
   const pipelineId = {
     nvda: 5
   }[atKey];
@@ -88,6 +90,8 @@ const triggerAzurePipeline = async ({ job, directory, gitSha, atVersion }) => {
   }
 
   const browser = job.testPlanRun.testPlanReport.browser.name.toLowerCase();
+  // These are called paramaters in the REST API client library,
+  // but they are passed to variables in practice
   const parameters = {
     callback_url: `https://${callbackUrlHostname}/api/jobs/${job.id}/test/:testRowNumber`,
     status_url: `https://${callbackUrlHostname}/api/jobs/${job.id}`,
