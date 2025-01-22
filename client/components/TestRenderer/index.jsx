@@ -165,7 +165,7 @@ const TestRenderer = ({
   isReadOnly = false,
   isEdit = false,
   setIsRendererReady = false,
-  issueContent
+  commonIssueContent
 }) => {
   const { scenarioResults, test = {}, completedAt } = testResult;
   const { renderableContent } = test;
@@ -548,7 +548,7 @@ const TestRenderer = ({
 
               const commandString = header.replace('After ', '');
               const issueLink = createIssueLink({
-                ...issueContent,
+                ...commonIssueContent,
                 commandString
               });
 
@@ -617,7 +617,7 @@ TestRenderer.propTypes = {
   isEdit: PropTypes.bool,
   isReviewingBot: PropTypes.bool,
   setIsRendererReady: PropTypes.func,
-  issueContent: PropTypes.object
+  commonIssueContent: PropTypes.object
 };
 
 export default TestRenderer;

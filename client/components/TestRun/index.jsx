@@ -359,10 +359,10 @@ const TestRun = () => {
   }
   adminReviewerCheckedRef.current = true;
 
-  let issueLink, issueContent;
+  let issueLink, commonIssueContent;
   const hasLoadingCompleted = Object.keys(currentTest).length;
   if (hasLoadingCompleted) {
-    issueContent = {
+    commonIssueContent = {
       testPlanTitle: testPlanVersion.title,
       testPlanDirectory: testPlanVersion.testPlan.directory,
       versionString: testPlanVersion.versionString,
@@ -376,7 +376,7 @@ const TestRun = () => {
       browserVersionName: currentBrowserVersion?.name,
       conflictMarkdown: conflictMarkdownRef.current
     };
-    issueLink = createIssueLink(issueContent);
+    issueLink = createIssueLink(commonIssueContent);
   }
 
   const remapScenarioResults = (
@@ -1048,7 +1048,7 @@ const TestRun = () => {
                   isSubmitted={isTestSubmitClicked}
                   isEdit={isTestEditClicked}
                   setIsRendererReady={setIsRendererReady}
-                  issueContent={issueContent}
+                  commonIssueContent={commonIssueContent}
                 />
               </Row>
               {isRendererReady && (
