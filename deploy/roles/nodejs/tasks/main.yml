@@ -8,7 +8,7 @@
     - https://dl.yarnpkg.com/debian/pubkey.gpg
     - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
 
-- include: upgrade.yml
+- include_tasks: upgrade.yml
 
 - name: Add software repositories
   apt_repository:
