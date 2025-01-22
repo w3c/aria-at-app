@@ -523,35 +523,3 @@ a.btn-options:hover {
 .form-control.is-invalid {
   background-image: none;
 }
-
-.raise-issue-container {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.75rem;
-}
-
-.raise-issue-container .title {
-  align-self: flex-start;
-  font-weight: bold;
-}
-
-.raise-issue-container input[type="radio"] {
-  margin-right: 0.25rem;
-  vertical-align: middle;
-}
-
-.raise-issue-container .options {
-  display: flex;
-}
-
-.raise-issue-container .options.type {
-  justify-content: space-between;
-  margin-bottom: 0.5rem;
-}
-
-.raise-issue-container .options.command {
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  margin-bottom: 1rem;
-}

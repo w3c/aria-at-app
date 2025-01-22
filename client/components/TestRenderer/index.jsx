@@ -27,6 +27,7 @@ import UnexpectedBehaviorsFieldset from './UnexpectedBehaviorsFieldset';
 import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
 import { AtPropType, TestResultPropType } from '../common/proptypes/index.js';
+import createIssueLink from '@client/utils/createIssueLink';
 
 const Container = styled.div`
   width: 100%;
@@ -163,7 +164,8 @@ const TestRenderer = ({
   isReviewingBot = false,
   isReadOnly = false,
   isEdit = false,
-  setIsRendererReady = false
+  setIsRendererReady = false,
+  issueContent
 }) => {
   const { scenarioResults, test = {}, completedAt } = testResult;
   const { renderableContent } = test;
@@ -543,6 +545,13 @@ const TestRenderer = ({
                 unexpectedBehaviors,
                 assertionsHeader
               } = value;
+
+              const commandString = header.replace('After ', '');
+              const issueLink = createIssueLink({
+                ...issueContent,
+                commandString
+              });
+
               return (
                 <Fragment key={`AtOutputKey_${commandIndex}`}>
                   <InnerSectionHeadingText>{header}</InnerSectionHeadingText>
@@ -564,6 +573,9 @@ const TestRenderer = ({
                     isSubmitted={isSubmitted}
                     readOnly={isReadOnly}
                   />
+                  <a href={issueLink} target="_blank" rel="noreferrer">
+                    Raise an issue for {commandString}
+                  </a>
                 </Fragment>
               );
             })}
@@ -604,7 +616,8 @@ TestRenderer.propTypes = {
   isReadOnly: PropTypes.bool,
   isEdit: PropTypes.bool,
   isReviewingBot: PropTypes.bool,
-  setIsRendererReady: PropTypes.func
+  setIsRendererReady: PropTypes.func,
+  issueContent: PropTypes.object
 };
 
 export default TestRenderer;
