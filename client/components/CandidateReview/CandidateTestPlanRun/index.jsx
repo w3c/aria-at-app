@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import TestNavigator from '../../TestRun/TestNavigator';
 import InstructionsRenderer from './InstructionsRenderer';
@@ -66,7 +66,7 @@ const CandidateTestPlanRun = () => {
     maxTestIndex: testsLength
   });
   const [showTestNavigator, setShowTestNavigator] = useState(true);
-  const [isFirstTest, setIsFirstTest] = useState(true);
+  const [isFirstTest, setIsFirstTest] = useState(currentTestIndex === 0);
   const [isLastTest, setIsLastTest] = useState(false);
   const [feedbackModalShowing, setFeedbackModalShowing] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(null);
@@ -83,6 +83,9 @@ const CandidateTestPlanRun = () => {
 
   const toggleTestNavigator = () => setShowTestNavigator(!showTestNavigator);
 
+  const hasFailingAssertionsSummary = useMemo(() => {
+    return data?.testPlanReports[0]?.metrics?.assertionsFailedCount > 0;
+  }, [data?.testPlanReports]);
   const handleTestClick = async index => {
     setCurrentTestIndex(index);
     if (index === -1) {
@@ -227,11 +230,11 @@ const CandidateTestPlanRun = () => {
     if (data) {
       updateVendorStatus();
       updateTestViewed();
-      if (currentTestIndex !== 0) setIsFirstTest(false);
+      setIsFirstTest(currentTestIndex === 0);
       if (tests?.length === 1) setIsLastTest(true);
       if (currentTestIndex + 1 === tests?.length) setIsLastTest(true);
     }
-  }, [reviewStatus, currentTestIndex]);
+  }, [reviewStatus, currentTestIndex, data]);
 
   useEffect(() => {
     // Prevent a plan with only 1 test from immediately pushing the focus to the
@@ -631,7 +634,8 @@ const CandidateTestPlanRun = () => {
                       aria-labelledby="test-toolbar-heading"
                       className="test-run-toolbar mt-1"
                     >
-                      {isSummaryView ? null : (
+                      {isSummaryView ||
+                      (isFirstTest && !hasFailingAssertionsSummary) ? null : (
                         <li>
                           <Button
                             variant="secondary"

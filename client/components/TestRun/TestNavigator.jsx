@@ -33,6 +33,10 @@ const TestNavigator = ({
     [collectionJob]
   );
 
+  const shouldShowFailingAssertionsSummary = useMemo(() => {
+    return isVendor && testPlanReport.metrics.assertionsFailedCount > 0;
+  }, [isVendor, testPlanReport]);
+
   return (
     <Col className="test-navigator" md={show ? 3 : 12}>
       <div className="test-navigator-toggle-container">
@@ -61,7 +65,7 @@ const TestNavigator = ({
           aria-labelledby="test-navigator-heading"
           className="test-navigator-list"
         >
-          {isVendor && (
+          {shouldShowFailingAssertionsSummary && (
             <div className="test-name-wrapper summary">
               <a
                 onClick={async e => {
