@@ -403,6 +403,9 @@ const triggerWorkflow = async (
   const { testPlanVersion } = job.testPlanRun.testPlanReport;
   const { gitSha, directory } = testPlanVersion;
 
+  // hardcode for testing
+  workflowService = AUTOMATION_SERVICE.AZURE_PIPELINES;
+
   try {
     if (workflowService === AUTOMATION_SERVICE.GITHUB_ACTIONS) {
       if (isGithubWorkflowEnabled()) {
