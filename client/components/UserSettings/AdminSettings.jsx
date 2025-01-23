@@ -50,8 +50,7 @@ const AdminSettings = ({ latestTestPlanVersion, refetch }) => {
   return (
     <LoadingStatus message={loadingMessage}>
       <section>
-        <h2>Actions</h2>
-        <p>Use the following actions below to perform a certain function:</p>
+        <h2>Admin Actions</h2>
         <Button variant="primary" onClick={handleImportTests}>
           Import Latest Test Plan Versions
         </Button>
