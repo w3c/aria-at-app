@@ -158,7 +158,6 @@ const DataManagement = () => {
         activeFilter={filter}
         onFilterChange={setFilter}
       />
-
       <Table
         className="data-management"
         aria-label="Test Plans Status Summary Table"
