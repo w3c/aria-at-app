@@ -3,6 +3,7 @@ const GITHUB_ISSUES_URL =
     ? 'https://github.com/w3c/aria-at'
     : 'https://github.com/bocoup/aria-at';
 
+// TODO: Use At.key
 const atLabelMap = {
   'VoiceOver for macOS': 'vo',
   JAWS: 'jaws',
@@ -28,6 +29,8 @@ const atLabelMap = {
  * @param {string|null} [options.browserVersionName=null] - The version name of the browser
  * @param {string|null} [options.conflictMarkdown=null] - The conflict markdown
  * @param {string|null} [options.reportLink=null] - The link to the report
+ * @param {string|null} [options.commandString=null] - The command string to be included in the report
+ * @param {string|null} [options.versionPhase=null] - The phase of the test plan version in case the report has to reflect that
  * @returns {string} The URL for creating a new issue on the GitHub repository
  * @throws {Error} If required parameters are missing
  */
@@ -46,8 +49,14 @@ const createIssueLink = ({
   browserName = null,
   browserVersionName = null,
   conflictMarkdown = null,
-  reportLink = null
+  reportLink = null,
+  testReviewLink = null,
+  commandString = null,
+  versionPhase = null
 }) => {
+  if (!isCandidateReview && versionPhase)
+    isCandidateReview = versionPhase === 'CANDIDATE';
+
   if (!(testPlanDirectory || testPlanTitle || versionString || atName)) {
     throw new Error('Cannot create issue link due to missing parameters');
   }
@@ -70,12 +79,28 @@ const createIssueLink = ({
       titleStart = 'Feedback';
     }
 
-    title =
-      `${titleStart}: "${testTitle}" (${testPlanTitle}, ` +
-      `Test ${testSequenceNumber}, ${versionString})`;
+    if (commandString) {
+      title =
+        `${titleStart}: "${testTitle}" (${testPlanTitle}, ` +
+        `Test ${testSequenceNumber}, Command "${commandString}", ${versionString})`;
+    } else {
+      title =
+        `${titleStart}: "${testTitle}" (${testPlanTitle}, ` +
+        `Test ${testSequenceNumber}, ${versionString})`;
+    }
   } else {
-    title = `${atName} General Feedback: ${testPlanTitle} ${versionString}`;
+    title = `General Feedback: ${testPlanTitle} ${versionString}`;
+    if (atName) title = `${atName} ${title}`;
   }
+
+  if (
+    isCandidateReview ||
+    isCandidateReviewChangesRequested ||
+    versionPhase === 'CANDIDATE'
+  ) {
+    title = `${title} for Candidate Report`;
+  }
+  if (versionPhase === 'RECOMMENDED') title = `${title} for Recommended Report`;
 
   const labels =
     (isCandidateReview ? 'candidate-review,' : '') +
@@ -117,8 +142,21 @@ const createIssueLink = ({
       `[${shortenedUrl}](${modifiedRenderedUrl})\n` +
       reportLinkFormatted +
       atFormatted +
-      browserFormatted +
-      '\n';
+      browserFormatted;
+
+    if (commandString) {
+      testSetupFormatted =
+        `${testSetupFormatted}` + `- Command: \`${commandString}\`\n`;
+    }
+
+    testSetupFormatted = `${testSetupFormatted}\n`;
+  }
+
+  let metadataFormatted = '';
+  let testReviewLinkFormatted = '';
+  if (testReviewLink) {
+    testReviewLinkFormatted = `- Test Review Page: [Link](${testReviewLink})\n`;
+    metadataFormatted = `## Metadata\n\n` + testReviewLinkFormatted + '\n';
   }
 
   const hiddenIssueMetadata = JSON.stringify({
@@ -136,6 +174,7 @@ const createIssueLink = ({
     `## Description of Behavior\n\n` +
     `<!-- Write your description here -->\n\n` +
     testSetupFormatted +
+    metadataFormatted +
     `<!-- The following data allows the issue to be imported into the ` +
     `ARIA AT App -->\n` +
     `<!-- ARIA_AT_APP_ISSUE_DATA = ${hiddenIssueMetadata} -->`;
@@ -172,6 +211,7 @@ export const getIssueSearchLink = ({
   versionString,
   testSequenceNumber = null
 }) => {
+  // TODO: Use At.key
   let atKey;
   if (atName === 'JAWS' || atName === 'NVDA') {
     atKey = atName.toLowerCase();
