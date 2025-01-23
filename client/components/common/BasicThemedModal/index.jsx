@@ -2,9 +2,13 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCheckCircle,
+  faExclamationTriangle
+} from '@fortawesome/free-solid-svg-icons';
 import styled from '@emotion/styled';
 import { uniqueId } from 'lodash';
+import { THEMES, THEME_COLOR } from '@client/hooks/useThemedModal';
 import { ActionButtonPropType } from '../proptypes';
 
 const ModalTitleStyle = styled.h1`
@@ -25,15 +29,7 @@ const ColorStrip = styled.div`
   width: 100%;
   height: 10px;
   ${props => props.hideHeadline && `display: none;`}
-  background-color: ${
-    ({ theme }) =>
-      theme === 'danger'
-        ? '#ce1b4c'
-        : theme === 'warning'
-        ? '#fab700'
-        : '#2ba51c' // success
-  };
-
+  background-color: ${({ theme }) => THEME_COLOR(theme)};
   border-top-left-radius: calc(0.3rem - 1px);
   border-top-right-radius: calc(0.3rem - 1px);
 `;
@@ -42,7 +38,7 @@ const BasicThemedModal = ({
   show = false,
   centered = false,
   animation = true,
-  theme = 'warning', // warning, danger, success
+  theme = THEMES.WARNING, // warning, danger, success
   dialogClassName = '',
   title = null,
   content = null,
@@ -84,15 +80,13 @@ const BasicThemedModal = ({
           >
             <ModalInnerSectionContainer>
               <FontAwesomeIcon
-                icon={faExclamationTriangle}
-                size="lg"
-                color={
-                  theme === 'danger'
-                    ? '#ce1b4c'
-                    : theme === 'warning'
-                    ? '#fab700'
-                    : '#2ba51c' // success
+                icon={
+                  theme === THEMES.SUCCESS
+                    ? faCheckCircle
+                    : faExclamationTriangle
                 }
+                size="lg"
+                color={THEME_COLOR(theme)}
               />
               {title}
             </ModalInnerSectionContainer>
@@ -115,7 +109,7 @@ const BasicThemedModal = ({
           {actionButtons.map(({ action, text }) => (
             <Button
               key={text}
-              variant={theme === 'danger' ? 'danger' : 'primary'}
+              variant={theme === THEMES.DANGER ? 'danger' : 'primary'}
               onClick={action}
             >
               {text}

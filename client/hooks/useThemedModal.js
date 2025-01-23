@@ -7,6 +7,24 @@ const THEMES = {
   DANGER: 'danger'
 };
 
+/**
+ * Returns hex code for corresponding color
+ * @param {'success'|'warning'|'danger'} theme
+ * @returns {string}
+ */
+const THEME_COLOR = theme => {
+  switch (theme) {
+    case THEMES.SUCCESS:
+      return '#2ba51c';
+    case THEMES.WARNING:
+      return '#fab700';
+    case THEMES.DANGER:
+      return '#ce1b4c';
+    default:
+      return '#fab700'; // default to warning theme if unexpected theme value
+  }
+};
+
 function useThemedModal({ show, type = THEMES.WARNING, title, content }) {
   const focusElementRef = useRef();
 
@@ -83,4 +101,4 @@ function useThemedModal({ show, type = THEMES.WARNING, title, content }) {
   };
 }
 
-export { useThemedModal, THEMES };
+export { useThemedModal, THEMES, THEME_COLOR };
