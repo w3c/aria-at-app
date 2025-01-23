@@ -1,0 +1,5 @@
+client/dist/*
+client/dist/bundle.js
+
+# snaphosts
+client/tests/e2e/snapshots/saved
