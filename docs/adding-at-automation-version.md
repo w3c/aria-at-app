@@ -2,6 +2,8 @@
 
 This document describes the process for adding a new version of an AT to the ARIA-AT App. These instructions will be used for both NVDA and VoiceOver.
 
+![Flowchart depicting the process outlined below](./assets/adding-at-version-to-automation-flowchart.png)
+
 ## NVDA
 
 ### Prerequisites
