@@ -6,7 +6,7 @@ const AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS = {
   // https://github.com/bocoup/aria-at-gh-actions-helper/blob/main/.github/workflows/voiceover-test.yml#L39
   'VoiceOver for macOS': ['13.0', '14.0'],
   // These are tracked with the https://github.com/bocoup/aria-at-automation-nvda-builds/releases
-  NVDA: ['2024.1', '2023.3.3', '2023.3']
+  NVDA: ['2024.4.1', '2024.1', '2023.3.3', '2023.3']
 };
 
 const VENDOR_NAME_TO_AT_MAPPING = {
