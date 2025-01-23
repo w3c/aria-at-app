@@ -6,7 +6,7 @@ import { useThemedModal, THEMES } from '../../hooks/useThemedModal';
 import { dates } from 'shared';
 
 const AdminSettings = ({ latestTestPlanVersion, refetch }) => {
-  const { triggerLoad, loadingMessage } = useTriggerLoad();
+  const { triggerLoad, loadingMessage, loadingNote } = useTriggerLoad();
   const {
     themedModal,
     showThemedModal,
@@ -16,39 +16,43 @@ const AdminSettings = ({ latestTestPlanVersion, refetch }) => {
     setThemedModalType
   } = useThemedModal({
     type: THEMES.SUCCESS,
-    title: 'Success!'
+    title: 'Success'
   });
 
   const handleImportTests = async () => {
-    await triggerLoad(async () => {
-      try {
-        const response = await fetch('/api/test/import', { method: 'POST' });
-        if (!response.ok) {
-          throw new Error(
-            `Failed to import the latest Test Plan Versions: ${response.status}`
-          );
-        }
+    await triggerLoad(
+      async () => {
+        try {
+          const response = await fetch('/api/test/import', { method: 'POST' });
+          if (!response.ok) {
+            throw new Error(
+              `Failed to import the latest Test Plan Versions: ${response.status}`
+            );
+          }
 
-        // Success
-        setThemedModalType(THEMES.SUCCESS);
-        setThemedModalTitle('Success!');
-        setThemedModalContent(
-          <>The latest Test Plan Versions have been imported.</>
-        );
-        setShowThemedModal(true);
-        await refetch();
-      } catch (e) {
-        // Failed, show themed message
-        setThemedModalType(THEMES.DANGER);
-        setThemedModalTitle('Error!');
-        setThemedModalContent(<>{e.message}</>);
-        setShowThemedModal(true);
-      }
-    }, 'Importing latest Test Plan Versions');
+          // Success
+          setThemedModalType(THEMES.SUCCESS);
+          setThemedModalTitle('Success');
+          setThemedModalContent(
+            <>The latest Test Plan Versions have been imported.</>
+          );
+          setShowThemedModal(true);
+          await refetch();
+        } catch (e) {
+          // Failed, show themed message
+          setThemedModalType(THEMES.DANGER);
+          setThemedModalTitle('Error');
+          setThemedModalContent(<>{e.message}</>);
+          setShowThemedModal(true);
+        }
+      },
+      'Importing latest Test Plan Versions',
+      'This may take a few minutes ...'
+    );
   };
 
   return (
-    <LoadingStatus message={loadingMessage}>
+    <LoadingStatus message={loadingMessage} note={loadingNote}>
       <section>
         <h2>Admin Actions</h2>
         <Button variant="primary" onClick={handleImportTests}>
