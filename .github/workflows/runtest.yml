@@ -1,5 +1,5 @@
 name: Run the tests
-on: [push, pull_request]
+on: [push]
 
 jobs:
   runtest_task:
