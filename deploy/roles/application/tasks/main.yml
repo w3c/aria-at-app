@@ -10,13 +10,22 @@
 
 - include_tasks: upload-source-code.yml
 
-- name: Allow aria-bot user to run import script as admin on sandbox
-  lineinfile:
-    path: /etc/sudoers
-    state: present
-    line: 'aria-bot ALL=(ALL) NOPASSWD:{{source_dir}}/deploy/scripts/export-and-exec.sh'
-    validate: 'visudo -cf %s'
-  become: yes
+- name: Ensure /etc/sudoers.d/10_aria-bot file exists to execute the import-tests script
+  block:
+    - name: Create /etc/sudoers.d/10_aria-bot file with correct permissions
+      file:
+        path: /etc/sudoers.d/10_aria-bot
+        state: touch
+        mode: '0440'
+      become: yes
+
+    - name: Allow aria-bot user to run import-tests script
+      lineinfile:
+        path: /etc/sudoers.d/10_aria-bot
+        state: present
+        line: 'aria-bot ALL=(ALL) NOPASSWD:{{source_dir}}/deploy/scripts/export-and-exec.sh'
+        validate: 'visudo -cf %s'
+      become: yes
   when: deployment_mode != 'development'
 
 # TODO: these permissions changes are a workaround solution
