@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 import { AT_FIELDS, ME_FIELDS } from '@components/common/fragments';
 
-export const CURRENT_SETTINGS_QUERY = gql`
+export const TESTER_SETTINGS_QUERY = gql`
   ${AT_FIELDS}
   ${ME_FIELDS}
   query CurrentSettings {
@@ -13,6 +13,15 @@ export const CURRENT_SETTINGS_QUERY = gql`
     }
     ats {
       ...AtFields
+    }
+  }
+`;
+
+export const ADMIN_SETTINGS_QUERY = gql`
+  query AdminSettings {
+    latestTestPlanVersion {
+      id
+      updatedAt
     }
   }
 `;
