@@ -5,6 +5,8 @@ import styled from '@emotion/styled';
 import BasicModal from '../BasicModal';
 import { dates } from 'shared';
 
+const minimumReleaseYear = 1999;
+
 const ModalInnerSectionContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -87,7 +89,8 @@ const UpdateVersionModal = ({
     const dateTextError =
       !updatedDateAvailabilityText ||
       updatedDateAvailabilityText.length !== 10 ||
-      !dates.isValidDate(updatedDateAvailabilityText);
+      !dates.isValidDate(updatedDateAvailabilityText) ||
+      !dates.isAfterYear(updatedDateAvailabilityText, minimumReleaseYear);
 
     if (versionTextError || dateTextError) {
       setIsVersionError(versionTextError);
