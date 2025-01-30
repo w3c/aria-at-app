@@ -20,8 +20,10 @@ const FailingAssertionsSummaryTable = ({
   return (
     <>
       <p>
-        {metrics.assertionsFailedCount} assertions failed for{' '}
-        {metrics.commandsCount} commands in {metrics.testsFailedCount} tests.
+        {failingAssertions.length} assertions failed for{' '}
+        {metrics.mustAssertionsFailedCount +
+          metrics.shouldAssertionsFailedCount}{' '}
+        commands in {metrics.testsFailedCount} tests.
       </p>
 
       <Table bordered responsive aria-labelledby="failing-assertions-heading">
