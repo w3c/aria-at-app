@@ -43,6 +43,18 @@ describe('User Settings common traits', () => {
     });
   });
 
+  it("renders admin's user details and assistive technology sections", async () => {
+    await getPage({ role: 'admin', url: '/account/settings' }, async page => {
+      await page.waitForSelector('h2 ::-p-text(User Details)');
+      await page.waitForSelector('h2 ::-p-text(Admin Actions)');
+
+      const admin = 'joe-the-admin';
+      await page.waitForSelector(`p a[href="https://github.com/${admin}"]`);
+    });
+  });
+});
+
+describe('User Settings when signed in as tester', () => {
   it('renders testable assistive technologies status and update on save', async () => {
     await getPage(
       { role: 'tester', url: '/account/settings' },
@@ -82,6 +94,21 @@ describe('User Settings common traits', () => {
         expect(selectedAtsListItems.length).toBe(2);
         expect(selectedAtsListItems.includes('JAWS')).toBe(true);
         expect(selectedAtsListItems.includes('NVDA')).toBe(true);
+
+        expect(consoleErrors).toHaveLength(0);
+      }
+    );
+  });
+});
+
+describe('User Settings when signed in as admin', () => {
+  it('renders admin actions section', async () => {
+    await getPage(
+      { role: 'admin', url: '/account/settings' },
+      async (page, { consoleErrors }) => {
+        await page.waitForSelector(
+          'button ::-p-text(Import Latest Test Plan Versions)'
+        );
 
         expect(consoleErrors).toHaveLength(0);
       }

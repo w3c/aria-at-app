@@ -304,6 +304,9 @@ describe('graphql', () => {
               }
             }
           }
+          latestTestPlanVersion {
+            id
+          }
           testPlan(id: "checkbox") {
             __typename
             id
