@@ -20,7 +20,7 @@ const FailingAssertionsSummaryTable = ({
   return (
     <>
       <p>
-        {failingAssertions.length} assertions failed for{' '}
+        {failingAssertions.length} assertions failed across{' '}
         {metrics.mustAssertionsFailedCount +
           metrics.shouldAssertionsFailedCount}{' '}
         commands in {metrics.testsFailedCount} tests.
