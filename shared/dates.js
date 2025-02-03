@@ -21,6 +21,10 @@ const isValidDate = (date, format = 'DD-MM-YYYY') => {
   return moment.utc(date, format).isValid();
 };
 
+const isAfterYear = (date, year, format = 'DD-MM-YYYY') => {
+  return moment.utc(date, format).isAfter(moment.utc(`${year}-12-31`));
+};
+
 const checkDaysBetweenDates = (date, otherDate) => {
   const _date = moment.utc(date);
   const _otherDate = moment.utc(otherDate);
@@ -52,6 +56,7 @@ module.exports = {
   convertStringToDate,
   convertStringFormatToAnotherFormat,
   isValidDate,
+  isAfterYear,
   checkDaysBetweenDates,
   gitUpdatedDateToString
 };
