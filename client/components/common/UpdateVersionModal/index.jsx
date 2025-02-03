@@ -152,7 +152,7 @@ const UpdateVersionModal = ({
                 style={{ display: 'block' }}
                 type="invalid"
               >
-                Please enter a valid date.
+                Please enter a valid date (01-01-2020 or later).
               </Form.Control.Feedback>
             )}
           </Form.Group>
