@@ -208,6 +208,39 @@ export const TestPlanReportConflictPropType = PropTypes.shape({
   ).isRequired
 });
 
+export const TestPlanReportMetricsPropType = PropTypes.shape({
+  __typename: PropTypes.string,
+  assertionsPassedCount: PropTypes.number,
+  assertionsFailedCount: PropTypes.number,
+  mustAssertionsPassedCount: PropTypes.number,
+  mustAssertionsCount: PropTypes.number,
+  mustAssertionsFailedCount: PropTypes.number,
+  shouldAssertionsPassedCount: PropTypes.number,
+  shouldAssertionsCount: PropTypes.number,
+  shouldAssertionsFailedCount: PropTypes.number,
+  mayAssertionsPassedCount: PropTypes.number,
+  mayAssertionsCount: PropTypes.number,
+  mayAssertionsFailedCount: PropTypes.number,
+  testsPassedCount: PropTypes.number,
+  testsCount: PropTypes.number,
+  testsFailedCount: PropTypes.number,
+  unexpectedBehaviorCount: PropTypes.number,
+  severeImpactPassedAssertionCount: PropTypes.number,
+  severeImpactFailedAssertionCount: PropTypes.number,
+  moderateImpactPassedAssertionCount: PropTypes.number,
+  moderateImpactFailedAssertionCount: PropTypes.number,
+  commandsCount: PropTypes.number,
+  mustFormatted: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  shouldFormatted: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  mayFormatted: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+  unexpectedBehaviorsFormatted: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.string
+  ]),
+  supportLevel: PropTypes.string,
+  supportPercent: PropTypes.number
+});
+
 export const TestPlanReportStatusPropType = PropTypes.shape({
   __typename: PropTypes.string,
   isRequired: PropTypes.bool,
@@ -217,7 +250,7 @@ export const TestPlanReportStatusPropType = PropTypes.shape({
   exactAtVersion: AtVersionPropType,
   testPlanReport: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    metrics: PropTypes.object,
+    metrics: TestPlanReportMetricsPropType,
     isFinal: PropTypes.bool,
     markedFinalAt: PropTypes.string,
     issues: PropTypes.arrayOf(IssuePropType),
