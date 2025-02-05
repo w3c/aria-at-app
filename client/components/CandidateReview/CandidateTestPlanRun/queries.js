@@ -62,6 +62,7 @@ export const CANDIDATE_REPORTS_QUERY = gql`
     ) {
       id
       vendorReviewStatus
+      metrics
       issues {
         ...IssueFieldsAll
       }

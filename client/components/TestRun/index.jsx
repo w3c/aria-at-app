@@ -39,7 +39,6 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
-import { dates } from 'shared';
 import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
 import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
 
@@ -124,7 +123,9 @@ const TestRun = () => {
   const [testPlanReport, setTestPlanReport] = useState({});
   const [testPlanVersion, setTestPlanVersion] = useState();
   const [currentTest, setCurrentTest] = useState({});
-  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex(tests.length);
+  const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex({
+    maxTestIndex: tests.length
+  });
   const [currentTestAtVersionId, setCurrentTestAtVersionId] = useState('');
   const [currentTestBrowserVersionId, setCurrentTestBrowserVersionId] =
     useState('');
@@ -360,16 +361,13 @@ const TestRun = () => {
   }
   adminReviewerCheckedRef.current = true;
 
-  let issueLink;
+  let issueLink, commonIssueContent;
   const hasLoadingCompleted = Object.keys(currentTest).length;
   if (hasLoadingCompleted) {
-    issueLink = createIssueLink({
+    commonIssueContent = {
       testPlanTitle: testPlanVersion.title,
       testPlanDirectory: testPlanVersion.testPlan.directory,
-      versionString: `V${dates.convertDateToString(
-        testPlanVersion.updatedAt,
-        'YY.MM.DD'
-      )}`,
+      versionString: testPlanVersion.versionString,
       testTitle: currentTest.title,
       testRowNumber: currentTest.rowNumber,
       testSequenceNumber: currentTest.seq,
@@ -379,7 +377,8 @@ const TestRun = () => {
       atVersionName: currentAtVersion?.name,
       browserVersionName: currentBrowserVersion?.name,
       conflictMarkdown: conflictMarkdownRef.current
-    });
+    };
+    issueLink = createIssueLink(commonIssueContent);
   }
 
   const remapScenarioResults = (
@@ -969,7 +968,7 @@ const TestRun = () => {
         <ul className="options-wrapper" aria-labelledby="test-options-heading">
           <li>
             <OptionButton
-              text="Raise An Issue"
+              text="Raise an Issue"
               icon={
                 <FontAwesomeIcon icon={faExclamationCircle} color="#94979b" />
               }
@@ -1051,6 +1050,7 @@ const TestRun = () => {
                   isSubmitted={isTestSubmitClicked}
                   isEdit={isTestEditClicked}
                   setIsRendererReady={setIsRendererReady}
+                  commonIssueContent={commonIssueContent}
                 />
               </Row>
               {isRendererReady && (
@@ -1143,6 +1143,8 @@ const TestRun = () => {
       testPlanTitle={
         testPlanVersion.title || testPlanVersion.testPlan?.directory || ''
       }
+      testPlanVersionString={testPlanVersion.versionString}
+      testPlanVersionReviewLink={`/test-review/${testPlanVersion.id}`}
       at={`${testPlanReport.at?.name}${
         isViewingRun ? ` ${currentAtVersion?.name}` : ''
       }`}

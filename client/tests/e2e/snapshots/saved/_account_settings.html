@@ -50,6 +50,11 @@
                   >Candidate Review</a
                 >
               </li>
+              <li>
+                <a aria-current="true" class="nav-link" href="/account/settings"
+                  >Settings</a
+                >
+              </li>
               <li class="signed-in-wrapper">
                 <div class="signed-in" id="signed-in">
                   <svg
@@ -88,55 +93,15 @@
                   >joe-the-admin</a
                 >
               </p>
-              <h2>Assistive Technology Settings</h2>
-              <div aria-atomic="true" aria-live="polite">
-                <p data-testid="testable-ats-status">
-                  You have not yet selected any assistive technologies.
-                </p>
-              </div>
+            </section>
+            <section>
+              <h2>Admin Actions</h2>
+              <button type="button" class="btn btn-primary">
+                Import Latest Test Plan Versions
+              </button>
               <p>
-                Update the assistive technologies you can test by selecting from
-                the options below:
+                Date of latest test plan version: January 23, 2025 20:56 UTC
               </p>
-              <form class="">
-                <h3 id="at-group-label">Assistive Technologies</h3>
-                <div role="group" aria-labelledby="at-group-label">
-                  <div class="form-check">
-                    <input
-                      type="checkbox"
-                      id="1"
-                      class="form-check-input" /><label
-                      title=""
-                      for="1"
-                      class="form-check-label"
-                      >JAWS</label
-                    >
-                  </div>
-                  <div class="form-check">
-                    <input
-                      type="checkbox"
-                      id="2"
-                      class="form-check-input" /><label
-                      title=""
-                      for="2"
-                      class="form-check-label"
-                      >NVDA</label
-                    >
-                  </div>
-                  <div class="form-check">
-                    <input
-                      type="checkbox"
-                      id="3"
-                      class="form-check-input" /><label
-                      title=""
-                      for="3"
-                      class="form-check-label"
-                      >VoiceOver for macOS</label
-                    >
-                  </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-              </form>
             </section>
           </div>
         </main>

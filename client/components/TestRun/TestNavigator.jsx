@@ -33,6 +33,10 @@ const TestNavigator = ({
     [collectionJob]
   );
 
+  const shouldShowFailingAssertionsSummary = useMemo(() => {
+    return isVendor && testPlanReport.metrics.assertionsFailedCount > 0;
+  }, [isVendor, testPlanReport]);
+
   return (
     <Col className="test-navigator" md={show ? 3 : 12}>
       <div className="test-navigator-toggle-container">
@@ -61,6 +65,25 @@ const TestNavigator = ({
           aria-labelledby="test-navigator-heading"
           className="test-navigator-list"
         >
+          {shouldShowFailingAssertionsSummary && (
+            <div className="test-name-wrapper summary">
+              <a
+                onClick={async e => {
+                  e.preventDefault();
+                  await handleTestClick(-1);
+                }}
+                href="#summary"
+                className="test-name"
+                aria-current={currentTestIndex === -1}
+              >
+                Summary of Failing Assertions
+              </a>
+              <span
+                className="progress-indicator"
+                title="Summary of Failing Assertions"
+              />
+            </div>
+          )}
           {tests.map((test, index) => {
             let resultClassName = isReadOnly ? 'missing' : 'not-started';
             let resultStatus = isReadOnly ? 'Missing' : 'Not Started';

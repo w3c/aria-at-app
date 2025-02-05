@@ -2,7 +2,7 @@
 - hosts: all
   become_method: sudo
   pre_tasks:
-    - include: tasks/prompt-for-become-password.yml
+    - import_tasks: tasks/prompt-for-become-password.yml
       when: needs_become_password|default(false, true)
   roles:
     - permissions

@@ -1,3 +1,17 @@
+## [1.12.0](https://github.com/w3c/aria-at-app/compare/v1.11.0...v1.12.0) (2025-02-05)
+
+
+### Features
+
+* Add report section summarizing failing assertions from all tests in a plan ([#1288](https://github.com/w3c/aria-at-app/issues/1288)) ([46851ce](https://github.com/w3c/aria-at-app/commit/46851cede6764b74aa186bf8ccba72758ce5ed30))
+* Include Settings page for admin and UI to manually import latest test plan versions ([#1290](https://github.com/w3c/aria-at-app/issues/1290)) ([7e22455](https://github.com/w3c/aria-at-app/commit/7e224551e19796c8f660f7151990983c12872d40))
+
+
+### Bug Fixes
+
+* Include additional "Raise an Issue" links ([#1281](https://github.com/w3c/aria-at-app/issues/1281)) ([7563f6d](https://github.com/w3c/aria-at-app/commit/7563f6df67dcc0a495c3778965d26b47979f46e1))
+* Prevent reassignment of bot run before status is completed, cancelled, or errored ([#1300](https://github.com/w3c/aria-at-app/issues/1300)) ([0d09b37](https://github.com/w3c/aria-at-app/commit/0d09b377830280f040199f02dc1577fa5da40630))
+
 ## [1.11.0](https://github.com/w3c/aria-at-app/compare/v1.10.0...v1.11.0) (2024-12-10)
 
 

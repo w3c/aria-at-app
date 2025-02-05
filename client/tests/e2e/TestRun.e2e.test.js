@@ -336,7 +336,7 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('h1 ::-p-text(Test 1)');
       await page.waitForSelector('button ::-p-text(Next Test)');
 
-      const radioSelector = 'input[type="radio"]';
+      const radioSelector = 'input[type="radio"][id^="pass-"]';
       const test1NavSelector = 'nav#test-navigator-nav ol li:nth-child(1)';
       const test2NavSelector = 'nav#test-navigator-nav ol li:nth-child(2)';
       const nextTestButtonSelector = 'button ::-p-text(Next Test)';
@@ -344,7 +344,7 @@ describe('Test Run when signed in as tester', () => {
 
       // Randomly select radio buttons on first test
       const generatedCheckedTest1Count =
-        await getGeneratedCheckedAssertionCount(page, radioSelector);
+        await getGeneratedCheckedAssertionCount(page);
 
       // Navigate to test 2 with navigation menu
       await page.$eval(test2NavSelector, el => el.querySelector('a').click());
@@ -352,7 +352,7 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
       const generatedCheckedTest2Count =
-        await getGeneratedCheckedAssertionCount(page, radioSelector);
+        await getGeneratedCheckedAssertionCount(page);
 
       // Navigate to test 3 with next button
       await page.click(nextTestButtonSelector);
