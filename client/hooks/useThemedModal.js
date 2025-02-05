@@ -2,15 +2,34 @@ import React, { useState, useRef, useEffect } from 'react';
 import BasicThemedModal from '@components/common/BasicThemedModal';
 
 const THEMES = {
+  SUCCESS: 'success',
   WARNING: 'warning',
   DANGER: 'danger'
 };
 
-function useThemedModal({ show, type, title, content }) {
+/**
+ * Returns hex code for corresponding color
+ * @param {'success'|'warning'|'danger'} theme
+ * @returns {string}
+ */
+const THEME_COLOR = theme => {
+  switch (theme) {
+    case THEMES.SUCCESS:
+      return '#2ba51c';
+    case THEMES.WARNING:
+      return '#fab700';
+    case THEMES.DANGER:
+      return '#ce1b4c';
+    default:
+      return '#fab700'; // default to warning theme if unexpected theme value
+  }
+};
+
+function useThemedModal({ show, type = THEMES.WARNING, title, content }) {
   const focusElementRef = useRef();
 
   const [showThemedModal, setShowThemedModal] = useState(false);
-  const [themedModalType, setThemedModalType] = useState(THEMES.WARNING);
+  const [themedModalType, setThemedModalType] = useState(type);
   const [themedModalTitle, setThemedModalTitle] = useState('');
   const [themedModalContent, setThemedModalContent] = useState(<></>);
   const [themedModalActions, setThemedModalActions] = useState(null);
@@ -26,7 +45,7 @@ function useThemedModal({ show, type, title, content }) {
 
   const hideThemedModal = () => {
     setShowThemedModal(false);
-    setThemedModalType(THEMES.WARNING);
+    setThemedModalType(type);
     setThemedModalTitle('');
     setThemedModalContent(<></>);
     setThemedModalActions(null);
@@ -82,4 +101,4 @@ function useThemedModal({ show, type, title, content }) {
   };
 }
 
-export { useThemedModal, THEMES };
+export { useThemedModal, THEMES, THEME_COLOR };

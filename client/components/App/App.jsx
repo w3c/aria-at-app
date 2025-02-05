@@ -19,7 +19,7 @@ const App = () => {
   const [isNavbarExpanded, setIsNavbarExpanded] = useState(false);
 
   const auth = evaluateAuth(data && data.me ? data.me : {});
-  const { username, isSignedIn, isAdmin, isVendor } = auth;
+  const { username, isSignedIn, isAdmin, isVendor, isTester } = auth;
 
   const signOut = async () => {
     await fetch('/api/auth/signout', { method: 'POST' });
@@ -104,7 +104,7 @@ const App = () => {
               )}
               {isSignedIn && (
                 <>
-                  {!isVendor && (
+                  {(isAdmin || isTester) && (
                     <li>
                       <Nav.Link
                         as={Link}

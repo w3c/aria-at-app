@@ -23,6 +23,8 @@ import {
   TestPlanReportPropType,
   TestPlanVersionPropType
 } from '../common/proptypes';
+import FailingAssertionsSummaryTable from '../FailingAssertionsSummary/Table';
+import FailingAssertionsSummaryHeading from '../FailingAssertionsSummary/Heading';
 
 const ResultsContainer = styled.div`
   padding: 1em 1.75em;
@@ -172,6 +174,28 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     );
   };
 
+  const renderFailingAssertionsSummary = () => {
+    if (
+      testPlanReport.metrics.mustAssertionsFailedCount === 0 &&
+      testPlanReport.metrics.shouldAssertionsFailedCount === 0
+    ) {
+      return null;
+    }
+
+    return (
+      <>
+        <FailingAssertionsSummaryHeading metrics={testPlanReport.metrics} />
+        <FailingAssertionsSummaryTable
+          testPlanReport={testPlanReport}
+          atName={testPlanReport.at.name}
+          getLinkUrl={assertion =>
+            `/report/${testPlanVersion.id}/targets/${testPlanReport.id}#result-${assertion.testResultId}`
+          }
+        />
+      </>
+    );
+  };
+
   return (
     <Container id="main" as="main" tabIndex="-1">
       <Helmet>
@@ -246,7 +270,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
 
       {renderVersionsSummaryTable()}
       {renderResultsForTargetTable()}
-
+      {renderFailingAssertionsSummary()}
       {testPlanReport.finalizedTestResults.map((testResult, index) => {
         const test = testResult.test;
 
@@ -263,6 +287,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
           atVersionName: testResult.atVersion.name,
           browserName: testPlanReport.browser.name,
           browserVersionName: testResult.browserVersion.name,
+          versionPhase: testPlanVersion.phase,
           reportLink
         });
 
