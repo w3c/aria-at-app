@@ -1620,6 +1620,14 @@ const graphqlSchema = gql`
     Delete a CollectionJob
     """
     deleteCollectionJob(id: ID!): NoResponse!
+    createCollectionJobsFromPreviousVersion(
+      atVersionId: ID!
+    ): CreateCollectionJobsFromPreviousVersionResponse!
+  }
+
+  type CreateCollectionJobsFromPreviousVersionResponse {
+    collectionJobs: [CollectionJob!]!
+    message: String!
   }
 `;
 

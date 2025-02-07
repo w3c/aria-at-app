@@ -1178,4 +1178,162 @@ describe('Automation controller', () => {
       expect(deletedCollectionJob).toEqual(null);
     });
   });
+
+  // Add test for creating collection jobs from previous version
+  it('should create collection jobs from previous AT version', async () => {
+    await dbCleaner(async transaction => {
+      const ats = await AtLoader().getAll({ transaction });
+      const at = ats.find(at => at.key === 'voiceover_macos');
+      expect(at).toBeDefined();
+
+      const { createAtVersion } = require('../../models/services/AtService');
+      const {
+        getTestPlanReportById
+      } = require('../../models/services/TestPlanReportService');
+
+      // Create two AT versions with different release dates
+      const oldAtVersion = await createAtVersion({
+        values: {
+          atId: at.id,
+          name: 'Old Version',
+          releasedAt: new Date('2025-01-01')
+        },
+        transaction
+      });
+
+      const newAtVersion = await createAtVersion({
+        values: {
+          atId: at.id,
+          name: 'New Version',
+          releasedAt: new Date('2025-02-01')
+        },
+        transaction
+      });
+
+      // Create multiple test plan reports with the old version
+      const testPlanReport1 = await getTestPlanReportById({
+        id: testPlanReportId,
+        transaction
+      });
+
+      // Find another test plan report for VoiceOver
+      const testPlanReport2 = await getTestPlanReportById({
+        id: '27', // Using another VoiceOver test plan report
+        transaction
+      });
+
+      // Mark both reports as final with the old version
+      await testPlanReport1.update(
+        {
+          exactAtVersionId: oldAtVersion.id,
+          markedFinalAt: new Date()
+        },
+        { transaction }
+      );
+
+      await testPlanReport2.update(
+        {
+          exactAtVersionId: oldAtVersion.id,
+          markedFinalAt: new Date()
+        },
+        { transaction }
+      );
+
+      // Now try to create collection jobs from the previous version
+      const result = await mutate(
+        `
+        mutation {
+          createCollectionJobsFromPreviousVersion(atVersionId: "${newAtVersion.id}") {
+            collectionJobs {
+              id
+              status
+              testPlanRun {
+                id
+                tester {
+                  id
+                  username
+                  isBot
+                }
+                testPlanReport {
+                  id
+                  at {
+                    id
+                    name
+                  }
+                  exactAtVersion {
+                    id
+                    name
+                  }
+                }
+              }
+              testStatus {
+                test {
+                  id
+                }
+                status
+              }
+            }
+            message
+          }
+        }
+        `,
+        {
+          transaction,
+          user: { roles: [{ name: 'ADMIN' }] }
+        }
+      );
+
+      const { createCollectionJobsFromPreviousVersion: response } = result;
+      expect(response.collectionJobs).toBeDefined();
+      expect(response.collectionJobs.length).toBe(2); // Should have one job per finalized report
+      expect(response.message).toContain(
+        'Successfully created 2 collection jobs'
+      );
+
+      // Verify each collection job was created with correct properties
+      for (const job of response.collectionJobs) {
+        // Verify job status
+        expect(job.status).toBe('QUEUED');
+
+        // Verify test plan run was created
+        expect(job.testPlanRun).toBeDefined();
+        expect(job.testPlanRun.tester).toBeDefined();
+        expect(job.testPlanRun.tester.isBot).toBe(true);
+
+        // Verify test plan report association
+        expect(job.testPlanRun.testPlanReport).toBeDefined();
+        expect(job.testPlanRun.testPlanReport.at.id.toString()).toBe(
+          at.id.toString()
+        );
+
+        // Verify all tests are initially queued
+        for (const testStatus of job.testStatus) {
+          expect(testStatus.status).toBe('QUEUED');
+        }
+
+        // Verify the job was scheduled with automation scheduler
+        expect(startCollectionJobSimulation.lastCallParams).toBeDefined();
+        expect(
+          startCollectionJobSimulation.lastCallParams.testIds
+        ).toBeDefined();
+        expect(
+          startCollectionJobSimulation.lastCallParams.testIds.length
+        ).toBeGreaterThan(0);
+      }
+
+      // Verify the jobs are distinct
+      const jobIds = response.collectionJobs.map(job => job.id);
+      const uniqueJobIds = [...new Set(jobIds)];
+      expect(uniqueJobIds.length).toBe(2);
+
+      // Verify the jobs are associated with different test plan reports
+      const reportIds = response.collectionJobs.map(
+        job => job.testPlanRun.testPlanReport.id
+      );
+      const uniqueReportIds = [...new Set(reportIds)];
+      expect(uniqueReportIds.length).toBe(2);
+      expect(uniqueReportIds).toContain(testPlanReportId);
+      expect(uniqueReportIds).toContain('27');
+    });
+  });
 });

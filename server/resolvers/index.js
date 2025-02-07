@@ -50,6 +50,7 @@ const TestPlanRun = require('./TestPlanRun');
 const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
 const AtVersion = require('./AtVersion');
+const createCollectionJobsFromPreviousVersion = require('./AtOperations/createCollectionJobsFromPreviousVersionResolver');
 
 const resolvers = {
   Query: {
@@ -89,7 +90,8 @@ const resolvers = {
     updateCollectionJob,
     deleteCollectionJob,
     scheduleCollectionJob,
-    restartCollectionJob
+    restartCollectionJob,
+    createCollectionJobsFromPreviousVersion
   },
   AtOperations,
   AtVersionOperations,

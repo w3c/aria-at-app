@@ -465,6 +465,85 @@ const findOrCreateAtVersion = async ({
   return version;
 };
 
+/**
+ * Gets the most recent previous AT version for a given AT version and creates collection jobs
+ * for all finalized test plan runs that used that previous version
+ * @param {object} options
+ * @param {number} options.atVersionId - ID of the current AT version
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<Array>} - Array of created collection jobs
+ */
+const createCollectionJobsFromPreviousVersion = async ({
+  atVersionId,
+  transaction
+}) => {
+  // Get the current AT version with its AT info
+  const currentVersion = await getAtVersionById({
+    id: atVersionId,
+    transaction
+  });
+
+  if (!currentVersion) {
+    throw new Error(`AT Version with ID ${atVersionId} not found`);
+  }
+
+  // Find the most recent previous version for the same AT
+  const previousVersion = await AtVersion.findOne({
+    where: {
+      atId: currentVersion.atId,
+      releasedAt: {
+        [Op.lt]: currentVersion.releasedAt
+      }
+    },
+    order: [['releasedAt', 'DESC']],
+    transaction
+  });
+
+  if (!previousVersion) {
+    throw new Error(
+      `No previous version found for AT Version ID ${atVersionId}`
+    );
+  }
+
+  // Get all finalized test plan reports that used the previous version
+  const { TestPlanReport } = require('../');
+  const finalizedReports = await TestPlanReport.findAll({
+    where: {
+      [Op.or]: [
+        { exactAtVersionId: previousVersion.id },
+        { minimumAtVersionId: previousVersion.id }
+      ],
+      markedFinalAt: {
+        [Op.not]: null
+      }
+    },
+    transaction
+  });
+
+  // Create collection jobs for each finalized report
+  const { createCollectionJob } = require('./CollectionJobService');
+  const { getBotUserByAtId } = require('./UserService');
+  const collectionJobs = [];
+  const botUser = await getBotUserByAtId({
+    atId: currentVersion.atId,
+    transaction
+  });
+
+  for (const report of finalizedReports) {
+    const job = await createCollectionJob({
+      values: {
+        testPlanReportId: report.id,
+        testerUserId: botUser.id,
+        status: 'QUEUED'
+      },
+      transaction
+    });
+    collectionJobs.push(job);
+  }
+
+  return collectionJobs;
+};
+
 module.exports = {
   // Basic CRUD [At]
   getAtById,
@@ -485,5 +564,6 @@ module.exports = {
 
   // Custom Methods
   getUniqueAtVersionsForReport,
-  findOrCreateAtVersion
+  findOrCreateAtVersion,
+  createCollectionJobsFromPreviousVersion
 };
