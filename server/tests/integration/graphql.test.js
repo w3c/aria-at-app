@@ -827,6 +827,14 @@ describe('graphql', () => {
               }
             }
             deleteCollectionJob(id: 1)
+            createCollectionJobsFromPreviousVersion(atVersionId: 5) {
+              __typename
+              collectionJobs {
+                __typename
+                id
+              }
+              message
+            }
           }
         `,
         {
@@ -845,7 +853,7 @@ describe('graphql', () => {
       );
     });
 
-    // esure recursive query of collectionJob<>testPlanRun fails at some depth
+    // ensure recursive query of collectionJob<>testPlanRun fails at some depth
     await expect(
       typeAwareQuery(
         gql`

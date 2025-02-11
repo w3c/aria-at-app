@@ -285,6 +285,47 @@ const removeAtVersionById = async ({ id, truncate = false, transaction }) => {
 };
 
 /**
+ * Returns all the unique AT Versions used when collecting results from testers
+ * for a Test Plan Report
+ * @param {number} testPlanReportId - id of the test plan report
+ * @param {object} options
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>}
+ */
+const getUniqueAtVersionsForReport = async (
+  testPlanReportId,
+  { transaction }
+) => {
+  const results = await ModelService.rawQuery(
+    `
+      select "At".name        as "atName",
+             "atVersionId",
+             "AtVersion".name as "atVersionName",
+             "releasedAt",
+             "testPlanReportId",
+             "testerUserId",
+             "testPlanRunId"
+      from ( select distinct "TestPlanReport".id                                              as "testPlanReportId",
+                             "TestPlanRun".id                                                 as "testPlanRunId",
+                             "TestPlanRun"."testerUserId",
+                             (jsonb_array_elements("testResults") ->> 'atVersionId')::integer as "atVersionId"
+             from "TestPlanReport"
+                    left outer join "TestPlanRun" on "TestPlanRun"."testPlanReportId" = "TestPlanReport".id
+             where "testPlanReportId" = ${testPlanReportId}
+             group by "TestPlanReport".id, "TestPlanRun".id ) as atVersionResults
+             join "AtVersion" on "AtVersion".id = atVersionResults."atVersionId"
+             join "At" on "AtVersion"."atId" = "At".id;
+    `,
+    { transaction }
+  );
+
+  // Sort in descending order of releasedAt date
+  results.sort((a, b) => new Date(b.releasedAt) - new Date(a.releasedAt));
+
+  return results;
+};
+
+/**
  * @param {object} options
  * @param {object} options.where - values to be used to create or find the AtVersion record
  * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
@@ -385,5 +426,6 @@ module.exports = {
   removeAtVersionByQuery,
   removeAtVersionById,
   findOrCreateAtVersion,
-  findPreviousVersionAndReports
+  findPreviousVersionAndReports,
+  getUniqueAtVersionsForReport
 };

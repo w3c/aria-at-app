@@ -781,7 +781,7 @@ module.exports = {
   restartCollectionJob,
   cancelCollectionJob,
   retryCanceledCollections,
+  createCollectionJobsFromPreviousVersion,
   // Basic CRUD for CollectionJobTestStatus
-  updateCollectionJobTestStatusByQuery,
-  createCollectionJobsFromPreviousVersion
+  updateCollectionJobTestStatusByQuery
 };
