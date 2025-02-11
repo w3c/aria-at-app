@@ -1215,7 +1215,7 @@ describe('Automation controller', () => {
       });
 
       const testPlanReport2 = await getTestPlanReportById({
-        id: '27',
+        id: '26',
         transaction
       });
 
@@ -1353,73 +1353,141 @@ describe('Automation controller', () => {
       const distinctReportIds = [...new Set(newReports.map(r => r.id))];
       expect(distinctReportIds.length).toBe(2);
 
-      const jobToSimulate = response.collectionJobs[0];
+      const jobToSimulate = response.collectionJobs[0]; // From testPlanReport1 (marked final)
+      const jobWithoutHistory = response.collectionJobs[1]; // From testPlanReport2 (not marked final)
 
-      let fullJob = await getCollectionJobById({
-        id: jobToSimulate.id,
-        transaction
-      });
+      // Test both jobs
+      for (const job of [jobToSimulate, jobWithoutHistory]) {
+        let fullJob = await getCollectionJobById({
+          id: job.id,
+          transaction
+        });
 
-      const secret = await getJobSecret(fullJob.id, { transaction });
+        const secret = await getJobSecret(fullJob.id, { transaction });
 
-      const runResponse = await sessionAgent
-        .post(`/api/jobs/${fullJob.id}`)
-        .send({ status: 'RUNNING' })
-        .set('x-automation-secret', secret)
-        .set('x-transaction-id', transaction.id);
-      expect(runResponse.statusCode).toBe(200);
+        const runResponse = await sessionAgent
+          .post(`/api/jobs/${fullJob.id}`)
+          .send({ status: 'RUNNING' })
+          .set('x-automation-secret', secret)
+          .set('x-transaction-id', transaction.id);
+        expect(runResponse.statusCode).toBe(200);
 
-      const tests = fullJob.testPlanRun.testPlanReport.testPlanVersion.tests;
-      expect(tests.length).toBeGreaterThan(0);
+        const tests = fullJob.testPlanRun.testPlanReport.testPlanVersion.tests;
+        expect(tests.length).toBeGreaterThan(0);
 
-      const voiceOverTests = tests.filter(
-        test => test.at.key === 'voiceover_macos'
-      );
-      expect(voiceOverTests.length).toBeGreaterThan(0);
+        const voiceOverTests = tests.filter(
+          test => test.at.key === 'voiceover_macos'
+        );
+        expect(voiceOverTests.length).toBeGreaterThan(0);
 
-      const selectedTest = voiceOverTests[0];
-      const selectedTestRowNumber = selectedTest.rowNumber;
-      const numberOfScenarios = selectedTest.scenarios.filter(
-        scenario => scenario.atId === fullJob.testPlanRun.testPlanReport.at.id
-      ).length;
-      const automatedTestResponse = 'AUTOMATED TEST RESPONSE';
+        // Get two tests to verify both matching and non-matching behavior
+        const [selectedTest1, selectedTest2] = voiceOverTests;
+        expect(selectedTest1).toBeDefined();
+        expect(selectedTest2).toBeDefined();
 
-      const browsers = await BrowserLoader().getAll({ transaction });
-      const atDetail = ats.find(
-        at => at.id === fullJob.testPlanRun.testPlanReport.at.id
-      );
-      const browserDetail = browsers.find(
-        browser => browser.id === fullJob.testPlanRun.testPlanReport.browser.id
-      );
+        // Get historical results if they exist
+        const historicalTestPlanReport = await getTestPlanReport(
+          fullJob.testPlanRun.testPlanReport.id,
+          { transaction }
+        );
 
-      const testResponse = await sessionAgent
-        .post(`/api/jobs/${fullJob.id}/test/${selectedTestRowNumber}`)
-        .send({
-          capabilities: {
-            atName: atDetail.name,
-            atVersion: atDetail.atVersions[0].name,
-            browserName: browserDetail.name,
-            browserVersion: browserDetail.browserVersions[0].name
-          },
-          responses: new Array(numberOfScenarios).fill(automatedTestResponse)
-        })
-        .set('x-automation-secret', secret)
-        .set('x-transaction-id', transaction.id);
-      expect(testResponse.statusCode).toBe(200);
+        const browsers = await BrowserLoader().getAll({ transaction });
+        const atDetail = ats.find(
+          at => at.id === fullJob.testPlanRun.testPlanReport.at.id
+        );
+        const browserDetail = browsers.find(
+          browser =>
+            browser.id === fullJob.testPlanRun.testPlanReport.browser.id
+        );
 
-      const storedTestPlanRun = await getTestPlanRun(fullJob.testPlanRun.id, {
-        transaction
-      });
-      const testResults = storedTestPlanRun.testPlanRun.testResults;
-      expect(testResults.length).toBeGreaterThan(0);
+        // For each test, we'll submit results - one matching historical output, one not
+        for (const testConfig of [
+          { test: selectedTest1, useHistoricalOutput: true },
+          { test: selectedTest2, useHistoricalOutput: false }
+        ]) {
+          const { test, useHistoricalOutput } = testConfig;
+          const historicalTestResult =
+            historicalTestPlanReport.testPlanReport?.finalizedTestResults?.find(
+              tr => tr.test.id === test.id
+            );
 
-      const matchingResult = testResults.find(
-        tr => tr.test.id === selectedTest.id
-      );
-      expect(matchingResult).not.toBeUndefined();
-      matchingResult.scenarioResults.forEach(scenarioResult => {
-        expect(scenarioResult.output).toEqual(automatedTestResponse);
-      });
+          const numberOfScenarios = test.scenarios.filter(
+            scenario =>
+              scenario.atId === fullJob.testPlanRun.testPlanReport.at.id
+          ).length;
+
+          // Use historical response if requested and available, otherwise use different response
+          const historicalOutput =
+            historicalTestResult?.scenarioResults[0]?.output;
+          const automatedTestResponse =
+            useHistoricalOutput && historicalOutput
+              ? historicalOutput
+              : 'NEW AUTOMATED TEST RESPONSE';
+
+          const testResponse = await sessionAgent
+            .post(`/api/jobs/${fullJob.id}/test/${test.rowNumber}`)
+            .send({
+              capabilities: {
+                atName: atDetail.name,
+                atVersion: atDetail.atVersions[0].name,
+                browserName: browserDetail.name,
+                browserVersion: browserDetail.browserVersions[0].name
+              },
+              responses: new Array(numberOfScenarios).fill(
+                automatedTestResponse
+              )
+            })
+            .set('x-automation-secret', secret)
+            .set('x-transaction-id', transaction.id);
+          expect(testResponse.statusCode).toBe(200);
+
+          const storedTestPlanRun = await getTestPlanRun(
+            fullJob.testPlanRun.id,
+            {
+              transaction
+            }
+          );
+          const testResults = storedTestPlanRun.testPlanRun.testResults;
+          expect(testResults.length).toBeGreaterThan(0);
+
+          const matchingResult = testResults.find(tr => tr.test.id === test.id);
+          expect(matchingResult).toBeDefined();
+
+          // Verify assertion copying behavior
+          matchingResult.scenarioResults.forEach((scenarioResult, index) => {
+            expect(scenarioResult.output).toEqual(automatedTestResponse);
+
+            const shouldCopyAssertions =
+              job === jobToSimulate && // Only copy for the job from marked final report
+              historicalTestResult && // Must have historical results
+              useHistoricalOutput && // Must be using historical output
+              automatedTestResponse ===
+                historicalTestResult.scenarioResults[index].output; // Outputs must match
+
+            const historicalScenarioResult = shouldCopyAssertions
+              ? historicalTestResult.scenarioResults[index]
+              : null;
+
+            // Create expected assertion results based on whether we should copy or not
+            const expectedAssertionResults = historicalScenarioResult
+              ? historicalScenarioResult.assertionResults.map(historical => ({
+                  passed: historical.passed,
+                  failedReason: historical.failedReason
+                }))
+              : scenarioResult.assertionResults.map(() => ({
+                  passed: false,
+                  failedReason: 'AUTOMATED_OUTPUT'
+                }));
+
+            // Make a single unconditional assertion comparing against expected results
+            expect(scenarioResult.assertionResults).toEqual(
+              expectedAssertionResults.map(expected =>
+                expect.objectContaining(expected)
+              )
+            );
+          });
+        }
+      }
     });
   });
 });
