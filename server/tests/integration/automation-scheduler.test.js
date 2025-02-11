@@ -18,6 +18,7 @@ const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const {
   getTestPlanReportById
 } = require('../../models/services/TestPlanReportService');
+const { createAtVersion } = require('../../models/services/AtService');
 
 let apiServer;
 let sessionAgent;
@@ -1190,11 +1191,6 @@ describe('Automation controller', () => {
       const at = ats.find(at => at.key === 'voiceover_macos');
       expect(at).toBeDefined();
 
-      const { createAtVersion } = require('../../models/services/AtService');
-      const {
-        getTestPlanReportById
-      } = require('../../models/services/TestPlanReportService');
-
       const oldAtVersion = await createAtVersion({
         values: {
           atId: at.id,
@@ -1223,7 +1219,6 @@ describe('Automation controller', () => {
         transaction
       });
 
-      // Mark both reports as final with the old version
       await testPlanReport1.update(
         {
           exactAtVersionId: oldAtVersion.id,
@@ -1300,7 +1295,6 @@ describe('Automation controller', () => {
         'Successfully created 2 collection jobs'
       );
 
-      // Verify each collection job was created with correct properties
       for (const job of response.collectionJobs) {
         // Verify job status
         expect(job.status).toBe('QUEUED');
@@ -1372,7 +1366,6 @@ describe('Automation controller', () => {
 
       const secret = await getJobSecret(fullJob.id, { transaction });
 
-      //   // Update job status to RUNNING via the automation scheduler endpoint
       const runResponse = await sessionAgent
         .post(`/api/jobs/${fullJob.id}`)
         .send({ status: 'RUNNING' })
@@ -1383,7 +1376,6 @@ describe('Automation controller', () => {
       const tests = fullJob.testPlanRun.testPlanReport.testPlanVersion.tests;
       expect(tests.length).toBeGreaterThan(0);
 
-      // Filter for VoiceOver tests specifically
       const voiceOverTests = tests.filter(
         test => test.at.key === 'voiceover_macos'
       );
@@ -1404,7 +1396,6 @@ describe('Automation controller', () => {
         browser => browser.id === fullJob.testPlanRun.testPlanReport.browser.id
       );
 
-      // Send simulated test result for the selected test
       const testResponse = await sessionAgent
         .post(`/api/jobs/${fullJob.id}/test/${selectedTestRowNumber}`)
         .send({
@@ -1420,14 +1411,12 @@ describe('Automation controller', () => {
         .set('x-transaction-id', transaction.id);
       expect(testResponse.statusCode).toBe(200);
 
-      // Retrieve the test plan run and verify that test results have been added
       const storedTestPlanRun = await getTestPlanRun(fullJob.testPlanRun.id, {
         transaction
       });
       const testResults = storedTestPlanRun.testPlanRun.testResults;
       expect(testResults.length).toBeGreaterThan(0);
 
-      // Check that the result for the selected test has the expected automated response
       const matchingResult = testResults.find(
         tr => tr.test.id === selectedTest.id
       );
