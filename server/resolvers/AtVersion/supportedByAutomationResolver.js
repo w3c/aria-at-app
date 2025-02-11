@@ -1,4 +1,4 @@
-const { getAtVersionById } = require('../../models/services/AtService');
+const { getAtVersionById } = require('../../models/services/AtVersionService');
 const {
   isSupportedByAutomation
 } = require('../../util/isSupportedByAutomation');

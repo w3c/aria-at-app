@@ -4,7 +4,6 @@ const {
   getSequelizeModelAttributes,
   USER_ROLES_ATTRIBUTES
 } = require('../../../models/services/helpers');
-const AtService = require('../../../models/services/AtService');
 const AtVersionService = require('../../../models/services/AtVersionService');
 const BrowserService = require('../../../models/services/BrowserService');
 const dbCleaner = require('../../util/db-cleaner');
@@ -159,7 +158,7 @@ describe('ModelService', () => {
         operations: [
           {
             get: AtVersionService.getAtVersions,
-            create: AtService.createAtVersion,
+            create: AtVersionService.createAtVersion,
             values: { atId: _atId, name: _atVersion },
             returnAttributes: {}
           },

@@ -4,7 +4,9 @@ const deepFlatFilter = require('../../util/deepFlatFilter');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
 const dbCleaner = require('../util/db-cleaner');
-const { getAtVersionByQuery } = require('../../models/services/AtService');
+const {
+  getAtVersionByQuery
+} = require('../../models/services/AtVersionService');
 const {
   getBrowserVersionByQuery
 } = require('../../models/services/BrowserService');

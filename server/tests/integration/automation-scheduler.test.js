@@ -18,7 +18,7 @@ const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const {
   getTestPlanReportById
 } = require('../../models/services/TestPlanReportService');
-const { createAtVersion } = require('../../models/services/AtService');
+const { createAtVersion } = require('../../models/services/AtVersionService');
 
 let apiServer;
 let sessionAgent;

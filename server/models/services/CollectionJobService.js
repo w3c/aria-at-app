@@ -17,7 +17,10 @@ const {
   createTestPlanRun,
   removeTestPlanRunById
 } = require('./TestPlanRunService');
-const { getTestPlanReportById } = require('./TestPlanReportService');
+const {
+  getTestPlanReportById,
+  cloneTestPlanReportWithNewAtVersion
+} = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 
 const {
@@ -32,7 +35,8 @@ const {
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../../graphql-context');
 const { getBotUserByAtId } = require('./UserService');
-const getAtVersionWithRequirements = require('../../util/getAtVersionWithRequirements');
+const { getAtVersionWithRequirements } = require('./AtVersionService');
+const { findPreviousVersionAndReports } = require('./AtVersionService');
 
 // association helpers to be included with Models' results
 
@@ -523,12 +527,13 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
  * @param {object} input object for request to schedule job
  * @param {string} input.testPlanReportId id of test plan report to use for scheduling
  * @param {Array<string>} input.testIds optional: ids of tests to run
+ * @param {object} input.atVersion AT version to use for the job
  * @param {object} options
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const scheduleCollectionJob = async (
-  { testPlanReportId, testIds = null },
+  { testPlanReportId, testIds = null, atVersion },
   { transaction }
 ) => {
   const context = getGraphQLContext({ req: { transaction } });
@@ -584,13 +589,6 @@ const scheduleCollectionJob = async (
     },
     transaction
   });
-
-  const atVersion = await getAtVersionWithRequirements(
-    report.at.id,
-    report.exactAtVersion,
-    report.minimumAtVersion,
-    transaction
-  );
 
   return triggerWorkflow(
     job,
@@ -725,6 +723,52 @@ const updateCollectionJobTestStatusByQuery = ({
   });
 };
 
+/**
+ * Creates collection jobs for all finalized test plan runs that used a previous version
+ * @param {object} options
+ * @param {number} options.atVersionId - ID of the current AT version
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<Array>} - Array of created collection jobs
+ */
+const createCollectionJobsFromPreviousVersion = async ({
+  atVersionId,
+  transaction
+}) => {
+  const { currentVersion, finalizedReports } =
+    await findPreviousVersionAndReports({
+      atVersionId,
+      transaction
+    });
+
+  const collectionJobs = [];
+  for (const report of finalizedReports) {
+    // Clone the historical report with the new current AT version
+    const newReport = await cloneTestPlanReportWithNewAtVersion(
+      report,
+      currentVersion,
+      transaction
+    );
+
+    // Get the appropriate AT version for automation - use currentVersion for both fields
+    const atVersion = await getAtVersionWithRequirements(
+      newReport.at.id,
+      currentVersion,
+      null,
+      transaction
+    );
+
+    const job = await scheduleCollectionJob(
+      {
+        testPlanReportId: newReport.id,
+        atVersion
+      },
+      { transaction }
+    );
+    collectionJobs.push(job);
+  }
+  return collectionJobs;
+};
+
 module.exports = {
   // Basic CRUD
   createCollectionJob,
@@ -738,5 +782,6 @@ module.exports = {
   cancelCollectionJob,
   retryCanceledCollections,
   // Basic CRUD for CollectionJobTestStatus
-  updateCollectionJobTestStatusByQuery
+  updateCollectionJobTestStatusByQuery,
+  createCollectionJobsFromPreviousVersion
 };

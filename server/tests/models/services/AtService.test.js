@@ -246,7 +246,7 @@ describe('AtVersionModel Data Checks', () => {
     const _id = 1;
 
     // A2
-    const atVersion = await AtService.getAtVersionById({
+    const atVersion = await AtVersionService.getAtVersionById({
       id: _id,
       transaction: false
     });
@@ -271,7 +271,7 @@ describe('AtVersionModel Data Checks', () => {
     const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
     // A2
-    const atVersionInstance = await AtService.getAtVersionByQuery({
+    const atVersionInstance = await AtVersionService.getAtVersionByQuery({
       where: {
         atId: _atId,
         name: _atVersion,
@@ -306,7 +306,7 @@ describe('AtVersionModel Data Checks', () => {
     const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
     // A2
-    const atVersionInstance = await AtService.getAtVersionByQuery({
+    const atVersionInstance = await AtVersionService.getAtVersionByQuery({
       where: { atId: _atId, name: _atVersion, releasedAt: _releasedAt },
       atAttributes: [],
       transaction: false
@@ -329,7 +329,7 @@ describe('AtVersionModel Data Checks', () => {
     const _releasedAt = new Date('2022-04-05');
 
     // A2
-    const atVersionResult = await AtService.getAtVersionByQuery({
+    const atVersionResult = await AtVersionService.getAtVersionByQuery({
       where: { atId: _atId, name: _atVersion, releasedAt: _releasedAt },
       transaction: false
     });
@@ -346,7 +346,7 @@ describe('AtVersionModel Data Checks', () => {
       const _releasedAt = new Date('2022-05-01 20:00:00-04');
 
       // A2
-      const atVersionInstance = await AtService.createAtVersion({
+      const atVersionInstance = await AtVersionService.createAtVersion({
         values: {
           atId: _atId,
           name: _atVersion,
@@ -357,11 +357,11 @@ describe('AtVersionModel Data Checks', () => {
       const { atId, name, at } = atVersionInstance;
 
       // A2
-      await AtService.removeAtVersionById({
+      await AtVersionService.removeAtVersionById({
         id: atId,
         transaction
       });
-      const deletedAtVersion = await AtService.getAtVersionById({
+      const deletedAtVersion = await AtVersionService.getAtVersionById({
         id: atId,
         transaction
       });
@@ -385,7 +385,7 @@ describe('AtVersionModel Data Checks', () => {
       const _releasedAt = new Date('2022-05-01 20:00:00-04');
 
       // A2
-      const atVersionInstance = await AtService.createAtVersion({
+      const atVersionInstance = await AtVersionService.createAtVersion({
         values: {
           atId: _atId,
           name: _atVersion,
@@ -396,11 +396,11 @@ describe('AtVersionModel Data Checks', () => {
       const { atId, name, at, releasedAt } = atVersionInstance;
 
       // A2
-      await AtService.removeAtVersionByQuery({
+      await AtVersionService.removeAtVersionByQuery({
         where: { atId, name, releasedAt },
         transaction
       });
-      const deletedAtVersion = await AtService.getAtVersionByQuery({
+      const deletedAtVersion = await AtVersionService.getAtVersionByQuery({
         where: {
           atId,
           name,
@@ -428,18 +428,19 @@ describe('AtVersionModel Data Checks', () => {
       const _updatedAtVersion = randomStringGenerator();
 
       // A2
-      const atVersionInstance = await AtService.createAtVersion({
+      const atVersionInstance = await AtVersionService.createAtVersion({
         values: { atId: _atId, name: _atVersion },
         transaction
       });
       const { id, atId, name, at } = atVersionInstance;
 
       // A2
-      const updatedAtVersionInstance = await AtService.updateAtVersionById({
-        id,
-        values: { name: _updatedAtVersion },
-        transaction
-      });
+      const updatedAtVersionInstance =
+        await AtVersionService.updateAtVersionById({
+          id,
+          values: { name: _updatedAtVersion },
+          transaction
+        });
       const { name: updatedAtVersion } = updatedAtVersionInstance;
 
       // after atVersion created
@@ -463,7 +464,7 @@ describe('AtVersionModel Data Checks', () => {
       const _releasedAt = new Date('2021-11-01 04:00:00.000Z');
 
       // A2
-      const originalAtVersion = await AtService.getAtVersionByQuery({
+      const originalAtVersion = await AtVersionService.getAtVersionByQuery({
         where: {
           atId: _atId,
           name: _atVersion,
@@ -471,7 +472,7 @@ describe('AtVersionModel Data Checks', () => {
         },
         transaction
       });
-      const updatedAtVersion = await AtService.updateAtVersionByQuery({
+      const updatedAtVersion = await AtVersionService.updateAtVersionByQuery({
         where: {
           atId: _atId,
           name: _atVersion,
