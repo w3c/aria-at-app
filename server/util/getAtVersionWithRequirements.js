@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { getAtVersions } = require('../models/services/AtService');
+const { getAtVersions } = require('../models/services/AtVersionService');
 const { AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS } = require('./constants');
 
 const getAtVersionWithRequirements = async (

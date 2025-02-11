@@ -1235,7 +1235,6 @@ describe('Automation controller', () => {
         { transaction }
       );
 
-      // Now try to create collection jobs from the previous version
       const result = await mutate(
         `
         mutation {
@@ -1296,15 +1295,12 @@ describe('Automation controller', () => {
       );
 
       for (const job of response.collectionJobs) {
-        // Verify job status
         expect(job.status).toBe('QUEUED');
 
-        // Verify test plan run was created
         expect(job.testPlanRun).toBeDefined();
         expect(job.testPlanRun.tester).toBeDefined();
         expect(job.testPlanRun.tester.isBot).toBe(true);
 
-        // Verify test plan report association
         expect(job.testPlanRun.testPlanReport).toBeDefined();
         expect(job.testPlanRun.testPlanReport.at.id.toString()).toBe(
           at.id.toString()

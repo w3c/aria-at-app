@@ -1,5 +1,6 @@
 const { sequelize } = require('../../../models');
 const AtService = require('../../../models/services/AtService');
+const AtVersionService = require('../../../models/services/AtVersionService');
 const randomStringGenerator = require('../../util/random-character-generator');
 const dbCleaner = require('../../util/db-cleaner');
 
@@ -487,7 +488,7 @@ describe('AtVersionModel Data Checks', () => {
 
   it('should return collection of atVersions', async () => {
     // A1
-    const result = await AtService.getAtVersions({ transaction: false });
+    const result = await AtVersionService.getAtVersions({ transaction: false });
 
     // A3
     expect(result.length).toBeGreaterThanOrEqual(1);
@@ -512,7 +513,7 @@ describe('AtVersionModel Data Checks', () => {
     const search = '202';
 
     // A2
-    const result = await AtService.getAtVersions({
+    const result = await AtVersionService.getAtVersions({
       search,
       transaction: false
     });
@@ -538,7 +539,7 @@ describe('AtVersionModel Data Checks', () => {
 
   it('should return collection of atVersions with paginated structure', async () => {
     // A1
-    const result = await AtService.getAtVersions({
+    const result = await AtVersionService.getAtVersions({
       atVersionAttributes: ['name'],
       atAttributes: [],
       pagination: { enablePagination: true },

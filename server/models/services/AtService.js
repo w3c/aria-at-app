@@ -6,9 +6,13 @@ const {
 } = require('./helpers');
 const { Sequelize, At, AtVersion } = require('../');
 const { Op } = Sequelize;
+const { TestPlanReport } = require('../');
+const {
+  cloneTestPlanReportWithNewAtVersion
+} = require('./TestPlanReportService');
+const { getAtVersions } = require('./AtVersionService');
 
 // association helpers to be included with Models' results
-
 /**
  * @param atAttributes - At attributes
  * @returns {{association: string, attributes: string[]}}
@@ -238,41 +242,6 @@ const getAtVersionByQuery = async ({
 
 /**
  * @param {object} options
- * @param {string|any} options.search - use this to combine with {@param filter} to be passed to Sequelize's where clause
- * @param {object} options.where - use this define conditions to be passed to Sequelize's where clause
- * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
- * @param {string[]} options.atAttributes  - At attributes to be returned in the result
- * @param {object} options.pagination - pagination options for query
- * @param {number} options.pagination.page - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
- * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
- * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
- * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<*>}
- */
-const getAtVersions = async ({
-  search,
-  where = {},
-  atVersionAttributes = AT_VERSION_ATTRIBUTES,
-  atAttributes = AT_ATTRIBUTES,
-  pagination = {},
-  transaction
-}) => {
-  // search and filtering options
-  const searchQuery = search ? `%${search}%` : '';
-  if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
-
-  return ModelService.get(AtVersion, {
-    where,
-    attributes: atVersionAttributes,
-    include: [atAssociation(atAttributes)],
-    pagination,
-    transaction
-  });
-};
-
-/**
- * @param {object} options
  * @param {object} options.createParams - values to be used to create the AtVersion record
  * @param {string[]} options.atVersionAttributes  - AtVersion attributes to be returned in the result
  * @param {string[]} options.atAttributes  - At attributes to be returned in the result
@@ -466,6 +435,18 @@ const findOrCreateAtVersion = async ({
 };
 
 /**
+ * Helper function to schedule a collection job for a test plan report
+ * @param {object} options
+ * @param {number} options.testPlanReportId - ID of the test plan report
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<*>} The created collection job
+ */
+const scheduleJob = async ({ testPlanReportId, transaction }) => {
+  const { scheduleCollectionJob } = require('./CollectionJobService');
+  return scheduleCollectionJob({ testPlanReportId }, { transaction });
+};
+
+/**
  * Gets the most recent previous AT version for a given AT version and creates collection jobs
  * for all finalized test plan runs that used that previous version
  * @param {object} options
@@ -506,7 +487,6 @@ const createCollectionJobsFromPreviousVersion = async ({
   }
 
   // Get all finalized test plan reports that used the previous version
-  const { TestPlanReport } = require('../');
   const finalizedReports = await TestPlanReport.findAll({
     where: {
       [Op.or]: [
@@ -520,12 +500,6 @@ const createCollectionJobsFromPreviousVersion = async ({
     transaction
   });
 
-  // Create collection jobs for each finalized report by cloning the report with updated AT version info
-  const { scheduleCollectionJob } = require('./CollectionJobService');
-  const {
-    cloneTestPlanReportWithNewAtVersion
-  } = require('./TestPlanReportService');
-
   const collectionJobs = [];
   for (const report of finalizedReports) {
     // Clone the historical report with the new current AT version
@@ -534,10 +508,10 @@ const createCollectionJobsFromPreviousVersion = async ({
       currentVersion,
       transaction
     );
-    const job = await scheduleCollectionJob(
-      { testPlanReportId: newReport.id },
-      { transaction }
-    );
+    const job = await scheduleJob({
+      testPlanReportId: newReport.id,
+      transaction
+    });
     collectionJobs.push(job);
   }
   return collectionJobs;
