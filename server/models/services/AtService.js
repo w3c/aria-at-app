@@ -520,27 +520,26 @@ const createCollectionJobsFromPreviousVersion = async ({
     transaction
   });
 
-  // Create collection jobs for each finalized report
-  const { createCollectionJob } = require('./CollectionJobService');
-  const { getBotUserByAtId } = require('./UserService');
-  const collectionJobs = [];
-  const botUser = await getBotUserByAtId({
-    atId: currentVersion.atId,
-    transaction
-  });
+  // Create collection jobs for each finalized report by cloning the report with updated AT version info
+  const { scheduleCollectionJob } = require('./CollectionJobService');
+  const {
+    cloneTestPlanReportWithNewAtVersion
+  } = require('./TestPlanReportService');
 
+  const collectionJobs = [];
   for (const report of finalizedReports) {
-    const job = await createCollectionJob({
-      values: {
-        testPlanReportId: report.id,
-        testerUserId: botUser.id,
-        status: 'QUEUED'
-      },
+    // Clone the historical report with the new current AT version
+    const newReport = await cloneTestPlanReportWithNewAtVersion(
+      report,
+      currentVersion,
       transaction
-    });
+    );
+    const job = await scheduleCollectionJob(
+      { testPlanReportId: newReport.id },
+      { transaction }
+    );
     collectionJobs.push(job);
   }
-
   return collectionJobs;
 };
 

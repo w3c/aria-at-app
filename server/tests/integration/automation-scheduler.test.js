@@ -15,6 +15,9 @@ const AtLoader = require('../../models/loaders/AtLoader');
 const BrowserLoader = require('../../models/loaders/BrowserLoader');
 const getGraphQLContext = require('../../graphql-context');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
+const {
+  getTestPlanReportById
+} = require('../../models/services/TestPlanReportService');
 
 let apiServer;
 let sessionAgent;
@@ -85,6 +88,7 @@ const getTestPlanRun = async (id, { transaction }) =>
                         id
                         test {
                             id
+                            rowNumber
                         }
                         atVersion {
                             id
@@ -1181,7 +1185,7 @@ describe('Automation controller', () => {
 
   // Add test for creating collection jobs from previous version
   it('should create collection jobs from previous AT version', async () => {
-    await dbCleaner(async transaction => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
       const ats = await AtLoader().getAll({ transaction });
       const at = ats.find(at => at.key === 'voiceover_macos');
       expect(at).toBeDefined();
@@ -1191,7 +1195,6 @@ describe('Automation controller', () => {
         getTestPlanReportById
       } = require('../../models/services/TestPlanReportService');
 
-      // Create two AT versions with different release dates
       const oldAtVersion = await createAtVersion({
         values: {
           atId: at.id,
@@ -1210,15 +1213,13 @@ describe('Automation controller', () => {
         transaction
       });
 
-      // Create multiple test plan reports with the old version
       const testPlanReport1 = await getTestPlanReportById({
         id: testPlanReportId,
         transaction
       });
 
-      // Find another test plan report for VoiceOver
       const testPlanReport2 = await getTestPlanReportById({
-        id: '27', // Using another VoiceOver test plan report
+        id: '27',
         transaction
       });
 
@@ -1260,15 +1261,24 @@ describe('Automation controller', () => {
                     id
                     name
                   }
+                  browser {
+                    id
+                    name
+                  }
                   exactAtVersion {
                     id
                     name
                   }
+                  testPlanVersion {
+                    id
+                  }
+                  markedFinalAt
                 }
               }
               testStatus {
                 test {
                   id
+                  rowNumber
                 }
                 status
               }
@@ -1285,7 +1295,7 @@ describe('Automation controller', () => {
 
       const { createCollectionJobsFromPreviousVersion: response } = result;
       expect(response.collectionJobs).toBeDefined();
-      expect(response.collectionJobs.length).toBe(2); // Should have one job per finalized report
+      expect(response.collectionJobs.length).toBe(2);
       expect(response.message).toContain(
         'Successfully created 2 collection jobs'
       );
@@ -1306,34 +1316,125 @@ describe('Automation controller', () => {
           at.id.toString()
         );
 
-        // Verify all tests are initially queued
         for (const testStatus of job.testStatus) {
           expect(testStatus.status).toBe('QUEUED');
         }
-
-        // Verify the job was scheduled with automation scheduler
-        expect(startCollectionJobSimulation.lastCallParams).toBeDefined();
-        expect(
-          startCollectionJobSimulation.lastCallParams.testIds
-        ).toBeDefined();
-        expect(
-          startCollectionJobSimulation.lastCallParams.testIds.length
-        ).toBeGreaterThan(0);
       }
 
-      // Verify the jobs are distinct
       const jobIds = response.collectionJobs.map(job => job.id);
       const uniqueJobIds = [...new Set(jobIds)];
       expect(uniqueJobIds.length).toBe(2);
 
-      // Verify the jobs are associated with different test plan reports
-      const reportIds = response.collectionJobs.map(
-        job => job.testPlanRun.testPlanReport.id
+      const newReports = response.collectionJobs.map(
+        job => job.testPlanRun.testPlanReport
       );
-      const uniqueReportIds = [...new Set(reportIds)];
-      expect(uniqueReportIds.length).toBe(2);
-      expect(uniqueReportIds).toContain(testPlanReportId);
-      expect(uniqueReportIds).toContain('27');
+      expect(newReports.length).toBe(2);
+
+      const originalReports = [testPlanReport1, testPlanReport2];
+      for (const newReport of newReports) {
+        const matchingOriginal = originalReports.find(
+          original =>
+            original.atId.toString() === newReport.at.id.toString() &&
+            original.browserId.toString() === newReport.browser.id.toString() &&
+            original.testPlanVersionId.toString() ===
+              newReport.testPlanVersion.id.toString()
+        );
+
+        expect(matchingOriginal).toBeDefined();
+
+        expect(newReport.exactAtVersion.id.toString()).toBe(
+          newAtVersion.id.toString()
+        );
+        expect(newReport.exactAtVersion.name).toBe('New Version');
+
+        expect(newReport.at.id.toString()).toBe(
+          matchingOriginal.atId.toString()
+        );
+        expect(newReport.browser.id.toString()).toBe(
+          matchingOriginal.browserId.toString()
+        );
+        expect(newReport.testPlanVersion.id.toString()).toBe(
+          matchingOriginal.testPlanVersionId.toString()
+        );
+
+        expect(newReport.markedFinalAt).toBeNull();
+      }
+
+      const distinctReportIds = [...new Set(newReports.map(r => r.id))];
+      expect(distinctReportIds.length).toBe(2);
+
+      const jobToSimulate = response.collectionJobs[0];
+
+      let fullJob = await getCollectionJobById({
+        id: jobToSimulate.id,
+        transaction
+      });
+
+      const secret = await getJobSecret(fullJob.id, { transaction });
+
+      //   // Update job status to RUNNING via the automation scheduler endpoint
+      const runResponse = await sessionAgent
+        .post(`/api/jobs/${fullJob.id}`)
+        .send({ status: 'RUNNING' })
+        .set('x-automation-secret', secret)
+        .set('x-transaction-id', transaction.id);
+      expect(runResponse.statusCode).toBe(200);
+
+      const tests = fullJob.testPlanRun.testPlanReport.testPlanVersion.tests;
+      expect(tests.length).toBeGreaterThan(0);
+
+      // Filter for VoiceOver tests specifically
+      const voiceOverTests = tests.filter(
+        test => test.at.key === 'voiceover_macos'
+      );
+      expect(voiceOverTests.length).toBeGreaterThan(0);
+
+      const selectedTest = voiceOverTests[0];
+      const selectedTestRowNumber = selectedTest.rowNumber;
+      const numberOfScenarios = selectedTest.scenarios.filter(
+        scenario => scenario.atId === fullJob.testPlanRun.testPlanReport.at.id
+      ).length;
+      const automatedTestResponse = 'AUTOMATED TEST RESPONSE';
+
+      const browsers = await BrowserLoader().getAll({ transaction });
+      const atDetail = ats.find(
+        at => at.id === fullJob.testPlanRun.testPlanReport.at.id
+      );
+      const browserDetail = browsers.find(
+        browser => browser.id === fullJob.testPlanRun.testPlanReport.browser.id
+      );
+
+      // Send simulated test result for the selected test
+      const testResponse = await sessionAgent
+        .post(`/api/jobs/${fullJob.id}/test/${selectedTestRowNumber}`)
+        .send({
+          capabilities: {
+            atName: atDetail.name,
+            atVersion: atDetail.atVersions[0].name,
+            browserName: browserDetail.name,
+            browserVersion: browserDetail.browserVersions[0].name
+          },
+          responses: new Array(numberOfScenarios).fill(automatedTestResponse)
+        })
+        .set('x-automation-secret', secret)
+        .set('x-transaction-id', transaction.id);
+      expect(testResponse.statusCode).toBe(200);
+
+      // Retrieve the test plan run and verify that test results have been added
+      const storedTestPlanRun = await getTestPlanRun(fullJob.testPlanRun.id, {
+        transaction
+      });
+      const testResults = storedTestPlanRun.testPlanRun.testResults;
+      expect(testResults.length).toBeGreaterThan(0);
+
+      // Check that the result for the selected test has the expected automated response
+      const matchingResult = testResults.find(
+        tr => tr.test.id === selectedTest.id
+      );
+      expect(matchingResult).not.toBeUndefined();
+      matchingResult.scenarioResults.forEach(scenarioResult => {
+        expect(scenarioResult.output).toEqual(automatedTestResponse);
+      });
     });
   });
 });
