@@ -16,15 +16,9 @@ const BrowserLoader = require('../../models/loaders/BrowserLoader');
 const getGraphQLContext = require('../../graphql-context');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const {
-  getTestPlanReportById
-} = require('../../models/services/TestPlanReportService');
-const {
-  createAtVersion,
   getAtVersionByQuery
 } = require('../../models/services/AtVersionService');
-const { TestPlanReport, TestPlanRun } = require('../../models');
 const { getAtById } = require('../../models/services/AtService');
-const { AtVersion } = db;
 
 let apiServer;
 let sessionAgent;
@@ -261,9 +255,24 @@ const createCollectionJobsFromPreviousVersionMutation = async (
                     collectionJobs {
                         id
                         status
+                        testStatus {
+                            status
+                        }
                         testPlanRun {
+                            tester {
+                                isBot
+                            }
                             testPlanReport {
                                 id
+                                markedFinalAt
+                                at {
+                                    id
+                                    name
+                                }
+                                exactAtVersion {
+                                    id
+                                    name
+                                }
                                 testPlanVersion {
                                     id
                                     title
@@ -1218,12 +1227,10 @@ describe('Automation controller', () => {
     });
   });
 
-  it('should minimally create collection jobs from previous AT version', async () => {
+  it('should create collection jobs from previous AT version with expanded test coverage', async () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
-      const targetAt = await getAtById({
-        id: 3,
-        transaction
-      });
+      //  Get VoiceOver
+      const targetAt = await getAtById({ id: 3, transaction });
       expect(targetAt).toBeDefined();
 
       const currentAtVersion = await getAtVersionByQuery({
@@ -1233,22 +1240,40 @@ describe('Automation controller', () => {
         },
         transaction
       });
-
       expect(currentAtVersion).toBeDefined();
 
-      // Prepare the GraphQL mutation query using the current AT Version ID.
       const response = await createCollectionJobsFromPreviousVersionMutation(
         currentAtVersion.id,
         { transaction }
       );
-      // Execute the GraphQL mutation.
       const result = response.createCollectionJobsFromPreviousVersion;
       expect(result).toBeDefined();
-      // Assert that a message and collection jobs are returned.
+
       const { collectionJobs } = result;
       expect(Array.isArray(collectionJobs)).toBe(true);
-      // There should be 2 collection jobs because there are 2 refreshable test plan runs
       expect(collectionJobs.length).toBe(2);
+
+      collectionJobs.forEach(job => {
+        expect(job.status).toBe('QUEUED');
+        expect(job.testPlanRun).toBeDefined();
+        expect(job.testPlanRun.tester.isBot).toBe(true);
+        expect(job.testPlanRun.testPlanReport).toBeDefined();
+        const report = job.testPlanRun.testPlanReport;
+        expect(report.at.id.toString()).toBe(targetAt.id.toString());
+        expect(report.exactAtVersion.id.toString()).toBe(
+          currentAtVersion.id.toString()
+        );
+        expect(report.markedFinalAt).toBeNull();
+        job.testStatus.forEach(ts => expect(ts.status).toBe('QUEUED'));
+      });
+      const uniqueJobIds = new Set(collectionJobs.map(job => job.id));
+      expect(uniqueJobIds.size).toBe(2);
+      const uniqueJobTestPlanVersions = new Set(
+        collectionJobs.map(
+          job => job.testPlanRun.testPlanReport.testPlanVersion.title
+        )
+      );
+      expect(uniqueJobTestPlanVersions.size).toBe(2);
     });
   });
 });
