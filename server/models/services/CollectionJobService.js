@@ -35,8 +35,10 @@ const {
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../../graphql-context');
 const { getBotUserByAtId } = require('./UserService');
-const { getAtVersionWithRequirements } = require('./AtVersionService');
-const { findPreviousVersionAndReports } = require('./AtVersionService');
+const {
+  getAtVersionWithRequirements,
+  getRefreshableTestPlanReports
+} = require('./AtVersionService');
 
 // association helpers to be included with Models' results
 
@@ -724,7 +726,16 @@ const updateCollectionJobTestStatusByQuery = ({
 };
 
 /**
- * Creates collection jobs for all finalized test plan runs that used a previous version
+ * Creates collection jobs for all test plan reports eligible for automation refresh.
+ * Eligible reports are those whose originating test run was initiated by automation and
+ * used the previous automatable AT version.
+ *
+ * For each report:
+ *   1. Clone the historical report with the current AT Version (keeping the original Browser and TestPlanVersion).
+ *   2. Start a collection job for the new Test Plan Report.
+ *
+ * If no eligible reports are found, return an empty array.
+ *
  * @param {object} options
  * @param {number} options.atVersionId - ID of the current AT version
  * @param {*} options.transaction - Sequelize transaction
@@ -734,14 +745,20 @@ const createCollectionJobsFromPreviousVersion = async ({
   atVersionId,
   transaction
 }) => {
-  const { currentVersion, finalizedReports } =
-    await findPreviousVersionAndReports({
-      atVersionId,
+  const { currentVersion, refreshableReports } =
+    await getRefreshableTestPlanReports({
+      currentAtVersionId: atVersionId,
       transaction
     });
 
+  console.log('refreshableReports', refreshableReports);
+
+  if (!refreshableReports.length) {
+    return [];
+  }
+
   const collectionJobs = [];
-  for (const report of finalizedReports) {
+  for (const report of refreshableReports) {
     // Clone the historical report with the new current AT version
     const newReport = await cloneTestPlanReportWithNewAtVersion(
       report,
@@ -749,7 +766,7 @@ const createCollectionJobsFromPreviousVersion = async ({
       transaction
     );
 
-    // Get the appropriate AT version for automation - use currentVersion for both fields
+    // Get the appropriate AT version for automation - here currentVersion will be used.
     const atVersion = await getAtVersionWithRequirements(
       newReport.at.id,
       currentVersion,

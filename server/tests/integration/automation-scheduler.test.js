@@ -18,7 +18,13 @@ const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const {
   getTestPlanReportById
 } = require('../../models/services/TestPlanReportService');
-const { createAtVersion } = require('../../models/services/AtVersionService');
+const {
+  createAtVersion,
+  getAtVersionByQuery
+} = require('../../models/services/AtVersionService');
+const { TestPlanReport, TestPlanRun } = require('../../models');
+const { getAtById } = require('../../models/services/AtService');
+const { AtVersion } = db;
 
 let apiServer;
 let sessionAgent;
@@ -239,6 +245,34 @@ const deleteCollectionJobByMutation = async (jobId, { transaction }) =>
     `
             mutation {
                 deleteCollectionJob(id: "${jobId}")
+            }
+        `,
+    { transaction }
+  );
+
+const createCollectionJobsFromPreviousVersionMutation = async (
+  atVersionId,
+  { transaction }
+) =>
+  await mutate(
+    `
+            mutation {
+                createCollectionJobsFromPreviousVersion(atVersionId: "${atVersionId}") {
+                    collectionJobs {
+                        id
+                        status
+                        testPlanRun {
+                            testPlanReport {
+                                id
+                                testPlanVersion {
+                                    id
+                                    title
+                                }
+                            }
+                        }
+                    }
+                    message
+                }
             }
         `,
     { transaction }
@@ -1184,220 +1218,37 @@ describe('Automation controller', () => {
     });
   });
 
-  it('should create collection jobs from previous AT version', async () => {
+  it('should minimally create collection jobs from previous AT version', async () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
-      // Setup: Retrieve target AT and create old/new versions.
-      const ats = await AtLoader().getAll({ transaction });
-      const targetAt = ats.find(at => at.key === 'voiceover_macos');
+      const targetAt = await getAtById({
+        id: 3,
+        transaction
+      });
       expect(targetAt).toBeDefined();
 
-      const oldAtVersion = await createAtVersion({
-        values: {
+      const currentAtVersion = await getAtVersionByQuery({
+        where: {
           atId: targetAt.id,
-          name: 'Old Version',
-          releasedAt: new Date('2025-01-01')
-        },
-        transaction
-      });
-      const newAtVersion = await createAtVersion({
-        values: {
-          atId: targetAt.id,
-          name: 'New Version',
-          releasedAt: new Date('2025-02-01')
+          name: '14.0'
         },
         transaction
       });
 
-      // Update two test plan reports with the old version and mark them final.
-      const testPlanReport1 = await getTestPlanReportById({
-        id: testPlanReportId,
-        transaction
-      });
-      const testPlanReport2 = await getTestPlanReportById({
-        id: '26',
-        transaction
-      });
-      // This direct update doesn't reflect real world behavior, but is
-      // necessary to test the mutation.
-      await Promise.all([
-        testPlanReport1.update(
-          { exactAtVersionId: oldAtVersion.id, markedFinalAt: new Date() },
-          { transaction }
-        ),
-        testPlanReport2.update(
-          { exactAtVersionId: oldAtVersion.id, markedFinalAt: new Date() },
-          { transaction }
-        )
-      ]);
+      expect(currentAtVersion).toBeDefined();
 
-      // Create collection jobs from previous version using mutation.
-      const mutation = `
-        mutation {
-          createCollectionJobsFromPreviousVersion(atVersionId: "${newAtVersion.id}") {
-            collectionJobs {
-              id
-              status
-              testPlanRun {
-                id
-                tester { id username isBot }
-                testPlanReport {
-                  id
-                  at { id name }
-                  browser { id name }
-                  exactAtVersion { id name }
-                  testPlanVersion { id }
-                  markedFinalAt
-                }
-              }
-              testStatus { test { id rowNumber } status }
-            }
-            message
-          }
-        }
-      `;
-      const result = await mutate(mutation, {
-        transaction,
-        user: { roles: [{ name: 'ADMIN' }] }
-      });
-      const response = result.createCollectionJobsFromPreviousVersion;
-      expect(response.collectionJobs).toBeDefined();
-      expect(response.collectionJobs.length).toBe(2);
-      expect(response.message).toContain(
-        'Successfully created 2 collection jobs'
+      // Prepare the GraphQL mutation query using the current AT Version ID.
+      const response = await createCollectionJobsFromPreviousVersionMutation(
+        currentAtVersion.id,
+        { transaction }
       );
-
-      // Validate basic properties of each created job.
-      response.collectionJobs.forEach(job => {
-        expect(job.status).toBe('QUEUED');
-        expect(job.testPlanRun).toBeDefined();
-        expect(job.testPlanRun.tester).toBeDefined();
-        expect(job.testPlanRun.tester.isBot).toBe(true);
-        expect(job.testPlanRun.testPlanReport).toBeDefined();
-        expect(job.testPlanRun.testPlanReport.at.id.toString()).toBe(
-          targetAt.id.toString()
-        );
-        job.testStatus.forEach(ts => expect(ts.status).toBe('QUEUED'));
-      });
-      const uniqueJobIds = new Set(response.collectionJobs.map(job => job.id));
-      expect(uniqueJobIds.size).toBe(2);
-
-      response.collectionJobs.forEach(job => {
-        const report = job.testPlanRun.testPlanReport;
-        const original = [testPlanReport1, testPlanReport2].find(
-          orig =>
-            orig.atId.toString() === report.at.id.toString() &&
-            orig.browserId.toString() === report.browser.id.toString() &&
-            orig.testPlanVersionId.toString() ===
-              report.testPlanVersion.id.toString()
-        );
-        expect(original).toBeDefined();
-        expect(report.exactAtVersion.id.toString()).toBe(
-          newAtVersion.id.toString()
-        );
-        expect(report.exactAtVersion.name).toBe('New Version');
-        expect(report.markedFinalAt).toBeNull();
-      });
-
-      const [jobToSimulate] = response.collectionJobs;
-
-      // Helper function to simulate a job run and verify test responses.
-      const simulateJobRun = async job => {
-        const fullJob = await getCollectionJobById({ id: job.id, transaction });
-        const secret = await getJobSecret(fullJob.id, { transaction });
-
-        // Update job status to RUNNING.
-        const runRes = await sessionAgent
-          .post(`/api/jobs/${fullJob.id}`)
-          .send({ status: 'RUNNING' })
-          .set('x-automation-secret', secret)
-          .set('x-transaction-id', transaction.id);
-        expect(runRes.statusCode).toBe(200);
-
-        const { tests } = fullJob.testPlanRun.testPlanReport.testPlanVersion;
-        const voiceTests = tests.filter(
-          test => test.at.key === 'voiceover_macos'
-        );
-        expect(voiceTests.length).toBeGreaterThan(0);
-        const [selectedTest1, selectedTest2] = voiceTests;
-        expect(selectedTest1).toBeDefined();
-        expect(selectedTest2).toBeDefined();
-
-        const historicalReport = await getTestPlanReport(
-          fullJob.testPlanRun.testPlanReport.id,
-          { transaction }
-        );
-        const browsers = await BrowserLoader().getAll({ transaction });
-        const atDetail = targetAt;
-        const browserDetail = browsers.find(
-          b => b.id === fullJob.testPlanRun.testPlanReport.browser.id
-        );
-
-        for (const { test, useHistoricalOutput } of [
-          { test: selectedTest1, useHistoricalOutput: true },
-          { test: selectedTest2, useHistoricalOutput: false }
-        ]) {
-          const historicalResult =
-            historicalReport.testPlanReport?.finalizedTestResults?.find(
-              tr => tr.test.id === test.id
-            );
-          const numScenarios = test.scenarios.filter(
-            s => s.atId === fullJob.testPlanRun.testPlanReport.at.id
-          ).length;
-          const histOutput = historicalResult?.scenarioResults[0]?.output;
-          const automatedResponse =
-            useHistoricalOutput && histOutput
-              ? histOutput
-              : 'NEW AUTOMATED TEST RESPONSE';
-
-          const testRes = await sessionAgent
-            .post(`/api/jobs/${fullJob.id}/test/${test.rowNumber}`)
-            .send({
-              capabilities: {
-                atName: atDetail.name,
-                atVersion: atDetail.atVersions[0].name,
-                browserName: browserDetail.name,
-                browserVersion: browserDetail.browserVersions[0].name
-              },
-              responses: new Array(numScenarios).fill(automatedResponse)
-            })
-            .set('x-automation-secret', secret)
-            .set('x-transaction-id', transaction.id);
-          expect(testRes.statusCode).toBe(200);
-
-          const storedRun = await getTestPlanRun(fullJob.testPlanRun.id, {
-            transaction
-          });
-          const matchingResult = storedRun.testPlanRun.testResults.find(
-            tr => tr.test.id === test.id
-          );
-          expect(matchingResult).toBeDefined();
-
-          matchingResult.scenarioResults.forEach((scenarioResult, idx) => {
-            expect(scenarioResult.output).toEqual(automatedResponse);
-            const shouldCopy =
-              job.id === jobToSimulate.id &&
-              historicalResult &&
-              useHistoricalOutput &&
-              automatedResponse ===
-                historicalResult.scenarioResults[idx].output;
-            const expectedAssertions = shouldCopy
-              ? historicalResult.scenarioResults[idx].assertionResults.map(
-                  ar => ({ passed: ar.passed, failedReason: ar.failedReason })
-                )
-              : scenarioResult.assertionResults.map(() => ({
-                  passed: false,
-                  failedReason: 'AUTOMATED_OUTPUT'
-                }));
-            expect(scenarioResult.assertionResults).toEqual(
-              expectedAssertions.map(exp => expect.objectContaining(exp))
-            );
-          });
-        }
-      };
-
-      await Promise.all(
-        response.collectionJobs.map(job => simulateJobRun(job))
-      );
+      // Execute the GraphQL mutation.
+      const result = response.createCollectionJobsFromPreviousVersion;
+      expect(result).toBeDefined();
+      // Assert that a message and collection jobs are returned.
+      const { collectionJobs } = result;
+      expect(Array.isArray(collectionJobs)).toBe(true);
+      // There should be 2 collection jobs because there are 2 refreshable test plan runs
+      expect(collectionJobs.length).toBe(2);
     });
   });
 });

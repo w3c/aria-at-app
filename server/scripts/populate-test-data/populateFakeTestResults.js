@@ -1,6 +1,7 @@
 const { gql } = require('apollo-server-core');
 const {
-  getAtVersionByQuery
+  getAtVersionByQuery,
+  getAtVersionById
 } = require('../../models/services/AtVersionService');
 const {
   getBrowserVersionByQuery
@@ -35,6 +36,7 @@ const populateFakeTestResults = async (
   fakeTestResultTypes,
   {
     transaction,
+    atVersionId = null,
     numFakeTestResultConflicts = FAKE_RESULT_CONFLICTS_OPTIONS.SINGLE
   }
 ) => {
@@ -82,7 +84,8 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'passing',
           submit: true,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'completeAndFailingDueToIncorrectAssertions':
@@ -93,7 +96,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'failingDueToIncorrectAssertions',
           submit: true,
           numFakeTestResultConflicts,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'completeAndFailingDueToNoOutputAssertions':
@@ -104,7 +108,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'failingDueToNoOutputAssertions',
           submit: true,
           numFakeTestResultConflicts,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'completeAndFailingDueToUnexpectedBehaviors':
@@ -115,7 +120,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'failingDueToUnexpectedBehaviors',
           submit: true,
           numFakeTestResultConflicts,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'completeAndFailingDueToMultiple':
@@ -126,7 +132,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'failingDueToMultiple',
           submit: true,
           numFakeTestResultConflicts,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'incompleteAndEmpty':
@@ -136,7 +143,8 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'empty',
           submit: false,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'incompleteAndPassing':
@@ -146,7 +154,8 @@ const populateFakeTestResults = async (
           index,
           fakeTestResultType: 'passing',
           submit: false,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'incompleteAndFailingDueToIncorrectAssertions':
@@ -157,7 +166,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'failingDueToIncorrectAssertions',
           submit: false,
           numFakeTestResultConflicts,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'incompleteAndFailingDueToNoOutputAssertions':
@@ -168,7 +178,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'failingDueToNoOutputAssertions',
           submit: false,
           numFakeTestResultConflicts,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'incompleteAndFailingDueToUnexpectedBehaviors':
@@ -179,7 +190,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'failingDueToUnexpectedBehaviors',
           submit: false,
           numFakeTestResultConflicts,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       case 'incompleteAndFailingDueToMultiple':
@@ -190,7 +202,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'failingDueToMultiple',
           submit: false,
           numFakeTestResultConflicts,
-          transaction
+          transaction,
+          atVersionId
         });
         break;
       default:
@@ -227,15 +240,19 @@ const getFake = async ({
   fakeTestResultType,
   submit,
   numFakeTestResultConflicts,
-  transaction
+  transaction,
+  atVersionId = null
 }) => {
   const testId = testPlanReport.runnableTests[index].id;
 
-  const atVersion = await getAtVersionByQuery({
-    where: { atId: testPlanReport.at.id },
-    pagination: { order: [['releasedAt', 'DESC']] },
-    transaction
-  });
+  if (!atVersionId) {
+    const atVersion = await getAtVersionByQuery({
+      where: { atId: testPlanReport.at.id },
+      pagination: { order: [['releasedAt', 'DESC']] },
+      transaction
+    });
+    atVersionId = atVersion.id;
+  }
 
   const browserVersion = await getBrowserVersionByQuery({
     where: { browserId: testPlanReport.browser.id },
@@ -252,7 +269,7 @@ const getFake = async ({
         testPlanRun(id: ${testPlanRunId}) {
           findOrCreateTestResult(
             testId: "${testId}",
-            atVersionId: "${atVersion.id}",
+            atVersionId: "${atVersionId}",
             browserVersionId: "${browserVersion.id}"
           ) {
             testResult {
@@ -275,7 +292,7 @@ const getFake = async ({
 
   const getPassing = () => ({
     ...baseTestResult,
-    atVersionId: atVersion.id,
+    atVersionId: atVersionId,
     browserVersionId: browserVersion.id,
     scenarioResults: baseTestResult.scenarioResults.map(scenarioResult => ({
       ...scenarioResult,

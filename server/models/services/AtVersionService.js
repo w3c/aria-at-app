@@ -1,11 +1,11 @@
 const ModelService = require('./ModelService');
-const { AtVersion } = require('..');
+const { AtVersion, TestPlanReport, TestPlanRun, Sequelize } = require('..');
 const { Op } = require('sequelize');
 const { AT_VERSION_ATTRIBUTES, AT_ATTRIBUTES } = require('./helpers');
 const {
   AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS
 } = require('../../util/constants');
-const { TestPlanReport } = require('..');
+const { getAtById } = require('./AtService');
 
 /**
  * @param atAttributes - At attributes to be returned in the result
@@ -359,60 +359,151 @@ const findOrCreateAtVersion = async ({
 };
 
 /**
- * Gets the most recent previous AT version and its associated finalized reports
+ * Gets refreshable Test Plan Reports by identifying the previous automatable AT version.
+ * Steps:
+ *   1. Load the current AT version (and its associated AT info).
+ *   2. From the constant AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS identify the previous automatable version.
+ *   3. Query for Test Plan Reports (joined with their Test Plan Run) that used that previous version
+ *      and were initiated by automation.
+ *
  * @param {object} options
- * @param {number} options.atVersionId - ID of the current AT version
+ * @param {number} options.currentAtVersionId - ID of the current automatable AT version
  * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<{currentVersion: object, previousVersion: object, finalizedReports: object[]}>}
+ * @returns {Promise<{currentVersion: object, previousVersion: object, refreshableReports: object[]}>}
  */
-const findPreviousVersionAndReports = async ({ atVersionId, transaction }) => {
-  // Get the current AT version with its AT info
-  const currentVersion = await getAtVersionById({
-    id: atVersionId,
+const getRefreshableTestPlanReports = async ({
+  currentAtVersionId,
+  transaction
+}) => {
+  // Get the current AT version along with its associated AT info
+  const currentVersion = await ModelService.getById(AtVersion, {
+    id: currentAtVersionId,
+    attributes: AT_VERSION_ATTRIBUTES,
+    include: [atAssociation(AT_ATTRIBUTES)],
     transaction
   });
 
+  console.log('Current version:', currentVersion.dataValues);
+
   if (!currentVersion) {
-    throw new Error(`AT Version with ID ${atVersionId} not found`);
+    throw new Error(`AT Version with ID ${currentAtVersionId} not found`);
   }
 
-  // Find the most recent previous version for the same AT
-  const previousVersion = await AtVersion.findOne({
+  // Ensure that the currentVersion has an associated 'at'
+  const atName = currentVersion.at?.name;
+  if (!atName) {
+    throw new Error(
+      `AT record is not associated with AT Version ID ${currentAtVersionId}`
+    );
+  }
+
+  // Get all automation-supported AT versions for the same AT that are in the constant list,
+  // sorting them by releasedAt descending.
+  const automationVersions = await AtVersion.findAll({
     where: {
       atId: currentVersion.atId,
-      releasedAt: {
-        [Op.lt]: currentVersion.releasedAt
-      }
+      name: { [Op.in]: AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[atName] }
     },
     order: [['releasedAt', 'DESC']],
     transaction
   });
-
-  if (!previousVersion) {
-    throw new Error(
-      `No previous version found for AT Version ID ${atVersionId}`
-    );
-  }
-
-  // Get all finalized test plan reports that used the previous version
-  const finalizedReports = await TestPlanReport.findAll({
+  const allVersions = await AtVersion.findAll({
     where: {
-      [Op.or]: [
-        { exactAtVersionId: previousVersion.id },
-        { minimumAtVersionId: previousVersion.id }
-      ],
-      markedFinalAt: {
-        [Op.not]: null
-      }
+      atId: currentVersion.atId
     },
     transaction
   });
+  console.log(
+    'All versions:',
+    allVersions.map(v => v.dataValues)
+  );
+  console.log(
+    'Automation versions found:',
+    automationVersions.map(v => v.dataValues)
+  );
 
-  return {
-    currentVersion,
-    previousVersion,
-    finalizedReports
-  };
+  if (!automationVersions.length) {
+    return { currentVersion, previousVersion: null, refreshableReports: [] };
+  }
+
+  // Check if the current version is the most recent automation-supported version;
+  // if not, return early.
+  const latestAutomationVersion = automationVersions[0];
+  console.log('Latest automation version:', latestAutomationVersion.dataValues);
+  if (currentVersion.id !== latestAutomationVersion.id) {
+    console.log(
+      'Current version is not the most recent automation-supported version'
+    );
+    return { currentVersion, previousVersion: null, refreshableReports: [] };
+  }
+
+  // Find the most recent automation-supported version released before the current one.
+  const previousVersion = automationVersions.find(
+    version =>
+      new Date(version.releasedAt) < new Date(currentVersion.releasedAt)
+  );
+  console.log(
+    'Previous automation version:',
+    previousVersion ? previousVersion.dataValues : null
+  );
+
+  if (!previousVersion) {
+    console.log('No previous automation version found');
+    return { currentVersion, previousVersion: null, refreshableReports: [] };
+  }
+
+  // Find TestPlanReports that are eligible for refresh based on their TestPlanRun.
+  // Use a raw condition that checks that at least one element in testResults has atVersionId equal to previousVersion.id.
+  const testPlanRunResults = await TestPlanRun.findAll({
+    attributes: ['testPlanReportId'],
+    where: {
+      initiatedByAutomation: true,
+      [Op.and]: Sequelize.literal(`EXISTS (
+        SELECT 1
+        FROM jsonb_array_elements("TestPlanRun"."testResults") AS js
+        WHERE (js->>'atVersionId')::int = ${previousVersion.id}
+      )`)
+    },
+    transaction,
+    raw: true
+  });
+  console.log('Found test plan run rows:', testPlanRunResults);
+
+  // Extract unique TestPlanReport IDs from the TestPlanRun results
+  const reportIds = [
+    ...new Set(testPlanRunResults.map(run => run.testPlanReportId))
+  ];
+
+  let refreshableReports = [];
+  if (reportIds.length) {
+    // Now retrieve the TestPlanReport rows matching these IDs
+    refreshableReports = await TestPlanReport.findAll({
+      where: { id: { [Op.in]: reportIds } },
+      transaction
+    });
+  }
+  console.log('Refreshable reports found:', refreshableReports.length);
+
+  return { currentVersion, previousVersion, refreshableReports };
+};
+
+/**
+ * Utility function to count the number of refreshable Test Plan Reports available for automation.
+ *
+ * @param {object} options
+ * @param {number} options.currentAtVersionId - ID of the current automatable AT version
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<number>}
+ */
+const countRefreshableTestPlanReports = async ({
+  currentAtVersionId,
+  transaction
+}) => {
+  const { refreshableReports } = await getRefreshableTestPlanReports({
+    currentAtVersionId,
+    transaction
+  });
+  return refreshableReports.length;
 };
 
 module.exports = {
@@ -426,6 +517,7 @@ module.exports = {
   removeAtVersionByQuery,
   removeAtVersionById,
   findOrCreateAtVersion,
-  findPreviousVersionAndReports,
-  getUniqueAtVersionsForReport
+  getUniqueAtVersionsForReport,
+  getRefreshableTestPlanReports,
+  countRefreshableTestPlanReports
 };
