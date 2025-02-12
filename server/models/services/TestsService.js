@@ -33,7 +33,10 @@ const getTests = parentRecord => {
         at,
         commands: scenario.commandIds.map(commandId => {
           if (isV2) {
-            const screenText = at?.settings[scenario.settings]?.screenText;
+            const screenText = scenario.settings
+              .split(' ')
+              .map(setting => at?.settings[setting]?.screenText)
+              .join(' and ');
             const commandKVs = getCommandV2(commandId);
             if (commandKVs.length) {
               // `scenario` has an identifier to the settings being displayed.
