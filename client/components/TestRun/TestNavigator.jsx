@@ -34,7 +34,11 @@ const TestNavigator = ({
   );
 
   const shouldShowFailingAssertionsSummary = useMemo(() => {
-    return isVendor && testPlanReport.metrics.assertionsFailedCount > 0;
+    return (
+      isVendor &&
+      (testPlanReport.metrics.mustAssertionsFailedCount > 0 ||
+        testPlanReport.metrics.shouldAssertionsFailedCount > 0)
+    );
   }, [isVendor, testPlanReport]);
 
   return (
