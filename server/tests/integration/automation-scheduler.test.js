@@ -1184,59 +1184,54 @@ describe('Automation controller', () => {
     });
   });
 
-  // Add test for creating collection jobs from previous version
   it('should create collection jobs from previous AT version', async () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
+      // Setup: Retrieve target AT and create old/new versions.
       const ats = await AtLoader().getAll({ transaction });
-      const at = ats.find(at => at.key === 'voiceover_macos');
-      expect(at).toBeDefined();
+      const targetAt = ats.find(at => at.key === 'voiceover_macos');
+      expect(targetAt).toBeDefined();
 
       const oldAtVersion = await createAtVersion({
         values: {
-          atId: at.id,
+          atId: targetAt.id,
           name: 'Old Version',
           releasedAt: new Date('2025-01-01')
         },
         transaction
       });
-
       const newAtVersion = await createAtVersion({
         values: {
-          atId: at.id,
+          atId: targetAt.id,
           name: 'New Version',
           releasedAt: new Date('2025-02-01')
         },
         transaction
       });
 
+      // Update two test plan reports with the old version and mark them final.
       const testPlanReport1 = await getTestPlanReportById({
         id: testPlanReportId,
         transaction
       });
-
       const testPlanReport2 = await getTestPlanReportById({
         id: '26',
         transaction
       });
+      // This direct update doesn't reflect real world behavior, but is
+      // necessary to test the mutation.
+      await Promise.all([
+        testPlanReport1.update(
+          { exactAtVersionId: oldAtVersion.id, markedFinalAt: new Date() },
+          { transaction }
+        ),
+        testPlanReport2.update(
+          { exactAtVersionId: oldAtVersion.id, markedFinalAt: new Date() },
+          { transaction }
+        )
+      ]);
 
-      await testPlanReport1.update(
-        {
-          exactAtVersionId: oldAtVersion.id,
-          markedFinalAt: new Date()
-        },
-        { transaction }
-      );
-
-      await testPlanReport2.update(
-        {
-          exactAtVersionId: oldAtVersion.id,
-          markedFinalAt: new Date()
-        },
-        { transaction }
-      );
-
-      const result = await mutate(
-        `
+      // Create collection jobs from previous version using mutation.
+      const mutation = `
         mutation {
           createCollectionJobsFromPreviousVersion(atVersionId: "${newAtVersion.id}") {
             collectionJobs {
@@ -1244,187 +1239,117 @@ describe('Automation controller', () => {
               status
               testPlanRun {
                 id
-                tester {
-                  id
-                  username
-                  isBot
-                }
+                tester { id username isBot }
                 testPlanReport {
                   id
-                  at {
-                    id
-                    name
-                  }
-                  browser {
-                    id
-                    name
-                  }
-                  exactAtVersion {
-                    id
-                    name
-                  }
-                  testPlanVersion {
-                    id
-                  }
+                  at { id name }
+                  browser { id name }
+                  exactAtVersion { id name }
+                  testPlanVersion { id }
                   markedFinalAt
                 }
               }
-              testStatus {
-                test {
-                  id
-                  rowNumber
-                }
-                status
-              }
+              testStatus { test { id rowNumber } status }
             }
             message
           }
         }
-        `,
-        {
-          transaction,
-          user: { roles: [{ name: 'ADMIN' }] }
-        }
-      );
-
-      const { createCollectionJobsFromPreviousVersion: response } = result;
+      `;
+      const result = await mutate(mutation, {
+        transaction,
+        user: { roles: [{ name: 'ADMIN' }] }
+      });
+      const response = result.createCollectionJobsFromPreviousVersion;
       expect(response.collectionJobs).toBeDefined();
       expect(response.collectionJobs.length).toBe(2);
       expect(response.message).toContain(
         'Successfully created 2 collection jobs'
       );
 
-      for (const job of response.collectionJobs) {
+      // Validate basic properties of each created job.
+      response.collectionJobs.forEach(job => {
         expect(job.status).toBe('QUEUED');
-
         expect(job.testPlanRun).toBeDefined();
         expect(job.testPlanRun.tester).toBeDefined();
         expect(job.testPlanRun.tester.isBot).toBe(true);
-
         expect(job.testPlanRun.testPlanReport).toBeDefined();
         expect(job.testPlanRun.testPlanReport.at.id.toString()).toBe(
-          at.id.toString()
+          targetAt.id.toString()
         );
+        job.testStatus.forEach(ts => expect(ts.status).toBe('QUEUED'));
+      });
+      const uniqueJobIds = new Set(response.collectionJobs.map(job => job.id));
+      expect(uniqueJobIds.size).toBe(2);
 
-        for (const testStatus of job.testStatus) {
-          expect(testStatus.status).toBe('QUEUED');
-        }
-      }
-
-      const jobIds = response.collectionJobs.map(job => job.id);
-      const uniqueJobIds = [...new Set(jobIds)];
-      expect(uniqueJobIds.length).toBe(2);
-
-      const newReports = response.collectionJobs.map(
-        job => job.testPlanRun.testPlanReport
-      );
-      expect(newReports.length).toBe(2);
-
-      const originalReports = [testPlanReport1, testPlanReport2];
-      for (const newReport of newReports) {
-        const matchingOriginal = originalReports.find(
-          original =>
-            original.atId.toString() === newReport.at.id.toString() &&
-            original.browserId.toString() === newReport.browser.id.toString() &&
-            original.testPlanVersionId.toString() ===
-              newReport.testPlanVersion.id.toString()
+      response.collectionJobs.forEach(job => {
+        const report = job.testPlanRun.testPlanReport;
+        const original = [testPlanReport1, testPlanReport2].find(
+          orig =>
+            orig.atId.toString() === report.at.id.toString() &&
+            orig.browserId.toString() === report.browser.id.toString() &&
+            orig.testPlanVersionId.toString() ===
+              report.testPlanVersion.id.toString()
         );
-
-        expect(matchingOriginal).toBeDefined();
-
-        expect(newReport.exactAtVersion.id.toString()).toBe(
+        expect(original).toBeDefined();
+        expect(report.exactAtVersion.id.toString()).toBe(
           newAtVersion.id.toString()
         );
-        expect(newReport.exactAtVersion.name).toBe('New Version');
+        expect(report.exactAtVersion.name).toBe('New Version');
+        expect(report.markedFinalAt).toBeNull();
+      });
 
-        expect(newReport.at.id.toString()).toBe(
-          matchingOriginal.atId.toString()
-        );
-        expect(newReport.browser.id.toString()).toBe(
-          matchingOriginal.browserId.toString()
-        );
-        expect(newReport.testPlanVersion.id.toString()).toBe(
-          matchingOriginal.testPlanVersionId.toString()
-        );
+      const [jobToSimulate] = response.collectionJobs;
 
-        expect(newReport.markedFinalAt).toBeNull();
-      }
-
-      const distinctReportIds = [...new Set(newReports.map(r => r.id))];
-      expect(distinctReportIds.length).toBe(2);
-
-      const jobToSimulate = response.collectionJobs[0]; // From testPlanReport1 (marked final)
-      const jobWithoutHistory = response.collectionJobs[1]; // From testPlanReport2 (not marked final)
-
-      // Test both jobs
-      for (const job of [jobToSimulate, jobWithoutHistory]) {
-        let fullJob = await getCollectionJobById({
-          id: job.id,
-          transaction
-        });
-
+      // Helper function to simulate a job run and verify test responses.
+      const simulateJobRun = async job => {
+        const fullJob = await getCollectionJobById({ id: job.id, transaction });
         const secret = await getJobSecret(fullJob.id, { transaction });
 
-        const runResponse = await sessionAgent
+        // Update job status to RUNNING.
+        const runRes = await sessionAgent
           .post(`/api/jobs/${fullJob.id}`)
           .send({ status: 'RUNNING' })
           .set('x-automation-secret', secret)
           .set('x-transaction-id', transaction.id);
-        expect(runResponse.statusCode).toBe(200);
+        expect(runRes.statusCode).toBe(200);
 
-        const tests = fullJob.testPlanRun.testPlanReport.testPlanVersion.tests;
-        expect(tests.length).toBeGreaterThan(0);
-
-        const voiceOverTests = tests.filter(
+        const { tests } = fullJob.testPlanRun.testPlanReport.testPlanVersion;
+        const voiceTests = tests.filter(
           test => test.at.key === 'voiceover_macos'
         );
-        expect(voiceOverTests.length).toBeGreaterThan(0);
-
-        // Get two tests to verify both matching and non-matching behavior
-        const [selectedTest1, selectedTest2] = voiceOverTests;
+        expect(voiceTests.length).toBeGreaterThan(0);
+        const [selectedTest1, selectedTest2] = voiceTests;
         expect(selectedTest1).toBeDefined();
         expect(selectedTest2).toBeDefined();
 
-        // Get historical results if they exist
-        const historicalTestPlanReport = await getTestPlanReport(
+        const historicalReport = await getTestPlanReport(
           fullJob.testPlanRun.testPlanReport.id,
           { transaction }
         );
-
         const browsers = await BrowserLoader().getAll({ transaction });
-        const atDetail = ats.find(
-          at => at.id === fullJob.testPlanRun.testPlanReport.at.id
-        );
+        const atDetail = targetAt;
         const browserDetail = browsers.find(
-          browser =>
-            browser.id === fullJob.testPlanRun.testPlanReport.browser.id
+          b => b.id === fullJob.testPlanRun.testPlanReport.browser.id
         );
 
-        // For each test, we'll submit results - one matching historical output, one not
-        for (const testConfig of [
+        for (const { test, useHistoricalOutput } of [
           { test: selectedTest1, useHistoricalOutput: true },
           { test: selectedTest2, useHistoricalOutput: false }
         ]) {
-          const { test, useHistoricalOutput } = testConfig;
-          const historicalTestResult =
-            historicalTestPlanReport.testPlanReport?.finalizedTestResults?.find(
+          const historicalResult =
+            historicalReport.testPlanReport?.finalizedTestResults?.find(
               tr => tr.test.id === test.id
             );
-
-          const numberOfScenarios = test.scenarios.filter(
-            scenario =>
-              scenario.atId === fullJob.testPlanRun.testPlanReport.at.id
+          const numScenarios = test.scenarios.filter(
+            s => s.atId === fullJob.testPlanRun.testPlanReport.at.id
           ).length;
-
-          // Use historical response if requested and available, otherwise use different response
-          const historicalOutput =
-            historicalTestResult?.scenarioResults[0]?.output;
-          const automatedTestResponse =
-            useHistoricalOutput && historicalOutput
-              ? historicalOutput
+          const histOutput = historicalResult?.scenarioResults[0]?.output;
+          const automatedResponse =
+            useHistoricalOutput && histOutput
+              ? histOutput
               : 'NEW AUTOMATED TEST RESPONSE';
 
-          const testResponse = await sessionAgent
+          const testRes = await sessionAgent
             .post(`/api/jobs/${fullJob.id}/test/${test.rowNumber}`)
             .send({
               capabilities: {
@@ -1433,61 +1358,46 @@ describe('Automation controller', () => {
                 browserName: browserDetail.name,
                 browserVersion: browserDetail.browserVersions[0].name
               },
-              responses: new Array(numberOfScenarios).fill(
-                automatedTestResponse
-              )
+              responses: new Array(numScenarios).fill(automatedResponse)
             })
             .set('x-automation-secret', secret)
             .set('x-transaction-id', transaction.id);
-          expect(testResponse.statusCode).toBe(200);
+          expect(testRes.statusCode).toBe(200);
 
-          const storedTestPlanRun = await getTestPlanRun(
-            fullJob.testPlanRun.id,
-            {
-              transaction
-            }
+          const storedRun = await getTestPlanRun(fullJob.testPlanRun.id, {
+            transaction
+          });
+          const matchingResult = storedRun.testPlanRun.testResults.find(
+            tr => tr.test.id === test.id
           );
-          const testResults = storedTestPlanRun.testPlanRun.testResults;
-          expect(testResults.length).toBeGreaterThan(0);
-
-          const matchingResult = testResults.find(tr => tr.test.id === test.id);
           expect(matchingResult).toBeDefined();
 
-          // Verify assertion copying behavior
-          matchingResult.scenarioResults.forEach((scenarioResult, index) => {
-            expect(scenarioResult.output).toEqual(automatedTestResponse);
-
-            const shouldCopyAssertions =
-              job === jobToSimulate && // Only copy for the job from marked final report
-              historicalTestResult && // Must have historical results
-              useHistoricalOutput && // Must be using historical output
-              automatedTestResponse ===
-                historicalTestResult.scenarioResults[index].output; // Outputs must match
-
-            const historicalScenarioResult = shouldCopyAssertions
-              ? historicalTestResult.scenarioResults[index]
-              : null;
-
-            // Create expected assertion results based on whether we should copy or not
-            const expectedAssertionResults = historicalScenarioResult
-              ? historicalScenarioResult.assertionResults.map(historical => ({
-                  passed: historical.passed,
-                  failedReason: historical.failedReason
-                }))
+          matchingResult.scenarioResults.forEach((scenarioResult, idx) => {
+            expect(scenarioResult.output).toEqual(automatedResponse);
+            const shouldCopy =
+              job.id === jobToSimulate.id &&
+              historicalResult &&
+              useHistoricalOutput &&
+              automatedResponse ===
+                historicalResult.scenarioResults[idx].output;
+            const expectedAssertions = shouldCopy
+              ? historicalResult.scenarioResults[idx].assertionResults.map(
+                  ar => ({ passed: ar.passed, failedReason: ar.failedReason })
+                )
               : scenarioResult.assertionResults.map(() => ({
                   passed: false,
                   failedReason: 'AUTOMATED_OUTPUT'
                 }));
-
-            // Make a single unconditional assertion comparing against expected results
             expect(scenarioResult.assertionResults).toEqual(
-              expectedAssertionResults.map(expected =>
-                expect.objectContaining(expected)
-              )
+              expectedAssertions.map(exp => expect.objectContaining(exp))
             );
           });
         }
-      }
+      };
+
+      await Promise.all(
+        response.collectionJobs.map(job => simulateJobRun(job))
+      );
     });
   });
 });
