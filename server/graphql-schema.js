@@ -1620,6 +1620,17 @@ const graphqlSchema = gql`
     Delete a CollectionJob
     """
     deleteCollectionJob(id: ID!): NoResponse!
+    """
+    Create collection jobs for all test plan reports eligible for automation refresh
+    """
+    createCollectionJobsFromPreviousAtVersion(
+      atVersionId: ID!
+    ): CreateCollectionJobsFromPreviousVersionResponse!
+  }
+
+  type CreateCollectionJobsFromPreviousVersionResponse {
+    collectionJobs: [CollectionJob!]!
+    message: String!
   }
 `;
 

@@ -15,6 +15,10 @@ const AtLoader = require('../../models/loaders/AtLoader');
 const BrowserLoader = require('../../models/loaders/BrowserLoader');
 const getGraphQLContext = require('../../graphql-context');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
+const {
+  getAtVersionByQuery
+} = require('../../models/services/AtVersionService');
+const { getAtById } = require('../../models/services/AtService');
 
 let apiServer;
 let sessionAgent;
@@ -85,6 +89,7 @@ const getTestPlanRun = async (id, { transaction }) =>
                         id
                         test {
                             id
+                            rowNumber
                         }
                         atVersion {
                             id
@@ -234,6 +239,49 @@ const deleteCollectionJobByMutation = async (jobId, { transaction }) =>
     `
             mutation {
                 deleteCollectionJob(id: "${jobId}")
+            }
+        `,
+    { transaction }
+  );
+
+const createCollectionJobsFromPreviousVersionMutation = async (
+  atVersionId,
+  { transaction }
+) =>
+  await mutate(
+    `
+            mutation {
+                createCollectionJobsFromPreviousAtVersion(atVersionId: "${atVersionId}") {
+                    collectionJobs {
+                        id
+                        status
+                        testStatus {
+                            status
+                        }
+                        testPlanRun {
+                            tester {
+                                isBot
+                            }
+                            testPlanReport {
+                                id
+                                markedFinalAt
+                                at {
+                                    id
+                                    name
+                                }
+                                exactAtVersion {
+                                    id
+                                    name
+                                }
+                                testPlanVersion {
+                                    id
+                                    title
+                                }
+                            }
+                        }
+                    }
+                    message
+                }
             }
         `,
     { transaction }
@@ -1176,6 +1224,101 @@ describe('Automation controller', () => {
       const { collectionJob: deletedCollectionJob } =
         await getTestCollectionJob(job.id, { transaction });
       expect(deletedCollectionJob).toEqual(null);
+    });
+  });
+
+  it('should create collection jobs from previous AT version', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      //  VoiceOver
+      const targetAt = await getAtById({ id: 3, transaction });
+      expect(targetAt).toBeDefined();
+
+      const currentAtVersion = await getAtVersionByQuery({
+        where: {
+          atId: 3,
+          name: '14.0'
+        },
+        transaction
+      });
+      expect(currentAtVersion).toBeDefined();
+
+      const response = await createCollectionJobsFromPreviousVersionMutation(
+        currentAtVersion.id,
+        { transaction }
+      );
+      const result = response.createCollectionJobsFromPreviousAtVersion;
+      expect(result).toBeDefined();
+
+      const { collectionJobs } = result;
+      expect(Array.isArray(collectionJobs)).toBe(true);
+      expect(collectionJobs.length).toBe(2);
+
+      const uniqueJobIds = new Set(collectionJobs.map(job => job.id));
+      expect(uniqueJobIds.size).toBe(2);
+
+      collectionJobs.forEach(job => {
+        expect(job.status).toBe('QUEUED');
+        expect(job.testPlanRun).toBeDefined();
+        expect(job.testPlanRun.tester.isBot).toBe(true);
+        expect(job.testPlanRun.testPlanReport).toBeDefined();
+        const report = job.testPlanRun.testPlanReport;
+        expect(report.at.id.toString()).toBe(targetAt.id.toString());
+        expect(report.exactAtVersion.id.toString()).toBe(
+          currentAtVersion.id.toString()
+        );
+        // The two reports that should be refreshed based on Test DB seed
+        expect(
+          ['88', '84'].includes(report.testPlanVersion.id.toString())
+        ).toBe(true);
+        expect(report.markedFinalAt).toBeNull();
+        job.testStatus.forEach(ts => expect(ts.status).toBe('QUEUED'));
+      });
+    });
+  });
+
+  it('should return empty collection jobs if no refreshable reports exist due to absence of eligible test results', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      // Update TestPlanRun records to clear testResults, so no report qualifies for refresh.
+      await db.sequelize.query(
+        `UPDATE "TestPlanRun" SET "testResults" = '[]' WHERE "initiatedByAutomation" = true`,
+        { transaction }
+      );
+
+      // This VoiceOver version would have two refreshable reports if the test results were present
+      const currentAtVersion = await getAtVersionByQuery({
+        where: { atId: 3, name: '14.0' },
+        transaction
+      });
+
+      const response = await createCollectionJobsFromPreviousVersionMutation(
+        currentAtVersion.id,
+        { transaction }
+      );
+      const result = response.createCollectionJobsFromPreviousAtVersion;
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result.collectionJobs)).toBe(true);
+      expect(result.collectionJobs.length).toBe(0);
+    });
+  });
+
+  it('should return empty collection jobs if current version is not the latest automation supported version', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      const olderAtVersion = await getAtVersionByQuery({
+        where: { atId: 3, name: '13.0' },
+        transaction
+      });
+      expect(olderAtVersion).toBeDefined();
+
+      const response = await createCollectionJobsFromPreviousVersionMutation(
+        olderAtVersion.id,
+        { transaction }
+      );
+      const result = response.createCollectionJobsFromPreviousAtVersion;
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result.collectionJobs)).toBe(true);
+      expect(result.collectionJobs.length).toBe(0);
     });
   });
 });

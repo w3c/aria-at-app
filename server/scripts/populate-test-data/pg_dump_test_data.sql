@@ -27,11 +27,28 @@ BEGIN
 END;
 $$;
 
+CREATE OR REPLACE FUNCTION get_at_version_id(atId integer, p_name text) RETURNS integer
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+  at_version_id integer;
+BEGIN
+  SELECT id INTO at_version_id
+  FROM "AtVersion"
+  WHERE "AtVersion"."atId" = atId
+    AND "AtVersion"."name" = p_name
+  ORDER BY id
+  LIMIT 1;
+  RETURN at_version_id;
+END;
+$$;
+
 --
 -- Data for Name: AtVersion; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
 INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2023.3.3', '2023-12-02');
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '13.0', '2023-12-02');
 INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '14.0', '2024-09-23');
 
 
@@ -93,6 +110,9 @@ INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinal
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (26, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 3, 5, 3, 'READY');
 --- Fully recommended TestPlanVersion [END]
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (27, get_test_plan_version_id(text 'Color Viewer Slider', '2'), '2024-10-02 14:18:23.602-05', 3, 3, 3, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "markedFinalAt", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (28, get_test_plan_version_id(text 'Color Viewer Slider', '2'), '2024-10-02 14:18:23.602-05', 3, '2024-10-03 14:18:23.602-05', get_at_version_id(3, '13.0'), 3, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "markedFinalAt", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (29, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-10-02 14:18:23.602-05', 3, '2024-10-03 14:18:23.602-05', get_at_version_id(3, '13.0'), 3, 'READY');
+
 
 --
 -- Data for Name: TestPlanVersion; Type: TABLE DATA; Schema: public; Owner: atr
@@ -158,6 +178,9 @@ INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults"
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (26, 2, 25, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (27, 2, 26, '[]');
 INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "testResults") VALUES (28, 1, 27, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "initiatedByAutomation", "testResults") VALUES (29, 1, 28, true, '[]');
+INSERT INTO "TestPlanRun" (id, "testerUserId", "testPlanReportId", "initiatedByAutomation", "testResults") VALUES (30, 1, 29, true, '[]');
+
 
 --
 -- Data for Name: CollectionJob; Type: TABLE DATA; Schema: public; Owner: atr

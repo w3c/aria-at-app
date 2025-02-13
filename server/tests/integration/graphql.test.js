@@ -4,7 +4,9 @@ const deepFlatFilter = require('../../util/deepFlatFilter');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
 const dbCleaner = require('../util/db-cleaner');
-const { getAtVersionByQuery } = require('../../models/services/AtService');
+const {
+  getAtVersionByQuery
+} = require('../../models/services/AtVersionService');
 const {
   getBrowserVersionByQuery
 } = require('../../models/services/BrowserService');
@@ -825,6 +827,14 @@ describe('graphql', () => {
               }
             }
             deleteCollectionJob(id: 1)
+            createCollectionJobsFromPreviousAtVersion(atVersionId: 6) {
+              __typename
+              collectionJobs {
+                __typename
+                id
+              }
+              message
+            }
           }
         `,
         {
@@ -843,7 +853,7 @@ describe('graphql', () => {
       );
     });
 
-    // esure recursive query of collectionJob<>testPlanRun fails at some depth
+    // ensure recursive query of collectionJob<>testPlanRun fails at some depth
     await expect(
       typeAwareQuery(
         gql`
