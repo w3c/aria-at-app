@@ -751,8 +751,6 @@ const createCollectionJobsFromPreviousVersion = async ({
       transaction
     });
 
-  console.log('refreshableReports', refreshableReports);
-
   if (!refreshableReports.length) {
     return [];
   }

@@ -383,8 +383,6 @@ const getRefreshableTestPlanReports = async ({
     transaction
   });
 
-  console.log('Current version:', currentVersion.dataValues);
-
   if (!currentVersion) {
     throw new Error(`AT Version with ID ${currentAtVersionId} not found`);
   }
@@ -407,48 +405,21 @@ const getRefreshableTestPlanReports = async ({
     order: [['releasedAt', 'DESC']],
     transaction
   });
-  const allVersions = await AtVersion.findAll({
-    where: {
-      atId: currentVersion.atId
-    },
-    transaction
-  });
-  console.log(
-    'All versions:',
-    allVersions.map(v => v.dataValues)
-  );
-  console.log(
-    'Automation versions found:',
-    automationVersions.map(v => v.dataValues)
-  );
 
   if (!automationVersions.length) {
     return { currentVersion, previousVersion: null, refreshableReports: [] };
   }
 
   // Check if the current version is the most recent automation-supported version;
-  // if not, return early.
   const latestAutomationVersion = automationVersions[0];
-  console.log('Latest automation version:', latestAutomationVersion.dataValues);
   if (currentVersion.id !== latestAutomationVersion.id) {
-    console.log(
-      'Current version is not the most recent automation-supported version'
-    );
     return { currentVersion, previousVersion: null, refreshableReports: [] };
   }
 
-  // Find the most recent automation-supported version released before the current one.
-  const previousVersion = automationVersions.find(
-    version =>
-      new Date(version.releasedAt) < new Date(currentVersion.releasedAt)
-  );
-  console.log(
-    'Previous automation version:',
-    previousVersion ? previousVersion.dataValues : null
-  );
+  // The most recent automation-supported version released before the current one.
+  const previousVersion = automationVersions[1];
 
   if (!previousVersion) {
-    console.log('No previous automation version found');
     return { currentVersion, previousVersion: null, refreshableReports: [] };
   }
 
@@ -467,7 +438,6 @@ const getRefreshableTestPlanReports = async ({
     transaction,
     raw: true
   });
-  console.log('Found test plan run rows:', testPlanRunResults);
 
   // Extract unique TestPlanReport IDs from the TestPlanRun results
   const reportIds = [
@@ -482,7 +452,6 @@ const getRefreshableTestPlanReports = async ({
       transaction
     });
   }
-  console.log('Refreshable reports found:', refreshableReports.length);
 
   return { currentVersion, previousVersion, refreshableReports };
 };

@@ -1276,4 +1276,33 @@ describe('Automation controller', () => {
       expect(uniqueJobTestPlanVersions.size).toBe(2);
     });
   });
+
+  it('should return empty collection jobs if no refreshable reports exist due to absence of eligible test results', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      // Update TestPlanRun records to clear testResults, so no report qualifies for refresh.
+      await db.sequelize.query(
+        `UPDATE "TestPlanRun" SET "testResults" = '[]' WHERE "initiatedByAutomation" = true`,
+        { transaction }
+      );
+
+      // Retrieve a valid current AT version. Using targetAt with id 3 and version '14.0' as in other tests.
+      const targetAt = await getAtById({ id: 3, transaction });
+      const currentAtVersion = await getAtVersionByQuery({
+        where: { atId: targetAt.id, name: '14.0' },
+        transaction
+      });
+
+      // Call the mutation that creates collection jobs from the previous version.
+      const response = await createCollectionJobsFromPreviousVersionMutation(
+        currentAtVersion.id,
+        { transaction }
+      );
+      const result = response.createCollectionJobsFromPreviousVersion;
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result.collectionJobs)).toBe(true);
+      // Expect no collection jobs to be created due to no refreshable reports.
+      expect(result.collectionJobs.length).toBe(0);
+    });
+  });
 });
