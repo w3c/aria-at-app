@@ -827,7 +827,7 @@ describe('graphql', () => {
               }
             }
             deleteCollectionJob(id: 1)
-            createCollectionJobsFromPreviousVersion(atVersionId: 5) {
+            createCollectionJobsFromPreviousAtVersion(atVersionId: 6) {
               __typename
               collectionJobs {
                 __typename

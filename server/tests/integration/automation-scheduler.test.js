@@ -251,7 +251,7 @@ const createCollectionJobsFromPreviousVersionMutation = async (
   await mutate(
     `
             mutation {
-                createCollectionJobsFromPreviousVersion(atVersionId: "${atVersionId}") {
+                createCollectionJobsFromPreviousAtVersion(atVersionId: "${atVersionId}") {
                     collectionJobs {
                         id
                         status
@@ -1227,15 +1227,15 @@ describe('Automation controller', () => {
     });
   });
 
-  it('should create collection jobs from previous AT version with expanded test coverage', async () => {
+  it('should create collection jobs from previous AT version', async () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
-      //  Get VoiceOver
+      //  VoiceOver
       const targetAt = await getAtById({ id: 3, transaction });
       expect(targetAt).toBeDefined();
 
       const currentAtVersion = await getAtVersionByQuery({
         where: {
-          atId: targetAt.id,
+          atId: 3,
           name: '14.0'
         },
         transaction
@@ -1246,12 +1246,15 @@ describe('Automation controller', () => {
         currentAtVersion.id,
         { transaction }
       );
-      const result = response.createCollectionJobsFromPreviousVersion;
+      const result = response.createCollectionJobsFromPreviousAtVersion;
       expect(result).toBeDefined();
 
       const { collectionJobs } = result;
       expect(Array.isArray(collectionJobs)).toBe(true);
       expect(collectionJobs.length).toBe(2);
+
+      const uniqueJobIds = new Set(collectionJobs.map(job => job.id));
+      expect(uniqueJobIds.size).toBe(2);
 
       collectionJobs.forEach(job => {
         expect(job.status).toBe('QUEUED');
@@ -1263,17 +1266,13 @@ describe('Automation controller', () => {
         expect(report.exactAtVersion.id.toString()).toBe(
           currentAtVersion.id.toString()
         );
+        // The two reports that should be refreshed based on Test DB seed
+        expect(
+          ['88', '84'].includes(report.testPlanVersion.id.toString())
+        ).toBe(true);
         expect(report.markedFinalAt).toBeNull();
         job.testStatus.forEach(ts => expect(ts.status).toBe('QUEUED'));
       });
-      const uniqueJobIds = new Set(collectionJobs.map(job => job.id));
-      expect(uniqueJobIds.size).toBe(2);
-      const uniqueJobTestPlanVersions = new Set(
-        collectionJobs.map(
-          job => job.testPlanRun.testPlanReport.testPlanVersion.title
-        )
-      );
-      expect(uniqueJobTestPlanVersions.size).toBe(2);
     });
   });
 
@@ -1285,23 +1284,40 @@ describe('Automation controller', () => {
         { transaction }
       );
 
-      // Retrieve a valid current AT version. Using targetAt with id 3 and version '14.0' as in other tests.
-      const targetAt = await getAtById({ id: 3, transaction });
+      // This VoiceOver version would have two refreshable reports if the test results were present
       const currentAtVersion = await getAtVersionByQuery({
-        where: { atId: targetAt.id, name: '14.0' },
+        where: { atId: 3, name: '14.0' },
         transaction
       });
 
-      // Call the mutation that creates collection jobs from the previous version.
       const response = await createCollectionJobsFromPreviousVersionMutation(
         currentAtVersion.id,
         { transaction }
       );
-      const result = response.createCollectionJobsFromPreviousVersion;
+      const result = response.createCollectionJobsFromPreviousAtVersion;
 
       expect(result).toBeDefined();
       expect(Array.isArray(result.collectionJobs)).toBe(true);
-      // Expect no collection jobs to be created due to no refreshable reports.
+      expect(result.collectionJobs.length).toBe(0);
+    });
+  });
+
+  it('should return empty collection jobs if current version is not the latest automation supported version', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      const olderAtVersion = await getAtVersionByQuery({
+        where: { atId: 3, name: '13.0' },
+        transaction
+      });
+      expect(olderAtVersion).toBeDefined();
+
+      const response = await createCollectionJobsFromPreviousVersionMutation(
+        olderAtVersion.id,
+        { transaction }
+      );
+      const result = response.createCollectionJobsFromPreviousAtVersion;
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result.collectionJobs)).toBe(true);
       expect(result.collectionJobs.length).toBe(0);
     });
   });

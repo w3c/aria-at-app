@@ -1,7 +1,6 @@
 const { gql } = require('apollo-server-core');
 const {
-  getAtVersionByQuery,
-  getAtVersionById
+  getAtVersionByQuery
 } = require('../../models/services/AtVersionService');
 const {
   getBrowserVersionByQuery

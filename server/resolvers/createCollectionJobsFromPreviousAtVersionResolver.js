@@ -1,9 +1,9 @@
 const { AuthenticationError } = require('apollo-server-core');
 const {
-  createCollectionJobsFromPreviousVersion
+  createCollectionJobsFromPreviousAtVersion
 } = require('../models/services/CollectionJobService');
 
-const createCollectionJobsFromPreviousVersionResolver = async (
+const createCollectionJobsFromPreviousAtVersionResolver = async (
   _,
   { atVersionId },
   context
@@ -15,7 +15,7 @@ const createCollectionJobsFromPreviousVersionResolver = async (
   }
 
   try {
-    const collectionJobs = await createCollectionJobsFromPreviousVersion({
+    const collectionJobs = await createCollectionJobsFromPreviousAtVersion({
       atVersionId,
       transaction
     });
@@ -31,4 +31,4 @@ const createCollectionJobsFromPreviousVersionResolver = async (
   }
 };
 
-module.exports = createCollectionJobsFromPreviousVersionResolver;
+module.exports = createCollectionJobsFromPreviousAtVersionResolver;

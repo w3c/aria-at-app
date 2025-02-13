@@ -729,19 +729,12 @@ const updateCollectionJobTestStatusByQuery = ({
  * Creates collection jobs for all test plan reports eligible for automation refresh.
  * Eligible reports are those whose originating test run was initiated by automation and
  * used the previous automatable AT version.
- *
- * For each report:
- *   1. Clone the historical report with the current AT Version (keeping the original Browser and TestPlanVersion).
- *   2. Start a collection job for the new Test Plan Report.
- *
- * If no eligible reports are found, return an empty array.
- *
  * @param {object} options
  * @param {number} options.atVersionId - ID of the current AT version
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<Array>} - Array of created collection jobs
  */
-const createCollectionJobsFromPreviousVersion = async ({
+const createCollectionJobsFromPreviousAtVersion = async ({
   atVersionId,
   transaction
 }) => {
@@ -757,14 +750,12 @@ const createCollectionJobsFromPreviousVersion = async ({
 
   const collectionJobs = [];
   for (const report of refreshableReports) {
-    // Clone the historical report with the new current AT version
     const newReport = await cloneTestPlanReportWithNewAtVersion(
       report,
       currentVersion,
       transaction
     );
 
-    // Get the appropriate AT version for automation - here currentVersion will be used.
     const atVersion = await getAtVersionWithRequirements(
       newReport.at.id,
       currentVersion,
@@ -796,7 +787,7 @@ module.exports = {
   restartCollectionJob,
   cancelCollectionJob,
   retryCanceledCollections,
-  createCollectionJobsFromPreviousVersion,
+  createCollectionJobsFromPreviousAtVersion,
   // Basic CRUD for CollectionJobTestStatus
   updateCollectionJobTestStatusByQuery
 };
