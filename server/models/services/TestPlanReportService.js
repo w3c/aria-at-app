@@ -451,7 +451,7 @@ const cloneTestPlanReportWithNewAtVersion = async (
     testPlanVersionId: historicalReport.testPlanVersionId,
     atId: historicalReport.atId,
     exactAtVersionId: currentVersion.id,
-    minimumAtVersionId: currentVersion.id,
+    minimumAtVersionId: null,
     browserId: historicalReport.browserId,
     markedFinalAt: null
   };
