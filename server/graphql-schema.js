@@ -1134,7 +1134,8 @@ const graphqlSchema = gql`
     """
     draftTestPlanRuns: [TestPlanRun]!
     """
-    The state of the vendor review, which can be "READY", "IN_PROGRESS", and "APPROVED"
+    The state of the vendor review, which can be "READY", "IN_PROGRESS", and "APPROVED".
+    Generated from VendorApprovalStatus.
     """
     vendorReviewStatus: String
     """
