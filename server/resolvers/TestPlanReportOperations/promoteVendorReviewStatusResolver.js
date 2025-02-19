@@ -1,13 +1,13 @@
 const { AuthenticationError } = require('apollo-server-errors');
-const {
-  updateTestPlanReportById
-} = require('../../models/services/TestPlanReportService');
 const populateData = require('../../services/PopulatedData/populateData');
 const checkUserRole = require('../helpers/checkUserRole');
+const {
+  updateVendorApprovalStatusByIds
+} = require('../../models/services/VendorApprovalStatusService');
 
 const promoteVendorReviewStatusResolver = async (
   { parentContext: { id: testPlanReportId } },
-  { vendorReviewStatus },
+  { reviewStatus },
   context
 ) => {
   const { user, transaction } = context;
@@ -18,25 +18,19 @@ const promoteVendorReviewStatusResolver = async (
     throw new AuthenticationError();
   }
 
-  let values = { vendorReviewStatus };
+  if (!user.vendorId || !user.company?.id)
+    return populateData({ testPlanReportId }, { context });
 
-  if (vendorReviewStatus === 'READY') {
-    values = {
-      vendorReviewStatus: 'IN_PROGRESS'
-    };
-  } else if (vendorReviewStatus === 'IN_PROGRESS') {
-    values = {
-      vendorReviewStatus: 'APPROVED'
-    };
-  }
-
-  if (vendorReviewStatus !== 'APPROVED') {
-    await updateTestPlanReportById({
-      id: testPlanReportId,
-      values,
-      transaction
-    });
-  }
+  await updateVendorApprovalStatusByIds({
+    testPlanReportId,
+    userId: user.id,
+    vendorId: user.vendorId || user.company?.id,
+    values: {
+      reviewStatus,
+      approvedAt: reviewStatus === 'APPROVED' ? new Date() : null
+    },
+    transaction
+  });
 
   return populateData({ testPlanReportId }, { context });
 };

@@ -1,11 +1,12 @@
 const { AuthenticationError } = require('apollo-server-errors');
-const {
-  getTestPlanVersionById,
-  updateTestPlanVersionById
-} = require('../models/services/TestPlanVersionService');
 const checkUserRole = require('./helpers/checkUserRole');
+const {
+  getVendorApprovalStatusByIds,
+  createVendorApprovalStatus,
+  updateVendorApprovalStatusByIds
+} = require('../models/services/VendorApprovalStatusService');
 
-const addViewerResolver = async (_, { testPlanVersionId, testId }, context) => {
+const addViewerResolver = async (_, { testId, testPlanReportId }, context) => {
   const { user, transaction } = context;
 
   const isAdmin = checkUserRole.isAdmin(user?.roles);
@@ -14,22 +15,43 @@ const addViewerResolver = async (_, { testPlanVersionId, testId }, context) => {
     throw new AuthenticationError();
   }
 
-  const testPlanVersion = await getTestPlanVersionById({
-    id: testPlanVersionId,
-    transaction
-  });
-  const currentTest = testPlanVersion.tests.find(each => each.id === testId);
-  if (!currentTest.viewers) currentTest.viewers = [user];
-  else {
-    const viewer = currentTest.viewers.find(each => each.id === user.id);
-    if (!viewer) currentTest.viewers.push(user);
-  }
+  const viewer = {
+    testPlanReportId,
+    userId: user.id,
+    vendorId: user.vendorId || user.company?.id
+  };
 
-  await updateTestPlanVersionById({
-    id: testPlanVersionId,
-    values: { tests: testPlanVersion.tests },
-    transaction
-  });
+  // No need to add a 'viewer' if not affiliated with a company
+  if (!viewer?.vendorId) return user;
+
+  try {
+    const vendorApprovalStatus = await getVendorApprovalStatusByIds({
+      ...viewer,
+      transaction
+    });
+
+    if (vendorApprovalStatus) {
+      if (!vendorApprovalStatus.viewedTests.includes(testId)) {
+        await updateVendorApprovalStatusByIds({
+          ...viewer,
+          values: {
+            viewedTests: [...vendorApprovalStatus.viewedTests, testId]
+          },
+          transaction
+        });
+      }
+    } else {
+      await createVendorApprovalStatus({
+        values: {
+          ...viewer,
+          viewedTests: [testId]
+        },
+        transaction
+      });
+    }
+  } catch (error) {
+    console.error('vendorApprovalStatus', error);
+  }
 
   return user;
 };

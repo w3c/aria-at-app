@@ -1168,6 +1168,39 @@ const graphqlSchema = gql`
   }
 
   """
+  """
+  type VendorApprovalStatus {
+    """
+    The vendor representative who reviewed the test.
+    """
+    user: User!
+    """
+    The vendor representative's company.
+    """
+    vendor: Vendor!
+    """
+    The test plan report being reviewed.
+    """
+    testPlanReport: TestPlanReport!
+    """
+    The parent test plan version of the test plan report.
+    """
+    testPlanVersion: TestPlanVersion!
+    """
+    The current review status. Expected to be "IN_PROGRESS" or "APPROVED".
+    """
+    reviewStatus: String!
+    """
+    The list of tests the tester has viewed.
+    """
+    viewedTests: [String]!
+    """
+    The timestamp of when the approval was done if "reviewStatus" is "APPROVED".
+    """
+    approvedAt: Timestamp
+  }
+
+  """
   Minimal plain representation of a TestPlanReport.
   """
   input TestPlanReportInput {
@@ -1282,6 +1315,18 @@ const graphqlSchema = gql`
     Get all vendors.
     """
     vendors: [Vendor]!
+    """
+    Get a VendorApprovalStatus.
+    """
+    vendorApprovalStatus(
+      userId: ID!
+      vendorId: ID!
+      testPlanReportId: ID!
+    ): VendorApprovalStatus!
+    """
+    Get all VendorApprovalStatuses.
+    """
+    vendorApprovalStatuses: [VendorApprovalStatus]!
     """
     Get a particular TestPlanVersion by ID.
     """
@@ -1413,10 +1458,9 @@ const graphqlSchema = gql`
     """
     unmarkAsFinal: PopulatedData!
     """
-    Move the vendor review status from READY to IN PROGRESS
-    or IN PROGRESS to APPROVED
+    Move the vendor review status to APPROVED
     """
-    promoteVendorReviewStatus(vendorReviewStatus: String!): PopulatedData
+    promoteVendorReviewStatus(reviewStatus: String!): PopulatedData
     """
     Permanently deletes the TestPlanReport and all associated TestPlanRuns.
     Only available to admins.
@@ -1580,7 +1624,7 @@ const graphqlSchema = gql`
     """
     Add a viewer to a test
     """
-    addViewer(testPlanVersionId: ID!, testId: ID!): User!
+    addViewer(testId: ID!, testPlanReportId: ID!): User
     """
     Schedule a new CollectionJob through the Response Scheduler
     """

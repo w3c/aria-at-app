@@ -12,8 +12,8 @@ import {
 } from '@components/common/fragments';
 
 export const ADD_VIEWER_MUTATION = gql`
-  mutation AddViewerMutation($testPlanVersionId: ID!, $testId: ID!) {
-    addViewer(testPlanVersionId: $testPlanVersionId, testId: $testId) {
+  mutation AddViewerMutation($testId: ID!, $testPlanReportId: ID!) {
+    addViewer(testId: $testId, testPlanReportId: $testPlanReportId) {
       username
     }
   }
@@ -25,12 +25,28 @@ export const PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION = gql`
     $reviewStatus: String!
   ) {
     testPlanReport(id: $testReportId) {
-      promoteVendorReviewStatus(vendorReviewStatus: $reviewStatus) {
+      promoteVendorReviewStatus(reviewStatus: $reviewStatus) {
         testPlanReport {
           id
           vendorReviewStatus
         }
       }
+    }
+  }
+`;
+
+export const VENDOR_APPROVAL_STATUS_QUERY = gql`
+  query VendorApprovalStatusQuery(
+    $userId: ID!
+    $vendorId: ID!
+    $testPlanReportId: ID!
+  ) {
+    vendorApprovalStatus(
+      userId: $userId
+      vendorId: $vendorId
+      testPlanReportId: $testPlanReportId
+    ) {
+      viewedTests
     }
   }
 `;
