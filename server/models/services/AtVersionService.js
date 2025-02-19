@@ -456,5 +456,5 @@ module.exports = {
   removeAtVersionById,
   findOrCreateAtVersion,
   getUniqueAtVersionsForReport,
-  getRefreshableTestPlanReports: getRefreshableTestPlanReportsForVersion
+  getRefreshableTestPlanReportsForVersion
 };

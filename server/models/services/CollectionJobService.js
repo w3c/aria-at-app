@@ -37,7 +37,7 @@ const getGraphQLContext = require('../../graphql-context');
 const { getBotUserByAtId } = require('./UserService');
 const {
   getAtVersionWithRequirements,
-  getRefreshableTestPlanReports
+  getRefreshableTestPlanReportsForVersion
 } = require('./AtVersionService');
 
 // association helpers to be included with Models' results
@@ -739,7 +739,7 @@ const createCollectionJobsFromPreviousAtVersion = async ({
   transaction
 }) => {
   const { currentVersion, refreshableReports } =
-    await getRefreshableTestPlanReports({
+    await getRefreshableTestPlanReportsForVersion({
       currentAtVersionId: atVersionId,
       transaction
     });
