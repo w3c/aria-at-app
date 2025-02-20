@@ -1391,12 +1391,6 @@ describe('Automation controller', () => {
       );
 
       expect(historicalReport).toBeDefined();
-      const historicalTestResult = historicalReport.finalizedTestResults[0];
-      const { test: selectedTest } = historicalTestResult;
-      expect(historicalTestResult).toBeDefined();
-      const historicalResponses = historicalTestResult.scenarioResults.map(
-        sr => sr.output
-      );
       const secret = await getJobSecret(newJob.id, { transaction });
       let updateResponse = await sessionAgent
         .post(`/api/jobs/${newJob.id}`)
@@ -1405,43 +1399,55 @@ describe('Automation controller', () => {
         .set('x-transaction-id', transaction.id);
       expect(updateResponse.statusCode).toBe(200);
 
-      // Update the test result on the new collection job with responses exactly the same as the historical ones
-      const testUpdateResponse = await sessionAgent
-        .post(`/api/jobs/${newJob.id}/test/${selectedTest.rowNumber}`)
-        .send({
-          responses: historicalResponses,
-          capabilities: {
-            atName: historicalReport.at.name,
-            atVersion: newJob.testPlanRun.testPlanReport.exactAtVersion.name,
-            browserName: historicalReport.browser.name,
-            browserVersion: historicalTestResult.browserVersion.name
-          }
-        })
-        .set('x-automation-secret', secret)
-        .set('x-transaction-id', transaction.id);
-      expect(testUpdateResponse.statusCode).toBe(200);
+      // Update test results for every historical test result with matching outputs
+      for (const historicalResult of historicalReport.finalizedTestResults) {
+        const testRowNumber = historicalResult.test.rowNumber;
+        const responses = historicalResult.scenarioResults.map(sr => sr.output);
+        const updateRes = await sessionAgent
+          .post(`/api/jobs/${newJob.id}/test/${testRowNumber}`)
+          .send({
+            responses,
+            capabilities: {
+              atName: historicalReport.at.name,
+              atVersion: newJob.testPlanRun.testPlanReport.exactAtVersion.name,
+              browserName: historicalReport.browser.name,
+              browserVersion: historicalResult.browserVersion.name
+            }
+          })
+          .set('x-automation-secret', secret)
+          .set('x-transaction-id', transaction.id);
+        expect(updateRes.statusCode).toBe(200);
+      }
 
-      // Verify that in the new test result the assertion results are copied from the historical test result
+      // Verify that for every updated test result, the assertion results are copied from the corresponding historical result
       const updatedRun = await getTestPlanRun(newJob.testPlanRun.id, {
         transaction
       });
-      const newTestResult = updatedRun.testPlanRun.testResults.find(
-        tr => tr.test.id === selectedTest.id
-      );
-
-      expect(newTestResult).toBeDefined();
-      newTestResult.scenarioResults.forEach((scenarioResult, i) => {
-        const historicalScenario = historicalTestResult.scenarioResults[i];
-        expect(scenarioResult.output).toEqual(historicalScenario.output);
-        scenarioResult.assertionResults.forEach((assertionResult, j) => {
-          expect(assertionResult.passed).toEqual(
-            historicalScenario.assertionResults[j].passed
-          );
-          expect(assertionResult.failedReason).toEqual(
-            historicalScenario.assertionResults[j].failedReason
-          );
+      for (const historicalResult of historicalReport.finalizedTestResults) {
+        const newTestResult = updatedRun.testPlanRun.testResults.find(
+          tr => tr.test.id === historicalResult.test.id
+        );
+        expect(newTestResult).toBeDefined();
+        newTestResult.scenarioResults.forEach((scenarioResult, i) => {
+          const historicalScenario = historicalResult.scenarioResults[i];
+          expect(scenarioResult.output).toEqual(historicalScenario.output);
+          scenarioResult.assertionResults.forEach((assertionResult, j) => {
+            expect(assertionResult.passed).toEqual(
+              historicalScenario.assertionResults[j].passed
+            );
+            expect(assertionResult.failedReason).toEqual(
+              historicalScenario.assertionResults[j].failedReason
+            );
+          });
         });
-      });
+      }
+
+      // Since all tests have matching outputs, the report should be auto-finalized
+      const { testPlanReport: finalReport } = await getTestPlanReport(
+        newJob.testPlanRun.testPlanReport.id,
+        { transaction }
+      );
+      expect(finalReport.markedFinalAt).not.toBeNull();
     });
   });
 });

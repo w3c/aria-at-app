@@ -29,7 +29,8 @@ const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTests
 const getGraphQLContext = require('../graphql-context');
 const populateData = require('../services/PopulatedData/populateData');
 const {
-  getTestPlanReportById
+  getTestPlanReportById,
+  updateTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 const httpAgent = new http.Agent({ family: 4 });
 
@@ -163,20 +164,21 @@ const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
 
   if (!previousVersion) return null;
 
-  // Find a finalized historical report from the previous automatable AT Versions
-  // that has been finalized and matches the same test plan version
-  const historicalReport = refreshableReports.find(async report => {
-    const populatedReport = await getTestPlanReportById({
-      id: report.id,
-      transaction: context.transaction
-    });
+  // Fetch all candidate historical reports concurrently
+  const historicalReports = await Promise.all(
+    refreshableReports.map(report =>
+      getTestPlanReportById({ id: report.id, transaction: context.transaction })
+    )
+  );
 
-    return (
-      populatedReport.testPlanVersion.id ===
-        testPlanReport.testPlanVersion.id &&
-      populatedReport.markedFinalAt !== null
-    );
-  });
+  // Select the historical report matching the same test plan version and that is finalized
+  const historicalReport = historicalReports.find(
+    report =>
+      report.testPlanVersion.id === testPlanReport.testPlanVersion.id &&
+      report.markedFinalAt !== null
+  );
+
+  if (!historicalReport) return null;
 
   const finalHistoricalReport = await populateData(
     { testPlanReportId: historicalReport.id },
@@ -371,6 +373,12 @@ const updateJobResults = async (req, res) => {
         browserVersionId: browserVersion.id,
         context
       });
+
+      await finalizeTestPlanReportIfAllTestsMatchHistoricalResults({
+        id,
+        transaction,
+        context
+      });
     }
 
     res.json({ success: true });
@@ -382,6 +390,73 @@ const updateJobResults = async (req, res) => {
       stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
     };
     res.status(statusCode).json(errorResponse);
+  }
+};
+
+const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
+  id,
+  transaction,
+  context
+}) => {
+  try {
+    const updatedJob = await getCollectionJobById({ id, transaction });
+    const { testPlanRun } = updatedJob;
+    const { testPlanReport } = testPlanRun;
+
+    // Early return if there's no report or it's already finalized
+    if (!testPlanReport || testPlanReport.markedFinalAt) return;
+
+    const applicableTests = testPlanReport.testPlanVersion.tests.filter(
+      test => test.at.key === testPlanReport.at.key
+    );
+    const totalTests = applicableTests.length;
+
+    // Return early if not all tests have been updated
+    if (testPlanRun.testResults.length !== totalTests) return;
+
+    const historicalResults = await getApprovedFinalizedTestResults(
+      testPlanRun,
+      context
+    );
+    if (!historicalResults) return;
+
+    // Validate each applicable test's results against historical results
+    for (const test of applicableTests) {
+      const currResult = testPlanRun.testResults.find(
+        tr => String(tr.testId) === String(test.id)
+      );
+      const histResult = historicalResults.find(
+        hr => String(hr.testId) === String(test.id)
+      );
+      if (!currResult || !histResult) return;
+      if (
+        !currResult.scenarioResults ||
+        currResult.scenarioResults.length !== histResult.scenarioResults.length
+      )
+        return;
+      for (let i = 0; i < currResult.scenarioResults.length; i++) {
+        if (
+          currResult.scenarioResults[i].output !==
+          histResult.scenarioResults[i].output
+        )
+          return;
+      }
+    }
+
+    // All tests match historical results; mark the report as final
+    await updateTestPlanReportById({
+      id: testPlanReport.id,
+      values: { markedFinalAt: new Date() },
+      transaction
+    });
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    const errorResponse = {
+      error: error.message,
+      details: error.details || {},
+      stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+    };
+    throw new HttpQueryError(statusCode, errorResponse, true);
   }
 };
 
