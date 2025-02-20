@@ -1329,6 +1329,138 @@ describe('Automation controller', () => {
     });
   });
 
+  const commonVerdictCopyingSetup = async ({
+    transaction,
+    context,
+    diffOutputs = 0
+  }) => {
+    const currentAtVersion = await getAtVersionByQuery({
+      where: { atId: 3, name: '14.0' },
+      transaction
+    });
+    expect(currentAtVersion).toBeDefined();
+    const createResponse =
+      await createCollectionJobsFromPreviousVersionMutation(
+        currentAtVersion.id,
+        { transaction }
+      );
+    const result = createResponse.createCollectionJobsFromPreviousAtVersion;
+    expect(result).toBeDefined();
+    expect(Array.isArray(result.collectionJobs)).toBe(true);
+    expect(result.collectionJobs.length).toBeGreaterThan(0);
+    const { collectionJob: newJob } = await getTestCollectionJob(
+      result.collectionJobs[0].id,
+      {
+        transaction
+      }
+    );
+    expect(newJob).toBeDefined();
+    const currentAtVersionId =
+      newJob.testPlanRun.testPlanReport.exactAtVersion.id;
+    const { previousVersion, refreshableReports } =
+      await getRefreshableTestPlanReportsForVersion({
+        currentAtVersionId,
+        transaction
+      });
+    expect(previousVersion).toBeDefined();
+    const refreshableReportsPopulated = await Promise.all(
+      refreshableReports.map(report =>
+        populateData({ testPlanReportId: report.id }, { context })
+      )
+    );
+
+    // Filter for the historical report that has the same Test Plan Version and is finalized
+    const {
+      testPlanReport: { id: historicalReportId }
+    } = refreshableReportsPopulated.find(report => {
+      return (
+        report.testPlanVersion.id.toString() ===
+          newJob.testPlanRun.testPlanReport.testPlanVersion.id &&
+        report.markedFinalAt !== null
+      );
+    });
+
+    const { testPlanReport: historicalReport } = await getTestPlanReport(
+      historicalReportId,
+      {
+        transaction
+      }
+    );
+
+    expect(historicalReport).toBeDefined();
+    const secret = await getJobSecret(newJob.id, { transaction });
+    let updateResponse = await sessionAgent
+      .post(`/api/jobs/${newJob.id}`)
+      .send({ status: 'RUNNING' })
+      .set('x-automation-secret', secret)
+      .set('x-transaction-id', transaction.id);
+    expect(updateResponse.statusCode).toBe(200);
+
+    // Update test results for every historical test result with matching outputs
+    for (const historicalResult of historicalReport.finalizedTestResults) {
+      const testRowNumber = historicalResult.test.rowNumber;
+      const responses = historicalResult.scenarioResults.map(sr => sr.output);
+      for (let i = 0; i < diffOutputs && i < responses.length; i++) {
+        responses[i] = 'This is a different output';
+      }
+      const updateRes = await sessionAgent
+        .post(`/api/jobs/${newJob.id}/test/${testRowNumber}`)
+        .send({
+          responses,
+          capabilities: {
+            atName: historicalReport.at.name,
+            atVersion: newJob.testPlanRun.testPlanReport.exactAtVersion.name,
+            browserName: historicalReport.browser.name,
+            browserVersion: historicalResult.browserVersion.name
+          }
+        })
+        .set('x-automation-secret', secret)
+        .set('x-transaction-id', transaction.id);
+      expect(updateRes.statusCode).toBe(200);
+    }
+
+    // Verify that for every updated test result, the assertion results are copied from the corresponding historical result
+    const updatedRun = await getTestPlanRun(newJob.testPlanRun.id, {
+      transaction
+    });
+    for (const historicalResult of historicalReport.finalizedTestResults) {
+      const newTestResult = updatedRun.testPlanRun.testResults.find(
+        tr => tr.test.id === historicalResult.test.id
+      );
+      let diffOutputsAvailable = diffOutputs;
+      expect(newTestResult).toBeDefined();
+      newTestResult.scenarioResults.forEach((scenarioResult, i) => {
+        const historicalScenario = historicalResult.scenarioResults[i];
+        if (scenarioResult.output !== historicalScenario.output) {
+          if (diffOutputsAvailable > 0) {
+            diffOutputsAvailable--;
+          } else {
+            console.error(
+              `Output mismatch for scenario ${i}: expected "${historicalScenario.output}" but got "${scenarioResult.output}" and have ${diffOutputsAvailable} diff tolerance remaining`
+            );
+            expect(false).toBe(true);
+          }
+        } else {
+          scenarioResult.assertionResults.forEach((assertionResult, j) => {
+            const historicalAssertionResult =
+              historicalScenario.assertionResults[j];
+            expect(assertionResult.passed).toEqual(
+              historicalAssertionResult.passed
+            );
+            expect(assertionResult.failedReason).toEqual(
+              historicalAssertionResult.failedReason
+            );
+          });
+        }
+      });
+    }
+    const { testPlanReport: finalReport } = await getTestPlanReport(
+      newJob.testPlanRun.testPlanReport.id,
+      { transaction }
+    );
+    return finalReport;
+  };
+
   it('should copy historical assertion results from historical report (previous automatable AT version) and auto-finalize new test report when outputs match', async () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
       const context = getGraphQLContext({
@@ -1337,117 +1469,34 @@ describe('Automation controller', () => {
           transaction
         }
       });
-      const currentAtVersion = await getAtVersionByQuery({
-        where: { atId: 3, name: '14.0' },
-        transaction
+
+      const finalReport = await commonVerdictCopyingSetup({
+        transaction,
+        context
       });
-      expect(currentAtVersion).toBeDefined();
-      const createResponse =
-        await createCollectionJobsFromPreviousVersionMutation(
-          currentAtVersion.id,
-          { transaction }
-        );
-      const result = createResponse.createCollectionJobsFromPreviousAtVersion;
-      expect(result).toBeDefined();
-      expect(Array.isArray(result.collectionJobs)).toBe(true);
-      expect(result.collectionJobs.length).toBeGreaterThan(0);
-      const { collectionJob: newJob } = await getTestCollectionJob(
-        result.collectionJobs[0].id,
-        {
-          transaction
-        }
-      );
-      expect(newJob).toBeDefined();
-      const currentAtVersionId =
-        newJob.testPlanRun.testPlanReport.exactAtVersion.id;
-      const { previousVersion, refreshableReports } =
-        await getRefreshableTestPlanReportsForVersion({
-          currentAtVersionId,
-          transaction
-        });
-      expect(previousVersion).toBeDefined();
-      const refreshableReportsPopulated = await Promise.all(
-        refreshableReports.map(report =>
-          populateData({ testPlanReportId: report.id }, { context })
-        )
-      );
-
-      // Filter for the historical report that has the same Test Plan Version and is finalized
-      const {
-        testPlanReport: { id: historicalReportId }
-      } = refreshableReportsPopulated.find(report => {
-        return (
-          report.testPlanVersion.id.toString() ===
-            newJob.testPlanRun.testPlanReport.testPlanVersion.id &&
-          report.markedFinalAt !== null
-        );
-      });
-
-      const { testPlanReport: historicalReport } = await getTestPlanReport(
-        historicalReportId,
-        {
-          transaction
-        }
-      );
-
-      expect(historicalReport).toBeDefined();
-      const secret = await getJobSecret(newJob.id, { transaction });
-      let updateResponse = await sessionAgent
-        .post(`/api/jobs/${newJob.id}`)
-        .send({ status: 'RUNNING' })
-        .set('x-automation-secret', secret)
-        .set('x-transaction-id', transaction.id);
-      expect(updateResponse.statusCode).toBe(200);
-
-      // Update test results for every historical test result with matching outputs
-      for (const historicalResult of historicalReport.finalizedTestResults) {
-        const testRowNumber = historicalResult.test.rowNumber;
-        const responses = historicalResult.scenarioResults.map(sr => sr.output);
-        const updateRes = await sessionAgent
-          .post(`/api/jobs/${newJob.id}/test/${testRowNumber}`)
-          .send({
-            responses,
-            capabilities: {
-              atName: historicalReport.at.name,
-              atVersion: newJob.testPlanRun.testPlanReport.exactAtVersion.name,
-              browserName: historicalReport.browser.name,
-              browserVersion: historicalResult.browserVersion.name
-            }
-          })
-          .set('x-automation-secret', secret)
-          .set('x-transaction-id', transaction.id);
-        expect(updateRes.statusCode).toBe(200);
-      }
-
-      // Verify that for every updated test result, the assertion results are copied from the corresponding historical result
-      const updatedRun = await getTestPlanRun(newJob.testPlanRun.id, {
-        transaction
-      });
-      for (const historicalResult of historicalReport.finalizedTestResults) {
-        const newTestResult = updatedRun.testPlanRun.testResults.find(
-          tr => tr.test.id === historicalResult.test.id
-        );
-        expect(newTestResult).toBeDefined();
-        newTestResult.scenarioResults.forEach((scenarioResult, i) => {
-          const historicalScenario = historicalResult.scenarioResults[i];
-          expect(scenarioResult.output).toEqual(historicalScenario.output);
-          scenarioResult.assertionResults.forEach((assertionResult, j) => {
-            expect(assertionResult.passed).toEqual(
-              historicalScenario.assertionResults[j].passed
-            );
-            expect(assertionResult.failedReason).toEqual(
-              historicalScenario.assertionResults[j].failedReason
-            );
-          });
-        });
-      }
 
       // Since all tests have matching outputs, the report should be auto-finalized
-      const { testPlanReport: finalReport } = await getTestPlanReport(
-        newJob.testPlanRun.testPlanReport.id,
-        { transaction }
-      );
       expect(finalReport.markedFinalAt).not.toBeNull();
+    });
+  });
+
+  it('should not auto-finalize new test report when outputs do not match', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      const context = getGraphQLContext({
+        req: {
+          session: { user: { roles: [{ name: 'ADMIN' }] } },
+          transaction
+        }
+      });
+
+      const finalReport = await commonVerdictCopyingSetup({
+        transaction,
+        context,
+        diffOutputs: 1
+      });
+
+      // Since there is one test with a different output, the report should not be auto-finalized
+      expect(finalReport.markedFinalAt).toBeNull();
     });
   });
 });
