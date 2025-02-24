@@ -20,6 +20,7 @@ import {
   DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
   DATA_MANAGEMENT_TABLE_SORT_OPTIONS
 } from './utils';
+import TestPlanRefresh from './TestPlanRefresh';
 
 const DataManagement = () => {
   const { loading, data, error, refetch } = useQuery(
@@ -123,7 +124,7 @@ const DataManagement = () => {
             This page provides a view of the latest test plan version
             information, and where they currently are in the{' '}
             <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
-              ARIA-AT Community Group’s review process
+              ARIA-AT Community Group&apos;s review process
             </a>
             .<br />
             Use this page to manage Test Plans in the Test Queue and their
@@ -143,7 +144,7 @@ const DataManagement = () => {
             This page provides a view of the latest test plan version
             information, and where they currently are in the{' '}
             <a href="https://github.com/w3c/aria-at/wiki/Working-Mode">
-              ARIA-AT Community Group’s review process
+              ARIA-AT Community Group&apos;s review process
             </a>
             .
           </p>
@@ -230,6 +231,7 @@ const DataManagement = () => {
           })}
         </tbody>
       </Table>
+      <TestPlanRefresh />
     </Container>
   );
 };

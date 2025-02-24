@@ -83,12 +83,25 @@ const DisclosureComponent = ({
   title = null,
   disclosureContainerView = null,
   onClick = null,
-  expanded = false,
+  expanded,
   stacked = false,
   headingLevel = '3',
   className = null
 }) => {
-  const [isExpanded, setIsExpanded] = useState(expanded);
+  const isControlled = expanded !== undefined;
+  const [internalExpanded, setInternalExpanded] = useState(expanded || false);
+  const expandedState = isControlled ? expanded : internalExpanded;
+
+  const handleToggle = () => {
+    if (isControlled) {
+      if (onClick) {
+        onClick();
+      }
+    } else {
+      setInternalExpanded(!internalExpanded);
+    }
+  };
+
   const Tag = `h${headingLevel}`;
 
   return (
@@ -124,7 +137,7 @@ const DisclosureComponent = ({
                 </Tag>
                 <DisclosureContainer
                   role="region"
-                  id={`disclosure-container-${componentId}-${labelTitle}`}
+                  id={`disclosure-btn-controls-${componentId}-${labelTitle}`}
                   aria-labelledby={`disclosure-btn-${componentId}-${labelTitle}`}
                   show={buttonExpanded}
                   stacked
@@ -141,23 +154,23 @@ const DisclosureComponent = ({
             <DisclosureButton
               id={`disclosure-btn-${componentId}`}
               type="button"
-              aria-expanded={isExpanded}
+              aria-expanded={expandedState}
               aria-controls={`disclosure-btn-controls-${componentId}`}
-              onClick={() => setIsExpanded(!isExpanded)}
+              onClick={handleToggle}
             >
               {title}
               <FontAwesomeIcon
                 className="disclosure-icon"
-                icon={isExpanded ? faChevronUp : faChevronDown}
+                icon={expandedState ? faChevronUp : faChevronDown}
               />
             </DisclosureButton>
           </Tag>
           <DisclosureContainer
             component={componentId}
             role="region"
-            id={`disclosure-container-${componentId}`}
+            id={`disclosure-btn-controls-${componentId}`}
             aria-labelledby={`disclosure-btn-${componentId}`}
-            show={isExpanded}
+            show={expandedState}
           >
             {disclosureContainerView}
           </DisclosureContainer>
@@ -183,10 +196,7 @@ DisclosureComponent.propTypes = {
     PropTypes.func,
     PropTypes.arrayOf(PropTypes.func)
   ]),
-  expanded: PropTypes.oneOfType([
-    PropTypes.bool,
-    PropTypes.arrayOf(PropTypes.bool)
-  ]),
+  expanded: PropTypes.bool,
   stacked: PropTypes.bool,
   headingLevel: PropTypes.string,
   className: PropTypes.string
