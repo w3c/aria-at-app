@@ -117,7 +117,7 @@ const CandidateTestPlanRun = () => {
   );
 
   const auth = evaluateAuth(data?.me ? data?.me : {});
-  const { company } = auth;
+  const { isAdmin, company } = auth;
   const { data: vendorApprovalStatusData } = useQuery(
     VENDOR_APPROVAL_STATUS_QUERY,
     {
@@ -761,6 +761,7 @@ const CandidateTestPlanRun = () => {
           changesRequestedGithubUrl={changesRequestedGithubUrl}
           handleAction={submitApproval}
           handleHide={() => setFeedbackModalShowing(false)}
+          isAdmin={isAdmin}
         />
       )}
       {!!confirmationModal && confirmationModal}

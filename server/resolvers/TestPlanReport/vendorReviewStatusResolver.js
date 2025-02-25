@@ -8,8 +8,6 @@ const vendorReviewStatusResolver = async (
 ) => {
   const { transaction } = context;
 
-  // return testPlanReport.vendorReviewStatus
-
   const where = {
     testPlanReportId: testPlanReport.id
   };

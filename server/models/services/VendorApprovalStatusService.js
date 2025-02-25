@@ -125,6 +125,8 @@ const getVendorApprovalStatuses = async ({
  * @param testPlanReportId
  * @param userId
  * @param vendorId
+ * @param reviewStatus
+ * @param approvedAt
  * @param viewedTests
  * @param vendorApprovalStatusAttributes
  * @param testPlanReportAttributes
@@ -135,7 +137,14 @@ const getVendorApprovalStatuses = async ({
  * @returns {Promise<Model>}
  */
 const createVendorApprovalStatus = async ({
-  values: { testPlanReportId, userId, vendorId, viewedTests = [] },
+  values: {
+    testPlanReportId,
+    userId,
+    vendorId,
+    reviewStatus,
+    approvedAt,
+    viewedTests = []
+  },
   vendorApprovalStatusAttributes = VENDOR_APPROVAL_STATUS_ATTRIBUTES,
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
@@ -153,6 +162,8 @@ const createVendorApprovalStatus = async ({
       testPlanVersionId: testPlanReport.testPlanVersionId,
       userId,
       vendorId,
+      reviewStatus,
+      approvedAt,
       viewedTests
     },
     transaction

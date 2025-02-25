@@ -222,17 +222,7 @@ const updatePhaseResolver = async (
         }
       });
 
-      if (phase === 'CANDIDATE') {
-        updateParams = {
-          ...updateParams,
-          metrics: { ...testPlanReport.metrics, ...metrics }
-        };
-
-        // In the instance where an older result's status is being copied over
-        if (!testPlanReport.vendorReviewStatus) {
-          updateParams = { ...updateParams, vendorReviewStatus: 'READY' };
-        }
-      } else if (phase === 'RECOMMENDED') {
+      if (phase === 'CANDIDATE' || phase === 'RECOMMENDED') {
         updateParams = {
           ...updateParams,
           metrics: { ...testPlanReport.metrics, ...metrics }
@@ -247,7 +237,7 @@ const updatePhaseResolver = async (
   }
 
   let updateParams = { phase };
-  if (phase === 'RD')
+  if (phase === 'RD') {
     updateParams = {
       ...updateParams,
       draftPhaseReachedAt: null,
@@ -256,7 +246,7 @@ const updatePhaseResolver = async (
       recommendedPhaseTargetDate: null,
       deprecatedAt: null
     };
-  else if (phase === 'DRAFT')
+  } else if (phase === 'DRAFT') {
     updateParams = {
       ...updateParams,
       draftPhaseReachedAt: new Date(),
@@ -265,7 +255,7 @@ const updatePhaseResolver = async (
       recommendedPhaseTargetDate: null,
       deprecatedAt: null
     };
-  else if (phase === 'CANDIDATE') {
+  } else if (phase === 'CANDIDATE') {
     // Preserve candidate target date for updated since not yet gone to
     // recommended so technically newer candidate versions would still be
     // in the same candidate review 'window'.
@@ -295,12 +285,13 @@ const updatePhaseResolver = async (
       recommendedPhaseTargetDate: recommendedPhaseTargetDateValue,
       deprecatedAt: null
     };
-  } else if (phase === 'RECOMMENDED')
+  } else if (phase === 'RECOMMENDED') {
     updateParams = {
       ...updateParams,
       recommendedPhaseReachedAt: new Date(),
       deprecatedAt: null
     };
+  }
 
   // If oldTestPlanVersion's results are being used to update this earlier
   // version, deprecate it (if the same phase)
@@ -331,7 +322,7 @@ const updatePhaseResolver = async (
 
   // From the point the TestPlanVersion has achieved consensus
   // and reached the recommended phase, extensive data collection
-  // can begin and the loose requirement of a mininumAtVersion
+  // can begin and the loose requirement of a minimumAtVersion
   // will no longer be allowed.
   if (testPlanVersion.phase === 'RECOMMENDED') {
     for (const testPlanReport of testPlanVersion.testPlanReports) {

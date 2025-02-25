@@ -50,7 +50,7 @@ const addViewerResolver = async (_, { testId, testPlanReportId }, context) => {
       });
     }
   } catch (error) {
-    console.error('vendorApprovalStatus', error);
+    // console.error('addViewerResolver.error', error);
   }
 
   return user;

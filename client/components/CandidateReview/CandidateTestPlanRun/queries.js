@@ -109,9 +109,6 @@ export const CANDIDATE_REPORTS_QUERY = gql`
       runnableTests {
         ...TestFieldsSimple
         renderableContent
-        viewers {
-          username
-        }
       }
       finalizedTestResults {
         ...TestResultFields

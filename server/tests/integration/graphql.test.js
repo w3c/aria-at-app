@@ -148,7 +148,6 @@ describe('graphql', () => {
       ['PopulatedData', 'browserVersion'],
       ['TestPlanReport', 'issues'],
       ['TestPlanReport', 'vendorReviewStatus'],
-      ['Test', 'viewers'],
       ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
       ['CollectionJob', 'testPlanRun'],
       ['CollectionJob', 'externalLogsUrl'],
