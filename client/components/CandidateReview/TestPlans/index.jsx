@@ -21,7 +21,7 @@ import ClippedProgressBar from '@components/common/ClippedProgressBar';
 import { dates } from 'shared';
 import './TestPlans.css';
 import { calculations } from 'shared';
-import { UserPropType } from '../../common/proptypes';
+import { AtPropType, UserPropType } from '../../common/proptypes';
 
 const FullHeightContainer = styled(Container)`
   min-height: calc(100vh - 64px);
@@ -178,12 +178,10 @@ const None = styled.span`
   }
 `;
 
-const TestPlans = ({ testPlanVersions, me }) => {
-  const [atExpandTableItems, setAtExpandTableItems] = useState({
-    1: true,
-    2: true,
-    3: true
-  });
+const TestPlans = ({ testPlanVersions, ats, me }) => {
+  const [atExpandTableItems, setAtExpandTableItems] = useState(
+    Object.fromEntries(ats.map(({ id }) => [id, true]))
+  );
 
   const none = <None>None</None>;
   const borderedNone = <None className="bordered">None</None>;
@@ -353,7 +351,7 @@ const TestPlans = ({ testPlanVersions, me }) => {
     // return 'None' element if no reports exists for AT
     if (!testPlanReportsForAtExists) {
       return (
-        <DisclosureParent>
+        <DisclosureParent key={`Review_${atName}_${atName}`}>
           <h3>
             <DisclosureButton
               id={`expand-at-${atId}-button`}
@@ -401,7 +399,7 @@ const TestPlans = ({ testPlanVersions, me }) => {
     );
 
     return (
-      <DisclosureParent>
+      <DisclosureParent key={`Review_${atName}_${atName}`}>
         <h3>
           <DisclosureButton
             id={`expand-at-${atId}-button`}
@@ -625,9 +623,9 @@ const TestPlans = ({ testPlanVersions, me }) => {
           <thead>
             <tr>
               <th>Test Plan</th>
-              <CenteredTh>JAWS</CenteredTh>
-              <CenteredTh>NVDA</CenteredTh>
-              <CenteredTh>VoiceOver for macOS</CenteredTh>
+              {ats.map(({ name }) => (
+                <CenteredTh key={`CenteredTh_${name}`}>{name}</CenteredTh>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -636,63 +634,42 @@ const TestPlans = ({ testPlanVersions, me }) => {
               .map(testPlanVersion => {
                 const testPlanReports = testPlanVersion.testPlanReports;
 
-                let jawsDataExists = false;
-                let nvdaDataExists = false;
-                let voDataExists = false;
+                const calculatedAtsData = ats.map(at => {
+                  let dataExists = false;
+                  while (!dataExists) {
+                    Object.values(testPlanTargetsById).forEach(
+                      testPlanTarget => {
+                        const testPlanReport = testPlanReports.find(
+                          testPlanReport =>
+                            testPlanReport.at.id === testPlanTarget.at.id &&
+                            testPlanReport.browser.id ===
+                              testPlanTarget.browser.id
+                        );
 
-                Object.values(testPlanTargetsById).map(testPlanTarget => {
-                  const testPlanReport = testPlanReports.find(
-                    testPlanReport =>
-                      testPlanReport.at.id === testPlanTarget.at.id &&
-                      testPlanReport.browser.id === testPlanTarget.browser.id
-                  );
-
-                  if (testPlanReport) {
-                    if (!jawsDataExists && testPlanReport.at.id === '1') {
-                      jawsDataExists = true;
-                    }
-                    if (!nvdaDataExists && testPlanReport.at.id === '2') {
-                      nvdaDataExists = true;
-                    }
-                    if (!voDataExists && testPlanReport.at.id === '3') {
-                      voDataExists = true;
-                    }
+                        if (testPlanReport && testPlanReport.at.id === at.id)
+                          dataExists = true;
+                      }
+                    );
                   }
-                });
 
-                const allJawsIssues = [];
-                const allNvdaIssues = [];
-                const allVoIssues = [];
+                  // TODO: Evaluate if uniqueLinks is necessary
+                  const uniqueLinks = [];
+                  const issues = [
+                    ...testPlanReports
+                      .filter(t => t.at.id === at.id)
+                      .flatMap(({ issues }) => issues)
+                      .filter(t => uniqueFilter(t, uniqueLinks, 'link'))
+                  ];
 
-                const jawsTestPlanReports = testPlanReports.filter(t => {
-                  if (t.at.id === '1') {
-                    allJawsIssues.push(...t.issues);
-                    return true;
-                  } else return false;
+                  return {
+                    id: at.id,
+                    key: at.key,
+                    name: at.name,
+                    reports: testPlanReports.filter(t => t.at.id === at.id),
+                    dataExists,
+                    issues
+                  };
                 });
-                const nvdaTestPlanReports = testPlanReports.filter(t => {
-                  if (t.at.id === '2') {
-                    allNvdaIssues.push(...t.issues);
-                    return true;
-                  } else return false;
-                });
-                const voTestPlanReports = testPlanReports.filter(t => {
-                  if (t.at.id === '3') {
-                    allVoIssues.push(...t.issues);
-                    return true;
-                  } else return false;
-                });
-
-                const uniqueLinks = [];
-                const jawsIssues = allJawsIssues.filter(t =>
-                  uniqueFilter(t, uniqueLinks, 'link')
-                );
-                const nvdaIssues = allNvdaIssues.filter(t =>
-                  uniqueFilter(t, uniqueLinks, 'link')
-                );
-                const voIssues = allVoIssues.filter(t =>
-                  uniqueFilter(t, uniqueLinks, 'link')
-                );
 
                 return (
                   <tr key={testPlanVersion.id}>
@@ -701,54 +678,25 @@ const TestPlans = ({ testPlanVersions, me }) => {
                         includeVersionString: true
                       })}
                     </td>
-                    <CenteredTd>
-                      {jawsDataExists
-                        ? getRowStatus({
-                            issues: jawsIssues,
-                            isInProgressStatusExists: jawsTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus ===
-                                'IN_PROGRESS'
-                            ),
-                            isApprovedStatusExists: jawsTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus === 'APPROVED'
-                            )
-                          })
-                        : none}
-                    </CenteredTd>
-                    <CenteredTd>
-                      {nvdaDataExists
-                        ? getRowStatus({
-                            issues: nvdaIssues,
-                            isInProgressStatusExists: nvdaTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus ===
-                                'IN_PROGRESS'
-                            ),
-                            isApprovedStatusExists: nvdaTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus === 'APPROVED'
-                            )
-                          })
-                        : none}
-                    </CenteredTd>
-                    <CenteredTd>
-                      {voDataExists
-                        ? getRowStatus({
-                            issues: voIssues,
-                            isInProgressStatusExists: voTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus ===
-                                'IN_PROGRESS'
-                            ),
-                            isApprovedStatusExists: voTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus === 'APPROVED'
-                            )
-                          })
-                        : none}
-                    </CenteredTd>
+                    {calculatedAtsData.map(data => {
+                      return (
+                        <CenteredTd key={`CenteredTd_Summary_${data.key}`}>
+                          {data.dataExists
+                            ? getRowStatus({
+                                issues: data.issues,
+                                isInProgressStatusExists: data.reports.some(
+                                  report =>
+                                    report.vendorReviewStatus === 'IN_PROGRESS'
+                                ),
+                                isApprovedStatusExists: data.reports.some(
+                                  report =>
+                                    report.vendorReviewStatus === 'APPROVED'
+                                )
+                              })
+                            : none}
+                        </CenteredTd>
+                      );
+                    })}
                   </tr>
                 );
               })}
@@ -769,9 +717,7 @@ const TestPlans = ({ testPlanVersions, me }) => {
         This page summarizes the test results for each AT and Browser which
         executed the Test Plan.
       </p>
-      {constructTableForAtById('1', 'JAWS')}
-      {constructTableForAtById('2', 'NVDA')}
-      {constructTableForAtById('3', 'VoiceOver for macOS')}
+      {ats.map(({ id, name }) => constructTableForAtById(id, name))}
       {constructTableForResultsSummary()}
     </FullHeightContainer>
   );
@@ -798,6 +744,7 @@ TestPlans.propTypes = {
       )
     })
   ).isRequired,
+  ats: PropTypes.arrayOf(AtPropType).isRequired,
   me: UserPropType.isRequired,
   triggerPageUpdate: PropTypes.func
 };
