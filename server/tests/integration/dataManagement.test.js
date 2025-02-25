@@ -265,7 +265,7 @@ const updateVendorReviewStatus = (
     gql`
       mutation {
         testPlanReport(id: ${testPlanReportId}) {
-          promoteVendorReviewStatus(vendorReviewStatus: "${reviewStatus}") {
+          promoteVendorReviewStatus(reviewStatus: "${reviewStatus}") {
             testPlanReport {
               id
               vendorReviewStatus

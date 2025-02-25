@@ -712,7 +712,7 @@ describe('graphql', () => {
             }
             promoteVendorStatus: testPlanReport(id: 6) {
               __typename
-              promoteVendorReviewStatus(vendorReviewStatus: "READY") {
+              promoteVendorReviewStatus(reviewStatus: "READY") {
                 testPlanReport {
                   id
                 }
