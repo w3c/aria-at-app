@@ -215,11 +215,13 @@ module.exports = {
         }
       );
 
-      await queryInterface.bulkInsert(
-        'VendorApprovalStatus',
-        vendorApprovalStatuses,
-        { transaction }
-      );
+      if (vendorApprovalStatuses.length) {
+        await queryInterface.bulkInsert(
+          'VendorApprovalStatus',
+          vendorApprovalStatuses,
+          { transaction }
+        );
+      }
     });
   },
 
