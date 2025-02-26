@@ -18,20 +18,18 @@ const promoteVendorReviewStatusResolver = async (
     throw new AuthenticationError();
   }
 
-  if (!user.vendorId || !user.company?.id)
-    return populateData({ testPlanReportId }, { context });
-
-  await updateVendorApprovalStatusByIds({
-    testPlanReportId,
-    userId: user.id,
-    vendorId: user.vendorId || user.company?.id,
-    values: {
-      reviewStatus,
-      approvedAt: reviewStatus === 'APPROVED' ? new Date() : null
-    },
-    transaction
-  });
-
+  if (user.vendorId || user.company?.id) {
+    await updateVendorApprovalStatusByIds({
+      testPlanReportId,
+      userId: user.id,
+      vendorId: user.vendorId || user.company?.id,
+      values: {
+        reviewStatus,
+        approvedAt: reviewStatus === 'APPROVED' ? new Date() : null
+      },
+      transaction
+    });
+  }
   return populateData({ testPlanReportId }, { context });
 };
 

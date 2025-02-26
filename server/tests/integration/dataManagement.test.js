@@ -1,6 +1,11 @@
 const { gql } = require('apollo-server');
 const dbCleaner = require('../util/db-cleaner');
-const { query, mutate } = require('../util/graphql-test-utilities');
+const {
+  query,
+  mutate,
+  getDefaultUser,
+  setCustomUser
+} = require('../util/graphql-test-utilities');
 const db = require('../../models');
 const { rawQuery } = require('../../models/services/ModelService');
 
@@ -51,6 +56,7 @@ const testPlanVersionsQuery = ({
             markedFinalAt
             at {
               id
+              vendorId
             }
             browser {
               id
@@ -290,6 +296,19 @@ const submitTestResult = (testResultId, testResult, { transaction }) => {
       }
     `,
     { variables: { input: testResult }, transaction }
+  );
+};
+
+const addViewer = (testId, testPlanReportId, { transaction }) => {
+  return mutate(
+    gql`
+      mutation {
+        addViewer(testId: "${testId}", testPlanReportId: ${testPlanReportId}) {
+          username
+        }
+      }
+    `,
+    { transaction }
   );
 };
 
@@ -996,15 +1015,19 @@ describe('data management', () => {
 
       // Make sure the reports are all approved
       for (const testPlanReport of oldCommandButtonVersion.testPlanReports) {
-        // Have to pass 'READY' first for it to move to 'IN_PROGRESS', then
-        // 'IN_PROGRESS' to move to 'APPROVED'
-        //
-        // TODO: Avoid this unnecessary state management based way to avoid
-        //  confusion; better to just pass the intended status
-        await updateVendorReviewStatus(testPlanReport.id, 'READY', {
-          transaction
+        setCustomUser({
+          ...getDefaultUser(),
+          roles: [...getDefaultUser().roles, { name: 'VENDOR' }],
+          vendorId: testPlanReport.at.vendorId
         });
-        await updateVendorReviewStatus(testPlanReport.id, 'IN_PROGRESS', {
+
+        // To ensure at least one VendorApprovalStatus exists so it can be approved
+        await addViewer(
+          testPlanReport.draftTestPlanRuns[0].testResults[0].test.id,
+          testPlanReport.id,
+          { transaction }
+        );
+        await updateVendorReviewStatus(testPlanReport.id, 'APPROVED', {
           transaction
         });
       }

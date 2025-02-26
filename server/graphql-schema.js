@@ -219,6 +219,10 @@ const graphqlSchema = gql`
     The browsers which are required to move a TestPlanVersion to RECOMMENDED phase.
     """
     recommendedBrowsers: [Browser]!
+    """
+    The vendor this assistive technology is affiliated with.
+    """
+    vendorId: ID!
   }
 
   """
