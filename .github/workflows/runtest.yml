@@ -32,7 +32,7 @@ jobs:
           ls -al /etc/postgresql
       - name: before_install
         run: |
-          sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/16/main/postgresql.conf
+          sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf
           sudo pg_ctlcluster 12 main restart
       - name: before_script
         run: |
