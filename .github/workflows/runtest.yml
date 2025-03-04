@@ -4,7 +4,7 @@ on: [push]
 jobs:
   runtest_task:
     name: Using NodeJS and Postgres 12
-    runs-on: ubuntu-22
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -17,7 +17,7 @@ jobs:
       - name: is preinstalled?
         run: |
           psql --version
-          ls -al /etc/postgresql
+          # ls -al /etc/postgresql
       - name: Install PostgreSQL 12
         run: |
           # sudo apt-get -y remove postgresql-16
