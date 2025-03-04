@@ -14,6 +14,10 @@ jobs:
           node-version: 20
           cache: npm
       - run: yarn --version
+      - name: is preinstalled?
+        run: |
+          psql --version
+          ls -al /etc/postgresql
       - name: Install PostgreSQL 12
         run: |
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
