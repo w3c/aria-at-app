@@ -3,27 +3,26 @@
 ## Dependencies
 
 1. Node
-    - Version 14 or greater
-    - It is recommended to install node with [`nvm`](https://github.com/nvm-sh/nvm)
+   - Version 14 or greater
+   - It is recommended to install node with [`nvm`](https://github.com/nvm-sh/nvm)
 2. Yarn
-    - Yarn is resposible for installing dependencies, similar to npm. This project is utilizing yarn workspaces to organize the code into a monorepo structure.
-    - For macOS, use: `brew install yarn`
-    - For linux, See [yarn documentation](https://classic.yarnpkg.com/en/docs/install/#debian-stable)
+   - Yarn is resposible for installing dependencies, similar to npm. This project is utilizing yarn workspaces to organize the code into a monorepo structure.
+   - For macOS, use: `brew install yarn`
+   - For linux, See [yarn documentation](https://classic.yarnpkg.com/en/docs/install/#debian-stable)
 
 ## Running the application locally
 
 1. Install Dependencies with Yarn
-    ```
-    yarn install
-    ```
+   ```
+   yarn install
+   ```
 2. Set up local database using the instructions provided in [database.md](database.md).
-    - Note: You must run `yarn db-import-tests:dev` after setting up your database to import the latest test harness into
-      your project.
+   - Note: You must run `yarn db-import-tests:dev` after setting up your database to import the latest test harness into
+     your project.
 3. Run the server
-    ```
-    yarn dev
-    ```
-Now you can navigate your browser to: [http://localhost:3000/](http://localhost:3000/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
+   `    yarn dev
+   `
+   Now you can navigate your browser to: [http://localhost:3000/](http://localhost:3000/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
 
 ### Signing in as a tester, admin, or vendor
 
@@ -34,26 +33,26 @@ Another way to log in as either a tester or admin, useful for quick testing and 
 1. With the app running, open the browser DevTools.
 2. Go to the DevTools console.
 3. Paste in the following code:
-    - To become an admin:
-        ```
-          signMeInAsAdmin("joe-the-admin")
-        ```
-    - To become a tester:
-        ```
-          signMeInAsTester("joe-the-tester")
-        ```
-    - To become a vendor:
-        ```
-          signMeInAsVendor("joe-the-vendor")
-        ```
-      By default, you will be signed in as a "vispero (JAWS)" vendor but to sign in as any others, you can provide the vendor's company name as the second parameter. eg:
-        ```
-          signMeInAsVendor("joe-the-vendor", "apple")
-        ```
-      The list of applicable constants is currently:
-        1. vispero (JAWS)
-        2. nvAccess (NVDA)
-        3. apple (VoiceOver for macOS)
+   - To become an admin:
+     ```
+       signMeInAsAdmin("joe-the-admin")
+     ```
+   - To become a tester:
+     ```
+       signMeInAsTester("joe-the-tester")
+     ```
+   - To become a vendor:
+     ```
+       signMeInAsVendor("joe-the-vendor")
+     ```
+     By default, you will be signed in as a "vispero (JAWS)" vendor but to sign in as any others, you can provide the vendor's company name as the second parameter. eg:
+     ```
+       signMeInAsVendor("joe-the-vendor", "apple")
+     ```
+     The list of applicable constants is currently:
+     1. vispero (JAWS)
+     2. nvAccess (NVDA)
+     3. apple (VoiceOver for macOS)
 
 The part in quotes is the username, feel free to change the username to whatever you prefer.
 
@@ -81,7 +80,7 @@ Follow the below steps to debug the server:
 ### Debugging Unit and Integration Tests
 
 - Using VSCode, set a breakpoint.
-- Open the test suite file you wish to debug and *make sure the file is the active tab*.
+- Open the test suite file you wish to debug and _make sure the file is the active tab_.
 - Open the "Run and Debug" sidebar.
 - Choose "Jest Client Debug Current Test" if you wish to debug a client test, or "Jest Server Debug Current Test" if you wish to debug a server test.
 - The debugger will trigger when it hits the line with a breakpoint.
@@ -127,11 +126,11 @@ yarn prettier
 
 ### Unit Tests
 
-* React application tests are located in `client/tests`.
-* Express server tests are located in `server/tests`.
-* Both the client and server side user **Jest** for testing.
-    * The client side, additionally, uses **Enzyme** to test React output
-    * The server side, additionally, user **Supertest** to test HTTP integration
+- React application tests are located in `client/tests`.
+- Express server tests are located in `server/tests`.
+- Both the client and server side user **Jest** for testing.
+  - The client side, additionally, uses **Enzyme** to test React output
+  - The server side, additionally, user **Supertest** to test HTTP integration
 
 The following command will run all unit tests.
 
@@ -153,50 +152,38 @@ yarn workspace server jest --watchAll
 
 Like unit tests, end-to-end tests are run by Jest, and the commands which run Jest tests should be used to run end-to-end tests as well.
 
-### Previewing components with Storybook
-Storybook is a tool for building out UI components. To start the Storybook server, run:
-```
-yarn storybook
-```
-
-#### Writing stories
-- Make a new file in `client/stories` with the format `<component>.stories.jsx`. 
-- Run the Storybook server
-
-Any changes in the component will be picked up by the Storybook server.
-
 #### Snapshot Testing
 
 We use snapshot testing to detect regressions. These require upkeep since snapshots can become outdated by upstream test changes in aria-at. It is a good practice to routinely run `yarn update-snapshots` on your working branch.
 
 ### Accessibility testing
 
-#### Manual accessibilty testing
+#### Manual Accessibility Testing
 
 Please note that this section may be out of date.
 
 If you have a Linux computer, you will have to download a Windows VM in order to test the application with NVDA or JAWS. Here are the basic instructions:
-* Enable virtualization in your BIOS settings
-* Download [VirtualBox](http://download.virtualbox.org/virtualbox/)
-* Download a [Windows VM](https://developer.microsoft.com/en-us/windows/downloads/virtual-machines)
-* Import the downloaded VM with the default settings.
-* Start the virtual machine and download JAWS or NVDA.
-* Click the windows button and type "notepad" and click "Run Notepad as administrator"
-    * Click "File > Open" and open the file: `Windows\system32\drivers\etc\hosts`
-    * Add the following lines to the end of the file:
-    ```
-    10.0.2.2       localhost
-    10.0.2.2       127.0.0.1
-    ```
-* Click the windows button and type "command" and click "Run Command Prompt as administrator"
-    * Then write the following commands:
-    ```
-    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=3000 connectaddress=10.0.2.2 connectport=3000
-    netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=8000 connectaddress=10.0.2.2 connectport=8000
-    ```
-* Now open your browser, and navigate to: `localhost:3000` and log in, and turn
-  on the screen reader. There are several helpful [guides](https://dequeuniversity.com/screenreaders/) to the keyboard shortcuts used. 
 
+- Enable virtualization in your BIOS settings
+- Download [VirtualBox](http://download.virtualbox.org/virtualbox/)
+- Download a [Windows VM](https://developer.microsoft.com/en-us/windows/downloads/virtual-machines)
+- Import the downloaded VM with the default settings.
+- Start the virtual machine and download JAWS or NVDA.
+- Click the windows button and type "notepad" and click "Run Notepad as administrator"
+  - Click "File > Open" and open the file: `Windows\system32\drivers\etc\hosts`
+  - Add the following lines to the end of the file:
+  ```
+  10.0.2.2       localhost
+  10.0.2.2       127.0.0.1
+  ```
+- Click the windows button and type "command" and click "Run Command Prompt as administrator"
+  - Then write the following commands:
+  ```
+  netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=3000 connectaddress=10.0.2.2 connectport=3000
+  netsh interface portproxy add v4tov4 listenaddress=127.0.0.1 listenport=8000 connectaddress=10.0.2.2 connectport=8000
+  ```
+- Now open your browser, and navigate to: `localhost:3000` and log in, and turn
+  on the screen reader. There are several helpful [guides](https://dequeuniversity.com/screenreaders/) to the keyboard shortcuts used.
 
 #### Automated accessibility tests
 
