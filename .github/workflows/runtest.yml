@@ -24,7 +24,7 @@ jobs:
       - name: confirm paths
         run: |
           psql --version
-          ls -al /etc/postgresql/12/main
+          ls -al /etc/postgresql
       - name: before_install
         run: |
           sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf
