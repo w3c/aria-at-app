@@ -18,31 +18,31 @@ jobs:
         run: |
           psql --version
           # ls -al /etc/postgresql
-      - name: attempt postgres 16 purge
-        run: |
-          dpkg -l | grep postgresql
-          sudo DEBIAN_FRONTEND=noninteractive apt-get purge -y postgresql\*
-          sudo apt-get autoremove -y
-          sudo rm -rf /var/lib/postgresql/
-          sudo rm -rf /etc/postgresql/
-      - name: Install PostgreSQL 12
+      #      - name: attempt postgres 16 purge
+      #        run: |
+      #          dpkg -l | grep postgresql
+      #          sudo DEBIAN_FRONTEND=noninteractive apt-get purge -y postgresql\*
+      #          sudo apt-get autoremove -y
+      #          sudo rm -rf /var/lib/postgresql/
+      #          sudo rm -rf /etc/postgresql/
+      - name: Install PostgreSQL 15
         run: |
           sudo apt-get install curl ca-certificates
           sudo install -d /usr/share/postgresql-common/pgdg
           sudo curl -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc --fail https://www.postgresql.org/media/keys/ACCC4CF8.asc
           sudo sh -c 'echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           sudo apt-get -y update
-          sudo apt-get -y install postgresql-12
-          sudo apt-get -y install postgresql-client-12
+          sudo apt-get -y install postgresql-15
+          sudo apt-get -y install postgresql-client-15
       - name: confirm paths
         run: |
-          whereis postgresql-12
+          whereis postgresql-15
           psql --version
           ls -al /etc/postgresql
       - name: before_install
         run: |
-          sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf
-          sudo pg_ctlcluster 12 main restart
+          sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/15/main/postgresql.conf
+          sudo pg_ctlcluster 15 main restart
       - name: before_script
         run: |
           yarn --frozen-lockfile
