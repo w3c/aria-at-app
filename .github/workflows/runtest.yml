@@ -18,6 +18,13 @@ jobs:
         run: |
           psql --version
           # ls -al /etc/postgresql
+      - name: attempt postgres 16 purge
+        run: |
+          dpkg -l | grep postgresql
+          sudo DEBIAN_FRONTEND=noninteractive apt-get purge -y postgresql\*
+          sudo apt-get autoremove -y
+          sudo rm -rf /var/lib/postgresql/
+          sudo rm -rf /etc/postgresql/
       - name: Install PostgreSQL 12
         run: |
           sudo apt-get install curl ca-certificates
