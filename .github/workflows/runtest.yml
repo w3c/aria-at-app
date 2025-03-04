@@ -8,11 +8,11 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
-      - name: Install NodeJS 18
+      - name: Install NodeJS 20
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
       - run: yarn --version
       - name: Install PostgreSQL 12
         run: |
@@ -21,6 +21,10 @@ jobs:
           sudo apt-get -y update
           sudo apt-get -y install postgresql-12
           sudo apt-get -y install postgresql-client-12
+      - name: confirm paths
+        run: |
+          psql --version
+          ls -al /etc/postgresql/12/main
       - name: before_install
         run: |
           sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf
