@@ -16,6 +16,19 @@ describe('convertDateToString', () => {
     expect(formattedDate4).toBe('February the 3rd of 2025');
   });
 
+  it('returns the correctly parsed UTC date for a non-UTC timestamp', () => {
+    const date = '2025-02-02T20:40:16.000-05:00';
+    const formattedDate1 = convertDateToString(date, outputFormat);
+    const formattedDate2 = convertDateToString(date, 'DD-MM-YYYY');
+    const formattedDate3 = convertDateToString(date, 'MMM D, YYYY');
+    const formattedDate4 = convertDateToString(date, 'MMMM [the] Do [of] YYYY');
+
+    expect(formattedDate1).toBe('Feb 3, 2025 at 1:40:16 am UTC');
+    expect(formattedDate2).toBe('03-02-2025');
+    expect(formattedDate3).toBe('Feb 3, 2025');
+    expect(formattedDate4).toBe('February the 3rd of 2025');
+  });
+
   it('returns a formatted string AM (English)', () => {
     const date = '2021-11-30T09:51:28.000Z';
     const formattedDate = convertDateToString(date, outputFormat, {
