@@ -14,13 +14,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: yarn --version
-      - name: is preinstalled?
+      - name: Remove pre-bundled versions of postgres to avoid version clashes
         run: |
-          psql --version
-          # ls -al /etc/postgresql
-      - name: attempt postgres 16 purge
-        run: |
-          dpkg -l | grep postgresql
           sudo DEBIAN_FRONTEND=noninteractive apt-get purge -y postgresql\*
           sudo apt-get autoremove -y
           sudo rm -rf /var/lib/postgresql/
@@ -34,11 +29,6 @@ jobs:
           sudo apt-get -y update
           sudo apt-get -y install postgresql-12
           sudo apt-get -y install postgresql-client-12
-      - name: confirm paths
-        run: |
-          whereis postgresql-12
-          psql --version
-          ls -al /etc/postgresql
       - name: before_install
         run: |
           sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf
