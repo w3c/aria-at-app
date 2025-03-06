@@ -17,10 +17,10 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
-      - name: Install NodeJS 18
+      - name: Install NodeJS 20
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: npm
       - name: Conventional Changelog Action
         uses: TriPSs/conventional-changelog-action@v3

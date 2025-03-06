@@ -162,7 +162,7 @@ const AddTestPlans = ({
             {matchingTestPlanVersions.length ? (
               matchingTestPlanVersions.map(item => (
                 <option key={`${item.gitSha}-${item.id}`} value={item.id}>
-                  {dates.gitUpdatedDateToString(item.updatedAt)}{' '}
+                  {dates.convertDateToString(item.updatedAt, 'MMM D, YYYY')}{' '}
                   {item.gitMessage} ({item.gitSha.substring(0, 7)})
                 </option>
               ))
