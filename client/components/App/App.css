@@ -1,70 +1,3 @@
-:root {
-  /* Background colors */
-  --bg: #eaeaea;
-  --bg-table-headings: #e9ebee;
-  --bg-table-body: #fafbfc;
-  --bg-table-hover: #f6f8fa;
-
-  /* Miscellaneous */
-  --border-gray: #d2d5d9;
-
-  /* Font and Button Colors */
-  --font-black: #000;
-  --font-link: #0b60ab; /* TODO: Use a different color? */
-  --font-link-hover-light: #cfcece;
-  --font-link-hover-dark: #214e86;
-  --font-primary: #0b60ab;
-
-  --primary-color: #0b60ab;
-  --primary-focus-bg: #fff;
-  --primary-dark: #09589e;
-  --primary-border: #095190;
-
-  --secondary-bg: #fff;
-  --secondary-dark: #e8e8e8;
-  --secondary-color: #111;
-  --secondary-border: #d2d5d9; /* Same as border-gray */
-
-  --danger-bg: #fff;
-  --danger-color: #bb2d3b;
-  --danger-border: #d2d5d9;
-
-  --disabled-bg: #f4f4f4;
-  --disabled-color: #999;
-  --disabled-border: #d2d5d9; /* Same as border-gray */
-
-  /* Shadows */
-  --button-shadow: rgba(103, 171, 197, 0.5);
-
-  /* Font sizes */
-  --default-font-size: 1rem;
-  --nav-font-size: 1rem;
-  --nav-font-size-sm: 0.875rem;
-  --font-weight-logo: 700;
-  --font-weight-headings: 600;
-  --font-weight-medium: 500;
-  --font-weight-light: 400;
-
-  /* Dimensions */
-  --32px: 2rem;
-  --30px: 1.875rem;
-  --28px: 1.75rem;
-  --26px: 1.625rem;
-  --24px: 1.5rem;
-  --22px: 1.375rem;
-  --20px: 1.25rem;
-  --18px: 1.125rem;
-
-  --16px: 1rem;
-
-  --14px: 0.875rem;
-  --12px: 0.75rem;
-  --10px: 0.625rem;
-  --8px: 0.5rem;
-  --6px: 0.375rem;
-  --4px: 0.25rem;
-}
-
 /* static/index.html:#root */
 #root {
   width: 100%;
@@ -121,6 +54,7 @@ main.container-fluid .row {
 /* Navbar and Menu */
 nav.navbar {
   max-width: 1400px;
+  height: 4rem;
   padding: 0.5rem 1rem;
   margin: auto;
 }

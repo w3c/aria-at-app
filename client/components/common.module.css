@@ -1,3 +1,8 @@
 .form-group {
   margin-bottom: 1rem;
 }
+
+/* Full Height Container */
+.fh-container {
+  min-height: calc(100vh - 4rem /* navbar height */);
+}
