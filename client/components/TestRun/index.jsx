@@ -1191,7 +1191,7 @@ const TestRun = () => {
   return (
     pageReady && (
       <CollectionJobContextProvider testPlanRun={testPlanRun}>
-        <Container className="test-run-container">
+        <Container className="container">
           <Helmet>
             <title>
               {testCount

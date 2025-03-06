@@ -1,0 +1,36 @@
+.test-plan-report-status-dialog {
+  max-width: 1200px;
+  min-width: max-content;
+  padding: 1rem;
+}
+
+.status-label {
+  display: inline;
+  font-size: 0.875rem;
+  padding: 0.15em 0.65em 0.15em;
+  border-radius: 22px;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
+
+  &.conflicts {
+    background: #f9aeae;
+    color: #640303;
+  }
+
+  &.in-progress {
+    background: #d9f6de;
+    color: #2c6c37;
+  }
+
+  &.not-started {
+    background: #e7ecef;
+    color: #63697e;
+  }
+
+  &.complete {
+    background: #bcddfa;
+    color: #10548f;
+  }
+}

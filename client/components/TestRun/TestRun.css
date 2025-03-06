@@ -1,5 +1,9 @@
 @import url('https://use.fontawesome.com/releases/v5.0.1/css/all.css');
 
+main.container-fluid .row {
+  padding: 0.5rem 1rem;
+}
+
 .main-test-area {
   position: relative;
 }

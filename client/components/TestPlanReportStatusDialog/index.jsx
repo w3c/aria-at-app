@@ -2,14 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
+import clsx from 'clsx';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import { ThemeTable } from '../common/ThemeTable';
 import BasicModal from '../common/BasicModal';
-import './TestPlanReportStatusDialog.css';
 import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion } from '../common/AtBrowserVersion';
 import { TestPlanVersionPropType } from '../common/proptypes';
+import styles from './TestPlanReportStatusDialog.module.css';
 
 const TestPlanReportStatusDialog = ({
   testPlanVersion,
@@ -97,9 +98,10 @@ const TestPlanReportStatusDialog = ({
           <p>
             This plan is in the&nbsp;
             <span
-              className={`status-label d-inline ${
-                phase === 'DRAFT' ? 'not-started' : 'complete'
-              }`}
+              className={clsx(
+                styles.statusLabel,
+                phase === 'DRAFT' ? styles.notStarted : styles.complete
+              )}
             >
               {/* text-transform: capitalize will not work on all-caps string */}
               {phase[0] + phase.slice(1).toLowerCase()}
@@ -140,7 +142,7 @@ const TestPlanReportStatusDialog = ({
       useOnHide={true}
       animation={false}
       centered
-      dialogClassName="test-plan-report-status-dialog p-3"
+      dialogClassName={styles.testPlanReportStatusDialog}
       content={getContent()}
       title={getTitle()}
     />

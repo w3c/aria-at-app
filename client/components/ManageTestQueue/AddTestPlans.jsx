@@ -5,6 +5,7 @@ import AddTestToQueueWithConfirmation from '@components/AddTestToQueueWithConfir
 import { DisclosureContainer } from '@components/ManageTestQueue/index';
 import { dates } from 'shared';
 import PropTypes from 'prop-types';
+import styles from '../common.module.css';
 
 const AddTestPlans = ({
   ats = [],
@@ -129,7 +130,7 @@ const AddTestPlans = ({
         plan report to the test queue.
       </span>
       <div className="disclosure-row-test-plans">
-        <Form.Group className="form-group">
+        <Form.Group className={styles.formGroup}>
           <Form.Label className="disclosure-form-label">Test Plan</Form.Label>
           <Form.Select
             onChange={e => {
@@ -149,7 +150,7 @@ const AddTestPlans = ({
             ))}
           </Form.Select>
         </Form.Group>
-        <Form.Group className="form-group">
+        <Form.Group className={styles.formGroup}>
           <Form.Label className="disclosure-form-label">
             Test Plan Version
           </Form.Label>
@@ -172,7 +173,7 @@ const AddTestPlans = ({
           </Form.Select>
         </Form.Group>
         <div>{/* blank grid cell */}</div>
-        <Form.Group className="form-group">
+        <Form.Group className={styles.formGroup}>
           <Form.Label className="disclosure-form-label">
             Assistive Technology
           </Form.Label>
@@ -187,7 +188,7 @@ const AddTestPlans = ({
             ))}
           </Form.Select>
         </Form.Group>
-        <Form.Group className="form-group">
+        <Form.Group className={styles.formGroup}>
           <Form.Label className="disclosure-form-label">
             Assistive Technology Version
           </Form.Label>
@@ -233,7 +234,7 @@ const AddTestPlans = ({
             ) : null}
           </div>
         </Form.Group>
-        <Form.Group className="form-group">
+        <Form.Group className={styles.formGroup}>
           <Form.Label className="disclosure-form-label">Browser</Form.Label>
           <Form.Select
             value={selectedBrowserId}

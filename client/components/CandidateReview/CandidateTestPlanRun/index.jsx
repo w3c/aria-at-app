@@ -602,7 +602,7 @@ const CandidateTestPlanRun = () => {
   };
 
   return (
-    <Container className="test-run-container">
+    <Container className="container">
       <Helmet>
         <title>Candidate Test Run Page | ARIA-AT</title>
       </Helmet>
