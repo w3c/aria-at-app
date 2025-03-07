@@ -352,6 +352,58 @@ ul {
   }
 }
 
+/* Bootstrap's breadcrumb */
+.breadcrumb {
+  background: none;
+  border: 1px solid gainsboro;
+  position: relative;
+  font-size: var(--14px);
+  margin: 0;
+
+  .breadcrumb-item {
+    position: relative;
+
+    & + .breadcrumb-item {
+      padding-left: var(--24px);
+
+      &::before,
+      &::after {
+        content: '';
+        position: absolute;
+        width: 1px;
+        height: var(--22px);
+        background: gainsboro;
+        display: initial;
+        padding: 0;
+        left: 0.75rem;
+      }
+
+      &::before {
+        top: -0.6875rem;
+        transform: rotate(-20deg);
+      }
+
+      &::after {
+        bottom: -0.6875rem;
+        transform: rotate(20deg);
+      }
+    }
+
+    a {
+      color: var(--font-link);
+
+      &:hover {
+        color: var(--font-link);
+      }
+    }
+
+    &.active {
+      color: var(--font-black);
+    }
+  }
+}
+
+/* Signed in elements */
 .signed-in-wrapper {
   display: flex;
   align-items: center;

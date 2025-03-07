@@ -17,7 +17,7 @@ import {
   getTestPlanTargetTitle,
   getTestPlanVersionTitle
 } from '@components/Reports/getTitles';
-import ClippedProgressBar from '@components/common/ClippedProgressBar';
+import ProgressBar from '@components/common/ProgressBar';
 import { dates } from 'shared';
 import './TestPlans.css';
 import { calculations } from 'shared';
@@ -572,9 +572,8 @@ const TestPlans = ({ testPlanVersions, me }) => {
                             to={`/candidate-test-plan/${testPlanVersion.id}/${atId}`}
                             aria-label={`${metrics.totalSupportPercent}%`}
                           >
-                            <ClippedProgressBar
+                            <ProgressBar
                               progress={metrics.totalSupportPercent}
-                              clipped
                             />
                           </Link>
                           <CellSubRow

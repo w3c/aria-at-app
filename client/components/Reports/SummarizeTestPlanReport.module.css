@@ -1,0 +1,32 @@
+.results-container {
+  padding: 1rem 1.75rem;
+  border-left: 1px solid var(--border-gray);
+  border-right: 1px solid var(--border-gray);
+  border-bottom: 1px solid var(--border-gray);
+  margin-bottom: 0.5rem;
+}
+
+.test-result-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  background: var(--bg-light-blue);
+  padding: 1.75rem 1.75rem 1rem 1.75rem;
+  border: 1px solid var(--border-light-blue);
+  margin-top: 2rem;
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+.test-result-buttons {
+  margin-bottom: 0.5rem;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+
+  a {
+    margin-right: 0.5rem;
+  }
+}

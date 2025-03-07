@@ -8,9 +8,9 @@ import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import { derivePhaseName } from '../../utils/aria';
 import { none } from './None';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
-import ClippedProgressBar from '@components/common/ClippedProgressBar';
+import ProgressBar from '@components/common/ProgressBar';
 import { TestPlanVersionPropType } from '../common/proptypes';
-import commonStyles from '../common.module.css';
+import commonStyles from '../styles.module.css';
 import styles from './SummarizeTestPlanReports.module.css';
 
 const SummarizeTestPlanReports = ({ testPlanVersions }) => {
@@ -131,9 +131,7 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
                           }
                           aria-label={`${metrics.supportPercent}%`}
                         >
-                          <ClippedProgressBar
-                            progress={metrics.supportPercent}
-                          />
+                          <ProgressBar progress={metrics.supportPercent} />
                         </Link>
                       </td>
                     );

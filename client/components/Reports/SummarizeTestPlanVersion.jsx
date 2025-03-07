@@ -9,16 +9,12 @@ import { LinkContainer } from 'react-router-bootstrap';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
-import styled from '@emotion/styled';
 import DisclaimerInfo from '../DisclaimerInfo';
 import {
   TestPlanReportPropType,
   TestPlanVersionPropType
 } from '../common/proptypes';
-
-const FullHeightContainer = styled(Container)`
-  min-height: calc(100vh - 64px);
-`;
+import commonStyles from '../styles.module.css';
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
   const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
@@ -40,7 +36,12 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
   });
 
   return (
-    <FullHeightContainer id="main" as="main" tabIndex="-1">
+    <Container
+      id="main"
+      as="main"
+      tabIndex="-1"
+      className={commonStyles.fhContainer}
+    >
       <Helmet>
         <title>
           {getTestPlanVersionTitle(testPlanVersion)} | ARIA-AT Reports
@@ -126,17 +127,14 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
                 `/targets/${testPlanReport.id}`
               }
             >
-              <Button variant="secondary" className="me-3">
-                View Complete Results
-              </Button>
+              <Button variant="secondary">View Complete Results</Button>
             </LinkContainer>
             <Table
-              className="mt-3"
               bordered
               responsive
-              aria-label={
-                `Results for ` + `${getTestPlanTargetTitle(testPlanTarget)}`
-              }
+              aria-label={`Results for ${getTestPlanTargetTitle(
+                testPlanTarget
+              )}`}
             >
               <thead>
                 <tr>
@@ -182,7 +180,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
           </Fragment>
         );
       })}
-    </FullHeightContainer>
+    </Container>
   );
 };
 

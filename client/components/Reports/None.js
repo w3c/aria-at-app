@@ -1,11 +1,6 @@
 import React from 'react';
-import styled from '@emotion/styled';
+import styles from './None.module.css';
 
-const StyledNone = styled.span`
-  font-style: italic;
-  color: #727272;
-`;
-
-const none = <StyledNone>None</StyledNone>;
+const none = <span className={styles.none}>None</span>;
 
 export { none };

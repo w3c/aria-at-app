@@ -4,9 +4,14 @@
   --bg-table-headings: #e9ebee;
   --bg-table-body: #fafbfc;
   --bg-table-hover: #f6f8fa;
+  --bg-light-blue: #e9f0f8;
+  --bg-light-gray: #e9ecef;
+  --bg-dark-gray: #94979b;
 
   /* Miscellaneous */
   --border-gray: #d2d5d9;
+  --border-light-blue: #b5cfec;
+  --white: #fff;
 
   /* Font and Button Colors */
   --font-black: #000;
@@ -32,6 +37,8 @@
   --disabled-bg: #f4f4f4;
   --disabled-color: #999;
   --disabled-border: #d2d5d9; /* Same as border-gray */
+
+  --dark-gray-text: #727272;
 
   /* Other Colors */
   --candidate-color: #f87f1b;

@@ -17,7 +17,7 @@ import TestPlanReportStatusDialogWithButton from '../TestPlanReportStatusDialog/
 import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion, BrowserVersion } from '../common/AtBrowserVersion';
 import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
-import ProgressBar from '../common/ClippedProgressBar';
+import ProgressBar from '../common/ProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';

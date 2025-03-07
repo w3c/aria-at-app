@@ -10,7 +10,6 @@ import {
   faExternalLinkAlt,
   faHome
 } from '@fortawesome/free-solid-svg-icons';
-import styled from '@emotion/styled';
 import { getMetrics, dates } from 'shared';
 import { none } from './None';
 import DisclaimerInfo from '../DisclaimerInfo';
@@ -25,14 +24,8 @@ import {
 } from '../common/proptypes';
 import FailingAssertionsSummaryTable from '../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../FailingAssertionsSummary/Heading';
-
-const ResultsContainer = styled.div`
-  padding: 1em 1.75em;
-  border-left: 1px solid #dee2e6;
-  border-right: 1px solid #dee2e6;
-  border-bottom: 1px solid #dee2e6;
-  margin-bottom: 0.5em;
-`;
+import commonStyles from '../styles.module.css';
+import styles from './SummarizeTestPlanReport.module.css';
 
 const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
   const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;
@@ -124,11 +117,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     return (
       <>
         <h2>{title}</h2>
-        <Table
-          bordered
-          responsive
-          aria-label={`Results for ${getTestPlanTargetTitle(testPlanTarget)}`}
-        >
+        <Table bordered responsive aria-label={title}>
           <thead>
             <tr>
               <th>Test Name</th>
@@ -311,7 +300,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
 
         return (
           <Fragment key={testResult.id}>
-            <div className="test-result-heading">
+            <div className={styles.testResultHeading}>
               <h2 id={`result-${testResult.id}`} tabIndex="-1">
                 Test {index + 1}: {test.title}&nbsp;(
                 {assertionsPassedCount} passed,&nbsp;
@@ -319,14 +308,17 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 {mayAssertionsFailedCount} unsupported)
                 <DisclaimerInfo phase={testPlanVersion.phase} />
               </h2>
-              <div className="test-result-buttons">
+              <div className={styles.testResultButtons}>
                 <Button
                   target="_blank"
                   rel="noreferrer"
                   href={issueLink}
                   variant="secondary"
                 >
-                  <FontAwesomeIcon icon={faExclamationCircle} color="#94979b" />
+                  <FontAwesomeIcon
+                    icon={faExclamationCircle}
+                    className={commonStyles.darkGray}
+                  />
                   Raise an Issue
                 </Button>
                 <Button
@@ -335,13 +327,16 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                   href={modifiedRenderedUrl}
                   variant="secondary"
                 >
-                  <FontAwesomeIcon icon={faExternalLinkAlt} color="#94979b" />
+                  <FontAwesomeIcon
+                    icon={faExternalLinkAlt}
+                    className={commonStyles.darkGray}
+                  />
                   Open Test
                 </Button>
               </div>
             </div>
 
-            <ResultsContainer>
+            <div className={styles.resultsContainer}>
               <TestPlanResultsTable
                 key={`TestPlanResultsTable__${testResult.id}`}
                 test={{ ...test, at }}
@@ -349,7 +344,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 optionalHeader={<h3>Results for each command</h3>}
                 commandHeadingLevel={4}
               />
-            </ResultsContainer>
+            </div>
 
             <DisclosureComponent
               componentId={`run-history-${testResult.id}`}

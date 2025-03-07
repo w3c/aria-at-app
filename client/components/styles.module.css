@@ -6,3 +6,7 @@
 .fh-container {
   min-height: calc(100vh - 4rem /* navbar height */);
 }
+
+.dark-gray {
+  color: var(--bg-dark-gray);
+}
