@@ -1,0 +1,293 @@
+.test-plan-refresh {
+  padding: 1.5rem;
+  max-width: 1200px;
+}
+
+/* SR-only class for screen reader content that shouldn't be visible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.events-header,
+.refresh-heading {
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+  color: #2e2f33;
+  font-weight: 500;
+}
+
+/* Dashboard card layout */
+.refresh-dashboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.refresh-opportunity {
+  background-color: white;
+  border: 1px solid #e1e4e8;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.opportunity-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.bot-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #e9ecef;
+  border-radius: 50%;
+  margin-right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #495057;
+}
+
+.bot-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #24292f;
+  margin: 0 0 1rem 0;
+}
+
+.version-badge {
+  display: inline-block;
+  background-color: #e9ecef;
+  color: #495057;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+}
+
+.version-update {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 1.25rem 0;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+.version-info {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.version-box {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid #e1e4e8;
+  border-radius: 0.5rem;
+  min-width: 5rem;
+  flex: 1;
+  max-width: 45%;
+  text-align: center;
+  cursor: default;
+  user-select: none;
+}
+
+.version-box span:first-child {
+  font-size: 0.85rem;
+  color: #57606a;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.version-number {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0969da;
+}
+
+.version-arrow {
+  font-size: 1.5rem;
+  color: #57606a;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+  user-select: none;
+}
+
+.plan-summary {
+  margin: 1.25rem 0;
+  padding: 0.5rem;
+  background-color: #f6f8fa;
+  border-radius: 0.25rem;
+}
+
+.plan-count {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: default;
+  user-select: none;
+  justify-content: center;
+}
+
+.plan-count-number {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #0969da;
+}
+
+.plan-count-label {
+  font-size: 1rem;
+  color: #57606a;
+}
+
+.test-plans-preview {
+  margin: 1.25rem 0;
+}
+
+.plans-preview-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #24292f;
+  margin: 0 0 1rem 0;
+}
+
+.plans-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid #e1e4e8;
+  border-radius: 0.5rem;
+}
+
+.plans-list li {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e1e4e8;
+  color: #57606a;
+  cursor: default;
+}
+
+.plans-list li:last-child {
+  border-bottom: none;
+}
+
+.action-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
+.refresh-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.refresh-button:hover {
+  background-color: #0366d6;
+  cursor: pointer;
+}
+
+.refresh-button:focus {
+  box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.3);
+  outline: none;
+}
+
+/* Events section styling */
+.events-section {
+  background-color: white;
+  border: 1px solid #e1e4e8;
+  border-radius: 0.5rem;
+  padding: 0;
+  margin-top: 2.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease-in-out;
+  overflow: hidden;
+}
+
+.events-header {
+  font-size: 1.25rem;
+  margin: 0;
+  padding: 1.25rem;
+  border-bottom: 1px solid #dee2e6;
+  color: #24292f;
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+.events-content {
+  padding: 0;
+}
+
+.empty-events-message {
+  padding: 1.5rem;
+  color: #57606a;
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* ThemeTable customizations */
+.events-section .theme-table {
+  margin: 0;
+  border: none;
+}
+
+.events-section th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+  color: #24292f;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.events-section td {
+  padding: 1rem 1.25rem;
+  color: #495057;
+  line-height: 1.5;
+  border-top: 1px solid #e1e4e8;
+}
+
+.timestamp-cell {
+  white-space: nowrap;
+  width: 180px;
+  color: #57606a;
+  font-weight: 500;
+}
+
+.message-cell {
+  line-height: 1.6;
+  color: #24292f;
+}
