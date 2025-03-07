@@ -436,7 +436,7 @@ const TestQueue = () => {
       <Helmet>
         <title>Test Queue | ARIA-AT</title>
       </Helmet>
-      <h1>Test Queue</h1>
+      <h1 className="no-bottom-border">Test Queue</h1>
       <Tabs tabs={tabs} />
     </Container>
   );
