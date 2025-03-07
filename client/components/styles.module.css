@@ -1,12 +1,14 @@
-.form-group {
-  margin-bottom: 1rem;
-}
-
-/* Full Height Container */
+/* Dimensions */
+/* Full Height Container accounting for navbar */
 .fh-container {
   min-height: calc(100vh - 4rem /* navbar height */);
 }
 
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/* Colors */
 .dark-gray {
   color: var(--bg-dark-gray);
 }

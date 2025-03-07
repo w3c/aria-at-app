@@ -14,6 +14,7 @@ import {
   TestPlanReportPropType,
   TestPlanVersionPropType
 } from '../common/proptypes';
+import styles from './SummarizeTestPlanVersion.module.css';
 import commonStyles from '../styles.module.css';
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
@@ -132,6 +133,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             <Table
               bordered
               responsive
+              className={styles.resultsTable}
               aria-label={`Results for ${getTestPlanTargetTitle(
                 testPlanTarget
               )}`}

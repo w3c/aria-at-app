@@ -54,7 +54,7 @@ main.container-fluid .row {
 /* Navbar and Menu */
 nav.navbar {
   max-width: 1400px;
-  height: 4rem;
+  min-height: 4rem;
   padding: 0.5rem 1rem;
   margin: auto;
 }
@@ -363,32 +363,6 @@ ul {
   .breadcrumb-item {
     position: relative;
 
-    & + .breadcrumb-item {
-      padding-left: var(--24px);
-
-      &::before,
-      &::after {
-        content: '';
-        position: absolute;
-        width: 1px;
-        height: var(--22px);
-        background: gainsboro;
-        display: initial;
-        padding: 0;
-        left: 0.75rem;
-      }
-
-      &::before {
-        top: -0.6875rem;
-        transform: rotate(-20deg);
-      }
-
-      &::after {
-        bottom: -0.6875rem;
-        transform: rotate(20deg);
-      }
-    }
-
     a {
       color: var(--font-link);
 
@@ -399,6 +373,34 @@ ul {
 
     &.active {
       color: var(--font-black);
+    }
+
+    @media (min-width: 770px) {
+      & + .breadcrumb-item {
+        padding-left: var(--24px);
+
+        &::before,
+        &::after {
+          content: '';
+          position: absolute;
+          width: 1px;
+          height: var(--22px);
+          background: gainsboro;
+          display: initial;
+          padding: 0;
+          left: 0.75rem;
+        }
+
+        &::before {
+          top: -0.6875rem;
+          transform: rotate(-20deg);
+        }
+
+        &::after {
+          bottom: -0.6875rem;
+          transform: rotate(20deg);
+        }
+      }
     }
   }
 }

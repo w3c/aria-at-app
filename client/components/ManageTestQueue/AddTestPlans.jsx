@@ -2,9 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import RadioBox from '@components/common/RadioBox';
 import AddTestToQueueWithConfirmation from '@components/AddTestToQueueWithConfirmation';
-import { DisclosureContainer } from '@components/ManageTestQueue/index';
 import { dates } from 'shared';
 import PropTypes from 'prop-types';
+import {
+  AtPropType,
+  TestPlanVersionPropType
+} from '@components/common/proptypes';
+import styles from './ManageTestQueue.module.css';
 import commonStyles from '../styles.module.css';
 
 const AddTestPlans = ({
@@ -124,14 +128,16 @@ const AddTestPlans = ({
     ?.atVersions.find(item => item.id === selectedReportAtVersionId);
 
   return (
-    <DisclosureContainer>
+    <div className={styles.disclosureContainer}>
       <span>
         Select a test plan, assistive technology and browser to add a new test
         plan report to the test queue.
       </span>
-      <div className="disclosure-row-test-plans">
+      <div className={styles.disclosureRowTestPlans}>
         <Form.Group className={commonStyles.formGroup}>
-          <Form.Label className="disclosure-form-label">Test Plan</Form.Label>
+          <Form.Label className={styles.disclosureFormLabel}>
+            Test Plan
+          </Form.Label>
           <Form.Select
             onChange={e => {
               const { value } = e.target;
@@ -141,17 +147,14 @@ const AddTestPlans = ({
             }}
           >
             {allTestPlans.map(item => (
-              <option
-                key={`${item.title || item.directory}-${item.id}`}
-                value={item.id}
-              >
-                {item.title || `"${item.directory}"`}
+              <option key={`${item.title}-${item.id}`} value={item.id}>
+                {item.title}
               </option>
             ))}
           </Form.Select>
         </Form.Group>
         <Form.Group className={commonStyles.formGroup}>
-          <Form.Label className="disclosure-form-label">
+          <Form.Label className={styles.disclosureFormLabel}>
             Test Plan Version
           </Form.Label>
           <Form.Select
@@ -174,7 +177,7 @@ const AddTestPlans = ({
         </Form.Group>
         <div>{/* blank grid cell */}</div>
         <Form.Group className={commonStyles.formGroup}>
-          <Form.Label className="disclosure-form-label">
+          <Form.Label className={styles.disclosureFormLabel}>
             Assistive Technology
           </Form.Label>
           <Form.Select value={selectedAtId} onChange={onAtChange}>
@@ -189,10 +192,10 @@ const AddTestPlans = ({
           </Form.Select>
         </Form.Group>
         <Form.Group className={commonStyles.formGroup}>
-          <Form.Label className="disclosure-form-label">
+          <Form.Label className={styles.disclosureFormLabel}>
             Assistive Technology Version
           </Form.Label>
-          <div className="form-group-at-version">
+          <div className={styles.formGroupAtVersion}>
             <RadioBox
               name="atVersion"
               labels={['Exact Version', 'Minimum Version']}
@@ -235,7 +238,9 @@ const AddTestPlans = ({
           </div>
         </Form.Group>
         <Form.Group className={commonStyles.formGroup}>
-          <Form.Label className="disclosure-form-label">Browser</Form.Label>
+          <Form.Label className={styles.disclosureFormLabel}>
+            Browser
+          </Form.Label>
           <Form.Select
             value={selectedBrowserId}
             onChange={onBrowserChange}
@@ -280,26 +285,13 @@ const AddTestPlans = ({
           !selectedBrowserId
         }
       />
-    </DisclosureContainer>
+    </div>
   );
 };
 
 AddTestPlans.propTypes = {
-  ats: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      key: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      browsers: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.string.isRequired,
-          key: PropTypes.string.isRequired,
-          name: PropTypes.string.isRequired
-        })
-      ).isRequired
-    })
-  ).isRequired,
-  testPlanVersions: PropTypes.array,
+  ats: PropTypes.arrayOf(AtPropType).isRequired,
+  testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType).isRequired,
   triggerUpdate: PropTypes.func
 };
 
