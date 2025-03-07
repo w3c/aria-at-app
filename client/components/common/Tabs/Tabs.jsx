@@ -87,7 +87,7 @@ const Tabs = ({ tabs }) => {
 
   return (
     <div className="tabs-container">
-      <TabList role="tablist" aria-label="Test Queue sections">
+      <TabList role="tablist">
         {tabs.map((tab, index) => (
           <TabButton
             key={index}

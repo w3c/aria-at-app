@@ -60,7 +60,7 @@ const RefreshDashboard = ({
     <h2 id="refresh-heading" className="refresh-header">
       Available Updates
     </h2>
-    <div className="refresh-dashboard" aria-labelledby="refresh-heading">
+    <div className="refresh-dashboard">
       {activeRuns.map(run => {
         const headingId = `refresh-heading-${run.id}`;
         const versionDescription = getVersionUpdateDescription(run);
@@ -205,12 +205,7 @@ const TestPlanRefresh = () => {
         />
       )}
 
-      <div
-        className="events-section"
-        ref={eventsPanelRef}
-        aria-labelledby="events-heading"
-        tabIndex="-1"
-      >
+      <div className="events-section" ref={eventsPanelRef} tabIndex="-1">
         <h2 id="events-heading" className="events-header">
           Update Events
         </h2>

@@ -1,5 +1,4 @@
 .test-plan-refresh {
-  padding: 1.5rem;
   max-width: 1200px;
 }
 
@@ -237,6 +236,7 @@
   overflow: hidden;
 }
 
+.refresh-header,
 .events-header {
   font-size: 1.25rem;
   margin: 0;
