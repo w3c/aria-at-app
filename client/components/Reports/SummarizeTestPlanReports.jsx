@@ -6,7 +6,7 @@ import { Container, Table } from 'react-bootstrap';
 import clsx from 'clsx';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import { derivePhaseName } from '../../utils/aria';
-import { none } from './None';
+import { None } from '../common/None';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import ProgressBar from '@components/common/ProgressBar';
 import { TestPlanVersionPropType } from '../common/proptypes';
@@ -45,6 +45,8 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
   testPlanTargetsById = alphabetizeObjectBy(testPlanTargetsById, keyValue =>
     getTestPlanTargetTitle(keyValue[1])
   );
+
+  const none = None();
 
   return (
     <Container

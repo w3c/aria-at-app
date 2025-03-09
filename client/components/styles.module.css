@@ -4,6 +4,10 @@
   min-height: calc(100vh - 4rem /* navbar height */);
 }
 
+.spacer {
+  height: var(--spacer);
+}
+
 .form-group {
   margin-bottom: 1rem;
 }
@@ -11,4 +15,41 @@
 /* Colors */
 .dark-gray {
   color: var(--bg-dark-gray);
+}
+
+/* Components */
+h2.theme-table-header {
+  background-color: var(--bs-table-bg) !important;
+  font-size: var(--24px);
+  font-weight: var(--font-weight-headings);
+  border: solid 1px var(--border-gray);
+  border-bottom: none;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0 0 0;
+}
+
+h3.theme-table-header {
+  background-color: var(--bs-table-bg) !important;
+  font-size: var(--20px);
+  font-weight: var(--font-weight-headings);
+  border: solid 1px var(--border-gray);
+  border-bottom: none;
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0 0 0;
+}
+
+table.theme-table {
+  margin-bottom: 0;
+
+  td,
+  th {
+    padding-left: 1rem;
+    min-width: 10.25rem;
+    vertical-align: middle;
+  }
+}
+
+div.theme-table-unavailable {
+  border: solid 1px var(--border-gray);
+  padding: 0.5rem 1rem;
 }

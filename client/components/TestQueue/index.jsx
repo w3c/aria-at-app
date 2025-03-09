@@ -223,7 +223,7 @@ const TestQueue = () => {
         title={testPlan.testPlanVersions.map(testPlanVersion => (
           <>
             <VersionString
-              iconColor="#2BA51C"
+              iconColor="var(--positive-green)"
               fullWidth={false}
               autoWidth={false}
             >

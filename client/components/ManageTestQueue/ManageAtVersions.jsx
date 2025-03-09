@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Form } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { DisclosureContainer } from '@components/ManageTestQueue/index';
 import BasicModal from '@components/common/BasicModal';
 import UpdateVersionModal from '@components/common/UpdateVersionModal';
 import { dates } from 'shared';
@@ -16,6 +15,9 @@ import { useTriggerLoad } from '@components/common/LoadingStatus';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import PropTypes from 'prop-types';
 import { AtPropType } from '../common/proptypes';
+import styles from './ManageTestQueue.module.css';
+import commonStyles from '../styles.module.css';
+import clsx from 'clsx';
 
 const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
   const { triggerLoad } = useTriggerLoad();
@@ -313,14 +315,16 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
 
   return (
     <>
-      <DisclosureContainer>
+      <div className={styles.disclosureContainer}>
         <span>
           Select an assistive technology and manage its versions in the ARIA-AT
           App
         </span>
-        <div className="disclosure-row-manage-ats">
-          <Form.Group className="ats-container form-group">
-            <Form.Label className="disclosure-form-label">
+        <div className={styles.disclosureRowManageAts}>
+          <Form.Group
+            className={clsx(styles.atsContainer, commonStyles.formGroup)}
+          >
+            <Form.Label className={styles.disclosureFormLabel}>
               Assistive Technology
             </Form.Label>
             <Form.Select value={selectedAtId} onChange={onAtChange}>
@@ -337,9 +341,9 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
                 ))}
             </Form.Select>
           </Form.Group>
-          <div className="at-versions-container">
-            <Form.Group className="form-group">
-              <Form.Label className="disclosure-form-label">
+          <div className={styles.atVersionsContainer}>
+            <Form.Group className={commonStyles.formGroup}>
+              <Form.Label className={styles.disclosureFormLabel}>
                 Available Versions
               </Form.Label>
               <Form.Select
@@ -356,7 +360,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
                 ))}
               </Form.Select>
             </Form.Group>
-            <div className="disclosure-buttons-row">
+            <div className={styles.disclosureButtonsRow}>
               <button
                 ref={ref => setFocusRef(ref)}
                 onClick={() => onOpenAtVersionModalClick('add')}
@@ -380,7 +384,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
             </div>
           </div>
         </div>
-      </DisclosureContainer>
+      </div>
 
       {showThemedModal && themedModal}
       {showUpdateVersionModal && (

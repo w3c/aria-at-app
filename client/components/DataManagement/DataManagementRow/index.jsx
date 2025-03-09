@@ -570,7 +570,7 @@ const DataManagementRow = ({
           <PhaseCell role="list" aria-setsize={isAdmin ? 2 : 1}>
             <VersionString
               role="listitem"
-              iconColor="#2BA51C"
+              iconColor="var(--positive-green)"
               linkHref={`/test-review/${latestVersion.id}`}
             >
               {latestVersion.versionString}
@@ -643,7 +643,7 @@ const DataManagementRow = ({
 
           return (
             <PhaseCell role="list">
-              <VersionString role="listitem" iconColor="#818F98">
+              <VersionString role="listitem" iconColor="var(--negative-gray)">
                 {otherLatestVersion.versionString}
               </VersionString>
               <span role="listitem" className="review-complete">
@@ -697,7 +697,7 @@ const DataManagementRow = ({
             <PhaseCell role="list" aria-setsize={isAdmin ? 3 : 2}>
               <VersionString
                 role="listitem"
-                iconColor="#2BA51C"
+                iconColor="var(--postive-green)"
                 linkRef={draftVersionStringRef}
                 linkHref={`/test-review/${latestVersion.id}`}
               >
@@ -774,7 +774,7 @@ const DataManagementRow = ({
 
           return (
             <PhaseCell role="list">
-              <VersionString role="listitem" iconColor="#818F98">
+              <VersionString role="listitem" iconColor="var(--negative-gray)">
                 {otherLatestVersion.versionString}
               </VersionString>
               <span role="listitem" className="review-complete">
@@ -880,7 +880,7 @@ const DataManagementRow = ({
             <PhaseCell role="list" aria-setsize={isAdmin ? 5 : 4}>
               <VersionString
                 role="listitem"
-                iconColor="#2BA51C"
+                iconColor="var(--positive-green)"
                 linkRef={candidateVersionStringRef}
                 linkHref={`/test-review/${latestVersion.id}`}
               >
@@ -976,7 +976,7 @@ const DataManagementRow = ({
           <PhaseCell role="list">
             <VersionString
               role="listitem"
-              iconColor="#2BA51C"
+              iconColor="var(--positive-green)"
               linkRef={recommendedVersionStringRef}
               linkHref={`/test-review/${latestVersion.id}`}
             >

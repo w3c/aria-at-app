@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { none } from './None';
+import { None } from '../common/None';
 import { getMetrics, dates } from 'shared';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';
@@ -35,6 +35,8 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
 
     return 0;
   });
+
+  const none = None();
 
   return (
     <Container

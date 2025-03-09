@@ -1,0 +1,37 @@
+span.styled-pill {
+  display: inline-block;
+
+  line-height: 2rem;
+  border-radius: var(--4px);
+
+  background: var(--bg-lighter-gray);
+  white-space: nowrap;
+  text-align: center;
+
+  /* Needed for presenting component on Version History page */
+
+  &.full-width {
+    width: 100%;
+
+    /* Version strings can have different character counts and this keeps them lined up in lists */
+
+    & b {
+      min-width: 6rem;
+      display: inline-block;
+      text-align: left;
+    }
+  }
+
+  &:not(.full-width) {
+    width: 10rem;
+    margin-right: var(--10px);
+  }
+
+  /* Needed for presenting component on Data Management page */
+  /* Override full-width's width if both are set */
+
+  &.auto-width {
+    width: auto;
+    margin: 0.75rem;
+  }
+}

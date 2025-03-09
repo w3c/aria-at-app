@@ -5,6 +5,8 @@
   --bg-table-body: #fafbfc;
   --bg-table-hover: #f6f8fa;
   --bg-light-blue: #e9f0f8;
+  --bg-hover-light-blue: #def;
+  --bg-lighter-gray: #f8f9fa;
   --bg-light-gray: #e9ecef;
   --bg-dark-gray: #94979b;
 
@@ -41,8 +43,18 @@
   --dark-gray-text: #727272;
 
   /* Other Colors */
+  --rd-color: #4177de;
+  --draft-color: #818f98;
   --candidate-color: #f87f1b;
   --recommended-color: #b253f8;
+  --deprecated-color: #ce1b4c;
+
+  --positive-green: #2ba51c;
+  --negative-gray: #818f98;
+
+  --success-status-color: #2ba51c;
+  --warning-status-color: #fab700;
+  --danger-status-color: #ce1b4c;
 
   /* Shadows */
   --button-shadow: rgba(103, 171, 197, 0.5);
@@ -57,6 +69,8 @@
   --font-weight-light: 400;
 
   /* Dimensions */
+  --spacer: 3rem;
+
   --32px: 2rem;
   --30px: 1.875rem;
   --28px: 1.75rem;
@@ -74,6 +88,7 @@
   --8px: 0.5rem;
   --6px: 0.375rem;
   --4px: 0.25rem;
+  --2px: 0.125rem;
 }
 
 html,

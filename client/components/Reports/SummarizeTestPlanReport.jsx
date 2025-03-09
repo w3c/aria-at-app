@@ -11,7 +11,7 @@ import {
   faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { getMetrics, dates } from 'shared';
-import { none } from './None';
+import { None } from '../common/None';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
@@ -47,6 +47,8 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     browser,
     atVersion: recommendedAtVersion
   };
+
+  const none = None();
 
   const renderVersionsSummaryTable = () => {
     if (testPlanVersion.phase !== 'RECOMMENDED') return null;
@@ -347,7 +349,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
             </div>
 
             <DisclosureComponent
-              componentId={`run-history-${testResult.id}`}
+              componentId={`runHistory_${testResult.id}`}
               title="Run History"
               disclosureContainerView={
                 <RunHistory

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { ThemeTable, ThemeTableUnavailable } from '../common/ThemeTable';
 import { dates } from 'shared';
-import { NoneText } from '../TestPlanVersionsPage';
+import { None } from '../common/None';
 import SortableTableHeader, {
   TABLE_SORT_ORDERS
 } from '../common/SortableTableHeader';
@@ -100,6 +100,8 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
     setSortOrder(newSortOrder);
   };
 
+  const none = None('N/A');
+
   const renderTableHeader = () => (
     <thead>
       <tr>
@@ -149,11 +151,9 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
           <td>{issue.at?.name ?? 'AT not specified'}</td>
           <td>{dates.convertDateToString(issue.createdAt, 'MMM D, YYYY')}</td>
           <td>
-            {!issue.closedAt ? (
-              <NoneText>N/A</NoneText>
-            ) : (
-              dates.convertDateToString(issue.closedAt, 'MMM D, YYYY')
-            )}
+            {!issue.closedAt
+              ? none
+              : dates.convertDateToString(issue.closedAt, 'MMM D, YYYY')}
           </td>
         </tr>
       ))}

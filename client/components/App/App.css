@@ -362,6 +362,10 @@ ul {
 
   .breadcrumb-item {
     position: relative;
+    width: max-content;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 
     a {
       color: var(--font-link);
@@ -375,31 +379,16 @@ ul {
       color: var(--font-black);
     }
 
-    @media (min-width: 770px) {
-      & + .breadcrumb-item {
-        padding-left: var(--24px);
+    & + .breadcrumb-item {
+      padding-left: var(--24px);
 
-        &::before,
-        &::after {
-          content: '';
-          position: absolute;
-          width: 1px;
-          height: var(--22px);
-          background: gainsboro;
-          display: initial;
-          padding: 0;
-          left: 0.75rem;
-        }
-
-        &::before {
-          top: -0.6875rem;
-          transform: rotate(-20deg);
-        }
-
-        &::after {
-          bottom: -0.6875rem;
-          transform: rotate(20deg);
-        }
+      &::before,
+      &::after {
+        content: '\203A';
+        position: absolute;
+        width: 0;
+        padding: 0;
+        left: 0.5rem;
       }
     }
   }

@@ -533,7 +533,7 @@ const CandidateTestPlanRun = () => {
           <>
             <h1 className="current-test-title">{currentTest.title}</h1>
             <DisclosureComponent
-              componentId="test-instructions-and-results"
+              componentId="testInstructionsAndResults"
               headingLevel="1"
               title={[
                 'Test Instructions',
@@ -593,7 +593,6 @@ const CandidateTestPlanRun = () => {
                   testId={currentTest.id}
                 />
               ]}
-              stacked
             ></DisclosureComponent>
           </>
         )}
