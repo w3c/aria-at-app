@@ -1,12 +1,19 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Modal } from 'react-bootstrap';
 import { uniqueId } from 'lodash';
+import { Button, Modal } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCheckCircle,
+  faExclamationTriangle
+} from '@fortawesome/free-solid-svg-icons';
 import FocusTrapper from '../FocusTrapper';
+import { THEMES, THEME_COLOR } from '@client/hooks/useThemedModal';
 import { ModalActionPropType } from '../proptypes';
+import styles from './CustomModal.module.css';
 import commonStyles from '../../styles.module.css';
 
-const BasicModal = ({
+const CustomModal = ({
   show = false,
   centered = false,
   animation = true,
@@ -17,13 +24,15 @@ const BasicModal = ({
   dialogClassName = '',
   title = null,
   content = null,
+  showCloseAction = true,
   closeLabel = 'Cancel',
   handleClose = null,
   handleHide = null,
   staticBackdrop = false,
   useOnHide = false,
   actions = [],
-  initialFocusRef = null
+  initialFocusRef = null,
+  theme = null // warning, danger, success
 }) => {
   const headerRef = useRef();
 
@@ -36,30 +45,58 @@ const BasicModal = ({
     }
   }, [show]);
 
-  const id = useMemo(() => {
-    return uniqueId('modal-');
-  }, []);
+  const id = useMemo(() => uniqueId('modal-'), []);
 
-  const renderAction = (action, index) => {
-    if (action.component) {
-      return React.createElement(
-        action.component,
-        { key: `CustomComponent_${index}`, ...action.props },
-        null
-      );
-    } else {
-      return (
-        <Button
-          key={`BasicModalAction_${index}`}
-          variant={action.variant ?? 'primary'}
-          onClick={action.onClick}
-          className={action.className ?? ''}
-          data-testid={action.testId ?? ''}
-        >
-          {action.label ?? 'Continue'}
-        </Button>
-      );
-    }
+  const renderAction = (action, index) =>
+    action.component ? (
+      React.createElement(action.component, {
+        key: `CustomModalAction_${index}`,
+        ...action.props
+      })
+    ) : (
+      <Button
+        key={`CustomModalAction_${index}`}
+        variant={action.variant ?? 'primary'}
+        onClick={action.onClick}
+        className={action.className ?? ''}
+        data-testid={action.testId ?? ''}
+      >
+        {action.label ?? 'Continue'}
+      </Button>
+    );
+
+  const renderTitle = () => {
+    return (
+      <>
+        {theme && (
+          <FontAwesomeIcon
+            icon={
+              theme === THEMES.SUCCESS ? faCheckCircle : faExclamationTriangle
+            }
+            size="lg"
+            color={THEME_COLOR(theme)}
+          />
+        )}
+        {title}
+      </>
+    );
+  };
+
+  const renderBody = () => {
+    return (
+      <>
+        {theme ? (
+          <div className={styles.innerContainer}>
+            <>
+              <div />
+              <div>{content}</div>
+            </>
+          </div>
+        ) : (
+          <>{content}</>
+        )}
+      </>
+    );
   };
 
   return (
@@ -81,6 +118,12 @@ const BasicModal = ({
         dialogClassName={dialogClassName}
         backdrop={staticBackdrop ? 'static' : true}
       >
+        {theme && (
+          <div
+            className={styles.colorStrip}
+            style={{ '--theme-color': THEME_COLOR(theme) }}
+          />
+        )}
         <Modal.Header
           closeButton={closeButton}
           className={headerSep ? '' : 'border-bottom-0'}
@@ -91,12 +134,17 @@ const BasicModal = ({
             tabIndex="-1"
             className={commonStyles.modalTitle}
           >
-            {title}
+            {renderTitle()}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>{content}</Modal.Body>
+        <Modal.Body>{renderBody()}</Modal.Body>
         {showFooter && (
           <Modal.Footer>
+            {showCloseAction && (
+              <Button variant="secondary" onClick={handleClose}>
+                {closeLabel}
+              </Button>
+            )}
             {cancelButton && handleClose && (
               <Button variant="secondary" onClick={handleClose}>
                 {closeLabel}
@@ -110,7 +158,7 @@ const BasicModal = ({
   );
 };
 
-BasicModal.propTypes = {
+CustomModal.propTypes = {
   show: PropTypes.bool,
   centered: PropTypes.bool,
   animation: PropTypes.bool,
@@ -129,7 +177,8 @@ BasicModal.propTypes = {
   actions: PropTypes.arrayOf(ModalActionPropType),
   initialFocusRef: PropTypes.shape({
     current: PropTypes.any
-  })
+  }),
+  theme: PropTypes.string
 };
 
-export default BasicModal;
+export default CustomModal;

@@ -1,0 +1,57 @@
+.table {
+  padding: 0;
+  margin: 0;
+  height: 100%;
+
+  thead {
+    tr {
+      th {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+
+        /* Test Plan column & Covered ATs column */
+        &:nth-of-type(-n + 2) {
+          max-width: 12.5rem;
+        }
+
+        /* RD, DRAFT, CANDIDATE & RECOMMENDED columns */
+        &:nth-last-of-type(-n + 4) {
+          max-width: 9.375rem;
+        }
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      th {
+        padding: 0.75rem;
+
+        /* Test Plan column & Covered ATs column */
+        &:nth-of-type(1) {
+          max-width: 12.5rem;
+        }
+      }
+
+      td {
+        position: relative;
+        padding: 0;
+        height: 100%;
+
+        /* Test Plan column & Covered ATs column */
+        &:nth-of-type(1) {
+          max-width: 12.5rem;
+        }
+
+        /* RD, DRAFT, CANDIDATE & RECOMMENDED columns */
+        &:nth-last-of-type(-n + 4) {
+          max-width: 9.375rem;
+        }
+
+        > * {
+          padding: 0.75rem;
+        }
+      }
+    }
+  }
+}

@@ -1,16 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
-import styled from '@emotion/styled';
 import BasicModal from '../BasicModal';
 import { dates } from 'shared';
+import commonStyles from '../../styles.module.css';
 
 const minimumReleaseYear = 1999;
-
-const ModalInnerSectionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
 
 const UpdateVersionModal = ({
   show = false,
@@ -113,8 +108,8 @@ const UpdateVersionModal = ({
       closeButton={false}
       title={title}
       content={
-        <ModalInnerSectionContainer>
-          <Form.Group className="form-group">
+        <div className={commonStyles.modalInnerSectionContainer}>
+          <Form.Group className={commonStyles.formGroup}>
             <Form.Label>Version Number</Form.Label>
             <Form.Control
               ref={versionTextRef}
@@ -134,7 +129,7 @@ const UpdateVersionModal = ({
             )}
           </Form.Group>
 
-          <Form.Group className="form-group">
+          <Form.Group className={commonStyles.formGroup}>
             <Form.Label>Approximate date of availability</Form.Label>
             <Form.Control
               ref={dateAvailabilityTextRef}
@@ -156,7 +151,7 @@ const UpdateVersionModal = ({
               </Form.Control.Feedback>
             )}
           </Form.Group>
-        </ModalInnerSectionContainer>
+        </div>
       }
       actions={[
         {

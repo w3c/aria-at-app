@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { TEST_PLAN_RUNS_TEST_RESULTS_QUERY } from './queries';
 import { useQuery } from '@apollo/client';
 import styled from '@emotion/styled';
-import ReportStatusDot from '../common/ReportStatusDot';
+import ReportStatusDot, { REPORT_STATUSES } from '../common/ReportStatusDot';
 
 const BotRunTestContainer = styled.div`
   font-size: 0.875rem !important;
@@ -99,27 +99,27 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
         <BotRunTestStatusUnorderedList className="text-secondary">
           {RUNNING > 0 && (
             <li>
-              <ReportStatusDot className="tests-running" />
+              <ReportStatusDot status={REPORT_STATUSES.TESTS_RUNNING} />
               {testCountString(RUNNING, 'Running')}
             </li>
           )}
           {ERROR > 0 && (
             <li>
-              <ReportStatusDot className="tests-error" />
+              <ReportStatusDot status={REPORT_STATUSES.TESTS_ERROR} />
               {testCountString(ERROR, 'Error')}
             </li>
           )}
           <li>
-            <ReportStatusDot className="tests-complete" />
+            <ReportStatusDot status={REPORT_STATUSES.TESTS_COMPLETE} />
             {testCountString(COMPLETED, 'Completed')}
           </li>
           <li>
-            <ReportStatusDot className="tests-queued" />
+            <ReportStatusDot status={REPORT_STATUSES.TESTS_QUEUED} />
             {testCountString(QUEUED, 'Queued')}
           </li>
           {CANCELLED > 0 && (
             <li>
-              <ReportStatusDot className="tests-cancelled" />
+              <ReportStatusDot status={REPORT_STATUSES.TESTS_CANCELLED} />
               {testCountString(CANCELLED, 'Cancelled')}
             </li>
           )}

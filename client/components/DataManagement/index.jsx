@@ -6,7 +6,6 @@ import { DATA_MANAGEMENT_PAGE_QUERY } from './queries';
 import PageStatus from '../common/PageStatus';
 import ManageTestQueue from '../ManageTestQueue';
 import DataManagementRow from '@components/DataManagement/DataManagementRow';
-import './DataManagement.css';
 import { evaluateAuth } from '@client/utils/evaluateAuth';
 import SortableTableHeader, {
   TABLE_SORT_ORDERS
@@ -20,6 +19,7 @@ import {
   DATA_MANAGEMENT_TABLE_FILTER_OPTIONS,
   DATA_MANAGEMENT_TABLE_SORT_OPTIONS
 } from './utils';
+import styles from './DataManagement.module.css';
 
 const DataManagement = () => {
   const { loading, data, error, refetch } = useQuery(
@@ -159,7 +159,7 @@ const DataManagement = () => {
         onFilterChange={setFilter}
       />
       <Table
-        className="data-management"
+        className={styles.table}
         aria-label="Test Plans Status Summary Table"
         bordered
         hover

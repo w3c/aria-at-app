@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { ThemeTable, ThemeTableUnavailable } from '../common/ThemeTable';
+import PropTypes from 'prop-types';
+import { Table } from 'react-bootstrap';
 import { dates } from 'shared';
 import { None } from '../common/None';
 import SortableTableHeader, {
@@ -7,7 +8,7 @@ import SortableTableHeader, {
 } from '../common/SortableTableHeader';
 import FilterButtons from '../common/FilterButtons';
 import { IssuePropType } from '../common/proptypes';
-import PropTypes from 'prop-types';
+import commonStyles from '../styles.module.css';
 
 const FILTER_OPTIONS = {
   OPEN: 'Open',
@@ -174,18 +175,22 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
         onFilterChange={setActiveFilter}
       />
       {!sortedAndFilteredIssues.length ? (
-        <ThemeTableUnavailable aria-labelledby="github-issues">
+        <div
+          className={commonStyles.themeTableUnavailable}
+          aria-labelledby="github-issues"
+        >
           No GitHub Issues
-        </ThemeTableUnavailable>
+        </div>
       ) : (
-        <ThemeTable
+        <Table
           bordered
           aria-labelledby="github-issues"
           data-test="issues-table"
+          className={commonStyles.themeTable}
         >
           {renderTableHeader()}
           {renderTableBody()}
-        </ThemeTable>
+        </Table>
       )}
       {issueLink && (
         <div style={{ marginTop: '1rem' }}>
