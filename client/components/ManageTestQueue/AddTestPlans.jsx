@@ -9,7 +9,7 @@ import {
   TestPlanVersionPropType
 } from '@components/common/proptypes';
 import styles from './ManageTestQueue.module.css';
-import commonStyles from '../styles.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const AddTestPlans = ({
   ats = [],

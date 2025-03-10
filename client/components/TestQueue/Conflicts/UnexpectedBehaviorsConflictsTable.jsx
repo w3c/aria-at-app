@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
-import { ConflictTable } from './ConflictSummaryTable';
+import { Table } from 'react-bootstrap';
 import { UserPropType } from '../../common/proptypes';
+import styles from './Conflicts.module.css';
 
 const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
   const commandString = scenario => {
@@ -28,7 +29,7 @@ const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
         {commandString(conflictingResults[0].scenario)}
       </h3>
 
-      <ConflictTable bordered responsive>
+      <Table className={styles.conflictsTable} bordered responsive>
         <thead>
           <tr>
             <th>Unexpected Behavior</th>
@@ -63,7 +64,7 @@ const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
             </tr>
           ))}
         </tbody>
-      </ConflictTable>
+      </Table>
     </>
   );
 };

@@ -7,37 +7,38 @@ span.report-status-dot {
   border-radius: 50%;
 
   &.issues {
-    background: #f2ba00;
+    background: var(--report-status-issues);
   }
 
   &.tests-skipped,
   &.reports-not-started {
-    background: #7c7c7c;
+    background: var(--report-status-not-started-skipped);
   }
 
   &.tests-running {
-    border: 2px solid #1e8f37;
-    background: #d2d5d9;
+    border: 2px solid var(--report-status-running);
+    background: var(--default-gray);
   }
 
   &.tests-error {
-    background: #e3261f;
+    background: var(--report-status-error);
   }
 
   &.tests-queued,
   &.reports-in-progress {
-    background: #3876e8;
+    background: var(--report-status-in-progress-queued);
   }
 
   &.tests-complete,
   &.reports-complete {
-    background: #2ba51c;
+    background: var(--report-status-complete);
   }
 
   &.tests-cancelled {
-    background: #a231ff;
+    background: var(--report-status-cancelled);
   }
+
   &.reports-missing {
-    background: #ce1b4c;
+    background: var(--report-status-missing);
   }
 }

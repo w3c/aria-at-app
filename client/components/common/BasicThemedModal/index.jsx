@@ -10,7 +10,7 @@ import { uniqueId } from 'lodash';
 import { THEMES, THEME_COLOR } from '@client/hooks/useThemedModal';
 import { ActionButtonPropType } from '../proptypes';
 import styles from './BasicThemedModal.module.css';
-import commonStyles from '../../styles.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const BasicThemedModal = ({
   show = false,

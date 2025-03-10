@@ -11,13 +11,14 @@
   --bg-dark-gray: #94979b;
 
   /* Miscellaneous */
+  --default-gray: #d2d5d9;
   --border-gray: #d2d5d9;
   --border-light-blue: #b5cfec;
   --white: #fff;
 
   /* Font and Button Colors */
   --font-black: #000;
-  --font-link: #0b60ab; /* TODO: Use a different color? */
+  --font-link: #0b60ab;
   --font-link-hover-light: #cfcece;
   --font-link-hover-dark: #214e86;
   --font-primary: #0b60ab;
@@ -55,6 +56,15 @@
   --success-status-color: #2ba51c;
   --warning-status-color: #fab700;
   --danger-status-color: #ce1b4c;
+
+  --report-status-issues: #f2ba00;
+  --report-status-not-started-skipped: #7c7c7c;
+  --report-status-complete: #2ba51c;
+  --report-status-in-progress-queued: #3876e8;
+  --report-status-missing: #ce1b4c;
+  --report-status-cancelled: #a231ff;
+  --report-status-error: #e3261f;
+  --report-status-running: #1e8f37;
 
   /* Shadows */
   --button-shadow: rgba(103, 171, 197, 0.5);

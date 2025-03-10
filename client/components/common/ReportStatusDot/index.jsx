@@ -13,7 +13,8 @@ export const REPORT_STATUSES = {
   TESTS_COMPLETE: 'tests-complete',
   TESTS_ERROR: 'tests-error',
   TESTS_QUEUED: 'tests-queued',
-  TESTS_RUNNING: 'tests-running'
+  TESTS_RUNNING: 'tests-running',
+  TESTS_SKIPPED: 'tests-skipped'
 };
 
 const ReportStatusDot = ({ status }) => {

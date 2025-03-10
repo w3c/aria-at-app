@@ -2,15 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
+import { Table } from 'react-bootstrap';
 import clsx from 'clsx';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import { ThemeTable } from '../common/ThemeTable';
 import BasicModal from '../common/BasicModal';
 import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion } from '../common/AtBrowserVersion';
 import { TestPlanVersionPropType } from '../common/proptypes';
 import styles from './TestPlanReportStatusDialog.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const TestPlanReportStatusDialog = ({
   testPlanVersion,
@@ -112,7 +113,7 @@ const TestPlanReportStatusDialog = ({
           </p>
         )}
 
-        <ThemeTable bordered responsive>
+        <Table bordered responsive className={commonStyles.themeTable}>
           <thead>
             <tr>
               <th>Required</th>
@@ -122,7 +123,7 @@ const TestPlanReportStatusDialog = ({
             </tr>
           </thead>
           <tbody>{tableRows}</tbody>
-        </ThemeTable>
+        </Table>
       </>
     );
   };

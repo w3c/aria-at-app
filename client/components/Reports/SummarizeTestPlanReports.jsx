@@ -10,7 +10,7 @@ import { None } from '../common/None';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import ProgressBar from '@components/common/ProgressBar';
 import { TestPlanVersionPropType } from '../common/proptypes';
-import commonStyles from '../styles.module.css';
+import commonStyles from '@components/common/styles.module.css';
 import styles from './SummarizeTestPlanReports.module.css';
 
 const SummarizeTestPlanReports = ({ testPlanVersions }) => {

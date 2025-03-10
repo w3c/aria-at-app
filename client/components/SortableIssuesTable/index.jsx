@@ -8,7 +8,7 @@ import SortableTableHeader, {
 } from '../common/SortableTableHeader';
 import FilterButtons from '../common/FilterButtons';
 import { IssuePropType } from '../common/proptypes';
-import commonStyles from '../styles.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const FILTER_OPTIONS = {
   OPEN: 'Open',

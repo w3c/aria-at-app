@@ -24,8 +24,8 @@ import {
 } from '../common/proptypes';
 import FailingAssertionsSummaryTable from '../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../FailingAssertionsSummary/Heading';
-import commonStyles from '../styles.module.css';
 import styles from './SummarizeTestPlanReport.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
   const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;

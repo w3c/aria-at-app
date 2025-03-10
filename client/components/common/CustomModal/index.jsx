@@ -11,7 +11,7 @@ import FocusTrapper from '../FocusTrapper';
 import { THEMES, THEME_COLOR } from '@client/hooks/useThemedModal';
 import { ModalActionPropType } from '../proptypes';
 import styles from './CustomModal.module.css';
-import commonStyles from '../../styles.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const CustomModal = ({
   show = false,

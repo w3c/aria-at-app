@@ -1,19 +1,12 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
-import { ThemeTable } from '../../common/ThemeTable';
+import { Table } from 'react-bootstrap';
+import clsx from 'clsx';
 import { IssuePropType } from '../../common/proptypes';
 import AssertionConflictsTable from './AssertionConflictsTable';
 import UnexpectedBehaviorsConflictsTable from './UnexpectedBehaviorsConflictsTable';
-
-export const ConflictTable = styled(ThemeTable)`
-  th,
-  td {
-    text-align: left;
-    padding: 0.75rem;
-  }
-  margin-bottom: 2rem;
-`;
+import styles from './Conflicts.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const ConflictSummaryTable = ({ conflictingResults }) => {
   const commandString = scenario => {
@@ -51,7 +44,11 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
         {commandString(conflictingResults[0].scenario)}
       </h3>
 
-      <ConflictTable bordered responsive>
+      <Table
+        className={clsx(commonStyles.themeTable, styles.conflictsTable)}
+        bordered
+        responsive
+      >
         <thead>
           <tr>
             <th>Tester</th>
@@ -72,7 +69,7 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
             </tr>
           ))}
         </tbody>
-      </ConflictTable>
+      </Table>
 
       {hasAssertionConflicts && (
         <AssertionConflictsTable

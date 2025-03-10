@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import { dates } from 'shared';
 import BasicModal from '../BasicModal';
-import commonStyles from '../../styles.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const UpdateTargetDateModal = ({
   show = false,

@@ -14,10 +14,10 @@ import {
 import { useTriggerLoad } from '@components/common/LoadingStatus';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import { AtPropType } from '../common/proptypes';
 import styles from './ManageTestQueue.module.css';
-import commonStyles from '../styles.module.css';
-import clsx from 'clsx';
+import commonStyles from '@components/common/styles.module.css';
 
 const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
   const { triggerLoad } = useTriggerLoad();
