@@ -184,6 +184,7 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
       ) : (
         <Table
           bordered
+          responsive
           aria-labelledby="github-issues"
           data-test="issues-table"
           className={commonStyles.themeTable}

@@ -159,10 +159,11 @@ const DataManagement = () => {
         onFilterChange={setFilter}
       />
       <Table
-        className={styles.table}
+        className={styles.dataManagement}
         aria-label="Test Plans Status Summary Table"
         bordered
         hover
+        responsive
         aria-rowcount={sortedTestPlans.length}
       >
         <thead>

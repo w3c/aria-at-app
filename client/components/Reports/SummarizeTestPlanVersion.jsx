@@ -135,7 +135,7 @@ const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
             <Table
               bordered
               responsive
-              className={styles.resultsTable}
+              className={styles.reports}
               aria-label={`Results for ${getTestPlanTargetTitle(
                 testPlanTarget
               )}`}

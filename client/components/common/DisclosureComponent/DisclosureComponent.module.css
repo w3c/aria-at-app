@@ -85,7 +85,8 @@
 
   &:not(.stacked) {
     flex-direction: column;
-    gap: 1.25rem;
+    /*gap: 1.25rem;*/
+    gap: 0;
   }
 }
 
