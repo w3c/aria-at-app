@@ -64,20 +64,18 @@ const DisclosureComponent = ({
                 />
               </button>
             </Heading>
-            {buttonExpanded && (
-              <div
-                className={clsx(
-                  styles.disclosureContent,
-                  buttonExpanded ? styles.visible : styles.hidden,
-                  isStacked && styles.stacked
-                )}
-                role="region"
-                id={`disclosure-btn-controls-${componentId}-${labelTitle}`}
-                aria-labelledby={`disclosure-btn-${componentId}-${labelTitle}`}
-              >
-                {buttonDisclosureContainerView}
-              </div>
-            )}
+            <div
+              className={clsx(
+                styles.disclosureContent,
+                buttonExpanded ? styles.visible : styles.hidden,
+                isStacked && styles.stacked
+              )}
+              role="region"
+              id={`disclosure-btn-controls-${componentId}-${labelTitle}`}
+              aria-labelledby={`disclosure-btn-${componentId}-${labelTitle}`}
+            >
+              {buttonDisclosureContainerView}
+            </div>
           </Fragment>
         );
       })}
