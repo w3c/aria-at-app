@@ -110,7 +110,8 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
                         {group.prevVersion}
                       </span>
                       <span className="version-count">
-                        {group.testPlanCount}
+                        {group.testPlanCount} run
+                        {group.testPlanCount === 1 ? '' : 's'}
                       </span>
                     </div>
                   ))}
@@ -161,7 +162,7 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
                 onClick={() => onRefreshClick(run)}
                 aria-label={`Start automated test plan runs for ${totalTestPlans} test plan versions using ${run.botName} ${run.newVersion}`}
               >
-                Start Refresh
+                Start Re-runs
               </button>
             </div>
           </div>
@@ -210,7 +211,7 @@ const TestPlanRefresh = () => {
           (sum, group) => sum + group.testPlanCount,
           0
         );
-        announcement.textContent = `Started refresh for ${totalPlans} test plans with ${run.botName} version ${run.newVersion}. Focus moved to events list.`;
+        announcement.textContent = `Started re-run for ${totalPlans} test plans with ${run.botName} version ${run.newVersion}. Focus moved to events list.`;
       }
     }
   };
