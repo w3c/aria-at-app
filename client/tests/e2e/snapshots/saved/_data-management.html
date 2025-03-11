@@ -94,11 +94,10 @@
             >.<br />Use this page to manage Test Plans in the Test Queue and
             their phases.
           </p>
-          <div
-            class="DisclosureComponent-module__disclosure-container__pmmIj DisclosureComponent-module__stacked__fpyGC">
-            <h3 class="DisclosureComponent-module__disclosure-heading__pqEOE">
+          <div class="disclosure-container stacked">
+            <h3 class="disclosure-heading">
               <button
-                class="DisclosureComponent-module__disclosure-button__BN1iU DisclosureComponent-module__stacked__fpyGC"
+                class="disclosure-button stacked"
                 id="disclosure-btn-manageTestQueue-Manage Assistive Technology Versions"
                 type="button"
                 aria-expanded="false"
@@ -108,7 +107,7 @@
                   focusable="false"
                   data-prefix="fas"
                   data-icon="chevron-down"
-                  class="svg-inline--fa fa-chevron-down DisclosureComponent-module__disclosure-icon__KxvdH"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
                   role="img"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 512 512">
@@ -118,9 +117,9 @@
                 </svg>
               </button>
             </h3>
-            <h3 class="DisclosureComponent-module__disclosure-heading__pqEOE">
+            <h3 class="disclosure-heading">
               <button
-                class="DisclosureComponent-module__disclosure-button__BN1iU DisclosureComponent-module__stacked__fpyGC"
+                class="disclosure-button stacked"
                 id="disclosure-btn-manageTestQueue-Add Test Plans to the Test Queue"
                 type="button"
                 aria-expanded="false"
@@ -130,7 +129,7 @@
                   focusable="false"
                   data-prefix="fas"
                   data-icon="chevron-down"
-                  class="svg-inline--fa fa-chevron-down DisclosureComponent-module__disclosure-icon__KxvdH"
+                  class="svg-inline--fa fa-chevron-down disclosure-icon"
                   role="img"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 512 512">
@@ -196,23 +195,21 @@
           <table
             aria-label="Test Plans Status Summary Table"
             aria-rowcount="35"
-            class="DataManagement-module__table__Wp3Es table table-bordered table-hover">
+            class="table table table-bordered table-hover">
             <thead>
               <tr>
                 <th
                   role="columnheader"
                   scope="col"
                   aria-sort="none"
-                  class="SortableTableHeader-module__styled-header__xsdUx">
-                  <button
-                    type="button"
-                    class="SortableTableHeader-module__header-button__CAzZF btn btn-primary">
+                  class="styled-header">
+                  <button type="button" class="header-button btn btn-primary">
                     Test Plan<svg
                       aria-hidden="true"
                       focusable="false"
                       data-prefix="fas"
                       data-icon="arrow-up-short-wide"
-                      class="svg-inline--fa fa-arrow-up-short-wide SortableTableHeader-module__inactive__daSAY"
+                      class="svg-inline--fa fa-arrow-up-short-wide inactive"
                       role="img"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 576 512">
@@ -226,16 +223,14 @@
                   role="columnheader"
                   scope="col"
                   aria-sort="none"
-                  class="SortableTableHeader-module__styled-header__xsdUx">
-                  <button
-                    type="button"
-                    class="SortableTableHeader-module__header-button__CAzZF btn btn-primary">
+                  class="styled-header">
+                  <button type="button" class="header-button btn btn-primary">
                     Covered AT<svg
                       aria-hidden="true"
                       focusable="false"
                       data-prefix="fas"
                       data-icon="arrow-up-short-wide"
-                      class="svg-inline--fa fa-arrow-up-short-wide SortableTableHeader-module__inactive__daSAY"
+                      class="svg-inline--fa fa-arrow-up-short-wide inactive"
                       role="img"
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 576 512">
@@ -249,10 +244,8 @@
                   role="columnheader"
                   scope="col"
                   aria-sort="descending"
-                  class="SortableTableHeader-module__styled-header__xsdUx">
-                  <button
-                    type="button"
-                    class="SortableTableHeader-module__header-button__CAzZF btn btn-primary">
+                  class="styled-header">
+                  <button type="button" class="header-button btn btn-primary">
                     Overall Status<svg
                       aria-hidden="true"
                       focusable="false"
@@ -291,28 +284,15 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__recommended__VTpe1"
-                      >Recommended</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Since <b>Sep 23, 2024</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width recommended">Recommended</span>
+                    <p class="review-text">Since <b>Sep 23, 2024</b></p>
                   </div>
                 </td>
+                <td><span class="none centered absolute">N/A</span></td>
                 <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >N/A</span
-                  >
-                </td>
-                <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list">
+                    <span class="styled-pill full-width auto-width"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -329,19 +309,14 @@
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V25.02.13</b></span
                       ></span
-                    ><span
-                      role="listitem"
-                      class="DataManagementRow-module__review-complete__LBNFz"
+                    ><span role="listitem" class="review-complete"
                       >Review Completed&nbsp;<b>Sep 22, 2024</b></span
                     >
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list">
+                    <span class="styled-pill full-width auto-width"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -358,19 +333,14 @@
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V25.02.13</b></span
                       ></span
-                    ><span
-                      role="listitem"
-                      class="DataManagementRow-module__review-complete__LBNFz"
+                    ><span role="listitem" class="review-complete"
                       >Review Completed&nbsp;<b>Sep 23, 2024</b></span
                     >
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/88"
                         ><span
                           ><svg
@@ -392,17 +362,15 @@
                     ><span role="listitem"
                       ><button
                         type="button"
-                        class="TestPlanReportStatusDialog-module__test-plan-report-status-dialog-button___kTI1 btn btn-primary">
+                        class="test-plan-report-status-dialog-button btn btn-primary">
                         <span
                           ><span
-                            class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__reports-complete__C6Iw6"></span
+                            class="report-status-dot reports-complete"></span
                           >Required Reports <strong>Complete</strong></span
                         >
                       </button>
                       <div></div></span
-                    ><span
-                      role="listitem"
-                      class="DataManagementRow-module__review-complete__LBNFz"
+                    ><span role="listitem" class="review-complete"
                       >Approved&nbsp;<b>Sep 23, 2024</b></span
                     >
                   </div>
@@ -421,28 +389,15 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__recommended__VTpe1"
-                      >Recommended</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Since <b>Jan 3, 2023</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width recommended">Recommended</span>
+                    <p class="review-text">Since <b>Jan 3, 2023</b></p>
                   </div>
                 </td>
+                <td><span class="none centered absolute">N/A</span></td>
                 <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >N/A</span
-                  >
-                </td>
-                <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list">
+                    <span class="styled-pill full-width auto-width"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -459,19 +414,14 @@
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V23.08.23</b></span
                       ></span
-                    ><span
-                      role="listitem"
-                      class="DataManagementRow-module__review-complete__LBNFz"
+                    ><span role="listitem" class="review-complete"
                       >Review Completed&nbsp;<b>Jul 6, 2022</b></span
                     >
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list">
+                    <span class="styled-pill full-width auto-width"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -488,19 +438,14 @@
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V23.08.23</b></span
                       ></span
-                    ><span
-                      role="listitem"
-                      class="DataManagementRow-module__review-complete__LBNFz"
+                    ><span role="listitem" class="review-complete"
                       >Review Completed&nbsp;<b>Jan 3, 2023</b></span
                     >
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/67"
                         ><span
                           ><svg
@@ -522,17 +467,15 @@
                     ><span role="listitem"
                       ><button
                         type="button"
-                        class="TestPlanReportStatusDialog-module__test-plan-report-status-dialog-button___kTI1 btn btn-primary">
+                        class="test-plan-report-status-dialog-button btn btn-primary">
                         <span
                           ><span
-                            class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__reports-missing__iZNFd"></span
+                            class="report-status-dot reports-missing"></span
                           >Some Required Reports <strong>Missing</strong></span
                         >
                       </button>
                       <div></div></span
-                    ><span
-                      role="listitem"
-                      class="DataManagementRow-module__review-complete__LBNFz"
+                    ><span role="listitem" class="review-complete"
                       >Approved&nbsp;<b>Jan 3, 2023</b></span
                     >
                   </div>
@@ -551,36 +494,19 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__candidate__mE8JH"
-                      >Candidate</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Review Started <b>Jul 6, 2022</b>
-                    </p>
-                    <span
-                      class="DataManagementRow-module__versions-in-progress__HlPLy"
-                      ><span class="DataManagementRow-module__pill__Uutru"
-                        >+1</span
-                      >
-                      New Version in Progress</span
+                  <div class="status-cell">
+                    <span class="pill full-width candidate">Candidate</span>
+                    <p class="review-text">Review Started <b>Jul 6, 2022</b></p>
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
                     >
                   </div>
                 </td>
+                <td><span class="none centered absolute">N/A</span></td>
                 <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >N/A</span
-                  >
-                </td>
-                <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="3">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="3">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/90"
                         ><span
                           ><svg
@@ -602,10 +528,10 @@
                     ><span role="listitem"
                       ><button
                         type="button"
-                        class="TestPlanReportStatusDialog-module__test-plan-report-status-dialog-button___kTI1 btn btn-primary">
+                        class="test-plan-report-status-dialog-button btn btn-primary">
                         <span
                           ><span
-                            class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__reports-missing__iZNFd"></span
+                            class="report-status-dot reports-missing"></span
                           >Some Required Reports <strong>Missing</strong></span
                         >
                       </button>
@@ -614,12 +540,8 @@
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="5">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="5">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/24"
                         ><span
                           ><svg
@@ -640,41 +562,28 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Recommended</button
                     ><span role="listitem"
                       ><button
                         type="button"
-                        class="TestPlanReportStatusDialog-module__test-plan-report-status-dialog-button___kTI1 btn btn-primary">
+                        class="test-plan-report-status-dialog-button btn btn-primary">
                         <span
                           ><span
-                            class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__reports-complete__C6Iw6"></span
+                            class="report-status-dot reports-complete"></span
                           >Required Reports <strong>Complete</strong></span
                         >
                       </button>
                       <div></div></span
-                    ><span class="DataManagementRow-module__more__qzY4S"
-                      ><span
-                        role="listitem"
-                        class="DataManagementRow-module__more-issues-container__ctKmx"
-                        ><span
-                          class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__issues__C7Tlj"></span
-                        >1 Open Issue</span
-                      ><span
-                        class="DataManagementRow-module__target-days-container__aLM2a"
-                        ><button>
-                          Target&nbsp;<b>799 Days</b>&nbsp;Past
-                        </button></span
-                      ></span
-                    >
+                    ><span class="more"
+                      ><span role="listitem" class="more-issues-container"
+                        ><span class="report-status-dot issues"></span>1 Open
+                        Issue</span
+                      ><span class="target-days-container"></span
+                    ></span>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="3">
                 <th>
@@ -687,30 +596,18 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__draft__eCR00"
-                      >Draft</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Review Started <b>Jul 6, 2022</b>
-                    </p>
-                    <span
-                      class="DataManagementRow-module__versions-in-progress__HlPLy"
-                      ><span class="DataManagementRow-module__pill__Uutru"
-                        >+1</span
-                      >
-                      New Version in Progress</span
+                  <div class="status-cell">
+                    <span class="pill full-width draft">Draft</span>
+                    <p class="review-text">Review Started <b>Jul 6, 2022</b></p>
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
                     >
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/81"
                         ><span
                           ><svg
@@ -731,18 +628,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="3">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="3">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/1"
                         ><span
                           ><svg
@@ -764,10 +657,10 @@
                     ><span role="listitem"
                       ><button
                         type="button"
-                        class="TestPlanReportStatusDialog-module__test-plan-report-status-dialog-button___kTI1 btn btn-primary">
+                        class="test-plan-report-status-dialog-button btn btn-primary">
                         <span
                           ><span
-                            class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__reports-not-started__rCPlu"></span
+                            class="report-status-dot reports-not-started"></span
                           >Required Reports <strong>Not Started</strong></span
                         >
                       </button>
@@ -775,18 +668,8 @@
                     ></span>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="4">
                 <th>
@@ -801,29 +684,15 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__draft__eCR00"
-                      >Draft</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Review Started <b>Oct 2, 2024</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width draft">Draft</span>
+                    <p class="review-text">Review Started <b>Oct 2, 2024</b></p>
                   </div>
                 </td>
+                <td><span class="none centered absolute">N/A</span></td>
                 <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >N/A</span
-                  >
-                </td>
-                <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="3">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="3">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/84"
                         ><span
                           ><svg
@@ -845,10 +714,10 @@
                     ><span role="listitem"
                       ><button
                         type="button"
-                        class="TestPlanReportStatusDialog-module__test-plan-report-status-dialog-button___kTI1 btn btn-primary">
+                        class="test-plan-report-status-dialog-button btn btn-primary">
                         <span
                           ><span
-                            class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__reports-missing__iZNFd"></span
+                            class="report-status-dot reports-missing"></span
                           >Some Required Reports <strong>Missing</strong></span
                         >
                       </button>
@@ -856,18 +725,8 @@
                     ></span>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="5">
                 <th>
@@ -882,30 +741,20 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__draft__eCR00"
-                      >Draft</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
+                  <div class="status-cell">
+                    <span class="pill full-width draft">Draft</span>
+                    <p class="review-text">
                       Review Started <b>Dec 14, 2023</b>
                     </p>
-                    <span
-                      class="DataManagementRow-module__versions-in-progress__HlPLy"
-                      ><span class="DataManagementRow-module__pill__Uutru"
-                        >+1</span
-                      >
-                      New Version in Progress</span
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
                     >
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/82"
                         ><span
                           ><svg
@@ -926,18 +775,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="3">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="3">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/68"
                         ><span
                           ><svg
@@ -958,15 +803,15 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Candidate</button
                     ><span role="listitem"
                       ><button
                         type="button"
-                        class="TestPlanReportStatusDialog-module__test-plan-report-status-dialog-button___kTI1 btn btn-primary">
+                        class="test-plan-report-status-dialog-button btn btn-primary">
                         <span
                           ><span
-                            class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__reports-complete__C6Iw6"></span
+                            class="report-status-dot reports-complete"></span
                           >Required Reports <strong>Complete</strong></span
                         >
                       </button>
@@ -974,18 +819,8 @@
                     ></span>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="6">
                 <th>
@@ -1000,30 +835,18 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__draft__eCR00"
-                      >Draft</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Review Started <b>Jul 6, 2022</b>
-                    </p>
-                    <span
-                      class="DataManagementRow-module__versions-in-progress__HlPLy"
-                      ><span class="DataManagementRow-module__pill__Uutru"
-                        >+1</span
-                      >
-                      New Version in Progress</span
+                  <div class="status-cell">
+                    <span class="pill full-width draft">Draft</span>
+                    <p class="review-text">Review Started <b>Jul 6, 2022</b></p>
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
                     >
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/39"
                         ><span
                           ><svg
@@ -1044,18 +867,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="3">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="3">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/7"
                         ><span
                           ><svg
@@ -1077,10 +896,10 @@
                     ><span role="listitem"
                       ><button
                         type="button"
-                        class="TestPlanReportStatusDialog-module__test-plan-report-status-dialog-button___kTI1 btn btn-primary">
+                        class="test-plan-report-status-dialog-button btn btn-primary">
                         <span
                           ><span
-                            class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__reports-not-started__rCPlu"></span
+                            class="report-status-dot reports-not-started"></span
                           >Required Reports <strong>Not Started</strong></span
                         >
                       </button>
@@ -1088,18 +907,8 @@
                     ></span>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="7">
                 <th>
@@ -1114,30 +923,18 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__draft__eCR00"
-                      >Draft</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Review Started <b>Jul 6, 2022</b>
-                    </p>
-                    <span
-                      class="DataManagementRow-module__versions-in-progress__HlPLy"
-                      ><span class="DataManagementRow-module__pill__Uutru"
-                        >+1</span
-                      >
-                      New Version in Progress</span
+                  <div class="status-cell">
+                    <span class="pill full-width draft">Draft</span>
+                    <p class="review-text">Review Started <b>Jul 6, 2022</b></p>
+                    <span class="versions-in-progress"
+                      ><span class="pill">+1</span> New Version in
+                      Progress</span
                     >
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/94"
                         ><span
                           ><svg
@@ -1158,18 +955,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="3">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="3">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/31"
                         ><span
                           ><svg
@@ -1191,10 +984,10 @@
                     ><span role="listitem"
                       ><button
                         type="button"
-                        class="TestPlanReportStatusDialog-module__test-plan-report-status-dialog-button___kTI1 btn btn-primary">
+                        class="test-plan-report-status-dialog-button btn btn-primary">
                         <span
                           ><span
-                            class="ReportStatusDot-module__report-status-dot__agnc0 ReportStatusDot-module__reports-in-progress__hwo0x"></span
+                            class="report-status-dot reports-in-progress"></span
                           >Required Reports <strong>In Progress</strong></span
                         >
                       </button>
@@ -1202,18 +995,8 @@
                     ></span>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="8">
                 <th>
@@ -1228,23 +1011,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Feb 13, 2025</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Feb 13, 2025</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/87"
                         ><span
                           ><svg
@@ -1265,29 +1039,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="9">
                 <th>
@@ -1300,23 +1059,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/34"
                         ><span
                           ><svg
@@ -1337,29 +1087,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="10">
                 <th>
@@ -1374,23 +1109,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Aug 23, 2023</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 23, 2023</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/66"
                         ><span
                           ><svg
@@ -1411,29 +1137,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="11">
                 <th>
@@ -1448,23 +1159,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/36"
                         ><span
                           ><svg
@@ -1485,29 +1187,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="12">
                 <th>
@@ -1525,23 +1212,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 29, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 29, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/38"
                         ><span
                           ><svg
@@ -1562,29 +1240,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="13">
                 <th>
@@ -1599,23 +1262,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/41"
                         ><span
                           ><svg
@@ -1636,29 +1290,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="14">
                 <th>
@@ -1673,23 +1312,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/42"
                         ><span
                           ><svg
@@ -1710,29 +1340,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="15">
                 <th>
@@ -1747,23 +1362,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/55"
                         ><span
                           ><svg
@@ -1784,29 +1390,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="16">
                 <th>
@@ -1821,23 +1412,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/43"
                         ><span
                           ><svg
@@ -1858,29 +1440,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="17">
                 <th>
@@ -1895,23 +1462,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 6, 2025</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 6, 2025</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/83"
                         ><span
                           ><svg
@@ -1932,29 +1490,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="18">
                 <th>
@@ -1972,23 +1515,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/44"
                         ><span
                           ><svg
@@ -2009,29 +1543,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="19">
                 <th>
@@ -2046,23 +1565,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/53"
                         ><span
                           ><svg
@@ -2083,29 +1593,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="20">
                 <th>
@@ -2118,23 +1613,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/46"
                         ><span
                           ><svg
@@ -2155,29 +1641,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="21">
                 <th>
@@ -2192,23 +1663,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Aug 23, 2023</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 23, 2023</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/75"
                         ><span
                           ><svg
@@ -2229,29 +1691,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="22">
                 <th>
@@ -2266,23 +1713,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Dec 13, 2023</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Dec 13, 2023</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/78"
                         ><span
                           ><svg
@@ -2303,29 +1741,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="23">
                 <th>
@@ -2340,23 +1763,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Jan 23, 2025</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Jan 23, 2025</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/86"
                         ><span
                           ><svg
@@ -2377,29 +1791,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="24">
                 <th>
@@ -2417,23 +1816,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Jan 23, 2025</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Jan 23, 2025</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/85"
                         ><span
                           ><svg
@@ -2454,29 +1844,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="25">
                 <th>
@@ -2489,23 +1864,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Aug 5, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 5, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/49"
                         ><span
                           ><svg
@@ -2526,29 +1892,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="26">
                 <th>
@@ -2563,23 +1914,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 6, 2025</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 6, 2025</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/93"
                         ><span
                           ><svg
@@ -2600,29 +1942,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="27">
                 <th>
@@ -2635,23 +1962,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Aug 5, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 5, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/54"
                         ><span
                           ><svg
@@ -2672,29 +1990,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="28">
                 <th>
@@ -2709,23 +2012,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Feb 13, 2025</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Feb 13, 2025</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/89"
                         ><span
                           ><svg
@@ -2746,29 +2040,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="29">
                 <th>
@@ -2783,23 +2062,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Feb 12, 2025</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Feb 12, 2025</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/92"
                         ><span
                           ><svg
@@ -2820,29 +2090,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="30">
                 <th>
@@ -2857,23 +2112,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Feb 12, 2025</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Feb 12, 2025</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/91"
                         ><span
                           ><svg
@@ -2894,29 +2140,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="31">
                 <th>
@@ -2931,23 +2162,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/59"
                         ><span
                           ><svg
@@ -2968,29 +2190,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="32">
                 <th>
@@ -3003,23 +2210,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Aug 5, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Aug 5, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/61"
                         ><span
                           ><svg
@@ -3040,29 +2238,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="33">
                 <th>
@@ -3077,23 +2260,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/62"
                         ><span
                           ><svg
@@ -3114,29 +2288,14 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
               <tr aria-rowindex="34">
                 <th>
@@ -3151,23 +2310,14 @@
                   </div>
                 </td>
                 <td>
-                  <div class="DataManagementRow-module__status-cell__Z1qVA">
-                    <span
-                      class="PhasePill-module__pill__RXUKP PhasePill-module__full-width__HUREl PhasePill-module__rd__JufJJ"
-                      >R&amp;D</span
-                    >
-                    <p class="DataManagementRow-module__review-text__GwT04">
-                      Complete <b>Mar 17, 2022</b>
-                    </p>
+                  <div class="status-cell">
+                    <span class="pill full-width rd">R&amp;D</span>
+                    <p class="review-text">Complete <b>Mar 17, 2022</b></p>
                   </div>
                 </td>
                 <td>
-                  <div
-                    class="DataManagementRow-module__phase-cell__BY4yY"
-                    role="list"
-                    aria-setsize="2">
-                    <span
-                      class="VersionString-module__styled-pill__KBgcY VersionString-module__full-width__tOt9j VersionString-module__auto-width__BOgVx"
+                  <div class="phase-cell" role="list" aria-setsize="2">
+                    <span class="styled-pill full-width auto-width"
                       ><a href="/test-review/64"
                         ><span
                           ><svg
@@ -3188,36 +2338,21 @@
                       ></span
                     ><button
                       type="button"
-                      class="DataManagementRow-module__advance-button__XAq1X btn btn-secondary">
+                      class="advance-button btn btn-secondary">
                       Advance to Draft
                     </button>
                   </div>
                 </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >Not Started</span
-                  >
-                </td>
-                <td>
-                  <span
-                    class="None-module__none__TTecI None-module__centered__biAI3 None-module__absolute__iKr_y"
-                    >None Yet</span
-                  >
-                </td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">Not Started</span></td>
+                <td><span class="none centered absolute">None Yet</span></td>
               </tr>
             </tbody>
           </table>
         </main>
       </div>
       <span
-        class="AriaLiveRegionProvider-module__visually-hidden-aria-live-region__L86KY"
+        class="visually-hidden-aria-live-region"
         aria-live="polite"
         aria-atomic="true"
         >Test Plans Status Summary Table, now sorted by Overall Status in

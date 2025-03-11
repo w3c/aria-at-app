@@ -38,7 +38,7 @@ module.exports = {
             options: {
               modules: {
                 exportLocalsConvention: 'camelCase',
-                localIdentName: '[name]__[local]__[hash:base64:5]'
+                localIdentName: '[local]'
               }
             }
           }
