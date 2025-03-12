@@ -1,0 +1,69 @@
+.issues-container {
+  margin-bottom: -0.875rem;
+
+  > h2 {
+    margin: 0 0 var(--8px);
+    font-size: var(--18px);
+    padding-bottom: var(--6px);
+    border-bottom: solid 1px var(--default-gray);
+  }
+}
+
+.test-results-header {
+  margin: 0 0 1rem;
+  border-bottom: none;
+}
+
+.candidate-results-container {
+  border: solid 1px var(--border-gray);
+  padding: var(--16px);
+}
+
+.options-feedback {
+  top: 2.25rem;
+}
+
+.using {
+  font-weight: var(--font-weight-lighter);
+}
+
+.viewed-badge {
+  background-color: var(--bg-light-gray) !important;
+  color: var(--black);
+  font-size: var(--14px);
+  font-weight: var(--font-weight-light);
+  position: relative;
+  top: -6px;
+}
+
+.begin-review-button-container {
+  margin-left: auto;
+  flex-grow: 0;
+}
+
+ol.numbered-list {
+  counter-reset: numbered-list;
+  list-style: none;
+
+  > li {
+    counter-increment: numbered-list;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  > li::before {
+    content: counter(numbered-list);
+    position: absolute;
+    font-size: var(--14px);
+    left: -2rem;
+    line-height: var(--24px);
+    width: var(--24px);
+    height: var(--24px);
+    border-radius: 50%;
+    text-align: center;
+
+    color: var(--dark-gray-text);
+    background: var(--bg-light-blue);
+    border: 1px solid var(--border-light-blue);
+  }
+}

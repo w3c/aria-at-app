@@ -158,8 +158,8 @@ const TestRunHeading = ({
           </div>
         </div>
         <div
-          className={clsx(styles.testInfoEntity, styles.atBrowser)}
-          data-testid="at-browser"
+          className={clsx(styles.testInfoEntity, styles.atBrowserContainer)}
+          data-testid="at-browser-container"
         >
           <div className={styles.atBrowserRow}>
             <div data-testid="info-label">

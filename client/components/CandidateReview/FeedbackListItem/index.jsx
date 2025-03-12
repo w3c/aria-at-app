@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import nextId from 'react-id-generator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag, faCommentAlt } from '@fortawesome/free-solid-svg-icons';
-import './FeedbackListItem.css';
+import styles from './FeedbackListItem.module.css';
 
 const FeedbackListItem = ({
   differentAuthors = false,

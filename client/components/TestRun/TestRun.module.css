@@ -32,6 +32,10 @@
 .current-test-options {
   padding-right: 0;
 
+  button {
+    margin: 0;
+  }
+
   > div {
     background: var(--bg-lighter-gray);
     border: 1px solid var(--border-gray);
@@ -57,6 +61,14 @@
 
     .option-btn {
       width: 100%;
+    }
+
+    li {
+      margin-bottom: var(--4px);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 

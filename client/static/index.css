@@ -7,15 +7,18 @@
   --bg-table-body: #fafbfc;
   --bg-table-hover: #f6f8fa;
   --bg-light-blue: #e9f0f8;
+  --bg-lighter-blue: #ecf6ff;
+  --bg-light-purple: #f0e1ff;
   --bg-hover-light-blue: #def;
-  --bg-lighter-gray: #f8f9fa;
   --bg-light-gray: #e9ecef;
+  --bg-lighter-gray: #f8f9fa;
   --bg-dark-gray: #94979b;
 
   /* Miscellaneous */
   --default-gray: #d2d5d9;
   --border-gray: #d2d5d9;
   --border-light-blue: #b5cfec;
+  --border-light-purple: #d29fff;
   --white: #fff;
   --black: #000;
 
@@ -91,6 +94,7 @@
   --font-weight-headings: 600;
   --font-weight-medium: 500;
   --font-weight-light: 400;
+  --font-weight-lighter: 400;
 
   /* Dimensions */
   --spacer: 3rem;

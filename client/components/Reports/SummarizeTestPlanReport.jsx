@@ -338,7 +338,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
               </div>
             </div>
 
-            <div className={styles.resultsContainer}>
+            <div className={styles.reportResultsContainer}>
               <TestPlanResultsTable
                 key={`TestPlanResultsTable__${testResult.id}`}
                 test={{ ...test, at }}
