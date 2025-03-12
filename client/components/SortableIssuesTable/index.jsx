@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import { dates } from 'shared';
-import { None } from '../common/None';
+import { None } from '@components/common/None';
 import SortableTableHeader, {
   TABLE_SORT_ORDERS
 } from '../common/SortableTableHeader';

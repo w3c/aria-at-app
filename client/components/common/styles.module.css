@@ -38,6 +38,14 @@ div.modal-inner-section-container {
   flex-direction: column;
 }
 
+.centered-text {
+  text-align: center;
+
+  &.vertical {
+    vertical-align: middle;
+  }
+}
+
 /* Colors */
 .dark-gray {
   color: var(--bg-dark-gray);

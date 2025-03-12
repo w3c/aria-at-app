@@ -396,7 +396,7 @@ const TestPlanVersionsPage = () => {
       </Table>
       <PageSpacer />
       <DisclosureComponent
-        className={styles.customDisclosureComponent}
+        className={styles.testPlanVersionsCustomDisclosureComponent}
         componentId="versionHistory"
         title={testPlanVersions.map(testPlanVersion => {
           return (

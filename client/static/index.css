@@ -78,7 +78,7 @@
   --candidate-changes-requested: #f87f1b;
   --candidate-ready-for-review: #edbb1d;
   --candidate-in-progress: #2560ab;
-  --candidate-approved: #edbb1d;
+  --candidate-approved: #309d08;
 
   /* Shadows */
   --button-shadow: rgba(103, 171, 197, 0.5);

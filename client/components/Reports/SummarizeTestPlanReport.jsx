@@ -11,7 +11,7 @@ import {
   faHome
 } from '@fortawesome/free-solid-svg-icons';
 import { getMetrics, dates } from 'shared';
-import { None } from '../common/None';
+import { None } from '@components/common/None';
 import DisclaimerInfo from '../DisclaimerInfo';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';

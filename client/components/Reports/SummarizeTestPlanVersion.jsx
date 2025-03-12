@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import { None } from '../common/None';
+import { None } from '@components/common/None';
 import { getMetrics, dates } from 'shared';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import { Breadcrumb, Button, Container, Table } from 'react-bootstrap';

@@ -6,7 +6,7 @@ import { Container, Table } from 'react-bootstrap';
 import clsx from 'clsx';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import { derivePhaseName } from '../../utils/aria';
-import { None } from '../common/None';
+import { None } from '@components/common/None';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import ProgressBar from '@components/common/ProgressBar';
 import { TestPlanVersionPropType } from '../common/proptypes';
