@@ -3,6 +3,10 @@ const GITHUB_ISSUES_URL =
     ? 'https://github.com/w3c/aria-at'
     : 'https://github.com/bocoup/aria-at';
 
+// Maximum URL length for GitHub issues
+// Tested on multiple browsers and devices
+const MAX_GITHUB_URL_LENGTH = 8000;
+
 // TODO: Use At.key
 const atLabelMap = {
   'VoiceOver for macOS': 'vo',
@@ -183,10 +187,26 @@ const createIssueLink = ({
     body += `\n${conflictMarkdown}`;
   }
 
-  return (
-    `${GITHUB_ISSUES_URL}/issues/new?title=${encodeURI(title)}&` +
-    `labels=${labels}&body=${encodeURIComponent(body)}`
-  );
+  let url = `${GITHUB_ISSUES_URL}/issues/new?title=${encodeURI(
+    title
+  )}&labels=${labels}&body=${encodeURIComponent(body)}`;
+
+  // This code assumes that URLs can only become too long with conflict markdown present
+  if (conflictMarkdown && url.length > MAX_GITHUB_URL_LENGTH) {
+    // If URL is too long, truncate the conflict markdown section
+    const truncationMessage = `\n\n[Content truncated due to URL length limits. Please visit [${window.location}](${window.location}) and click "Review Conflicts" to review the full conflict information.]`;
+    const maxBodyLength = Math.floor(
+      MAX_GITHUB_URL_LENGTH -
+        (url.length - body.length) -
+        truncationMessage.length
+    );
+    body = body.slice(0, maxBodyLength) + truncationMessage;
+    url = `${GITHUB_ISSUES_URL}/issues/new?title=${encodeURI(
+      title
+    )}&labels=${labels}&body=${encodeURIComponent(body)}`;
+  }
+
+  return url;
 };
 
 /**
