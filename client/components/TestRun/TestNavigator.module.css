@@ -25,12 +25,12 @@
 
   h2 {
     width: fit-content;
-    font-size: 1em;
-    margin-top: 0.75em;
+    font-size: var(--16px);
+    margin-top: var(--12px);
 
     @media all and (max-width: 767px) {
       position: relative;
-      top: -0.15em;
+      top: -0.15rem;
     }
 
     @media all and (min-width: 768px) {
@@ -60,22 +60,22 @@ button.test-navigator-toggle {
 
 .test-navigator-list {
   position: relative;
-  margin-top: 1em;
-  font-size: 0.9em;
-  padding-left: 3.25em;
+  margin-top: var(--16px);
+  font-size: var(--14px);
+  padding-left: 2.5rem;
 }
 
 .test-name-wrapper {
   position: relative;
-  margin: 0 0 1em 0.25em;
+  margin: 0 0 var(--14px) var(--4px);
   list-style: unset;
 
   &:not(.summary):before {
     content: '';
     height: 100%;
-    left: -2.8em;
+    left: -2.5rem;
     position: absolute;
-    top: 1.2em;
+    top: var(--16px);
     background: var(--default-gray);
     width: 2px;
   }
@@ -95,11 +95,11 @@ button.test-navigator-toggle {
 
   .progress-indicator {
     position: absolute;
-    left: -3.35em;
-    top: 0.2em;
-    width: 18px;
-    height: 18px;
-    border-radius: 50px;
+    left: -3rem;
+    top: var(--2px);
+    width: var(--18px);
+    height: var(--18px);
+    border-radius: 3.125rem;
   }
 
   /* Default States */

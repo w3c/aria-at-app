@@ -1,40 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
-import { Feedback, Fieldset } from '..';
-
-const ProblemOptionContainer = styled.div`
-  &.enabled {
-    margin-bottom: 15px;
-  }
-`;
-
-const Label = styled.label`
-  display: inline-block;
-  width: 100%;
-  margin-bottom: 5px;
-
-  > select,
-  > input[type='text'] {
-    min-width: 120px;
-    width: 50%;
-    height: 26px;
-    margin-left: 5px;
-  }
-
-  > input[type='checkbox'] {
-    margin-right: 5px;
-  }
-
-  &.off-screen {
-    position: absolute !important;
-    height: 1px;
-    width: 1px;
-    overflow: hidden;
-    clip: rect(1px, 1px, 1px, 1px);
-    white-space: nowrap;
-  }
-`;
+import clsx from 'clsx';
+import styles from '../TestRenderer.module.css';
 
 const UnexpectedBehaviorsFieldset = ({
   commandIndex,
@@ -54,20 +21,22 @@ const UnexpectedBehaviorsFieldset = ({
   };
 
   return (
-    <Fieldset id={`cmd-${commandIndex}-problems`}>
+    <fieldset
+      className={styles.testRendererFieldset}
+      id={`cmd-${commandIndex}-problems`}
+    >
       <legend>{unexpectedBehaviors.description[0]}</legend>
       {isSubmitted && (
-        <Feedback
-          className={`${
-            unexpectedBehaviors.description[1].required ? 'required' : ''
-          } ${
-            unexpectedBehaviors.description[1].highlightRequired
-              ? 'highlight-required'
-              : ''
-          }`}
+        <span
+          className={clsx(
+            styles.testRendererFeedback,
+            unexpectedBehaviors.description[1].required && 'required',
+            unexpectedBehaviors.description[1].highlightRequired &&
+              'highlight-required'
+          )}
         >
           {unexpectedBehaviors.description[1].description}
-        </Feedback>
+        </span>
       )}
       <div>
         <input
@@ -104,8 +73,8 @@ const UnexpectedBehaviorsFieldset = ({
         </label>
       </div>
 
-      <Fieldset
-        className="problem-select"
+      <fieldset
+        className={clsx(styles.testRendererFieldset, 'problem-select')}
         hidden={!unexpectedBehaviors.failChoice.checked}
       >
         <legend>{unexpectedBehaviors.failChoice.options.header}</legend>
@@ -127,12 +96,18 @@ const UnexpectedBehaviorsFieldset = ({
               .replace(/\s+/g, '-');
 
             return (
-              <ProblemOptionContainer
-                className={checked ? 'enabled' : ''}
+              <div
+                className={clsx(
+                  styles.problemOptionContainer,
+                  checked && 'enabled'
+                )}
                 key={`AssertionOptionsKey_${optionIndex}`}
               >
                 {/* Undesirable behavior checkbox */}
-                <Label key={`${descriptionId}_${commandIndex}__checkbox`}>
+                <label
+                  className={styles.unexpectedBehaviorsLabel}
+                  key={`${descriptionId}_${commandIndex}__checkbox`}
+                >
                   <input
                     type="checkbox"
                     value={description}
@@ -145,12 +120,15 @@ const UnexpectedBehaviorsFieldset = ({
                     }}
                   />
                   {description} behavior occurred
-                </Label>
+                </label>
 
                 {/* Impact select */}
-                <Label
+                <label
                   key={`${descriptionId}_${commandIndex}__impact`}
-                  className={!checked ? 'off-screen' : ''}
+                  className={clsx(
+                    styles.unexpectedBehaviorsLabel,
+                    !checked && 'off-screen'
+                  )}
                   aria-hidden={!checked}
                 >
                   Impact:
@@ -171,14 +149,17 @@ const UnexpectedBehaviorsFieldset = ({
                       </option>
                     ))}
                   </select>
-                </Label>
+                </label>
 
                 {/* Details text input */}
                 {more && (
                   <>
-                    <Label
+                    <label
                       key={`${descriptionId}_${commandIndex}__details`}
-                      className={!checked ? 'off-screen' : ''}
+                      className={clsx(
+                        styles.unexpectedBehaviorsLabel,
+                        !checked && 'off-screen'
+                      )}
                       aria-hidden={!checked}
                     >
                       Details:
@@ -192,27 +173,26 @@ const UnexpectedBehaviorsFieldset = ({
                         readOnly={readOnly}
                       />
                       {isSubmitted && (
-                        <Feedback
-                          className={`${
-                            more.description[1].required ? 'required' : ''
-                          } ${
-                            more.description[1].highlightRequired
-                              ? 'highlight-required'
-                              : ''
-                          }`}
+                        <span
+                          className={clsx(
+                            styles.testRendererFeedback,
+                            more.description[1].required && 'required',
+                            more.description[1].highlightRequired &&
+                              'highlight-required'
+                          )}
                         >
                           {more.description[1].description}
-                        </Feedback>
+                        </span>
                       )}
-                    </Label>
+                    </label>
                   </>
                 )}
-              </ProblemOptionContainer>
+              </div>
             );
           }
         )}
-      </Fieldset>
-    </Fieldset>
+      </fieldset>
+    </fieldset>
   );
 };
 

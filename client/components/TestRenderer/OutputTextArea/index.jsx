@@ -1,27 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
-import { Feedback } from '..';
+import clsx from 'clsx';
 import { Form } from 'react-bootstrap';
 import { NO_OUTPUT_STRING } from './constants';
 import { AtOutputPropType } from '../../common/proptypes';
-
-const OutputTextAreaWrapper = styled.div`
-  > textarea {
-    width: 100%;
-    height: 3.5rem;
-  }
-`;
-
-const NoOutputCheckbox = styled(Form.Check)`
-  display: inline-block;
-  float: right;
-  color: ${props => (props.disabled ? '#7F7F7F' : 'inherit')};
-  > input {
-    cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
-    margin-right: 4px;
-  }
-`;
+import styles from '../TestRenderer.module.css';
 
 const OutputTextArea = ({
   commandIndex,
@@ -49,25 +32,32 @@ const OutputTextArea = ({
     setNoOutput(atOutput.value === NO_OUTPUT_STRING);
   }, [atOutput.value]);
 
+  const isNoOutputCheckboxDisabled =
+    (atOutput.value && atOutput.value !== NO_OUTPUT_STRING) || readOnly;
+
   return (
-    <OutputTextAreaWrapper>
+    <div className={styles.outputTextContainer}>
       <label htmlFor={`speechoutput-${commandIndex}`}>
         {atOutput.description[0]}
         {isSubmitted && (
-          <Feedback
-            className={`${atOutput.description[1].required && 'required'} ${
+          <span
+            className={clsx(
+              styles.testRendererFeedback,
+              atOutput.description[1].required && 'required',
               atOutput.description[1].highlightRequired && 'highlight-required'
-            }`}
+            )}
           >
             {atOutput.description[1].description}
-          </Feedback>
+          </span>
         )}
       </label>
-      <NoOutputCheckbox
+      <Form.Check
+        className={clsx(
+          styles.noOutputCheckbox,
+          isNoOutputCheckboxDisabled && styles.disabled
+        )}
         checked={noOutput}
-        disabled={
-          (atOutput.value && atOutput.value !== NO_OUTPUT_STRING) || readOnly
-        }
+        disabled={isNoOutputCheckboxDisabled}
         label="No output"
         id={`no-output-checkbox-${commandIndex}`}
         type="checkbox"
@@ -82,7 +72,7 @@ const OutputTextArea = ({
         disabled={noOutput}
         readOnly={readOnly}
       />
-    </OutputTextAreaWrapper>
+    </div>
   );
 };
 
