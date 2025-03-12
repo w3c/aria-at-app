@@ -315,7 +315,7 @@ const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
 
   return (
     <>
-      <div className={styles.disclosureContainer}>
+      <div className={styles.manageDisclosureContainer}>
         <span>
           Select an assistive technology and manage its versions in the ARIA-AT
           App

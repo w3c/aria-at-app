@@ -128,7 +128,7 @@ const AddTestPlans = ({
     ?.atVersions.find(item => item.id === selectedReportAtVersionId);
 
   return (
-    <div className={styles.disclosureContainer}>
+    <div className={styles.manageDisclosureContainer}>
       <span>
         Select a test plan, assistive technology and browser to add a new test
         plan report to the test queue.

@@ -114,6 +114,10 @@ span.test-renderer-feedback {
 
   &.required.highlight-required {
     color: var(--report-status-error);
+
+    &.space {
+      margin-left: var(--4px);
+    }
   }
 
   &.off-screen {

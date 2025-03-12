@@ -43,6 +43,7 @@ const OutputTextArea = ({
           <span
             className={clsx(
               styles.testRendererFeedback,
+              styles.space,
               atOutput.description[1].required && 'required',
               atOutput.description[1].highlightRequired && 'highlight-required'
             )}

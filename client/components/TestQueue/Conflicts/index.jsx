@@ -311,7 +311,6 @@ const TestQueueConflicts = () => {
         </ConflictCount>
         <DisclosureComponent
           title={disclosureLabels}
-          stacked
           onClick={disclosureClickHandlers}
           disclosureContainerView={disclosureContents}
           expanded={openDisclosures}

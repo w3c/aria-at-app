@@ -176,6 +176,7 @@ const UnexpectedBehaviorsFieldset = ({
                         <span
                           className={clsx(
                             styles.testRendererFeedback,
+                            styles.space,
                             more.description[1].required && 'required',
                             more.description[1].highlightRequired &&
                               'highlight-required'
