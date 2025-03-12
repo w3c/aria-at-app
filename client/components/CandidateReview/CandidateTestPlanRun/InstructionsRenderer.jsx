@@ -26,7 +26,8 @@ const InstructionsRenderer = ({
   testPageUrl,
   at,
   headingLevel = 2,
-  testFormatVersion
+  testFormatVersion,
+  customClassNames
 }) => {
   const { renderableContent } = test;
   const [testRunExport, setTestRunExport] = useState();
@@ -145,7 +146,7 @@ const InstructionsRenderer = ({
   const Heading = `h${headingLevel}`;
 
   return (
-    <>
+    <div className={customClassNames}>
       <ol className={styles.numberedList}>{allInstructionsContent}</ol>
       {settingsContent.length ? settingsContent : null}
 
@@ -208,7 +209,12 @@ const InstructionsRenderer = ({
           if (isV2) {
             return (
               <React.Fragment key={`command-${id}-${i}`}>
-                <Heading id={scenarioId}>{scenarioTitle}</Heading>
+                <Heading
+                  id={scenarioId}
+                  className="instructions-assertions-table"
+                >
+                  {scenarioTitle}
+                </Heading>
                 <Table
                   key={`${id}-${i}`}
                   bordered
@@ -278,7 +284,7 @@ const InstructionsRenderer = ({
       >
         {pageContent.instructions.openTestPage.button}
       </Button>
-    </>
+    </div>
   );
 };
 
@@ -289,7 +295,8 @@ InstructionsRenderer.propTypes = {
     name: PropTypes.string.isRequired
   }),
   testFormatVersion: PropTypes.number,
-  headingLevel: PropTypes.number
+  headingLevel: PropTypes.number,
+  customClassNames: PropTypes.string
 };
 
 export default InstructionsRenderer;

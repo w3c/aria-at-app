@@ -574,6 +574,9 @@ const CandidateTestPlanRun = () => {
               expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
               disclosureContainerView={[
                 <InstructionsRenderer
+                  customClassNames={
+                    styles.candidateReviewCustomInstructionsRenderer
+                  }
                   key={`instructions-${currentTest.id}`}
                   at={testPlanReport.at}
                   test={currentTest}

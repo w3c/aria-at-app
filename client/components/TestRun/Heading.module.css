@@ -7,10 +7,12 @@
 }
 
 .test-info-entity {
-  padding: 0.5em 0.75em;
-  border-radius: 3px;
-  margin-bottom: 1em;
-  font-size: 0.9em;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--4px);
+  margin-bottom: var(--14px);
+  font-size: var(--14px);
+  text-overflow: ellipsis;
+  overflow: auto;
 }
 
 .apg-example-name,
@@ -23,6 +25,11 @@
   border: 1px solid var(--border-gray);
   width: 32%;
   text-align: center;
+
+  @media (max-width: 425px) {
+    font-size: var(--12px);
+    padding: 0.25rem 0.5rem;
+  }
 }
 
 .at-browser-container {

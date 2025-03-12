@@ -19,8 +19,7 @@ const FeedbackListItem = ({
       <span>
         {`You ${
           type === 'feedback' ? 'left feedback for' : 'requested changes for'
-        }
-                    `}
+        }`}
         <a href={githubUrl} target="_blank" rel="noreferrer">
           {issues.length} {issues.length === 1 ? 'test' : 'tests'}
         </a>{' '}
@@ -51,15 +50,17 @@ const FeedbackListItem = ({
   }
 
   return (
-    <li className="feedback-list-item" key={nextId()}>
-      {type === 'feedback' ? (
-        <FontAwesomeIcon icon={faCommentAlt} color="#B254F8" />
-      ) : (
-        <FontAwesomeIcon icon={faFlag} color="#F87F1C" />
-      )}
-      {'  '}
+    <li className={styles.feedbackListItem} key={nextId()}>
+      <FontAwesomeIcon
+        icon={type === 'feedback' ? faCommentAlt : faFlag}
+        color={
+          type === 'feedback'
+            ? 'var(--candidate-feedback)'
+            : 'var(--candidate-changes-requested)'
+        }
+      />
       {content}
-      <span className="feedback-indicator" title="Feedback Indicator" />
+      <span className={styles.feedbackIndicator} title="Feedback Indicator" />
     </li>
   );
 };

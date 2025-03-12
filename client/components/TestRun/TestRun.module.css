@@ -77,4 +77,8 @@
     text-align: center;
     margin-top: var(--10px);
   }
+
+  @media (max-width: 767px) {
+    padding-left: 0;
+  }
 }

@@ -35,6 +35,12 @@ main {
   margin: 0;
 }
 
+@media (max-width: 700px) {
+  .container {
+    padding: 1rem;
+  }
+}
+
 @media (min-width: 700px) {
   .container {
     padding: 3rem;
@@ -155,7 +161,7 @@ h1 {
   margin-bottom: 1rem;
   border-bottom: 1px solid gainsboro;
   padding-bottom: 0.25rem;
-  font-size: var(--32px);
+  font-size: var(--28px);
 }
 
 h2 {
@@ -175,8 +181,8 @@ h4 {
 }
 
 h5 {
-  margin: 1em 0 0.5em;
-  font-size: 1em;
+  margin: 1rem 0 0.5rem;
+  font-size: 1rem;
   font-weight: var(--font-weight-headings);
 }
 

@@ -1,4 +1,11 @@
+.candidate-review-custom-instructions-renderer {
+  h2 {
+    font-size: var(--20px);
+  }
+}
+
 .issues-container {
+  padding: 0;
   margin-bottom: -0.875rem;
 
   > h2 {
