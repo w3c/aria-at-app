@@ -80,7 +80,7 @@
         </nav>
       </div>
       <div class="container-fluid">
-        <div class="container container">
+        <div class="container">
           <div class="row">
             <div class="test-navigator col-md-3">
               <div class="test-navigator-toggle-container">
@@ -266,9 +266,9 @@
                 </ol>
               </nav>
             </div>
-            <main id="main" tabindex="-1" class="candidate-test-area col">
+            <main id="main" tabindex="-1" class="col">
               <div class="row">
-                <div class="test-info-heading">
+                <div class="no-padding">
                   <div class="sr-only" aria-live="polite" aria-atomic="true">
                     Viewing Test Open a Modal Dialog in reading mode, Test 1 of
                     18
@@ -297,9 +297,9 @@
                     <div><b>Target Completion Date: </b>January 2, 2023</div>
                   </div>
                 </div>
-                <div class="results-container-col col">
+                <div class="no-padding col">
                   <div s="1" class="row row-cols-md-2 row-cols-1">
-                    <div class="results-container col-md-9">
+                    <div class="no-padding col-md-9">
                       <div class="row">
                         <div class="issues-container">
                           <h2>
@@ -308,7 +308,7 @@
                             >
                             <b>JAWS Representative</b>
                           </h2>
-                          <ul class="feedback-list">
+                          <ul>
                             <li class="feedback-list-item">
                               <svg
                                 aria-hidden="true"
@@ -319,12 +319,11 @@
                                 role="img"
                                 xmlns="http://www.w3.org/2000/svg"
                                 viewBox="0 0 448 512"
-                                color="#F87F1C">
+                                color="var(--candidate-changes-requested)">
                                 <path
                                   fill="currentColor"
-                                  d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"></path>
-                              </svg>
-                              <a
+                                  d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"></path></svg
+                              ><a
                                 href="https://github.com/bocoup/aria-at/issues?q=label:candidate-review%20label:changes-requested%20label:jaws%20label:jaws%20%22Modal%20Dialog%20Example%22%20Test%201%20V22.05.26"
                                 target="_blank"
                                 rel="noreferrer"
@@ -337,8 +336,8 @@
                           </ul>
                         </div>
                       </div>
-                      <div class="results-container-row row">
-                        <div class="results-container">
+                      <div class="candidate-results-container row">
+                        <div class="no-padding">
                           <h1 class="no-border">
                             Open a Modal Dialog in reading mode
                           </h1>
@@ -370,119 +369,124 @@
                               role="region"
                               id="disclosure-btn-controls-candidateReviewRun-Test Instructions"
                               aria-labelledby="disclosure-btn-candidateReviewRun-Test Instructions">
-                              <ol class="css-tzo3vz">
-                                <li>
-                                  Configure JAWS with default settings. For
-                                  help, read
-                                  <a
-                                    href="https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing"
-                                    >Configuring Screen Readers for Testing</a
-                                  >.
-                                </li>
-                                <li>
-                                  Activate the "Open test page" button, which
-                                  opens the example to test in a new window and
-                                  runs a script that sets focus on the 'Add
-                                  Delivery Address' button
-                                </li>
-                                <li>
-                                  With the reading cursor on the 'Add Delivery
-                                  Address' button, open the dialog.
-                                </li>
-                                <li>
-                                  With the reading cursor on the 'Add Delivery
-                                  Address' button, open the dialog. Do this with
-                                  each of the following commands or command
-                                  sequences.
-                                  <ul class="bullet-list">
-                                    <li>Space</li>
-                                    <li>Enter</li>
-                                  </ul>
-                                </li>
-                              </ol>
-                              <h2 id="JAWS-test1-SPACE-cmd0">
-                                Space: 4 MUST, 0 SHOULD, 0 MAY Assertions
-                              </h2>
-                              <div class="table-responsive">
-                                <table
-                                  aria-labelledby="JAWS-test1-SPACE-cmd0"
-                                  class="table table-bordered">
-                                  <thead>
-                                    <tr>
-                                      <th>Priority</th>
-                                      <th>Assertion Statement</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td>MUST</td>
-                                      <td>Role 'dialog' is conveyed</td>
-                                    </tr>
-                                    <tr>
-                                      <td>MUST</td>
-                                      <td>
-                                        Name 'Add Delivery Address' is conveyed
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td>MUST</td>
-                                      <td>
-                                        Name of input ('Street') is conveyed
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td>MUST</td>
-                                      <td>
-                                        The ability to enter or edit text is
-                                        conveyed
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
+                              <div
+                                class="candidate-review-custom-instructions-renderer">
+                                <ol class="numbered-list">
+                                  <li>
+                                    Configure JAWS with default settings. For
+                                    help, read
+                                    <a
+                                      href="https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing"
+                                      >Configuring Screen Readers for Testing</a
+                                    >.
+                                  </li>
+                                  <li>
+                                    Activate the "Open test page" button, which
+                                    opens the example to test in a new window
+                                    and runs a script that sets focus on the
+                                    'Add Delivery Address' button
+                                  </li>
+                                  <li>
+                                    With the reading cursor on the 'Add Delivery
+                                    Address' button, open the dialog.
+                                  </li>
+                                  <li>
+                                    With the reading cursor on the 'Add Delivery
+                                    Address' button, open the dialog. Do this
+                                    with each of the following commands or
+                                    command sequences.
+                                    <ul class="bullet-list">
+                                      <li>Space</li>
+                                      <li>Enter</li>
+                                    </ul>
+                                  </li>
+                                </ol>
+                                <h2 id="JAWS-test1-SPACE-cmd0">
+                                  Space: 4 MUST, 0 SHOULD, 0 MAY Assertions
+                                </h2>
+                                <div class="table-responsive">
+                                  <table
+                                    aria-labelledby="JAWS-test1-SPACE-cmd0"
+                                    class="table table-bordered">
+                                    <thead>
+                                      <tr>
+                                        <th>Priority</th>
+                                        <th>Assertion Statement</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>Role 'dialog' is conveyed</td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          Name 'Add Delivery Address' is
+                                          conveyed
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          Name of input ('Street') is conveyed
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          The ability to enter or edit text is
+                                          conveyed
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <h2 id="JAWS-test1-ENTER-cmd1">
+                                  Enter: 4 MUST, 0 SHOULD, 0 MAY Assertions
+                                </h2>
+                                <div class="table-responsive">
+                                  <table
+                                    aria-labelledby="JAWS-test1-ENTER-cmd1"
+                                    class="table table-bordered">
+                                    <thead>
+                                      <tr>
+                                        <th>Priority</th>
+                                        <th>Assertion Statement</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>Role 'dialog' is conveyed</td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          Name 'Add Delivery Address' is
+                                          conveyed
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          Name of input ('Street') is conveyed
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          The ability to enter or edit text is
+                                          conveyed
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <button type="button" class="btn btn-primary">
+                                  Open Test Page
+                                </button>
                               </div>
-                              <h2 id="JAWS-test1-ENTER-cmd1">
-                                Enter: 4 MUST, 0 SHOULD, 0 MAY Assertions
-                              </h2>
-                              <div class="table-responsive">
-                                <table
-                                  aria-labelledby="JAWS-test1-ENTER-cmd1"
-                                  class="table table-bordered">
-                                  <thead>
-                                    <tr>
-                                      <th>Priority</th>
-                                      <th>Assertion Statement</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    <tr>
-                                      <td>MUST</td>
-                                      <td>Role 'dialog' is conveyed</td>
-                                    </tr>
-                                    <tr>
-                                      <td>MUST</td>
-                                      <td>
-                                        Name 'Add Delivery Address' is conveyed
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td>MUST</td>
-                                      <td>
-                                        Name of input ('Street') is conveyed
-                                      </td>
-                                    </tr>
-                                    <tr>
-                                      <td>MUST</td>
-                                      <td>
-                                        The ability to enter or edit text is
-                                        conveyed
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </div>
-                              <button type="button" class="btn btn-primary">
-                                Open Test Page
-                              </button>
                             </div>
                             <h1 class="disclosure-heading">
                               <button
@@ -708,7 +712,7 @@
                       <div class="row">
                         <ul
                           aria-labelledby="test-toolbar-heading"
-                          class="test-run-toolbar mt-1">
+                          class="test-run-toolbar">
                           <li>
                             <button type="button" class="btn btn-secondary">
                               Summary
