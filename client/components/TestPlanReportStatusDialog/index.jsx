@@ -29,11 +29,9 @@ const TestPlanReportStatusDialog = ({
   const { requiredReportsCount, sortedStatuses } = useMemo(() => {
     let requiredCount = 0;
 
-    const sorted = [...testPlanReportStatuses].sort((a, b) => {
-      if (a.isRequired && !b.isRequired) return -1;
-      if (!a.isRequired && b.isRequired) return 1;
-      return 0;
-    });
+    const sorted = [...testPlanReportStatuses].sort(
+      (a, b) => Number(b.isRequired) - Number(a.isRequired)
+    );
 
     sorted.forEach(status => {
       if (status.isRequired) requiredCount += 1;
