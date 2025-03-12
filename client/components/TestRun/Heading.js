@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -14,6 +15,8 @@ import {
   isJobStatusFinal
 } from '../../utils/collectionJobStatus';
 import { TestResultPropType } from '../common/proptypes';
+import styles from './Heading.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const TestRunHeading = ({
   at,
@@ -85,8 +88,8 @@ const TestRunHeading = ({
     }
 
     return (
-      <div className="test-info-entity tests-completed">
-        <div className="info-label">
+      <div className={clsx(styles.testInfoEntity, styles.testsCompleted)}>
+        <div data-testid="info-label">
           <FontAwesomeIcon icon={testCount ? faCheck : faExclamationCircle} />
           {content}
         </div>
@@ -98,9 +101,11 @@ const TestRunHeading = ({
 
   if (openAsUser?.isBot) {
     openAsUserHeading = (
-      <div className="test-info-entity reviewing-as bot">
+      <div
+        className={clsx(styles.testInfoEntity, styles.reviewingAs, styles.bot)}
+      >
         {isReadOnly ? 'Viewing' : 'Reviewing'} tests of{' '}
-        <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
+        <FontAwesomeIcon icon={faRobot} className={commonStyles.noMargin} />{' '}
         <b>{`${openAsUser.username}`}.</b>
         {!isJobStatusFinal(collectionJob.status) && (
           <>
@@ -121,7 +126,7 @@ const TestRunHeading = ({
     }
 
     openAsUserHeading = (
-      <div className="test-info-entity reviewing-as">
+      <div className={clsx(styles.testInfoEntity, styles.reviewingAs)}>
         {isReadOnly ? (
           <>
             Viewing {readOnlyStatus} tests of <b>{openAsUser.username}</b> in
@@ -142,22 +147,25 @@ const TestRunHeading = ({
   const testPlanName = `${testPlanTitle} ${testPlanVersionString}`;
   return (
     <>
-      <div className="test-info-wrapper">
+      <div className={styles.testInfoWrapper}>
         <div
-          className="test-info-entity apg-example-name"
+          className={clsx(styles.testInfoEntity, styles.apgExampleName)}
           data-testid="apg-example-name"
         >
-          <div className="info-label">
+          <div data-testid="info-label">
             <b>Test Plan:</b>&nbsp;
             <a href={testPlanVersionReviewLink}>{testPlanName}</a>
           </div>
         </div>
-        <div className="test-info-entity at-browser" data-testid="at-browser">
-          <div className="at-browser-row">
-            <div className="info-label">
+        <div
+          className={clsx(styles.testInfoEntity, styles.atBrowser)}
+          data-testid="at-browser"
+        >
+          <div className={styles.atBrowserRow}>
+            <div data-testid="info-label">
               <b>AT:</b> {at}
             </div>
-            <div className="info-label">
+            <div data-testid="info-label">
               <b>Browser:</b> {browser}
             </div>
           </div>

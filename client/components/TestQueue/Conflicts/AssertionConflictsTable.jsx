@@ -22,7 +22,7 @@ const AssertionConflictsTable = ({ conflictingResults, testers }) => {
         {commandString(conflictingResults[0].scenario)}
       </h3>
 
-      <Table className={styles.conflictsTable} bordered responsive>
+      <Table className={styles.conflicts} bordered responsive>
         <thead>
           <tr>
             <th>Assertion</th>

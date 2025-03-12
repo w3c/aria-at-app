@@ -1,0 +1,23 @@
+fieldset.fieldset-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
+
+  legend {
+    float: inherit;
+  }
+
+  .at-browser-details-modal-alert {
+    margin-bottom: 0;
+  }
+}
+
+.at-browser-details-modal-alert {
+  display: flex;
+  grid-column: 1 / -1;
+
+  span {
+    font-size: var(--14px);
+    line-height: var(--18px);
+  }
+}

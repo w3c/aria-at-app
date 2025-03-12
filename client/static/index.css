@@ -1,3 +1,5 @@
+@import url('https://use.fontawesome.com/releases/v5.0.1/css/all.css');
+
 :root {
   /* Background colors */
   --bg: #eaeaea;
@@ -66,6 +68,17 @@
   --report-status-cancelled: #a231ff;
   --report-status-error: #e3261f;
   --report-status-running: #1e8f37;
+
+  --navigator-green: #1d8f37;
+  --navigator-warning: #ffcd00;
+  --navigator-warning-indicator: #976005;
+
+  --candidate-summary: #295fa6;
+  --candidate-feedback: #b253f8;
+  --candidate-changes-requested: #f87f1b;
+  --candidate-ready-for-review: #edbb1d;
+  --candidate-in-progress: #2560ab;
+  --candidate-approved: #edbb1d;
 
   /* Shadows */
   --button-shadow: rgba(103, 171, 197, 0.5);

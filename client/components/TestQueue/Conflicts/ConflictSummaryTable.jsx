@@ -45,7 +45,7 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
       </h3>
 
       <Table
-        className={clsx(commonStyles.themeTable, styles.conflictsTable)}
+        className={clsx(commonStyles.themeTable, styles.conflicts)}
         bordered
         responsive
       >
