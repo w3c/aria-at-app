@@ -55,6 +55,7 @@ const BasicThemedModal = ({
         <Modal.Header className="border-bottom-0">
           <Modal.Title
             id={`title-${id}`}
+            as="h1"
             ref={headerRef}
             tabIndex="-1"
             className={commonStyles.modalTitle}
