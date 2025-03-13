@@ -1031,7 +1031,7 @@ const TestRun = () => {
         />
         {pageReady && (
           <Row>
-            <Col className={commonStyles.noPadding} md={9}>
+            <Col className="p-0" md={9}>
               <Row>
                 <TestRenderer
                   key={nextId()}

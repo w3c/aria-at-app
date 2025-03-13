@@ -5,24 +5,16 @@
   min-height: calc(100vh - 4rem /* navbar height */);
 }
 
-.no-padding {
-  padding: 0 !important;
-}
-
-.no-margin {
-  margin: 0 !important;
-}
-
-.no-border {
-  border: none !important;
-}
-
 .spacer {
   height: var(--spacer);
 }
 
 .form-group {
   margin-bottom: 1rem;
+}
+
+.bold-font {
+  font-weight: bold;
 }
 
 h1.modal-title {
@@ -98,4 +90,14 @@ table.theme-table {
 div.theme-table-unavailable {
   border: solid 1px var(--border-gray);
   padding: 0.5rem 1rem;
+}
+
+ul.bullet-list {
+  padding-inline-start: var(--24px);
+  list-style-type: circle;
+
+  > li {
+    display: list-item;
+    list-style: circle;
+  }
 }

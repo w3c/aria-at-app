@@ -399,7 +399,7 @@ const CandidateTestPlanRun = () => {
 
   const getHeading = () => {
     return (
-      <div className={commonStyles.noPadding}>
+      <div className="p-0">
         {isSummaryView ? (
           <>
             <span className={testRunStyles.taskLabel}>
@@ -539,7 +539,7 @@ const CandidateTestPlanRun = () => {
 
   const getContent = () => {
     return (
-      <div className={commonStyles.noPadding}>
+      <div className="p-0">
         {isSummaryView ? (
           <div
             className={
@@ -554,7 +554,7 @@ const CandidateTestPlanRun = () => {
           </div>
         ) : (
           <>
-            <h1 className={commonStyles.noBorder}>{currentTest.title}</h1>
+            <h1 className="border-0">{currentTest.title}</h1>
             <DisclosureComponent
               componentId="candidateReviewRun"
               headingLevel="1"
@@ -646,12 +646,9 @@ const CandidateTestPlanRun = () => {
           <Row>
             {getHeading()}
             {getTestInfo()}
-            <Col className={commonStyles.noPadding}>
+            <Col className="p-0">
               <Row xs={1} s={1} md={2}>
-                <Col
-                  className={commonStyles.noPadding}
-                  md={isLaptopOrLarger ? 9 : 12}
-                >
+                <Col className="p-0" md={isLaptopOrLarger ? 9 : 12}>
                   <Row>{getFeedback()}</Row>
                   <Row className={styles.candidateResultsContainer}>
                     {getContent()}

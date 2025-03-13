@@ -7,26 +7,13 @@ import { Helmet } from 'react-helmet';
 import PageStatus from '../common/PageStatus';
 import InstructionsRenderer from '../CandidateReview/CandidateTestPlanRun/InstructionsRenderer';
 import FilterButtons from '../common/FilterButtons';
-import styled from '@emotion/styled';
 import { derivePhaseName } from '../../utils/aria';
 import { dates } from 'shared';
 import supportJson from '../../resources/support.json';
 import SortableIssuesTable from '../SortableIssuesTable';
 import createIssueLink from '../../utils/createIssueLink';
-
-const Ul = styled.ul`
-  li {
-    list-style-type: disc;
-    margin-left: 20px;
-  }
-`;
-
-const FilterButtonContainer = styled.div`
-  padding: 0 0.75rem;
-  border: 1px solid #d2d5d9;
-  border-radius: 3px;
-  margin-bottom: 40px;
-`;
+import styles from './TestReview.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const TestReview = () => {
   const location = useLocation();
@@ -146,7 +133,7 @@ const TestReview = () => {
         </li>
         <li>
           <strong>Version History:&nbsp;</strong>
-          <Ul>
+          <ul className={commonStyles.bulletList}>
             <li>
               {`R&D completed on ${dates.convertDateToString(
                 testPlanVersion.updatedAt,
@@ -191,7 +178,7 @@ const TestReview = () => {
                   )}.`}
               </li>
             )}
-          </Ul>
+          </ul>
         </li>
         <li>
           <strong>Latest Commit:&nbsp;</strong>
@@ -250,7 +237,7 @@ const TestReview = () => {
         })}
       />
       <h2>Tests</h2>
-      <FilterButtonContainer>
+      <div className={styles.filterButtonsContainer}>
         <FilterButtons
           filterLabel="Filter tests by covered AT"
           filterOptions={filterOptions}
@@ -259,7 +246,7 @@ const TestReview = () => {
             setActiveFilter(selectedFilter);
           }}
         />
-      </FilterButtonContainer>
+      </div>
       {filteredTests.map((test, index) => {
         const isFirst = index === 0;
         const hasAriaReference =

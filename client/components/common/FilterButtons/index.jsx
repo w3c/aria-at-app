@@ -1,27 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
 import { Button } from 'react-bootstrap';
-
-const StyledFilterButton = styled(Button)`
-  background: #e9ebee;
-  border-radius: 16px;
-  margin-left: 12px;
-  background-color: white;
-  font-weight: 400;
-
-  &.active,
-  &:active {
-    background: #eaf3fe !important;
-    border: #517dbc 2px solid !important;
-    box-shadow: none !important;
-
-    &:hover,
-    :focus {
-      box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5) !important;
-    }
-  }
-`;
+import styles from './FilterButtons.module.css';
 
 const FilterButtons = ({
   filterLabel,
@@ -41,15 +21,16 @@ const FilterButtons = ({
         const isActive = activeFilter === value;
         return (
           <li key={value}>
-            <StyledFilterButton
+            <Button
               data-test={`filter-${value.toLowerCase()}`}
               variant="secondary"
               aria-pressed={isActive}
               active={isActive}
               onClick={() => onFilterChange(value)}
+              className={styles.filterButton}
             >
               {label}
-            </StyledFilterButton>
+            </Button>
           </li>
         );
       })}

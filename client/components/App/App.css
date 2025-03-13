@@ -485,3 +485,60 @@ div[role='dialog'][aria-modal='true']:nth-last-child(5) {
 .fa-check {
   color: var(--positive-green);
 }
+
+/* Miscellaneous */
+.loading {
+  display: inline-block;
+  clip-path: inset(0 1ch 0 0);
+  animation: dots 1s steps(4) infinite;
+}
+
+@keyframes dots {
+  to {
+    clip-path: inset(0 -1ch 0 0);
+  }
+}
+
+.indeterminate-loading-container {
+  display: flex;
+  justify-content: center;
+
+  /* Target react bootstrap spinner */
+  > .spinner-border {
+    width: 3.125rem;
+    height: 3.125rem;
+  }
+
+  &.has-note {
+    margin-bottom: 2rem;
+  }
+}
+
+.skip-link {
+  left: -999px;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  z-index: -999;
+
+  &:focus,
+  &:focus-visible,
+  &:active {
+    color: var(--white);
+    background-color: var(--primary-color);
+    outline: 2px solid var(--border-light-blue);
+    outline-offset: 0;
+    left: auto;
+    width: initial;
+    height: auto;
+    overflow: auto;
+    margin-top: 120px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+    z-index: 999;
+    display: inline-block;
+  }
+}

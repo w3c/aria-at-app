@@ -30,7 +30,7 @@ const ReviewConflictsModal = ({
       onHide={handleClose}
     >
       <Modal.Header closeButton>
-        <Modal.Title as="h2" className={commonStyles.noMargin}>
+        <Modal.Title as="h2" className="m-0">
           Review Conflicts for &quot;{test.title}&quot;
         </Modal.Title>
       </Modal.Header>

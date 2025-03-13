@@ -1,31 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
-
-const ContainerDiv = styled.div`
-  display: flex;
-`;
-
-const Label = styled.label`
-  border: 1px solid #ced4da;
-  padding: 0.375rem 0.9rem 0.375rem 0.75rem;
-  background-color: ${props =>
-    props.applyCheckedStyles ? `#F6F8FA` : 'white'};
-
-  &:first-of-type {
-    border-radius: 0.375rem 0 0 0.375rem;
-  }
-  &:last-of-type {
-    border-radius: 0 0.375rem 0.375rem 0;
-  }
-  &:not(:last-of-type) {
-    border-right: none;
-  }
-`;
-
-const Input = styled.input`
-  margin-right: 0.375rem;
-`;
+import clsx from 'clsx';
+import styles from './RadioBox.module.css';
+import commonStyles from '@components/common/styles.module.css';
 
 const RadioBox = ({ name, labels, selectedLabel, onSelect }) => {
   const getOnChange = label => event => {
@@ -33,24 +10,31 @@ const RadioBox = ({ name, labels, selectedLabel, onSelect }) => {
   };
 
   return (
-    <ContainerDiv>
+    <div className="d-flex">
       {labels.map(label => {
         const isChecked = selectedLabel === label;
         return (
-          <Label key={label} applyCheckedStyles={isChecked}>
-            <Input
+          <label
+            key={label}
+            className={clsx(
+              styles.radioBoxLabel,
+              isChecked && styles.applyCheckedStyle
+            )}
+          >
+            <input
               type="radio"
               name={name}
               checked={isChecked}
               onChange={getOnChange(label)}
+              className={styles.radioBoxInput}
             />
             <TextThatWontShiftWhenBold isBold={isChecked}>
               {label}
             </TextThatWontShiftWhenBold>
-          </Label>
+          </label>
         );
       })}
-    </ContainerDiv>
+    </div>
   );
 };
 

@@ -3,7 +3,6 @@ import { Container } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import clsx from 'clsx';
-import styles from './PageStatus.module.css';
 
 const Loading = ({
   title,
@@ -21,7 +20,7 @@ const Loading = ({
       <div
         className={clsx(
           isError && 'alert alert-danger',
-          message === 'Loading ...' && styles.loading
+          message === 'Loading ...' && 'loading'
         )}
         role={isError ? 'alert' : ''}
         data-testid="page-status"

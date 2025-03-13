@@ -105,7 +105,7 @@ const TestRunHeading = ({
         className={clsx(styles.testInfoEntity, styles.reviewingAs, styles.bot)}
       >
         {isReadOnly ? 'Viewing' : 'Reviewing'} tests of{' '}
-        <FontAwesomeIcon icon={faRobot} className={commonStyles.noMargin} />{' '}
+        <FontAwesomeIcon icon={faRobot} className="m-0" />{' '}
         <b>{`${openAsUser.username}`}.</b>
         {!isJobStatusFinal(collectionJob.status) && (
           <>

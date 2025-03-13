@@ -174,13 +174,3 @@ label {
     }
   }
 }
-
-ul.bullet-list {
-  padding-inline-start: 2.5rem;
-  list-style-type: circle;
-
-  > li {
-    display: list-item;
-    list-style: circle;
-  }
-}
