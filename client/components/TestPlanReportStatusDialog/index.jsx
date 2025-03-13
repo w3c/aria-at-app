@@ -11,7 +11,7 @@ import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion } from '../common/AtBrowserVersion';
 import { TestPlanVersionPropType } from '../common/proptypes';
 import styles from './TestPlanReportStatusDialog.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const TestPlanReportStatusDialog = ({
   testPlanVersion,

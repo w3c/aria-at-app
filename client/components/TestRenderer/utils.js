@@ -3,7 +3,7 @@ import nextId from 'react-id-generator';
 import ReactHtmlParser from 'react-html-parser';
 import supportJson from '@client/resources/support.json';
 import { unescape } from 'lodash';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const parseRichContentFromArray = (instruction = []) => {
   let content = null;

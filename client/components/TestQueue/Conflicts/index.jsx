@@ -13,7 +13,7 @@ import ConflictIssueDetails from './ConflictIssueDetails';
 import TestConflictsActions from './TestConflictsActions';
 import generateConflictMarkdown from '../../../utils/generateConflictMarkdown';
 import styles from './Conflicts.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../../common/styles.module.css';
 
 const TestQueueConflicts = () => {
   const [openDisclosures, setOpenDisclosures] = useState([]);

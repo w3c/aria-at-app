@@ -1,5 +1,5 @@
 import React from 'react';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../styles.module.css';
 
 /**
  * @returns {JSX.Element}

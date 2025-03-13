@@ -1,7 +1,7 @@
 .candidate-review-custom-disclosure-component {
   border: 1px solid var(--border-gray);
   border-radius: var(--4px);
-  margin-bottom: var(--20px);
+  margin-bottom: 3rem;
 
   > .disclosure-content,
   table {

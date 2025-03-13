@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
 import BasicModal from '../BasicModal';
 import { dates } from 'shared';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../styles.module.css';
 
 const minimumReleaseYear = 1999;
 

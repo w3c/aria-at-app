@@ -553,7 +553,9 @@ const CandidateTestPlanRun = () => {
           </div>
         ) : (
           <>
-            <h1 className="border-0">{currentTest.title}</h1>
+            <h1 className="border-0" data-testid="current-test-title">
+              {currentTest.title}
+            </h1>
             <DisclosureComponent
               componentId="candidateReviewRun"
               headingLevel="1"

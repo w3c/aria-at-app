@@ -21,7 +21,7 @@ import AssignTesters from './AssignTesters';
 import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
 import styles from './TestQueue.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const TestQueue = () => {
   const client = useApolloClient();

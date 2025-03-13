@@ -17,7 +17,7 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { AtPropType } from '../common/proptypes';
 import styles from './ManageTestQueue.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const ManageAtVersions = ({ ats = [], triggerUpdate = () => {} }) => {
   const { triggerLoad } = useTriggerLoad();

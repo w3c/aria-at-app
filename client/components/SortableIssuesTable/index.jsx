@@ -8,7 +8,7 @@ import SortableTableHeader, {
 } from '../common/SortableTableHeader';
 import FilterButtons from '../common/FilterButtons';
 import { IssuePropType } from '../common/proptypes';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const FILTER_OPTIONS = {
   OPEN: 'Open',
@@ -119,7 +119,7 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
             title={title}
             active={activeSort === field}
             onSort={handleSort(field)}
-            data-test={`sort-${field.toLowerCase()}`}
+            data-testid={`sort-${field.toLowerCase()}`}
           />
         ))}
       </tr>
@@ -131,7 +131,7 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
       {sortedAndFilteredIssues.map(issue => (
         <tr
           key={issue.link}
-          data-test="issue-row"
+          data-testid="issue-row"
           data-status={issue.isOpen ? 'open' : 'closed'}
         >
           <td>
@@ -148,7 +148,7 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
               {issue.title}
             </a>
           </td>
-          <td data-test="issue-status">{issue.isOpen ? 'Open' : 'Closed'}</td>
+          <td data-testid="issue-status">{issue.isOpen ? 'Open' : 'Closed'}</td>
           <td>{issue.at?.name ?? 'AT not specified'}</td>
           <td>{dates.convertDateToString(issue.createdAt, 'MMM D, YYYY')}</td>
           <td>
@@ -186,7 +186,7 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
           bordered
           responsive
           aria-labelledby="github-issues"
-          data-test="issues-table"
+          data-testid="issues-table"
           className={commonStyles.themeTable}
         >
           {renderTableHeader()}

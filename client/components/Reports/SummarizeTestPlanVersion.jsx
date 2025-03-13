@@ -15,7 +15,7 @@ import {
   TestPlanVersionPropType
 } from '../common/proptypes';
 import styles from './SummarizeTestPlanVersion.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const SummarizeTestPlanVersion = ({ testPlanVersion, testPlanReports }) => {
   const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;

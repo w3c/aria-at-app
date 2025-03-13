@@ -25,7 +25,7 @@ import {
 import FailingAssertionsSummaryTable from '../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../FailingAssertionsSummary/Heading';
 import styles from './SummarizeTestPlanReport.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
   const { exampleUrl, designPatternUrl } = testPlanVersion.metadata;

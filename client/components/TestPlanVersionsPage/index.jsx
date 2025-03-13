@@ -20,7 +20,7 @@ import PageSpacer from '../common/PageSpacer';
 import useForceUpdate from '../../hooks/useForceUpdate';
 import SortableIssuesTable from '../SortableIssuesTable';
 import styles from './TestPlanVersionsPage.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const TestPlanVersionsPage = () => {
   const { testPlanDirectory } = useParams();

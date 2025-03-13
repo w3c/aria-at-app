@@ -15,7 +15,7 @@ const DisclosureComponent = ({
   className = null
 }) => {
   const Heading = `h${headingLevel}`;
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(expanded);
 
   const titlesArr = Array.isArray(title) ? title : [title];
   const disclosureViewsArr = Array.isArray(disclosureContainerView)

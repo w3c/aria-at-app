@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import { IssuePropType } from '../../common/proptypes';
 import { dates } from 'shared';
 import styles from './Conflicts.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../../common/styles.module.css';
 
 const ConflictIssueDetails = ({ issues }) => {
   if (!issues || issues.length === 0) return null;

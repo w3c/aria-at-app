@@ -22,7 +22,7 @@ const FilterButtons = ({
         return (
           <li key={value}>
             <Button
-              data-test={`filter-${value.toLowerCase()}`}
+              data-testid={`filter-${value.toLowerCase()}`}
               variant="secondary"
               aria-pressed={isActive}
               active={isActive}

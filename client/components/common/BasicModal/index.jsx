@@ -4,7 +4,7 @@ import { Button, Modal } from 'react-bootstrap';
 import { uniqueId } from 'lodash';
 import FocusTrapper from '../FocusTrapper';
 import { ModalActionPropType } from '../proptypes';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../styles.module.css';
 
 const BasicModal = ({
   show = false,

@@ -22,10 +22,12 @@ import { dates } from 'shared';
 import { calculations } from 'shared';
 import { UserPropType } from '../../common/proptypes';
 import styles from '../CandidateReview.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../../common/styles.module.css';
 
 const none = None();
-const noneNoTestPlans = None('No Test Plans to Review');
+const noneNoTestPlans = None('No Test Plans to Review', {
+  customClassNames: 'p-3'
+});
 
 const TestPlans = ({ testPlanVersions, me }) => {
   const testPlanReportsExist = testPlanVersions.some(
@@ -188,10 +190,11 @@ const TestPlans = ({ testPlanVersions, me }) => {
     if (!testPlanReportsForAtExists) {
       return (
         <DisclosureComponent
+          expanded
           className={styles.candidateReviewCustomDisclosureComponent}
           componentId="candidateReviewRuns"
           title={atName}
-          disclosureContainerView={noneNoTestPlans}
+          disclosureContainerView={<div className="p-3">{noneNoTestPlans}</div>}
         />
       );
     }
@@ -217,6 +220,7 @@ const TestPlans = ({ testPlanVersions, me }) => {
 
     return (
       <DisclosureComponent
+        expanded
         className={styles.candidateReviewCustomDisclosureComponent}
         componentId="candidateReviewRuns"
         title={atName}

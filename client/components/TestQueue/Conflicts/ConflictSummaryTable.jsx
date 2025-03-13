@@ -6,7 +6,7 @@ import { IssuePropType } from '../../common/proptypes';
 import AssertionConflictsTable from './AssertionConflictsTable';
 import UnexpectedBehaviorsConflictsTable from './UnexpectedBehaviorsConflictsTable';
 import styles from './Conflicts.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../../common/styles.module.css';
 
 const ConflictSummaryTable = ({ conflictingResults }) => {
   const commandString = scenario => {

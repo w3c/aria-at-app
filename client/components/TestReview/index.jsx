@@ -13,7 +13,7 @@ import supportJson from '../../resources/support.json';
 import SortableIssuesTable from '../SortableIssuesTable';
 import createIssueLink from '../../utils/createIssueLink';
 import styles from './TestReview.module.css';
-import commonStyles from '@components/common/styles.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const TestReview = () => {
   const location = useLocation();
