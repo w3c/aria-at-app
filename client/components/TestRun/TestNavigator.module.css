@@ -50,7 +50,7 @@
 button.test-navigator-toggle {
   border: 0;
   background-color: transparent;
-  color: var(--default-gray);
+  color: var(--bg-dark-gray);
 
   &:hover,
   &:focus {

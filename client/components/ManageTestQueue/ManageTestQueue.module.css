@@ -49,6 +49,10 @@
         }
       }
     }
+
+    @media (max-width: 860px) {
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
   }
 
   .disclosure-row-test-plans {
