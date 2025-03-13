@@ -58,7 +58,7 @@ describe('Issues table interactions', () => {
 
   it('displays correct issue counts in heading', async () => {
     await getPage({ role: false, url: TEST_URL }, async page => {
-      await page.waitForSelector('[data-test="issues-table"]');
+      await page.waitForSelector('[data-testid="issues-table"]');
       const headingText = await page.$eval(
         'h2#github-issues',
         el => el.textContent
@@ -71,45 +71,46 @@ describe('Issues table interactions', () => {
 
   it('filters issues correctly', async () => {
     await getPage({ role: false, url: TEST_URL }, async page => {
-      await page.waitForSelector('[data-test="issues-table"]');
+      await page.waitForSelector('[data-testid="issues-table"]');
 
       // Check initial state (Open filter should be active by default)
-      const isOpenPressed = await page.$eval('[data-test="filter-open"]', el =>
-        el.getAttribute('aria-pressed')
+      const isOpenPressed = await page.$eval(
+        '[data-testid="filter-open"]',
+        el => el.getAttribute('aria-pressed')
       );
       expect(isOpenPressed).toBe('true');
 
       // Verify only open issues are shown initially
       let visibleIssues = await page.$$eval(
-        '[data-test="issue-row"]',
+        '[data-testid="issue-row"]',
         rows => rows.length
       );
-      let firstRowStatus = await page.$eval('[data-test="issue-row"]', row =>
+      let firstRowStatus = await page.$eval('[data-testid="issue-row"]', row =>
         row.getAttribute('data-status')
       );
       expect(visibleIssues).toBe(1);
       expect(firstRowStatus).toBe('open');
 
       // Click "Closed" filter
-      await page.click('[data-test="filter-closed"]');
+      await page.click('[data-testid="filter-closed"]');
 
       // Verify only closed issues are shown
       visibleIssues = await page.$$eval(
-        '[data-test="issue-row"]',
+        '[data-testid="issue-row"]',
         rows => rows.length
       );
-      firstRowStatus = await page.$eval('[data-test="issue-row"]', row =>
+      firstRowStatus = await page.$eval('[data-testid="issue-row"]', row =>
         row.getAttribute('data-status')
       );
       expect(visibleIssues).toBe(1);
       expect(firstRowStatus).toBe('closed');
 
       // Click "All" filter
-      await page.click('[data-test="filter-all"]');
+      await page.click('[data-testid="filter-all"]');
 
       // Verify all issues are shown
       visibleIssues = await page.$$eval(
-        '[data-test="issue-row"]',
+        '[data-testid="issue-row"]',
         rows => rows.length
       );
       expect(visibleIssues).toBe(2);
@@ -118,15 +119,15 @@ describe('Issues table interactions', () => {
 
   it('sorts issues by different columns', async () => {
     await getPage({ role: false, url: TEST_URL }, async page => {
-      await page.waitForSelector('[data-test="issues-table"]');
+      await page.waitForSelector('[data-testid="issues-table"]');
 
       // Click "All" filter first so we can see all issues
-      await page.click('[data-test="filter-all"]');
-      await page.waitForSelector('[data-test="issue-row"]');
+      await page.click('[data-testid="filter-all"]');
+      await page.waitForSelector('[data-testid="issue-row"]');
 
       // Initial sort is by Status (ascending)
       let firstRowStatus = await page.$eval(
-        '[data-test="issue-row"]:first-child [data-test="issue-status"]',
+        '[data-testid="issue-row"]:first-child [data-testid="issue-status"]',
         el => el.textContent.trim()
       );
       expect(firstRowStatus).toBe('Open');
@@ -135,10 +136,10 @@ describe('Issues table interactions', () => {
       await page.click('th[role="columnheader"] button::-p-text(Status)');
 
       // Wait for the table to update after sorting
-      await page.waitForSelector('[data-test="issue-row"]');
+      await page.waitForSelector('[data-testid="issue-row"]');
 
       firstRowStatus = await page.$eval(
-        '[data-test="issue-row"]:first-child [data-test="issue-status"]',
+        '[data-testid="issue-row"]:first-child [data-testid="issue-status"]',
         el => el.textContent.trim()
       );
       expect(firstRowStatus).toBe('Closed');
@@ -147,10 +148,10 @@ describe('Issues table interactions', () => {
       await page.click('th[role="columnheader"] button::-p-text(Author)');
 
       // Wait for the table to update after sorting
-      await page.waitForSelector('[data-test="issue-row"]');
+      await page.waitForSelector('[data-testid="issue-row"]');
 
       const firstRowAuthor = await page.$eval(
-        '[data-test="issue-row"]:first-child td:first-child',
+        '[data-testid="issue-row"]:first-child td:first-child',
         el => el.textContent.trim()
       );
       expect(firstRowAuthor).toBe('alflennik');
@@ -159,17 +160,17 @@ describe('Issues table interactions', () => {
 
   it('maintains filter state when sorting changes', async () => {
     await getPage({ role: false, url: TEST_URL }, async page => {
-      await page.waitForSelector('[data-test="issues-table"]');
+      await page.waitForSelector('[data-testid="issues-table"]');
 
       // Select "Open" filter (should already be selected by default)
-      await page.click('[data-test="filter-open"]');
+      await page.click('[data-testid="filter-open"]');
 
       // Sort by Author
       await page.click('th[role="columnheader"] button::-p-text(Author)');
 
       // Verify only open issues are still shown
       const visibleIssues = await page.$$eval(
-        '[data-test="issue-row"]',
+        '[data-testid="issue-row"]',
         rows => ({
           length: rows.length,
           status: rows[0].getAttribute('data-status')
