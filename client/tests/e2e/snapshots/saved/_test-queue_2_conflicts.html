@@ -15,7 +15,7 @@
           aria-label="Menu"
           class="navbar navbar-expand-xl navbar-light bg-light">
           <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
-          ><a href="#main" class="css-32m7ay">Skip to main content</a
+          ><a class="skip-link" href="#main">Skip to main content</a
           ><button
             aria-controls="basic-navbar-nav"
             type="button"
@@ -83,40 +83,40 @@
         </nav>
       </div>
       <div class="container-fluid">
-        <main id="main" tabindex="-1" class="css-3m3mjt container">
+        <main id="main" tabindex="-1" class="fh-container container">
           <h1>
             Conflicts for Test Plan Report Select Only Combobox Example
             V22.03.17
           </h1>
-          <section class="css-xz63dn">
-            <h2 class="css-wndajv">Introduction</h2>
+          <section class="mb-5">
+            <h2 class="mb-3">Introduction</h2>
             <p>
               This page displays conflicts identified in the current test plan
               report. Conflicts occur when different testers report different
               outcomes for the same test assertions or unexpected behaviors.
             </p>
           </section>
-          <section class="css-xz63dn">
-            <h2 class="css-wndajv">Test Plan Report</h2>
-            <ul class="css-eur3pi">
-              <li class="css-yf2clt">
-                <span class="css-1g4l6a">Test Plan Version:</span
+          <section class="mb-5">
+            <h2 class="mb-3">Test Plan Report</h2>
+            <ul class="metadata-list">
+              <li class="metadata-item">
+                <span class="metadata-label">Test Plan Version:</span
                 ><a href="/test-review/7"
                   >Select Only Combobox Example V22.03.17</a
                 >
               </li>
-              <li class="css-yf2clt">
-                <span class="css-1g4l6a">Assistive Technology:</span>NVDA
+              <li class="metadata-item">
+                <span class="metadata-label">Assistive Technology:</span>NVDA
                 (2020.4 and above)
               </li>
-              <li class="css-yf2clt">
-                <span class="css-1g4l6a">Browser:</span>Firefox
+              <li class="metadata-item">
+                <span class="metadata-label">Browser:</span>Firefox
               </li>
             </ul>
           </section>
-          <section class="css-xz63dn">
-            <h2 class="css-wndajv">Conflicts</h2>
-            <p class="css-1unwn3">
+          <section class="mb-5">
+            <h2 class="mb-3">Conflicts</h2>
+            <p class="conflicts-count">
               There are currently<strong> 3 conflicts </strong>across<strong>
                 3 tests </strong
               >and<strong> 3 assertions </strong>for this test plan report.
@@ -195,10 +195,10 @@
                       </tbody>
                     </table>
                   </div>
-                  <div class="css-1diq458">
+                  <div>
                     <h3>Related GitHub Issues</h3>
-                    <div class="css-18esgrt">
-                      <div class="css-1brckf0">
+                    <div class="conflict-issue-container">
+                      <div class="conflict-issue-header-container">
                         <svg
                           aria-hidden="true"
                           focusable="false"
@@ -208,32 +208,32 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          style="color: rgb(40, 167, 69)">
+                          style="color: var(--positive-green)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"></path>
                         </svg>
-                        <h4 class="css-1jajo4f">
+                        <h4 class="conflict-issue-header">
                           Feedback: "Navigate backwards to a collapsed
                           select-only combobox in interaction mode" (Select Only
                           Combobox Example, Test 4, V22.03.17)
                         </h4>
                       </div>
-                      <div class="css-w6pan5">
-                        <span class="css-1xxe9l9">Status:</span
-                        ><span class="css-1u8cpva">Open</span
-                        ><span class="css-1xxe9l9">Author:</span
-                        ><span class="css-1u8cpva">alflennik</span
-                        ><span class="css-1xxe9l9">Type:</span
-                        ><span class="css-1u8cpva">FEEDBACK</span
-                        ><span class="css-1xxe9l9">Created:</span
-                        ><span class="css-1u8cpva">28-02-2024</span>
+                      <div class="conflict-issue-grid">
+                        <span class="bold-font">Status:</span
+                        ><span class="conflict-issue-value">Open</span
+                        ><span class="bold-font">Author:</span
+                        ><span class="conflict-issue-value">alflennik</span
+                        ><span class="bold-font">Type:</span
+                        ><span class="conflict-issue-value">FEEDBACK</span
+                        ><span class="bold-font">Created:</span
+                        ><span class="conflict-issue-value">28-02-2024</span>
                       </div>
                       <a
                         href="https://github.com/bocoup/aria-at/issues/128#issue-2157878584"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="css-z94fn4"
+                        class="conflict-issue-link"
                         >View on GitHub&nbsp;<svg
                           aria-hidden="true"
                           focusable="false"
@@ -250,7 +250,7 @@
                       ></a>
                     </div>
                   </div>
-                  <div class="css-1689yv0">
+                  <div class="conflicts-actions-container">
                     <a
                       role="button"
                       tabindex="0"
@@ -275,7 +275,7 @@
                       <button
                         type="button"
                         aria-expanded="false"
-                        class="dropdown-toggle css-jeseq0 btn btn-secondary">
+                        class="action-button dropdown-toggle btn btn-secondary">
                         <svg
                           aria-hidden="true"
                           focusable="false"
@@ -370,7 +370,7 @@
                       </tbody>
                     </table>
                   </div>
-                  <div class="css-1689yv0">
+                  <div class="conflicts-actions-container">
                     <a
                       role="button"
                       tabindex="0"
@@ -395,7 +395,7 @@
                       <button
                         type="button"
                         aria-expanded="false"
-                        class="dropdown-toggle css-jeseq0 btn btn-secondary">
+                        class="action-button dropdown-toggle btn btn-secondary">
                         <svg
                           aria-hidden="true"
                           focusable="false"
@@ -498,7 +498,7 @@
                       </tbody>
                     </table>
                   </div>
-                  <div class="css-1689yv0">
+                  <div class="conflicts-actions-container">
                     <a
                       role="button"
                       tabindex="0"
@@ -523,7 +523,7 @@
                       <button
                         type="button"
                         aria-expanded="false"
-                        class="dropdown-toggle css-jeseq0 btn btn-secondary">
+                        class="action-button dropdown-toggle btn btn-secondary">
                         <svg
                           aria-hidden="true"
                           focusable="false"
