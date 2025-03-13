@@ -37,6 +37,7 @@ async function cleanAndNormalizeSnapshot(page) {
       elements.forEach(el => {
         const text = el.textContent.trim();
         if (
+          text.includes('Review status by') ||
           text.includes('Ready for Review') ||
           text.includes('Review in Progress') ||
           (text.includes('Days') &&
