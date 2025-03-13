@@ -207,7 +207,7 @@ const CandidateTestPlanRun = () => {
     const results = await Promise.all(
       testPlanReports?.map(report =>
         promoteVendorReviewStatus({
-          variables: { testReportId: report.id, reviewStatus: 'APPROVED' }
+          variables: { testReportId: report.id }
         })
       )
     );

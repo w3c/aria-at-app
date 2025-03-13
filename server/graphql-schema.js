@@ -1461,7 +1461,7 @@ const graphqlSchema = gql`
     """
     Move the vendor review status to APPROVED
     """
-    promoteVendorReviewStatus(reviewStatus: String!): PopulatedData
+    promoteVendorReviewStatus: PopulatedData
     """
     Permanently deletes the TestPlanReport and all associated TestPlanRuns.
     Only available to admins.
