@@ -34,7 +34,6 @@ import feedbackStyles from '../FeedbackListItem/FeedbackListItem.module.css';
 import testRunStyles from '../../TestRun/TestRun.module.css';
 import testRunHeadingStyles from '../../TestRun/Heading.module.css';
 import failingAssertionsSummaryStyles from '../../FailingAssertionsSummary/FailingAssertionsSummary.module.css';
-import commonStyles from '@components/common/styles.module.css';
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();

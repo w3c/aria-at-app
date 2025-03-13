@@ -7,7 +7,6 @@ import {
   TestPlanVersionPropType,
   TestPropType
 } from '../../common/proptypes';
-import commonStyles from '../../common/styles.module.css';
 
 const ReviewConflictsModal = ({
   testPlanReport,

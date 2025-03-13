@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import styles from './RadioBox.module.css';
-import commonStyles from '@components/common/styles.module.css';
 
 const RadioBox = ({ name, labels, selectedLabel, onSelect }) => {
   const getOnChange = label => event => {

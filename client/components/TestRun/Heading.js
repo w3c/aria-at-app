@@ -16,7 +16,6 @@ import {
 } from '../../utils/collectionJobStatus';
 import { TestResultPropType } from '../common/proptypes';
 import styles from './Heading.module.css';
-import commonStyles from '../common/styles.module.css';
 
 const TestRunHeading = ({
   at,

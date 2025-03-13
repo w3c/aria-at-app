@@ -42,7 +42,6 @@ import { Provider as CollectionJobContextProvider } from './CollectionJobContext
 import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
 import styles from './TestRun.module.css';
 import atBrowserDetailsModalStyles from '../common/AtAndBrowserDetailsModal/AtAndBrowserDetails.module.css';
-import commonStyles from '../common/styles.module.css';
 
 const TestRun = () => {
   const params = useParams();
