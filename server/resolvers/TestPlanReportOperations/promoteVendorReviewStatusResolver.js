@@ -7,7 +7,7 @@ const {
 
 const promoteVendorReviewStatusResolver = async (
   { parentContext: { id: testPlanReportId } },
-  { reviewStatus },
+  _,
   context
 ) => {
   const { user, transaction } = context;
@@ -24,8 +24,8 @@ const promoteVendorReviewStatusResolver = async (
       userId: user.id,
       vendorId: user.vendorId || user.company?.id,
       values: {
-        reviewStatus,
-        approvedAt: reviewStatus === 'APPROVED' ? new Date() : null
+        reviewStatus: 'APPROVED',
+        approvedAt: new Date()
       },
       transaction
     });

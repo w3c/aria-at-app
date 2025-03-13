@@ -1,7 +1,7 @@
 const { AuthenticationError } = require('apollo-server-errors');
 const checkUserRole = require('./helpers/checkUserRole');
 const {
-  getVendorApprovalStatusByIds,
+  getVendorApprovalStatusById,
   createVendorApprovalStatus,
   updateVendorApprovalStatusByIds
 } = require('../models/services/VendorApprovalStatusService');
@@ -25,7 +25,7 @@ const addViewerResolver = async (_, { testId, testPlanReportId }, context) => {
   if (!viewer?.vendorId) return user;
 
   try {
-    const vendorApprovalStatus = await getVendorApprovalStatusByIds({
+    const vendorApprovalStatus = await getVendorApprovalStatusById({
       ...viewer,
       transaction
     });

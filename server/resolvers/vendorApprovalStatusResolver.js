@@ -1,5 +1,5 @@
 const {
-  getVendorApprovalStatusByIds
+  getVendorApprovalStatusById
 } = require('../models/services/VendorApprovalStatusService');
 
 const vendorApprovalStatusResolver = async (
@@ -9,7 +9,7 @@ const vendorApprovalStatusResolver = async (
 ) => {
   const { transaction } = context;
 
-  return getVendorApprovalStatusByIds({
+  return getVendorApprovalStatusById({
     userId,
     vendorId,
     testPlanReportId,

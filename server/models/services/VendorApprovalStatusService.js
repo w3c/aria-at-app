@@ -58,7 +58,7 @@ const vendorAssociation = vendorAttributes => ({
  * @param transaction
  * @returns {Promise<Model>}
  */
-const getVendorApprovalStatusByIds = async ({
+const getVendorApprovalStatusById = async ({
   testPlanReportId,
   userId,
   vendorId,
@@ -169,7 +169,7 @@ const createVendorApprovalStatus = async ({
     transaction
   });
 
-  return getVendorApprovalStatusByIds({
+  return getVendorApprovalStatusById({
     testPlanReportId,
     userId,
     vendorId,
@@ -223,7 +223,7 @@ const updateVendorApprovalStatusByIds = async ({
     transaction
   });
 
-  return getVendorApprovalStatusByIds({
+  return getVendorApprovalStatusById({
     testPlanReportId,
     userId,
     vendorId,
@@ -238,7 +238,7 @@ const updateVendorApprovalStatusByIds = async ({
 
 module.exports = {
   // Basic CRUD
-  getVendorApprovalStatusByIds,
+  getVendorApprovalStatusById,
   getVendorApprovalStatuses,
   createVendorApprovalStatus,
   updateVendorApprovalStatusByIds

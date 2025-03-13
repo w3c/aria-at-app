@@ -9,7 +9,7 @@ const {
 const {
   getVendorApprovalStatuses,
   createVendorApprovalStatus,
-  getVendorApprovalStatusByIds
+  getVendorApprovalStatusById
 } = require('../../models/services/VendorApprovalStatusService');
 const { hashTest } = require('../../util/aria');
 const {
@@ -486,7 +486,7 @@ const processCopiedReports = async ({
         let newVendorApprovalStatusExists;
 
         try {
-          newVendorApprovalStatusExists = await getVendorApprovalStatusByIds({
+          newVendorApprovalStatusExists = await getVendorApprovalStatusById({
             testPlanReportId: newTestPlanReport.id,
             userId: oldVendorApprovalStatus.userId,
             vendorId: oldVendorApprovalStatus.vendorId,
