@@ -10,6 +10,16 @@ fieldset.fieldset-row {
   .at-browser-details-modal-alert {
     margin-bottom: 0;
   }
+
+  .form-label {
+    transition: font-size 0.5s ease;
+  }
+
+  @media (max-width: 860px) {
+    .form-label {
+      font-size: var(--12px);
+    }
+  }
 }
 
 .at-browser-details-modal-alert {
