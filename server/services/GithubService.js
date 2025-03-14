@@ -49,7 +49,7 @@ const getAllIssues = async () => {
       // Our issue API should only return issues that were originally
       // created by the app, indicated by the presence of metadata
       // hidden in a comment
-      .filter(data => data.body.includes('ARIA_AT_APP_ISSUE_DATA'));
+      .filter(data => data.body?.includes('ARIA_AT_APP_ISSUE_DATA'));
 
     currentResults = [...currentResults, ...issues];
 
