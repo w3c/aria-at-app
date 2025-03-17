@@ -10,7 +10,8 @@ const {
 const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const {
-  findOrCreateAtVersion
+  findOrCreateAtVersion,
+  getRefreshableTestPlanReportsForVersion
 } = require('../models/services/AtVersionService');
 const { getAts } = require('../models/services/AtService');
 const {
@@ -19,7 +20,6 @@ const {
 } = require('../models/services/BrowserService');
 const { HttpQueryError } = require('apollo-server-core');
 const { COLLECTION_JOB_STATUS, isJobStatusFinal } = require('../util/enums');
-const populateData = require('../services/PopulatedData/populateData');
 const {
   getFinalizedTestResults
 } = require('../models/services/TestResultReadService');
@@ -27,6 +27,11 @@ const http = require('http');
 const { NO_OUTPUT_STRING } = require('../util/constants');
 const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../graphql-context');
+const populateData = require('../services/PopulatedData/populateData');
+const {
+  getTestPlanReportById,
+  updateTestPlanReportById
+} = require('../models/services/TestPlanReportService');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -136,28 +141,55 @@ const updateJobStatus = async (req, res) => {
 };
 
 const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
-  const {
-    testPlanReport: { testPlanVersion }
-  } = testPlanRun;
-
-  // To be considered "Approved", a test plan run must be associated with a test plan report
-  // that is associated with a test plan version that is in "CANDIDATE" or "RECOMMENDED" or
-  // "DRAFT" phase and the test plan report been marked as final.
-  const { phase } = testPlanVersion;
-
-  if (
-    phase === 'RD' ||
-    (phase === 'DRAFT' && testPlanRun.testPlanReport.markedFinalAt === null)
-  ) {
-    return null;
-  }
-
   const { testPlanReport } = await populateData(
     { testPlanReportId: testPlanRun.testPlanReport.id },
     { context }
   );
 
-  return getFinalizedTestResults({ testPlanReport, context });
+  // If the current report is finalized
+  // Use the finalized test results (from another run)
+  if (testPlanReport.markedFinalAt !== null) {
+    return getFinalizedTestResults({ testPlanReport, context });
+  }
+  // Otherwise, fallback to historical report from previous automatable AT version
+  // Refresh collection jobs will have an exactAtVersion
+  const currentAtVersionId = testPlanReport.exactAtVersion?.id;
+  if (!currentAtVersionId) return null;
+
+  const { previousVersion, refreshableReports } =
+    await getRefreshableTestPlanReportsForVersion({
+      currentAtVersionId,
+      transaction: context.transaction
+    });
+
+  if (!previousVersion) return null;
+
+  // Fetch all candidate historical reports concurrently
+  const historicalReports = await Promise.all(
+    refreshableReports.map(report =>
+      getTestPlanReportById({ id: report.id, transaction: context.transaction })
+    )
+  );
+
+  // Select the historical report matching the same test plan version and that is finalized
+  const historicalReport = historicalReports.find(
+    report =>
+      report.testPlanVersion.id === testPlanReport.testPlanVersion.id &&
+      report.markedFinalAt !== null
+  );
+
+  if (!historicalReport) return null;
+
+  const finalHistoricalReport = await populateData(
+    { testPlanReportId: historicalReport.id },
+    { context }
+  );
+  if (!finalHistoricalReport) return null;
+
+  return getFinalizedTestResults({
+    testPlanReport: finalHistoricalReport.testPlanReport,
+    context
+  });
 };
 
 const getTestByRowNumber = async ({ testPlanRun, testRowNumber, context }) => {
@@ -250,89 +282,182 @@ const updateOrCreateTestResultWithResponses = async ({
 };
 
 const updateJobResults = async (req, res) => {
-  const { jobID: id, testRowNumber } = req.params;
-  const context = getGraphQLContext({ req });
-  const { transaction } = context;
-  const {
-    responses,
-    status,
-    capabilities: {
-      atName,
-      atVersion: atVersionName,
-      browserName,
-      browserVersion: browserVersionName
-    } = {}
-  } = req.body;
+  try {
+    const { jobID: id, testRowNumber } = req.params;
+    const context = getGraphQLContext({ req });
+    const { transaction } = context;
+    const {
+      responses,
+      status,
+      capabilities: {
+        atName,
+        atVersion: atVersionName,
+        browserName,
+        browserVersion: browserVersionName
+      } = {}
+    } = req.body;
 
-  const job =
-    req.collectionJob ?? (await getCollectionJobById({ id, transaction }));
-  if (!job) {
-    throwNoJobFoundError(id);
-  }
+    const job =
+      req.collectionJob ?? (await getCollectionJobById({ id, transaction }));
+    if (!job) {
+      throwNoJobFoundError(id);
+    }
 
-  if (job.status !== COLLECTION_JOB_STATUS.RUNNING) {
-    throw new Error(`Job with id ${id} is not running, cannot update results`);
-  }
-  if (status && !Object.values(COLLECTION_JOB_STATUS).includes(status)) {
-    throw new HttpQueryError(400, `Invalid status: ${status}`, true);
-  }
-  const { testPlanRun } = job;
+    if (job.status !== COLLECTION_JOB_STATUS.RUNNING) {
+      throw new Error(
+        `Job with id ${id} is not running, cannot update results`
+      );
+    }
+    if (status && !Object.values(COLLECTION_JOB_STATUS).includes(status)) {
+      throw new HttpQueryError(400, `Invalid status: ${status}`, true);
+    }
+    const { testPlanRun } = job;
 
-  const testId = (
-    await getTestByRowNumber({
+    const testId = (
+      await getTestByRowNumber({
+        testPlanRun,
+        testRowNumber,
+        context
+      })
+    )?.id;
+
+    if (testId === undefined) {
+      throwNoTestFoundError(testRowNumber);
+    }
+
+    // status only update, or responses were provided (default to complete)
+    if (status || responses) {
+      await updateCollectionJobTestStatusByQuery({
+        where: { collectionJobId: id, testId },
+        // default to completed if not specified (when results are present)
+        values: { status: status ?? COLLECTION_JOB_STATUS.COMPLETED },
+        transaction: req.transaction
+      });
+    }
+
+    // responses were provided
+    if (responses) {
+      /* TODO: Change this to use a better key based lookup system after gh-958 */
+      const [at] = await getAts({ search: atName, transaction });
+      if (!at) {
+        throw new Error(`AT not found with name: ${atName}`);
+      }
+
+      const [browser] = await getBrowsers({
+        search: browserName,
+        transaction
+      });
+      if (!browser) {
+        throw new Error(`Browser not found with name: ${browserName}`);
+      }
+
+      const [atVersion, browserVersion] = await Promise.all([
+        findOrCreateAtVersion({
+          where: { atId: at.id, name: atVersionName },
+          transaction
+        }),
+        findOrCreateBrowserVersion({
+          where: { browserId: browser.id, name: browserVersionName },
+          transaction
+        })
+      ]);
+
+      const processedResponses =
+        convertEmptyStringsToNoOutputMessages(responses);
+
+      await updateOrCreateTestResultWithResponses({
+        testId,
+        responses: processedResponses,
+        testPlanRun,
+        atVersionId: atVersion.id,
+        browserVersionId: browserVersion.id,
+        context
+      });
+
+      await finalizeTestPlanReportIfAllTestsMatchHistoricalResults({
+        id,
+        transaction,
+        context
+      });
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    const errorResponse = {
+      error: error.message,
+      details: error.details || {},
+      stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+    };
+    res.status(statusCode).json(errorResponse);
+  }
+};
+
+const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
+  id,
+  transaction,
+  context
+}) => {
+  try {
+    const updatedJob = await getCollectionJobById({ id, transaction });
+    const { testPlanRun } = updatedJob;
+    const { testPlanReport } = testPlanRun;
+
+    // Early return if there's no report or it's already finalized
+    if (!testPlanReport || testPlanReport.markedFinalAt) return;
+
+    const applicableTests = testPlanReport.testPlanVersion.tests.filter(
+      test => test.at.key === testPlanReport.at.key
+    );
+    const totalTests = applicableTests.length;
+
+    // Return early if not all tests have been updated
+    if (testPlanRun.testResults.length !== totalTests) return;
+
+    const historicalResults = await getApprovedFinalizedTestResults(
       testPlanRun,
-      testRowNumber,
       context
-    })
-  )?.id;
+    );
+    if (!historicalResults) return;
 
-  if (testId === undefined) {
-    throwNoTestFoundError(testRowNumber);
-  }
+    // Validate each applicable test's results against historical results
+    for (const test of applicableTests) {
+      const currResult = testPlanRun.testResults.find(
+        tr => String(tr.testId) === String(test.id)
+      );
+      const histResult = historicalResults.find(
+        hr => String(hr.testId) === String(test.id)
+      );
+      if (!currResult || !histResult) return;
+      if (
+        !currResult.scenarioResults ||
+        currResult.scenarioResults.length !== histResult.scenarioResults.length
+      )
+        return;
+      for (let i = 0; i < currResult.scenarioResults.length; i++) {
+        if (
+          currResult.scenarioResults[i].output !==
+          histResult.scenarioResults[i].output
+        )
+          return;
+      }
+    }
 
-  // status only update, or responses were provided (default to complete)
-  if (status || responses) {
-    await updateCollectionJobTestStatusByQuery({
-      where: { collectionJobId: id, testId },
-      // default to completed if not specified (when results are present)
-      values: { status: status ?? COLLECTION_JOB_STATUS.COMPLETED },
-      transaction: req.transaction
-    });
-  }
-
-  // responses were provided
-  if (responses) {
-    /* TODO: Change this to use a better key based lookup system after gh-958 */
-    const [at] = await getAts({ search: atName, transaction });
-    const [browser] = await getBrowsers({
-      search: browserName,
+    // All tests match historical results; mark the report as final
+    await updateTestPlanReportById({
+      id: testPlanReport.id,
+      values: { markedFinalAt: new Date() },
       transaction
     });
-
-    const [atVersion, browserVersion] = await Promise.all([
-      findOrCreateAtVersion({
-        where: { atId: at.id, name: atVersionName },
-        transaction
-      }),
-      findOrCreateBrowserVersion({
-        where: { browserId: browser.id, name: browserVersionName },
-        transaction
-      })
-    ]);
-
-    const processedResponses = convertEmptyStringsToNoOutputMessages(responses);
-
-    await updateOrCreateTestResultWithResponses({
-      testId,
-      responses: processedResponses,
-      testPlanRun,
-      atVersionId: atVersion.id,
-      browserVersionId: browserVersion.id,
-      context
-    });
+  } catch (error) {
+    const statusCode = error.statusCode || 500;
+    const errorResponse = {
+      error: error.message,
+      details: error.details || {},
+      stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
+    };
+    throw new HttpQueryError(statusCode, errorResponse, true);
   }
-
-  res.json({ success: true });
 };
 
 // Human test runners are able to use a checkbox to indicate no output was detected.
