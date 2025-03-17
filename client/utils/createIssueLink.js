@@ -40,9 +40,9 @@ const truncateUrlBody = (body, baseUrl, testSequenceNumber = null) => {
   const maxUrlLength = MAX_GITHUB_URL_LENGTH;
   const truncationMessage = getTruncationMessage(testSequenceNumber);
 
-  // Multiply by 0.75 to account for encoding
+  // Multiply by 0.65 to account for encoding
   const maxBodyLength = Math.floor(
-    (maxUrlLength - baseUrl.length - truncationMessage.length) * 0.75
+    (maxUrlLength - baseUrl.length - truncationMessage.length) * 0.65
   );
 
   return body.substring(0, maxBodyLength) + truncationMessage;
