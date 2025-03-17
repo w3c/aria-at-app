@@ -1,3 +1,20 @@
+## [1.13.0](https://github.com/w3c/aria-at-app/compare/v1.12.0...v1.13.0) (2025-03-17)
+
+
+### Features
+
+* Group required reports in test plan report status dialog ([#1337](https://github.com/w3c/aria-at-app/issues/1337)) ([a705888](https://github.com/w3c/aria-at-app/commit/a705888df6a53abb69f011a94ffd641678949769))
+
+
+### Bug Fixes
+
+* Include result of undesirable behaviors assertions in summary of failing assertions ([#1317](https://github.com/w3c/aria-at-app/issues/1317)) ([8ea4def](https://github.com/w3c/aria-at-app/commit/8ea4def8f9212ba4ea1f4e52bfad5613d764fee0))
+
+
+### Reverts
+
+* Revert "Update testers list" ([e95fdbb](https://github.com/w3c/aria-at-app/commit/e95fdbbb6bfe0c7f8e734f532daebd55ddc93a9a))
+
 ## [1.12.0](https://github.com/w3c/aria-at-app/compare/v1.11.0...v1.12.0) (2025-02-05)
 
 
