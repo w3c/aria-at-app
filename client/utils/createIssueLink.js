@@ -23,8 +23,8 @@ const atLabelMap = {
 const getTruncationMessage = (testSequenceNumber = null) => {
   return `...\n\n[**Content truncated due to URL length limits.** Please visit [${
     window.location
-  }](${window.location}) to review the conflicts ${
-    testSequenceNumber ? `for Test ${testSequenceNumber}` : ''
+  }](${window.location}) to review ${
+    !testSequenceNumber ? 'further' : `Test ${testSequenceNumber}`
   }.]`;
 };
 
