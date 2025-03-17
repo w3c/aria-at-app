@@ -2,8 +2,8 @@ const { AuthenticationError } = require('apollo-server-errors');
 const populateData = require('../../services/PopulatedData/populateData');
 const checkUserRole = require('../helpers/checkUserRole');
 const {
-  updateVendorApprovalStatusByIds
-} = require('../../models/services/VendorApprovalStatusService');
+  updateReviewerStatusByIds
+} = require('../../models/services/ReviewerStatusService');
 
 const promoteVendorReviewStatusResolver = async (
   { parentContext: { id: testPlanReportId } },
@@ -19,7 +19,7 @@ const promoteVendorReviewStatusResolver = async (
   }
 
   if (user.vendorId || user.company?.id) {
-    await updateVendorApprovalStatusByIds({
+    await updateReviewerStatusByIds({
       testPlanReportId,
       userId: user.id,
       vendorId: user.vendorId || user.company?.id,

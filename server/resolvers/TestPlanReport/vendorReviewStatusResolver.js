@@ -1,6 +1,7 @@
+const { Op } = require('sequelize');
 const {
-  getVendorApprovalStatuses
-} = require('../../models/services/VendorApprovalStatusService');
+  getReviewerStatuses
+} = require('../../models/services/ReviewerStatusService');
 const vendorReviewStatusResolver = async (
   testPlanReport,
   args, // eslint-disable-line no-unused-vars
@@ -9,19 +10,20 @@ const vendorReviewStatusResolver = async (
   const { transaction } = context;
 
   const where = {
-    testPlanReportId: testPlanReport.id
+    testPlanReportId: testPlanReport.id,
+    vendorId: { [Op.ne]: null } // Only if approval comes from a vendor
   };
-  const vendorApprovalStatuses = await getVendorApprovalStatuses({
+  const reviewerStatuses = await getReviewerStatuses({
     where,
     transaction
   });
 
   // TODO: Use enum for review values
-  if (!vendorApprovalStatuses.length) return 'READY';
+  if (!reviewerStatuses.length) return 'READY';
 
   // TODO: Determine what to do if there is a difference in statuses; ie. 1 APPROVED and 2 other IN_PROGRESS
   // For now, use a single review as that's been the current expectation
-  const isApprovingReview = vendorApprovalStatuses.some(
+  const isApprovingReview = reviewerStatuses.some(
     ({ reviewStatus }) => reviewStatus === 'APPROVED'
   );
   if (isApprovingReview) return 'APPROVED';

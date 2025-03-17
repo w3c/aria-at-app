@@ -139,7 +139,7 @@ describe('graphql', () => {
       'Vendor',
       'scheduleCollectionJob',
       'CollectionJobTestStatus',
-      'VendorApprovalStatus'
+      'ReviewerStatus'
     ];
     const excludedTypeNameAndField = [
       // Items formatted like this:
@@ -154,8 +154,8 @@ describe('graphql', () => {
       ['CollectionJob', 'externalLogsUrl'],
       ['CollectionJob', 'testStatus'],
       ['User', 'company'],
-      ['Query', 'vendorApprovalStatus'],
-      ['Query', 'vendorApprovalStatuses'],
+      ['Query', 'reviewerStatus'],
+      ['Query', 'reviewerStatuses'],
       // These interact with Response Scheduler API
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],

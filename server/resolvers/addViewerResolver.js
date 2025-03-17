@@ -1,10 +1,10 @@
 const { AuthenticationError } = require('apollo-server-errors');
 const checkUserRole = require('./helpers/checkUserRole');
 const {
-  getVendorApprovalStatusById,
-  createVendorApprovalStatus,
-  updateVendorApprovalStatusByIds
-} = require('../models/services/VendorApprovalStatusService');
+  getReviewerStatusById,
+  createReviewerStatus,
+  updateReviewerStatusByIds
+} = require('../models/services/ReviewerStatusService');
 
 const addViewerResolver = async (_, { testId, testPlanReportId }, context) => {
   const { user, transaction } = context;
@@ -15,35 +15,46 @@ const addViewerResolver = async (_, { testId, testPlanReportId }, context) => {
     throw new AuthenticationError();
   }
 
-  const viewer = {
+  let viewer = {
     testPlanReportId,
-    userId: user.id,
-    vendorId: user.vendorId || user.company?.id
+    userId: user.id
   };
 
-  // No need to add a 'viewer' if not affiliated with a company
-  if (!viewer?.vendorId) return user;
+  const vendorId = user.vendorId || user.company?.id;
+  if (vendorId) viewer.vendorId = vendorId;
 
   try {
-    const vendorApprovalStatus = await getVendorApprovalStatusById({
+    const reviewerStatus = await getReviewerStatusById({
       ...viewer,
       transaction
     });
 
-    if (vendorApprovalStatus) {
-      if (!vendorApprovalStatus.viewedTests.includes(testId)) {
-        await updateVendorApprovalStatusByIds({
+    if (reviewerStatus) {
+      if (!reviewerStatus.viewedTests.includes(testId)) {
+        let updateValues = {
+          viewedTests: [...reviewerStatus.viewedTests, testId]
+        };
+
+        // Only check if a vendorId hasn't already been set. Unlikely event but
+        // worth catching in extremely special instances
+        if (
+          !reviewerStatus.vendorId ||
+          (reviewerStatus.vendorId && reviewerStatus.vendorId !== vendorId)
+        ) {
+          updateValues.vendorId = vendorId;
+        }
+
+        await updateReviewerStatusByIds({
           ...viewer,
-          values: {
-            viewedTests: [...vendorApprovalStatus.viewedTests, testId]
-          },
+          values: updateValues,
           transaction
         });
       }
     } else {
-      await createVendorApprovalStatus({
+      await createReviewerStatus({
         values: {
           ...viewer,
+          reviewStatus: viewer.vendorId ? 'IN_PROGRESS' : null,
           viewedTests: [testId]
         },
         transaction

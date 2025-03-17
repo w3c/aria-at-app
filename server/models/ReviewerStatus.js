@@ -1,4 +1,4 @@
-const MODEL_NAME = 'VendorApprovalStatus';
+const MODEL_NAME = 'ReviewerStatus';
 
 module.exports = function (sequelize, DataTypes) {
   const Model = sequelize.define(
@@ -6,8 +6,8 @@ module.exports = function (sequelize, DataTypes) {
     {
       userId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         primaryKey: true,
+        allowNull: false,
         references: {
           model: 'User',
           key: 'id'
@@ -17,8 +17,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       vendorId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        primaryKey: true,
+        allowNull: true,
         references: {
           model: 'Vendor',
           key: 'id'
@@ -28,8 +27,8 @@ module.exports = function (sequelize, DataTypes) {
       },
       testPlanReportId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
         primaryKey: true,
+        allowNull: false,
         references: {
           model: 'TestPlanReport',
           key: 'id'
@@ -39,7 +38,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       testPlanVersionId: {
         type: DataTypes.INTEGER,
-        allowNull: true,
+        allowNull: false,
         references: {
           model: 'TestPlanVersion',
           key: 'id'
@@ -54,7 +53,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       reviewStatus: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: true,
         defaultValue: 'IN_PROGRESS'
       },
       approvedAt: {

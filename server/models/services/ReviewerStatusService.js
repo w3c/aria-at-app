@@ -1,12 +1,12 @@
 const ModelService = require('./ModelService');
 const {
-  VENDOR_APPROVAL_STATUS_ATTRIBUTES,
+  REVIEWER_STATUS_ATTRIBUTES,
   TEST_PLAN_REPORT_ATTRIBUTES,
   TEST_PLAN_VERSION_ATTRIBUTES,
   USER_ATTRIBUTES,
   VENDOR_ATTRIBUTES
 } = require('./helpers');
-const { TestPlanReport, VendorApprovalStatus } = require('../');
+const { TestPlanReport, ReviewerStatus } = require('../');
 
 // Associate helpers
 
@@ -50,7 +50,7 @@ const vendorAssociation = vendorAttributes => ({
  * @param testPlanReportId
  * @param userId
  * @param vendorId
- * @param vendorApprovalStatusAttributes
+ * @param reviewerStatusAttributes
  * @param testPlanReportAttributes
  * @param testPlanVersionAttributes
  * @param userAttributes
@@ -58,24 +58,22 @@ const vendorAssociation = vendorAttributes => ({
  * @param transaction
  * @returns {Promise<Model>}
  */
-const getVendorApprovalStatusById = async ({
+const getReviewerStatusById = async ({
   testPlanReportId,
   userId,
-  vendorId,
-  vendorApprovalStatusAttributes = VENDOR_APPROVAL_STATUS_ATTRIBUTES,
+  reviewerStatusAttributes = REVIEWER_STATUS_ATTRIBUTES,
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
   userAttributes = USER_ATTRIBUTES,
   vendorAttributes = VENDOR_ATTRIBUTES,
   transaction
 }) => {
-  return ModelService.getByQuery(VendorApprovalStatus, {
+  return ModelService.getByQuery(ReviewerStatus, {
     where: {
       testPlanReportId,
-      userId,
-      vendorId
+      userId
     },
-    attributes: vendorApprovalStatusAttributes,
+    attributes: reviewerStatusAttributes,
     include: [
       testPlanReportAssociation(testPlanReportAttributes),
       testPlanVersionAssociation(testPlanVersionAttributes),
@@ -88,7 +86,7 @@ const getVendorApprovalStatusById = async ({
 
 /**
  * @param where
- * @param vendorApprovalStatusAttributes
+ * @param reviewerStatusAttributes
  * @param testPlanReportAttributes
  * @param testPlanVersionAttributes
  * @param userAttributes
@@ -97,9 +95,9 @@ const getVendorApprovalStatusById = async ({
  * @param transaction
  * @returns {Promise<*>}
  */
-const getVendorApprovalStatuses = async ({
+const getReviewerStatuses = async ({
   where = {},
-  vendorApprovalStatusAttributes = VENDOR_APPROVAL_STATUS_ATTRIBUTES,
+  reviewerStatusAttributes = REVIEWER_STATUS_ATTRIBUTES,
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
   userAttributes = USER_ATTRIBUTES,
@@ -107,9 +105,9 @@ const getVendorApprovalStatuses = async ({
   pagination = {},
   transaction
 }) => {
-  return ModelService.get(VendorApprovalStatus, {
+  return ModelService.get(ReviewerStatus, {
     where,
-    attributes: vendorApprovalStatusAttributes,
+    attributes: reviewerStatusAttributes,
     include: [
       testPlanReportAssociation(testPlanReportAttributes),
       testPlanVersionAssociation(testPlanVersionAttributes),
@@ -128,7 +126,7 @@ const getVendorApprovalStatuses = async ({
  * @param reviewStatus
  * @param approvedAt
  * @param viewedTests
- * @param vendorApprovalStatusAttributes
+ * @param reviewerStatusAttributes
  * @param testPlanReportAttributes
  * @param testPlanVersionAttributes
  * @param userAttributes
@@ -136,7 +134,7 @@ const getVendorApprovalStatuses = async ({
  * @param transaction
  * @returns {Promise<Model>}
  */
-const createVendorApprovalStatus = async ({
+const createReviewerStatus = async ({
   values: {
     testPlanReportId,
     userId,
@@ -145,7 +143,7 @@ const createVendorApprovalStatus = async ({
     approvedAt,
     viewedTests = []
   },
-  vendorApprovalStatusAttributes = VENDOR_APPROVAL_STATUS_ATTRIBUTES,
+  reviewerStatusAttributes = REVIEWER_STATUS_ATTRIBUTES,
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
   userAttributes = USER_ATTRIBUTES,
@@ -156,7 +154,7 @@ const createVendorApprovalStatus = async ({
     where: { id: testPlanReportId },
     transaction
   });
-  await ModelService.create(VendorApprovalStatus, {
+  await ModelService.create(ReviewerStatus, {
     values: {
       testPlanReportId,
       testPlanVersionId: testPlanReport.testPlanVersionId,
@@ -169,11 +167,11 @@ const createVendorApprovalStatus = async ({
     transaction
   });
 
-  return getVendorApprovalStatusById({
+  return getReviewerStatusById({
     testPlanReportId,
     userId,
     vendorId,
-    vendorApprovalStatusAttributes,
+    reviewerStatusAttributes,
     testPlanReportAttributes,
     testPlanVersionAttributes,
     userAttributes,
@@ -189,7 +187,7 @@ const createVendorApprovalStatus = async ({
  * @param viewedTests
  * @param reviewStatus
  * @param approvedAt
- * @param vendorApprovalStatusAttributes
+ * @param reviewerStatusAttributes
  * @param testPlanReportAttributes
  * @param testPlanVersionAttributes
  * @param userAttributes
@@ -197,25 +195,24 @@ const createVendorApprovalStatus = async ({
  * @param transaction
  * @returns {Promise<Model>}
  */
-const updateVendorApprovalStatusByIds = async ({
+const updateReviewerStatusByIds = async ({
   testPlanReportId,
   userId,
-  vendorId,
-  values: { viewedTests, reviewStatus, approvedAt },
-  vendorApprovalStatusAttributes = VENDOR_APPROVAL_STATUS_ATTRIBUTES,
+  values: { vendorId, viewedTests, reviewStatus, approvedAt },
+  reviewerStatusAttributes = REVIEWER_STATUS_ATTRIBUTES,
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
   userAttributes = USER_ATTRIBUTES,
   vendorAttributes = VENDOR_ATTRIBUTES,
   transaction
 }) => {
-  await ModelService.update(VendorApprovalStatus, {
+  await ModelService.update(ReviewerStatus, {
     where: {
       testPlanReportId,
-      userId,
-      vendorId
+      userId
     },
     values: {
+      vendorId,
       reviewStatus,
       approvedAt,
       viewedTests
@@ -223,11 +220,11 @@ const updateVendorApprovalStatusByIds = async ({
     transaction
   });
 
-  return getVendorApprovalStatusById({
+  return getReviewerStatusById({
     testPlanReportId,
     userId,
     vendorId,
-    vendorApprovalStatusAttributes,
+    reviewerStatusAttributes,
     testPlanReportAttributes,
     testPlanVersionAttributes,
     userAttributes,
@@ -238,8 +235,8 @@ const updateVendorApprovalStatusByIds = async ({
 
 module.exports = {
   // Basic CRUD
-  getVendorApprovalStatusById,
-  getVendorApprovalStatuses,
-  createVendorApprovalStatus,
-  updateVendorApprovalStatusByIds
+  getReviewerStatusById,
+  getReviewerStatuses,
+  createReviewerStatus,
+  updateReviewerStatusByIds
 };

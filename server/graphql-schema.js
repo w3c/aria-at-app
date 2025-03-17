@@ -1135,7 +1135,7 @@ const graphqlSchema = gql`
     draftTestPlanRuns: [TestPlanRun]!
     """
     The state of the vendor review, which can be "READY", "IN_PROGRESS", and "APPROVED".
-    Generated from VendorApprovalStatus.
+    Generated from ReviewerStatus.
     """
     vendorReviewStatus: String
     """
@@ -1170,7 +1170,7 @@ const graphqlSchema = gql`
 
   """
   """
-  type VendorApprovalStatus {
+  type ReviewerStatus {
     """
     The vendor representative who reviewed the test.
     """
@@ -1317,17 +1317,13 @@ const graphqlSchema = gql`
     """
     vendors: [Vendor]!
     """
-    Get a VendorApprovalStatus.
+    Get a ReviewerStatus.
     """
-    vendorApprovalStatus(
-      userId: ID!
-      vendorId: ID!
-      testPlanReportId: ID!
-    ): VendorApprovalStatus!
+    reviewerStatus(userId: ID!, testPlanReportId: ID!): ReviewerStatus!
     """
-    Get all VendorApprovalStatuses.
+    Get all ReviewerStatuses.
     """
-    vendorApprovalStatuses: [VendorApprovalStatus]!
+    reviewerStatuses: [ReviewerStatus]!
     """
     Get a particular TestPlanVersion by ID.
     """

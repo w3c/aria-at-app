@@ -9,13 +9,13 @@ const testPlanReports = require('./testPlanReportsResolver');
 const testPlanVersion = require('./testPlanVersionResolver');
 const testPlanVersions = require('./testPlanVersionsResolver');
 const latestTestPlanVersion = require('./latestTestPlanVersionResolver');
+const reviewerStatus = require('./reviewerStatusResolver');
+const reviewerStatuses = require('./reviewerStatusesResolver');
 const testPlanRun = require('./testPlanRunResolver');
 const testPlanRuns = require('./testPlanRunsResolver');
 const vendors = require('./vendorsResolver');
 const vendor = require('./vendorResolver');
 const vendorByName = require('./vendorByNameResolver');
-const vendorApprovalStatus = require('./vendorApprovalStatusResolver');
-const vendorApprovalStatuses = require('./vendorApprovalStatusesResolver');
 const createTestPlanReport = require('./createTestPlanReportResolver');
 const addViewer = require('./addViewerResolver');
 const mutateAt = require('./mutateAtResolver');
@@ -72,11 +72,11 @@ const resolvers = {
     collectionJob,
     collectionJobs,
     collectionJobByTestPlanRunId,
+    reviewerStatus,
+    reviewerStatuses,
     vendors,
     vendor,
-    vendorByName,
-    vendorApprovalStatus,
-    vendorApprovalStatuses
+    vendorByName
   },
   Mutation: {
     at: mutateAt,
