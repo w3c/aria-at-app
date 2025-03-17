@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
@@ -26,9 +26,21 @@ const TestPlanReportStatusDialog = ({
 
   const { testPlanReportStatuses } = testPlanVersion;
 
-  let requiredReports = 0;
+  const { requiredReportsCount, sortedStatuses } = useMemo(() => {
+    let requiredCount = 0;
 
-  const tableRows = testPlanReportStatuses.map(status => {
+    const sorted = [...testPlanReportStatuses].sort(
+      (a, b) => Number(b.isRequired) - Number(a.isRequired)
+    );
+
+    sorted.forEach(status => {
+      if (status.isRequired) requiredCount += 1;
+    });
+
+    return { requiredReportsCount: requiredCount, sortedStatuses: sorted };
+  }, [testPlanReportStatuses]);
+
+  const tableRows = sortedStatuses.map(status => {
     const {
       isRequired,
       at,
@@ -37,8 +49,6 @@ const TestPlanReportStatusDialog = ({
       exactAtVersion,
       testPlanReport
     } = status;
-
-    if (isRequired) requiredReports += 1;
 
     const key =
       `${at.name}-${browser.name}-` +
@@ -105,7 +115,7 @@ const TestPlanReportStatusDialog = ({
               {phase[0] + phase.slice(1).toLowerCase()}
             </span>
             &nbsp;{reviewDescription}.&nbsp;
-            <strong>{requiredReports} AT/browser&nbsp;</strong>
+            <strong>{requiredReportsCount} AT/browser&nbsp;</strong>
             pairs {requirementNeedsDescription}.
           </p>
         )}

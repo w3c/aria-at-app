@@ -4,20 +4,26 @@ on: [push]
 jobs:
   runtest_task:
     name: Using NodeJS and Postgres 12
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
-      - name: Install NodeJS 18
+      - name: Install NodeJS 20
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: 20
+          cache: npm
       - run: yarn --version
+      - name: Remove pre-bundled versions of postgres to avoid version clashes
+        run: |
+          sudo DEBIAN_FRONTEND=noninteractive apt-get purge -y postgresql\*
+          sudo apt-get autoremove -y
+          sudo rm -rf /var/lib/postgresql/
+          sudo rm -rf /etc/postgresql/
       - name: Install PostgreSQL 12
         run: |
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-          echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" |sudo tee  /etc/apt/sources.list.d/pgdg.list
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           sudo apt-get -y update
           sudo apt-get -y install postgresql-12
           sudo apt-get -y install postgresql-client-12
