@@ -1021,7 +1021,7 @@ describe('data management', () => {
           vendorId: testPlanReport.at.vendorId
         });
 
-        // To ensure at least one VendorApprovalStatus exists so it can be approved
+        // To ensure at least one ReviewerStatus exists so it can be approved
         await addViewer(
           testPlanReport.draftTestPlanRuns[0].testResults[0].test.id,
           testPlanReport.id,

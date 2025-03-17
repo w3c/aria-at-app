@@ -40,7 +40,7 @@ const checkIfValidVendorUsername = username => {
 module.exports = {
   async up(queryInterface, Sequelize) {
     return queryInterface.sequelize.transaction(async transaction => {
-      // Collect all the TestPlanVersion.tests information to move into VendorApprovalStatus
+      // Collect all the TestPlanVersion.tests information to move into ReviewerStatus
       const testPlanVersions = await queryInterface.sequelize.query(
         `select id, tests from "TestPlanVersion"`,
         {
@@ -57,7 +57,7 @@ module.exports = {
         }
       );
 
-      const vendorApprovalStatuses = [];
+      const reviewerStatuses = [];
 
       for (const testPlanReport of testPlanReports) {
         const testPlanVersion = testPlanVersions.find(
@@ -92,7 +92,7 @@ module.exports = {
             const isApproved = testPlanReport.vendorReviewStatus === 'APPROVED';
             const date = new Date();
 
-            let vendorApprovalStatus = {
+            let reviewerStatus = {
               userId,
               vendorId,
               testPlanReportId: testPlanReport.id,
@@ -104,15 +104,15 @@ module.exports = {
               updatedAt: date
             };
 
-            const viewerExists = vendorApprovalStatuses.find(
+            const viewerExists = reviewerStatuses.find(
               ({ userId, vendorId, testPlanReportId }) =>
-                vendorApprovalStatus.userId === userId &&
-                vendorApprovalStatus.vendorId === vendorId &&
-                vendorApprovalStatus.testPlanReportId === testPlanReportId
+                reviewerStatus.userId === userId &&
+                reviewerStatus.vendorId === vendorId &&
+                reviewerStatus.testPlanReportId === testPlanReportId
             );
 
             if (!viewerExists) {
-              vendorApprovalStatuses.push(vendorApprovalStatus);
+              reviewerStatuses.push(reviewerStatus);
             }
             break;
           }
@@ -147,7 +147,7 @@ module.exports = {
       );
 
       await queryInterface.createTable(
-        'VendorApprovalStatus',
+        'ReviewerStatus',
         {
           userId: {
             type: Sequelize.INTEGER,
@@ -162,8 +162,7 @@ module.exports = {
           },
           vendorId: {
             type: Sequelize.INTEGER,
-            primaryKey: true,
-            allowNull: false,
+            allowNull: true,
             references: {
               model: 'Vendor',
               key: 'id'
@@ -199,7 +198,7 @@ module.exports = {
           },
           reviewStatus: {
             type: Sequelize.TEXT,
-            allowNull: false,
+            allowNull: true,
             defaultValue: 'IN_PROGRESS'
           },
           approvedAt: {
@@ -215,18 +214,16 @@ module.exports = {
         }
       );
 
-      if (vendorApprovalStatuses.length) {
-        await queryInterface.bulkInsert(
-          'VendorApprovalStatus',
-          vendorApprovalStatuses,
-          { transaction }
-        );
+      if (reviewerStatuses.length) {
+        await queryInterface.bulkInsert('ReviewerStatus', reviewerStatuses, {
+          transaction
+        });
       }
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('VendorApprovalStatus');
+    await queryInterface.dropTable('ReviewerStatus');
     await queryInterface.addColumn('TestPlanReport', 'vendorReviewStatus', {
       type: Sequelize.TEXT,
       defaultValue: null,

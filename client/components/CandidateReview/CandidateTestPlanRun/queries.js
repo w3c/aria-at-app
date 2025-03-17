@@ -32,17 +32,9 @@ export const PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION = gql`
   }
 `;
 
-export const VENDOR_APPROVAL_STATUS_QUERY = gql`
-  query VendorApprovalStatusQuery(
-    $userId: ID!
-    $vendorId: ID!
-    $testPlanReportId: ID!
-  ) {
-    vendorApprovalStatus(
-      userId: $userId
-      vendorId: $vendorId
-      testPlanReportId: $testPlanReportId
-    ) {
+export const REVIEWER_STATUS_QUERY = gql`
+  query ReviewerStatusQuery($userId: ID!, $testPlanReportId: ID!) {
+    reviewerStatus(userId: $userId, testPlanReportId: $testPlanReportId) {
       viewedTests
     }
   }
