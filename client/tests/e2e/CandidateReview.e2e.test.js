@@ -75,6 +75,9 @@ describe('Candidate Review when signed in as vendor', () => {
       await page.waitForSelector('nav#test-navigator-nav ol');
       await page.waitForSelector('h1 ::-p-text(1.)');
       await page.waitForSelector('h1[class="current-test-title"]');
+      await page.waitForSelector(
+        '::-p-text(Review status by JAWS Representative: In Progress)'
+      );
 
       // Expand Test Instructions and Test Results
       const instructionsDisclosureContainerSelector =
@@ -124,6 +127,9 @@ describe('Candidate Review when signed in as vendor', () => {
         await page.waitForSelector('nav#test-navigator-nav ol');
         await page.waitForSelector('h1 ::-p-text(1.)');
         await page.waitForSelector('h1[class="current-test-title"]');
+        await page.waitForSelector(
+          '::-p-text(Review status by JAWS Representative: In Progress)'
+        );
 
         await page.click('a[href="#summary"]');
 
@@ -172,6 +178,9 @@ describe('Candidate Review when signed in as vendor', () => {
         await page.waitForSelector('nav#test-navigator-nav ol');
         await page.waitForSelector('h1 ::-p-text(1.)');
         await page.waitForSelector('h1[class="current-test-title"]');
+        await page.waitForSelector(
+          '::-p-text(Review status by JAWS Representative: In Progress)'
+        );
 
         // Check for summary specific content
         await page.click('a[href="#summary"]');

@@ -1,18 +1,20 @@
 /**
  * Takes the GraphQL `me` object to form a simplified auth object
- * @param {object} data
+ * @param {object} user
  *        auth object returned from GraphQL for currently logged in user.
- * @param {number|string} data.id
+ * @param {number|string} user.id
  *        currently logged in user's identifier (ID in GraphQL can be number or
  *        string)
- * @param {string} data.username - currently logged in user's username
- * @param {string[]} data.roles - currently logged in user's assigned roles
+ * @param {string} user.username - currently logged in user's username
+ * @param {string[]} user.roles - currently logged in user's assigned roles
+ * @param {object | null} user.company - currently logged in user's assigned company if any
  * @returns {Auth} - evaluated auth object
  */
 export const evaluateAuth = user => {
   if (!user) user = {};
 
   let roles = user.roles ?? [];
+  let company = user?.company ?? null;
 
   return {
     // calculated booleans
@@ -24,7 +26,8 @@ export const evaluateAuth = user => {
     // user object values
     id: user.id ?? null,
     username: user.username ?? null,
-    roles
+    roles,
+    company
   };
 };
 

@@ -23,7 +23,6 @@
     "id": "ODgzMeyIyIjoiNTYyOTgifQGMzOT",
     "atIds": [1],
     "title": "Navigate forwards to a button",
-    "viewers": [],
     "rawTestId": "navForwardsToButton",
     "rowNumber": 5,
     "scenarios": [
@@ -228,7 +227,6 @@
     "id": "NGVjNeyIyIjoiNTYyOTgifQDE4OD",
     "atIds": [2],
     "title": "Navigate forwards to a button",
-    "viewers": [],
     "rawTestId": "navForwardsToButton",
     "rowNumber": 5,
     "scenarios": [
@@ -433,7 +431,6 @@
     "id": "ODM5MeyIyIjoiNTYyOTgifQDc5MG",
     "atIds": [3],
     "title": "Navigate forwards to a button",
-    "viewers": [],
     "rawTestId": "navForwardsToButton",
     "rowNumber": 5,
     "scenarios": [
@@ -608,7 +605,6 @@
     "id": "Y2Q3MeyIyIjoiNTYyOTgifQGI0Mm",
     "atIds": [1],
     "title": "Navigate backwards to a button",
-    "viewers": [],
     "rawTestId": "navBackToButton",
     "rowNumber": 6,
     "scenarios": [
@@ -743,9 +739,7 @@
           "id": "shift+tab",
           "settings": "virtualCursor",
           "keystroke": "Shift+Tab",
-          "keypresses": [
-            { "id": "shift+tab", "keystroke": "Shift+Tab" }
-          ],
+          "keypresses": [{ "id": "shift+tab", "keystroke": "Shift+Tab" }],
           "presentationNumber": 2.3,
           "assertionExceptions": []
         },
@@ -753,9 +747,7 @@
           "id": "shift+tab",
           "settings": "pcCursor",
           "keystroke": "Shift+Tab",
-          "keypresses": [
-            { "id": "shift+tab", "keystroke": "Shift+Tab" }
-          ],
+          "keypresses": [{ "id": "shift+tab", "keystroke": "Shift+Tab" }],
           "presentationNumber": 4,
           "assertionExceptions": []
         }
@@ -817,7 +809,6 @@
     "id": "ZjIxYeyIyIjoiNTYyOTgifQTI3Mj",
     "atIds": [2],
     "title": "Navigate backwards to a button",
-    "viewers": [],
     "rawTestId": "navBackToButton",
     "rowNumber": 6,
     "scenarios": [
@@ -952,9 +943,7 @@
           "id": "shift+tab",
           "settings": "browseMode",
           "keystroke": "Shift+Tab",
-          "keypresses": [
-            { "id": "shift+tab", "keystroke": "Shift+Tab" }
-          ],
+          "keypresses": [{ "id": "shift+tab", "keystroke": "Shift+Tab" }],
           "presentationNumber": 2.3,
           "assertionExceptions": []
         },
@@ -962,9 +951,7 @@
           "id": "shift+tab",
           "settings": "focusMode",
           "keystroke": "Shift+Tab",
-          "keypresses": [
-            { "id": "shift+tab", "keystroke": "Shift+Tab" }
-          ],
+          "keypresses": [{ "id": "shift+tab", "keystroke": "Shift+Tab" }],
           "presentationNumber": 4,
           "assertionExceptions": []
         }
@@ -1026,7 +1013,6 @@
     "id": "MzBjNeyIyIjoiNTYyOTgifQ2IyOT",
     "atIds": [3],
     "title": "Navigate backwards to a button",
-    "viewers": [],
     "rawTestId": "navBackToButton",
     "rowNumber": 6,
     "scenarios": [
@@ -1133,9 +1119,7 @@
           "id": "shift+tab",
           "settings": "defaultMode",
           "keystroke": "Shift+Tab",
-          "keypresses": [
-            { "id": "shift+tab", "keystroke": "Shift+Tab" }
-          ],
+          "keypresses": [{ "id": "shift+tab", "keystroke": "Shift+Tab" }],
           "presentationNumber": 6.1,
           "assertionExceptions": []
         },
@@ -1203,7 +1187,6 @@
     "id": "ZGM1NeyIyIjoiNTYyOTgifQjQ5NT",
     "atIds": [1],
     "title": "Request information about a button",
-    "viewers": [],
     "rawTestId": "reqInfoAboutButton",
     "rowNumber": 9,
     "scenarios": [
@@ -1308,9 +1291,7 @@
           "id": "ins+tab",
           "settings": "virtualCursor",
           "keystroke": "Insert+Tab",
-          "keypresses": [
-            { "id": "ins+tab", "keystroke": "Insert+Tab" }
-          ],
+          "keypresses": [{ "id": "ins+tab", "keystroke": "Insert+Tab" }],
           "presentationNumber": 7,
           "assertionExceptions": []
         },
@@ -1318,9 +1299,7 @@
           "id": "ins+up",
           "settings": "virtualCursor",
           "keystroke": "Insert+Up Arrow",
-          "keypresses": [
-            { "id": "ins+up", "keystroke": "Insert+Up Arrow" }
-          ],
+          "keypresses": [{ "id": "ins+up", "keystroke": "Insert+Up Arrow" }],
           "presentationNumber": 7.1,
           "assertionExceptions": []
         },
@@ -1328,9 +1307,7 @@
           "id": "ins+tab",
           "settings": "pcCursor",
           "keystroke": "Insert+Tab",
-          "keypresses": [
-            { "id": "ins+tab", "keystroke": "Insert+Tab" }
-          ],
+          "keypresses": [{ "id": "ins+tab", "keystroke": "Insert+Tab" }],
           "presentationNumber": 8,
           "assertionExceptions": []
         },
@@ -1338,9 +1315,7 @@
           "id": "ins+up",
           "settings": "pcCursor",
           "keystroke": "Insert+Up Arrow",
-          "keypresses": [
-            { "id": "ins+up", "keystroke": "Insert+Up Arrow" }
-          ],
+          "keypresses": [{ "id": "ins+up", "keystroke": "Insert+Up Arrow" }],
           "presentationNumber": 8.1,
           "assertionExceptions": []
         }
@@ -1402,7 +1377,6 @@
     "id": "MzE1MeyIyIjoiNTYyOTgifQTRlN2",
     "atIds": [2],
     "title": "Request information about a button",
-    "viewers": [],
     "rawTestId": "reqInfoAboutButton",
     "rowNumber": 9,
     "scenarios": [
@@ -1507,9 +1481,7 @@
           "id": "ins+tab",
           "settings": "browseMode",
           "keystroke": "Insert+Tab",
-          "keypresses": [
-            { "id": "ins+tab", "keystroke": "Insert+Tab" }
-          ],
+          "keypresses": [{ "id": "ins+tab", "keystroke": "Insert+Tab" }],
           "presentationNumber": 7,
           "assertionExceptions": []
         },
@@ -1517,9 +1489,7 @@
           "id": "ins+up",
           "settings": "browseMode",
           "keystroke": "Insert+Up Arrow",
-          "keypresses": [
-            { "id": "ins+up", "keystroke": "Insert+Up Arrow" }
-          ],
+          "keypresses": [{ "id": "ins+up", "keystroke": "Insert+Up Arrow" }],
           "presentationNumber": 7.1,
           "assertionExceptions": []
         },
@@ -1527,9 +1497,7 @@
           "id": "ins+tab",
           "settings": "focusMode",
           "keystroke": "Insert+Tab",
-          "keypresses": [
-            { "id": "ins+tab", "keystroke": "Insert+Tab" }
-          ],
+          "keypresses": [{ "id": "ins+tab", "keystroke": "Insert+Tab" }],
           "presentationNumber": 8,
           "assertionExceptions": []
         },
@@ -1537,9 +1505,7 @@
           "id": "ins+up",
           "settings": "focusMode",
           "keystroke": "Insert+Up Arrow",
-          "keypresses": [
-            { "id": "ins+up", "keystroke": "Insert+Up Arrow" }
-          ],
+          "keypresses": [{ "id": "ins+up", "keystroke": "Insert+Up Arrow" }],
           "presentationNumber": 8.1,
           "assertionExceptions": []
         }
@@ -1601,7 +1567,6 @@
     "id": "MGQ3MeyIyIjoiNTYyOTgifQzRmYT",
     "atIds": [3],
     "title": "Request information about a button",
-    "viewers": [],
     "rawTestId": "reqInfoAboutButton",
     "rowNumber": 9,
     "scenarios": [

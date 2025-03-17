@@ -2,7 +2,6 @@
   "id": "NjJkOeyIyIjoiMjUyIn0GJkMG",
   "atIds": [1, 2],
   "title": "This title has been changed for testing purposes",
-  "viewers": [],
   "rowNumber": "1",
   "scenarios": [
     {
@@ -69,8 +68,7 @@
           "modulePath": "scripts/setFocusOnButton.module.js",
           "description": "sets focus on the 'Trigger Alert' button"
         },
-        "referencePage":
-        "reference/2021-10-15_143458/alert.setFocusOnButton.html"
+        "referencePage": "reference/2021-10-15_143458/alert.setFocusOnButton.html"
       },
       "commands": [
         {
@@ -122,8 +120,7 @@
           "modulePath": "scripts/setFocusOnButton.module.js",
           "description": "sets focus on the 'Trigger Alert' button"
         },
-        "referencePage":
-        "reference/2021-10-15_143458/alert.setFocusOnButton.html"
+        "referencePage": "reference/2021-10-15_143458/alert.setFocusOnButton.html"
       },
       "commands": [
         {

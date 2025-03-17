@@ -13,6 +13,7 @@ const recommendedAtVersion = require('./recommendedAtVersionResolver');
 const isFinal = require('./isFinalResolver');
 const exactAtVersion = require('./exactAtVersionResolver');
 const minimumAtVersion = require('./minimumAtVersionResolver');
+const vendorReviewStatus = require('./vendorReviewStatusResolver');
 
 module.exports = {
   runnableTests,
@@ -29,5 +30,6 @@ module.exports = {
   browser,
   latestAtVersionReleasedAt,
   recommendedAtVersion,
-  isFinal
+  isFinal,
+  vendorReviewStatus
 };

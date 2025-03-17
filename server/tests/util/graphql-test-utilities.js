@@ -5,6 +5,10 @@ const resolvers = require('../../resolvers');
 const defaultUser = require('../mock-data/newUser.json');
 
 let mockReq;
+let customUser;
+
+const getDefaultUser = () => defaultUser;
+const setCustomUser = user => (customUser = user);
 
 const server = new ApolloServer({
   typeDefs,
@@ -56,7 +60,7 @@ const failWithErrors = errors => {
  */
 const query = async (
   gql,
-  { transaction, user = defaultUser, ...queryOptions } = {}
+  { transaction, user = customUser || defaultUser, ...queryOptions } = {}
 ) => {
   mockReq = { session: { user }, transaction };
   const { data, errors } = await server.executeOperation({
@@ -71,4 +75,4 @@ const mutate = async (gql, options) => {
   return query(gql, options); // same as query
 };
 
-module.exports = { query, mutate };
+module.exports = { query, mutate, getDefaultUser, setCustomUser };

@@ -1,12 +1,16 @@
 const {
-  getTestPlanVersionById,
-  updateTestViewersOnTestPlanVersion
+  getTestPlanVersionById
 } = require('../../models/services/TestPlanVersionService');
 const {
   getTestPlanReports,
   updateTestPlanReportById,
   getOrCreateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
+const {
+  getVendorApprovalStatuses,
+  createVendorApprovalStatus,
+  getVendorApprovalStatusById
+} = require('../../models/services/VendorApprovalStatusService');
 const { hashTest } = require('../../util/aria');
 const {
   createTestPlanRun,
@@ -328,14 +332,23 @@ const processCopiedReports = async ({
       newTestPlanVersion
     );
 
+    const newVendorApprovalStatusViewedTestsToSave = [];
+    const oldVendorApprovalStatuses = await getVendorApprovalStatuses({
+      where: { testPlanReportId: oldTestPlanReport.id },
+      transaction
+    });
+    const oldVendorViewedTests = oldVendorApprovalStatuses.flatMap(
+      ({ viewedTests }) => viewedTests
+    );
+
     for (const oldTestPlanRun of oldTestPlanReport.testPlanRuns) {
       // Don't create a new test plan run if previous run was for a bot to avoid unexpected assignment results
       // Bot assignments orchestrated and controlled by separate system
       const isBotIdRegex = /^9\d{3}$/; // Currently, user ids for bots are in the format '9XXX'
       if (isBotIdRegex.test(oldTestPlanRun.testerUserId)) continue;
 
-      const oldTestPlanRunVendorReviewStatus =
-        oldTestPlanReport.vendorReviewStatus;
+      // Keep track if previous vendor approval status should be carried over
+      let shouldSaveVendorApprovalStatus = true;
 
       // Track which old test results need to be preserved
       const keptTestResultsByTestId = getKeptTestResultsByTestId(
@@ -367,7 +380,6 @@ const processCopiedReports = async ({
         },
         transaction
       });
-      let allResultsPreserved = true;
       const newTestResults = [];
 
       for (const testResultToSaveTestId of Object.keys(
@@ -417,7 +429,7 @@ const processCopiedReports = async ({
           // Unknown combination of command + settings when compared with last version
           const oldScenarioResult = scenarioResultsByScenarioIds[rawScenarioId];
           if (!oldScenarioResult) {
-            allResultsPreserved = false;
+            shouldSaveVendorApprovalStatus = false;
             newTestResult.completedAt = null;
             continue;
           }
@@ -443,41 +455,27 @@ const processCopiedReports = async ({
             const oldAssertionResult =
               assertionResultsByAssertionIds[rawAssertionId];
             if (!oldAssertionResult) {
-              allResultsPreserved = false;
+              shouldSaveVendorApprovalStatus = false;
               newTestResult.completedAt = null;
               continue;
             }
-
-            // Update TestPlanVersion.tests to include the viewers from the old
-            // TestPlanVersion.tests
-            // TODO: Move viewers to TestPlanReport; more appropriate and
-            //  understandable database structure
-            if (oldTest.viewers) {
-              await updateTestViewersOnTestPlanVersion({
-                id: newTestPlanVersionId,
-                testId: testResultToSaveTestId,
-                viewers: oldTest.viewers,
-                transaction
-              });
-            }
-
             eachAssertionResult.passed = oldAssertionResult.passed;
           }
         }
-
         newTestResults.push(newTestResult);
-      }
 
-      // Since no substantive changes, preserve the TestPlanReport's
-      // vendorReviewStatus if exists
-      if (allResultsPreserved && oldTestPlanRunVendorReviewStatus) {
-        await updateTestPlanReportById({
-          id: newTestPlanReport.id,
-          values: {
-            vendorReviewStatus: oldTestPlanRunVendorReviewStatus
-          },
-          transaction
-        });
+        // Keep track of vendor viewed tests to carry over
+        if (
+          shouldSaveVendorApprovalStatus &&
+          oldVendorViewedTests.includes(oldTest.id) &&
+          !newVendorApprovalStatusViewedTestsToSave.includes(
+            `${oldTest.id}:${test.id}`
+          )
+        ) {
+          newVendorApprovalStatusViewedTestsToSave.push(
+            `${oldTest.id}:${test.id}`
+          );
+        }
       }
 
       // Run updated metrics calculations for new TestPlanRun test results to be used in metrics calculations
@@ -488,6 +486,58 @@ const processCopiedReports = async ({
         context,
         transaction
       });
+
+      for (const oldVendorApprovalStatus of oldVendorApprovalStatuses) {
+        let newVendorApprovalStatusExists;
+
+        try {
+          newVendorApprovalStatusExists = await getVendorApprovalStatusById({
+            testPlanReportId: newTestPlanReport.id,
+            userId: oldVendorApprovalStatus.userId,
+            vendorId: oldVendorApprovalStatus.vendorId,
+            transaction
+          });
+        } catch (error) {
+          console.error(
+            `Unable to query for vendorApprovalStatus: { ${newTestPlanReport.id},${oldVendorApprovalStatus.userId},${oldVendorApprovalStatus.vendorId} }`,
+            error
+          );
+        }
+
+        if (newVendorApprovalStatusExists) continue;
+
+        const viewedTests = [];
+        newVendorApprovalStatusViewedTestsToSave.forEach(oldNewViewedTest => {
+          const [oldTestId, newTestId] = oldNewViewedTest.split(':');
+          if (oldVendorApprovalStatus.viewedTests.includes(oldTestId))
+            viewedTests.push(newTestId);
+        });
+
+        try {
+          await createVendorApprovalStatus({
+            values: {
+              testPlanReportId: newTestPlanReport.id,
+              userId: oldVendorApprovalStatus.userId,
+              vendorId: oldVendorApprovalStatus.vendorId,
+              reviewStatus: shouldSaveVendorApprovalStatus
+                ? oldVendorApprovalStatus.reviewStatus
+                : 'IN_PROGRESS',
+              approvedAt:
+                shouldSaveVendorApprovalStatus &&
+                oldVendorApprovalStatus.reviewStatus === 'APPROVED'
+                  ? new Date()
+                  : null,
+              viewedTests
+            },
+            transaction
+          });
+        } catch (error) {
+          console.error(
+            `Unable to create vendorApprovalStatus: { ${newTestPlanReport.id},${oldVendorApprovalStatus.userId},${oldVendorApprovalStatus.vendorId} }`,
+            error
+          );
+        }
+      }
     }
   }
 
