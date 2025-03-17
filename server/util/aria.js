@@ -28,6 +28,7 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
     // The updated settings, instructions or references should be shown when
     // the copy process is done
     propertiesToOmit.push('renderableContent.target.at.settings');
+    propertiesToOmit.push('renderableContent.target.referencePage');
     propertiesToOmit.push('renderableContent.instructions');
     propertiesToOmit.push('renderableContent.info.references');
     // for v1 format since structure is:

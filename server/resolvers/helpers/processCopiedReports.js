@@ -329,6 +329,11 @@ const processCopiedReports = async ({
     );
 
     for (const oldTestPlanRun of oldTestPlanReport.testPlanRuns) {
+      // Don't create a new test plan run if previous run was for a bot to avoid unexpected assignment results
+      // Bot assignments orchestrated and controlled by separate system
+      const isBotIdRegex = /^9\d{3}$/; // Currently, user ids for bots are in the format '9XXX'
+      if (isBotIdRegex.test(oldTestPlanRun.testerUserId)) continue;
+
       const oldTestPlanRunVendorReviewStatus =
         oldTestPlanReport.vendorReviewStatus;
 
