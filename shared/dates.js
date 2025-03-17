@@ -1,19 +1,24 @@
+// TODO: momentjs is no longer supported. Replace with another date utility/practice. See https://momentjs.com/docs/#/-project-status/.
 const moment = require('moment');
 
-const convertDateToString = (date, format = 'DD-MM-YYYY') => {
+const convertDateToString = (date, format = 'DD-MM-YYYY', { locale } = {}) => {
   if (!date) return '';
+  if (locale) setLocale(locale);
   return moment.utc(date).format(format);
 };
 
-const convertStringToDate = (date, format = 'DD-MM-YYYY') => {
+const convertStringToDate = (date, format = 'DD-MM-YYYY', { locale } = {}) => {
+  if (locale) setLocale(locale);
   return moment.utc(date, format).toDate();
 };
 
 const convertStringFormatToAnotherFormat = (
   date,
   fromFormat = 'DD-MM-YYYY',
-  toFormat = 'MM-DD-YYYY'
+  toFormat = 'MM-DD-YYYY',
+  { locale } = {}
 ) => {
+  if (locale) setLocale(locale);
   return moment.utc(date, fromFormat).format(toFormat);
 };
 
@@ -32,24 +37,7 @@ const checkDaysBetweenDates = (date, otherDate) => {
   return Math.ceil(hours / 24);
 };
 
-const gitUpdatedDateToString = (dateString, locale = 'default') => {
-  const lc = (pattern, string) =>
-    string.replace(pattern, pattern.toLowerCase());
-  const timeZone = 'UTC';
-  const options = { month: 'short' };
-
-  const date = new Date(dateString);
-  const month = date.toLocaleString(locale, options);
-  const day = date.getDate();
-  const year = date.getFullYear();
-  const time = date
-    .toLocaleTimeString(locale, { timeZone: timeZone })
-    .replace(/\s/g, ' ');
-
-  const timeStamp = `${month} ${day}, ${year} at ${time} ${timeZone}`;
-
-  return lc('PM', lc('AM', timeStamp));
-};
+const setLocale = (locale = 'en') => moment.locale(locale);
 
 module.exports = {
   convertDateToString,
@@ -57,6 +45,5 @@ module.exports = {
   convertStringFormatToAnotherFormat,
   isValidDate,
   isAfterYear,
-  checkDaysBetweenDates,
-  gitUpdatedDateToString
+  checkDaysBetweenDates
 };

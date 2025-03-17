@@ -1,3 +1,28 @@
+### [1.13.1](https://github.com/w3c/aria-at-app/compare/v1.13.0...v1.13.1) (2025-03-17)
+
+
+### Bug Fixes
+
+* Account for `referencePage` update during copy process ([#1340](https://github.com/w3c/aria-at-app/issues/1340)) ([b1a8483](https://github.com/w3c/aria-at-app/commit/b1a8483dca0e716ddab4e6fcd578268972c451ac))
+* Revise length of generated GitHub issue link to avoid hitting URI max length ([#1336](https://github.com/w3c/aria-at-app/issues/1336)) ([a6f5c9f](https://github.com/w3c/aria-at-app/commit/a6f5c9f4cecf84bc5a3a34dc996d7efb67df3a94))
+
+## [1.13.0](https://github.com/w3c/aria-at-app/compare/v1.12.0...v1.13.0) (2025-03-17)
+
+
+### Features
+
+* Group required reports in test plan report status dialog ([#1337](https://github.com/w3c/aria-at-app/issues/1337)) ([a705888](https://github.com/w3c/aria-at-app/commit/a705888df6a53abb69f011a94ffd641678949769))
+
+
+### Bug Fixes
+
+* Include result of undesirable behaviors assertions in summary of failing assertions ([#1317](https://github.com/w3c/aria-at-app/issues/1317)) ([8ea4def](https://github.com/w3c/aria-at-app/commit/8ea4def8f9212ba4ea1f4e52bfad5613d764fee0))
+
+
+### Reverts
+
+* Revert "Update testers list" ([e95fdbb](https://github.com/w3c/aria-at-app/commit/e95fdbbb6bfe0c7f8e734f532daebd55ddc93a9a))
+
 ## [1.12.0](https://github.com/w3c/aria-at-app/compare/v1.11.0...v1.12.0) (2025-02-05)
 
 
