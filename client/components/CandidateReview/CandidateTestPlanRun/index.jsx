@@ -360,6 +360,7 @@ const CandidateTestPlanRun = () => {
     isCandidateReviewChangesRequested: false,
     testTitle: undefined,
     testRowNumber: undefined,
+    testSequenceNumber: undefined,
     testRenderedUrl: undefined
   });
 
