@@ -15,7 +15,7 @@ const NotApprovedModal = ({ handleAction = () => {}, githubUrl = '#' }) => {
         <>
           <p className="review-confirmation-content">Thank you for reviewing</p>
           <p className="review-confirmation-share">
-            if you haven’t opened any issues yet, please{' '}
+            If you haven’t opened any issues yet, please{' '}
             <a href={githubUrl} target="_blank" rel="noreferrer">
               open an issue describing why this is not approved.
             </a>
