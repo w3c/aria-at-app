@@ -16,7 +16,6 @@ span.styled-pill {
     /* Version strings can have different character counts and this keeps them lined up in lists */
 
     & b {
-      min-width: 6rem;
       display: inline-block;
       text-align: left;
     }

@@ -465,6 +465,11 @@ div[role='dialog'][aria-modal='true']:nth-last-child(5) {
   z-index: 1000;
 }
 
+.modal-50w,
+.modal-60w {
+  min-width: 90%;
+}
+
 @media (min-width: 768px) {
   .modal-50w {
     min-width: 50%;
