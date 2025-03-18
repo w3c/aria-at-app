@@ -51,6 +51,7 @@ const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
 const AtVersion = require('./AtVersion');
 const createCollectionJobsFromPreviousAtVersion = require('./createCollectionJobsFromPreviousAtVersionResolver');
+const refreshableReports = require('./refreshableReportsResolver');
 
 const resolvers = {
   Query: {
@@ -73,7 +74,8 @@ const resolvers = {
     collectionJobByTestPlanRunId,
     vendors,
     vendor,
-    vendorByName
+    vendorByName,
+    refreshableReports
   },
   Mutation: {
     at: mutateAt,

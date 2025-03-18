@@ -422,11 +422,11 @@ const TestQueue = () => {
 
   const tabs = [
     {
-      label: 'Queue',
+      label: 'Manual Test Queue',
       content: renderQueueContent()
     },
     {
-      label: 'Updates',
+      label: 'Automated Report Updates',
       content: <TestPlanRefresh />
     }
   ];

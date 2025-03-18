@@ -1234,6 +1234,21 @@ const graphqlSchema = gql`
     assertionResult: AssertionResult
   }
 
+  type TestPlanForRefresh {
+    id: ID!
+    title: String!
+  }
+
+  type PreviousVersionGroup {
+    previousVersion: AtVersion!
+    testPlans: [TestPlanForRefresh!]!
+  }
+
+  type RefreshableReportsResponse {
+    currentVersion: AtVersion!
+    previousVersionGroups: [PreviousVersionGroup!]!
+  }
+
   type Query {
     """
     Get the currently-logged-in user or null if you are not logged in.
@@ -1328,6 +1343,10 @@ const graphqlSchema = gql`
     Get all CollectionJobs.
     """
     collectionJobs: [CollectionJob]!
+    """
+    Get refreshable test plan reports for an AT version that can be used for automation re-runs
+    """
+    refreshableReports(atVersionId: ID!): RefreshableReportsResponse
   }
 
   # Mutation-specific types below

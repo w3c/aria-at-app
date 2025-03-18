@@ -1,68 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './TestPlanRefresh.css';
 import { ThemeTable } from '../common/ThemeTable';
-import { useQuery } from '@apollo/client';
+import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import PropTypes from 'prop-types';
-const initialRefreshRuns = [
-  {
-    id: 1,
-    botName: 'VoiceOver Bot',
-    newVersion: '14.0',
-    versionGroups: [
-      {
-        prevVersion: '13.0',
-        testPlanCount: 3,
-        testPlans: [
-          'Action Menu Button Example Using aria-activedescendant V24.09.18',
-          'Alert Example V24.09.18',
-          'Command Button Example V24.09.18'
-        ]
-      },
-      {
-        prevVersion: '12.5',
-        testPlanCount: 2,
-        testPlans: [
-          'Modal Dialog Example V24.09.17',
-          'Navigation Menu Button V24.10.18'
-        ]
-      }
-    ]
-  },
-  {
-    id: 2,
-    botName: 'NVDA Bot',
-    newVersion: '2025.1',
-    versionGroups: [
-      {
-        prevVersion: '2024.2',
-        testPlanCount: 4,
-        testPlans: [
-          'Color Viewer Slider V23.12.13',
-          'Disclosure Navigation Menu Example V23.11.29',
-          'Link Example 1 (span element with text content) V24.09.18',
-          'Toggle Button V24.11.04'
-        ]
-      }
-    ]
-  }
-];
-
-const initialRefreshEvents = [
-  {
-    id: 1,
-    timestamp: '12/01/2025, \n 8:02:30 AM',
-    description:
-      'Re-run of Action Menu Button Example using aria-activedescendant performed with VoiceOver Bot version 14.0 had an exact match for all output. Verdicts were copied and report was finalized.'
-  },
-  {
-    id: 2,
-    timestamp: '11/01/2025, \n 3:28:01 PM',
-    description:
-      'Re-run of Alert Example performed with NVDA Bot Version 2024.4 had mismatched output on 4 scenarios. Report added to Test Queue for review.'
-  }
-];
+import {
+  GET_AUTOMATION_SUPPORTED_AT_VERSIONS,
+  GET_REFRESHABLE_REPORTS_QUERY,
+  CREATE_COLLECTION_JOBS_MUTATION
+} from './queries';
 
 const getVersionDescription = run => {
   const totalTestPlans = run.versionGroups.reduce(
@@ -173,55 +120,163 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
 );
 
 const TestPlanRefresh = () => {
-  const [activeRuns, setActiveRuns] = useState(initialRefreshRuns);
-  const [events, setEvents] = useState(initialRefreshEvents);
-  const [nextEventId, setNextEventId] = useState(
-    initialRefreshEvents.length + 1
-  );
+  const [activeRuns, setActiveRuns] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [nextEventId, setNextEventId] = useState(1);
   const eventsPanelRef = useRef(null);
+  const client = useApolloClient();
 
   const { data: { me } = {} } = useQuery(ME_QUERY);
   const { isAdmin } = evaluateAuth(me);
 
-  const handleRefreshClick = run => {
-    setActiveRuns(current => current.filter(item => item.id !== run.id));
+  // Fetch all automation-supported AT versions
+  const { data: atVersionsData, loading: loadingVersions } = useQuery(
+    GET_AUTOMATION_SUPPORTED_AT_VERSIONS,
+    {
+      skip: !isAdmin
+    }
+  );
 
-    const newEvents = [];
-    let eventId = nextEventId;
+  // Process supported AT versions to find the latest versions
+  useEffect(() => {
+    if (!atVersionsData || loadingVersions) return;
 
-    run.versionGroups.forEach(group => {
-      group.testPlans.forEach(plan => {
-        newEvents.push({
-          id: eventId++,
-          timestamp: new Date().toLocaleString(),
-          description: `Update run started for ${plan} using ${run.botName} ${run.newVersion} (upgrading from ${group.prevVersion})`
+    const fetchPromises = [];
+
+    // Find the latest automatable version for each AT
+    atVersionsData.ats.forEach(at => {
+      // Filter to only versions that support automation and sort by release date (newest first)
+      const automationVersions = at.atVersions
+        .filter(version => version.supportedByAutomation)
+        .sort((a, b) => {
+          return new Date(b.releasedAt) - new Date(a.releasedAt);
         });
-      });
+
+      if (automationVersions.length > 0) {
+        const latestVersion = automationVersions[0];
+
+        // Create a promise to fetch refreshable reports for this version
+        fetchPromises.push(
+          fetchRefreshableReports(latestVersion.id, at.name, latestVersion.name)
+        );
+      }
     });
 
-    setNextEventId(eventId);
-    setEvents(current => [...newEvents, ...current]);
+    // Wait for all queries to complete
+    Promise.all(fetchPromises).then(results => {
+      // Filter out undefined results and set as active runs
+      const validRuns = results.filter(run => run !== undefined);
+      setActiveRuns(validRuns);
+    });
+  }, [atVersionsData, loadingVersions]);
 
-    if (eventsPanelRef.current) {
-      eventsPanelRef.current.focus();
-      // Announce to screen readers that refresh has started
-      const announcement = document.getElementById('refresh-announcement');
-      if (announcement) {
-        const totalPlans = run.versionGroups.reduce(
-          (sum, group) => sum + group.testPlanCount,
-          0
-        );
-        announcement.textContent = `Started re-run for ${totalPlans} test plans with ${run.botName} version ${run.newVersion}. Focus moved to events list.`;
+  // Function to fetch refreshable reports for a specific AT version
+  const fetchRefreshableReports = async (atVersionId, atName, versionName) => {
+    try {
+      const { data } = await client.query({
+        query: GET_REFRESHABLE_REPORTS_QUERY,
+        variables: { atVersionId },
+        fetchPolicy: 'network-only'
+      });
+
+      if (!data?.refreshableReports?.previousVersionGroups?.length) {
+        return undefined;
       }
+
+      // Transform data to match the UI format
+      const versionGroups = data.refreshableReports.previousVersionGroups.map(
+        group => ({
+          prevVersion: group.previousVersion.name,
+          testPlanCount: group.testPlans.length,
+          testPlans: group.testPlans.map(tp => tp.title)
+        })
+      );
+
+      return {
+        id: atVersionId,
+        botName: `${atName} Bot`,
+        newVersion: versionName,
+        versionGroups
+      };
+    } catch (error) {
+      console.error('Error fetching refreshable reports:', error);
+      if (error.graphQLErrors?.length) {
+        console.error('GraphQL Errors:', error.graphQLErrors);
+      }
+      if (error.networkError?.result) {
+        console.error('Network Error:', error.networkError);
+      }
+      return undefined;
     }
   };
 
-  const getVersionUpdateDescription = run => {
-    return `${run.botName} ${
-      run.newVersion
-    } automation support has been added to the application. ${
-      run.runs
-    } test plan version${run.runs !== 1 ? 's' : ''} can be re-run.`;
+  // Mutation to create collection jobs
+  const [createCollectionJobs] = useMutation(CREATE_COLLECTION_JOBS_MUTATION);
+
+  const handleRefreshClick = async run => {
+    try {
+      const response = await createCollectionJobs({
+        variables: { atVersionId: run.id }
+      });
+
+      const { collectionJobs, message } =
+        response.data.createCollectionJobsFromPreviousAtVersion;
+      console.log('collectionJobs', collectionJobs);
+      console.log('message', message);
+      // Remove this run from active runs
+      setActiveRuns(current => current.filter(item => item.id !== run.id));
+
+      // Create events for each job
+      const newEvents = [];
+      let eventId = nextEventId;
+
+      // Add a summary event
+      newEvents.push({
+        id: eventId++,
+        timestamp: new Date().toLocaleString(),
+        description: message
+      });
+
+      // Add details for each job if available
+      if (collectionJobs && collectionJobs.length > 0) {
+        run.versionGroups.forEach(group => {
+          group.testPlans.forEach((plan, idx) => {
+            if (idx < collectionJobs.length) {
+              newEvents.push({
+                id: eventId++,
+                timestamp: new Date().toLocaleString(),
+                description: `Update run started for ${plan} using ${run.botName} ${run.newVersion} (upgrading from ${group.prevVersion})`
+              });
+            }
+          });
+        });
+      }
+
+      setNextEventId(eventId);
+      setEvents(current => [...newEvents, ...current]);
+
+      // Announce to screen readers and move focus
+      if (eventsPanelRef.current) {
+        eventsPanelRef.current.focus();
+        const announcement = document.getElementById('refresh-announcement');
+        if (announcement) {
+          const totalPlans = run.versionGroups.reduce(
+            (sum, group) => sum + group.testPlanCount,
+            0
+          );
+          announcement.textContent = `Started re-run for ${totalPlans} test plans with ${run.botName} version ${run.newVersion}. Focus moved to events list.`;
+        }
+      }
+    } catch (error) {
+      console.error('Error creating collection jobs:', error);
+      const errorEvent = {
+        id: nextEventId,
+        timestamp: new Date().toLocaleString(),
+        description: `Error starting re-run for ${run.botName} ${run.newVersion}: ${error.message}`
+      };
+      setNextEventId(prevId => prevId + 1);
+      setEvents(current => [errorEvent, ...current]);
+    }
   };
 
   return (
@@ -237,7 +292,6 @@ const TestPlanRefresh = () => {
         <RefreshDashboard
           activeRuns={activeRuns}
           onRefreshClick={handleRefreshClick}
-          getVersionUpdateDescription={getVersionUpdateDescription}
         />
       )}
 
@@ -280,8 +334,7 @@ const TestPlanRefresh = () => {
 
 RefreshDashboard.propTypes = {
   activeRuns: PropTypes.array.isRequired,
-  onRefreshClick: PropTypes.func.isRequired,
-  getVersionUpdateDescription: PropTypes.func.isRequired
+  onRefreshClick: PropTypes.func.isRequired
 };
 
 export default TestPlanRefresh;
