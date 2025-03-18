@@ -746,19 +746,10 @@ const createCollectionJobsFromPreviousAtVersion = async ({
   atVersionId,
   transaction
 }) => {
-  console.log(
-    `[Debug] Starting createCollectionJobsFromPreviousAtVersion for atVersionId: ${atVersionId}`
-  );
-
   const result = await getRefreshableTestPlanReportsForVersion({
     currentAtVersionId: atVersionId,
     transaction
   });
-
-  console.log(
-    '[Debug] Full result from getRefreshableTestPlanReportsForVersion:',
-    result
-  );
 
   if (!result) {
     console.error(
@@ -774,99 +765,83 @@ const createCollectionJobsFromPreviousAtVersion = async ({
     return [];
   }
 
-  console.log(`[Debug] Retrieved currentVersion:`, currentVersion);
-
   if (!previousVersionGroups) {
     console.error('[Error] previousVersionGroups is null or undefined');
-    return [];
-  }
-
-  // Get all reports that need to be refreshed
-  const reports = [];
-  for (const group of previousVersionGroups) {
-    // Get the full report for each test plan
-    for (const testPlan of group.testPlans) {
-      const report = await TestPlanReport.findOne({
-        where: {
-          testPlanVersionId: testPlan.id,
-          markedFinalAt: { [Op.not]: null }
-        },
-        order: [['markedFinalAt', 'DESC']],
-        include: [
-          {
-            association: 'testPlanVersion',
-            where: {
-              phase: { [Op.in]: ['CANDIDATE', 'RECOMMENDED'] }
-            },
-            required: true
-          },
-          {
-            association: 'at',
-            required: true
-          }
-        ],
-        transaction
-      });
-
-      if (report) {
-        reports.push(report);
-      }
-    }
-  }
-
-  console.log(`[Debug] Found ${reports.length} reports to process`);
-
-  if (!reports.length) {
-    console.log('[Debug] No reports found, returning empty array');
     return [];
   }
 
   const collectionJobs = [];
 
   // Process each report that can be refreshed
-  for (const report of reports) {
-    console.log(`[Debug] Processing report:`, report.id);
+  for (const group of previousVersionGroups) {
+    for (const reportInfo of group.reports) {
+      try {
+        // Get the full report with all necessary associations
+        const report = await TestPlanReport.findOne({
+          where: { id: reportInfo.id },
+          include: [
+            {
+              association: 'testPlanVersion',
+              include: [
+                {
+                  association: 'testPlan',
+                  required: true
+                }
+              ],
+              required: true
+            },
+            {
+              association: 'at',
+              required: true
+            }
+          ],
+          transaction
+        });
 
-    try {
-      // Clone the report with the new AT version
-      const newReport = await cloneTestPlanReportWithNewAtVersion(
-        report,
-        currentVersion,
-        transaction
-      );
-      console.log(`[Debug] Created new report:`, newReport.id);
+        if (!report) {
+          console.error(
+            `[Error] Could not find report with ID ${reportInfo.id}`
+          );
+          continue;
+        }
 
-      const atVersion = await getAtVersionWithRequirements(
-        newReport.at.id,
-        currentVersion,
-        null,
-        transaction
-      );
-      console.log(
-        `[Debug] Retrieved AT version for new report:`,
-        atVersion?.id
-      );
+        // Clone the report with the new AT version
+        const newReport = await cloneTestPlanReportWithNewAtVersion(
+          report,
+          currentVersion,
+          transaction
+        );
 
-      const job = await scheduleCollectionJob(
-        {
-          testPlanReportId: newReport.id,
-          atVersion
-        },
-        { transaction }
-      );
-      console.log(`[Debug] Created collection job:`, job.id);
-      collectionJobs.push(job);
-    } catch (error) {
-      console.error(
-        `[Error] Failed to create collection job for report ${report.id}:`,
-        error.message
-      );
+        const atVersion = await getAtVersionWithRequirements(
+          newReport.at.id,
+          currentVersion,
+          null,
+          transaction
+        );
+
+        if (!atVersion) {
+          throw new Error(
+            `Failed to get AT version requirements for report ${newReport.id}`
+          );
+        }
+
+        const job = await scheduleCollectionJob(
+          {
+            testPlanReportId: newReport.id,
+            atVersion
+          },
+          { transaction }
+        );
+        collectionJobs.push(job);
+      } catch (error) {
+        console.error(
+          `[Error] Failed to create collection job for report ${reportInfo.id}:`,
+          error.message
+        );
+      }
     }
   }
 
-  console.log(
-    `[Debug] Completed processing. Created ${collectionJobs.length} collection jobs`
-  );
   return collectionJobs;
 };
 

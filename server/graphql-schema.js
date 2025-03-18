@@ -1234,14 +1234,9 @@ const graphqlSchema = gql`
     assertionResult: AssertionResult
   }
 
-  type TestPlanForRefresh {
-    id: ID!
-    title: String!
-  }
-
   type PreviousVersionGroup {
     previousVersion: AtVersion!
-    testPlans: [TestPlanForRefresh!]!
+    reports: [TestPlanReport!]!
   }
 
   type RefreshableReportsResponse {

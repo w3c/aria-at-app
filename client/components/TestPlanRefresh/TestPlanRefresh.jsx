@@ -12,12 +12,12 @@ import {
 } from './queries';
 
 const getVersionDescription = run => {
-  const totalTestPlans = run.versionGroups.reduce(
-    (sum, group) => sum + group.testPlanCount,
+  const totalTestPlans = run.reportGroups.reduce(
+    (sum, group) => sum + group.reportCount,
     0
   );
-  const versions = run.versionGroups.map(group => group.prevVersion).join(', ');
-  return `${run.botName} ${run.newVersion} automation support has been added to the application. ${totalTestPlans} test plan versions can be re-run from ${run.versionGroups.length} previous versions, including ${versions}.`;
+  const reports = run.reportGroups.map(group => group.prevVersion).join(', ');
+  return `${run.botName} ${run.newVersion} automation support has been added to the application. ${totalTestPlans} test plan versions can be re-run from ${run.reportGroups.length} previous versions, including ${reports}.`;
 };
 
 const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
@@ -28,8 +28,8 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
     <div className="refresh-dashboard">
       {activeRuns.map(run => {
         const headingId = `refresh-heading-${run.id}`;
-        const totalTestPlans = run.versionGroups.reduce(
-          (sum, group) => sum + group.testPlanCount,
+        const totalTestPlans = run.reportGroups.reduce(
+          (sum, group) => sum + group.reportCount,
           0
         );
         const versionDescription = getVersionDescription(run);
@@ -51,14 +51,14 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
             <div className="version-update" aria-hidden="true">
               <div className="version-info">
                 <div className="version-groups-container">
-                  {run.versionGroups.map((group, index) => (
+                  {run.reportGroups.map((group, index) => (
                     <div key={index} className="version-box">
                       <span className="version-number">
                         {group.prevVersion}
                       </span>
                       <span className="version-count">
-                        {group.testPlanCount} run
-                        {group.testPlanCount === 1 ? '' : 's'}
+                        {group.reportCount} run
+                        {group.reportCount === 1 ? '' : 's'}
                       </span>
                     </div>
                   ))}
@@ -81,7 +81,7 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
             </div>
 
             <div className="test-plans-preview">
-              {run.versionGroups.map((group, groupIndex) => (
+              {run.reportGroups.map((group, groupIndex) => (
                 <div key={groupIndex} className="version-group">
                   <h4
                     className="plans-preview-title"
@@ -95,8 +95,11 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
                     className="plans-list"
                     aria-labelledby={`plans-preview-title-${run.id}-${groupIndex}`}
                   >
-                    {group.testPlans.map((plan, index) => (
-                      <li key={index}>{plan}</li>
+                    {group.reports.map((report, index) => (
+                      <li key={index}>
+                        {report.testPlanVersion.title}, {report.browser.name},{' '}
+                        {report.at.name}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -183,11 +186,11 @@ const TestPlanRefresh = () => {
       }
 
       // Transform data to match the UI format
-      const versionGroups = data.refreshableReports.previousVersionGroups.map(
+      const reportGroups = data.refreshableReports.previousVersionGroups.map(
         group => ({
           prevVersion: group.previousVersion.name,
-          testPlanCount: group.testPlans.length,
-          testPlans: group.testPlans.map(tp => tp.title)
+          reportCount: group.reports.length,
+          reports: group.reports
         })
       );
 
@@ -195,7 +198,7 @@ const TestPlanRefresh = () => {
         id: atVersionId,
         botName: `${atName} Bot`,
         newVersion: versionName,
-        versionGroups
+        reportGroups
       };
     } catch (error) {
       console.error('Error fetching refreshable reports:', error);
@@ -237,12 +240,12 @@ const TestPlanRefresh = () => {
       // Add details for each job if available
       if (collectionJobs && collectionJobs.length > 0) {
         run.versionGroups.forEach(group => {
-          group.testPlans.forEach((plan, idx) => {
+          group.reports.forEach((report, idx) => {
             if (idx < collectionJobs.length) {
               newEvents.push({
                 id: eventId++,
                 timestamp: new Date().toLocaleString(),
-                description: `Update run started for ${plan} using ${run.botName} ${run.newVersion} (upgrading from ${group.prevVersion})`
+                description: `Update run started for ${report.testPlanVersion.title} using ${run.botName} ${run.newVersion} (upgrading from ${group.prevVersion})`
               });
             }
           });

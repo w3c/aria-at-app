@@ -11,51 +11,47 @@ const {
  * @returns {Promise<Object>} - Promise that resolves to the refreshable reports data
  */
 const refreshableReportsResolver = async (_, { atVersionId }, context) => {
-  try {
-    console.log('atVersionId', atVersionId);
-    const { transaction } = context;
+  const { transaction } = context;
 
-    // Ensure atVersionId is properly converted to a number if needed
-    const currentAtVersionId = parseInt(atVersionId, 10);
+  // Ensure atVersionId is properly converted to a number if needed
+  const currentAtVersionId = parseInt(atVersionId, 10);
 
-    if (isNaN(currentAtVersionId)) {
-      throw new Error(`Invalid atVersionId: ${atVersionId}`);
-    }
-    console.log('currentAtVersionId', currentAtVersionId);
+  if (isNaN(currentAtVersionId)) {
+    console.error(
+      '[refreshableReportsResolver] Invalid atVersionId:',
+      atVersionId
+    );
+    throw new Error(`Invalid atVersionId: ${atVersionId}`);
+  }
 
-    const { currentVersion, previousVersionGroups } =
-      await getRefreshableTestPlanReportsForVersion({
-        currentAtVersionId,
-        transaction
-      });
+  const { currentVersion, previousVersionGroups } =
+    await getRefreshableTestPlanReportsForVersion({
+      currentAtVersionId,
+      transaction
+    });
 
-    if (!previousVersionGroups?.length) {
-      return {
-        currentVersion: {
-          id: currentVersion.id,
-          name: currentVersion.name
-        },
-        previousVersionGroups: []
-      };
-    }
-
+  if (!previousVersionGroups?.length) {
     return {
       currentVersion: {
         id: currentVersion.id,
         name: currentVersion.name
       },
-      previousVersionGroups: previousVersionGroups.map(group => ({
-        previousVersion: {
-          id: group.previousVersion.id,
-          name: group.previousVersion.name
-        },
-        testPlans: group.testPlans
-      }))
+      previousVersionGroups: []
     };
-  } catch (error) {
-    console.error('Error in refreshableReports resolver:', error);
-    throw error;
   }
+
+  const result = {
+    currentVersion: {
+      id: currentVersion.id,
+      name: currentVersion.name
+    },
+    previousVersionGroups: previousVersionGroups.map(group => ({
+      previousVersion: group.previousVersion,
+      reports: group.reports
+    }))
+  };
+
+  return result;
 };
 
 module.exports = refreshableReportsResolver;

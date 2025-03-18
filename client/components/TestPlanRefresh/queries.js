@@ -1,6 +1,4 @@
 import { gql } from '@apollo/client';
-import AT_VERSION_FIELDS from '@components/common/fragments/AtVersion';
-import AT_FIELDS from '@components/common/fragments/At';
 
 // Query to get all AT versions that support automation
 export const GET_AUTOMATION_SUPPORTED_AT_VERSIONS = gql`
@@ -31,9 +29,20 @@ export const GET_REFRESHABLE_REPORTS_QUERY = gql`
           id
           name
         }
-        testPlans {
+        reports {
           id
-          title
+          testPlanVersion {
+            id
+            title
+          }
+          browser {
+            id
+            name
+          }
+          at {
+            id
+            name
+          }
         }
       }
     }
