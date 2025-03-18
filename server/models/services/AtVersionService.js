@@ -375,211 +375,115 @@ const getRefreshableTestPlanReportsForVersion = async ({
   currentAtVersionId,
   transaction
 }) => {
-  try {
-    const currentVersion = await ModelService.getById(AtVersion, {
-      id: currentAtVersionId,
-      attributes: AT_VERSION_ATTRIBUTES,
-      include: [atAssociation(AT_ATTRIBUTES)],
-      transaction
-    });
+  // Get current version with AT info
+  const currentVersion = await ModelService.getById(AtVersion, {
+    id: currentAtVersionId,
+    attributes: AT_VERSION_ATTRIBUTES,
+    include: [atAssociation(AT_ATTRIBUTES)],
+    transaction
+  });
 
-    if (!currentVersion) {
-      console.error(
-        '[getRefreshableTestPlanReportsForVersion] AT Version not found:',
-        currentAtVersionId
-      );
-      throw new Error(`AT Version with ID ${currentAtVersionId} not found`);
-    }
+  if (!currentVersion?.at?.name) {
+    throw new Error(
+      `AT Version with ID ${currentAtVersionId} not found or has no associated AT`
+    );
+  }
 
-    const atName = currentVersion.at?.name;
-    if (!atName) {
-      console.error(
-        '[getRefreshableTestPlanReportsForVersion] AT record not associated:',
-        currentAtVersionId
-      );
-      throw new Error(
-        `AT record is not associated with AT Version ID ${currentAtVersionId}`
-      );
-    }
+  // Check if version is supported by automation
+  const supportedVersionNames =
+    AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[currentVersion.at.name] || [];
+  if (!supportedVersionNames.includes(currentVersion.name)) {
+    return { currentVersion, previousVersionGroups: [] };
+  }
 
-    // Get all automation-supported AT versions for the same AT, sorted by release date
-    const supportedVersionNames =
-      AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[atName] || [];
-
-    // Check if the current version is supported by automation
-    if (!supportedVersionNames.includes(currentVersion.name)) {
-      return { currentVersion, previousVersionGroups: [] };
-    }
-
-    // Find all finalized test plan reports for this AT
-    const finalizedReports = await TestPlanReport.findAll({
-      where: {
-        atId: currentVersion.atId,
-        markedFinalAt: { [Op.not]: null }
+  // Get all finalized reports for this AT
+  const finalizedReports = await TestPlanReport.findAll({
+    where: {
+      atId: currentVersion.atId,
+      markedFinalAt: { [Op.not]: null }
+    },
+    include: [
+      {
+        association: 'testPlanVersion',
+        where: { phase: { [Op.in]: ['CANDIDATE', 'RECOMMENDED'] } },
+        required: true,
+        include: [{ association: 'testPlan', required: true }]
       },
-      include: [
-        {
-          association: 'testPlanVersion',
-          where: {
-            phase: { [Op.in]: ['CANDIDATE', 'RECOMMENDED'] }
-          },
-          required: true,
-          include: [
-            {
-              association: 'testPlan',
-              required: true
-            }
+      { association: 'testPlanRuns', required: true },
+      { association: 'browser', required: true },
+      { association: 'at', required: true }
+    ],
+    order: [['markedFinalAt', 'DESC']],
+    transaction
+  });
+
+  // Get reports already using current version
+  const existingReportCombos = new Set(
+    (
+      await TestPlanReport.findAll({
+        where: {
+          atId: currentVersion.atId,
+          [Op.or]: [
+            { exactAtVersionId: currentAtVersionId },
+            { minimumAtVersionId: currentAtVersionId }
           ]
         },
-        {
-          association: 'testPlanRuns',
-          required: true
-        },
-        {
-          association: 'browser',
-          required: true
-        },
-        {
-          association: 'at',
-          required: true
-        }
-      ],
-      order: [['markedFinalAt', 'DESC']],
+        attributes: ['testPlanVersionId', 'browserId'],
+        transaction
+      })
+    ).map(r => `${r.testPlanVersionId}-${r.browserId}`)
+  );
+
+  // Group and filter reports
+  const versionGroups = new Map();
+
+  for (const report of finalizedReports) {
+    const combo = `${report.testPlanVersionId}-${report.browserId}`;
+    if (existingReportCombos.has(combo)) continue;
+
+    // Find most recent AT version used in test runs
+    const mostRecentAtVersionId = report.testPlanRuns.reduce((latest, run) => {
+      if (!Array.isArray(run.testResults)) return latest;
+
+      return run.testResults.reduce((ver, result) => {
+        const resultVer = parseInt(result.atVersionId, 10);
+        return !ver || (resultVer && resultVer > ver) ? resultVer : ver;
+      }, latest);
+    }, null);
+
+    if (!mostRecentAtVersionId) continue;
+
+    const usedVersion = await AtVersion.findByPk(mostRecentAtVersionId, {
       transaction
     });
+    if (
+      !usedVersion ||
+      new Date(usedVersion.releasedAt) >= new Date(currentVersion.releasedAt)
+    )
+      continue;
 
-    // Get all reports that use the current AT version
-    const reportsWithCurrentVersion = await TestPlanReport.findAll({
-      where: {
-        atId: currentVersion.atId,
-        [Op.or]: [
-          { exactAtVersionId: currentAtVersionId },
-          { minimumAtVersionId: currentAtVersionId }
-        ]
-      },
-      include: [
-        {
-          association: 'testPlanVersion',
-          required: true
-        },
-        {
-          association: 'browser',
-          required: true
-        }
-      ],
-      transaction
-    });
-
-    // Group reports by test plan version, browser and AT combination and keep only the most recent for each
-    const latestReportsByVersionAndBrowser = new Map();
-    for (const report of finalizedReports) {
-      const versionBrowserKey = `${report.testPlanVersionId}-${report.browserId}`;
-      if (
-        !latestReportsByVersionAndBrowser.has(versionBrowserKey) ||
-        new Date(report.markedFinalAt) >
-          new Date(
-            latestReportsByVersionAndBrowser.get(
-              versionBrowserKey
-            ).markedFinalAt
-          )
-      ) {
-        latestReportsByVersionAndBrowser.set(versionBrowserKey, report);
-      }
+    if (!versionGroups.has(mostRecentAtVersionId)) {
+      versionGroups.set(mostRecentAtVersionId, []);
     }
+    versionGroups.get(mostRecentAtVersionId).push(report);
+  }
 
-    // Create a set of unique combinations of testPlanVersion and browser for reports with current version
-    const existingCombinations = new Set(
-      reportsWithCurrentVersion.map(
-        report => `${report.testPlanVersionId}-${report.browserId}`
-      )
-    );
-
-    // Filter reports where the most recent AT version used is older than current version
-    // and no report exists for the same test plan version and browser combination with the current AT version
-    const refreshableReports = [];
-    for (const report of latestReportsByVersionAndBrowser.values()) {
-      // Skip if a report already exists for this combination
-      const combinationKey = `${report.testPlanVersionId}-${report.browserId}`;
-      if (existingCombinations.has(combinationKey)) {
-        continue;
-      }
-
-      let mostRecentAtVersionId = null;
-
-      // Find the most recent AT version used in any test run
-      for (const run of report.testPlanRuns) {
-        if (!Array.isArray(run.testResults)) {
-          continue;
-        }
-
-        for (const result of run.testResults) {
-          const resultAtVersionId = parseInt(result.atVersionId, 10);
-          if (
-            !isNaN(resultAtVersionId) &&
-            (!mostRecentAtVersionId ||
-              resultAtVersionId > mostRecentAtVersionId)
-          ) {
-            mostRecentAtVersionId = resultAtVersionId;
-          }
-        }
-      }
-
-      // If we found a version and it's older than current version, add to refreshable reports
-      if (mostRecentAtVersionId) {
-        const usedVersion = await AtVersion.findByPk(mostRecentAtVersionId, {
-          transaction
-        });
-
-        if (usedVersion) {
-          if (
-            new Date(usedVersion.releasedAt) <
-            new Date(currentVersion.releasedAt)
-          ) {
-            refreshableReports.push({
-              report,
-              previousAtVersionId: mostRecentAtVersionId
-            });
-          }
-        }
-      }
-    }
-
-    // Group reports by their AT version
-    const previousVersionGroups = [];
-    const reportsByVersion = new Map();
-
-    for (const { report, previousAtVersionId } of refreshableReports) {
-      if (!reportsByVersion.has(previousAtVersionId)) {
-        reportsByVersion.set(previousAtVersionId, []);
-      }
-      reportsByVersion.get(previousAtVersionId).push(report);
-    }
-
-    // Convert the grouped reports into the expected format
-    for (const [versionId, reports] of reportsByVersion) {
+  // Format response
+  const previousVersionGroups = await Promise.all(
+    Array.from(versionGroups.entries()).map(async ([versionId, reports]) => {
       const previousVersion = await ModelService.getById(AtVersion, {
         id: versionId,
         attributes: AT_VERSION_ATTRIBUTES,
         transaction
       });
+      return previousVersion ? { previousVersion, reports } : null;
+    })
+  );
 
-      if (previousVersion) {
-        previousVersionGroups.push({
-          previousVersion,
-          reports
-        });
-      }
-    }
-
-    return { currentVersion, previousVersionGroups };
-  } catch (error) {
-    console.error('[getRefreshableTestPlanReportsForVersion] Error:', error);
-    console.error(
-      '[getRefreshableTestPlanReportsForVersion] Stack:',
-      error.stack
-    );
-    throw error;
-  }
+  return {
+    currentVersion,
+    previousVersionGroups: previousVersionGroups.filter(Boolean)
+  };
 };
 
 module.exports = {

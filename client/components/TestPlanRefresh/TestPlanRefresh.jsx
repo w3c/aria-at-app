@@ -11,15 +11,6 @@ import {
   CREATE_COLLECTION_JOBS_MUTATION
 } from './queries';
 
-const getVersionDescription = run => {
-  const totalTestPlans = run.reportGroups.reduce(
-    (sum, group) => sum + group.reportCount,
-    0
-  );
-  const reports = run.reportGroups.map(group => group.prevVersion).join(', ');
-  return `${run.botName} ${run.newVersion} automation support has been added to the application. ${totalTestPlans} test plan versions can be re-run from ${run.reportGroups.length} previous versions, including ${reports}.`;
-};
-
 const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
   <>
     <h2 id="refresh-heading" className="refresh-header">
@@ -27,27 +18,30 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
     </h2>
     <div className="refresh-dashboard">
       {activeRuns.map(run => {
-        const headingId = `refresh-heading-${run.id}`;
         const totalTestPlans = run.reportGroups.reduce(
           (sum, group) => sum + group.reportCount,
           0
         );
-        const versionDescription = getVersionDescription(run);
+        const versionDescription = `${run.botName} ${
+          run.newVersion
+        } automation support has been added to the application. ${totalTestPlans} test plan versions can be re-run from ${
+          run.reportGroups.length
+        } previous versions, including ${run.reportGroups
+          .map(g => g.prevVersion)
+          .join(', ')}.`;
 
         return (
           <div key={run.id} className="refresh-opportunity">
             <h3
-              id={headingId}
+              id={`refresh-heading-${run.id}`}
               className="bot-name"
               aria-label={`Re-run available for ${run.botName} ${run.newVersion}`}
             >
               {run.botName} {run.newVersion}
             </h3>
 
-            {/* Screen reader version - hidden visually */}
             <p className="sr-only">{versionDescription}</p>
 
-            {/* Visual version - hidden from screen readers */}
             <div className="version-update" aria-hidden="true">
               <div className="version-info">
                 <div className="version-groups-container">
@@ -57,19 +51,18 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
                         {group.prevVersion}
                       </span>
                       <span className="version-count">
-                        {group.reportCount} run
-                        {group.reportCount === 1 ? '' : 's'}
+                        {group.reportCount} run{group.reportCount !== 1 && 's'}
                       </span>
                     </div>
                   ))}
                 </div>
                 <div
                   className={`version-box highlight${
-                    run.reportGroups.length === 0 ? ' no-reports' : ''
+                    !run.reportGroups.length ? ' no-reports' : ''
                   }`}
                 >
                   <span className="version-number">{run.newVersion}</span>
-                  {run.reportGroups.length === 0 && (
+                  {!run.reportGroups.length && (
                     <span className="version-count">No reports to update</span>
                   )}
                 </div>
@@ -77,7 +70,7 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
             </div>
 
             <div className="plan-summary" aria-hidden="true">
-              {run.reportGroups.length > 0 ? (
+              {run.reportGroups.length ? (
                 <div className="plan-count">
                   <span className="plan-count-number">{totalTestPlans}</span>
                   <span className="plan-count-label">
@@ -96,24 +89,24 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
             </div>
 
             <div className="test-plans-preview">
-              {run.reportGroups.map((group, groupIndex) => (
-                <div key={groupIndex} className="version-group">
+              {run.reportGroups.map((group, index) => (
+                <div key={index} className="version-group">
                   <h4
                     className="plans-preview-title"
-                    id={`plans-preview-title-${run.id}-${groupIndex}`}
+                    id={`plans-preview-title-${run.id}-${index}`}
                     aria-label={`Test Plan Versions from ${run.botName} ${group.prevVersion}`}
                   >
                     From Version {group.prevVersion}
                   </h4>
-
                   <ul
                     className="plans-list"
-                    aria-labelledby={`plans-preview-title-${run.id}-${groupIndex}`}
+                    aria-labelledby={`plans-preview-title-${run.id}-${index}`}
                   >
-                    {group.reports.map((report, index) => (
-                      <li key={index}>
-                        {report.testPlanVersion.title}, {report.browser.name},{' '}
-                        {report.at.name}
+                    {group.reports.map((report, idx) => (
+                      <li key={idx}>
+                        {report.testPlanVersion.title}{' '}
+                        {report.testPlanVersion.versionString},{' '}
+                        {report.browser.name}
                       </li>
                     ))}
                   </ul>
@@ -124,7 +117,7 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
             <div className="action-footer">
               <button
                 className="refresh-button"
-                disabled={run.reportGroups.length === 0}
+                disabled={!run.reportGroups.length}
                 onClick={() => onRefreshClick(run)}
                 aria-label={`Start automated test plan runs for ${totalTestPlans} test plan versions using ${run.botName} ${run.newVersion}`}
               >
@@ -139,112 +132,72 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
 );
 
 const TestPlanRefresh = () => {
-  const [activeRuns, setActiveRuns] = useState([]);
   const [events, setEvents] = useState([]);
-  const [nextEventId, setNextEventId] = useState(1);
+  const [activeRuns, setActiveRuns] = useState([]);
   const eventsPanelRef = useRef(null);
   const client = useApolloClient();
 
   const { data: { me } = {} } = useQuery(ME_QUERY);
   const { isAdmin } = evaluateAuth(me);
 
-  // Fetch all automation-supported AT versions
-  const { data: atVersionsData, loading: loadingVersions } = useQuery(
+  const { data: atVersionsData } = useQuery(
     GET_AUTOMATION_SUPPORTED_AT_VERSIONS,
     {
       skip: !isAdmin
     }
   );
 
-  // Process supported AT versions to find the latest versions
+  const [createCollectionJobs] = useMutation(CREATE_COLLECTION_JOBS_MUTATION);
+
   useEffect(() => {
-    if (!atVersionsData || loadingVersions) return;
+    if (!atVersionsData?.ats) return;
 
-    const fetchPromises = [];
-    // Find the latest automatable version for each AT
-    atVersionsData.ats.forEach(at => {
-      // Filter to only versions that support automation and sort by release date (newest first)
-      const automationVersions = at.atVersions
-        .filter(version => version.supportedByAutomation)
-        .sort((a, b) => {
-          return new Date(b.releasedAt) - new Date(a.releasedAt);
-        });
+    const fetchRefreshableReports = async () => {
+      const runs = await Promise.all(
+        atVersionsData.ats
+          .map(at => {
+            const automationVersions = at.atVersions
+              .filter(v => v.supportedByAutomation)
+              .sort((a, b) => new Date(b.releasedAt) - new Date(a.releasedAt));
 
-      if (automationVersions.length > 0) {
-        const latestVersion = automationVersions[0];
-        fetchPromises.push(
-          fetchRefreshableReports(latestVersion.id, at.name, latestVersion.name)
-        );
-      }
-    });
-
-    // Wait for all queries to complete
-    Promise.all(fetchPromises).then(results => {
-      // Transform results to include all ATs with automation support, even if no refreshable reports
-      const validRuns = results
-        .map(result => {
-          if (result === undefined) {
-            // Get the AT info from the original promise
-            const atIndex = fetchPromises.findIndex(p => p === undefined);
-            if (atIndex >= 0) {
-              const at = atVersionsData.ats[atIndex];
-              const latestVersion = at.atVersions
-                .filter(v => v.supportedByAutomation)
-                .sort(
-                  (a, b) => new Date(b.releasedAt) - new Date(a.releasedAt)
-                )[0];
+            return automationVersions[0]
+              ? { at, version: automationVersions[0] }
+              : null;
+          })
+          .filter(Boolean)
+          .map(async ({ at, version }) => {
+            try {
+              const { data } = await client.query({
+                query: GET_REFRESHABLE_REPORTS_QUERY,
+                variables: { atVersionId: version.id },
+                fetchPolicy: 'network-only'
+              });
 
               return {
-                id: latestVersion.id,
+                id: version.id,
                 botName: `${at.name} Bot`,
-                newVersion: latestVersion.name,
-                reportGroups: []
+                newVersion: version.name,
+                reportGroups:
+                  data?.refreshableReports?.previousVersionGroups?.map(
+                    group => ({
+                      prevVersion: group.previousVersion.name,
+                      reportCount: group.reports.length,
+                      reports: group.reports
+                    })
+                  ) || []
               };
+            } catch (error) {
+              console.error('Error fetching refreshable reports:', error);
+              return null;
             }
-          }
-          return result;
-        })
-        .filter(Boolean);
+          })
+      );
 
-      setActiveRuns(validRuns);
-    });
-  }, [atVersionsData, loadingVersions]);
+      setActiveRuns(runs.filter(Boolean));
+    };
 
-  // Function to fetch refreshable reports for a specific AT version
-  const fetchRefreshableReports = async (atVersionId, atName, versionName) => {
-    try {
-      const { data } = await client.query({
-        query: GET_REFRESHABLE_REPORTS_QUERY,
-        variables: { atVersionId },
-        fetchPolicy: 'network-only'
-      });
-
-      // Always return a run object, even if no refreshable reports
-      return {
-        id: atVersionId,
-        botName: `${atName} Bot`,
-        newVersion: versionName,
-        reportGroups:
-          data?.refreshableReports?.previousVersionGroups?.map(group => ({
-            prevVersion: group.previousVersion.name,
-            reportCount: group.reports.length,
-            reports: group.reports
-          })) || []
-      };
-    } catch (error) {
-      console.error('Error fetching refreshable reports:', error);
-      if (error.graphQLErrors?.length) {
-        console.error('GraphQL Errors:', error.graphQLErrors);
-      }
-      if (error.networkError?.result) {
-        console.error('Network Error:', error.networkError);
-      }
-      return undefined;
-    }
-  };
-
-  // Mutation to create collection jobs
-  const [createCollectionJobs] = useMutation(CREATE_COLLECTION_JOBS_MUTATION);
+    fetchRefreshableReports();
+  }, [atVersionsData, client]);
 
   const handleRefreshClick = async run => {
     try {
@@ -252,61 +205,36 @@ const TestPlanRefresh = () => {
         variables: { atVersionId: run.id }
       });
 
-      const { collectionJobs, message } =
+      const { message } =
         response.data.createCollectionJobsFromPreviousAtVersion;
-      // Remove this run from active runs
+
       setActiveRuns(current => current.filter(item => item.id !== run.id));
 
-      // Create events for each job
-      const newEvents = [];
-      let eventId = nextEventId;
-
-      // Add a summary event
-      newEvents.push({
-        id: eventId++,
+      const newEvent = {
+        id: Date.now(),
         timestamp: new Date().toLocaleString(),
         description: message
-      });
+      };
 
-      // Add details for each job if available
-      if (collectionJobs && collectionJobs.length > 0) {
-        run.versionGroups.forEach(group => {
-          group.reports.forEach((report, idx) => {
-            if (idx < collectionJobs.length) {
-              newEvents.push({
-                id: eventId++,
-                timestamp: new Date().toLocaleString(),
-                description: `Update run started for ${report.testPlanVersion.title} using ${run.botName} ${run.newVersion} (upgrading from ${group.prevVersion})`
-              });
-            }
-          });
-        });
-      }
+      setEvents(current => [newEvent, ...current]);
 
-      setNextEventId(eventId);
-      setEvents(current => [...newEvents, ...current]);
-
-      // Announce to screen readers and move focus
       if (eventsPanelRef.current) {
         eventsPanelRef.current.focus();
         const announcement = document.getElementById('refresh-announcement');
         if (announcement) {
-          const totalPlans = run.versionGroups.reduce(
-            (sum, group) => sum + group.testPlanCount,
-            0
-          );
-          announcement.textContent = `Started re-run for ${totalPlans} test plans with ${run.botName} version ${run.newVersion}. Focus moved to events list.`;
+          announcement.textContent = message;
         }
       }
     } catch (error) {
       console.error('Error creating collection jobs:', error);
-      const errorEvent = {
-        id: nextEventId,
-        timestamp: new Date().toLocaleString(),
-        description: `Error starting re-run for ${run.botName} ${run.newVersion}: ${error.message}`
-      };
-      setNextEventId(prevId => prevId + 1);
-      setEvents(current => [errorEvent, ...current]);
+      setEvents(current => [
+        {
+          id: Date.now(),
+          timestamp: new Date().toLocaleString(),
+          description: `Error starting re-run for ${run.botName} ${run.newVersion}: ${error.message}`
+        },
+        ...current
+      ]);
     }
   };
 
@@ -317,7 +245,7 @@ const TestPlanRefresh = () => {
         aria-live="polite"
         className="sr-only"
         role="status"
-      ></div>
+      />
 
       {isAdmin && (
         <RefreshDashboard
@@ -331,7 +259,7 @@ const TestPlanRefresh = () => {
           Update Events
         </h2>
         <div className="events-content">
-          {events.length > 0 ? (
+          {events.length ? (
             <ThemeTable
               responsive
               aria-label="Test plan refresh events history"

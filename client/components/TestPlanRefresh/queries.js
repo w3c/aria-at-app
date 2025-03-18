@@ -34,6 +34,7 @@ export const GET_REFRESHABLE_REPORTS_QUERY = gql`
           testPlanVersion {
             id
             title
+            versionString
           }
           browser {
             id

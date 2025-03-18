@@ -746,103 +746,72 @@ const createCollectionJobsFromPreviousAtVersion = async ({
   atVersionId,
   transaction
 }) => {
-  const result = await getRefreshableTestPlanReportsForVersion({
-    currentAtVersionId: atVersionId,
-    transaction
-  });
+  const { currentVersion, previousVersionGroups } =
+    await getRefreshableTestPlanReportsForVersion({
+      currentAtVersionId: atVersionId,
+      transaction
+    });
 
-  if (!result) {
-    console.error(
-      '[Error] getRefreshableTestPlanReportsForVersion returned null or undefined'
-    );
-    return [];
-  }
-
-  const { currentVersion, previousVersionGroups } = result;
-
-  if (!currentVersion) {
-    console.error('[Error] currentVersion is null or undefined');
-    return [];
-  }
-
-  if (!previousVersionGroups) {
-    console.error('[Error] previousVersionGroups is null or undefined');
-    return [];
+  if (!currentVersion || !previousVersionGroups) {
+    throw new Error('Failed to get refreshable test plan reports');
   }
 
   const collectionJobs = [];
 
-  // Process each report that can be refreshed
-  for (const group of previousVersionGroups) {
-    for (const reportInfo of group.reports) {
-      try {
-        // Get the full report with all necessary associations
-        const report = await TestPlanReport.findOne({
-          where: { id: reportInfo.id },
-          include: [
-            {
-              association: 'testPlanVersion',
-              include: [
-                {
-                  association: 'testPlan',
-                  required: true
-                }
-              ],
-              required: true
-            },
-            {
-              association: 'at',
-              required: true
-            }
-          ],
-          transaction
-        });
+  for (const { reports } of previousVersionGroups) {
+    await Promise.all(
+      reports.map(async reportInfo => {
+        try {
+          const report = await TestPlanReport.findOne({
+            where: { id: reportInfo.id },
+            include: [
+              {
+                association: 'testPlanVersion',
+                include: [{ association: 'testPlan', required: true }],
+                required: true
+              },
+              { association: 'at', required: true }
+            ],
+            transaction
+          });
 
-        if (!report) {
+          if (!report) return;
+
+          const newReport = await cloneTestPlanReportWithNewAtVersion(
+            report,
+            currentVersion,
+            transaction
+          );
+
+          const atVersion = await getAtVersionWithRequirements(
+            newReport.at.id,
+            currentVersion,
+            null,
+            transaction
+          );
+
+          if (!atVersion) return;
+
+          const job = await scheduleCollectionJob(
+            { testPlanReportId: newReport.id, atVersion },
+            { transaction }
+          );
+
+          collectionJobs.push(job);
+        } catch (error) {
           console.error(
-            `[Error] Could not find report with ID ${reportInfo.id}`
-          );
-          continue;
-        }
-
-        // Clone the report with the new AT version
-        const newReport = await cloneTestPlanReportWithNewAtVersion(
-          report,
-          currentVersion,
-          transaction
-        );
-
-        const atVersion = await getAtVersionWithRequirements(
-          newReport.at.id,
-          currentVersion,
-          null,
-          transaction
-        );
-
-        if (!atVersion) {
-          throw new Error(
-            `Failed to get AT version requirements for report ${newReport.id}`
+            `Failed to create collection job for report ${reportInfo.id}:`,
+            error.message
           );
         }
-
-        const job = await scheduleCollectionJob(
-          {
-            testPlanReportId: newReport.id,
-            atVersion
-          },
-          { transaction }
-        );
-        collectionJobs.push(job);
-      } catch (error) {
-        console.error(
-          `[Error] Failed to create collection job for report ${reportInfo.id}:`,
-          error.message
-        );
-      }
-    }
+      })
+    );
   }
 
-  return collectionJobs;
+  return {
+    collectionJobs,
+    message: `Created ${collectionJobs.length} collection jobs for AT version ${currentVersion.name}`
+  };
 };
 
 module.exports = {
