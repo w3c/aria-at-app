@@ -15,7 +15,7 @@
           aria-label="Menu"
           class="navbar navbar-expand-xl navbar-light bg-light">
           <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
-          ><a href="#main" class="css-32m7ay">Skip to main content</a
+          ><a class="skip-link" href="#main">Skip to main content</a
           ><button
             aria-controls="basic-navbar-nav"
             type="button"
@@ -85,17 +85,16 @@
       <div class="container-fluid">
         <main id="main" tabindex="-1" class="container">
           <h1>Meter Test Plan Versions</h1>
-          <div class="css-1n5vwuv">
+          <div class="page-commit-history">
             <svg
               aria-hidden="true"
               focusable="false"
               data-prefix="fas"
               data-icon="code-commit"
-              class="svg-inline--fa fa-code-commit fa-xs"
+              class="svg-inline--fa fa-code-commit fa-xs dark-gray"
               role="img"
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 640 512"
-              color="#818F98">
+              viewBox="0 0 640 512">
               <path
                 fill="currentColor"
                 d="M320 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm156.8-48C462 361 397.4 416 320 416s-142-55-156.8-128H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H163.2C178 151 242.6 96 320 96s142 55 156.8 128H608c17.7 0 32 14.3 32 32s-14.3 32-32 32H476.8z"></path></svg
@@ -106,11 +105,15 @@
               >Commit History for aria-at/tests/meter</a
             >
           </div>
-          <h3 id="version-summary" class="css-1uk1lbf">Version Summary</h3>
+          <h3
+            id="version-summary"
+            class="custom-theme-table-header theme-table-header">
+            Version Summary
+          </h3>
           <div class="table-responsive">
             <table
               aria-labelledby="version-summary"
-              class="css-1k1tjpf table table-bordered">
+              class="theme-table table table-bordered">
               <thead>
                 <tr>
                   <th>Version</th>
@@ -121,7 +124,7 @@
               <tbody>
                 <tr>
                   <th>
-                    <span class="full-width css-36z7cz"
+                    <span class="styled-pill full-width"
                       ><a href="/test-review/54"
                         ><span
                           ><svg
@@ -133,7 +136,7 @@
                             role="img"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
-                            color="#818F98">
+                            color="var(--negative-gray)">
                             <path
                               fill="currentColor"
                               d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
@@ -142,12 +145,12 @@
                       ></span
                     >
                   </th>
-                  <td><span class="rd css-be9e2a">R&amp;D</span></td>
+                  <td><span class="pill rd">R&amp;D</span></td>
                   <td>Aug 5, 2022</td>
                 </tr>
                 <tr>
                   <th>
-                    <span class="full-width css-36z7cz"
+                    <span class="styled-pill full-width"
                       ><a href="/test-review/22"
                         ><span
                           ><svg
@@ -159,7 +162,7 @@
                             role="img"
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 512 512"
-                            color="#818F98">
+                            color="var(--negative-gray)">
                             <path
                               fill="currentColor"
                               d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
@@ -169,15 +172,15 @@
                     >
                   </th>
                   <td>
-                    <span class="deprecated css-be9e2a">Deprecated</span> before
-                    <span class="draft css-be9e2a">Draft</span> review
+                    <span class="pill deprecated">Deprecated</span> before
+                    <span class="pill draft">Draft</span> review
                   </td>
                   <td>Aug 5, 2022</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="css-1ybkowq"></div>
+          <div class="spacer"></div>
           <h2 id="github-issues">GitHub Issues (0 open, 0&nbsp;closed)</h2>
           <ul
             class="d-flex align-items-center my-3"
@@ -187,42 +190,44 @@
             <li>
               <button
                 type="button"
-                data-test="filter-open"
+                data-testid="filter-open"
                 aria-pressed="true"
-                class="css-14jv778 btn active btn-secondary">
+                class="filter-button btn active btn-secondary">
                 Open
               </button>
             </li>
             <li>
               <button
                 type="button"
-                data-test="filter-closed"
+                data-testid="filter-closed"
                 aria-pressed="false"
-                class="css-14jv778 btn btn-secondary">
+                class="filter-button btn btn-secondary">
                 Closed
               </button>
             </li>
             <li>
               <button
                 type="button"
-                data-test="filter-all"
+                data-testid="filter-all"
                 aria-pressed="false"
-                class="css-14jv778 btn btn-secondary">
+                class="filter-button btn btn-secondary">
                 All
               </button>
             </li>
           </ul>
-          <div aria-labelledby="github-issues" class="css-gy9uo3">
+          <div class="theme-table-unavailable" aria-labelledby="github-issues">
             No GitHub Issues
           </div>
-          <div class="css-1ybkowq"></div>
-          <h3 id="timeline-for-all-versions" class="css-1uk1lbf">
+          <div class="spacer"></div>
+          <h3
+            id="timeline-for-all-versions"
+            class="custom-theme-table-header theme-table-header">
             Timeline for All Versions
           </h3>
           <div class="table-responsive">
             <table
               aria-labelledby="timeline-for-all-versions"
-              class="css-1k1tjpf table table-bordered">
+              class="theme-table table table-bordered">
               <thead>
                 <tr>
                   <th>Date</th>
@@ -233,7 +238,7 @@
                 <tr>
                   <th>Mar 17, 2022</th>
                   <td>
-                    <span class="css-36z7cz"
+                    <span class="styled-pill"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -244,19 +249,19 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          color="#818F98">
+                          color="var(--negative-gray)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V22.03.17</b></span
                       ></span
-                    >&nbsp;<span class="rd css-be9e2a">R&amp;D</span> Complete
+                    >&nbsp;<span class="pill rd">R&amp;D</span> Complete
                   </td>
                 </tr>
                 <tr>
                   <th>Aug 5, 2022</th>
                   <td>
-                    <span class="css-36z7cz"
+                    <span class="styled-pill"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -267,19 +272,19 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          color="#818F98">
+                          color="var(--negative-gray)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V22.03.17</b></span
                       ></span
-                    >&nbsp;<span class="deprecated css-be9e2a">Deprecated</span>
+                    >&nbsp;<span class="pill deprecated">Deprecated</span>
                   </td>
                 </tr>
                 <tr>
                   <th>Aug 5, 2022</th>
                   <td>
-                    <span class="css-36z7cz"
+                    <span class="styled-pill"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -290,29 +295,30 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          color="#818F98">
+                          color="var(--negative-gray)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V22.08.05</b></span
                       ></span
-                    >&nbsp;<span class="rd css-be9e2a">R&amp;D</span> Complete
+                    >&nbsp;<span class="pill rd">R&amp;D</span> Complete
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="css-1ybkowq"></div>
-          <div class="css-vgqi7x">
-            <h2>
+          <div class="spacer"></div>
+          <div
+            class="disclosure-container stacked test-plan-versions-custom-disclosure-component">
+            <h2 class="disclosure-heading">
               <button
+                class="disclosure-button stacked"
                 id="disclosure-btn-versionHistory-0"
                 type="button"
                 aria-expanded="false"
-                aria-controls="disclosure-btn-controls-versionHistory-0"
-                class="css-10jxhio">
+                aria-controls="disclosure-btn-controls-versionHistory-0">
                 <span aria-label="V22.08.05 R&amp;D on Aug 5, 2022"
-                  ><span class="css-36z7cz"
+                  ><span class="styled-pill"
                     ><span
                       ><svg
                         aria-hidden="true"
@@ -323,14 +329,14 @@
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"
-                        color="#818F98">
+                        color="var(--negative-gray)">
                         <path
                           fill="currentColor"
                           d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                       ><b>V22.08.05</b></span
                     ></span
-                  >&nbsp;<span class="rd css-be9e2a">R&amp;D</span
-                  >&nbsp;on&nbsp;Aug 5, 2022</span
+                  >&nbsp;<span class="pill rd">R&amp;D</span>&nbsp;on&nbsp;Aug
+                  5, 2022</span
                 ><svg
                   aria-hidden="true"
                   focusable="false"
@@ -347,24 +353,23 @@
               </button>
             </h2>
             <div
+              class="disclosure-content hidden stacked"
               role="region"
-              id="disclosure-container-versionHistory-0"
-              aria-labelledby="disclosure-btn-versionHistory-0"
-              class="css-19fsyrg">
+              id="disclosure-btn-controls-versionHistory-0"
+              aria-labelledby="disclosure-btn-versionHistory-0">
               <div>
-                <div class="css-d8w39x">
-                  <ul class="css-1b3jq26">
+                <div>
+                  <ul class="versions-list">
                     <li>
                       <svg
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fas"
                         data-icon="code-commit"
-                        class="svg-inline--fa fa-code-commit fa-xs"
+                        class="svg-inline--fa fa-code-commit fa-xs dark-gray"
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 640 512"
-                        color="#818F98">
+                        viewBox="0 0 640 512">
                         <path
                           fill="currentColor"
                           d="M320 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm156.8-48C462 361 397.4 416 320 416s-142-55-156.8-128H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H163.2C178 151 242.6 96 320 96s142 55 156.8 128H608c17.7 0 32 14.3 32 32s-14.3 32-32 32H476.8z"></path></svg
@@ -383,11 +388,10 @@
                           focusable="false"
                           data-prefix="fas"
                           data-icon="arrow-up-right-from-square"
-                          class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                          class="svg-inline--fa fa-arrow-up-right-from-square fa-xs dark-gray"
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 512 512"
-                          color="#818F98">
+                          viewBox="0 0 512 512">
                           <path
                             fill="currentColor"
                             d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
@@ -395,7 +399,7 @@
                       >
                     </li>
                   </ul>
-                  <dl class="css-l0jrk9">
+                  <dl class="covered-at-list">
                     <dt>Covered AT</dt>
                     <dd>
                       <ul>
@@ -407,13 +411,13 @@
                   </dl>
                   <h3
                     id="timeline-for-V22.08.05"
-                    class="timeline-for-version-table css-1uk1lbf">
+                    class="custom-theme-table-header timeline-for-version-title theme-table-header">
                     Timeline for V22.08.05
                   </h3>
                   <div class="table-responsive">
                     <table
                       aria-labelledby="timeline-for-V22.08.05"
-                      class="css-1k1tjpf table table-bordered">
+                      class="theme-table table table-bordered">
                       <thead>
                         <tr>
                           <th>Date</th>
@@ -423,9 +427,7 @@
                       <tbody>
                         <tr>
                           <th>Aug 5, 2022</th>
-                          <td>
-                            <span class="rd css-be9e2a">R&amp;D</span> Complete
-                          </td>
+                          <td><span class="pill rd">R&amp;D</span> Complete</td>
                         </tr>
                       </tbody>
                     </table>
@@ -433,15 +435,15 @@
                 </div>
               </div>
             </div>
-            <h2>
+            <h2 class="disclosure-heading">
               <button
+                class="disclosure-button stacked"
                 id="disclosure-btn-versionHistory-1"
                 type="button"
                 aria-expanded="false"
-                aria-controls="disclosure-btn-controls-versionHistory-1"
-                class="css-10jxhio">
+                aria-controls="disclosure-btn-controls-versionHistory-1">
                 <span aria-label="V22.03.17 Deprecated on Aug 5, 2022"
-                  ><span class="css-36z7cz"
+                  ><span class="styled-pill"
                     ><span
                       ><svg
                         aria-hidden="true"
@@ -452,13 +454,13 @@
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 512 512"
-                        color="#818F98">
+                        color="var(--negative-gray)">
                         <path
                           fill="currentColor"
                           d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                       ><b>V22.03.17</b></span
                     ></span
-                  >&nbsp;<span class="deprecated css-be9e2a">Deprecated</span
+                  >&nbsp;<span class="pill deprecated">Deprecated</span
                   >&nbsp;on&nbsp;Aug 5, 2022</span
                 ><svg
                   aria-hidden="true"
@@ -476,24 +478,23 @@
               </button>
             </h2>
             <div
+              class="disclosure-content hidden stacked"
               role="region"
-              id="disclosure-container-versionHistory-1"
-              aria-labelledby="disclosure-btn-versionHistory-1"
-              class="css-19fsyrg">
+              id="disclosure-btn-controls-versionHistory-1"
+              aria-labelledby="disclosure-btn-versionHistory-1">
               <div>
-                <div class="css-d8w39x">
-                  <ul class="css-1b3jq26">
+                <div>
+                  <ul class="versions-list">
                     <li>
                       <svg
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fas"
                         data-icon="code-commit"
-                        class="svg-inline--fa fa-code-commit fa-xs"
+                        class="svg-inline--fa fa-code-commit fa-xs dark-gray"
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 640 512"
-                        color="#818F98">
+                        viewBox="0 0 640 512">
                         <path
                           fill="currentColor"
                           d="M320 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm156.8-48C462 361 397.4 416 320 416s-142-55-156.8-128H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H163.2C178 151 242.6 96 320 96s142 55 156.8 128H608c17.7 0 32 14.3 32 32s-14.3 32-32 32H476.8z"></path></svg
@@ -512,11 +513,10 @@
                           focusable="false"
                           data-prefix="fas"
                           data-icon="arrow-up-right-from-square"
-                          class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                          class="svg-inline--fa fa-arrow-up-right-from-square fa-xs dark-gray"
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 512 512"
-                          color="#818F98">
+                          viewBox="0 0 512 512">
                           <path
                             fill="currentColor"
                             d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
@@ -524,7 +524,7 @@
                       >
                     </li>
                   </ul>
-                  <dl class="css-l0jrk9">
+                  <dl class="covered-at-list">
                     <dt>Covered AT</dt>
                     <dd>
                       <ul>
@@ -536,13 +536,13 @@
                   </dl>
                   <h3
                     id="timeline-for-V22.03.17"
-                    class="timeline-for-version-table css-1uk1lbf">
+                    class="custom-theme-table-header timeline-for-version-title theme-table-header">
                     Timeline for V22.03.17
                   </h3>
                   <div class="table-responsive">
                     <table
                       aria-labelledby="timeline-for-V22.03.17"
-                      class="css-1k1tjpf table table-bordered">
+                      class="theme-table table table-bordered">
                       <thead>
                         <tr>
                           <th>Date</th>
@@ -552,16 +552,12 @@
                       <tbody>
                         <tr>
                           <th>Mar 17, 2022</th>
-                          <td>
-                            <span class="rd css-be9e2a">R&amp;D</span> Complete
-                          </td>
+                          <td><span class="pill rd">R&amp;D</span> Complete</td>
                         </tr>
                         <tr>
                           <th>Aug 5, 2022</th>
                           <td>
-                            <span class="deprecated css-be9e2a"
-                              >Deprecated</span
-                            >
+                            <span class="pill deprecated">Deprecated</span>
                           </td>
                         </tr>
                       </tbody>
@@ -573,7 +569,10 @@
           </div>
         </main>
       </div>
-      <span aria-live="polite" aria-atomic="true" class="css-1wkn33"></span>
+      <span
+        class="visually-hidden-aria-live-region"
+        aria-live="polite"
+        aria-atomic="true"></span>
     </div>
     <script src="/bundle.js"></script>
   </body>

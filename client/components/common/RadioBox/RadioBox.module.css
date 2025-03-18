@@ -1,0 +1,25 @@
+label.radio-box-label {
+  border: 1px solid var(--border-gray);
+  padding: var(--6px) var(--14px) var(--6px) var(--12px);
+  background-color: var(--white);
+
+  &:first-of-type {
+    border-radius: var(--6px) 0 0 var(--6px);
+  }
+
+  &:last-of-type {
+    border-radius: 0 var(--6px) var(--6px) 0;
+  }
+
+  &:not(:last-of-type) {
+    border-right: none;
+  }
+
+  &.apply-checked-style {
+    background-color: var(--bg-lighter-gray);
+  }
+}
+
+input.radio-box-input {
+  margin-right: 0.375rem;
+}

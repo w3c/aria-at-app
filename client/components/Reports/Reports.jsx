@@ -3,7 +3,6 @@ import { useQuery } from '@apollo/client';
 import SummarizeTestPlanReports from './SummarizeTestPlanReports';
 import PageStatus from '../common/PageStatus';
 import { REPORTS_PAGE_QUERY } from './queries';
-import './Reports.css';
 
 const Reports = () => {
   const { loading, data, error } = useQuery(REPORTS_PAGE_QUERY, {

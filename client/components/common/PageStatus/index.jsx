@@ -2,7 +2,7 @@ import React from 'react';
 import { Container } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
-import './PageStatus.css';
+import clsx from 'clsx';
 
 const Loading = ({
   title,
@@ -10,9 +10,6 @@ const Loading = ({
   message = 'Loading ...',
   isError = false
 }) => {
-  let className = isError ? 'alert alert-danger' : '';
-  className = message === 'Loading ...' ? `${className} loading` : className;
-
   return (
     <Container id="main" as="main" tabIndex="-1">
       <Helmet>
@@ -21,7 +18,10 @@ const Loading = ({
       <h1>{heading}</h1>
 
       <div
-        className={className}
+        className={clsx(
+          isError && 'alert alert-danger',
+          message === 'Loading ...' && 'loading'
+        )}
         role={isError ? 'alert' : ''}
         data-testid="page-status"
       >

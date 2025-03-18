@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useLayoutEffect } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 
 /**
  * Fixes scroll issues inherent in single page apps such as jumping the scroll

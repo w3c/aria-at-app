@@ -1,0 +1,12 @@
+.status-bar {
+  display: flex;
+  align-items: center;
+
+  button {
+    margin-left: auto;
+  }
+
+  svg {
+    margin-right: var(--8px);
+  }
+}

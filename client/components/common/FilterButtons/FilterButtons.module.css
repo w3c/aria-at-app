@@ -1,0 +1,18 @@
+button.filter-button {
+  border-radius: var(--16px);
+  margin-left: var(--12px);
+  background-color: white;
+  font-weight: var(--font-weight-light);
+
+  &.active,
+  &:active {
+    background: var(--bg-light-blue) !important;
+    border: var(--border-dark-blue) 2px solid !important;
+    box-shadow: none !important;
+
+    &:hover,
+    :focus {
+      box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5) !important;
+    }
+  }
+}

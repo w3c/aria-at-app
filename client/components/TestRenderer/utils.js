@@ -1,19 +1,9 @@
 import React from 'react';
 import nextId from 'react-id-generator';
 import ReactHtmlParser from 'react-html-parser';
-import styled from '@emotion/styled';
 import supportJson from '@client/resources/support.json';
 import { unescape } from 'lodash';
-
-const BulletList = styled.ul`
-  padding-inline-start: 2.5rem;
-  list-style-type: circle;
-
-  > li {
-    display: list-item;
-    list-style: circle;
-  }
-`;
+import commonStyles from '../common/styles.module.css';
 
 const parseRichContentFromArray = (instruction = []) => {
   let content = null;
@@ -51,7 +41,7 @@ const parseListContent = (instructions = [], commandsContent = null) => {
         <li key={nextId()}>
           {ReactHtmlParser(value)}
           {commandsContent && index === instructions.length - 1 && (
-            <BulletList>{commandsContent}</BulletList>
+            <ul className={commonStyles.bulletList}>{commandsContent}</ul>
           )}
         </li>
       );
@@ -60,7 +50,7 @@ const parseListContent = (instructions = [], commandsContent = null) => {
         <li key={nextId()}>
           {parseRichContentFromArray(value)}
           {commandsContent && index === instructions.length - 1 && (
-            <BulletList>{commandsContent}</BulletList>
+            <ul className={commonStyles.bulletList}>{commandsContent}</ul>
           )}
         </li>
       );

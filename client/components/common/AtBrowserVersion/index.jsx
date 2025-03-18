@@ -1,21 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
-
-const VersionContainer = styled.div`
-  display: inline-block;
-  flex-wrap: wrap;
-  background: #f5f5f5;
-  border-radius: 4px;
-  padding: 0 5px;
-  font-weight: bold;
-
-  & span {
-    font-weight: initial;
-    display: inline-block;
-    margin-left: 2px;
-  }
-`;
+import styles from './AtBrowserVersion.module.css';
 
 const AtVersion = ({ at, minimumAtVersion, exactAtVersion }) => {
   const atVersionFormatted = minimumAtVersion
@@ -23,10 +8,10 @@ const AtVersion = ({ at, minimumAtVersion, exactAtVersion }) => {
     : exactAtVersion.name;
 
   return (
-    <VersionContainer>
+    <div className={styles.versionContainer}>
       {at.name}&nbsp;
       <span>{atVersionFormatted}</span>
-    </VersionContainer>
+    </div>
   );
 };
 
@@ -38,10 +23,10 @@ AtVersion.propTypes = {
 
 const BrowserVersion = ({ browser }) => {
   return (
-    <VersionContainer>
+    <div className={styles.versionContainer}>
       {browser.name}&nbsp;
       <span>Any version</span>
-    </VersionContainer>
+    </div>
   );
 };
 

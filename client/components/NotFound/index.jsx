@@ -8,7 +8,7 @@ const NotFound = () => {
       <Helmet>
         <title>Page Not Found | ARIA-AT</title>
       </Helmet>
-      <section className="not-found">
+      <section>
         <div>
           <h1>Whoops! Page not found</h1>
         </div>

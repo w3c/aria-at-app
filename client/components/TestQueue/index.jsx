@@ -2,13 +2,12 @@ import React, { Fragment, useRef } from 'react';
 import { useApolloClient, useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
-import { Alert, Container, Table as BootstrapTable } from 'react-bootstrap';
+import { Alert, Container, Table } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import ManageTestQueue from '../ManageTestQueue';
-import DisclosureComponentUnstyled from '../common/DisclosureComponent';
+import DisclosureComponent from '../common/DisclosureComponent';
 import useForceUpdate from '../../hooks/useForceUpdate';
-import styled from '@emotion/styled';
 import VersionString from '../common/VersionString';
 import PhasePill from '../common/PhasePill';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,107 +16,12 @@ import TestPlanReportStatusDialogWithButton from '../TestPlanReportStatusDialog/
 import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion, BrowserVersion } from '../common/AtBrowserVersion';
 import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
-import ProgressBar from '../common/ClippedProgressBar';
+import ProgressBar from '../common/ProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
-import './TestQueue.css';
-
-const DisclosureComponent = styled(DisclosureComponentUnstyled)`
-  h3 {
-    font-size: 1rem;
-
-    button {
-      font-size: unset;
-      font-weight: unset;
-    }
-  }
-
-  [role='region'] {
-    padding: 0;
-  }
-`;
-
-const MetadataContainer = styled.div`
-  display: flex;
-  gap: 1.25em;
-  margin: 0.5rem 1.25rem;
-  align-items: center;
-  min-height: 40px; /* temp because the status dialog button keeps disappearing */
-
-  & button {
-    margin-bottom: 0;
-    margin-top: 0;
-    font-size: 16px;
-  }
-  & button:hover {
-    color: white;
-  }
-  & button,
-  & button:focus {
-    color: #2e2f33;
-  }
-`;
-
-const TableOverflowContainer = styled.div`
-  width: 100%;
-
-  @media (max-width: 1080px) {
-    overflow-x: scroll;
-  }
-`;
-
-const Table = styled(BootstrapTable)`
-  margin-bottom: 0;
-
-  th {
-    padding: 0.75rem;
-  }
-
-  th:first-of-type,
-  td:first-of-type {
-    border-left: none;
-  }
-  th:last-of-type,
-  td:last-of-type {
-    border-right: none;
-  }
-  tr:last-of-type,
-  tr:last-of-type td {
-    border-bottom: none;
-  }
-
-  th:nth-of-type(1),
-  td:nth-of-type(1) {
-    min-width: 220px;
-  }
-  th:nth-of-type(2),
-  td:nth-of-type(2) {
-    min-width: 150px;
-  }
-  th:nth-of-type(3),
-  td:nth-of-type(3) {
-    min-width: 230px;
-  }
-  th:nth-of-type(4),
-  td:nth-of-type(4) {
-    width: 20%;
-    min-width: 125px;
-  }
-  th:nth-of-type(5),
-  td:nth-of-type(5) {
-    width: 20%;
-    min-width: 175px;
-  }
-`;
-
-const StatusContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  text-align: center;
-  color: rgb(var(--bs-secondary-rgb));
-`;
+import styles from './TestQueue.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const TestQueue = () => {
   const client = useApolloClient();
@@ -214,16 +118,16 @@ const TestQueue = () => {
     .filter(user => user.roles.includes('TESTER'))
     .sort((a, b) => a.username.localeCompare(b.username));
 
-  const renderDisclosure = ({ testPlan }) => {
+  const renderTestPlanDisclosure = ({ testPlan }) => {
     return (
       // TODO: fix the aria-label of this
       <DisclosureComponent
-        stacked
+        className={styles.testPlanDisclosure}
         componentId={testPlan.directory}
         title={testPlan.testPlanVersions.map(testPlanVersion => (
           <>
             <VersionString
-              iconColor="#2BA51C"
+              iconColor="var(--positive-green)"
               fullWidth={false}
               autoWidth={false}
             >
@@ -253,12 +157,12 @@ const TestQueue = () => {
   const renderDisclosureContent = ({ testPlan, testPlanVersion }) => {
     return (
       <>
-        <MetadataContainer>
+        <div className={styles.metadataContainer}>
           <a href={`/test-review/${testPlanVersion.id}`}>
             <FontAwesomeIcon
               icon={faArrowUpRightFromSquare}
               size="xs"
-              color="#818F98"
+              className={commonStyles.darkGray}
             />
             View tests in {testPlanVersion.versionString}
           </a>
@@ -266,37 +170,37 @@ const TestQueue = () => {
             triggerUpdate={refetch}
             testPlanVersionId={testPlanVersion.id}
           />
-        </MetadataContainer>
-        <TableOverflowContainer>
-          <Table
-            aria-label={
-              `Reports for ${testPlanVersion.title} ` +
-              `${testPlanVersion.versionString} in ` +
-              `${testPlanVersion.phase.toLowerCase()} phase`
-            }
-            bordered
-            hover={false}
-          >
-            <thead>
-              <tr>
-                <th>Assistive Technology</th>
-                <th>Browser</th>
-                <th>Testers</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {testPlanVersion.testPlanReports.map(testPlanReport =>
-                renderRow({
-                  testPlan,
-                  testPlanVersion,
-                  testPlanReport
-                })
-              )}
-            </tbody>
-          </Table>
-        </TableOverflowContainer>
+        </div>
+        <Table
+          aria-label={
+            `Reports for ${testPlanVersion.title} ` +
+            `${testPlanVersion.versionString} in ` +
+            `${testPlanVersion.phase.toLowerCase()} phase`
+          }
+          bordered
+          responsive
+          hover={false}
+          className={styles.testQueue}
+        >
+          <thead>
+            <tr>
+              <th>Assistive Technology</th>
+              <th>Browser</th>
+              <th>Testers</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {testPlanVersion.testPlanReports.map(testPlanReport =>
+              renderRow({
+                testPlan,
+                testPlanVersion,
+                testPlanReport
+              })
+            )}
+          </tbody>
+        </Table>
       </>
     );
   };
@@ -327,7 +231,7 @@ const TestQueue = () => {
           />
         </td>
         <td>
-          <StatusContainer>
+          <div className={styles.statusContainer}>
             {<ProgressBar progress={percentComplete} decorative />}
             <ReportStatusSummary
               testPlanVersion={testPlanVersion}
@@ -337,7 +241,7 @@ const TestQueue = () => {
             {hasBotRun ? (
               <BotRunTestStatusList testPlanReportId={testPlanReport.id} />
             ) : null}
-          </StatusContainer>
+          </div>
         </td>
         <td>
           <Actions
@@ -416,7 +320,7 @@ const TestQueue = () => {
               <h2 tabIndex="-1" id={testPlan.directory}>
                 {testPlan.title}
               </h2>
-              {renderDisclosure({ testPlan })}
+              {renderTestPlanDisclosure({ testPlan })}
             </Fragment>
           ))
         : null}

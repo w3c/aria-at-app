@@ -1,82 +1,9 @@
 import React, { Fragment, useState } from 'react';
-import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
-
-const DisclosureParent = styled.div`
-  border: 1px solid #d3d5da;
-  border-radius: 3px;
-  width: 100%;
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    margin: 0;
-    padding: 0;
-  }
-
-  ${({ stacked }) =>
-    stacked &&
-    `
-    h1:not(:first-of-type) button,
-    h2:not(:first-of-type) button,
-    h3:not(:first-of-type) button,
-    h4:not(:first-of-type) button {
-        border-top: 1px solid #d3d5da;
-    }`}
-`;
-
-const DisclosureButton = styled.button`
-  position: relative;
-  width: 100%;
-  margin: 0;
-  padding: 1.25rem 40px 1.25rem 1.25rem;
-  text-align: left;
-  font-size: 1rem;
-  font-weight: bold;
-  border: none;
-  border-radius: 3px;
-  background-color: transparent;
-
-  ${({ stacked }) =>
-    stacked &&
-    `
-    &:nth-last-of-type(1) {
-        border-radius: 0 0 3px 3px;
-    } `}
-
-  &:hover,
-    &:focus {
-    padding: 1.25rem;
-    border: 0 solid #005a9c;
-    background-color: #def;
-    cursor: pointer;
-  }
-
-  .disclosure-icon {
-    position: absolute;
-    margin: 0;
-    top: 50%;
-    right: 1.25rem;
-
-    color: #969696;
-    transform: translateY(-50%);
-  }
-`;
-
-const DisclosureContainer = styled.div`
-  display: ${({ show, stacked }) =>
-    show && stacked ? 'block' : show ? 'flex' : 'none'};
-  flex-direction: ${({ stacked }) => !stacked && 'column'};
-  gap: ${({ stacked }) => !stacked && '1.25rem'};
-
-  background-color: #f8f9fa;
-  padding: ${({ component }) =>
-    component === 'test-management' ? '0' : '1.25rem'};
-  border-top: 1px solid #d3d5da;
-`;
+import clsx from 'clsx';
+import styles from './DisclosureComponent.module.css';
 
 const DisclosureComponent = ({
   componentId,
@@ -84,86 +11,75 @@ const DisclosureComponent = ({
   disclosureContainerView = null,
   onClick = null,
   expanded = false,
-  stacked = false,
   headingLevel = '3',
   className = null
 }) => {
+  const Heading = `h${headingLevel}`;
   const [isExpanded, setIsExpanded] = useState(expanded);
-  const Tag = `h${headingLevel}`;
+
+  const titlesArr = Array.isArray(title) ? title : [title];
+  const disclosureViewsArr = Array.isArray(disclosureContainerView)
+    ? disclosureContainerView
+    : [disclosureContainerView];
+  const clickFuncsArr = Array.isArray(onClick)
+    ? onClick
+    : [() => setIsExpanded(!isExpanded)];
+  const isExpandedBoolsArr = Array.isArray(expanded) ? expanded : [isExpanded];
+  const isStacked = titlesArr.length > 1;
 
   return (
-    <>
-      {stacked ? (
-        <DisclosureParent stacked className={className}>
-          {title.map((_, index) => {
-            const buttonTitle = title[index];
-            const labelTitle =
-              typeof buttonTitle === 'string' ? buttonTitle : index;
-            const buttonExpanded = expanded[index];
-            const buttonOnClick = onClick[index];
-            const buttonDisclosureContainerView =
-              disclosureContainerView[index];
-
-            return (
-              <Fragment key={`disclosure-${index}-key`}>
-                <Tag>
-                  <DisclosureButton
-                    id={`disclosure-btn-${componentId}-${labelTitle}`}
-                    type="button"
-                    aria-expanded={buttonExpanded}
-                    aria-controls={`disclosure-btn-controls-${componentId}-${labelTitle}`}
-                    onClick={buttonOnClick}
-                    stacked
-                  >
-                    {buttonTitle}
-                    <FontAwesomeIcon
-                      className="disclosure-icon"
-                      icon={buttonExpanded ? faChevronUp : faChevronDown}
-                    />
-                  </DisclosureButton>
-                </Tag>
-                <DisclosureContainer
-                  role="region"
-                  id={`disclosure-container-${componentId}-${labelTitle}`}
-                  aria-labelledby={`disclosure-btn-${componentId}-${labelTitle}`}
-                  show={buttonExpanded}
-                  stacked
-                >
-                  {buttonDisclosureContainerView}
-                </DisclosureContainer>
-              </Fragment>
-            );
-          })}
-        </DisclosureParent>
-      ) : (
-        <DisclosureParent className={className}>
-          <Tag>
-            <DisclosureButton
-              id={`disclosure-btn-${componentId}`}
-              type="button"
-              aria-expanded={isExpanded}
-              aria-controls={`disclosure-btn-controls-${componentId}`}
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {title}
-              <FontAwesomeIcon
-                className="disclosure-icon"
-                icon={isExpanded ? faChevronUp : faChevronDown}
-              />
-            </DisclosureButton>
-          </Tag>
-          <DisclosureContainer
-            component={componentId}
-            role="region"
-            id={`disclosure-container-${componentId}`}
-            aria-labelledby={`disclosure-btn-${componentId}`}
-            show={isExpanded}
-          >
-            {disclosureContainerView}
-          </DisclosureContainer>
-        </DisclosureParent>
+    <div
+      className={clsx(
+        styles.disclosureContainer,
+        isStacked && styles.stacked,
+        className
       )}
-    </>
+    >
+      {titlesArr.map((_, index) => {
+        const buttonTitle = titlesArr[index];
+        const labelTitle =
+          typeof buttonTitle === 'string' ? buttonTitle : index;
+        const buttonExpanded = isExpandedBoolsArr[index];
+        const buttonOnClick = clickFuncsArr[index];
+        const buttonDisclosureContainerView = disclosureViewsArr[index];
+
+        return (
+          <Fragment key={`${componentId}_${index}`}>
+            <Heading className={styles.disclosureHeading}>
+              <button
+                className={clsx(
+                  styles.disclosureButton,
+                  isStacked && styles.stacked
+                )}
+                id={`disclosure-btn-${componentId}-${labelTitle}`}
+                type="button"
+                aria-expanded={buttonExpanded}
+                aria-controls={`disclosure-btn-controls-${componentId}-${labelTitle}`}
+                onClick={buttonOnClick}
+              >
+                {buttonTitle}
+                <FontAwesomeIcon
+                  className={styles.disclosureIcon}
+                  icon={buttonExpanded ? faChevronUp : faChevronDown}
+                />
+              </button>
+            </Heading>
+            <div
+              className={clsx(
+                styles.disclosureContent,
+                buttonExpanded ? styles.visible : styles.hidden,
+                isStacked && styles.stacked
+              )}
+              role="region"
+              id={`disclosure-btn-controls-${componentId}-${labelTitle}`}
+              aria-labelledby={`disclosure-btn-${componentId}-${labelTitle}`}
+            >
+              {buttonDisclosureContainerView}
+            </div>
+          </Fragment>
+        );
+      })}
+    </div>
   );
 };
 

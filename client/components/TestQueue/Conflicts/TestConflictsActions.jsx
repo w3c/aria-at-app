@@ -1,33 +1,13 @@
 import React from 'react';
-import styled from '@emotion/styled';
+import PropTypes from 'prop-types';
 import { Button, Dropdown } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faExclamationCircle,
   faFileImport
 } from '@fortawesome/free-solid-svg-icons';
-import PropTypes from 'prop-types';
 import { TestPlanRunPropType } from '../../common/proptypes';
-
-const ActionContainer = styled.div`
-  display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  max-width: 500px;
-  & > * {
-    flex-grow: 1;
-    flex-basis: 0;
-    min-width: 0;
-  }
-`;
-
-const ActionButton = styled(Button)`
-  flex-grow: 1;
-  flex-basis: 0;
-  min-width: 0;
-  width: 100%;
-  margin: 0;
-`;
+import styles from './Conflicts.module.css';
 
 const TestConflictsActions = ({
   issueLink,
@@ -38,13 +18,17 @@ const TestConflictsActions = ({
   const openResultsLabel = isAdmin ? 'Open run as...' : 'View Results for...';
 
   return (
-    <ActionContainer>
+    <div className={styles.conflictsActionsContainer}>
       <Button variant="secondary" target="_blank" href={issueLink}>
         <FontAwesomeIcon icon={faExclamationCircle} />
         Raise an Issue for Conflict
       </Button>
       <Dropdown>
-        <Dropdown.Toggle variant="secondary" as={ActionButton}>
+        <Dropdown.Toggle
+          variant="secondary"
+          as={Button}
+          className={styles.actionButton}
+        >
           <FontAwesomeIcon icon={faFileImport} />
           {openResultsLabel}
         </Dropdown.Toggle>
@@ -59,7 +43,7 @@ const TestConflictsActions = ({
           ))}
         </Dropdown.Menu>
       </Dropdown>
-    </ActionContainer>
+    </div>
   );
 };
 

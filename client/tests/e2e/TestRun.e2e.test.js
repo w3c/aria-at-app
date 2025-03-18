@@ -83,14 +83,16 @@ describe('Test Run when not signed in', () => {
 
           await page.waitForSelector(`h1 ::-p-text(Test ${index + 1}:)`);
           await page.waitForSelector(
-            `div[class="info-label"] ::-p-text(Test Plan:)`
-          );
-          await page.waitForSelector(`div[class="info-label"] ::-p-text(AT:)`);
-          await page.waitForSelector(
-            `div[class="info-label"] ::-p-text(Browser:)`
+            `div[data-testid="info-label"] ::-p-text(Test Plan:)`
           );
           await page.waitForSelector(
-            `div[class="info-label"] ::-p-text(${listItemsLength} tests to view)`
+            `div[data-testid="info-label"] ::-p-text(AT:)`
+          );
+          await page.waitForSelector(
+            `div[data-testid="info-label"] ::-p-text(Browser:)`
+          );
+          await page.waitForSelector(
+            `div[data-testid="info-label"] ::-p-text(${listItemsLength} tests to view)`
           );
           await page.waitForSelector(`h2 ::-p-text(Instructions)`);
           await page.waitForSelector(`h2 ::-p-text(Record Results)`);
@@ -267,14 +269,16 @@ describe('Test Run when signed in as tester', () => {
 
         await page.waitForSelector(`h1 ::-p-text(Test ${sequence}:)`);
         await page.waitForSelector(
-          `div[class="info-label"] ::-p-text(Test Plan:)`
-        );
-        await page.waitForSelector(`div[class="info-label"] ::-p-text(AT:)`);
-        await page.waitForSelector(
-          `div[class="info-label"] ::-p-text(Browser:)`
+          `div[data-testid="info-label"] ::-p-text(Test Plan:)`
         );
         await page.waitForSelector(
-          `div[class="info-label"] ::-p-text(0 of ${listItemsLength} tests completed)`
+          `div[data-testid="info-label"] ::-p-text(AT:)`
+        );
+        await page.waitForSelector(
+          `div[data-testid="info-label"] ::-p-text(Browser:)`
+        );
+        await page.waitForSelector(
+          `div[data-testid="info-label"] ::-p-text(0 of ${listItemsLength} tests completed)`
         );
         await page.waitForSelector(`h2 ::-p-text(Instructions)`);
         await page.waitForSelector(`h2 ::-p-text(Record Results)`);

@@ -1,0 +1,40 @@
+.disclaimer-info-container {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--16px);
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  background: var(--bg-lighter-gray);
+
+  border: 2px solid var(--default-gray);
+  border-radius: 0.5rem;
+
+  details {
+    font-weight: normal;
+    font-size: var(--16px);
+
+    span > ol {
+      margin-bottom: 0;
+    }
+
+    summary {
+      width: fit-content;
+      list-style: none;
+      font-weight: bold;
+      text-align: left;
+      border: thin solid transparent;
+      background-color: transparent;
+
+      &:hover,
+      &:focus {
+        background-color: var(--bg-light-gray);
+        border-radius: var(--4px);
+      }
+
+      &::-webkit-details-marker {
+        display: none;
+      }
+    }
+  }
+}

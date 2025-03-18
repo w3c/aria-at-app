@@ -4,77 +4,23 @@ import { TEST_PLAN_VERSIONS_PAGE_QUERY } from './queries';
 import PageStatus from '../common/PageStatus';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { Container } from 'react-bootstrap';
-import {
-  ThemeTable,
-  ThemeTableHeaderH3 as UnstyledThemeTableHeader
-} from '../common/ThemeTable';
+import { Container, Table } from 'react-bootstrap';
 import VersionString from '../common/VersionString';
 import PhasePill from '../common/PhasePill';
 import { dates } from 'shared';
 import { derivePhaseName } from '../../utils/aria';
-import styled from '@emotion/styled';
 import {
   faArrowUpRightFromSquare,
   faCodeCommit
 } from '@fortawesome/free-solid-svg-icons';
+import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import DisclosureComponentUnstyled from '../common/DisclosureComponent';
+import DisclosureComponent from '../common/DisclosureComponent';
+import PageSpacer from '../common/PageSpacer';
 import useForceUpdate from '../../hooks/useForceUpdate';
 import SortableIssuesTable from '../SortableIssuesTable';
-
-const DisclosureContainer = styled.div`
-  .timeline-for-version-table {
-    padding: 0.5rem 1rem;
-  }
-`;
-
-const DisclosureComponent = styled(DisclosureComponentUnstyled)`
-  h2 {
-    font-size: 1.25em;
-
-    button {
-      font-size: unset;
-      font-weight: unset;
-    }
-  }
-`;
-
-export const NoneText = styled.span`
-  font-style: italic;
-  color: #6a7989;
-`;
-
-const PageCommitHistory = styled.div`
-  padding: 1.5rem 0 1.5rem;
-`;
-
-const PageUl = styled.ul`
-  margin-bottom: 2rem;
-
-  li:not(:last-of-type) {
-    margin-bottom: 8px;
-  }
-`;
-
-const PageSpacer = styled.div`
-  height: 3rem;
-`;
-
-const CoveredAtDl = styled.dl`
-  margin-bottom: 2rem;
-
-  dt {
-    margin-bottom: 8px;
-  }
-  li:not(:last-of-type) {
-    margin-bottom: 8px;
-  }
-`;
-
-const ThemeTableHeader = styled(UnstyledThemeTableHeader)`
-  margin: 0 !important;
-`;
+import styles from './TestPlanVersionsPage.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const TestPlanVersionsPage = () => {
   const { testPlanDirectory } = useParams();
@@ -143,8 +89,8 @@ const TestPlanVersionsPage = () => {
   const getIconColor = testPlanVersion => {
     return testPlanVersion.phase === 'DEPRECATED' ||
       testPlanVersion.phase === 'RD'
-      ? '#818F98'
-      : '#2BA51C';
+      ? 'var(--negative-gray)'
+      : 'var(--positive-green)';
   };
 
   const getEventDate = testPlanVersion => {
@@ -287,8 +233,12 @@ const TestPlanVersionsPage = () => {
         <title>{testPlan.title} Test Plan Versions | ARIA-AT</title>
       </Helmet>
       <h1>{testPlan.title} Test Plan Versions</h1>
-      <PageCommitHistory>
-        <FontAwesomeIcon icon={faCodeCommit} color="#818F98" size="xs" />
+      <div className={styles.pageCommitHistory}>
+        <FontAwesomeIcon
+          icon={faCodeCommit}
+          size="xs"
+          className={commonStyles.darkGray}
+        />
         <a
           target="_blank"
           rel="noreferrer"
@@ -296,13 +246,24 @@ const TestPlanVersionsPage = () => {
         >
           Commit History for aria-at/tests/{testPlanDirectory}
         </a>
-      </PageCommitHistory>
+      </div>
       {!testPlanVersions.length ? null : (
         <>
-          <ThemeTableHeader id="version-summary">
+          <h3
+            id="version-summary"
+            className={clsx(
+              styles.customThemeTableHeader,
+              commonStyles.themeTableHeader
+            )}
+          >
             Version Summary
-          </ThemeTableHeader>
-          <ThemeTable bordered responsive aria-labelledby="version-summary">
+          </h3>
+          <Table
+            bordered
+            responsive
+            aria-labelledby="version-summary"
+            className={commonStyles.themeTable}
+          >
             <thead>
               <tr>
                 <th>Version</th>
@@ -381,19 +342,26 @@ const TestPlanVersionsPage = () => {
                 </tr>
               ))}
             </tbody>
-          </ThemeTable>
+          </Table>
           <PageSpacer />
         </>
       )}
       <SortableIssuesTable issues={issues} />
       <PageSpacer />
-      <ThemeTableHeader id="timeline-for-all-versions">
+      <h3
+        id="timeline-for-all-versions"
+        className={clsx(
+          styles.customThemeTableHeader,
+          commonStyles.themeTableHeader
+        )}
+      >
         Timeline for All Versions
-      </ThemeTableHeader>
-      <ThemeTable
+      </h3>
+      <Table
         bordered
         responsive
         aria-labelledby="timeline-for-all-versions"
+        className={commonStyles.themeTable}
       >
         <thead>
           <tr>
@@ -425,9 +393,10 @@ const TestPlanVersionsPage = () => {
             );
           })}
         </tbody>
-      </ThemeTable>
+      </Table>
       <PageSpacer />
       <DisclosureComponent
+        className={styles.testPlanVersionsCustomDisclosureComponent}
         componentId="versionHistory"
         title={testPlanVersions.map(testPlanVersion => {
           return (
@@ -458,13 +427,13 @@ const TestPlanVersionsPage = () => {
 
           return (
             <div key={testPlanVersion.id}>
-              <DisclosureContainer key={`manage-test-queue-at-section`}>
-                <PageUl>
+              <div>
+                <ul className={styles.versionsList}>
                   <li>
                     <FontAwesomeIcon
                       icon={faCodeCommit}
-                      color="#818F98"
                       size="xs"
+                      className={commonStyles.darkGray}
                     />
                     <a
                       target="_blank"
@@ -480,7 +449,7 @@ const TestPlanVersionsPage = () => {
                       <FontAwesomeIcon
                         icon={faArrowUpRightFromSquare}
                         size="xs"
-                        color="#818F98"
+                        className={commonStyles.darkGray}
                       />
                       View tests in {testPlanVersion.versionString}
                     </a>
@@ -491,15 +460,15 @@ const TestPlanVersionsPage = () => {
                         <FontAwesomeIcon
                           icon={faArrowUpRightFromSquare}
                           size="xs"
-                          color="#818F98"
+                          className={commonStyles.darkGray}
                         />
                         View reports generated from{' '}
                         {testPlanVersion.versionString}
                       </a>
                     </li>
                   )}
-                </PageUl>
-                <CoveredAtDl>
+                </ul>
+                <dl className={styles.coveredAtList}>
                   <dt>Covered AT</dt>
                   <dd>
                     <ul>
@@ -508,17 +477,22 @@ const TestPlanVersionsPage = () => {
                       ))}
                     </ul>
                   </dd>
-                </CoveredAtDl>
-                <ThemeTableHeader
+                </dl>
+                <h3
                   id={`timeline-for-${testPlanVersion.versionString}`}
-                  className="timeline-for-version-table"
+                  className={clsx(
+                    styles.customThemeTableHeader,
+                    styles.timelineForVersionTitle,
+                    commonStyles.themeTableHeader
+                  )}
                 >
                   Timeline for {testPlanVersion.versionString}
-                </ThemeTableHeader>
-                <ThemeTable
+                </h3>
+                <Table
                   bordered
                   responsive
                   aria-labelledby={`timeline-for-${testPlanVersion.versionString}`}
+                  className={commonStyles.themeTable}
                 >
                   <thead>
                     <tr>
@@ -555,14 +529,13 @@ const TestPlanVersionsPage = () => {
                       ));
                     })()}
                   </tbody>
-                </ThemeTable>
-              </DisclosureContainer>
+                </Table>
+              </div>
             </div>
           );
         })}
         onClick={toggleVersionSections.current}
         expanded={expandedVersionSections.current}
-        stacked={true}
         headingLevel="2"
       />
     </Container>

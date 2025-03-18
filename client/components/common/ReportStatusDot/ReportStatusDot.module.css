@@ -1,0 +1,44 @@
+span.report-status-dot {
+  display: inline-block;
+  height: var(--10px);
+  width: var(--10px);
+  padding: 0;
+  margin-right: var(--8px);
+  border-radius: 50%;
+
+  &.issues {
+    background: var(--report-status-issues);
+  }
+
+  &.tests-skipped,
+  &.reports-not-started {
+    background: var(--report-status-not-started-skipped);
+  }
+
+  &.tests-running {
+    border: 2px solid var(--report-status-running);
+    background: var(--default-gray);
+  }
+
+  &.tests-error {
+    background: var(--report-status-error);
+  }
+
+  &.tests-queued,
+  &.reports-in-progress {
+    background: var(--report-status-in-progress-queued);
+  }
+
+  &.tests-complete,
+  &.reports-complete {
+    background: var(--report-status-complete);
+  }
+
+  &.tests-cancelled {
+    background: var(--report-status-cancelled);
+  }
+
+  &.reports-missing {
+    background: var(--report-status-missing);
+  }
+}

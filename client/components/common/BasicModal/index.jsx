@@ -1,18 +1,10 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
-import styled from '@emotion/styled';
-import FocusTrapper from '../FocusTrapper';
 import { uniqueId } from 'lodash';
-
-import './BasicModal.css';
+import FocusTrapper from '../FocusTrapper';
 import { ModalActionPropType } from '../proptypes';
-
-const ModalTitleStyle = styled.h1`
-  border: 0;
-  padding: 0;
-  font-size: 1.5rem;
-`;
+import commonStyles from '../styles.module.css';
 
 const BasicModal = ({
   show = false,
@@ -94,10 +86,11 @@ const BasicModal = ({
           className={headerSep ? '' : 'border-bottom-0'}
         >
           <Modal.Title
-            as={ModalTitleStyle}
-            tabIndex="-1"
-            ref={headerRef}
             id={`title-${id}`}
+            as="h1"
+            ref={headerRef}
+            tabIndex="-1"
+            className={commonStyles.modalTitle}
           >
             {title}
           </Modal.Title>

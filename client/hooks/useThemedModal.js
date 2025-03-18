@@ -8,20 +8,21 @@ const THEMES = {
 };
 
 /**
- * Returns hex code for corresponding color
+ * Returns hex code for corresponding color.
+ * Default theme to 'warning' if none provided.
  * @param {'success'|'warning'|'danger'} theme
  * @returns {string}
  */
 const THEME_COLOR = theme => {
+  if (!theme) return THEME_COLOR(THEMES.WARNING);
+
   switch (theme) {
     case THEMES.SUCCESS:
-      return '#2ba51c';
+      return 'var(--success-status-color)';
     case THEMES.WARNING:
-      return '#fab700';
+      return 'var(--warning-status-color)';
     case THEMES.DANGER:
-      return '#ce1b4c';
-    default:
-      return '#fab700'; // default to warning theme if unexpected theme value
+      return 'var(--danger-status-color)';
   }
 };
 

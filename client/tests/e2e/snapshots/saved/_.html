@@ -15,7 +15,7 @@
           aria-label="Menu"
           class="navbar navbar-expand-xl navbar-light bg-light">
           <a aria-current="true" class="logo navbar-brand" href="/">ARIA-AT</a
-          ><a href="#main" class="css-32m7ay">Skip to main content</a
+          ><a class="skip-link" href="#main">Skip to main content</a
           ><button
             aria-controls="basic-navbar-nav"
             type="button"
@@ -83,12 +83,12 @@
         </nav>
       </div>
       <div class="container-fluid">
-        <main id="main" tabindex="-1" class="home-page container">
+        <main id="main" tabindex="-1" class="home-page container container">
           <section class="hero-section">
             <h1>Enabling Interoperability for Assistive Technology Users</h1>
             <div class="hero-copy-and-video">
               <div class="hero-copy">
-                <p class="w3c-authorization-message">
+                <p class="authorization-message">
                   <i aria-hidden="true">✨</i
                   ><em
                     ><strong>Note:</strong> The
@@ -271,7 +271,10 @@
           </section>
         </main>
       </div>
-      <span aria-live="polite" aria-atomic="true" class="css-1wkn33"></span>
+      <span
+        class="visually-hidden-aria-live-region"
+        aria-live="polite"
+        aria-atomic="true"></span>
     </div>
     <script src="/bundle.js"></script>
   </body>

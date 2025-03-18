@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { Form, Alert } from 'react-bootstrap';
-import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faInfoCircle,
@@ -11,35 +10,8 @@ import {
 import { useDetectUa } from '../../../hooks/useDetectUa';
 import BasicModal from '../BasicModal';
 import { AtVersionPropType } from '../proptypes';
-
-const ModalInnerSectionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const FieldsetRow = styled.fieldset`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 1rem;
-
-  legend {
-    float: inherit;
-  }
-`;
-
-const ModalSubtitleStyle = styled.h2`
-  font-size: 0.8em;
-  margin: 0;
-  padding: 0;
-`;
-
-const Required = styled.span`
-  color: #ce1b4c;
-
-  :after {
-    content: '*';
-  }
-`;
+import styles from './AtAndBrowserDetails.module.css';
+import commonStyles from '../styles.module.css';
 
 const AtAndBrowserDetailsModal = ({
   show = false,
@@ -259,12 +231,12 @@ const AtAndBrowserDetailsModal = ({
           title="Assistive Technology and Browser Details"
           dialogClassName="modal-60w"
           content={
-            <ModalInnerSectionContainer>
+            <div className={commonStyles.modalInnerSectionContainer}>
               {/* Admin Scenario 1 */}
               {isAdmin && (
                 <Alert
                   variant="warning"
-                  className="at-browser-details-modal-alert"
+                  className={styles.atBrowserDetailsModalAlert}
                 >
                   <FontAwesomeIcon icon={faExclamationTriangle} />
                   <span>
@@ -278,17 +250,17 @@ const AtAndBrowserDetailsModal = ({
               Please make sure this information is still accurate.
               <br />
               <br />
-              <FieldsetRow>
+              <fieldset className={styles.fieldsetRow}>
                 <legend>
-                  <ModalSubtitleStyle>
+                  <h2 className={commonStyles.modalSubtitle}>
                     Assistive Technology Details
-                  </ModalSubtitleStyle>
+                  </h2>
                 </legend>
                 {/* Tester Scenario 6 */}
                 {!isFirstLoad && updatedAtVersion !== atVersion && (
                   <Alert
                     variant="warning"
-                    className="at-browser-details-modal-alert"
+                    className={styles.atBrowserDetailsModalAlert}
                   >
                     <FontAwesomeIcon icon={faExclamationTriangle} />
                     <span>
@@ -307,7 +279,7 @@ const AtAndBrowserDetailsModal = ({
                 {exactAtVersion ? (
                   <Alert
                     variant="warning"
-                    className="at-browser-details-modal-alert"
+                    className={styles.atBrowserDetailsModalAlert}
                   >
                     <FontAwesomeIcon icon={faExclamationTriangle} />
                     <span>
@@ -339,7 +311,10 @@ const AtAndBrowserDetailsModal = ({
                     <>
                       <Form.Label>
                         Assistive Technology Version
-                        <Required aria-hidden />
+                        <span
+                          className={commonStyles.requiredIndicator}
+                          aria-hidden
+                        />
                       </Form.Label>
                       <Form.Select
                         ref={updatedAtVersionDropdownRef}
@@ -370,16 +345,18 @@ const AtAndBrowserDetailsModal = ({
                     </>
                   )}
                 </Form.Group>
-              </FieldsetRow>
-              <FieldsetRow>
+              </fieldset>
+              <fieldset className={styles.fieldsetRow}>
                 <legend>
-                  <ModalSubtitleStyle>Browser Details</ModalSubtitleStyle>
+                  <h2 className={commonStyles.modalSubtitle}>
+                    Browser Details
+                  </h2>
                 </legend>
                 {/* Tester Scenario 1 */}
                 {isFirstLoad && uaBrowser && uaMajor !== '0' && (
                   <Alert
                     variant="primary"
-                    className="at-browser-details-modal-alert"
+                    className={styles.atBrowserDetailsModalAlert}
                   >
                     <FontAwesomeIcon icon={faInfoCircle} />
                     <span>
@@ -393,7 +370,7 @@ const AtAndBrowserDetailsModal = ({
                   forceBrowserVersionUpdateMessage && (
                     <Alert
                       variant="warning"
-                      className="at-browser-details-modal-alert"
+                      className={styles.atBrowserDetailsModalAlert}
                     >
                       <FontAwesomeIcon icon={faExclamationTriangle} />
                       <span>
@@ -415,7 +392,7 @@ const AtAndBrowserDetailsModal = ({
                   uaMajor !== '0' && (
                     <Alert
                       variant="warning"
-                      className="at-browser-details-modal-alert"
+                      className={styles.atBrowserDetailsModalAlert}
                     >
                       <FontAwesomeIcon icon={faExclamationTriangle} />
                       <span>
@@ -436,7 +413,7 @@ const AtAndBrowserDetailsModal = ({
                   uaMajor !== '0' && (
                     <Alert
                       variant="warning"
-                      className="at-browser-details-modal-alert"
+                      className={styles.atBrowserDetailsModalAlert}
                     >
                       <FontAwesomeIcon icon={faExclamationTriangle} />
                       <span>
@@ -472,7 +449,7 @@ const AtAndBrowserDetailsModal = ({
                   browserVersionMismatchMessage && (
                     <Alert
                       variant="warning"
-                      className="at-browser-details-modal-alert"
+                      className={styles.atBrowserDetailsModalAlert}
                     >
                       <FontAwesomeIcon icon={faExclamationTriangle} />
                       <span>
@@ -493,7 +470,7 @@ const AtAndBrowserDetailsModal = ({
                 {uaMajor === '0' && (
                   <Alert
                     variant="warning"
-                    className="at-browser-details-modal-alert"
+                    className={styles.atBrowserDetailsModalAlert}
                   >
                     <FontAwesomeIcon icon={faExclamationTriangle} />
                     <span>
@@ -509,7 +486,7 @@ const AtAndBrowserDetailsModal = ({
                     browserVersionMismatchMessage) && (
                     <Alert
                       variant="warning"
-                      className="at-browser-details-modal-alert"
+                      className={styles.atBrowserDetailsModalAlert}
                     >
                       <FontAwesomeIcon icon={faExclamationTriangle} />
                       <span>
@@ -538,7 +515,10 @@ const AtAndBrowserDetailsModal = ({
                 <Form.Group className="form-group">
                   <Form.Label>
                     Browser Version
-                    <Required aria-hidden />
+                    <span
+                      className={commonStyles.requiredIndicator}
+                      aria-hidden
+                    />
                   </Form.Label>
                   <Form.Control
                     ref={updatedBrowserVersionTextRef}
@@ -558,8 +538,8 @@ const AtAndBrowserDetailsModal = ({
                     </Form.Control.Feedback>
                   )}
                 </Form.Group>
-              </FieldsetRow>
-            </ModalInnerSectionContainer>
+              </fieldset>
+            </div>
           }
           actions={[
             {

@@ -1,17 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
-import styled from '@emotion/styled';
 import ReviewConflicts from '../../ReviewConflicts';
 import {
   TestPlanReportPropType,
   TestPlanVersionPropType,
   TestPropType
 } from '../../common/proptypes';
-
-const H2 = styled.h2`
-  margin-top: 0;
-`;
 
 const ReviewConflictsModal = ({
   testPlanReport,
@@ -28,13 +23,13 @@ const ReviewConflictsModal = ({
       tabIndex={-1}
       keyboard
       scrollable
-      dialogClassName="modal-xl"
+      dialogClassName="modal-60w"
       aria-modal="true"
       aria-labelledby="review-conflicts-modal"
       onHide={handleClose}
     >
       <Modal.Header closeButton>
-        <Modal.Title as={H2} id="review-conflicts-modal-title">
+        <Modal.Title as="h2" className="m-0">
           Review Conflicts for &quot;{test.title}&quot;
         </Modal.Title>
       </Modal.Header>

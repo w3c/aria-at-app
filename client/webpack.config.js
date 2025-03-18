@@ -19,6 +19,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
+        exclude: /\.module\.css$/,
         use: ['style-loader', 'css-loader']
       },
       {
@@ -28,6 +29,21 @@ module.exports = {
           'style-loader',
           // Translates CSS into CommonJS
           'css-loader'
+        ]
+      },
+      {
+        test: /\.module\.css$/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: {
+                exportLocalsConvention: 'camelCase',
+                localIdentName: '[local]'
+              }
+            }
+          }
         ]
       },
       {
@@ -49,7 +65,8 @@ module.exports = {
       '@': path.resolve(__dirname, '..'),
       '@client': __dirname,
       '@components': path.resolve(__dirname, 'components'),
-      '@server': path.resolve(__dirname, '../server')
+      '@server': path.resolve(__dirname, '../server'),
+      '@shared': path.resolve(__dirname, '../shared')
     },
     extensions: ['*', '.js', '.jsx']
   },

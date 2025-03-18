@@ -1,47 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
-import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faArrowDownShortWide,
   faArrowUpShortWide
 } from '@fortawesome/free-solid-svg-icons';
 import { useAriaLiveRegion } from '../../providers/AriaLiveRegionProvider';
-
-const SortableTableHeaderWrapper = styled.th`
-  background: #e9ebee;
-  padding: 0 !important;
-  height: 100%;
-`;
-
-const SortableTableHeaderButton = styled(Button)`
-  background: transparent;
-  border: none;
-  color: black;
-  font-size: 1rem;
-  font-weight: 700;
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-  flex: 1 1 auto;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: 0.5rem;
-  border-radius: 0;
-  margin: 0;
-
-  &:hover,
-  &:focus {
-    color: #0b60ab;
-    background-color: var(--bs-table-hover-bg);
-  }
-`;
-
-const InactiveIcon = styled(FontAwesomeIcon)`
-  color: rgb(155, 155, 155);
-`;
+import styles from './SortableTableHeader.module.css';
 
 export const TABLE_SORT_ORDERS = {
   ASC: 'ASCENDING',
@@ -96,10 +62,13 @@ const SortableTableHeader = ({
     if (active) {
       return <FontAwesomeIcon {...attribs} />;
     } else {
-      return <InactiveIcon {...attribs} />;
+      return <FontAwesomeIcon className={styles.inactive} {...attribs} />;
     }
   };
 
+  /**
+   * @returns {'none'|'ascending'|'descending'}
+   */
   const getAriaSort = () => {
     if (!active) {
       return 'none';
@@ -111,16 +80,17 @@ const SortableTableHeader = ({
   };
 
   return (
-    <SortableTableHeaderWrapper
+    <th
       role="columnheader"
       scope="col"
       aria-sort={getAriaSort()}
+      className={styles.styledHeader}
     >
-      <SortableTableHeaderButton onClick={handleClick}>
+      <Button className={styles.headerButton} onClick={handleClick}>
         {title}
         {getIcon()}
-      </SortableTableHeaderButton>
-    </SortableTableHeaderWrapper>
+      </Button>
+    </th>
   );
 };
 

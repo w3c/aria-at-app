@@ -1,13 +1,8 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
-
-import styled from '@emotion/styled';
 import { dates } from 'shared';
 import { TestPlanReportPropType } from '../proptypes';
-
-const RunListItem = styled.li`
-  margin-bottom: 0.5rem;
-`;
+import styles from './RunHistory.module.css';
 
 const RunHistory = ({ testPlanReports, testId }) => {
   if (!testPlanReports || testPlanReports.length === 0) {
@@ -23,8 +18,8 @@ const RunHistory = ({ testPlanReports, testId }) => {
         const testResult = testResults.find(item => item.test.id === testId);
         if (testResult?.completedAt) {
           l.push(
-            <RunListItem
-              className="run-history-item"
+            <li
+              className={styles.runHistoryItem}
               key={`${testResult.atVersion.id}-${testResult.browserVersion.id}-${testResult.test.id}-${tester.username}`}
             >
               Tested with{' '}
@@ -47,7 +42,7 @@ const RunHistory = ({ testPlanReports, testId }) => {
                 'MMMM DD, YYYY'
               )}
               .
-            </RunListItem>
+            </li>
           );
         }
       }

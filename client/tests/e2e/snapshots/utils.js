@@ -58,7 +58,7 @@ async function cleanAndNormalizeSnapshot(page) {
     }
 
     removeElements(
-      '.ready-for-review, .in-progress, .target-days-container button, .run-history-item'
+      '.ready-for-review, .in-progress, .target-days-container button'
     );
   });
 

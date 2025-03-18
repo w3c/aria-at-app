@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import useConfirmationModal from '../../hooks/useConfirmationModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import { useApolloClient } from '@apollo/client';
-import styled from '@emotion/styled';
 import { Button, Dropdown, Form } from 'react-bootstrap';
 import BasicModal from '../common/BasicModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -27,12 +26,7 @@ import {
   TestPlanReportPropType,
   UserPropType
 } from '../common/proptypes';
-
-const ActionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
+import styles from './TestQueue.module.css';
 
 const Actions = ({
   me,
@@ -147,7 +141,7 @@ const Actions = ({
             Technology combination.
           </p>
           <Form.Select
-            className="primary-test-run-select"
+            className={styles.primaryTestRunSelect}
             defaultValue={runs[0].id}
             onChange={onChangePrimary}
             htmlSize={runs.length}
@@ -230,7 +224,7 @@ const Actions = ({
 
   return (
     <LoadingStatus message={loadingMessage}>
-      <ActionContainer>
+      <div className={styles.actionsContainer}>
         {!isTester && (
           <Button
             variant="primary"
@@ -295,7 +289,7 @@ const Actions = ({
             Delete Report
           </Button>
         )}
-      </ActionContainer>
+      </div>
     </LoadingStatus>
   );
 };

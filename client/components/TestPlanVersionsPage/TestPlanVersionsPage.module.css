@@ -1,0 +1,42 @@
+.test-plan-versions-custom-disclosure-component {
+  h2 {
+    font-size: var(--18px);
+
+    button {
+      font-size: unset;
+      font-weight: unset;
+    }
+  }
+}
+
+.timeline-for-version-title {
+  padding: 0.5rem 1rem;
+}
+
+div.page-commit-history {
+  padding: 1.5rem 0 1.5rem;
+}
+
+ul.versions-list {
+  margin-bottom: 2rem;
+
+  li:not(:last-of-type) {
+    margin-bottom: var(--8px);
+  }
+}
+
+dl.covered-at-list {
+  margin-bottom: 2rem;
+
+  dt {
+    margin-bottom: var(--8px);
+  }
+
+  li:not(:last-of-type) {
+    margin-bottom: var(--8px);
+  }
+}
+
+.custom-theme-table-header {
+  margin: 0;
+}

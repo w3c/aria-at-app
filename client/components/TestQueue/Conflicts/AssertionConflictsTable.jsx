@@ -1,7 +1,8 @@
 import React from 'react';
-import { ConflictTable } from './ConflictSummaryTable';
+import { Table } from 'react-bootstrap';
 import { UserPropType } from '../../common/proptypes';
 import PropTypes from 'prop-types';
+import styles from './Conflicts.module.css';
 
 const AssertionConflictsTable = ({ conflictingResults, testers }) => {
   const commandString = scenario => {
@@ -21,7 +22,7 @@ const AssertionConflictsTable = ({ conflictingResults, testers }) => {
         {commandString(conflictingResults[0].scenario)}
       </h3>
 
-      <ConflictTable bordered responsive>
+      <Table className={styles.conflicts} bordered responsive>
         <thead>
           <tr>
             <th>Assertion</th>
@@ -49,7 +50,7 @@ const AssertionConflictsTable = ({ conflictingResults, testers }) => {
             );
           })}
         </tbody>
-      </ConflictTable>
+      </Table>
     </>
   );
 };

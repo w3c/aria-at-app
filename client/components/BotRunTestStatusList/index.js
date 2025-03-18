@@ -2,23 +2,8 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { TEST_PLAN_RUNS_TEST_RESULTS_QUERY } from './queries';
 import { useQuery } from '@apollo/client';
-import styled from '@emotion/styled';
-import ReportStatusDot from '../common/ReportStatusDot';
-
-const BotRunTestContainer = styled.div`
-  font-size: 0.875rem !important;
-  padding: 0.5rem 0;
-  margin: 0.5rem 0;
-
-  background: #f5f5f5;
-  border-radius: 0.25rem;
-
-  white-space: nowrap;
-`;
-
-const BotRunTestStatusUnorderedList = styled.ul`
-  list-style-type: none;
-`;
+import ReportStatusDot, { REPORT_STATUSES } from '../common/ReportStatusDot';
+import styles from './BotRunTestStatusList.module.css';
 
 /**
  * Generate a string describing the status of some number of "Tests" where the
@@ -94,37 +79,37 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
 
   return (
     <>
-      <BotRunTestContainer>
+      <div className={styles.botRunTestContainer}>
         Bot Status:
-        <BotRunTestStatusUnorderedList className="text-secondary">
+        <ul className="text-secondary">
           {RUNNING > 0 && (
             <li>
-              <ReportStatusDot className="tests-running" />
+              <ReportStatusDot status={REPORT_STATUSES.TESTS_RUNNING} />
               {testCountString(RUNNING, 'Running')}
             </li>
           )}
           {ERROR > 0 && (
             <li>
-              <ReportStatusDot className="tests-error" />
+              <ReportStatusDot status={REPORT_STATUSES.TESTS_ERROR} />
               {testCountString(ERROR, 'Error')}
             </li>
           )}
           <li>
-            <ReportStatusDot className="tests-complete" />
+            <ReportStatusDot status={REPORT_STATUSES.TESTS_COMPLETE} />
             {testCountString(COMPLETED, 'Completed')}
           </li>
           <li>
-            <ReportStatusDot className="tests-queued" />
+            <ReportStatusDot status={REPORT_STATUSES.TESTS_QUEUED} />
             {testCountString(QUEUED, 'Queued')}
           </li>
           {CANCELLED > 0 && (
             <li>
-              <ReportStatusDot className="tests-cancelled" />
+              <ReportStatusDot status={REPORT_STATUSES.TESTS_CANCELLED} />
               {testCountString(CANCELLED, 'Cancelled')}
             </li>
           )}
-        </BotRunTestStatusUnorderedList>
-      </BotRunTestContainer>
+        </ul>
+      </div>
     </>
   );
 };

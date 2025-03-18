@@ -5,7 +5,6 @@ import SummarizeTestPlanVersion from './SummarizeTestPlanVersion';
 import SummarizeTestPlanReport from './SummarizeTestPlanReport';
 import PageStatus from '../common/PageStatus';
 import { REPORT_PAGE_QUERY } from './queries';
-import './Reports.css';
 
 const Report = () => {
   const { testPlanVersionId } = useParams();

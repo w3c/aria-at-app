@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
 import { dates } from 'shared';
 import { calculatePercentComplete } from '../../../utils/calculatePercentComplete';
 import {
@@ -8,11 +7,7 @@ import {
   TestPlanRunPropType,
   UserPropType
 } from '../proptypes';
-
-const IncompleteStatusReport = styled.span`
-  min-width: 5rem;
-  display: inline-block;
-`;
+import styles from './ReportStatusSummary.module.css';
 
 const ReportStatusSummary = ({
   testPlanVersion,
@@ -89,7 +84,7 @@ const ReportStatusSummary = ({
     }
   }
 
-  return <IncompleteStatusReport>Missing</IncompleteStatusReport>;
+  return <span className={styles.incompleteStatusReport}>Missing</span>;
 };
 
 ReportStatusSummary.propTypes = {
