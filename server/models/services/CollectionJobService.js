@@ -1,5 +1,9 @@
 const ModelService = require('./ModelService');
-const { CollectionJob, CollectionJobTestStatus } = require('../');
+const {
+  CollectionJob,
+  CollectionJobTestStatus,
+  TestPlanReport
+} = require('../');
 const {
   COLLECTION_JOB_ATTRIBUTES,
   TEST_PLAN_ATTRIBUTES,
@@ -727,8 +731,12 @@ const updateCollectionJobTestStatusByQuery = ({
 
 /**
  * Creates collection jobs for all test plan reports eligible for automation refresh.
- * Eligible reports are those whose originating test run was initiated by automation and
- * used the previous automatable AT version.
+ * A test plan report is eligible when:
+ * - The Test Plan Version is in Candidate or Recommended
+ * - The Test Plan Report has been marked final
+ * - The Test Plan Report is the most recently "finalized" Report for the Test Plan Version
+ * - The most recent AT version used in any Test Plan Run is older than the specified AT Version
+ *
  * @param {object} options
  * @param {number} options.atVersionId - ID of the current AT version
  * @param {*} options.transaction - Sequelize transaction
@@ -738,40 +746,127 @@ const createCollectionJobsFromPreviousAtVersion = async ({
   atVersionId,
   transaction
 }) => {
-  const { currentVersion, refreshableReports } =
-    await getRefreshableTestPlanReportsForVersion({
-      currentAtVersionId: atVersionId,
-      transaction
-    });
+  console.log(
+    `[Debug] Starting createCollectionJobsFromPreviousAtVersion for atVersionId: ${atVersionId}`
+  );
 
-  if (!refreshableReports.length) {
+  const result = await getRefreshableTestPlanReportsForVersion({
+    currentAtVersionId: atVersionId,
+    transaction
+  });
+
+  console.log(
+    '[Debug] Full result from getRefreshableTestPlanReportsForVersion:',
+    result
+  );
+
+  if (!result) {
+    console.error(
+      '[Error] getRefreshableTestPlanReportsForVersion returned null or undefined'
+    );
+    return [];
+  }
+
+  const { currentVersion, previousVersionGroups } = result;
+
+  if (!currentVersion) {
+    console.error('[Error] currentVersion is null or undefined');
+    return [];
+  }
+
+  console.log(`[Debug] Retrieved currentVersion:`, currentVersion);
+
+  if (!previousVersionGroups) {
+    console.error('[Error] previousVersionGroups is null or undefined');
+    return [];
+  }
+
+  // Get all reports that need to be refreshed
+  const reports = [];
+  for (const group of previousVersionGroups) {
+    // Get the full report for each test plan
+    for (const testPlan of group.testPlans) {
+      const report = await TestPlanReport.findOne({
+        where: {
+          testPlanVersionId: testPlan.id,
+          markedFinalAt: { [Op.not]: null }
+        },
+        order: [['markedFinalAt', 'DESC']],
+        include: [
+          {
+            association: 'testPlanVersion',
+            where: {
+              phase: { [Op.in]: ['CANDIDATE', 'RECOMMENDED'] }
+            },
+            required: true
+          },
+          {
+            association: 'at',
+            required: true
+          }
+        ],
+        transaction
+      });
+
+      if (report) {
+        reports.push(report);
+      }
+    }
+  }
+
+  console.log(`[Debug] Found ${reports.length} reports to process`);
+
+  if (!reports.length) {
+    console.log('[Debug] No reports found, returning empty array');
     return [];
   }
 
   const collectionJobs = [];
-  for (const report of refreshableReports) {
-    const newReport = await cloneTestPlanReportWithNewAtVersion(
-      report,
-      currentVersion,
-      transaction
-    );
 
-    const atVersion = await getAtVersionWithRequirements(
-      newReport.at.id,
-      currentVersion,
-      null,
-      transaction
-    );
+  // Process each report that can be refreshed
+  for (const report of reports) {
+    console.log(`[Debug] Processing report:`, report.id);
 
-    const job = await scheduleCollectionJob(
-      {
-        testPlanReportId: newReport.id,
-        atVersion
-      },
-      { transaction }
-    );
-    collectionJobs.push(job);
+    try {
+      // Clone the report with the new AT version
+      const newReport = await cloneTestPlanReportWithNewAtVersion(
+        report,
+        currentVersion,
+        transaction
+      );
+      console.log(`[Debug] Created new report:`, newReport.id);
+
+      const atVersion = await getAtVersionWithRequirements(
+        newReport.at.id,
+        currentVersion,
+        null,
+        transaction
+      );
+      console.log(
+        `[Debug] Retrieved AT version for new report:`,
+        atVersion?.id
+      );
+
+      const job = await scheduleCollectionJob(
+        {
+          testPlanReportId: newReport.id,
+          atVersion
+        },
+        { transaction }
+      );
+      console.log(`[Debug] Created collection job:`, job.id);
+      collectionJobs.push(job);
+    } catch (error) {
+      console.error(
+        `[Error] Failed to create collection job for report ${report.id}:`,
+        error.message
+      );
+    }
   }
+
+  console.log(
+    `[Debug] Completed processing. Created ${collectionJobs.length} collection jobs`
+  );
   return collectionJobs;
 };
 

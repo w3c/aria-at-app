@@ -1,9 +1,6 @@
 const {
   getRefreshableTestPlanReportsForVersion
 } = require('../models/services/AtVersionService');
-const {
-  getTestPlanVersionById
-} = require('../models/services/TestPlanVersionService');
 
 /**
  * Resolver for the refreshableReports query
@@ -15,6 +12,7 @@ const {
  */
 const refreshableReportsResolver = async (_, { atVersionId }, context) => {
   try {
+    console.log('atVersionId', atVersionId);
     const { transaction } = context;
 
     // Ensure atVersionId is properly converted to a number if needed
@@ -23,14 +21,15 @@ const refreshableReportsResolver = async (_, { atVersionId }, context) => {
     if (isNaN(currentAtVersionId)) {
       throw new Error(`Invalid atVersionId: ${atVersionId}`);
     }
+    console.log('currentAtVersionId', currentAtVersionId);
 
-    const { currentVersion, previousVersion, refreshableReports } =
+    const { currentVersion, previousVersionGroups } =
       await getRefreshableTestPlanReportsForVersion({
         currentAtVersionId,
         transaction
       });
 
-    if (!previousVersion || refreshableReports.length === 0) {
+    if (!previousVersionGroups?.length) {
       return {
         currentVersion: {
           id: currentVersion.id,
@@ -40,50 +39,18 @@ const refreshableReportsResolver = async (_, { atVersionId }, context) => {
       };
     }
 
-    // Group test plans by previous version
-    const reportsByPreviousVersion = {};
-
-    // Process all refreshable reports
-    for (const report of refreshableReports) {
-      if (!report.testPlanVersionId) continue;
-
-      const testPlanVersion = await getTestPlanVersionById({
-        id: report.testPlanVersionId,
-        transaction
-      });
-
-      if (!testPlanVersion) continue;
-
-      // Group by previous version
-      if (!reportsByPreviousVersion[previousVersion.id]) {
-        reportsByPreviousVersion[previousVersion.id] = {
-          previousVersion: {
-            id: previousVersion.id,
-            name: previousVersion.name
-          },
-          testPlans: []
-        };
-      }
-
-      // Add to the group if not already added
-      const existingTestPlan = reportsByPreviousVersion[
-        previousVersion.id
-      ].testPlans.find(tp => tp.id === testPlanVersion.id);
-
-      if (!existingTestPlan) {
-        reportsByPreviousVersion[previousVersion.id].testPlans.push({
-          id: testPlanVersion.id,
-          title: testPlanVersion.title
-        });
-      }
-    }
-
     return {
       currentVersion: {
         id: currentVersion.id,
         name: currentVersion.name
       },
-      previousVersionGroups: Object.values(reportsByPreviousVersion)
+      previousVersionGroups: previousVersionGroups.map(group => ({
+        previousVersion: {
+          id: group.previousVersion.id,
+          name: group.previousVersion.name
+        },
+        testPlans: group.testPlans
+      }))
     };
   } catch (error) {
     console.error('Error in refreshableReports resolver:', error);

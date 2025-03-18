@@ -142,7 +142,6 @@ const TestPlanRefresh = () => {
     if (!atVersionsData || loadingVersions) return;
 
     const fetchPromises = [];
-
     // Find the latest automatable version for each AT
     atVersionsData.ats.forEach(at => {
       // Filter to only versions that support automation and sort by release date (newest first)
@@ -221,8 +220,6 @@ const TestPlanRefresh = () => {
 
       const { collectionJobs, message } =
         response.data.createCollectionJobsFromPreviousAtVersion;
-      console.log('collectionJobs', collectionJobs);
-      console.log('message', message);
       // Remove this run from active runs
       setActiveRuns(current => current.filter(item => item.id !== run.id));
 
