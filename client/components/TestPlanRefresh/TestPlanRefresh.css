@@ -41,6 +41,7 @@
 }
 
 .refresh-opportunity {
+  height: min-content;
   background-color: white;
   border: 1px solid #e1e4e8;
   border-radius: 0.5rem;
@@ -153,9 +154,21 @@
   z-index: 0;
 }
 
+/* Hide the line when there are no previous versions */
+.version-info:not(:has(.version-groups-container > *))::after {
+  display: none;
+}
+
+/* Center the highlight box when there are no previous versions */
+.version-info:not(:has(.version-groups-container > *)) .version-box.highlight {
+  position: relative;
+  left: 50%;
+  transform: translate(-25%, 0);
+  width: 120px;
+}
+
 .version-box {
   background: white;
-  min-width: 90px;
   width: 90px;
   height: 90px;
   border: 1px solid #e2e8f0;
@@ -176,9 +189,9 @@
 
 @media (min-width: 768px) {
   .version-box {
-    width: 110px;
-    height: 110px;
-    min-width: 110px;
+    width: 80px;
+    height: 80px;
+    min-width: 80px;
     margin-right: -1rem;
     padding: 1rem;
   }
@@ -187,9 +200,6 @@
 .version-box.highlight {
   background-color: #f0f9ff;
   border-color: #93c5fd;
-  width: 90px;
-  height: 90px;
-  min-width: 90px;
   position: absolute;
   right: 0;
   top: 50%;
@@ -199,12 +209,18 @@
   z-index: 1;
 }
 
-@media (min-width: 768px) {
-  .version-box.highlight {
-    width: 110px;
-    height: 110px;
-    min-width: 110px;
-  }
+.version-box.highlight.no-reports {
+  background-color: #f8fafc;
+  border-color: #e2e8f0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.version-box.highlight.no-reports .version-number {
+  color: #64748b;
+}
+
+.version-box.highlight.no-reports:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
 }
 
 .version-box:hover {
@@ -223,7 +239,7 @@
 
 @media (min-width: 768px) {
   .version-box .version-number {
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
 }
 
@@ -241,13 +257,13 @@
 }
 
 .version-box.highlight .version-number {
-  font-size: 1.125rem;
+  font-size: 1rem;
   color: #1e40af;
 }
 
 @media (min-width: 768px) {
   .version-box.highlight .version-number {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 }
 
@@ -256,12 +272,10 @@
   box-shadow: 0 4px 6px rgba(147, 197, 253, 0.4);
 }
 
-/* Remove the old separator */
 .version-separator {
   display: none;
 }
 
-/* Adjust spacing for the test plans preview */
 .test-plans-preview {
   margin-top: 2rem;
 }
@@ -358,7 +372,12 @@
   min-width: 140px;
 }
 
-.refresh-button:hover {
+.refresh-button:disabled {
+  background-color: #e1e4e8;
+  cursor: not-allowed;
+}
+
+.refresh-button:not(:disabled):hover {
   background-color: #0366d6;
   cursor: pointer;
 }

@@ -470,6 +470,23 @@ const getRefreshableTestPlanReportsForVersion = async ({
       transaction
     });
 
+    // Group reports by test plan version, browser and AT combination and keep only the most recent for each
+    const latestReportsByVersionAndBrowser = new Map();
+    for (const report of finalizedReports) {
+      const versionBrowserKey = `${report.testPlanVersionId}-${report.browserId}`;
+      if (
+        !latestReportsByVersionAndBrowser.has(versionBrowserKey) ||
+        new Date(report.markedFinalAt) >
+          new Date(
+            latestReportsByVersionAndBrowser.get(
+              versionBrowserKey
+            ).markedFinalAt
+          )
+      ) {
+        latestReportsByVersionAndBrowser.set(versionBrowserKey, report);
+      }
+    }
+
     // Create a set of unique combinations of testPlanVersion and browser for reports with current version
     const existingCombinations = new Set(
       reportsWithCurrentVersion.map(
@@ -477,23 +494,10 @@ const getRefreshableTestPlanReportsForVersion = async ({
       )
     );
 
-    // Group reports by test plan version and keep only the most recent for each
-    const latestReportsByVersion = new Map();
-    for (const report of finalizedReports) {
-      const versionId = report.testPlanVersionId;
-      if (
-        !latestReportsByVersion.has(versionId) ||
-        new Date(report.markedFinalAt) >
-          new Date(latestReportsByVersion.get(versionId).markedFinalAt)
-      ) {
-        latestReportsByVersion.set(versionId, report);
-      }
-    }
-
     // Filter reports where the most recent AT version used is older than current version
-    // and no report exists for the same test plan version and browser with the current AT version
+    // and no report exists for the same test plan version and browser combination with the current AT version
     const refreshableReports = [];
-    for (const report of latestReportsByVersion.values()) {
+    for (const report of latestReportsByVersionAndBrowser.values()) {
       // Skip if a report already exists for this combination
       const combinationKey = `${report.testPlanVersionId}-${report.browserId}`;
       if (existingCombinations.has(combinationKey)) {

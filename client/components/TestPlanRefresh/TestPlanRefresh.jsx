@@ -63,21 +63,36 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
                     </div>
                   ))}
                 </div>
-                <div className="version-box highlight">
+                <div
+                  className={`version-box highlight${
+                    run.reportGroups.length === 0 ? ' no-reports' : ''
+                  }`}
+                >
                   <span className="version-number">{run.newVersion}</span>
+                  {run.reportGroups.length === 0 && (
+                    <span className="version-count">No reports to update</span>
+                  )}
                 </div>
               </div>
             </div>
 
             <div className="plan-summary" aria-hidden="true">
-              <div className="plan-count">
-                <span className="plan-count-number">{totalTestPlans}</span>
-                <span className="plan-count-label">
-                  {totalTestPlans === 1
-                    ? 'Test plan version can be re-run'
-                    : 'Test plan versions can be re-run'}
-                </span>
-              </div>
+              {run.reportGroups.length > 0 ? (
+                <div className="plan-count">
+                  <span className="plan-count-number">{totalTestPlans}</span>
+                  <span className="plan-count-label">
+                    {totalTestPlans === 1
+                      ? 'Test plan version can be re-run'
+                      : 'Test plan versions can be re-run'}
+                  </span>
+                </div>
+              ) : (
+                <div className="plan-count">
+                  <span className="plan-count-label">
+                    No test plans available for update
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="test-plans-preview">
@@ -109,6 +124,7 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
             <div className="action-footer">
               <button
                 className="refresh-button"
+                disabled={run.reportGroups.length === 0}
                 onClick={() => onRefreshClick(run)}
                 aria-label={`Start automated test plan runs for ${totalTestPlans} test plan versions using ${run.botName} ${run.newVersion}`}
               >
@@ -156,8 +172,6 @@ const TestPlanRefresh = () => {
 
       if (automationVersions.length > 0) {
         const latestVersion = automationVersions[0];
-
-        // Create a promise to fetch refreshable reports for this version
         fetchPromises.push(
           fetchRefreshableReports(latestVersion.id, at.name, latestVersion.name)
         );
@@ -166,8 +180,32 @@ const TestPlanRefresh = () => {
 
     // Wait for all queries to complete
     Promise.all(fetchPromises).then(results => {
-      // Filter out undefined results and set as active runs
-      const validRuns = results.filter(run => run !== undefined);
+      // Transform results to include all ATs with automation support, even if no refreshable reports
+      const validRuns = results
+        .map(result => {
+          if (result === undefined) {
+            // Get the AT info from the original promise
+            const atIndex = fetchPromises.findIndex(p => p === undefined);
+            if (atIndex >= 0) {
+              const at = atVersionsData.ats[atIndex];
+              const latestVersion = at.atVersions
+                .filter(v => v.supportedByAutomation)
+                .sort(
+                  (a, b) => new Date(b.releasedAt) - new Date(a.releasedAt)
+                )[0];
+
+              return {
+                id: latestVersion.id,
+                botName: `${at.name} Bot`,
+                newVersion: latestVersion.name,
+                reportGroups: []
+              };
+            }
+          }
+          return result;
+        })
+        .filter(Boolean);
+
       setActiveRuns(validRuns);
     });
   }, [atVersionsData, loadingVersions]);
@@ -181,24 +219,17 @@ const TestPlanRefresh = () => {
         fetchPolicy: 'network-only'
       });
 
-      if (!data?.refreshableReports?.previousVersionGroups?.length) {
-        return undefined;
-      }
-
-      // Transform data to match the UI format
-      const reportGroups = data.refreshableReports.previousVersionGroups.map(
-        group => ({
-          prevVersion: group.previousVersion.name,
-          reportCount: group.reports.length,
-          reports: group.reports
-        })
-      );
-
+      // Always return a run object, even if no refreshable reports
       return {
         id: atVersionId,
         botName: `${atName} Bot`,
         newVersion: versionName,
-        reportGroups
+        reportGroups:
+          data?.refreshableReports?.previousVersionGroups?.map(group => ({
+            prevVersion: group.previousVersion.name,
+            reportCount: group.reports.length,
+            reports: group.reports
+          })) || []
       };
     } catch (error) {
       console.error('Error fetching refreshable reports:', error);
