@@ -21,7 +21,7 @@ import ProgressBar from '../common/ClippedProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
-import TestPlanRefresh from '../TestPlanRefresh/TestPlanRefresh';
+import ReportRerun from '../ReportRerun';
 import Tabs from '../common/Tabs';
 import './TestQueue.css';
 
@@ -427,7 +427,7 @@ const TestQueue = () => {
     },
     {
       label: 'Automated Report Updates',
-      content: <TestPlanRefresh />
+      content: <ReportRerun onQueueUpdate={refetch} />
     }
   ];
 
