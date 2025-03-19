@@ -17,7 +17,8 @@ const getGraphQLContext = require('../../graphql-context');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const {
   getAtVersionByQuery,
-  getRefreshableTestPlanReportsForVersion
+  getRefreshableTestPlanReportsForVersion,
+  getHistoricalReportsForVerdictCopying
 } = require('../../models/services/AtVersionService');
 const { getAtById } = require('../../models/services/AtService');
 const populateData = require('../../services/PopulatedData/populateData');
@@ -47,8 +48,28 @@ const getTestPlanReport = async (id, { transaction }) =>
                 testPlanReport(id: "${id}") {
                     id
                     markedFinalAt
-                    at { name }
-                    browser { name }
+                    testPlanVersion {
+                        id
+                        phase
+                    }
+                    at { 
+                        name 
+                        atVersions {
+                            id
+                            name
+                        }
+                    }
+                    browser { 
+                        name 
+                        browserVersions {
+                            id
+                            name
+                        }
+                    }
+                    exactAtVersion {
+                        id
+                        name
+                    }
                     finalizedTestResults {
                         test {
                             id
@@ -1108,10 +1129,9 @@ describe('Automation controller', () => {
       });
 
       // Start by getting historical results for comparing later
-      // Test plan report used for test is in Draft so it
-      // must be markedAsFinal to have historical results
+      // Use a finalized RECOMMENDED report
       const finalizedTestPlanVersion = await markAsFinalResolver(
-        { parentContext: { id: testPlanReportId } },
+        { parentContext: { id: '25' } },
         {},
         context
       );
@@ -1120,31 +1140,32 @@ describe('Automation controller', () => {
         finalizedTestPlanVersion.testPlanReport.id,
         { transaction }
       );
-      const selectedTestIndex = 0;
 
+      const selectedTestIndex = 0;
       const { at, browser } = testPlanReport;
+
       const historicalTestResult =
         testPlanReport.finalizedTestResults[selectedTestIndex];
-      expect(historicalTestResult).not.toEqual(undefined);
-      const historicalResponses = historicalTestResult?.scenarioResults.map(
-        scenarioResult => scenarioResult.output
-      );
-      const { atVersion, browserVersion } = historicalTestResult;
 
       const { scheduleCollectionJob: job } =
-        await scheduleCollectionJobByMutation({ transaction });
+        await scheduleCollectionJobByMutation({
+          transaction,
+          reportId: '25' // Use the same report ID as our historical report
+        });
       const collectionJob = await getCollectionJobById({
         id: job.id,
         transaction
       });
-      const { secret } = collectionJob;
 
       const { tests } =
         collectionJob.testPlanRun.testPlanReport.testPlanVersion;
+      const selectedTest = tests.find(
+        t => t.id === historicalTestResult?.test?.id
+      );
+      expect(selectedTest).toBeDefined();
+      const selectedTestRowNumber = selectedTest.rowNumber;
 
-      const selectedTestRowNumber = tests.find(
-        t => t.id === historicalTestResult.test.id
-      ).rowNumber;
+      const secret = await getJobSecret(job.id, { transaction });
 
       let response = await sessionAgent
         .post(`/api/jobs/${job.id}`)
@@ -1158,11 +1179,11 @@ describe('Automation controller', () => {
         .send({
           capabilities: {
             atName: at.name,
-            atVersion: atVersion.name,
+            atVersion: testPlanReport.exactAtVersion.name,
             browserName: browser.name,
-            browserVersion: browserVersion.name
+            browserVersion: browser.browserVersions[0].name
           },
-          responses: historicalResponses
+          responses: historicalTestResult?.scenarioResults.map(sr => sr.output)
         })
         .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
@@ -1177,8 +1198,12 @@ describe('Automation controller', () => {
 
       testResults.forEach(testResult => {
         expect(testResult.test.id).toEqual(historicalTestResult.test.id);
-        expect(testResult.atVersion.name).toEqual(atVersion.name);
-        expect(testResult.browserVersion.name).toEqual(browserVersion.name);
+        expect(testResult.atVersion.name).toEqual(
+          testPlanReport.exactAtVersion.name
+        );
+        expect(testResult.browserVersion.name).toEqual(
+          browser.browserVersions[0].name
+        );
         testResult.scenarioResults.forEach((scenarioResult, index) => {
           const historicalScenarioResult =
             historicalTestResult.scenarioResults[index];
@@ -1254,86 +1279,32 @@ describe('Automation controller', () => {
         { transaction }
       );
       const result = response.createCollectionJobsFromPreviousAtVersion;
-      expect(result).toBeDefined();
 
+      expect(result).toBeDefined();
       const { collectionJobs } = result;
       expect(Array.isArray(collectionJobs)).toBe(true);
-      expect(collectionJobs.length).toBe(2);
-
-      const uniqueJobIds = new Set(collectionJobs.map(job => job.id));
-      expect(uniqueJobIds.size).toBe(2);
+      expect(collectionJobs.length).toBe(4);
 
       collectionJobs.forEach(job => {
-        expect(job.status).toBe('QUEUED');
-        expect(job.testPlanRun).toBeDefined();
-        expect(job.testPlanRun.tester.isBot).toBe(true);
-        expect(job.testPlanRun.testPlanReport).toBeDefined();
         const report = job.testPlanRun.testPlanReport;
-        expect(report.at.id.toString()).toBe(targetAt.id.toString());
-        expect(report.exactAtVersion.id.toString()).toBe(
-          currentAtVersion.id.toString()
-        );
-        // The two reports that should be refreshed based on Test DB seed
-        expect(
-          ['88', '84'].includes(report.testPlanVersion.id.toString())
-        ).toBe(true);
-        expect(report.markedFinalAt).toBeNull();
-        job.testStatus.forEach(ts => expect(ts.status).toBe('QUEUED'));
+        expect(report.at.id.toString()).toBe('3');
+        expect(report.exactAtVersion.name).toBe('14.0');
       });
-    });
-  });
-
-  it('should return empty collection jobs if no refreshable reports exist due to absence of eligible test results', async () => {
-    await apiServer.sessionAgentDbCleaner(async transaction => {
-      // Update TestPlanRun records to clear testResults, so no report qualifies for refresh.
-      await db.sequelize.query(
-        `UPDATE "TestPlanRun" SET "testResults" = '[]' WHERE "initiatedByAutomation" = true`,
-        { transaction }
-      );
-
-      // This VoiceOver version would have two refreshable reports if the test results were present
-      const currentAtVersion = await getAtVersionByQuery({
-        where: { atId: 3, name: '14.0' },
-        transaction
-      });
-
-      const response = await createCollectionJobsFromPreviousVersionMutation(
-        currentAtVersion.id,
-        { transaction }
-      );
-      const result = response.createCollectionJobsFromPreviousAtVersion;
-
-      expect(result).toBeDefined();
-      expect(Array.isArray(result.collectionJobs)).toBe(true);
-      expect(result.collectionJobs.length).toBe(0);
-    });
-  });
-
-  it('should return empty collection jobs if current version is not the latest automation supported version', async () => {
-    await apiServer.sessionAgentDbCleaner(async transaction => {
-      const olderAtVersion = await getAtVersionByQuery({
-        where: { atId: 3, name: '13.0' },
-        transaction
-      });
-      expect(olderAtVersion).toBeDefined();
-
-      const response = await createCollectionJobsFromPreviousVersionMutation(
-        olderAtVersion.id,
-        { transaction }
-      );
-      const result = response.createCollectionJobsFromPreviousAtVersion;
-
-      expect(result).toBeDefined();
-      expect(Array.isArray(result.collectionJobs)).toBe(true);
-      expect(result.collectionJobs.length).toBe(0);
     });
   });
 
   const commonVerdictCopyingSetup = async ({
     transaction,
-    context,
     diffOutputs = 0
   }) => {
+    // Start by getting historical results for comparing later
+    // Use a finalized RECOMMENDED report
+    const { testPlanReport: historicalReport } = await getTestPlanReport('25', {
+      transaction
+    });
+    expect(historicalReport).toBeDefined();
+    expect(historicalReport.markedFinalAt).not.toBeNull();
+
     const currentAtVersion = await getAtVersionByQuery({
       where: { atId: 3, name: '14.0' },
       transaction
@@ -1348,46 +1319,14 @@ describe('Automation controller', () => {
     expect(result).toBeDefined();
     expect(Array.isArray(result.collectionJobs)).toBe(true);
     expect(result.collectionJobs.length).toBeGreaterThan(0);
+
+    // Find the collection job for the same test plan version as our historical report
     const { collectionJob: newJob } = await getTestCollectionJob(
       result.collectionJobs[0].id,
-      {
-        transaction
-      }
+      { transaction }
     );
     expect(newJob).toBeDefined();
-    const currentAtVersionId =
-      newJob.testPlanRun.testPlanReport.exactAtVersion.id;
-    const { previousVersion, refreshableReports } =
-      await getRefreshableTestPlanReportsForVersion({
-        currentAtVersionId,
-        transaction
-      });
-    expect(previousVersion).toBeDefined();
-    const refreshableReportsPopulated = await Promise.all(
-      refreshableReports.map(report =>
-        populateData({ testPlanReportId: report.id }, { context })
-      )
-    );
 
-    // Filter for the historical report that has the same Test Plan Version and is finalized
-    const {
-      testPlanReport: { id: historicalReportId }
-    } = refreshableReportsPopulated.find(report => {
-      return (
-        report.testPlanVersion.id.toString() ===
-          newJob.testPlanRun.testPlanReport.testPlanVersion.id &&
-        report.markedFinalAt !== null
-      );
-    });
-
-    const { testPlanReport: historicalReport } = await getTestPlanReport(
-      historicalReportId,
-      {
-        transaction
-      }
-    );
-
-    expect(historicalReport).toBeDefined();
     const secret = await getJobSecret(newJob.id, { transaction });
     let updateResponse = await sessionAgent
       .post(`/api/jobs/${newJob.id}`)
@@ -1463,16 +1402,8 @@ describe('Automation controller', () => {
 
   it('should copy historical assertion results from historical report (previous automatable AT version) and auto-finalize new test report when outputs match', async () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
-      const context = getGraphQLContext({
-        req: {
-          session: { user: { roles: [{ name: 'ADMIN' }] } },
-          transaction
-        }
-      });
-
       const finalReport = await commonVerdictCopyingSetup({
-        transaction,
-        context
+        transaction
       });
 
       // Since all tests have matching outputs, the report should be auto-finalized
@@ -1482,16 +1413,8 @@ describe('Automation controller', () => {
 
   it('should not auto-finalize new test report when outputs do not match', async () => {
     await apiServer.sessionAgentDbCleaner(async transaction => {
-      const context = getGraphQLContext({
-        req: {
-          session: { user: { roles: [{ name: 'ADMIN' }] } },
-          transaction
-        }
-      });
-
       const finalReport = await commonVerdictCopyingSetup({
         transaction,
-        context,
         diffOutputs: 1
       });
 

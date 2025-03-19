@@ -755,6 +755,14 @@ const createCollectionJobsFromPreviousAtVersion = async ({
     throw new Error('Failed to get refreshable test plan reports');
   }
 
+  // If no previous version groups found, return empty result
+  if (!previousVersionGroups.length) {
+    return {
+      collectionJobs: [],
+      message: `No refreshable reports found for AT version ${currentVersion.name}`
+    };
+  }
+
   const collectionJobs = [];
 
   for (const { reports } of previousVersionGroups) {
