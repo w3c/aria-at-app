@@ -13,7 +13,7 @@ const {
   findOrCreateAtVersion,
   getRefreshableTestPlanReportsForVersion
 } = require('../models/services/AtVersionService');
-const { getAts } = require('../models/services/AtService');
+const { getAts, getAtById } = require('../models/services/AtService');
 const {
   getBrowsers,
   findOrCreateBrowserVersion
@@ -32,6 +32,9 @@ const {
   getTestPlanReportById,
   updateTestPlanReportById
 } = require('../models/services/TestPlanReportService');
+const {
+  getTestPlanVersionById
+} = require('../models/services/TestPlanVersionService');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -403,12 +406,17 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
     const { testPlanRun } = updatedJob;
     const { testPlanReport } = testPlanRun;
 
+    const testPlanVersion = await getTestPlanVersionById({
+      id: testPlanReport.testPlanVersionId,
+      transaction
+    });
+
     // Early return if there's no report or it's already finalized
     if (!testPlanReport || testPlanReport.markedFinalAt) return;
 
-    const applicableTests = testPlanReport.testPlanVersion.tests.filter(
-      test => test.at.key === testPlanReport.at.key
-    );
+    const applicableTests = testPlanVersion.tests.filter(test => {
+      return test.atIds.includes(testPlanReport.at.id);
+    });
     const totalTests = applicableTests.length;
 
     // Return early if not all tests have been updated
@@ -451,12 +459,16 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
     });
   } catch (error) {
     const statusCode = error.statusCode || 500;
-    const errorResponse = {
-      error: error.message,
-      details: error.details || {},
-      stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
-    };
-    throw new HttpQueryError(statusCode, errorResponse, true);
+    const errorMessage = error.message || 'An unknown error occurred';
+    const details = error.details || {};
+    const stack =
+      process.env.NODE_ENV !== 'production' ? error.stack : undefined;
+
+    throw new HttpQueryError(
+      statusCode,
+      JSON.stringify({ message: errorMessage, details, stack }),
+      true
+    );
   }
 };
 

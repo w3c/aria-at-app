@@ -398,7 +398,6 @@ const getCollectionJobs = async ({
 const triggerWorkflow = async (job, testIds, atVersion, { transaction }) => {
   const { testPlanVersion } = job.testPlanRun.testPlanReport;
   const { gitSha, directory } = testPlanVersion;
-
   try {
     if (isGithubWorkflowEnabled()) {
       // TODO: pass the reduced list of testIds along / deal with them somehow
