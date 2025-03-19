@@ -11,7 +11,8 @@ const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/con
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const {
   findOrCreateAtVersion,
-  getRefreshableTestPlanReportsForVersion
+  getRefreshableTestPlanReportsForVersion,
+  getHistoricalReportsForVerdictCopying
 } = require('../models/services/AtVersionService');
 const { getAts, getAtById } = require('../models/services/AtService');
 const {
@@ -154,40 +155,57 @@ const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
   if (testPlanReport.markedFinalAt !== null) {
     return getFinalizedTestResults({ testPlanReport, context });
   }
+
   // Otherwise, fallback to historical report from previous automatable AT version
   // Refresh collection jobs will have an exactAtVersion
   const currentAtVersionId = testPlanReport.exactAtVersion?.id;
-  if (!currentAtVersionId) return null;
 
-  const { previousVersion, refreshableReports } =
-    await getRefreshableTestPlanReportsForVersion({
+  if (!currentAtVersionId) {
+    return null;
+  }
+
+  const { previousVersionGroups } = await getHistoricalReportsForVerdictCopying(
+    {
       currentAtVersionId,
       transaction: context.transaction
-    });
+    }
+  );
 
-  if (!previousVersion) return null;
+  if (!previousVersionGroups?.length) {
+    return null;
+  }
 
   // Fetch all candidate historical reports concurrently
   const historicalReports = await Promise.all(
-    refreshableReports.map(report =>
-      getTestPlanReportById({ id: report.id, transaction: context.transaction })
+    previousVersionGroups.flatMap(group =>
+      group.reports.map(report =>
+        getTestPlanReportById({
+          id: report.id,
+          transaction: context.transaction
+        })
+      )
     )
   );
 
   // Select the historical report matching the same test plan version and that is finalized
-  const historicalReport = historicalReports.find(
-    report =>
+  const historicalReport = historicalReports.find(report => {
+    const matches =
       report.testPlanVersion.id === testPlanReport.testPlanVersion.id &&
-      report.markedFinalAt !== null
-  );
+      report.markedFinalAt !== null;
+    return matches;
+  });
 
-  if (!historicalReport) return null;
+  if (!historicalReport) {
+    return null;
+  }
 
   const finalHistoricalReport = await populateData(
     { testPlanReportId: historicalReport.id },
     { context }
   );
-  if (!finalHistoricalReport) return null;
+  if (!finalHistoricalReport) {
+    return null;
+  }
 
   return getFinalizedTestResults({
     testPlanReport: finalHistoricalReport.testPlanReport,

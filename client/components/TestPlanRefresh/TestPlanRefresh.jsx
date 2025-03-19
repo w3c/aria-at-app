@@ -82,7 +82,7 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
               ) : (
                 <div className="plan-count">
                   <span className="plan-count-label">
-                    No test plans available for update
+                    No reports available for update
                   </span>
                 </div>
               )}
@@ -121,7 +121,7 @@ const RefreshDashboard = ({ activeRuns, onRefreshClick }) => (
                 onClick={() => onRefreshClick(run)}
                 aria-label={`Start automated test plan runs for ${totalTestPlans} test plan versions using ${run.botName} ${run.newVersion}`}
               >
-                Start Re-runs
+                Start Updates
               </button>
             </div>
           </div>

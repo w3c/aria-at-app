@@ -14,21 +14,10 @@ const createCollectionJobsFromPreviousAtVersionResolver = async (
     throw new AuthenticationError();
   }
 
-  try {
-    const collectionJobs = await createCollectionJobsFromPreviousAtVersion({
-      atVersionId,
-      transaction
-    });
-
-    return {
-      collectionJobs,
-      message: `Successfully created ${collectionJobs.length} collection jobs from previous version`
-    };
-  } catch (error) {
-    throw new Error(
-      `Failed to create collection jobs from previous version: ${error.message}`
-    );
-  }
+  return createCollectionJobsFromPreviousAtVersion({
+    atVersionId,
+    transaction
+  });
 };
 
 module.exports = createCollectionJobsFromPreviousAtVersionResolver;
