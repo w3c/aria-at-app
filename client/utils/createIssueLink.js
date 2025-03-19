@@ -3,11 +3,49 @@ const GITHUB_ISSUES_URL =
     ? 'https://github.com/w3c/aria-at'
     : 'https://github.com/bocoup/aria-at';
 
+// Maximum URL length for GitHub issues
+// Tested on multiple browsers and devices
+const MAX_GITHUB_URL_LENGTH = 8000;
+
 // TODO: Use At.key
 const atLabelMap = {
   'VoiceOver for macOS': 'vo',
   JAWS: 'jaws',
   NVDA: 'nvda'
+};
+
+/**
+ * Returns a truncation message for URLs that are too long.
+ *
+ * @param {number|null} testSequenceNumber - Optional test sequence number to include in truncation message
+ * @returns {string} The truncation message
+ */
+const getTruncationMessage = (testSequenceNumber = null) => {
+  return `...\n\n[**Content truncated due to URL length limits.** Please visit [${
+    window.location
+  }](${window.location}) to review ${
+    !testSequenceNumber ? 'further' : `Test ${testSequenceNumber}`
+  }.]`;
+};
+
+/**
+ * Truncates a body string to ensure the resulting URL stays under the maximum length.
+ *
+ * @param {string} body - The original body content
+ * @param {string} baseUrl - The URL without the body (including title and labels)
+ * @param {number|null} testSequenceNumber - Optional test sequence number to include in truncation message
+ * @returns {string} The truncated body that will keep the URL under the maximum length
+ */
+const truncateUrlBody = (body, baseUrl, testSequenceNumber = null) => {
+  const maxUrlLength = MAX_GITHUB_URL_LENGTH;
+  const truncationMessage = getTruncationMessage(testSequenceNumber);
+
+  // Multiply by 0.65 to account for encoding
+  const maxBodyLength = Math.floor(
+    (maxUrlLength - baseUrl.length - truncationMessage.length) * 0.65
+  );
+
+  return body.substring(0, maxBodyLength) + truncationMessage;
 };
 
 /**
@@ -183,10 +221,19 @@ const createIssueLink = ({
     body += `\n${conflictMarkdown}`;
   }
 
-  return (
-    `${GITHUB_ISSUES_URL}/issues/new?title=${encodeURI(title)}&` +
-    `labels=${labels}&body=${encodeURIComponent(body)}`
-  );
+  // Create the base URL without the body
+  const baseUrl = `${GITHUB_ISSUES_URL}/issues/new?title=${encodeURI(
+    title
+  )}&labels=${labels}&body=`;
+
+  let url = baseUrl + encodeURIComponent(body);
+
+  if (url.length > MAX_GITHUB_URL_LENGTH) {
+    body = truncateUrlBody(body, baseUrl, testSequenceNumber);
+    url = baseUrl + encodeURIComponent(body);
+  }
+
+  return url;
 };
 
 /**
