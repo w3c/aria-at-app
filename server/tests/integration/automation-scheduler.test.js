@@ -16,12 +16,9 @@ const BrowserLoader = require('../../models/loaders/BrowserLoader');
 const getGraphQLContext = require('../../graphql-context');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
 const {
-  getAtVersionByQuery,
-  getRefreshableTestPlanReportsForVersion,
-  getHistoricalReportsForVerdictCopying
+  getAtVersionByQuery
 } = require('../../models/services/AtVersionService');
 const { getAtById } = require('../../models/services/AtService');
-const populateData = require('../../services/PopulatedData/populateData');
 
 let apiServer;
 let sessionAgent;

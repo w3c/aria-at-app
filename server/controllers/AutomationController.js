@@ -11,10 +11,9 @@ const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/con
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const {
   findOrCreateAtVersion,
-  getRefreshableTestPlanReportsForVersion,
   getHistoricalReportsForVerdictCopying
 } = require('../models/services/AtVersionService');
-const { getAts, getAtById } = require('../models/services/AtService');
+const { getAts } = require('../models/services/AtService');
 const {
   getBrowsers,
   findOrCreateBrowserVersion
