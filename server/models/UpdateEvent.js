@@ -20,14 +20,14 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false
       },
       type: {
-        type: DataTypes.TEXT,
+        type: DataTypes.ENUM(
+          'COLLECTION_JOB',
+          'GENERAL',
+          'TEST_PLAN_RUN',
+          'TEST_PLAN_REPORT'
+        ),
         allowNull: false,
         defaultValue: 'GENERAL'
-      },
-      metadata: {
-        type: DataTypes.JSONB,
-        allowNull: true,
-        defaultValue: {}
       }
     },
     {

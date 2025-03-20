@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ThemeTable } from '../common/ThemeTable';
+import { convertDateToString } from 'shared/dates';
 
-const UpdateEventsPanel = ({ events = [], eventsPanelRef }) => {
+const UpdateEventsPanel = ({ events = [] }) => {
   return (
-    <div className="events-section" ref={eventsPanelRef} tabIndex="-1">
+    <div className="events-section" tabIndex="-1">
       <h2 id="events-heading" className="events-header">
         Update Events
       </h2>
@@ -15,19 +16,15 @@ const UpdateEventsPanel = ({ events = [], eventsPanelRef }) => {
               <tr>
                 <th scope="col">Time</th>
                 <th scope="col">Message</th>
-                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
               {events.map(event => (
                 <tr key={event.id}>
                   <td className="timestamp-cell">
-                    {new Date(event.timestamp).toLocaleString()}
+                    {convertDateToString(event.timestamp, 'DD-MM-YYYY HH:mm')}
                   </td>
                   <td className="message-cell">{event.description}</td>
-                  <td className="status-cell">
-                    {event.metadata.status || 'N/A'}
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -45,11 +42,15 @@ const UpdateEventsPanel = ({ events = [], eventsPanelRef }) => {
 UpdateEventsPanel.propTypes = {
   events: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.string.isRequired,
       timestamp: PropTypes.string.isRequired,
       description: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired,
-      metadata: PropTypes.object
+      type: PropTypes.oneOf([
+        'COLLECTION_JOB',
+        'GENERAL',
+        'TEST_PLAN_RUN',
+        'TEST_PLAN_REPORT'
+      ]).isRequired
     })
   ),
   eventsPanelRef: PropTypes.object.isRequired

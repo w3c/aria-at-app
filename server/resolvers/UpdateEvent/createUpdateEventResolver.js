@@ -1,21 +1,14 @@
-const { UpdateEvent } = require('../../models');
+const {
+  createUpdateEvent
+} = require('../../models/services/UpdateEventService');
 
 module.exports = async (
   _,
-  { description, type = 'GENERAL', metadata = {} },
+  { description, type = 'GENERAL' },
   { transaction }
 ) => {
-  const event = await UpdateEvent.create(
-    {
-      description,
-      type,
-      metadata
-    },
-    { transaction }
-  );
-  const json = event.toJSON();
-  return {
-    ...json,
-    timestamp: event.timestamp.toISOString()
-  };
+  return await createUpdateEvent({
+    values: { description, type },
+    transaction
+  });
 };

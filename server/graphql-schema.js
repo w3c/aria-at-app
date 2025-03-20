@@ -1244,6 +1244,20 @@ const graphqlSchema = gql`
     previousVersionGroups: [PreviousVersionGroup!]!
   }
 
+  enum UpdateEventType {
+    COLLECTION_JOB
+    GENERAL
+    TEST_PLAN_RUN
+    TEST_PLAN_REPORT
+  }
+
+  type UpdateEvent {
+    id: ID!
+    timestamp: String!
+    description: String!
+    type: UpdateEventType!
+  }
+
   type Query {
     """
     Get the currently-logged-in user or null if you are not logged in.
@@ -1345,7 +1359,7 @@ const graphqlSchema = gql`
     """
     Get update events
     """
-    updateEvents(type: String): [UpdateEvent!]!
+    updateEvents(type: UpdateEventType): [UpdateEvent!]!
     """
     Get a particular update event by ID
     """
@@ -1653,22 +1667,13 @@ const graphqlSchema = gql`
     """
     createUpdateEvent(
       description: String!
-      type: String
-      metadata: Any
+      type: UpdateEventType = GENERAL
     ): UpdateEvent!
   }
 
   type CreateCollectionJobsFromPreviousVersionResponse {
     collectionJobs: [CollectionJob!]!
     message: String!
-  }
-
-  type UpdateEvent {
-    id: ID!
-    timestamp: String!
-    description: String!
-    type: String!
-    metadata: Any
   }
 `;
 

@@ -14,8 +14,6 @@ import {
 } from './queries';
 
 const ReportRerun = ({ onQueueUpdate }) => {
-  const [events, setEvents] = useState([]);
-  const eventsPanelRef = useRef(null);
   const client = useApolloClient();
 
   const { data: { me } = {} } = useQuery(ME_QUERY);
@@ -50,7 +48,6 @@ const ReportRerun = ({ onQueueUpdate }) => {
       .filter(Boolean);
   }, [atVersionsData]);
 
-  // Query refreshable reports for each automated version
   const refreshableReportsQueries = automatedVersions.map(({ at, version }) =>
     useQuery(GET_REFRESHABLE_REPORTS_QUERY, {
       variables: { atVersionId: version.id },
@@ -58,7 +55,6 @@ const ReportRerun = ({ onQueueUpdate }) => {
     })
   );
 
-  // Transform the query results into activeRuns
   const activeRuns = useMemo(() => {
     return automatedVersions.map(({ at, version }, index) => {
       const { data: refreshableData } = refreshableReportsQueries[index];
@@ -90,39 +86,25 @@ const ReportRerun = ({ onQueueUpdate }) => {
       const { message } =
         response.data.createCollectionJobsFromPreviousAtVersion;
 
-      // Trigger refetch without blocking
       client.query({
         query: GET_REFRESHABLE_REPORTS_QUERY,
         variables: { atVersionId: run.id },
         fetchPolicy: 'network-only'
       });
+
+      client.query({
+        query: GET_UPDATE_EVENTS,
+        variables: { type: 'COLLECTION_JOB' },
+        fetchPolicy: 'network-only'
+      });
       onQueueUpdate();
 
-      const newEvent = {
-        id: Date.now(),
-        timestamp: new Date().toLocaleString(),
-        description: message
-      };
-
-      setEvents(current => [newEvent, ...current]);
-
-      if (eventsPanelRef.current) {
-        eventsPanelRef.current.focus();
-        const announcement = document.getElementById('rerun-announcement');
-        if (announcement) {
-          announcement.textContent = message;
-        }
+      const announcementEl = document.getElementById('rerun-announcement');
+      if (announcementEl) {
+        announcementEl.textContent = message;
       }
     } catch (error) {
       console.error('Error creating collection jobs:', error);
-      setEvents(current => [
-        {
-          id: Date.now(),
-          timestamp: new Date().toLocaleString(),
-          description: `Error starting re-run for ${run.botName} ${run.newVersion}: ${error.message}`
-        },
-        ...current
-      ]);
     }
   };
 
@@ -142,10 +124,7 @@ const ReportRerun = ({ onQueueUpdate }) => {
         />
       )}
 
-      <UpdateEventsPanel
-        events={updateEvents}
-        eventsPanelRef={eventsPanelRef}
-      />
+      <UpdateEventsPanel events={updateEvents} />
     </div>
   );
 };

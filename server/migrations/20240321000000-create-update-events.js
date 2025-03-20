@@ -17,19 +17,22 @@ module.exports = {
         allowNull: false
       },
       type: {
-        type: Sequelize.TEXT,
+        type: Sequelize.ENUM(
+          'COLLECTION_JOB',
+          'GENERAL',
+          'TEST_PLAN_RUN',
+          'TEST_PLAN_REPORT'
+        ),
         allowNull: false,
         defaultValue: 'GENERAL'
-      },
-      metadata: {
-        type: Sequelize.JSONB,
-        allowNull: true,
-        defaultValue: {}
       }
     });
   },
 
   down: async queryInterface => {
     await queryInterface.dropTable('UpdateEvent');
+    await queryInterface.sequelize.query(
+      'DROP TYPE IF EXISTS "enum_UpdateEvent_type";'
+    );
   }
 };

@@ -1,34 +1,33 @@
 const ModelService = require('./ModelService');
 const { UpdateEvent } = require('../');
+const { convertDateToString } = require('shared/dates');
 
-const UPDATE_EVENT_ATTRIBUTES = [
-  'id',
-  'timestamp',
-  'description',
-  'type',
-  'metadata'
-];
+const UPDATE_EVENT_ATTRIBUTES = ['id', 'timestamp', 'description', 'type'];
 
 /**
  * @param {object} options
  * @param {object} options.values - values of the UpdateEvent record to be created
  * @param {string} options.values.description - Description of the update event
- * @param {string} options.values.type - Type of the update event
- * @param {object} options.values.metadata - Additional metadata for the update event
+ * @param {string} options.values.type - Type of the update event (COLLECTION_JOB, GENERAL, TEST_PLAN_RUN, TEST_PLAN_REPORT)
  * @param {string[]} options.updateEventAttributes - UpdateEvent attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const createUpdateEvent = async ({
-  values: { description, type, metadata },
+  values: { description, type },
   updateEventAttributes = UPDATE_EVENT_ATTRIBUTES,
   transaction
 }) => {
-  return ModelService.create(UpdateEvent, {
-    values: { description, type, metadata },
+  const event = await ModelService.create(UpdateEvent, {
+    values: { description, type },
     attributes: updateEventAttributes,
     transaction
   });
+
+  return {
+    ...event.toJSON(),
+    timestamp: convertDateToString(event.timestamp, 'DD-MM-YYYY HH:mm')
+  };
 };
 
 /**
@@ -43,11 +42,18 @@ const getUpdateEventById = async ({
   updateEventAttributes = UPDATE_EVENT_ATTRIBUTES,
   transaction
 }) => {
-  return ModelService.getById(UpdateEvent, {
+  const event = await ModelService.getById(UpdateEvent, {
     id,
     attributes: updateEventAttributes,
     transaction
   });
+
+  if (!event) return null;
+
+  return {
+    ...event.toJSON(),
+    timestamp: convertDateToString(event.timestamp, 'DD-MM-YYYY HH:mm')
+  };
 };
 
 /**
@@ -65,15 +71,20 @@ const getUpdateEventById = async ({
 const getUpdateEvents = async ({
   where = {},
   updateEventAttributes = UPDATE_EVENT_ATTRIBUTES,
-  pagination = {},
+  pagination = { order: [['timestamp', 'DESC']] },
   transaction
 }) => {
-  return ModelService.get(UpdateEvent, {
+  const events = await ModelService.get(UpdateEvent, {
     where,
     attributes: updateEventAttributes,
     pagination,
     transaction
   });
+
+  return events.map(event => ({
+    ...event.toJSON(),
+    timestamp: convertDateToString(event.timestamp, 'DD-MM-YYYY HH:mm')
+  }));
 };
 
 /**
