@@ -2065,12 +2065,7 @@
               hidden=""
               tabindex="0"
               class="css-r25ey0">
-              <div class="test-plan-refresh">
-                <div
-                  id="rerun-announcement"
-                  aria-live="polite"
-                  class="sr-only"
-                  role="status"></div>
+              <div class="rerun-section">
                 <h2 id="rerun-heading" class="rerun-header">
                   Available Updates
                 </h2>
@@ -2220,11 +2215,33 @@
                   <h2 id="events-heading" class="events-header">
                     Update Events
                   </h2>
-                  <div class="events-content">
-                    <p class="p-4 empty-events-message">
-                      No update events to display yet. Start a rerun to see
-                      events here.
-                    </p>
+                  <div
+                    class="events-content"
+                    aria-live="polite"
+                    aria-atomic="true">
+                    <div class="table-responsive">
+                      <table
+                        aria-label="Test plan rerun events history"
+                        class="css-1k1tjpf table">
+                        <thead>
+                          <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Message</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td class="timestamp-cell">Invalid date</td>
+                            <td class="message-cell">
+                              Test plan report for Modal Dialog Example run with
+                              NVDA 2024.4.1 and Chrome had identical outputs to
+                              the historical report, verdicts were copied, and
+                              the report was finalized
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>

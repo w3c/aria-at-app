@@ -10,6 +10,9 @@ const {
 const {
   getBrowserVersionByQuery
 } = require('../../models/services/BrowserService');
+const {
+  setupMockAutomationSchedulerServer
+} = require('../util/mock-automation-scheduler-server');
 
 /**
  * Get a function for making GraphQL queries - as well as functions to check
@@ -134,6 +137,7 @@ let checkForMissingFields;
 
 describe('graphql', () => {
   beforeAll(async () => {
+    await setupMockAutomationSchedulerServer();
     const excludedTypeNames = [
       // Items formatted like this:
       // 'TestResult'
@@ -281,6 +285,20 @@ describe('graphql', () => {
             __typename
             id
             status
+          }
+          updateEvent(id: 1) {
+            __typename
+            id
+            description
+            timestamp
+            type
+          }
+          updateEvents {
+            __typename
+            id
+            description
+            timestamp
+            type
           }
           vendors {
             id
@@ -644,6 +662,32 @@ describe('graphql', () => {
               id
             }
           }
+          rerunnableReports(atVersionId: 4) {
+            __typename
+            currentVersion {
+              __typename
+              id
+              name
+            }
+            previousVersionGroups {
+              __typename
+              previousVersion {
+                __typename
+                id
+                name
+              }
+              reports {
+                __typename
+                id
+                at {
+                  id
+                }
+                browser {
+                  id
+                }
+              }
+            }
+          }
         }
       `,
       { transaction: false }
@@ -834,6 +878,12 @@ describe('graphql', () => {
                 id
               }
               message
+            }
+            createUpdateEvent(
+              description: "Test plan report for Alert Example run with NVDA 2024.4.1 and Chrome had identical outputs to the historical report, verdicts were copied, and the report was finalized"
+              type: TEST_PLAN_REPORT
+            ) {
+              id
             }
           }
         `,
