@@ -27,7 +27,6 @@ const ReportRerun = ({ onQueueUpdate }) => {
   );
 
   const { data: { updateEvents = [] } = {} } = useQuery(GET_UPDATE_EVENTS, {
-    variables: { type: 'COLLECTION_JOB' },
     pollInterval: 2000
   });
 

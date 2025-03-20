@@ -15,7 +15,10 @@ const {
   USER_ATTRIBUTES,
   COLLECTION_JOB_TEST_STATUS_ATTRIBUTES
 } = require('./helpers');
-const { COLLECTION_JOB_STATUS } = require('../../util/enums');
+const {
+  COLLECTION_JOB_STATUS,
+  UPDATE_EVENT_TYPE
+} = require('../../util/enums');
 const { Op } = require('sequelize');
 const {
   createTestPlanRun,
@@ -806,20 +809,6 @@ const createCollectionJobsFromPreviousAtVersion = async ({
           );
 
           collectionJobs.push(job);
-
-          await createUpdateEvent({
-            values: {
-              description: `Created collection job for test plan report ${newReport.id} with AT version ${currentVersion.name}`,
-              type: 'COLLECTION_JOB',
-              metadata: {
-                collectionJobId: job.id,
-                testPlanReportId: newReport.id,
-                atVersionId: currentVersion.id,
-                status: 'CREATED'
-              }
-            },
-            transaction
-          });
         } catch (error) {
           console.error(
             `Failed to create collection job for report ${reportInfo.id}:`,
@@ -828,14 +817,8 @@ const createCollectionJobsFromPreviousAtVersion = async ({
 
           await createUpdateEvent({
             values: {
-              description: `Failed to create collection job for report ${reportInfo.id}: ${error.message}`,
-              type: 'COLLECTION_JOB',
-              metadata: {
-                reportId: reportInfo.id,
-                atVersionId: currentVersion.id,
-                status: 'ERROR',
-                error: error.message
-              }
+              description: `Failed to start automated re-run for ${reportInfo.testPlanVersion.title} ${reportInfo.testPlanVersion.versionString} using ${currentVersion.at.name} ${currentVersion.name}: ${error.message}`,
+              type: UPDATE_EVENT_TYPE.COLLECTION_JOB
             },
             transaction
           });
@@ -844,17 +827,14 @@ const createCollectionJobsFromPreviousAtVersion = async ({
     );
   }
 
-  const message = `Created ${collectionJobs.length} collection jobs for AT version ${currentVersion.name}`;
+  const message = `Created ${collectionJobs.length} re-run collection job${
+    collectionJobs.length === 1 ? '' : 's'
+  } for ${currentVersion.at.name} ${currentVersion.name}`;
 
   await createUpdateEvent({
     values: {
       description: message,
-      type: 'COLLECTION_JOB',
-      metadata: {
-        atVersionId: currentVersion.id,
-        jobCount: collectionJobs.length,
-        status: 'COMPLETED'
-      }
+      type: UPDATE_EVENT_TYPE.COLLECTION_JOB
     },
     transaction
   });

@@ -19,7 +19,11 @@ const {
   findOrCreateBrowserVersion
 } = require('../models/services/BrowserService');
 const { HttpQueryError } = require('apollo-server-core');
-const { COLLECTION_JOB_STATUS, isJobStatusFinal } = require('../util/enums');
+const {
+  COLLECTION_JOB_STATUS,
+  isJobStatusFinal,
+  UPDATE_EVENT_TYPE
+} = require('../util/enums');
 const {
   getFinalizedTestResults
 } = require('../models/services/TestResultReadService');
@@ -35,6 +39,7 @@ const {
 const {
   getTestPlanVersionById
 } = require('../models/services/TestPlanVersionService');
+const { createUpdateEvent } = require('../models/services/UpdateEventService');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -469,9 +474,17 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
     }
 
     // All tests match historical results; mark the report as final
-    await updateTestPlanReportById({
+    const updatedReport = await updateTestPlanReportById({
       id: testPlanReport.id,
       values: { markedFinalAt: new Date() },
+      transaction
+    });
+
+    await createUpdateEvent({
+      values: {
+        description: `Test plan report for ${updatedReport.testPlanVersion.title} ${updatedReport.testPlanVersion.versionString} with ${updatedReport.at.name} ${updatedReport.exactAtVersion.name} and ${updatedReport.browser.name} had identical outputs to the previous finalized report, verdicts were copied, and the report was finalized`,
+        type: UPDATE_EVENT_TYPE.TEST_PLAN_REPORT
+      },
       transaction
     });
   } catch (error) {
