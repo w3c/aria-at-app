@@ -63,7 +63,7 @@ const ReportRerun = ({ onQueueUpdate }) => {
         botName: `${at.name} Bot`,
         newVersion: version.name,
         reportGroups:
-          rerunnableData?.refreshableReports?.previousVersionGroups?.map(
+          rerunnableData?.rerunnableReports?.previousVersionGroups?.map(
             group => ({
               prevVersion: group.previousVersion.name,
               reportCount: group.reports.length,

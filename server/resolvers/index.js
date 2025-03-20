@@ -51,7 +51,7 @@ const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
 const AtVersion = require('./AtVersion');
 const createCollectionJobsFromPreviousAtVersion = require('./createCollectionJobsFromPreviousAtVersionResolver');
-const refreshableReports = require('./refreshableReportsResolver');
+const rerunnableReports = require('./rerunnableReportsResolver');
 const {
   updateEvents,
   updateEvent,
@@ -80,7 +80,7 @@ const resolvers = {
     vendors,
     vendor,
     vendorByName,
-    refreshableReports,
+    rerunnableReports,
     updateEvents,
     updateEvent
   },

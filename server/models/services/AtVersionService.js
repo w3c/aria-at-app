@@ -358,21 +358,13 @@ const findOrCreateAtVersion = async ({
 };
 
 /**
- * Gets refreshable Test Plan Reports by identifying reports that can be re-run with a newer AT version.
- *
- * A test plan report can be re-run for a specified AT Version when it meets the following criteria:
- * - The Test Plan Version for the Test Plan Report is in Candidate or Recommended
- * - The Test Plan Report has been marked final
- * - The Test Plan Report is the most recently "finalized" Report for the Test Plan Version
- * - The most recent AT version used in any Test Plan Run is older than the specified AT Version
- * - If multiple reports exist for the same test plan version and browser, only the one with the most recent AT version is included
- *
- * @param {object} options
- * @param {number} options.currentAtVersionId - ID of the current automatable AT version
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<{currentVersion: object, previousVersionGroups: object[]}>}
+ * Gets rerunnable Test Plan Reports by identifying reports that can be re-run with a newer AT version.
+ * @param {Object} params - The parameters for the function
+ * @param {number} params.currentAtVersionId - The ID of the current AT version
+ * @param {Object} [params.transaction] - The transaction to use for database operations
+ * @returns {Promise<Object>} - The rerunnable test plan reports
  */
-const getRefreshableTestPlanReportsForVersion = async ({
+const getRerunnableTestPlanReportsForVersion = async ({
   currentAtVersionId,
   transaction
 }) => {
@@ -625,6 +617,6 @@ module.exports = {
   removeAtVersionById,
   findOrCreateAtVersion,
   getUniqueAtVersionsForReport,
-  getRefreshableTestPlanReportsForVersion,
+  getRerunnableTestPlanReportsForVersion,
   getHistoricalReportsForVerdictCopying
 };

@@ -17,7 +17,7 @@ export const GET_AUTOMATION_SUPPORTED_AT_VERSIONS = gql`
 
 export const GET_RERUNNABLE_REPORTS_QUERY = gql`
   query GetRerunnableReports($atVersionId: ID!) {
-    refreshableReports(atVersionId: $atVersionId) {
+    rerunnableReports(atVersionId: $atVersionId) {
       currentVersion {
         id
         name

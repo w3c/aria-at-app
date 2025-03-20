@@ -41,7 +41,7 @@ const getGraphQLContext = require('../../graphql-context');
 const { getBotUserByAtId } = require('./UserService');
 const {
   getAtVersionWithRequirements,
-  getRefreshableTestPlanReportsForVersion
+  getRerunnableTestPlanReportsForVersion
 } = require('./AtVersionService');
 const { createUpdateEvent } = require('./UpdateEventService');
 
@@ -747,32 +747,20 @@ const createCollectionJobsFromPreviousAtVersion = async ({
   transaction
 }) => {
   const { currentVersion, previousVersionGroups } =
-    await getRefreshableTestPlanReportsForVersion({
+    await getRerunnableTestPlanReportsForVersion({
       currentAtVersionId: atVersionId,
       transaction
     });
 
   if (!currentVersion || !previousVersionGroups) {
-    throw new Error('Failed to get refreshable test plan reports');
+    throw new Error('Failed to get rerunnable test plan reports');
   }
 
-  // If no previous version groups found, return empty result
-  if (!previousVersionGroups.length) {
-    await createUpdateEvent({
-      values: {
-        description: `No refreshable reports found for AT version ${currentVersion.name}`,
-        type: 'COLLECTION_JOB',
-        metadata: {
-          atVersionId,
-          status: 'NO_REPORTS'
-        }
-      },
-      transaction
-    });
-
+  if (previousVersionGroups.length === 0) {
     return {
-      collectionJobs: [],
-      message: `No refreshable reports found for AT version ${currentVersion.name}`
+      success: false,
+      description: `No rerunnable reports found for AT version ${currentVersion.name}`,
+      message: `No rerunnable reports found for AT version ${currentVersion.name}`
     };
   }
 

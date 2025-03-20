@@ -1239,7 +1239,7 @@ const graphqlSchema = gql`
     reports: [TestPlanReport!]!
   }
 
-  type RefreshableReportsResponse {
+  type RerunnableReportsResponse {
     currentVersion: AtVersion!
     previousVersionGroups: [PreviousVersionGroup!]!
   }
@@ -1353,9 +1353,9 @@ const graphqlSchema = gql`
     """
     collectionJobs: [CollectionJob]!
     """
-    Get refreshable test plan reports for an AT version that can be used for automation re-runs
+    Get rerunnable test plan reports for an AT version that can be used for automation re-runs
     """
-    refreshableReports(atVersionId: ID!): RefreshableReportsResponse
+    rerunnableReports(atVersionId: ID!): RerunnableReportsResponse
     """
     Get update events
     """
