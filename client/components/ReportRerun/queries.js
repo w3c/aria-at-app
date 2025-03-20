@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 
-// Query to get all AT versions that support automation
 export const GET_AUTOMATION_SUPPORTED_AT_VERSIONS = gql`
   query GetAutomationSupportedAtVersions {
     ats {
@@ -16,9 +15,8 @@ export const GET_AUTOMATION_SUPPORTED_AT_VERSIONS = gql`
   }
 `;
 
-// Query to get refreshable test plan reports for a specific AT version
-export const GET_REFRESHABLE_REPORTS_QUERY = gql`
-  query GetRefreshableReports($atVersionId: ID!) {
+export const GET_RERUNNABLE_REPORTS_QUERY = gql`
+  query GetRerunnableReports($atVersionId: ID!) {
     refreshableReports(atVersionId: $atVersionId) {
       currentVersion {
         id
@@ -50,7 +48,6 @@ export const GET_REFRESHABLE_REPORTS_QUERY = gql`
   }
 `;
 
-// Mutation to create collection jobs from a previous AT version
 export const CREATE_COLLECTION_JOBS_MUTATION = gql`
   mutation CreateCollectionJobs($atVersionId: ID!) {
     createCollectionJobsFromPreviousAtVersion(atVersionId: $atVersionId) {

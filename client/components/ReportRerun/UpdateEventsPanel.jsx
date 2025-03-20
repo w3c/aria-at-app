@@ -9,7 +9,7 @@ const UpdateEventsPanel = ({ events = [] }) => {
       <h2 id="events-heading" className="events-header">
         Update Events
       </h2>
-      <div className="events-content">
+      <div className="events-content" aria-live="polite" aria-atomic="true">
         {events.length ? (
           <ThemeTable responsive aria-label="Test plan rerun events history">
             <thead>
@@ -52,8 +52,7 @@ UpdateEventsPanel.propTypes = {
         'TEST_PLAN_REPORT'
       ]).isRequired
     })
-  ),
-  eventsPanelRef: PropTypes.object.isRequired
+  )
 };
 
 export default UpdateEventsPanel;
