@@ -9,7 +9,8 @@ import './ReportRerun.css';
 import {
   GET_AUTOMATION_SUPPORTED_AT_VERSIONS,
   GET_REFRESHABLE_REPORTS_QUERY,
-  CREATE_COLLECTION_JOBS_MUTATION
+  CREATE_COLLECTION_JOBS_MUTATION,
+  GET_UPDATE_EVENTS
 } from './queries';
 
 const ReportRerun = ({ onQueueUpdate }) => {
@@ -27,8 +28,13 @@ const ReportRerun = ({ onQueueUpdate }) => {
     }
   );
 
+  const { data: { updateEvents = [] } = {} } = useQuery(GET_UPDATE_EVENTS, {
+    variables: { type: 'COLLECTION_JOB' },
+    pollInterval: 5000 // Poll every 5 seconds for updates
+  });
+
   // Get the latest version for each AT that supports automation
-  const automatedVersions = React.useMemo(() => {
+  const automatedVersions = useMemo(() => {
     if (!atVersionsData?.ats) return [];
 
     return atVersionsData.ats
@@ -136,7 +142,10 @@ const ReportRerun = ({ onQueueUpdate }) => {
         />
       )}
 
-      <UpdateEventsPanel events={events} eventsPanelRef={eventsPanelRef} />
+      <UpdateEventsPanel
+        events={updateEvents}
+        eventsPanelRef={eventsPanelRef}
+      />
     </div>
   );
 };

@@ -52,6 +52,11 @@ const ScenarioResult = require('./ScenarioResult');
 const AtVersion = require('./AtVersion');
 const createCollectionJobsFromPreviousAtVersion = require('./createCollectionJobsFromPreviousAtVersionResolver');
 const refreshableReports = require('./refreshableReportsResolver');
+const {
+  updateEvents,
+  updateEvent,
+  createUpdateEvent
+} = require('./UpdateEvent');
 
 const resolvers = {
   Query: {
@@ -75,7 +80,9 @@ const resolvers = {
     vendors,
     vendor,
     vendorByName,
-    refreshableReports
+    refreshableReports,
+    updateEvents,
+    updateEvent
   },
   Mutation: {
     at: mutateAt,
@@ -93,7 +100,8 @@ const resolvers = {
     deleteCollectionJob,
     scheduleCollectionJob,
     restartCollectionJob,
-    createCollectionJobsFromPreviousAtVersion
+    createCollectionJobsFromPreviousAtVersion,
+    createUpdateEvent
   },
   AtOperations,
   AtVersionOperations,

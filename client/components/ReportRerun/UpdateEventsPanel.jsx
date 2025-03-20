@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { ThemeTable } from '../common/ThemeTable';
 
-const UpdateEventsPanel = ({ events, eventsPanelRef }) => {
+const UpdateEventsPanel = ({ events = [], eventsPanelRef }) => {
   return (
     <div className="events-section" ref={eventsPanelRef} tabIndex="-1">
       <h2 id="events-heading" className="events-header">
@@ -15,13 +15,19 @@ const UpdateEventsPanel = ({ events, eventsPanelRef }) => {
               <tr>
                 <th scope="col">Time</th>
                 <th scope="col">Message</th>
+                <th scope="col">Status</th>
               </tr>
             </thead>
             <tbody>
               {events.map(event => (
                 <tr key={event.id}>
-                  <td className="timestamp-cell">{event.timestamp}</td>
+                  <td className="timestamp-cell">
+                    {new Date(event.timestamp).toLocaleString()}
+                  </td>
                   <td className="message-cell">{event.description}</td>
+                  <td className="status-cell">
+                    {event.metadata.status || 'N/A'}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -41,9 +47,11 @@ UpdateEventsPanel.propTypes = {
     PropTypes.shape({
       id: PropTypes.number.isRequired,
       timestamp: PropTypes.string.isRequired,
-      description: PropTypes.string.isRequired
+      description: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired,
+      metadata: PropTypes.object
     })
-  ).isRequired,
+  ),
   eventsPanelRef: PropTypes.object.isRequired
 };
 

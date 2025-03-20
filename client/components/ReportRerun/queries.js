@@ -62,3 +62,15 @@ export const CREATE_COLLECTION_JOBS_MUTATION = gql`
     }
   }
 `;
+
+export const GET_UPDATE_EVENTS = gql`
+  query GetUpdateEvents($type: String) {
+    updateEvents(type: $type) {
+      id
+      timestamp
+      description
+      type
+      metadata
+    }
+  }
+`;

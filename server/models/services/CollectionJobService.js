@@ -43,6 +43,7 @@ const {
   getAtVersionWithRequirements,
   getRefreshableTestPlanReportsForVersion
 } = require('./AtVersionService');
+const { createUpdateEvent } = require('./UpdateEventService');
 
 // association helpers to be included with Models' results
 
@@ -757,6 +758,18 @@ const createCollectionJobsFromPreviousAtVersion = async ({
 
   // If no previous version groups found, return empty result
   if (!previousVersionGroups.length) {
+    await createUpdateEvent({
+      values: {
+        description: `No refreshable reports found for AT version ${currentVersion.name}`,
+        type: 'COLLECTION_JOB',
+        metadata: {
+          atVersionId,
+          status: 'NO_REPORTS'
+        }
+      },
+      transaction
+    });
+
     return {
       collectionJobs: [],
       message: `No refreshable reports found for AT version ${currentVersion.name}`
@@ -805,19 +818,62 @@ const createCollectionJobsFromPreviousAtVersion = async ({
           );
 
           collectionJobs.push(job);
+
+          await createUpdateEvent({
+            values: {
+              description: `Created collection job for test plan report ${newReport.id} with AT version ${currentVersion.name}`,
+              type: 'COLLECTION_JOB',
+              metadata: {
+                collectionJobId: job.id,
+                testPlanReportId: newReport.id,
+                atVersionId: currentVersion.id,
+                status: 'CREATED'
+              }
+            },
+            transaction
+          });
         } catch (error) {
           console.error(
             `Failed to create collection job for report ${reportInfo.id}:`,
             error.message
           );
+
+          await createUpdateEvent({
+            values: {
+              description: `Failed to create collection job for report ${reportInfo.id}: ${error.message}`,
+              type: 'COLLECTION_JOB',
+              metadata: {
+                reportId: reportInfo.id,
+                atVersionId: currentVersion.id,
+                status: 'ERROR',
+                error: error.message
+              }
+            },
+            transaction
+          });
         }
       })
     );
   }
 
+  const message = `Created ${collectionJobs.length} collection jobs for AT version ${currentVersion.name}`;
+
+  await createUpdateEvent({
+    values: {
+      description: message,
+      type: 'COLLECTION_JOB',
+      metadata: {
+        atVersionId: currentVersion.id,
+        jobCount: collectionJobs.length,
+        status: 'COMPLETED'
+      }
+    },
+    transaction
+  });
+
   return {
     collectionJobs,
-    message: `Created ${collectionJobs.length} collection jobs for AT version ${currentVersion.name}`
+    message
   };
 };
 

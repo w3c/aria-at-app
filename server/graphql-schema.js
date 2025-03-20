@@ -1342,6 +1342,14 @@ const graphqlSchema = gql`
     Get refreshable test plan reports for an AT version that can be used for automation re-runs
     """
     refreshableReports(atVersionId: ID!): RefreshableReportsResponse
+    """
+    Get update events
+    """
+    updateEvents(type: String): [UpdateEvent!]!
+    """
+    Get a particular update event by ID
+    """
+    updateEvent(id: ID!): UpdateEvent
   }
 
   # Mutation-specific types below
@@ -1640,11 +1648,27 @@ const graphqlSchema = gql`
     createCollectionJobsFromPreviousAtVersion(
       atVersionId: ID!
     ): CreateCollectionJobsFromPreviousVersionResponse!
+    """
+    Create a new update event
+    """
+    createUpdateEvent(
+      description: String!
+      type: String
+      metadata: Any
+    ): UpdateEvent!
   }
 
   type CreateCollectionJobsFromPreviousVersionResponse {
     collectionJobs: [CollectionJob!]!
     message: String!
+  }
+
+  type UpdateEvent {
+    id: ID!
+    timestamp: String!
+    description: String!
+    type: String!
+    metadata: Any
   }
 `;
 
