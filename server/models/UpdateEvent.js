@@ -8,7 +8,8 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        autoIncrementIdentity: true
       },
       timestamp: {
         type: DataTypes.DATE,
