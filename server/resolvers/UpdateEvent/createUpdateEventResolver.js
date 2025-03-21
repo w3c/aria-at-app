@@ -2,13 +2,15 @@ const {
   createUpdateEvent
 } = require('../../models/services/UpdateEventService');
 
-module.exports = async (
+const createUpdateEventResolver = (
   _,
   { description, type = 'GENERAL' },
   { transaction }
 ) => {
-  return await createUpdateEvent({
+  return createUpdateEvent({
     values: { description, type },
     transaction
   });
 };
+
+module.exports = createUpdateEventResolver;

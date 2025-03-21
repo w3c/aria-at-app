@@ -22,7 +22,10 @@ const UpdateEventsPanel = ({ events = [] }) => {
               {events.map(event => (
                 <tr key={event.id}>
                   <td className="timestamp-cell">
-                    {convertDateToString(event.timestamp, 'DD-MM-YYYY HH:mm')}
+                    {convertDateToString(
+                      new Date(event.timestamp),
+                      'YYYY-MM-DD HH:mm'
+                    )}
                   </td>
                   <td className="message-cell">{event.description}</td>
                 </tr>

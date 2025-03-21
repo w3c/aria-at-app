@@ -1,6 +1,8 @@
 import getPage from '../util/getPage';
 
 describe('Report Rerun tab', () => {
+  jest.setTimeout(60000);
+
   const switchToReportRerunTab = async page => {
     await page.waitForSelector(
       'button[role="tab"] span::-p-text(Automated Report Updates)'

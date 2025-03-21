@@ -2,6 +2,8 @@ const {
   getUpdateEventById
 } = require('../../models/services/UpdateEventService');
 
-module.exports = async (_, { id }, { transaction }) => {
-  return await getUpdateEventById({ id, transaction });
+const updateEventResolver = (_, { id }, { transaction }) => {
+  return getUpdateEventById({ id, transaction });
 };
+
+module.exports = updateEventResolver;
