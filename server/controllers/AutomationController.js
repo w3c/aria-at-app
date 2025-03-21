@@ -408,13 +408,11 @@ const updateJobResults = async (req, res) => {
 
     res.json({ success: true });
   } catch (error) {
-    const statusCode = error.statusCode || 500;
-    const errorResponse = {
-      error: error.message,
-      details: error.details || {},
-      stack: process.env.NODE_ENV !== 'production' ? error.stack : undefined
-    };
-    res.status(statusCode).json(errorResponse);
+    throw new HttpQueryError(
+      error.statusCode || 500,
+      `Error updating job results: ${error.message}`,
+      true
+    );
   }
 };
 
@@ -488,15 +486,9 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
       transaction
     });
   } catch (error) {
-    const statusCode = error.statusCode || 500;
-    const errorMessage = error.message || 'An unknown error occurred';
-    const details = error.details || {};
-    const stack =
-      process.env.NODE_ENV !== 'production' ? error.stack : undefined;
-
     throw new HttpQueryError(
-      statusCode,
-      JSON.stringify({ message: errorMessage, details, stack }),
+      error.statusCode || 500,
+      `Error finalizing test plan report: ${error.message}`,
       true
     );
   }
