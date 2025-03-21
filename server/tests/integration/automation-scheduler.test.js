@@ -1247,7 +1247,7 @@ describe('Automation controller', () => {
         transaction
       });
       expect(res).toEqual({
-        deleteCollectionJob: true
+        deleteCollectionJob: 1
       });
 
       const { collectionJob: deletedCollectionJob } =
