@@ -164,7 +164,8 @@ describe('graphql', () => {
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
       ['Mutation', 'restartCollectionJob'],
-      ['CollectionJobOperations', 'retryCanceledCollections']
+      ['CollectionJobOperations', 'retryCanceledCollections'],
+      ['Mutation', 'createUpdateEvent']
     ];
     ({
       typeAwareQuery,
@@ -878,12 +879,6 @@ describe('graphql', () => {
                 id
               }
               message
-            }
-            createUpdateEvent(
-              description: "Test plan report for Alert Example run with NVDA 2024.4.1 and Chrome had identical outputs to the historical report, verdicts were copied, and the report was finalized"
-              type: TEST_PLAN_REPORT
-            ) {
-              id
             }
           }
         `,
