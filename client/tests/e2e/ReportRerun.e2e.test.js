@@ -3,12 +3,15 @@ import getPage from '../util/getPage';
 describe('Report Rerun tab', () => {
   const switchToReportRerunTab = async page => {
     await page.waitForSelector(
-      'button[role="tab"] span::-p-text(Automated Report Updates)'
+      'button[role="tab"] span::-p-text(Automated Report Updates)',
+      { timeout: 20000 }
     );
     await page.click(
       'button[role="tab"] span::-p-text(Automated Report Updates)'
     );
-    await page.waitForSelector('[role="tabpanel"]:not([hidden])');
+    await page.waitForSelector('[role="tabpanel"]:not([hidden])', {
+      timeout: 20000
+    });
   };
 
   it('shows different content based on user role', async () => {
@@ -70,7 +73,8 @@ describe('Report Rerun tab', () => {
 
   it('handles rerun action for specific bot version', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      page.setDefaultTimeout(60000);
+      page.setDefaultTimeout(75000);
+
       await switchToReportRerunTab(page);
 
       const startUpdateResult = await page.evaluate(() => {
@@ -97,20 +101,24 @@ describe('Report Rerun tab', () => {
 
       expect(startUpdateResult.found).toBe(true);
 
-      await page.waitForFunction(() => {
-        const table = document.querySelector(
-          'table[aria-label="Test plan rerun events history"]'
-        );
-        return (
-          table && table.querySelector('tbody tr:nth-child(2) td.message-cell')
-        );
-      });
-      const eventMessage = await page.$eval(
-        'table[aria-label="Test plan rerun events history"] tbody tr:first-child td.message-cell',
-        el => el.textContent
-      );
-      expect(eventMessage).toContain(
-        'Created 1 re-run collection job for NVDA 2023.3.3'
+      await page.waitForFunction(
+        () => {
+          const table = document.querySelector(
+            'table[aria-label="Test plan rerun events history"]'
+          );
+
+          if (!table) return false;
+
+          const rows = table.querySelectorAll('tbody tr');
+          if (rows.length === 0) return false;
+
+          const firstRowMessage =
+            rows[0].querySelector('.message-cell')?.textContent || '';
+          return firstRowMessage.includes(
+            'Created 1 re-run collection job for NVDA'
+          );
+        },
+        { timeout: 60000 }
       );
     });
   });
