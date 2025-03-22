@@ -3,15 +3,12 @@ import getPage from '../util/getPage';
 describe('Report Rerun tab', () => {
   const switchToReportRerunTab = async page => {
     await page.waitForSelector(
-      'button[role="tab"] span::-p-text(Automated Report Updates)',
-      { timeout: 20000 }
+      'button[role="tab"] span::-p-text(Automated Report Updates)'
     );
     await page.click(
       'button[role="tab"] span::-p-text(Automated Report Updates)'
     );
-    await page.waitForSelector('[role="tabpanel"]:not([hidden])', {
-      timeout: 20000
-    });
+    await page.waitForSelector('[role="tabpanel"]:not([hidden])');
   };
 
   it('shows different content based on user role', async () => {
@@ -48,7 +45,6 @@ describe('Report Rerun tab', () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       await switchToReportRerunTab(page);
 
-      // Verify the events table structure
       const tableStructure = await page.evaluate(() => {
         const table = document.querySelector(
           'table[aria-label="Test plan rerun events history"]'
@@ -73,8 +69,6 @@ describe('Report Rerun tab', () => {
 
   it('handles rerun action for specific bot version', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      page.setDefaultTimeout(75000);
-
       await switchToReportRerunTab(page);
 
       const startUpdateResult = await page.evaluate(() => {
@@ -101,25 +95,21 @@ describe('Report Rerun tab', () => {
 
       expect(startUpdateResult.found).toBe(true);
 
-      await page.waitForFunction(
-        () => {
-          const table = document.querySelector(
-            'table[aria-label="Test plan rerun events history"]'
-          );
+      await page.waitForFunction(() => {
+        const table = document.querySelector(
+          'table[aria-label="Test plan rerun events history"]'
+        );
 
-          if (!table) return false;
+        if (!table) return false;
 
-          const rows = table.querySelectorAll('tbody tr');
-          if (rows.length === 0) return false;
-
-          const firstRowMessage =
-            rows[0].querySelector('.message-cell')?.textContent || '';
-          return firstRowMessage.includes(
-            'Created 1 re-run collection job for NVDA'
-          );
-        },
-        { timeout: 60000 }
-      );
+        const rows = table.querySelectorAll('tbody tr');
+        if (rows.length === 0) return false;
+        const firstRowMessage =
+          rows[0].querySelector('.message-cell')?.textContent || '';
+        return firstRowMessage.includes(
+          'Created 1 re-run collection job for NVDA'
+        );
+      });
     });
   });
 });

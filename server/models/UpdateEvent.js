@@ -1,8 +1,6 @@
-const MODEL_NAME = 'UpdateEvent';
-
 module.exports = function (sequelize, DataTypes) {
   const Model = sequelize.define(
-    MODEL_NAME,
+    'UpdateEvent',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -33,7 +31,8 @@ module.exports = function (sequelize, DataTypes) {
     },
     {
       timestamps: false,
-      tableName: MODEL_NAME
+      tableName: 'UpdateEvent',
+      schema: 'public'
     }
   );
 

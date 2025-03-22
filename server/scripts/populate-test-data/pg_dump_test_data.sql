@@ -195,6 +195,12 @@ INSERT INTO "CollectionJob" (id, status, "testPlanRunId") VALUES (1, 'QUEUED', 1
 INSERT INTO "UpdateEvent" (id, "description", "timestamp", "type") VALUES (1, 'Test plan report for Modal Dialog Example run with NVDA 2024.4.1 and Chrome had identical outputs to the historical report, verdicts were copied, and the report was finalized', '2024-09-20 13:57:16.232-05', 'TEST_PLAN_REPORT');
 
 --
+-- Name: UpdateEvent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
+--
+
+SELECT pg_catalog.setval('"UpdateEvent_id_seq"', (SELECT MAX(id) FROM "UpdateEvent"), true);
+
+--
 -- Name: At_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
 --
 
