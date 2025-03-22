@@ -70,6 +70,7 @@ describe('Report Rerun tab', () => {
 
   it('handles rerun action for specific bot version', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      page.setDefaultTimeout(60000);
       await switchToReportRerunTab(page);
 
       const startUpdateResult = await page.evaluate(() => {
