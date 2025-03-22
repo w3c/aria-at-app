@@ -50,6 +50,13 @@ const TestPlanRun = require('./TestPlanRun');
 const Test = require('./Test');
 const ScenarioResult = require('./ScenarioResult');
 const AtVersion = require('./AtVersion');
+const createCollectionJobsFromPreviousAtVersion = require('./createCollectionJobsFromPreviousAtVersionResolver');
+const rerunnableReports = require('./rerunnableReportsResolver');
+const {
+  updateEvents,
+  updateEvent,
+  createUpdateEvent
+} = require('./UpdateEvent');
 
 const resolvers = {
   Query: {
@@ -72,7 +79,10 @@ const resolvers = {
     collectionJobByTestPlanRunId,
     vendors,
     vendor,
-    vendorByName
+    vendorByName,
+    rerunnableReports,
+    updateEvents,
+    updateEvent
   },
   Mutation: {
     at: mutateAt,
@@ -89,7 +99,9 @@ const resolvers = {
     updateCollectionJob,
     deleteCollectionJob,
     scheduleCollectionJob,
-    restartCollectionJob
+    restartCollectionJob,
+    createCollectionJobsFromPreviousAtVersion,
+    createUpdateEvent
   },
   AtOperations,
   AtVersionOperations,

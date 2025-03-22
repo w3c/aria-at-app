@@ -3,7 +3,7 @@ const getGraphQLContext = require('../../graphql-context');
 const testPlanReportStatusesResolver = require('./testPlanReportStatusesResolver');
 const db = require('../../models');
 const dbCleaner = require('../../tests/util/db-cleaner');
-const { createAtVersion } = require('../../models/services/AtService');
+const { createAtVersion } = require('../../models/services/AtVersionService');
 
 const getDate = dayAdjustment => {
   return new Date(

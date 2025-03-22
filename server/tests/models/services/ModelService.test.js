@@ -4,7 +4,7 @@ const {
   getSequelizeModelAttributes,
   USER_ROLES_ATTRIBUTES
 } = require('../../../models/services/helpers');
-const AtService = require('../../../models/services/AtService');
+const AtVersionService = require('../../../models/services/AtVersionService');
 const BrowserService = require('../../../models/services/BrowserService');
 const dbCleaner = require('../../util/db-cleaner');
 
@@ -157,8 +157,8 @@ describe('ModelService', () => {
       const results = await ModelService.nestedGetOrCreate({
         operations: [
           {
-            get: AtService.getAtVersions,
-            create: AtService.createAtVersion,
+            get: AtVersionService.getAtVersions,
+            create: AtVersionService.createAtVersion,
             values: { atId: _atId, name: _atVersion },
             returnAttributes: {}
           },

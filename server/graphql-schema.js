@@ -1234,6 +1234,30 @@ const graphqlSchema = gql`
     assertionResult: AssertionResult
   }
 
+  type PreviousVersionGroup {
+    previousVersion: AtVersion!
+    reports: [TestPlanReport!]!
+  }
+
+  type RerunnableReportsResponse {
+    currentVersion: AtVersion!
+    previousVersionGroups: [PreviousVersionGroup!]!
+  }
+
+  enum UpdateEventType {
+    COLLECTION_JOB
+    GENERAL
+    TEST_PLAN_RUN
+    TEST_PLAN_REPORT
+  }
+
+  type UpdateEvent {
+    id: ID!
+    timestamp: String!
+    description: String!
+    type: UpdateEventType!
+  }
+
   type Query {
     """
     Get the currently-logged-in user or null if you are not logged in.
@@ -1328,6 +1352,18 @@ const graphqlSchema = gql`
     Get all CollectionJobs.
     """
     collectionJobs: [CollectionJob]!
+    """
+    Get rerunnable test plan reports for an AT version that can be used for automation re-runs
+    """
+    rerunnableReports(atVersionId: ID!): RerunnableReportsResponse
+    """
+    Get update events
+    """
+    updateEvents(type: UpdateEventType): [UpdateEvent!]!
+    """
+    Get a particular update event by ID
+    """
+    updateEvent(id: ID!): UpdateEvent
   }
 
   # Mutation-specific types below
@@ -1620,6 +1656,24 @@ const graphqlSchema = gql`
     Delete a CollectionJob
     """
     deleteCollectionJob(id: ID!): NoResponse!
+    """
+    Create collection jobs for all test plan reports eligible for automation refresh
+    """
+    createCollectionJobsFromPreviousAtVersion(
+      atVersionId: ID!
+    ): CreateCollectionJobsFromPreviousVersionResponse!
+    """
+    Create a new update event
+    """
+    createUpdateEvent(
+      description: String!
+      type: UpdateEventType = GENERAL
+    ): UpdateEvent!
+  }
+
+  type CreateCollectionJobsFromPreviousVersionResponse {
+    collectionJobs: [CollectionJob!]!
+    message: String!
   }
 `;
 

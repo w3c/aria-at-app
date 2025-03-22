@@ -162,6 +162,10 @@ const startCollectionJobSimulation = async (
                               metadata
                               gitSha
                           }
+                          exactAtVersion {
+                              name
+                              id
+                          }
                           at {
                               name
                               atVersions {
@@ -205,7 +209,7 @@ const startCollectionJobSimulation = async (
     const atName = testPlanReport.at.name;
 
     if (!atVersion || !atVersion.name) {
-      throw new Error('Simulated job started without specified version');
+      atVersion = testPlanReport.exactAtVersion;
     }
 
     const { name: atVersionName } = atVersion;

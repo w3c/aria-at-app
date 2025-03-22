@@ -15,6 +15,10 @@ const AtLoader = require('../../models/loaders/AtLoader');
 const BrowserLoader = require('../../models/loaders/BrowserLoader');
 const getGraphQLContext = require('../../graphql-context');
 const { COLLECTION_JOB_STATUS } = require('../../util/enums');
+const {
+  getAtVersionByQuery
+} = require('../../models/services/AtVersionService');
+const { getAtById } = require('../../models/services/AtService');
 
 let apiServer;
 let sessionAgent;
@@ -41,8 +45,28 @@ const getTestPlanReport = async (id, { transaction }) =>
                 testPlanReport(id: "${id}") {
                     id
                     markedFinalAt
-                    at { name }
-                    browser { name }
+                    testPlanVersion {
+                        id
+                        phase
+                    }
+                    at { 
+                        name 
+                        atVersions {
+                            id
+                            name
+                        }
+                    }
+                    browser { 
+                        name 
+                        browserVersions {
+                            id
+                            name
+                        }
+                    }
+                    exactAtVersion {
+                        id
+                        name
+                    }
                     finalizedTestResults {
                         test {
                             id
@@ -85,6 +109,7 @@ const getTestPlanRun = async (id, { transaction }) =>
                         id
                         test {
                             id
+                            rowNumber
                         }
                         atVersion {
                             id
@@ -126,8 +151,13 @@ const getTestCollectionJob = async (jobId, { transaction }) =>
                     status
                     externalLogsUrl
                     testPlanRun {
+                      id
                         testPlanReport {
                             id
+                            exactAtVersion {
+                                id
+                                name
+                            }
                             testPlanVersion {
                                 id
                                 phase
@@ -234,6 +264,49 @@ const deleteCollectionJobByMutation = async (jobId, { transaction }) =>
     `
             mutation {
                 deleteCollectionJob(id: "${jobId}")
+            }
+        `,
+    { transaction }
+  );
+
+const createCollectionJobsFromPreviousVersionMutation = async (
+  atVersionId,
+  { transaction }
+) =>
+  await mutate(
+    `
+            mutation {
+                createCollectionJobsFromPreviousAtVersion(atVersionId: "${atVersionId}") {
+                    collectionJobs {
+                        id
+                        status
+                        testStatus {
+                            status
+                        }
+                        testPlanRun {
+                            tester {
+                                isBot
+                            }
+                            testPlanReport {
+                                id
+                                markedFinalAt
+                                at {
+                                    id
+                                    name
+                                }
+                                exactAtVersion {
+                                    id
+                                    name
+                                }
+                                testPlanVersion {
+                                    id
+                                    title
+                                }
+                            }
+                        }
+                    }
+                    message
+                }
             }
         `,
     { transaction }
@@ -1053,10 +1126,9 @@ describe('Automation controller', () => {
       });
 
       // Start by getting historical results for comparing later
-      // Test plan report used for test is in Draft so it
-      // must be markedAsFinal to have historical results
+      // Use a finalized RECOMMENDED report
       const finalizedTestPlanVersion = await markAsFinalResolver(
-        { parentContext: { id: testPlanReportId } },
+        { parentContext: { id: '25' } },
         {},
         context
       );
@@ -1065,31 +1137,32 @@ describe('Automation controller', () => {
         finalizedTestPlanVersion.testPlanReport.id,
         { transaction }
       );
-      const selectedTestIndex = 0;
 
+      const selectedTestIndex = 0;
       const { at, browser } = testPlanReport;
+
       const historicalTestResult =
         testPlanReport.finalizedTestResults[selectedTestIndex];
-      expect(historicalTestResult).not.toEqual(undefined);
-      const historicalResponses = historicalTestResult?.scenarioResults.map(
-        scenarioResult => scenarioResult.output
-      );
-      const { atVersion, browserVersion } = historicalTestResult;
 
       const { scheduleCollectionJob: job } =
-        await scheduleCollectionJobByMutation({ transaction });
+        await scheduleCollectionJobByMutation({
+          transaction,
+          reportId: '25' // Use the same report ID as our historical report
+        });
       const collectionJob = await getCollectionJobById({
         id: job.id,
         transaction
       });
-      const { secret } = collectionJob;
 
       const { tests } =
         collectionJob.testPlanRun.testPlanReport.testPlanVersion;
+      const selectedTest = tests.find(
+        t => t.id === historicalTestResult?.test?.id
+      );
+      expect(selectedTest).toBeDefined();
+      const selectedTestRowNumber = selectedTest.rowNumber;
 
-      const selectedTestRowNumber = tests.find(
-        t => t.id === historicalTestResult.test.id
-      ).rowNumber;
+      const secret = await getJobSecret(job.id, { transaction });
 
       let response = await sessionAgent
         .post(`/api/jobs/${job.id}`)
@@ -1103,11 +1176,11 @@ describe('Automation controller', () => {
         .send({
           capabilities: {
             atName: at.name,
-            atVersion: atVersion.name,
+            atVersion: testPlanReport.exactAtVersion.name,
             browserName: browser.name,
-            browserVersion: browserVersion.name
+            browserVersion: browser.browserVersions[0].name
           },
-          responses: historicalResponses
+          responses: historicalTestResult?.scenarioResults.map(sr => sr.output)
         })
         .set('x-automation-secret', secret)
         .set('x-transaction-id', transaction.id);
@@ -1122,8 +1195,12 @@ describe('Automation controller', () => {
 
       testResults.forEach(testResult => {
         expect(testResult.test.id).toEqual(historicalTestResult.test.id);
-        expect(testResult.atVersion.name).toEqual(atVersion.name);
-        expect(testResult.browserVersion.name).toEqual(browserVersion.name);
+        expect(testResult.atVersion.name).toEqual(
+          testPlanReport.exactAtVersion.name
+        );
+        expect(testResult.browserVersion.name).toEqual(
+          browser.browserVersions[0].name
+        );
         testResult.scenarioResults.forEach((scenarioResult, index) => {
           const historicalScenarioResult =
             historicalTestResult.scenarioResults[index];
@@ -1170,12 +1247,176 @@ describe('Automation controller', () => {
         transaction
       });
       expect(res).toEqual({
-        deleteCollectionJob: true
+        deleteCollectionJob: 1
       });
 
       const { collectionJob: deletedCollectionJob } =
         await getTestCollectionJob(job.id, { transaction });
       expect(deletedCollectionJob).toEqual(null);
+    });
+  });
+
+  it('should create collection jobs from previous AT version', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      //  VoiceOver
+      const targetAt = await getAtById({ id: 3, transaction });
+      expect(targetAt).toBeDefined();
+
+      const currentAtVersion = await getAtVersionByQuery({
+        where: {
+          atId: 3,
+          name: '14.0'
+        },
+        transaction
+      });
+      expect(currentAtVersion).toBeDefined();
+
+      const response = await createCollectionJobsFromPreviousVersionMutation(
+        currentAtVersion.id,
+        { transaction }
+      );
+      const result = response.createCollectionJobsFromPreviousAtVersion;
+
+      expect(result).toBeDefined();
+      const { collectionJobs } = result;
+      expect(Array.isArray(collectionJobs)).toBe(true);
+      expect(collectionJobs.length).toBe(4);
+
+      collectionJobs.forEach(job => {
+        const report = job.testPlanRun.testPlanReport;
+        expect(report.at.id.toString()).toBe('3');
+        expect(report.exactAtVersion.name).toBe('14.0');
+      });
+    });
+  });
+
+  const commonVerdictCopyingSetup = async ({
+    transaction,
+    diffOutputs = 0
+  }) => {
+    // Start by getting historical results for comparing later
+    // Use a finalized RECOMMENDED report
+    const { testPlanReport: historicalReport } = await getTestPlanReport('25', {
+      transaction
+    });
+    expect(historicalReport).toBeDefined();
+    expect(historicalReport.markedFinalAt).not.toBeNull();
+
+    const currentAtVersion = await getAtVersionByQuery({
+      where: { atId: 3, name: '14.0' },
+      transaction
+    });
+    expect(currentAtVersion).toBeDefined();
+    const createResponse =
+      await createCollectionJobsFromPreviousVersionMutation(
+        currentAtVersion.id,
+        { transaction }
+      );
+    const result = createResponse.createCollectionJobsFromPreviousAtVersion;
+    expect(result).toBeDefined();
+    expect(Array.isArray(result.collectionJobs)).toBe(true);
+    expect(result.collectionJobs.length).toBeGreaterThan(0);
+
+    // Find the collection job for the same test plan version as our historical report
+    const { collectionJob: newJob } = await getTestCollectionJob(
+      result.collectionJobs[0].id,
+      { transaction }
+    );
+    expect(newJob).toBeDefined();
+
+    const secret = await getJobSecret(newJob.id, { transaction });
+    let updateResponse = await sessionAgent
+      .post(`/api/jobs/${newJob.id}`)
+      .send({ status: 'RUNNING' })
+      .set('x-automation-secret', secret)
+      .set('x-transaction-id', transaction.id);
+    expect(updateResponse.statusCode).toBe(200);
+
+    // Update test results for every historical test result with matching outputs
+    for (const historicalResult of historicalReport.finalizedTestResults) {
+      const testRowNumber = historicalResult.test.rowNumber;
+      const responses = historicalResult.scenarioResults.map(sr => sr.output);
+      for (let i = 0; i < diffOutputs && i < responses.length; i++) {
+        responses[i] = 'This is a different output';
+      }
+      const updateRes = await sessionAgent
+        .post(`/api/jobs/${newJob.id}/test/${testRowNumber}`)
+        .send({
+          responses,
+          capabilities: {
+            atName: historicalReport.at.name,
+            atVersion: newJob.testPlanRun.testPlanReport.exactAtVersion.name,
+            browserName: historicalReport.browser.name,
+            browserVersion: historicalResult.browserVersion.name
+          }
+        })
+        .set('x-automation-secret', secret)
+        .set('x-transaction-id', transaction.id);
+      expect(updateRes.statusCode).toBe(200);
+    }
+
+    // Verify that for every updated test result, the assertion results are copied from the corresponding historical result
+    const updatedRun = await getTestPlanRun(newJob.testPlanRun.id, {
+      transaction
+    });
+    for (const historicalResult of historicalReport.finalizedTestResults) {
+      const newTestResult = updatedRun.testPlanRun.testResults.find(
+        tr => tr.test.id === historicalResult.test.id
+      );
+      let diffOutputsAvailable = diffOutputs;
+      expect(newTestResult).toBeDefined();
+      newTestResult.scenarioResults.forEach((scenarioResult, i) => {
+        const historicalScenario = historicalResult.scenarioResults[i];
+        if (scenarioResult.output !== historicalScenario.output) {
+          if (diffOutputsAvailable > 0) {
+            diffOutputsAvailable--;
+          } else {
+            console.error(
+              `Output mismatch for scenario ${i}: expected "${historicalScenario.output}" but got "${scenarioResult.output}" and have ${diffOutputsAvailable} diff tolerance remaining`
+            );
+            expect(false).toBe(true);
+          }
+        } else {
+          scenarioResult.assertionResults.forEach((assertionResult, j) => {
+            const historicalAssertionResult =
+              historicalScenario.assertionResults[j];
+            expect(assertionResult.passed).toEqual(
+              historicalAssertionResult.passed
+            );
+            expect(assertionResult.failedReason).toEqual(
+              historicalAssertionResult.failedReason
+            );
+          });
+        }
+      });
+    }
+    const { testPlanReport: finalReport } = await getTestPlanReport(
+      newJob.testPlanRun.testPlanReport.id,
+      { transaction }
+    );
+    return finalReport;
+  };
+
+  it('should copy historical assertion results from historical report (previous automatable AT version) and auto-finalize new test report when outputs match', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      const finalReport = await commonVerdictCopyingSetup({
+        transaction
+      });
+
+      // Since all tests have matching outputs, the report should be auto-finalized
+      expect(finalReport.markedFinalAt).not.toBeNull();
+    });
+  });
+
+  it('should not auto-finalize new test report when outputs do not match', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      const finalReport = await commonVerdictCopyingSetup({
+        transaction,
+        diffOutputs: 1
+      });
+
+      // Since there is one test with a different output, the report should not be auto-finalized
+      expect(finalReport.markedFinalAt).toBeNull();
     });
   });
 });

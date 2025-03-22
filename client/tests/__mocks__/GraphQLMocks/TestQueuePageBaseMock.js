@@ -1,4 +1,8 @@
-export default (testPlanReportAtBrowserQuery, existingTestPlanReportsQuery) => [
+export default (
+  testPlanReportAtBrowserQuery,
+  existingTestPlanReportsQuery,
+  getUpdateEventsQuery
+) => [
   {
     request: {
       query: testPlanReportAtBrowserQuery,
@@ -108,6 +112,17 @@ export default (testPlanReportAtBrowserQuery, existingTestPlanReportsQuery) => [
           }
         },
         oldTestPlanVersions: []
+      }
+    }
+  },
+  {
+    request: {
+      query: getUpdateEventsQuery,
+      variables: {}
+    },
+    result: {
+      data: {
+        updateEvents: []
       }
     }
   }
