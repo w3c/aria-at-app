@@ -1,4 +1,4 @@
-# ARIA and Assistive Technologies App (ARIA-AT App)
+# Paul's ARIA and Assistive Technologies App (ARIA-AT App)
 ## ARIA-AT APP
 ARIA-AT aims to improve interoperability between different Assistive Technologies (ATs) in how they render ARIA patterns. This is achieved through running manual tests and presenting test results to AT vendors. The tests are based on examples from [WAI-ARIA Authoring Practices](https://w3c.github.io/aria-practices/), and are vetted with stakeholders following the [Working Mode](https://github.com/w3c/aria-at/wiki/Working-Mode) process. This project is managed by the [ARIA-AT Community Group](https://www.w3.org/groups/cg/aria-at) in coordination with the [Authoring Practices Task Force](https://www.w3.org/WAI/ARIA/task-forces/practices/) of the [ARIA Working Group](http://www.w3.org/WAI/ARIA/). The W3C staff contact is Daniel Montalvo.
 
