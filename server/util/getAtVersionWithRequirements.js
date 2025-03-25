@@ -28,8 +28,13 @@ const getAtVersionWithRequirements = async (
         atId,
         releasedAt: { [Op.gte]: minimumAtVersion.releasedAt }
       },
+      // If there is ever a significant shift in how the ATs' versions we're
+      // collecting changes, this has to be revisited
       pagination: {
-        order: [['releasedAt', 'ASC']]
+        order: [
+          ['name', 'DESC'],
+          ['releasedAt', 'DESC']
+        ]
       },
       transaction
     });
@@ -41,7 +46,7 @@ const getAtVersionWithRequirements = async (
 
     const latestSupportedAtVersion = matchingAtVersions.find(
       atv =>
-        supportedVersions.includes(atv.name) &&
+        supportedVersions.includes(atv.name.trim()) &&
         new Date(atv.releasedAt) >= new Date(minimumAtVersion.releasedAt)
     );
 
