@@ -1,4 +1,5 @@
 const { getAts } = require('../services/AtService');
+const { utils } = require('shared');
 
 const AtLoader = () => {
   let ats;
@@ -18,8 +19,8 @@ const AtLoader = () => {
         // Sort date of atVersions subarray in desc order by releasedAt date
         ats
           .sort((a, b) => a.name.localeCompare(b.name))
-          .forEach(item =>
-            item.atVersions.sort((a, b) => b.releasedAt - a.releasedAt)
+          .forEach(
+            item => (item.atVersions = utils.sortAtVersions(item.atVersions))
           );
 
         ats = ats.map(at => ({
