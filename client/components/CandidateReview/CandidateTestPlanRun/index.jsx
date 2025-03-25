@@ -279,11 +279,6 @@ const CandidateTestPlanRun = () => {
     if (isLastTest && tests?.length !== 1) finishButtonRef.current.focus();
   }, [isLastTest]);
 
-  useEffect(() => {
-    if (viewedTests.length > 0 && currentTest?.id)
-      addViewerToTest(currentTest.id).then(() => setFirstTimeViewing(true));
-  }, [viewedTests]);
-
   if (error)
     return (
       <PageStatus

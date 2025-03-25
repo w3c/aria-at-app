@@ -233,10 +233,74 @@ const updateReviewerStatusByIds = async ({
   });
 };
 
+/**
+ * @param testPlanReportId
+ * @param userId
+ * @param testId
+ * @param vendorId
+ * @param reviewerStatusAttributes
+ * @param testPlanReportAttributes
+ * @param testPlanVersionAttributes
+ * @param userAttributes
+ * @param vendorAttributes
+ * @param transaction
+ * @returns {Promise<Model>}
+ */
+const createOrUpdateReviewerStatus = async ({
+  testPlanReportId,
+  userId,
+  testId,
+  vendorId,
+  reviewerStatusAttributes = REVIEWER_STATUS_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  vendorAttributes = VENDOR_ATTRIBUTES,
+  transaction
+}) => {
+  const testPlanReport = await TestPlanReport.findOne({
+    where: { id: testPlanReportId },
+    transaction
+  });
+
+  const existing = await ReviewerStatus.findOne({
+    where: { testPlanReportId, userId },
+    transaction
+  });
+
+  const viewedTests = existing
+    ? [...new Set([...existing.viewedTests, testId])]
+    : [testId];
+
+  await ReviewerStatus.upsert(
+    {
+      testPlanReportId,
+      testPlanVersionId: testPlanReport.testPlanVersionId,
+      userId,
+      vendorId,
+      reviewStatus: vendorId ? 'IN_PROGRESS' : null,
+      viewedTests
+    },
+    { transaction }
+  );
+
+  return getReviewerStatusById({
+    testPlanReportId,
+    userId,
+    reviewerStatusAttributes,
+    testPlanReportAttributes,
+    testPlanVersionAttributes,
+    userAttributes,
+    vendorAttributes,
+    transaction
+  });
+};
+
 module.exports = {
   // Basic CRUD
   getReviewerStatusById,
   getReviewerStatuses,
   createReviewerStatus,
-  updateReviewerStatusByIds
+  updateReviewerStatusByIds,
+  createOrUpdateReviewerStatus
 };
