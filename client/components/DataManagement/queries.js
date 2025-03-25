@@ -72,6 +72,12 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
       metadata
       testPlan {
         directory
+        issues {
+          ...IssueFieldsSimple
+          at {
+            ...AtFields
+          }
+        }
       }
       testPlanReports {
         ...TestPlanReportFields
@@ -80,9 +86,6 @@ export const DATA_MANAGEMENT_PAGE_QUERY = gql`
         }
         browser {
           ...BrowserFields
-        }
-        issues {
-          ...IssueFieldsSimple
         }
         draftTestPlanRuns {
           tester {
@@ -126,6 +129,15 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
       ) {
         testPlanVersion {
           ...TestPlanVersionFields
+          testPlan {
+            directory
+            issues {
+              ...IssueFieldsSimple
+              at {
+                ...AtFields
+              }
+            }
+          }
           testPlanReports {
             id
             at {
@@ -133,9 +145,6 @@ export const UPDATE_TEST_PLAN_VERSION_PHASE = gql`
             }
             browser {
               ...BrowserFields
-            }
-            issues {
-              ...IssueFieldsSimple
             }
           }
         }
@@ -159,6 +168,15 @@ export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE = gql`
       ) {
         testPlanVersion {
           ...TestPlanVersionFields
+          testPlan {
+            directory
+            issues {
+              ...IssueFieldsSimple
+              at {
+                ...AtFields
+              }
+            }
+          }
           testPlanReports {
             id
             at {
@@ -166,9 +184,6 @@ export const UPDATE_TEST_PLAN_VERSION_RECOMMENDED_TARGET_DATE = gql`
             }
             browser {
               ...BrowserFields
-            }
-            issues {
-              ...IssueFieldsSimple
             }
           }
         }
