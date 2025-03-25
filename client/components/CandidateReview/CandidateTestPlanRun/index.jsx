@@ -9,7 +9,7 @@ import {
   ADD_VIEWER_MUTATION,
   CANDIDATE_REPORTS_QUERY,
   PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
-  VENDOR_APPROVAL_STATUS_QUERY
+  REVIEWER_STATUS_QUERY
 } from './queries';
 import Badge from 'react-bootstrap/Badge';
 import Container from 'react-bootstrap/Container';
@@ -117,18 +117,14 @@ const CandidateTestPlanRun = () => {
   );
 
   const auth = evaluateAuth(data?.me ? data?.me : {});
-  const { isAdmin, company } = auth;
-  const { data: vendorApprovalStatusData } = useQuery(
-    VENDOR_APPROVAL_STATUS_QUERY,
-    {
-      variables: {
-        userId: auth.id,
-        vendorId: company?.id,
-        testPlanReportId: testPlanReport?.id
-      },
-      skip: !company || !testPlanReport
-    }
-  );
+  const { isAdmin } = auth;
+  const { data: reviewerStatusData } = useQuery(REVIEWER_STATUS_QUERY, {
+    variables: {
+      userId: auth.id,
+      testPlanReportId: testPlanReport?.id
+    },
+    skip: !testPlanReport
+  });
 
   const isSummaryView = currentTestIndex === -1;
 
@@ -249,8 +245,7 @@ const CandidateTestPlanRun = () => {
 
   useEffect(() => {
     if (data) {
-      const viewedTests =
-        vendorApprovalStatusData?.vendorApprovalStatus?.viewedTests || [];
+      const viewedTests = reviewerStatusData?.reviewerStatus?.viewedTests || [];
       setViewedTests(viewedTests);
       setReviewStatus(testPlanReport.vendorReviewStatus);
 
@@ -267,7 +262,7 @@ const CandidateTestPlanRun = () => {
       setTestsLength(tests.length);
       setShowBrowserClicks(browserClicks);
     }
-  }, [data, vendorApprovalStatusData]);
+  }, [data, reviewerStatusData]);
 
   useEffect(() => {
     if (data) {
@@ -283,11 +278,6 @@ const CandidateTestPlanRun = () => {
     // submit button
     if (isLastTest && tests?.length !== 1) finishButtonRef.current.focus();
   }, [isLastTest]);
-
-  useEffect(() => {
-    if (viewedTests.length > 0 && currentTest?.id)
-      addViewerToTest(currentTest.id).then(() => setFirstTimeViewing(true));
-  }, [viewedTests]);
 
   if (error)
     return (

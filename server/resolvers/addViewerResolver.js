@@ -1,10 +1,8 @@
 const { AuthenticationError } = require('apollo-server-errors');
 const checkUserRole = require('./helpers/checkUserRole');
 const {
-  getVendorApprovalStatusById,
-  createVendorApprovalStatus,
-  updateVendorApprovalStatusByIds
-} = require('../models/services/VendorApprovalStatusService');
+  createOrUpdateReviewerStatus
+} = require('../models/services/ReviewerStatusService');
 
 const addViewerResolver = async (_, { testId, testPlanReportId }, context) => {
   const { user, transaction } = context;
@@ -15,40 +13,16 @@ const addViewerResolver = async (_, { testId, testPlanReportId }, context) => {
     throw new AuthenticationError();
   }
 
-  const viewer = {
-    testPlanReportId,
-    userId: user.id,
-    vendorId: user.vendorId || user.company?.id
-  };
-
-  // No need to add a 'viewer' if not affiliated with a company
-  if (!viewer?.vendorId) return user;
+  const vendorId = user.vendorId || user.company?.id;
 
   try {
-    const vendorApprovalStatus = await getVendorApprovalStatusById({
-      ...viewer,
+    await createOrUpdateReviewerStatus({
+      testPlanReportId,
+      userId: user.id,
+      testId,
+      vendorId,
       transaction
     });
-
-    if (vendorApprovalStatus) {
-      if (!vendorApprovalStatus.viewedTests.includes(testId)) {
-        await updateVendorApprovalStatusByIds({
-          ...viewer,
-          values: {
-            viewedTests: [...vendorApprovalStatus.viewedTests, testId]
-          },
-          transaction
-        });
-      }
-    } else {
-      await createVendorApprovalStatus({
-        values: {
-          ...viewer,
-          viewedTests: [testId]
-        },
-        transaction
-      });
-    }
   } catch (error) {
     console.error('addViewerResolver.error', error);
   }

@@ -7,10 +7,10 @@ const {
   getOrCreateTestPlanReport
 } = require('../../models/services/TestPlanReportService');
 const {
-  getVendorApprovalStatuses,
-  createVendorApprovalStatus,
-  getVendorApprovalStatusById
-} = require('../../models/services/VendorApprovalStatusService');
+  getReviewerStatuses,
+  createReviewerStatus,
+  getReviewerStatusById
+} = require('../../models/services/ReviewerStatusService');
 const { hashTest } = require('../../util/aria');
 const {
   createTestPlanRun,
@@ -332,12 +332,12 @@ const processCopiedReports = async ({
       newTestPlanVersion
     );
 
-    const newVendorApprovalStatusViewedTestsToSave = [];
-    const oldVendorApprovalStatuses = await getVendorApprovalStatuses({
+    const newReviewerStatusViewedTestsToSave = [];
+    const oldReviewerStatuses = await getReviewerStatuses({
       where: { testPlanReportId: oldTestPlanReport.id },
       transaction
     });
-    const oldVendorViewedTests = oldVendorApprovalStatuses.flatMap(
+    const oldVendorViewedTests = oldReviewerStatuses.flatMap(
       ({ viewedTests }) => viewedTests
     );
 
@@ -348,7 +348,7 @@ const processCopiedReports = async ({
       if (isBotIdRegex.test(oldTestPlanRun.testerUserId)) continue;
 
       // Keep track if previous vendor approval status should be carried over
-      let shouldSaveVendorApprovalStatus = true;
+      let shouldSaveReviewerStatus = true;
 
       // Track which old test results need to be preserved
       const keptTestResultsByTestId = getKeptTestResultsByTestId(
@@ -429,7 +429,7 @@ const processCopiedReports = async ({
           // Unknown combination of command + settings when compared with last version
           const oldScenarioResult = scenarioResultsByScenarioIds[rawScenarioId];
           if (!oldScenarioResult) {
-            shouldSaveVendorApprovalStatus = false;
+            shouldSaveReviewerStatus = false;
             newTestResult.completedAt = null;
             continue;
           }
@@ -455,7 +455,7 @@ const processCopiedReports = async ({
             const oldAssertionResult =
               assertionResultsByAssertionIds[rawAssertionId];
             if (!oldAssertionResult) {
-              shouldSaveVendorApprovalStatus = false;
+              shouldSaveReviewerStatus = false;
               newTestResult.completedAt = null;
               continue;
             }
@@ -466,15 +466,13 @@ const processCopiedReports = async ({
 
         // Keep track of vendor viewed tests to carry over
         if (
-          shouldSaveVendorApprovalStatus &&
+          shouldSaveReviewerStatus &&
           oldVendorViewedTests.includes(oldTest.id) &&
-          !newVendorApprovalStatusViewedTestsToSave.includes(
+          !newReviewerStatusViewedTestsToSave.includes(
             `${oldTest.id}:${test.id}`
           )
         ) {
-          newVendorApprovalStatusViewedTestsToSave.push(
-            `${oldTest.id}:${test.id}`
-          );
+          newReviewerStatusViewedTestsToSave.push(`${oldTest.id}:${test.id}`);
         }
       }
 
@@ -487,44 +485,44 @@ const processCopiedReports = async ({
         transaction
       });
 
-      for (const oldVendorApprovalStatus of oldVendorApprovalStatuses) {
-        let newVendorApprovalStatusExists;
+      for (const oldReviewerStatus of oldReviewerStatuses) {
+        let newReviewerStatusExists;
 
         try {
-          newVendorApprovalStatusExists = await getVendorApprovalStatusById({
+          newReviewerStatusExists = await getReviewerStatusById({
             testPlanReportId: newTestPlanReport.id,
-            userId: oldVendorApprovalStatus.userId,
-            vendorId: oldVendorApprovalStatus.vendorId,
+            userId: oldReviewerStatus.userId,
+            vendorId: oldReviewerStatus.vendorId,
             transaction
           });
         } catch (error) {
           console.error(
-            `Unable to query for vendorApprovalStatus: { ${newTestPlanReport.id},${oldVendorApprovalStatus.userId},${oldVendorApprovalStatus.vendorId} }`,
+            `Unable to query for reviewerStatus: { ${newTestPlanReport.id},${oldReviewerStatus.userId},${oldReviewerStatus.vendorId} }`,
             error
           );
         }
 
-        if (newVendorApprovalStatusExists) continue;
+        if (newReviewerStatusExists) continue;
 
         const viewedTests = [];
-        newVendorApprovalStatusViewedTestsToSave.forEach(oldNewViewedTest => {
+        newReviewerStatusViewedTestsToSave.forEach(oldNewViewedTest => {
           const [oldTestId, newTestId] = oldNewViewedTest.split(':');
-          if (oldVendorApprovalStatus.viewedTests.includes(oldTestId))
+          if (oldReviewerStatus.viewedTests.includes(oldTestId))
             viewedTests.push(newTestId);
         });
 
         try {
-          await createVendorApprovalStatus({
+          await createReviewerStatus({
             values: {
               testPlanReportId: newTestPlanReport.id,
-              userId: oldVendorApprovalStatus.userId,
-              vendorId: oldVendorApprovalStatus.vendorId,
-              reviewStatus: shouldSaveVendorApprovalStatus
-                ? oldVendorApprovalStatus.reviewStatus
+              userId: oldReviewerStatus.userId,
+              vendorId: oldReviewerStatus.vendorId,
+              reviewStatus: shouldSaveReviewerStatus
+                ? oldReviewerStatus.reviewStatus
                 : 'IN_PROGRESS',
               approvedAt:
-                shouldSaveVendorApprovalStatus &&
-                oldVendorApprovalStatus.reviewStatus === 'APPROVED'
+                shouldSaveReviewerStatus &&
+                oldReviewerStatus.reviewStatus === 'APPROVED'
                   ? new Date()
                   : null,
               viewedTests
@@ -533,7 +531,7 @@ const processCopiedReports = async ({
           });
         } catch (error) {
           console.error(
-            `Unable to create vendorApprovalStatus: { ${newTestPlanReport.id},${oldVendorApprovalStatus.userId},${oldVendorApprovalStatus.vendorId} }`,
+            `Unable to create reviewerStatus: { ${newTestPlanReport.id},${oldReviewerStatus.userId},${oldReviewerStatus.vendorId} }`,
             error
           );
         }

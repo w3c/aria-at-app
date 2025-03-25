@@ -5,6 +5,7 @@ const {
   BrowserVersion,
   CollectionJob,
   CollectionJobTestStatus,
+  ReviewerStatus,
   Role,
   TestPlan,
   TestPlanReport,
@@ -13,8 +14,7 @@ const {
   User,
   UserAts,
   UserRoles,
-  Vendor,
-  VendorApprovalStatus
+  Vendor
 } = require('../index');
 
 /**
@@ -38,6 +38,7 @@ module.exports = {
   COLLECTION_JOB_TEST_STATUS_ATTRIBUTES: getSequelizeModelAttributes(
     CollectionJobTestStatus
   ),
+  REVIEWER_STATUS_ATTRIBUTES: getSequelizeModelAttributes(ReviewerStatus),
   ROLE_ATTRIBUTES: getSequelizeModelAttributes(Role),
   TEST_PLAN_ATTRIBUTES: getSequelizeModelAttributes(TestPlan),
   TEST_PLAN_REPORT_ATTRIBUTES: getSequelizeModelAttributes(TestPlanReport),
@@ -46,7 +47,5 @@ module.exports = {
   USER_ATTRIBUTES: getSequelizeModelAttributes(User),
   USER_ROLES_ATTRIBUTES: getSequelizeModelAttributes(UserRoles),
   USER_ATS_ATTRIBUTES: getSequelizeModelAttributes(UserAts),
-  VENDOR_ATTRIBUTES: getSequelizeModelAttributes(Vendor),
-  VENDOR_APPROVAL_STATUS_ATTRIBUTES:
-    getSequelizeModelAttributes(VendorApprovalStatus)
+  VENDOR_ATTRIBUTES: getSequelizeModelAttributes(Vendor)
 };
