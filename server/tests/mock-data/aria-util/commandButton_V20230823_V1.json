@@ -3,7 +3,6 @@
     "id": "NTNmYeyIyIjoiNTU1OTgifQTYwYz",
     "atIds": [1, 2],
     "title": "Navigate forwards to a button in reading mode",
-    "viewers": [],
     "rowNumber": "1",
     "scenarios": [
       {
@@ -96,9 +95,7 @@
           {
             "id": "DOWN",
             "keystroke": "Down Arrow",
-            "keypresses": [
-              { "id": "DOWN", "keystroke": "Down Arrow" }
-            ]
+            "keypresses": [{ "id": "DOWN", "keystroke": "Down Arrow" }]
           },
           {
             "id": "B",
@@ -166,9 +163,7 @@
           {
             "id": "DOWN",
             "keystroke": "Down Arrow",
-            "keypresses": [
-              { "id": "DOWN", "keystroke": "Down Arrow" }
-            ]
+            "keypresses": [{ "id": "DOWN", "keystroke": "Down Arrow" }]
           },
           {
             "id": "B",
@@ -210,7 +205,6 @@
     "id": "MTY0MeyIyIjoiNTU1OTgifQmIzNG",
     "atIds": [1, 2],
     "title": "Navigate backwards to a button in reading mode",
-    "viewers": [],
     "rowNumber": "2",
     "scenarios": [
       {
@@ -308,23 +302,17 @@
           {
             "id": "SHIFT_B",
             "keystroke": "Shift+B",
-            "keypresses": [
-              { "id": "SHIFT_B", "keystroke": "Shift+B" }
-            ]
+            "keypresses": [{ "id": "SHIFT_B", "keystroke": "Shift+B" }]
           },
           {
             "id": "SHIFT_F",
             "keystroke": "Shift+F",
-            "keypresses": [
-              { "id": "SHIFT_F", "keystroke": "Shift+F" }
-            ]
+            "keypresses": [{ "id": "SHIFT_F", "keystroke": "Shift+F" }]
           },
           {
             "id": "SHIFT_TAB",
             "keystroke": "Shift+Tab",
-            "keypresses": [
-              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
-            ]
+            "keypresses": [{ "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }]
           }
         ],
         "assertions": [
@@ -382,23 +370,17 @@
           {
             "id": "SHIFT_B",
             "keystroke": "Shift+B",
-            "keypresses": [
-              { "id": "SHIFT_B", "keystroke": "Shift+B" }
-            ]
+            "keypresses": [{ "id": "SHIFT_B", "keystroke": "Shift+B" }]
           },
           {
             "id": "SHIFT_F",
             "keystroke": "Shift+F",
-            "keypresses": [
-              { "id": "SHIFT_F", "keystroke": "Shift+F" }
-            ]
+            "keypresses": [{ "id": "SHIFT_F", "keystroke": "Shift+F" }]
           },
           {
             "id": "SHIFT_TAB",
             "keystroke": "Shift+Tab",
-            "keypresses": [
-              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
-            ]
+            "keypresses": [{ "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }]
           }
         ],
         "assertions": [
@@ -425,7 +407,6 @@
     "id": "MDUxNeyIyIjoiNTU1OTgifQWNiZT",
     "atIds": [1, 2],
     "title": "Navigate forwards to a button in interaction mode",
-    "viewers": [],
     "rowNumber": "3",
     "scenarios": [
       {
@@ -568,7 +549,6 @@
     "id": "NjI2MeyIyIjoiNTU1OTgifQ2UzND",
     "atIds": [1, 2],
     "title": "Navigate backwards to a button in interaction mode",
-    "viewers": [],
     "rowNumber": "4",
     "scenarios": [
       {
@@ -631,9 +611,7 @@
           {
             "id": "SHIFT_TAB",
             "keystroke": "Shift+Tab",
-            "keypresses": [
-              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
-            ]
+            "keypresses": [{ "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }]
           }
         ],
         "assertions": [
@@ -686,9 +664,7 @@
           {
             "id": "SHIFT_TAB",
             "keystroke": "Shift+Tab",
-            "keypresses": [
-              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
-            ]
+            "keypresses": [{ "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }]
           }
         ],
         "assertions": [
@@ -715,7 +691,6 @@
     "id": "ODlmMeyIyIjoiNTU1OTgifQjZlOW",
     "atIds": [3],
     "title": "Navigate forwards to a button",
-    "viewers": [],
     "rowNumber": "5",
     "scenarios": [
       {
@@ -833,7 +808,6 @@
     "id": "YTE1NeyIyIjoiNTU1OTgifQGQ5Nj",
     "atIds": [3],
     "title": "Navigate backwards to a button",
-    "viewers": [],
     "rowNumber": "6",
     "scenarios": [
       {
@@ -914,9 +888,7 @@
           {
             "id": "SHIFT_TAB",
             "keystroke": "Shift+Tab",
-            "keypresses": [
-              { "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }
-            ]
+            "keypresses": [{ "id": "SHIFT_TAB", "keystroke": "Shift+Tab" }]
           },
           {
             "id": "SHIFT_CTRL_OPT_CMD_J",
@@ -953,7 +925,6 @@
     "id": "MzdhYeyIyIjoiNTU1OTgifQTE1ZD",
     "atIds": [1, 2],
     "title": "Read information about a button in reading mode",
-    "viewers": [],
     "rowNumber": "7",
     "scenarios": [
       {
@@ -1026,16 +997,12 @@
           {
             "id": "INS_TAB",
             "keystroke": "Insert+Tab",
-            "keypresses": [
-              { "id": "INS_TAB", "keystroke": "Insert+Tab" }
-            ]
+            "keypresses": [{ "id": "INS_TAB", "keystroke": "Insert+Tab" }]
           },
           {
             "id": "INS_UP",
             "keystroke": "Insert+Up",
-            "keypresses": [
-              { "id": "INS_UP", "keystroke": "Insert+Up" }
-            ]
+            "keypresses": [{ "id": "INS_UP", "keystroke": "Insert+Up" }]
           }
         ],
         "assertions": [
@@ -1088,16 +1055,12 @@
           {
             "id": "INS_TAB",
             "keystroke": "Insert+Tab",
-            "keypresses": [
-              { "id": "INS_TAB", "keystroke": "Insert+Tab" }
-            ]
+            "keypresses": [{ "id": "INS_TAB", "keystroke": "Insert+Tab" }]
           },
           {
             "id": "INS_UP",
             "keystroke": "Insert+Up",
-            "keypresses": [
-              { "id": "INS_UP", "keystroke": "Insert+Up" }
-            ]
+            "keypresses": [{ "id": "INS_UP", "keystroke": "Insert+Up" }]
           }
         ],
         "assertions": [
@@ -1124,7 +1087,6 @@
     "id": "YjI3MeyIyIjoiNTU1OTgifQGM1M2",
     "atIds": [1, 2],
     "title": "Read information about a button in interaction mode",
-    "viewers": [],
     "rowNumber": "8",
     "scenarios": [
       {
@@ -1197,16 +1159,12 @@
           {
             "id": "INS_TAB",
             "keystroke": "Insert+Tab",
-            "keypresses": [
-              { "id": "INS_TAB", "keystroke": "Insert+Tab" }
-            ]
+            "keypresses": [{ "id": "INS_TAB", "keystroke": "Insert+Tab" }]
           },
           {
             "id": "INS_UP",
             "keystroke": "Insert+Up",
-            "keypresses": [
-              { "id": "INS_UP", "keystroke": "Insert+Up" }
-            ]
+            "keypresses": [{ "id": "INS_UP", "keystroke": "Insert+Up" }]
           }
         ],
         "assertions": [
@@ -1259,16 +1217,12 @@
           {
             "id": "INS_TAB",
             "keystroke": "Insert+Tab",
-            "keypresses": [
-              { "id": "INS_TAB", "keystroke": "Insert+Tab" }
-            ]
+            "keypresses": [{ "id": "INS_TAB", "keystroke": "Insert+Tab" }]
           },
           {
             "id": "INS_UP",
             "keystroke": "Insert+Up",
-            "keypresses": [
-              { "id": "INS_UP", "keystroke": "Insert+Up" }
-            ]
+            "keypresses": [{ "id": "INS_UP", "keystroke": "Insert+Up" }]
           }
         ],
         "assertions": [
@@ -1295,7 +1249,6 @@
     "id": "Y2E5NeyIyIjoiNTU1OTgifQTg5ZG",
     "atIds": [3],
     "title": "Read information about a button",
-    "viewers": [],
     "rowNumber": "9",
     "scenarios": [
       {

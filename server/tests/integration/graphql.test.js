@@ -138,7 +138,8 @@ describe('graphql', () => {
       'Issue',
       'Vendor',
       'scheduleCollectionJob',
-      'CollectionJobTestStatus'
+      'CollectionJobTestStatus',
+      'ReviewerStatus'
     ];
     const excludedTypeNameAndField = [
       // Items formatted like this:
@@ -148,12 +149,13 @@ describe('graphql', () => {
       ['PopulatedData', 'browserVersion'],
       ['TestPlanReport', 'issues'],
       ['TestPlanReport', 'vendorReviewStatus'],
-      ['Test', 'viewers'],
       ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
       ['CollectionJob', 'testPlanRun'],
       ['CollectionJob', 'externalLogsUrl'],
       ['CollectionJob', 'testStatus'],
       ['User', 'company'],
+      ['Query', 'reviewerStatus'],
+      ['Query', 'reviewerStatuses'],
       // These interact with Response Scheduler API
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
@@ -193,6 +195,7 @@ describe('graphql', () => {
               __typename
               id
               name
+              vendorId
             }
             candidateAts {
               __typename
@@ -713,7 +716,7 @@ describe('graphql', () => {
             }
             promoteVendorStatus: testPlanReport(id: 6) {
               __typename
-              promoteVendorReviewStatus(vendorReviewStatus: "READY") {
+              promoteVendorReviewStatus {
                 testPlanReport {
                   id
                 }
@@ -807,7 +810,7 @@ describe('graphql', () => {
                 name
               }
             }
-            addViewer(testPlanVersionId: 1, testId: "NjgwYeyIyIjoiMSJ9zYxZT") {
+            addViewer(testId: "NjgwYeyIyIjoiMSJ9zYxZT", testPlanReportId: 7) {
               username
             }
             collectionJob(id: 1) {
@@ -843,7 +846,7 @@ describe('graphql', () => {
       );
     });
 
-    // esure recursive query of collectionJob<>testPlanRun fails at some depth
+    // ensure recursive query of collectionJob<>testPlanRun fails at some depth
     await expect(
       typeAwareQuery(
         gql`

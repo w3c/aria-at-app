@@ -26,11 +26,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
       },
-      vendorReviewStatus: {
-        type: DataTypes.TEXT, // 'READY', 'IN_PROGRESS', 'APPROVED'
-        defaultValue: null,
-        allowNull: true
-      },
       metrics: {
         type: DataTypes.JSONB,
         defaultValue: {},
