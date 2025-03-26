@@ -1,0 +1,35 @@
+name: Update Test Snapshots
+on:
+  repository_dispatch:
+    types: [update-test-snapshots]
+
+jobs:
+  update-snapshots:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: development
+          fetch-depth: 0
+
+      - name: Setup test environment
+        uses: ./.github/actions/setup
+
+      - name: Update snapshots
+        run: yarn update-snapshots
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Commit and push changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            git add -A
+            git commit -m "chore: update snapshots from aria-at@${{ github.event.client_payload.ref }}"
+            git push origin development
+          else
+            echo "No changes to commit"
+          fi
