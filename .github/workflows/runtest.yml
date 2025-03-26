@@ -10,7 +10,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup test environment
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-test-env
 
       # Run tests
       - run: yarn workspace shared prettier

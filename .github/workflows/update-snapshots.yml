@@ -14,7 +14,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup test environment
-        uses: ./.github/actions/setup
+        uses: ./.github/actions/setup-test-env
 
       - name: Update snapshots
         run: yarn update-snapshots
@@ -27,7 +27,7 @@ jobs:
       - name: Commit and push changes
         run: |
           if [[ -n $(git status --porcelain) ]]; then
-            git add -A
+            git add "client/tests/e2e/snapshots/saved/*"
             git commit -m "chore: update snapshots from aria-at@${{ github.event.client_payload.ref }}"
             git push origin development
           else
