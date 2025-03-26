@@ -366,7 +366,8 @@ describe('graphql', () => {
               isCandidateReview
               feedbackType
               isOpen
-              testNumberFilteredByAt
+              testRowNumber
+              testSequenceNumber
               createdAt
               closedAt
               at {

@@ -1022,9 +1022,27 @@ const graphqlSchema = gql`
     """
     isOpen: Boolean!
     """
-    Test Number the issue was raised for.
+    Test Row Number the issue was raised for. Because of how the tests are
+    generated using AT group separations or defined "presentation" numbers, even
+    if they are presented logically in order in the Test Run viewer for example
+    such that there is a test 1, test 2, test 3, etc. They could have row
+    numbers being test 5, test 8, test 16 and so on.
+
+    So the "true" test identifier, as these values are not expected to change.
     """
-    testNumberFilteredByAt: Float
+    testRowNumber: Float
+    """
+    Test Sequence Number the issue was raised for. The order in which the tests
+    are rendered in the Test Run viewer. So the logical order of test 1, test 2,
+    test 3 and so on.
+
+    This sequence could be altered between version updates. The Test Writer
+    admin could for example have 6.0, 7.1 and 7.2 as defined "presentation"
+    numbers which has been represented as 1, 2, 3 in the viewer but come up on
+    a situation where 6.1 has to be included -- so 6.0, 6.1, 7.1, 7.2 would now
+    be 1, 2 (new), 3 (old 2), 4 (old 3).
+    """
+    testSequenceNumber: Float
     """
     The time the issue was created, according to GitHub.
     """

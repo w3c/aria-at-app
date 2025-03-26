@@ -5,46 +5,62 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag, faCommentAlt } from '@fortawesome/free-solid-svg-icons';
 import styles from './FeedbackListItem.module.css';
 
+export const FeedbackTypeMap = {
+  FEEDBACK: 'FEEDBACK',
+  CHANGES_REQUESTED: 'CHANGES_REQUESTED'
+};
+
 const FeedbackListItem = ({
-  differentAuthors = false,
-  type = 'feedback',
   issues = [],
-  individualTest = false,
+  uniqueAuthors = [],
+  authorMeIncluded = false,
+  feedbackType = FeedbackTypeMap.FEEDBACK,
+  isGeneralFeedback = false,
   githubUrl = '#'
 }) => {
   let content;
+  const hasDifferentAuthors = uniqueAuthors.length > 1;
 
-  if (!differentAuthors && !individualTest) {
-    content = (
-      <span>
-        {`You ${
-          type === 'feedback' ? 'left feedback for' : 'requested changes for'
-        }`}
-        <a href={githubUrl} target="_blank" rel="noreferrer">
-          {issues.length} {issues.length === 1 ? 'test' : 'tests'}
-        </a>{' '}
-        in this Test Plan
-      </span>
-    );
-  } else if (!differentAuthors && individualTest) {
-    githubUrl = issues[0].link;
+  const issuesText =
+    issues.length === 1 ? 'in 1 issue' : `in ${issues.length} issues`;
+  const contextNote = isGeneralFeedback
+    ? ` for this test plan ${issuesText}`
+    : ` for this test ${issuesText}`;
+
+  if (authorMeIncluded) {
+    let feedbackNote = 'You';
+    if (hasDifferentAuthors) {
+      const othersCount = uniqueAuthors.length - 1;
+      const othersText = othersCount === 1 ? 'other' : 'others';
+      feedbackNote += ` and ${uniqueAuthors.length - 1} ${othersText}`;
+    }
+    feedbackNote +=
+      feedbackType === FeedbackTypeMap.FEEDBACK
+        ? ' left feedback'
+        : ' requested changes';
+
     content = (
       <>
-        You{' '}
         <a href={githubUrl} target="_blank" rel="noreferrer">
-          {type === 'feedback' ? 'left feedback' : 'requested changes'}
-        </a>{' '}
-        for this test.
+          {feedbackNote}
+        </a>
+        {contextNote}
       </>
     );
   } else {
+    let feedbackNote = `${uniqueAuthors.length}`;
+    feedbackNote += ` ${uniqueAuthors.length === 1 ? 'person' : 'people'}`;
+    feedbackNote +=
+      feedbackType === FeedbackTypeMap.FEEDBACK
+        ? ` left feedback`
+        : ` requested changes`;
+
     content = (
       <>
         <a href={githubUrl} target="_blank" rel="noreferrer">
-          {issues.length} {issues.length === 1 ? 'person' : 'people'}{' '}
-          {type === 'feedback' ? 'left feedback' : 'requested changes'}
+          {feedbackNote}
         </a>
-        {' for this test'}
+        {contextNote}
       </>
     );
   }
@@ -52,9 +68,9 @@ const FeedbackListItem = ({
   return (
     <li className={styles.feedbackListItem} key={nextId()}>
       <FontAwesomeIcon
-        icon={type === 'feedback' ? faCommentAlt : faFlag}
+        icon={feedbackType === FeedbackTypeMap.FEEDBACK ? faCommentAlt : faFlag}
         color={
-          type === 'feedback'
+          feedbackType === FeedbackTypeMap.FEEDBACK
             ? 'var(--candidate-feedback)'
             : 'var(--candidate-changes-requested)'
         }
@@ -66,10 +82,11 @@ const FeedbackListItem = ({
 };
 
 FeedbackListItem.propTypes = {
-  differentAuthors: PropTypes.bool,
+  uniqueAuthors: PropTypes.arrayOf(PropTypes.string),
+  authorMeIncluded: PropTypes.bool,
   issues: PropTypes.array,
-  type: PropTypes.string,
-  individualTest: PropTypes.bool,
+  feedbackType: PropTypes.string,
+  isGeneralFeedback: PropTypes.bool,
   githubUrl: PropTypes.string
 };
 

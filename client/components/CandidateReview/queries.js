@@ -43,6 +43,7 @@ export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
         }
         issues {
           ...IssueFieldsSimple
+          testRowNumber
         }
       }
     }

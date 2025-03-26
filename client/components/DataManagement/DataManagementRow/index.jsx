@@ -705,16 +705,14 @@ const DataManagementRow = ({
         if (testPlanVersions.length) {
           const uniqueAtsCount = unique(
             testPlanVersions
-              .flatMap(testPlanVersion => testPlanVersion.testPlanReports)
-              .filter(testPlanReport => testPlanReport.issues.length)
-              .map(testPlanReport => testPlanReport.at.id)
+              .flatMap(testPlanVersion => testPlanVersion.testPlan?.issues)
+              .filter(issue => issue.isOpen && !!issue.at)
+              .map(issue => issue?.at?.id)
           ).length;
 
           const issuesCount = uniqueBy(
             testPlanVersions.flatMap(testPlanVersion =>
-              testPlanVersion.testPlanReports.flatMap(testPlanReport =>
-                testPlanReport.issues.filter(issue => issue.isOpen)
-              )
+              testPlanVersion.testPlan.issues?.filter(issue => issue.isOpen)
             ),
             item => item.link
           ).length;
@@ -747,16 +745,16 @@ const DataManagementRow = ({
           );
           const workingModeDaysToReview = 120;
 
-          let timeToTargetDate = 0;
+          let numberOfDaysToTargetDate = 0;
           if (currentDate > recommendedPhaseTargetDate) {
             // Indicates that this is in the past
-            timeToTargetDate = dates.checkDaysBetweenDates(
+            numberOfDaysToTargetDate = dates.checkDaysBetweenDates(
               currentDate,
               recommendedPhaseTargetDate
             );
-            timeToTargetDate = -timeToTargetDate;
+            numberOfDaysToTargetDate = -numberOfDaysToTargetDate;
           } else
-            timeToTargetDate = dates.checkDaysBetweenDates(
+            numberOfDaysToTargetDate = dates.checkDaysBetweenDates(
               recommendedPhaseTargetDate,
               currentDate
             );
@@ -774,6 +772,69 @@ const DataManagementRow = ({
 
           // Phase is "active"
           insertActivePhaseForTestPlan(latestVersion);
+
+          const linkToIssuesComponent = () => {
+            const openIssuesText =
+              issuesCount === 1 ? 'Open Issue' : 'Open Issues';
+            const atsText =
+              uniqueAtsCount > 1 ? ` from ${uniqueAtsCount} ATs` : '';
+
+            const openIssuesComponent = issuesCount ? (
+              <>
+                <a
+                  href={`/data-management/${testPlan.directory}#github-issues`}
+                >
+                  {issuesCount} {openIssuesText}
+                </a>
+                {atsText}
+              </>
+            ) : (
+              <>
+                {issuesCount} {openIssuesText}
+                {atsText}
+              </>
+            );
+
+            return (
+              <>
+                <ReportStatusDot status={REPORT_STATUSES.ISSUES} />
+                {openIssuesComponent}
+              </>
+            );
+          };
+
+          const numberOfDaysToDateComponent = () => {
+            const numberOfDaysToTargetDateContent = (
+              <>
+                Target&nbsp;
+                <b>{Math.abs(numberOfDaysToTargetDate)} Days</b>
+                &nbsp;
+                {numberOfDaysToTargetDate < 0 ? 'Past' : 'Away'}
+              </>
+            );
+
+            return (
+              <>
+                {isAdmin ? (
+                  <button
+                    ref={updateTargetRef}
+                    onClick={() => {
+                      setShowUpdateTargetModal(true);
+                      setUpdateTargetModalData({
+                        testPlanVersionId: latestVersion.id,
+                        title: `Change Recommended Phase Target Date for ${testPlan.title}, ${latestVersion.versionString}`,
+                        dateText: latestVersion.recommendedPhaseTargetDate
+                      });
+                    }}
+                  >
+                    {numberOfDaysToTargetDateContent}
+                  </button>
+                ) : (
+                  numberOfDaysToTargetDateContent
+                )}
+              </>
+            );
+          };
 
           return (
             <div
@@ -824,37 +885,10 @@ const DataManagementRow = ({
               </span>
               <span className={styles.more}>
                 <span role="listitem" className={styles.moreIssuesContainer}>
-                  <ReportStatusDot status={REPORT_STATUSES.ISSUES} />
-                  {issuesCount} Open Issue
-                  {`${issuesCount === 1 ? '' : 's'}`}
-                  {`${issuesCount >= 2 ? ` from ${uniqueAtsCount} ATs` : ''}`}
+                  {linkToIssuesComponent()}
                 </span>
                 <span className={styles.targetDaysContainer}>
-                  {isAdmin ? (
-                    <button
-                      ref={updateTargetRef}
-                      onClick={() => {
-                        setShowUpdateTargetModal(true);
-                        setUpdateTargetModalData({
-                          testPlanVersionId: latestVersion.id,
-                          title: `Change Recommended Phase Target Date for ${testPlan.title}, ${latestVersion.versionString}`,
-                          dateText: latestVersion.recommendedPhaseTargetDate
-                        });
-                      }}
-                    >
-                      Target&nbsp;
-                      <b>{Math.abs(timeToTargetDate)} Days</b>
-                      &nbsp;
-                      {timeToTargetDate < 0 ? 'Past' : 'Away'}
-                    </button>
-                  ) : (
-                    <>
-                      Target&nbsp;
-                      <b>{Math.abs(timeToTargetDate)} Days</b>
-                      &nbsp;
-                      {timeToTargetDate < 0 ? 'Past' : 'Away'}
-                    </>
-                  )}
+                  {numberOfDaysToDateComponent()}
                 </span>
               </span>
             </div>

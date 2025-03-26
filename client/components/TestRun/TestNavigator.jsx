@@ -94,8 +94,7 @@ const TestNavigator = ({
 
             const issuesExist = testPlanReport.issues?.filter(
               issue =>
-                issue.isCandidateReview &&
-                issue.testNumberFilteredByAt == test.seq
+                issue.isCandidateReview && issue.testRowNumber == test.rowNumber
             ).length;
 
             if (test) {
