@@ -246,7 +246,8 @@ const createIssueLink = ({
  * @param {string} options.atName - The name of the assistive technology
  * @param {string} options.testPlanTitle - The title of the test plan
  * @param {string} options.versionString - The version string
- * @param {number|null} [options.testSequenceNumber=null] - The sequence number of the test, this is the test number displayed to test runners, otherwise this can be assumed as general feedback
+ * @param {number|null} [options.testSequenceNumber=null] - The sequence number of the test, this is the test number displayed to test runners
+ * @param {boolean} [options.isGeneralFeedback] - is 'General' feedback across the entire test plan
  * @returns {string} The URL for searching issues on the GitHub repository
  */
 export const getIssueSearchLink = ({
@@ -256,7 +257,8 @@ export const getIssueSearchLink = ({
   atName,
   testPlanTitle,
   versionString,
-  testSequenceNumber = null
+  testSequenceNumber = null,
+  isGeneralFeedback = false
 }) => {
   const query = [
     isCandidateReview ? `label:candidate-review` : '',
@@ -268,7 +270,7 @@ export const getIssueSearchLink = ({
     `"${testPlanTitle}${
       testSequenceNumber ? ` Test ${testSequenceNumber}` : ''
     }"`,
-    !testSequenceNumber ? `General` : '',
+    isGeneralFeedback ? `General` : '',
     versionString
   ]
     .filter(str => str)

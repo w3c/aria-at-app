@@ -541,7 +541,8 @@ const CandidateTestPlanRun = () => {
                       versionString: testPlanVersion.versionString,
                       testSequenceNumber: isGeneralFeedback
                         ? null
-                        : currentTest.seq
+                        : currentTest.seq,
+                      isGeneralFeedback
                     })}
                   />
                 );
