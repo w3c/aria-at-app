@@ -25,7 +25,7 @@ import { useMediaQuery } from 'react-responsive';
 import TestPlanResultsTable from '../../common/TestPlanResultsTable';
 import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
 import ApprovedModal from '../CandidateModals/ApprovedModal';
-import FeedbackListItem from '../FeedbackListItem';
+import FeedbackListItem, { FeedbackTypeMap } from '../FeedbackListItem';
 import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
   getIssueSearchLink
@@ -324,15 +324,29 @@ const CandidateTestPlanRun = () => {
   const changesRequestedIssues = testPlanReport.issues?.filter(
     issue =>
       issue.isCandidateReview &&
-      issue.feedbackType === 'CHANGES_REQUESTED' &&
-      issue.testNumberFilteredByAt === currentTest?.seq
+      issue.feedbackType === FeedbackTypeMap.CHANGES_REQUESTED &&
+      issue.testRowNumber === currentTest?.rowNumber
   );
 
   const feedbackIssues = testPlanReport.issues?.filter(
     issue =>
       issue.isCandidateReview &&
-      issue.feedbackType === 'FEEDBACK' &&
-      issue.testNumberFilteredByAt === currentTest?.seq
+      issue.feedbackType === FeedbackTypeMap.FEEDBACK &&
+      issue.testRowNumber === currentTest?.rowNumber
+  );
+
+  const otherChangesRequestedIssues = testPlanReport.issues?.filter(
+    issue =>
+      issue.isCandidateReview &&
+      issue.feedbackType === FeedbackTypeMap.CHANGES_REQUESTED &&
+      !issue.testRowNumber
+  );
+
+  const otherFeedbackIssues = testPlanReport.issues?.filter(
+    issue =>
+      issue.isCandidateReview &&
+      issue.feedbackType === FeedbackTypeMap.FEEDBACK &&
+      !issue.testRowNumber
   );
 
   const issue = {
@@ -474,40 +488,60 @@ const CandidateTestPlanRun = () => {
       return null;
     }
     return (
-      testPlanReport.issues.filter(
-        issue =>
+      testPlanReport.issues.filter(issue => {
+        return (
           issue.isCandidateReview &&
-          issue.testNumberFilteredByAt == currentTest.seq
-      ).length > 0 && (
+          issue.testRowNumber == currentTest.rowNumber
+        );
+      }).length > 0 && (
         <div className="issues-container">
           <h2>
             <span className="feedback-from-text">Feedback from</span>{' '}
             <b>{at} Representative</b>
           </h2>
           <ul className="feedback-list">
-            {[changesRequestedIssues, feedbackIssues].map((list, index) => {
-              if (list.length > 0) {
+            {[
+              otherChangesRequestedIssues,
+              otherFeedbackIssues,
+              changesRequestedIssues,
+              feedbackIssues
+            ].map((issues, index) => {
+              if (issues.length > 0) {
                 const uniqueAuthors = [
-                  ...new Set(list.map(issue => issue.author))
+                  ...new Set(issues.map(issue => issue.author))
                 ];
-                const differentAuthors = !(
-                  uniqueAuthors.length === 1 &&
-                  uniqueAuthors[0] === data.me.username
+
+                // Means the feedback isn't scoped to a single test
+                const isGeneralFeedback = issues.every(
+                  ({ testRowNumber }) => !testRowNumber
                 );
+
+                const isCandidateReviewChangesRequested = issues.every(
+                  ({ feedbackType }) =>
+                    feedbackType === FeedbackTypeMap.CHANGES_REQUESTED
+                );
+
                 return (
                   <FeedbackListItem
-                    key={`${index}-issues`}
-                    differentAuthors={differentAuthors}
-                    type={index === 0 ? 'changes-requested' : 'feedback'}
-                    issues={list}
-                    individualTest={true}
+                    key={`${index}_FeedbackListItem_key`}
+                    issues={issues}
+                    uniqueAuthors={uniqueAuthors}
+                    authorMeIncluded={uniqueAuthors.includes(data.me.username)}
+                    isGeneralFeedback={isGeneralFeedback}
+                    feedbackType={
+                      isCandidateReviewChangesRequested
+                        ? FeedbackTypeMap.CHANGES_REQUESTED
+                        : FeedbackTypeMap.FEEDBACK
+                    }
                     githubUrl={getIssueSearchLink({
                       isCandidateReview: true,
-                      isCandidateReviewChangesRequested: index === 0,
+                      isCandidateReviewChangesRequested,
                       atName: testPlanReport.at.name,
                       testPlanTitle: testPlanVersion.title,
                       versionString: testPlanVersion.versionString,
-                      testSequenceNumber: currentTest.seq
+                      testSequenceNumber: isGeneralFeedback
+                        ? null
+                        : currentTest.seq
                     })}
                   />
                 );
@@ -740,14 +774,14 @@ const CandidateTestPlanRun = () => {
           feedbackIssues={testPlanReport.issues?.filter(
             issue =>
               issue.isCandidateReview &&
-              issue.feedbackType === 'FEEDBACK' &&
+              issue.feedbackType === FeedbackTypeMap.FEEDBACK &&
               issue.author === data.me.username
           )}
           feedbackGithubUrl={feedbackGithubUrl}
           changesRequestedIssues={testPlanReport.issues?.filter(
             issue =>
               issue.isCandidateReview &&
-              issue.feedbackType === 'CHANGES_REQUESTED' &&
+              issue.feedbackType === FeedbackTypeMap.CHANGES_REQUESTED &&
               issue.author === data.me.username
           )}
           changesRequestedGithubUrl={changesRequestedGithubUrl}

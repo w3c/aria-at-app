@@ -246,7 +246,7 @@ const createIssueLink = ({
  * @param {string} options.atName - The name of the assistive technology
  * @param {string} options.testPlanTitle - The title of the test plan
  * @param {string} options.versionString - The version string
- * @param {number|null} [options.testSequenceNumber=null] - The sequence number of the test, this is the test number displayed to test runners
+ * @param {number|null} [options.testSequenceNumber=null] - The sequence number of the test, this is the test number displayed to test runners, otherwise this can be assumed as general feedback
  * @returns {string} The URL for searching issues on the GitHub repository
  */
 export const getIssueSearchLink = ({
@@ -258,14 +258,6 @@ export const getIssueSearchLink = ({
   versionString,
   testSequenceNumber = null
 }) => {
-  // TODO: Use At.key
-  let atKey;
-  if (atName === 'JAWS' || atName === 'NVDA') {
-    atKey = atName.toLowerCase();
-  } else {
-    atKey = 'vo';
-  }
-
   const query = [
     isCandidateReview ? `label:candidate-review` : '',
     isCandidateReviewChangesRequested
@@ -273,9 +265,10 @@ export const getIssueSearchLink = ({
       : 'label:feedback',
     `label:${atLabelMap[atName]}`,
     username ? `author:${username}` : '',
-    `label:${atKey}`,
-    `"${testPlanTitle}"`,
-    testSequenceNumber ? `Test ${testSequenceNumber}` : '',
+    `"${testPlanTitle}${
+      testSequenceNumber ? ` Test ${testSequenceNumber}` : ''
+    }"`,
+    !testSequenceNumber ? `General` : '',
     versionString
   ]
     .filter(str => str)
