@@ -8,10 +8,17 @@ const GITHUB_ISSUES_URL =
 const MAX_GITHUB_URL_LENGTH = 8000;
 
 // TODO: Use At.key
-const atLabelMap = {
+export const GitHubAtLabelMap = {
   'VoiceOver for macOS': 'vo',
   JAWS: 'jaws',
   NVDA: 'nvda'
+};
+
+export const AtBugTrackerMap = {
+  JAWS: 'https://github.com/FreedomScientific/VFO-standards-support/issues',
+  NVDA: 'https://github.com/nvaccess/nvda/issues',
+  'VoiceOver for macOS':
+    'https://bugs.webkit.org/buglist.cgi?quicksearch=voiceover'
 };
 
 /**
@@ -142,7 +149,7 @@ const createIssueLink = ({
 
   const labels =
     (isCandidateReview ? 'candidate-review,' : '') +
-    `${atLabelMap[atName]},` +
+    `${GitHubAtLabelMap[atName]},` +
     (isCandidateReviewChangesRequested ? 'changes-requested' : 'feedback');
 
   let reportLinkFormatted = '';
@@ -265,7 +272,7 @@ export const getIssueSearchLink = ({
     isCandidateReviewChangesRequested
       ? `label:changes-requested`
       : 'label:feedback',
-    `label:${atLabelMap[atName]}`,
+    `label:${GitHubAtLabelMap[atName]}`,
     username ? `author:${username}` : '',
     `"${testPlanTitle}${
       testSequenceNumber ? ` Test ${testSequenceNumber}` : ''

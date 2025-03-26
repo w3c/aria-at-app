@@ -28,6 +28,7 @@ import ApprovedModal from '../CandidateModals/ApprovedModal';
 import FeedbackListItem, { FeedbackTypeMap } from '../FeedbackListItem';
 import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
+  AtBugTrackerMap,
   getIssueSearchLink
 } from '../../../utils/createIssueLink';
 import RunHistory from '../../common/RunHistory';
@@ -395,22 +396,7 @@ const CandidateTestPlanRun = () => {
     isCandidateReviewChangesRequested: true
   });
 
-  let fileBugUrl;
-
-  const githubAtLabelMap = {
-    'VoiceOver for macOS': 'vo',
-    JAWS: 'jaws',
-    NVDA: 'nvda'
-  };
-
-  if (githubAtLabelMap[at] === 'vo') {
-    fileBugUrl = 'https://bugs.webkit.org/buglist.cgi?quicksearch=voiceover';
-  } else if (githubAtLabelMap[at] === 'nvda') {
-    fileBugUrl = 'https://github.com/nvaccess/nvda/issues';
-  } else {
-    fileBugUrl =
-      'https://github.com/FreedomScientific/VFO-standards-support/issues';
-  }
+  const fileBugUrl = AtBugTrackerMap[at];
 
   const getHeading = () => {
     return (
