@@ -231,7 +231,12 @@ const getFake = async ({
 
   const atVersion = await getAtVersionByQuery({
     where: { atId: testPlanReport.at.id },
-    pagination: { order: [['releasedAt', 'DESC']] },
+    pagination: {
+      order: [
+        ['name', 'DESC'],
+        ['releasedAt', 'DESC']
+      ]
+    },
     transaction
   });
 

@@ -958,7 +958,12 @@ const getMutationInputs = async () => {
 
   const atVersion = await getAtVersionByQuery({
     where: { atId: at.id },
-    pagination: { order: [['releasedAt', 'DESC']] },
+    pagination: {
+      order: [
+        ['name', 'DESC'],
+        ['releasedAt', 'DESC']
+      ]
+    },
     transaction: false
   });
 

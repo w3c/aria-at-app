@@ -102,7 +102,7 @@ const UpdateVersionModal = ({
     }
 
     handleAction(actionType, {
-      updatedVersionText,
+      updatedVersionText: updatedVersionText.trim(),
       updatedDateAvailabilityText
     });
   };
