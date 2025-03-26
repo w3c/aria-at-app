@@ -474,12 +474,8 @@ const CandidateTestPlanRun = () => {
       return null;
     }
     return (
-      testPlanReport.issues.filter(issue => {
-        return (
-          issue.isCandidateReview &&
-          issue.testRowNumber == currentTest.rowNumber
-        );
-      }).length > 0 && (
+      testPlanReport.issues.filter(({ isCandidateReview }) => isCandidateReview)
+        .length > 0 && (
         <div className="issues-container">
           <h2>
             <span className="feedback-from-text">Feedback from</span>{' '}
