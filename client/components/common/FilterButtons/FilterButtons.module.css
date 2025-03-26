@@ -12,7 +12,7 @@ button.filter-button {
 
     &:hover,
     :focus {
-      box-shadow: 0 0 0 0.2rem rgba(103, 171, 197, 0.5) !important;
+      box-shadow: 0 0 0 0.2rem var(--button-shadow) !important;
     }
   }
 }
