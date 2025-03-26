@@ -227,6 +227,7 @@ const TestPlans = ({ testPlanVersions, ats, me }) => {
 
     return (
       <DisclosureComponent
+        key={`CandidateReview_DisclosureComponent__${atName}`}
         expanded
         className={styles.candidateReviewCustomDisclosureComponent}
         componentId="candidateReviewRuns"

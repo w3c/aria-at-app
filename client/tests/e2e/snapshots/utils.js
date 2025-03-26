@@ -59,7 +59,7 @@ async function cleanAndNormalizeSnapshot(page) {
     }
 
     removeElements(
-      '.ready-for-review, .in-progress, .target-days-container button'
+      '.ready-for-review, .in-progress, .target-days-container button, .review-status'
     );
   });
 
