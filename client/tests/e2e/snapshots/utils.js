@@ -37,6 +37,7 @@ async function cleanAndNormalizeSnapshot(page) {
       elements.forEach(el => {
         const text = el.textContent.trim();
         if (
+          text.includes('Review status by') ||
           text.includes('Ready for Review') ||
           text.includes('Review in Progress') ||
           (text.includes('Days') &&
@@ -58,7 +59,7 @@ async function cleanAndNormalizeSnapshot(page) {
     }
 
     removeElements(
-      '.ready-for-review, .in-progress, .target-days-container button, .run-history-item'
+      '.ready-for-review, .in-progress, .target-days-container button, .run-history-item, .review-status'
     );
   });
 

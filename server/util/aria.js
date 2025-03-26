@@ -13,8 +13,7 @@ const testWithModifiedAttributes = (test, { forUpdateCompare }) => {
     'at',
     'renderedUrls',
     'renderedUrl',
-    'renderableContent.target.at.raw',
-    'viewers'
+    'renderableContent.target.at.raw'
   ];
 
   // During comparison for phase update, we need to make sure the assertionId and
