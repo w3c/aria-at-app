@@ -195,10 +195,7 @@ const TestQueueConflicts = () => {
           {Object.entries(conflicts).map(([commandKey, conflict]) => (
             <ConflictSummaryTable
               key={`${test.id}-${commandKey}`}
-              issueLink={getIssueLink(conflict)}
-              isAdmin={isAdmin}
               conflictingResults={conflict.conflictingResults}
-              testIndex={getTestNumberFilteredByAt(test)}
             />
           ))}
           {issues.length > 0 && <ConflictIssueDetails issues={issues} />}
