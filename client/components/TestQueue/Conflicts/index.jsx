@@ -188,8 +188,7 @@ const TestQueueConflicts = () => {
 
     return Object.values(conflictsByTest).map(({ test, conflicts }) => {
       const issues = data?.testPlanReport?.issues?.filter(
-        issue =>
-          issue.testNumberFilteredByAt === getTestNumberFilteredByAt(test)
+        issue => issue.testRowNumber === test.rowNumber
       );
       return (
         <div key={test.id}>
