@@ -22,6 +22,7 @@ import { dates } from 'shared';
 import './TestPlans.css';
 import { calculations } from 'shared';
 import { AtPropType, UserPropType } from '../../common/proptypes';
+import { FeedbackTypeMap } from '../FeedbackListItem';
 
 const FullHeightContainer = styled(Container)`
   min-height: calc(100vh - 64px);
@@ -218,11 +219,17 @@ const TestPlans = ({ testPlanVersions, ats, me }) => {
     isInProgressStatusExists,
     isApprovedStatusExists
   }) => {
+    // TODO: Future discussion on whether to include the issues that aren't
+    //  just general feedback
+    //
+    // Don't present information on general feedback provided here as there
+    // is no design spec or discussions around that
+    const filteredIssues = issues.filter(issue => !!issue.testRowNumber);
     let issueChangesRequestedTypeCount = 0;
     let issueFeedbackTypeCount = 0;
 
-    for (let i = 0; i < issues.length; i++) {
-      if (issues[i].feedbackType === 'CHANGES_REQUESTED')
+    for (let i = 0; i < filteredIssues.length; i++) {
+      if (filteredIssues[i].feedbackType === FeedbackTypeMap.CHANGES_REQUESTED)
         issueChangesRequestedTypeCount++;
       else issueFeedbackTypeCount++;
     }

@@ -1,10 +1,9 @@
 ### [1.13.1](https://github.com/w3c/aria-at-app/compare/v1.13.0...v1.13.1) (2025-03-17)
 
-
 ### Bug Fixes
 
-* Account for `referencePage` update during copy process ([#1340](https://github.com/w3c/aria-at-app/issues/1340)) ([b1a8483](https://github.com/w3c/aria-at-app/commit/b1a8483dca0e716ddab4e6fcd578268972c451ac))
-* Revise length of generated GitHub issue link to avoid hitting URI max length ([#1336](https://github.com/w3c/aria-at-app/issues/1336)) ([a6f5c9f](https://github.com/w3c/aria-at-app/commit/a6f5c9f4cecf84bc5a3a34dc996d7efb67df3a94))
+- Account for `referencePage` update during copy process ([#1340](https://github.com/w3c/aria-at-app/issues/1340)) ([b1a8483](https://github.com/w3c/aria-at-app/commit/b1a8483dca0e716ddab4e6fcd578268972c451ac))
+- Revise length of generated GitHub issue link to avoid hitting URI max length ([#1336](https://github.com/w3c/aria-at-app/issues/1336)) ([a6f5c9f](https://github.com/w3c/aria-at-app/commit/a6f5c9f4cecf84bc5a3a34dc996d7efb67df3a94))
 
 ## [1.13.0](https://github.com/w3c/aria-at-app/compare/v1.12.0...v1.13.0) (2025-03-17)
 

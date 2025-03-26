@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { ThemeTable } from '../../common/ThemeTable';
-import { IssuePropType } from '../../common/proptypes';
 import AssertionConflictsTable from './AssertionConflictsTable';
 import UnexpectedBehaviorsConflictsTable from './UnexpectedBehaviorsConflictsTable';
 
@@ -91,11 +90,7 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
 };
 
 ConflictSummaryTable.propTypes = {
-  conflictingResults: PropTypes.arrayOf(PropTypes.object).isRequired,
-  issues: PropTypes.arrayOf(IssuePropType),
-  issueLink: PropTypes.string.isRequired,
-  isAdmin: PropTypes.bool.isRequired,
-  testIndex: PropTypes.number.isRequired
+  conflictingResults: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 export default ConflictSummaryTable;

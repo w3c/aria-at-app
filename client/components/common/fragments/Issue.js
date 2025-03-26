@@ -27,7 +27,7 @@ const ISSUE_FIELDS = (type = 'simple') => {
           isOpen
           feedbackType
           isCandidateReview
-          testNumberFilteredByAt
+          testRowNumber
           createdAt
           closedAt
         }

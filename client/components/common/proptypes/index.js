@@ -69,7 +69,8 @@ export const IssuePropType = PropTypes.shape({
   isCandidateReview: PropTypes.bool,
   title: PropTypes.string,
   author: PropTypes.string,
-  testNumberFilteredByAt: PropTypes.number,
+  testRowNumber: PropTypes.number,
+  testSequenceNumber: PropTypes.number,
   createdAt: PropTypes.string,
   closedAt: PropTypes.string
 });
