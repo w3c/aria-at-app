@@ -219,6 +219,10 @@ const graphqlSchema = gql`
     The browsers which are required to move a TestPlanVersion to RECOMMENDED phase.
     """
     recommendedBrowsers: [Browser]!
+    """
+    The vendor this assistive technology is affiliated with.
+    """
+    vendorId: ID!
   }
 
   """
@@ -556,10 +560,6 @@ const graphqlSchema = gql`
     info on the Assertion type.
     """
     assertions(priority: AssertionPriority): [Assertion]!
-    """
-    Vendors who viewed the tests
-    """
-    viewers: [User]
     """
     Version number to indicate which of the following test writing specs this test is based on:
     1: https://github.com/w3c/aria-at/wiki/Test-Format-V1-Definition
@@ -1134,7 +1134,8 @@ const graphqlSchema = gql`
     """
     draftTestPlanRuns: [TestPlanRun]!
     """
-    The state of the vendor review, which can be "READY", "IN_PROGRESS", and "APPROVED"
+    The state of the vendor review, which can be "READY", "IN_PROGRESS", and "APPROVED".
+    Generated from ReviewerStatus.
     """
     vendorReviewStatus: String
     """
@@ -1165,6 +1166,39 @@ const graphqlSchema = gql`
     TestPlanVersion.earliestAtVersion as a default.
     """
     recommendedAtVersion: AtVersion
+  }
+
+  """
+  """
+  type ReviewerStatus {
+    """
+    The vendor representative who reviewed the test.
+    """
+    user: User!
+    """
+    The vendor representative's company.
+    """
+    vendor: Vendor!
+    """
+    The test plan report being reviewed.
+    """
+    testPlanReport: TestPlanReport!
+    """
+    The parent test plan version of the test plan report.
+    """
+    testPlanVersion: TestPlanVersion!
+    """
+    The current review status. Expected to be "IN_PROGRESS" or "APPROVED".
+    """
+    reviewStatus: String!
+    """
+    The list of tests the tester has viewed.
+    """
+    viewedTests: [String]!
+    """
+    The timestamp of when the approval was done if "reviewStatus" is "APPROVED".
+    """
+    approvedAt: Timestamp
   }
 
   """
@@ -1282,6 +1316,14 @@ const graphqlSchema = gql`
     Get all vendors.
     """
     vendors: [Vendor]!
+    """
+    Get a ReviewerStatus.
+    """
+    reviewerStatus(userId: ID!, testPlanReportId: ID!): ReviewerStatus!
+    """
+    Get all ReviewerStatuses.
+    """
+    reviewerStatuses: [ReviewerStatus]!
     """
     Get a particular TestPlanVersion by ID.
     """
@@ -1413,10 +1455,9 @@ const graphqlSchema = gql`
     """
     unmarkAsFinal: PopulatedData!
     """
-    Move the vendor review status from READY to IN PROGRESS
-    or IN PROGRESS to APPROVED
+    Move the vendor review status to APPROVED
     """
-    promoteVendorReviewStatus(vendorReviewStatus: String!): PopulatedData
+    promoteVendorReviewStatus: PopulatedData
     """
     Permanently deletes the TestPlanReport and all associated TestPlanRuns.
     Only available to admins.
@@ -1580,7 +1621,7 @@ const graphqlSchema = gql`
     """
     Add a viewer to a test
     """
-    addViewer(testPlanVersionId: ID!, testId: ID!): User!
+    addViewer(testId: ID!, testPlanReportId: ID!): User
     """
     Schedule a new CollectionJob through the Response Scheduler
     """

@@ -3,7 +3,6 @@
     "id": "MTRjOeyIyIjoiNDM1In0TVmYT",
     "atIds": [1, 2],
     "title": "Trigger an alert in reading mode",
-    "viewers": [],
     "rowNumber": "1",
     "scenarios": [
       {
@@ -70,8 +69,7 @@
             "modulePath": "scripts/setFocusOnButton.module.js",
             "description": "sets focus on the 'Trigger Alert' button"
           },
-          "referencePage":
-          "reference/2021-10-15_143458/alert.setFocusOnButton.html"
+          "referencePage": "reference/2021-10-15_143458/alert.setFocusOnButton.html"
         },
         "commands": [
           {
@@ -123,8 +121,7 @@
             "modulePath": "scripts/setFocusOnButton.module.js",
             "description": "sets focus on the 'Trigger Alert' button"
           },
-          "referencePage":
-          "reference/2021-10-15_143458/alert.setFocusOnButton.html"
+          "referencePage": "reference/2021-10-15_143458/alert.setFocusOnButton.html"
         },
         "commands": [
           {
@@ -156,7 +153,6 @@
     "id": "NzFjYeyIyIjoiNDM1In0TYzZT",
     "atIds": [1, 2],
     "title": "Trigger an alert in interaction mode",
-    "viewers": [],
     "rowNumber": "2",
     "scenarios": [
       {
@@ -223,8 +219,7 @@
             "modulePath": "scripts/setFocusOnButton.module.js",
             "description": "sets focus on the 'Trigger Alert' button"
           },
-          "referencePage":
-          "reference/2021-10-15_143458/alert.setFocusOnButton.html"
+          "referencePage": "reference/2021-10-15_143458/alert.setFocusOnButton.html"
         },
         "commands": [
           {
@@ -276,8 +271,7 @@
             "modulePath": "scripts/setFocusOnButton.module.js",
             "description": "sets focus on the 'Trigger Alert' button"
           },
-          "referencePage":
-          "reference/2021-10-15_143458/alert.setFocusOnButton.html"
+          "referencePage": "reference/2021-10-15_143458/alert.setFocusOnButton.html"
         },
         "commands": [
           {
@@ -309,7 +303,6 @@
     "id": "MDM4NeyIyIjoiNDM1In0zc0Mm",
     "atIds": [3],
     "title": "Trigger an alert",
-    "viewers": [],
     "rowNumber": "3",
     "scenarios": [
       {
@@ -374,8 +367,7 @@
             "modulePath": "scripts/setFocusOnButton.module.js",
             "description": "sets focus on the 'Trigger Alert' button"
           },
-          "referencePage":
-          "reference/2021-10-15_143458/alert.setFocusOnButton.html"
+          "referencePage": "reference/2021-10-15_143458/alert.setFocusOnButton.html"
         },
         "commands": [
           {

@@ -20,7 +20,7 @@ import ProgressBar from '@components/common/ProgressBar';
 import { None } from '@components/common/None';
 import { dates } from 'shared';
 import { calculations } from 'shared';
-import { UserPropType } from '../../common/proptypes';
+import { AtPropType, UserPropType } from '../../common/proptypes';
 import styles from '../CandidateReview.module.css';
 import commonStyles from '../../common/styles.module.css';
 
@@ -29,7 +29,7 @@ const noneNoTestPlans = None('No Test Plans to Review', {
   customClassNames: 'p-3'
 });
 
-const TestPlans = ({ testPlanVersions, me }) => {
+const TestPlans = ({ testPlanVersions, ats, me }) => {
   const testPlanReportsExist = testPlanVersions.some(
     testPlanVersion => testPlanVersion.testPlanReports.length
   );
@@ -450,9 +450,14 @@ const TestPlans = ({ testPlanVersions, me }) => {
           <thead>
             <tr>
               <th>Test Plan</th>
-              <th className={commonStyles.centeredText}>JAWS</th>
-              <th className={commonStyles.centeredText}>NVDA</th>
-              <th className={commonStyles.centeredText}>VoiceOver for macOS</th>
+              {ats.map(({ name }) => (
+                <th
+                  className={commonStyles.centeredText}
+                  key={`CenteredTh_${name}`}
+                >
+                  {name}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
@@ -461,63 +466,42 @@ const TestPlans = ({ testPlanVersions, me }) => {
               .map(testPlanVersion => {
                 const testPlanReports = testPlanVersion.testPlanReports;
 
-                let jawsDataExists = false;
-                let nvdaDataExists = false;
-                let voDataExists = false;
+                const calculatedAtsData = ats.map(at => {
+                  let dataExists = false;
+                  while (!dataExists) {
+                    Object.values(testPlanTargetsById).forEach(
+                      testPlanTarget => {
+                        const testPlanReport = testPlanReports.find(
+                          testPlanReport =>
+                            testPlanReport.at.id === testPlanTarget.at.id &&
+                            testPlanReport.browser.id ===
+                              testPlanTarget.browser.id
+                        );
 
-                Object.values(testPlanTargetsById).map(testPlanTarget => {
-                  const testPlanReport = testPlanReports.find(
-                    testPlanReport =>
-                      testPlanReport.at.id === testPlanTarget.at.id &&
-                      testPlanReport.browser.id === testPlanTarget.browser.id
-                  );
-
-                  if (testPlanReport) {
-                    if (!jawsDataExists && testPlanReport.at.id === '1') {
-                      jawsDataExists = true;
-                    }
-                    if (!nvdaDataExists && testPlanReport.at.id === '2') {
-                      nvdaDataExists = true;
-                    }
-                    if (!voDataExists && testPlanReport.at.id === '3') {
-                      voDataExists = true;
-                    }
+                        if (testPlanReport && testPlanReport.at.id === at.id)
+                          dataExists = true;
+                      }
+                    );
                   }
-                });
 
-                const allJawsIssues = [];
-                const allNvdaIssues = [];
-                const allVoIssues = [];
+                  // TODO: Evaluate if uniqueLinks is necessary
+                  const uniqueLinks = [];
+                  const issues = [
+                    ...testPlanReports
+                      .filter(t => t.at.id === at.id)
+                      .flatMap(({ issues }) => issues)
+                      .filter(t => uniqueFilter(t, uniqueLinks, 'link'))
+                  ];
 
-                const jawsTestPlanReports = testPlanReports.filter(t => {
-                  if (t.at.id === '1') {
-                    allJawsIssues.push(...t.issues);
-                    return true;
-                  } else return false;
+                  return {
+                    id: at.id,
+                    key: at.key,
+                    name: at.name,
+                    reports: testPlanReports.filter(t => t.at.id === at.id),
+                    dataExists,
+                    issues
+                  };
                 });
-                const nvdaTestPlanReports = testPlanReports.filter(t => {
-                  if (t.at.id === '2') {
-                    allNvdaIssues.push(...t.issues);
-                    return true;
-                  } else return false;
-                });
-                const voTestPlanReports = testPlanReports.filter(t => {
-                  if (t.at.id === '3') {
-                    allVoIssues.push(...t.issues);
-                    return true;
-                  } else return false;
-                });
-
-                const uniqueLinks = [];
-                const jawsIssues = allJawsIssues.filter(t =>
-                  uniqueFilter(t, uniqueLinks, 'link')
-                );
-                const nvdaIssues = allNvdaIssues.filter(t =>
-                  uniqueFilter(t, uniqueLinks, 'link')
-                );
-                const voIssues = allVoIssues.filter(t =>
-                  uniqueFilter(t, uniqueLinks, 'link')
-                );
 
                 return (
                   <tr key={testPlanVersion.id}>
@@ -526,69 +510,31 @@ const TestPlans = ({ testPlanVersions, me }) => {
                         includeVersionString: true
                       })}
                     </td>
-                    <td
-                      className={clsx(
-                        commonStyles.centeredText,
-                        commonStyles.vertical
-                      )}
-                    >
-                      {jawsDataExists
-                        ? getRowStatus({
-                            issues: jawsIssues,
-                            isInProgressStatusExists: jawsTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus ===
-                                'IN_PROGRESS'
-                            ),
-                            isApprovedStatusExists: jawsTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus === 'APPROVED'
-                            )
-                          })
-                        : none}
-                    </td>
-                    <td
-                      className={clsx(
-                        commonStyles.centeredText,
-                        commonStyles.vertical
-                      )}
-                    >
-                      {nvdaDataExists
-                        ? getRowStatus({
-                            issues: nvdaIssues,
-                            isInProgressStatusExists: nvdaTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus ===
-                                'IN_PROGRESS'
-                            ),
-                            isApprovedStatusExists: nvdaTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus === 'APPROVED'
-                            )
-                          })
-                        : none}
-                    </td>
-                    <td
-                      className={clsx(
-                        commonStyles.centeredText,
-                        commonStyles.vertical
-                      )}
-                    >
-                      {voDataExists
-                        ? getRowStatus({
-                            issues: voIssues,
-                            isInProgressStatusExists: voTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus ===
-                                'IN_PROGRESS'
-                            ),
-                            isApprovedStatusExists: voTestPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus === 'APPROVED'
-                            )
-                          })
-                        : none}
-                    </td>
+                    {calculatedAtsData.map(data => {
+                      return (
+                        <td
+                          key={`CenteredTd_Summary_${data.key}`}
+                          className={clsx(
+                            commonStyles.centeredText,
+                            commonStyles.vertical
+                          )}
+                        >
+                          {data.dataExists
+                            ? getRowStatus({
+                                issues: data.issues,
+                                isInProgressStatusExists: data.reports.some(
+                                  report =>
+                                    report.vendorReviewStatus === 'IN_PROGRESS'
+                                ),
+                                isApprovedStatusExists: data.reports.some(
+                                  report =>
+                                    report.vendorReviewStatus === 'APPROVED'
+                                )
+                              })
+                            : none}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}
@@ -614,9 +560,7 @@ const TestPlans = ({ testPlanVersions, me }) => {
         This page summarizes the test results for each AT and Browser which
         executed the Test Plan.
       </p>
-      {constructTableForAtById('1', 'JAWS')}
-      {constructTableForAtById('2', 'NVDA')}
-      {constructTableForAtById('3', 'VoiceOver for macOS')}
+      {ats.map(({ id, name }) => constructTableForAtById(id, name))}
       {constructTableForResultsSummary()}
     </Container>
   );
@@ -643,6 +587,7 @@ TestPlans.propTypes = {
       )
     })
   ).isRequired,
+  ats: PropTypes.arrayOf(AtPropType).isRequired,
   me: UserPropType.isRequired,
   triggerPageUpdate: PropTypes.func
 };
