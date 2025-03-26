@@ -1,5 +1,5 @@
 .bot-run-test-container {
-  font-size: 0.875rem !important;
+  font-size: var(--14px) !important;
   padding: 0.5rem 0;
   margin: 0.5rem 0;
 
