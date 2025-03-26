@@ -112,7 +112,7 @@ describe('Issues table interactions', () => {
         '[data-test="issue-row"]',
         rows => rows.length
       );
-      expect(visibleIssues).toBe(2);
+      expect(visibleIssues).toBe(3);
     });
   });
 
