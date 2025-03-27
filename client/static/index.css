@@ -12,6 +12,7 @@
   /* Background colors */
   --bg: #eaeaea;
   --bg-table-headings: #e9ebee;
+  --bg-table-headings-hover: rgba(0, 0, 0, 0.075);
   --bg-table-body: #fafbfc;
   --bg-table-hover: #f6f8fa;
   --bg-light-blue: #e9f0f8;
@@ -57,6 +58,7 @@
   --disabled-border: #d2d5d9; /* Same as border-gray */
 
   --dark-gray-text: #727272;
+  --required-color: #dc3545;
 
   /* Other Colors */
   --rd-color: #4177de;

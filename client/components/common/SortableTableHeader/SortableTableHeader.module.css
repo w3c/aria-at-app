@@ -24,7 +24,7 @@ button.header-button {
   &:hover,
   &:focus {
     color: var(--font-primary);
-    background-color: var(--bs-table-hover-bg);
+    background-color: var(--bg-table-headings-hover);
   }
 }
 

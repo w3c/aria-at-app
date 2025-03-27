@@ -48,7 +48,7 @@ div.modal-inner-section-container {
 }
 
 span.required-indicator {
-  color: var(--bs-form-invalid-color);
+  color: var(--required-color);
 
   &::after {
     content: '*';
@@ -57,7 +57,7 @@ span.required-indicator {
 
 /* Components */
 h2.theme-table-header {
-  background-color: var(--bs-table-bg) !important;
+  background-color: var(--white) !important;
   font-size: var(--24px);
   font-weight: var(--font-weight-headings);
   border: solid 1px var(--border-gray);
@@ -67,7 +67,7 @@ h2.theme-table-header {
 }
 
 h3.theme-table-header {
-  background-color: var(--bs-table-bg) !important;
+  background-color: var(--white) !important;
   font-size: var(--20px);
   font-weight: var(--font-weight-headings);
   border: solid 1px var(--border-gray);
