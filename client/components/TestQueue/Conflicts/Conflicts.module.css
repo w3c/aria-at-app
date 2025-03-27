@@ -53,7 +53,7 @@ table.conflicts {
     min-width: 0;
   }
 
-  @media (max-width: 1060px) {
+  @media (max-width: 1024px) {
     max-width: 70%;
   }
 

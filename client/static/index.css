@@ -1,6 +1,14 @@
 @import url('https://use.fontawesome.com/releases/v5.0.1/css/all.css');
 
 :root {
+  /* Home */
+  --hero-text: #5c728e;
+  --hero-link: #0072ed;
+  --hero-link-hover: #0058b6;
+  --authorization-message-bg: #fff9ea;
+  --authorization-message-text: #654e29;
+  --improvements-bg: #f6fbfe;
+
   /* Background colors */
   --bg: #eaeaea;
   --bg-table-headings: #e9ebee;
@@ -98,8 +106,6 @@
   --font-weight-lighter: 400;
 
   /* Dimensions */
-  --spacer: 3rem;
-
   --32px: 2rem;
   --30px: 1.875rem;
   --28px: 1.75rem;
@@ -123,6 +129,17 @@
   --text-gap: 0.25rem;
   --el-gap: 0.5rem;
   --section-gap: 1rem;
+  --spacer-gap: 3rem;
+
+  /* Breakpoints */
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 480px;
+  --mobile-breakpoint: 600px;
+  --breakpoint-md: 768px;
+  --tablet-breakpoint: 900px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-xxl: 1440px;
 }
 
 html,

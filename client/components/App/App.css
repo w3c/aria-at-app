@@ -18,7 +18,7 @@ main {
 }
 
 .container {
-  max-width: 1400px;
+  max-width: var(--breakpoint-xxl);
   margin: auto;
   background-color: white;
 }
@@ -35,19 +35,19 @@ main {
   margin: 0;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .container {
     padding: 1rem;
   }
 }
 
-@media (min-width: 700px) {
+@media (min-width: 768px) {
   .container {
     padding: 3rem;
   }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1024px) {
   .container {
     padding: 5rem;
   }
@@ -55,7 +55,7 @@ main {
 
 /* Navbar and Menu */
 nav.navbar {
-  max-width: 1400px;
+  max-width: var(--breakpoint-xxl);
   min-height: 4rem;
   padding: 0.5rem 1rem;
   margin: auto;
@@ -85,19 +85,19 @@ nav.navbar {
   }
 }
 
-@media (min-width: 700px) {
+@media (min-width: 768px) {
   nav.navbar {
     padding: 0.5rem 3rem;
   }
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1024px) {
   nav.navbar {
     padding: 0.5rem 5rem;
   }
 }
 
-@media all and (min-width: 1200px) {
+@media all and (min-width: 1280px) {
   .navbar-expand-lg .navbar-collapse ul {
     display: flex;
     flex-basis: auto;
@@ -117,13 +117,14 @@ nav.navbar {
   }
 }
 
-@media all and (min-width: 1199px) and (max-width: 1253px) {
+/* 1200 (when bootstrap's nav collapses) */
+@media all and (min-width: 1200px) and (max-width: 1280px) {
   .nav-link {
     font-size: var(--nav-font-size-sm);
   }
 }
 
-@media all and (max-width: 1199px) {
+@media all and (max-width: 1024px) {
   .nav-link[aria-current='true']::after,
   .nav-link:hover::after {
     position: absolute;
@@ -422,7 +423,8 @@ ul {
   border-left: 2px solid var(--border-gray);
 }
 
-@media (max-width: 991px) {
+/* Display when the nav bar is in collapsed state */
+@media (max-width: 1200px) {
   .signed-in-wrapper {
     align-items: stretch;
     flex-direction: column;
@@ -430,6 +432,7 @@ ul {
 
   .signed-in {
     border-left: none;
+    padding-left: 0;
   }
 }
 

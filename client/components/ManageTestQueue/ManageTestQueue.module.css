@@ -5,6 +5,7 @@
   }
 
   /* Add Test Plan to Test Queue button */
+
   > button {
     padding: 0.5rem 1rem;
     margin-top: 1rem;
@@ -43,6 +44,7 @@
         }
 
         /* remove button */
+
         &:nth-of-type(3) {
           margin-left: 1rem;
           color: #ce1b4c;
@@ -50,8 +52,14 @@
       }
     }
 
-    @media (max-width: 860px) {
+    @media (max-width: 900px) {
       grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    @media (max-width: 480px) {
+      .disclosure-buttons-row {
+        font-size: var(--14px);
+      }
     }
   }
 
@@ -90,7 +98,8 @@
 
     select {
       width: inherit;
-      @media (max-width: 767px) {
+
+      @media (max-width: 768px) {
         flex-grow: 1;
       }
     }

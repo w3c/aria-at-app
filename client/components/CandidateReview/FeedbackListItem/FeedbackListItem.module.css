@@ -47,7 +47,7 @@
   border: 2px solid var(--default-gray);
 }
 
-@media (max-width: 425px) {
+@media (max-width: 480px) {
   .feedback-list-item:before {
     height: 60%;
     bottom: 3rem;

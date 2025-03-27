@@ -15,7 +15,7 @@ fieldset.fieldset-row {
     transition: font-size 0.5s ease;
   }
 
-  @media (max-width: 860px) {
+  @media (max-width: 900px) {
     .form-label {
       font-size: var(--12px);
     }

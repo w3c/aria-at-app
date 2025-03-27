@@ -28,7 +28,7 @@
     font-size: var(--16px);
     margin-top: var(--12px);
 
-    @media all and (max-width: 767px) {
+    @media all and (max-width: 768px) {
       position: relative;
       top: -0.15rem;
     }

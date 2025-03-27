@@ -26,7 +26,7 @@
   width: 32%;
   text-align: center;
 
-  @media (max-width: 425px) {
+  @media (max-width: 480px) {
     font-size: var(--12px);
     padding: 0.25rem 0.5rem;
   }
