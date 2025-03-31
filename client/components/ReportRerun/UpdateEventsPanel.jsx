@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ThemeTable } from '../common/ThemeTable';
 import RefreshButton from '../common/RefreshButton';
 import { convertStringFormatToAnotherFormat } from 'shared/dates';
+import { Table } from 'react-bootstrap';
 
 const UpdateEventsPanel = ({ events = [], isAdmin, onRefresh }) => {
   return (
@@ -15,7 +15,7 @@ const UpdateEventsPanel = ({ events = [], isAdmin, onRefresh }) => {
       </div>
       <div className="events-content" aria-live="polite" aria-atomic="true">
         {events.length ? (
-          <ThemeTable responsive aria-label="Test plan rerun events history">
+          <Table responsive aria-label="Test plan rerun events history">
             <thead>
               <tr>
                 <th scope="col">Time</th>
@@ -36,7 +36,7 @@ const UpdateEventsPanel = ({ events = [], isAdmin, onRefresh }) => {
                 </tr>
               ))}
             </tbody>
-          </ThemeTable>
+          </Table>
         ) : (
           <p className="p-4 empty-events-message">
             {isAdmin

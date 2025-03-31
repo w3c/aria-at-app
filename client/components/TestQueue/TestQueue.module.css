@@ -48,6 +48,10 @@ table.test-queue {
   }
 }
 
+h1.test-queue-heading {
+  border-bottom: none !important;
+}
+
 .status-container {
   display: flex;
   flex-direction: column;
