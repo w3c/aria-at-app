@@ -6,7 +6,7 @@ export const useFailingAssertions = testPlanReport => {
       return [];
     }
 
-    return testPlanReport.finalizedTestResults.flatMap(
+    const failingAssertions = testPlanReport.finalizedTestResults.flatMap(
       (testResult, testIndex) => {
         return testResult.scenarioResults.flatMap(scenarioResult => {
           const commonResult = {
@@ -27,7 +27,10 @@ export const useFailingAssertions = testPlanReport => {
                 // Some revision of how that key combination + setting is rendered may be useful
                 return cmd.text.split(' (')[0];
               })
-              .join(' then ')
+              .join(' then '),
+            commandId: `${
+              scenarioResult.scenario.id
+            }_${scenarioResult.scenario.commands.map(cmd => cmd.id).join('_')}`
           };
 
           /**
@@ -72,5 +75,12 @@ export const useFailingAssertions = testPlanReport => {
         });
       }
     );
+
+    const uniqueCommandsWithFailures = new Set(
+      failingAssertions.map(a => a.commandId)
+    );
+    failingAssertions.uniqueCommandsCount = uniqueCommandsWithFailures.size;
+
+    return failingAssertions;
   }, [testPlanReport]);
 };

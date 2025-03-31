@@ -29,6 +29,7 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
           id
           output
           scenario {
+            id
             commands {
               id
               text
