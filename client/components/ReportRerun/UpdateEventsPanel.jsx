@@ -1,14 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ThemeTable } from '../common/ThemeTable';
+import RefreshButton from '../common/RefreshButton';
 import { convertStringFormatToAnotherFormat } from 'shared/dates';
 
-const UpdateEventsPanel = ({ events = [], isAdmin }) => {
+const UpdateEventsPanel = ({ events = [], isAdmin, onRefresh }) => {
   return (
     <div className="events-section" tabIndex="-1">
-      <h2 id="events-heading" className="events-header">
-        Update Events
-      </h2>
+      <div className="events-header">
+        <div className="events-header-container">
+          <h2 id="events-heading">Update Events</h2>
+          <RefreshButton onRefresh={onRefresh} />
+        </div>
+      </div>
       <div className="events-content" aria-live="polite" aria-atomic="true">
         {events.length ? (
           <ThemeTable responsive aria-label="Test plan rerun events history">
@@ -59,7 +63,8 @@ UpdateEventsPanel.propTypes = {
       ]).isRequired
     })
   ),
-  isAdmin: PropTypes.bool.isRequired
+  isAdmin: PropTypes.bool.isRequired,
+  onRefresh: PropTypes.func.isRequired
 };
 
 export default UpdateEventsPanel;

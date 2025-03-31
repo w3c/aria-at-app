@@ -26,9 +26,12 @@ const ReportRerun = ({ onQueueUpdate }) => {
     }
   );
 
-  const { data: { updateEvents = [] } = {} } = useQuery(GET_UPDATE_EVENTS, {
-    pollInterval: 2000
-  });
+  const { data: { updateEvents = [] } = {}, refetch: refetchEvents } = useQuery(
+    GET_UPDATE_EVENTS,
+    {
+      pollInterval: 10000
+    }
+  );
 
   const automatedVersions = useMemo(() => {
     if (!atVersionsData?.ats) return [];
@@ -98,6 +101,10 @@ const ReportRerun = ({ onQueueUpdate }) => {
     }
   };
 
+  const handleRefreshEvents = async () => {
+    await refetchEvents();
+  };
+
   return (
     <div className="rerun-section">
       {isAdmin && (
@@ -107,7 +114,11 @@ const ReportRerun = ({ onQueueUpdate }) => {
         />
       )}
 
-      <UpdateEventsPanel events={updateEvents} isAdmin={isAdmin} />
+      <UpdateEventsPanel
+        events={updateEvents}
+        isAdmin={isAdmin}
+        onRefresh={handleRefreshEvents}
+      />
     </div>
   );
 };

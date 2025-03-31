@@ -441,3 +441,16 @@
   line-height: 1.6;
   color: #24292f;
 }
+
+.events-header-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.events-header-container h2 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
