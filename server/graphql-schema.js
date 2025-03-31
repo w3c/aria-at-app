@@ -1662,13 +1662,6 @@ const graphqlSchema = gql`
     createCollectionJobsFromPreviousAtVersion(
       atVersionId: ID!
     ): CreateCollectionJobsFromPreviousVersionResponse!
-    """
-    Create a new update event
-    """
-    createUpdateEvent(
-      description: String!
-      type: UpdateEventType = GENERAL
-    ): UpdateEvent!
   }
 
   type CreateCollectionJobsFromPreviousVersionResponse {

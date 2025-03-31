@@ -52,11 +52,7 @@ const ScenarioResult = require('./ScenarioResult');
 const AtVersion = require('./AtVersion');
 const createCollectionJobsFromPreviousAtVersion = require('./createCollectionJobsFromPreviousAtVersionResolver');
 const rerunnableReports = require('./rerunnableReportsResolver');
-const {
-  updateEvents,
-  updateEvent,
-  createUpdateEvent
-} = require('./UpdateEvent');
+const { updateEvents, updateEvent } = require('./UpdateEvent');
 
 const resolvers = {
   Query: {
@@ -100,8 +96,7 @@ const resolvers = {
     deleteCollectionJob,
     scheduleCollectionJob,
     restartCollectionJob,
-    createCollectionJobsFromPreviousAtVersion,
-    createUpdateEvent
+    createCollectionJobsFromPreviousAtVersion
   },
   AtOperations,
   AtVersionOperations,

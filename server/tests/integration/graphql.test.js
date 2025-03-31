@@ -164,8 +164,7 @@ describe('graphql', () => {
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
       ['Mutation', 'restartCollectionJob'],
-      ['CollectionJobOperations', 'retryCanceledCollections'],
-      ['Mutation', 'createUpdateEvent']
+      ['CollectionJobOperations', 'retryCanceledCollections']
     ];
     ({
       typeAwareQuery,
