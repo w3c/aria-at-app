@@ -8,10 +8,17 @@ const GITHUB_ISSUES_URL =
 const MAX_GITHUB_URL_LENGTH = 8000;
 
 // TODO: Use At.key
-const atLabelMap = {
+export const GitHubAtLabelMap = {
   'VoiceOver for macOS': 'vo',
   JAWS: 'jaws',
   NVDA: 'nvda'
+};
+
+export const AtBugTrackerMap = {
+  JAWS: 'https://github.com/FreedomScientific/VFO-standards-support/issues',
+  NVDA: 'https://github.com/nvaccess/nvda/issues',
+  'VoiceOver for macOS':
+    'https://bugs.webkit.org/buglist.cgi?quicksearch=voiceover'
 };
 
 /**
@@ -142,7 +149,7 @@ const createIssueLink = ({
 
   const labels =
     (isCandidateReview ? 'candidate-review,' : '') +
-    `${atLabelMap[atName]},` +
+    `${GitHubAtLabelMap[atName]},` +
     (isCandidateReviewChangesRequested ? 'changes-requested' : 'feedback');
 
   let reportLinkFormatted = '';
@@ -247,6 +254,7 @@ const createIssueLink = ({
  * @param {string} options.testPlanTitle - The title of the test plan
  * @param {string} options.versionString - The version string
  * @param {number|null} [options.testSequenceNumber=null] - The sequence number of the test, this is the test number displayed to test runners
+ * @param {boolean} [options.isGeneralFeedback] - is 'General' feedback across the entire test plan
  * @returns {string} The URL for searching issues on the GitHub repository
  */
 export const getIssueSearchLink = ({
@@ -256,26 +264,20 @@ export const getIssueSearchLink = ({
   atName,
   testPlanTitle,
   versionString,
-  testSequenceNumber = null
+  testSequenceNumber = null,
+  isGeneralFeedback = false
 }) => {
-  // TODO: Use At.key
-  let atKey;
-  if (atName === 'JAWS' || atName === 'NVDA') {
-    atKey = atName.toLowerCase();
-  } else {
-    atKey = 'vo';
-  }
-
   const query = [
     isCandidateReview ? `label:candidate-review` : '',
     isCandidateReviewChangesRequested
       ? `label:changes-requested`
       : 'label:feedback',
-    `label:${atLabelMap[atName]}`,
+    `label:${GitHubAtLabelMap[atName]}`,
     username ? `author:${username}` : '',
-    `label:${atKey}`,
-    `"${testPlanTitle}"`,
-    testSequenceNumber ? `Test ${testSequenceNumber}` : '',
+    `"${testPlanTitle}${
+      testSequenceNumber ? ` Test ${testSequenceNumber}` : ''
+    }"`,
+    isGeneralFeedback ? `General` : '',
     versionString
   ]
     .filter(str => str)

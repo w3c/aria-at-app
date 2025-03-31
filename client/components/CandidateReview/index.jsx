@@ -36,8 +36,9 @@ const CandidateReview = () => {
   if (!data) return null;
 
   const testPlanVersions = data.testPlanVersions;
+  const ats = data.ats;
 
-  return <TestPlans testPlanVersions={testPlanVersions} me={me} />;
+  return <TestPlans testPlanVersions={testPlanVersions} ats={ats} me={me} />;
 };
 
 export default CandidateReview;

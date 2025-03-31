@@ -61,7 +61,6 @@ function createV1Test({
     renderedUrls: createV1RenderedUrls(atIds, getRenderedUrl),
     scenarios: createV1Scenarios(allCollected, testId, ats),
     assertions: getAssertions(common, testId),
-    viewers: [],
     testFormatVersion: 1
   });
 }
@@ -103,7 +102,6 @@ function createV2Test({
       renderedUrl: getRenderedUrl(collectedIndex),
       scenarios: createV2Scenarios(collected, testId, atId),
       assertions: getAssertions(collected, testId),
-      viewers: [],
       testFormatVersion: 2
     });
   });

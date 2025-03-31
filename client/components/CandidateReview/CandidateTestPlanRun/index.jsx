@@ -8,7 +8,8 @@ import { navigateTests } from '../../../utils/navigateTests';
 import {
   ADD_VIEWER_MUTATION,
   CANDIDATE_REPORTS_QUERY,
-  PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
+  PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
+  REVIEWER_STATUS_QUERY
 } from './queries';
 import Badge from 'react-bootstrap/Badge';
 import Container from 'react-bootstrap/Container';
@@ -25,39 +26,39 @@ import { useMediaQuery } from 'react-responsive';
 import TestPlanResultsTable from '../../common/TestPlanResultsTable';
 import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
 import ApprovedModal from '../CandidateModals/ApprovedModal';
-import FeedbackListItem from '../FeedbackListItem';
+import FeedbackListItem, { FeedbackTypeMap } from '../FeedbackListItem';
 import DisclosureComponent from '../../common/DisclosureComponent';
 import createIssueLink, {
+  AtBugTrackerMap,
   getIssueSearchLink
 } from '../../../utils/createIssueLink';
 import RunHistory from '../../common/RunHistory';
 import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
+import { evaluateAuth } from '../../../utils/evaluateAuth';
 import NotApprovedModal from '../CandidateModals/NotApprovedModal';
 import FailingAssertionsSummaryTable from '../../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../../FailingAssertionsSummary/Heading';
+
+const atMap = {
+  1: 'JAWS',
+  2: 'NVDA',
+  3: 'VoiceOver for macOS'
+};
+
+const vendorReviewStatusMap = {
+  READY: 'Ready',
+  IN_PROGRESS: 'In Progress',
+  APPROVED: 'Approved'
+};
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
   const navigate = useNavigate();
 
-  let testPlanVersionIds = [];
-  if (testPlanVersionId.includes(','))
-    testPlanVersionIds = testPlanVersionId.split(',');
-
-  const { loading, data, error, refetch } = useQuery(CANDIDATE_REPORTS_QUERY, {
-    variables: testPlanVersionIds.length
-      ? { testPlanVersionIds, atId }
-      : { testPlanVersionId, atId }
-  });
-  const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
-  const [promoteVendorReviewStatus] = useMutation(
-    PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
-  );
-
   const nextButtonRef = useRef();
   const finishButtonRef = useRef();
 
-  const [reviewStatus, setReviewStatus] = useState('');
+  const [reviewStatus, setReviewStatus] = useState('READY');
   const [firstTimeViewing, setFirstTimeViewing] = useState(false);
   const [viewedTests, setViewedTests] = useState([]);
   const [testsLength, setTestsLength] = useState(0);
@@ -74,6 +75,57 @@ const CandidateTestPlanRun = () => {
   const [showBrowserBools, setShowBrowserBools] = useState([]);
   const [showRunHistory, setShowRunHistory] = useState(false);
   const [showBrowserClicks, setShowBrowserClicks] = useState([]);
+
+  let testPlanVersionIds = [];
+  if (testPlanVersionId.includes(','))
+    testPlanVersionIds = testPlanVersionId.split(',');
+
+  const { loading, data, error, refetch } = useQuery(CANDIDATE_REPORTS_QUERY, {
+    variables: testPlanVersionIds.length
+      ? { testPlanVersionIds, atId }
+      : { testPlanVersionId, atId }
+  });
+  const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
+  const [promoteVendorReviewStatus] = useMutation(
+    PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
+  );
+
+  const testPlanReports = [];
+  if (data?.testPlanReports?.length === 0)
+    return <Navigate to="/404" replace />;
+
+  const getLatestReleasedAtVersionReport = arr => {
+    return arr.reduce((o1, o2) => {
+      return new Date(o1.latestAtVersionReleasedAt.releasedAt) >
+        new Date(o2.latestAtVersionReleasedAt.releasedAt)
+        ? o1
+        : o2;
+    });
+  };
+
+  Object.keys(atMap).forEach(k => {
+    const group = data?.testPlanReports?.filter(t => t.browser.id == k);
+    if (group?.length) {
+      const latestReport = getLatestReleasedAtVersionReport(group);
+      testPlanReports.push(latestReport);
+    }
+  });
+
+  const testPlanReport = testPlanReports.find(
+    each =>
+      each.testPlanVersion.id === testPlanVersionId ||
+      testPlanVersionIds.includes(each.testPlanVersion.id)
+  );
+
+  const auth = evaluateAuth(data?.me ? data?.me : {});
+  const { isAdmin } = auth;
+  const { data: reviewerStatusData } = useQuery(REVIEWER_STATUS_QUERY, {
+    variables: {
+      userId: auth.id,
+      testPlanReportId: testPlanReport?.id
+    },
+    skip: !testPlanReport
+  });
 
   const isSummaryView = currentTestIndex === -1;
 
@@ -127,7 +179,12 @@ const CandidateTestPlanRun = () => {
   };
 
   const addViewerToTest = async testId => {
-    await addViewer({ variables: { testPlanVersionId, testId } });
+    await addViewer({
+      variables: {
+        testId,
+        testPlanReportId: testPlanReport.id
+      }
+    });
   };
 
   const updateTestViewed = async () => {
@@ -143,31 +200,27 @@ const CandidateTestPlanRun = () => {
     }
   };
 
-  const updateVendorStatus = async (reportApproved = false) => {
-    if (reviewStatus === 'READY') {
-      await Promise.all(
-        testPlanReports?.map(report =>
-          promoteVendorReviewStatus({
-            variables: { testReportId: report.id, reviewStatus }
-          })
-        )
-      );
-      setReviewStatus('IN_PROGRESS');
-    } else if (reviewStatus === 'IN_PROGRESS' && reportApproved) {
-      await Promise.all(
-        testPlanReports?.map(report =>
-          promoteVendorReviewStatus({
-            variables: { testReportId: report.id, reviewStatus }
-          })
-        )
-      );
-      setReviewStatus('APPROVED');
-    }
+  const setVendorReviewStatusToApproved = async () => {
+    const results = await Promise.all(
+      testPlanReports?.map(report =>
+        promoteVendorReviewStatus({
+          variables: { testReportId: report.id }
+        })
+      )
+    );
+    const isApproved = results.every(
+      result =>
+        result.data.testPlanReport.promoteVendorReviewStatus.testPlanReport
+          .vendorReviewStatus === 'APPROVED'
+    );
+    setReviewStatus(
+      isApproved ? 'APPROVED' : testPlanReport.vendorReviewStatus
+    );
   };
 
   const submitApproval = async (status = '') => {
     if (status === 'APPROVED') {
-      await updateVendorStatus(true);
+      await setVendorReviewStatusToApproved();
       setConfirmationModal(
         <ApprovedModal
           handleAction={async () => {
@@ -193,23 +246,9 @@ const CandidateTestPlanRun = () => {
 
   useEffect(() => {
     if (data) {
-      if (
-        !tests[0].viewers?.find(viewer => viewer.username === data.me.username)
-      ) {
-        addViewerToTest(tests[0].id).then(() => {
-          setFirstTimeViewing(true);
-        });
-      }
-      const viewedTests = [
-        tests[0].id,
-        ...tests
-          .filter(test =>
-            test.viewers?.find(viewer => viewer.username === data.me.username)
-          )
-          .map(test => test.id)
-      ];
+      const viewedTests = reviewerStatusData?.reviewerStatus?.viewedTests || [];
       setViewedTests(viewedTests);
-      setReviewStatus(vendorReviewStatus);
+      setReviewStatus(testPlanReport.vendorReviewStatus);
 
       const bools = testPlanReports.map(() => false);
       setShowBrowserBools(bools);
@@ -224,11 +263,10 @@ const CandidateTestPlanRun = () => {
       setTestsLength(tests.length);
       setShowBrowserClicks(browserClicks);
     }
-  }, [data]);
+  }, [data, reviewerStatusData]);
 
   useEffect(() => {
     if (data) {
-      updateVendorStatus();
       updateTestViewed();
       setIsFirstTest(currentTestIndex === 0);
       if (tests?.length === 1) setIsLastTest(true);
@@ -263,39 +301,7 @@ const CandidateTestPlanRun = () => {
 
   if (!data) return null;
 
-  const atMap = {
-    1: 'JAWS',
-    2: 'NVDA',
-    3: 'VoiceOver for macOS'
-  };
   const at = atMap[atId];
-
-  const testPlanReports = [];
-  const _testPlanReports = data.testPlanReports;
-  if (_testPlanReports.length === 0) return <Navigate to="/404" replace />;
-
-  const getLatestReleasedAtVersionReport = arr => {
-    return arr.reduce((o1, o2) => {
-      return new Date(o1.latestAtVersionReleasedAt.releasedAt) >
-        new Date(o2.latestAtVersionReleasedAt.releasedAt)
-        ? o1
-        : o2;
-    });
-  };
-
-  Object.keys(atMap).forEach(k => {
-    const group = _testPlanReports.filter(t => t.browser.id == k);
-    if (group.length) {
-      const latestReport = getLatestReleasedAtVersionReport(group);
-      testPlanReports.push(latestReport);
-    }
-  });
-
-  const testPlanReport = testPlanReports.find(
-    each =>
-      each.testPlanVersion.id === testPlanVersionId ||
-      testPlanVersionIds.includes(each.testPlanVersion.id)
-  );
 
   const tests = testPlanReport.runnableTests.map((test, index) => ({
     ...test,
@@ -304,14 +310,8 @@ const CandidateTestPlanRun = () => {
   }));
 
   const currentTest = tests[currentTestIndex];
-  const { testPlanVersion, vendorReviewStatus } = testPlanReport;
+  const { testPlanVersion } = testPlanReport;
   const { recommendedPhaseTargetDate } = testPlanVersion;
-
-  const vendorReviewStatusMap = {
-    READY: 'Ready',
-    IN_PROGRESS: 'In Progress',
-    APPROVED: 'Approved'
-  };
 
   const reviewStatusText = vendorReviewStatusMap[reviewStatus];
 
@@ -324,15 +324,29 @@ const CandidateTestPlanRun = () => {
   const changesRequestedIssues = testPlanReport.issues?.filter(
     issue =>
       issue.isCandidateReview &&
-      issue.feedbackType === 'CHANGES_REQUESTED' &&
-      issue.testNumberFilteredByAt === currentTest?.seq
+      issue.feedbackType === FeedbackTypeMap.CHANGES_REQUESTED &&
+      issue.testRowNumber === currentTest?.rowNumber
   );
 
   const feedbackIssues = testPlanReport.issues?.filter(
     issue =>
       issue.isCandidateReview &&
-      issue.feedbackType === 'FEEDBACK' &&
-      issue.testNumberFilteredByAt === currentTest?.seq
+      issue.feedbackType === FeedbackTypeMap.FEEDBACK &&
+      issue.testRowNumber === currentTest?.rowNumber
+  );
+
+  const otherChangesRequestedIssues = testPlanReport.issues?.filter(
+    issue =>
+      issue.isCandidateReview &&
+      issue.feedbackType === FeedbackTypeMap.CHANGES_REQUESTED &&
+      !issue.testRowNumber
+  );
+
+  const otherFeedbackIssues = testPlanReport.issues?.filter(
+    issue =>
+      issue.isCandidateReview &&
+      issue.feedbackType === FeedbackTypeMap.FEEDBACK &&
+      !issue.testRowNumber
   );
 
   const issue = {
@@ -381,22 +395,7 @@ const CandidateTestPlanRun = () => {
     isCandidateReviewChangesRequested: true
   });
 
-  let fileBugUrl;
-
-  const githubAtLabelMap = {
-    'VoiceOver for macOS': 'vo',
-    JAWS: 'jaws',
-    NVDA: 'nvda'
-  };
-
-  if (githubAtLabelMap[at] === 'vo') {
-    fileBugUrl = 'https://bugs.webkit.org/buglist.cgi?quicksearch=voiceover';
-  } else if (githubAtLabelMap[at] === 'nvda') {
-    fileBugUrl = 'https://github.com/nvaccess/nvda/issues';
-  } else {
-    fileBugUrl =
-      'https://github.com/FreedomScientific/VFO-standards-support/issues';
-  }
+  const fileBugUrl = AtBugTrackerMap[at];
 
   const getHeading = () => {
     return (
@@ -474,40 +473,57 @@ const CandidateTestPlanRun = () => {
       return null;
     }
     return (
-      testPlanReport.issues.filter(
-        issue =>
-          issue.isCandidateReview &&
-          issue.testNumberFilteredByAt == currentTest.seq
-      ).length > 0 && (
+      testPlanReport.issues.filter(({ isCandidateReview }) => isCandidateReview)
+        .length > 0 && (
         <div className="issues-container">
           <h2>
             <span className="feedback-from-text">Feedback from</span>{' '}
             <b>{at} Representative</b>
           </h2>
           <ul className="feedback-list">
-            {[changesRequestedIssues, feedbackIssues].map((list, index) => {
-              if (list.length > 0) {
+            {[
+              otherChangesRequestedIssues,
+              otherFeedbackIssues,
+              changesRequestedIssues,
+              feedbackIssues
+            ].map((issues, index) => {
+              if (issues.length > 0) {
                 const uniqueAuthors = [
-                  ...new Set(list.map(issue => issue.author))
+                  ...new Set(issues.map(issue => issue.author))
                 ];
-                const differentAuthors = !(
-                  uniqueAuthors.length === 1 &&
-                  uniqueAuthors[0] === data.me.username
+
+                // Means the feedback isn't scoped to a single test
+                const isGeneralFeedback = issues.every(
+                  ({ testRowNumber }) => !testRowNumber
                 );
+
+                const isCandidateReviewChangesRequested = issues.every(
+                  ({ feedbackType }) =>
+                    feedbackType === FeedbackTypeMap.CHANGES_REQUESTED
+                );
+
                 return (
                   <FeedbackListItem
-                    key={`${index}-issues`}
-                    differentAuthors={differentAuthors}
-                    type={index === 0 ? 'changes-requested' : 'feedback'}
-                    issues={list}
-                    individualTest={true}
+                    key={`${index}_FeedbackListItem_key`}
+                    issues={issues}
+                    uniqueAuthors={uniqueAuthors}
+                    authorMeIncluded={uniqueAuthors.includes(data.me.username)}
+                    isGeneralFeedback={isGeneralFeedback}
+                    feedbackType={
+                      isCandidateReviewChangesRequested
+                        ? FeedbackTypeMap.CHANGES_REQUESTED
+                        : FeedbackTypeMap.FEEDBACK
+                    }
                     githubUrl={getIssueSearchLink({
                       isCandidateReview: true,
-                      isCandidateReviewChangesRequested: index === 0,
+                      isCandidateReviewChangesRequested,
                       atName: testPlanReport.at.name,
                       testPlanTitle: testPlanVersion.title,
                       versionString: testPlanVersion.versionString,
-                      testSequenceNumber: currentTest.seq
+                      testSequenceNumber: isGeneralFeedback
+                        ? null
+                        : currentTest.seq,
+                      isGeneralFeedback
                     })}
                   />
                 );
@@ -740,19 +756,20 @@ const CandidateTestPlanRun = () => {
           feedbackIssues={testPlanReport.issues?.filter(
             issue =>
               issue.isCandidateReview &&
-              issue.feedbackType === 'FEEDBACK' &&
+              issue.feedbackType === FeedbackTypeMap.FEEDBACK &&
               issue.author === data.me.username
           )}
           feedbackGithubUrl={feedbackGithubUrl}
           changesRequestedIssues={testPlanReport.issues?.filter(
             issue =>
               issue.isCandidateReview &&
-              issue.feedbackType === 'CHANGES_REQUESTED' &&
+              issue.feedbackType === FeedbackTypeMap.CHANGES_REQUESTED &&
               issue.author === data.me.username
           )}
           changesRequestedGithubUrl={changesRequestedGithubUrl}
           handleAction={submitApproval}
           handleHide={() => setFeedbackModalShowing(false)}
+          isAdmin={isAdmin}
         />
       )}
       {!!confirmationModal && confirmationModal}

@@ -12,6 +12,9 @@ export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
   ${BROWSER_FIELDS}
   ${ISSUE_FIELDS()}
   query {
+    ats {
+      ...AtFields
+    }
     testPlanVersions(phases: [CANDIDATE]) {
       id
       title
@@ -40,6 +43,7 @@ export const CANDIDATE_REVIEW_PAGE_QUERY = gql`
         }
         issues {
           ...IssueFieldsSimple
+          testRowNumber
         }
       }
     }

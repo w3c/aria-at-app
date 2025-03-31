@@ -30,20 +30,25 @@ export const useFailingAssertions = testPlanReport => {
               .join(' then ')
           };
 
-          const assertionResults = scenarioResult.assertionResults
-            .filter(assertionResult => !assertionResult.passed)
-            // We only want to show MUST and SHOULD assertions
-            .filter(
-              assertionResult =>
-                assertionResult.assertion.priority !== 'MAY' &&
-                assertionResult.assertion.priority !== 'EXCLUDE'
-            )
-            .map(assertionResult => ({
-              ...commonResult,
-              assertionText: assertionResult.assertion.text,
-              priority: assertionResult.assertion.priority,
-              output: scenarioResult.output
-            }));
+          /**
+           * @param {'MUST'|'SHOULD'} priority
+           * @return {object[]}
+           */
+          const processPriorityAssertionResults = priority => {
+            return scenarioResult[`${priority.toLowerCase()}AssertionResults`]
+              .filter(assertionResult => !assertionResult.passed)
+              .map(assertionResult => ({
+                ...commonResult,
+                priority,
+                assertionText: assertionResult.assertion.text,
+                output: scenarioResult.output
+              }));
+          };
+
+          const assertionResults = [
+            ...processPriorityAssertionResults('MUST'),
+            ...processPriorityAssertionResults('SHOULD')
+          ];
 
           const unexpectedResults = scenarioResult.unexpectedBehaviors.map(
             unexpectedBehavior => ({

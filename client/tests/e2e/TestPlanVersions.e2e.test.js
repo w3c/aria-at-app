@@ -64,7 +64,7 @@ describe('Issues table interactions', () => {
         el => el.textContent
       );
       expect(headingText.replace(/\s+/g, ' ').trim()).toBe(
-        'GitHub Issues (1 open, 1 closed)'
+        'GitHub Issues (2 open, 1 closed)'
       );
     });
   });
@@ -87,7 +87,7 @@ describe('Issues table interactions', () => {
       let firstRowStatus = await page.$eval('[data-test="issue-row"]', row =>
         row.getAttribute('data-status')
       );
-      expect(visibleIssues).toBe(1);
+      expect(visibleIssues).toBe(2);
       expect(firstRowStatus).toBe('open');
 
       // Click "Closed" filter
@@ -112,7 +112,7 @@ describe('Issues table interactions', () => {
         '[data-test="issue-row"]',
         rows => rows.length
       );
-      expect(visibleIssues).toBe(2);
+      expect(visibleIssues).toBe(3);
     });
   });
 
@@ -175,7 +175,7 @@ describe('Issues table interactions', () => {
           status: rows[0].getAttribute('data-status')
         })
       );
-      expect(visibleIssues.length).toBe(1);
+      expect(visibleIssues.length).toBe(2);
       expect(visibleIssues.status).toBe('open');
     });
   });
