@@ -4,7 +4,7 @@ const {
 } = require('../models/services/CollectionJobService');
 
 const scheduleCollectionJobResolver = async (
-  _parent,
+  _,
   { testPlanReportId },
   context
 ) => {
