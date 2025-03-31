@@ -97,7 +97,8 @@ nav.navbar {
   }
 }
 
-@media all and (min-width: 1280px) {
+/* 1200 (when bootstrap's nav collapses) */
+@media all and (min-width: 1200px) {
   .navbar-expand-lg .navbar-collapse ul {
     display: flex;
     flex-basis: auto;
@@ -117,14 +118,13 @@ nav.navbar {
   }
 }
 
-/* 1200 (when bootstrap's nav collapses) */
 @media all and (min-width: 1200px) and (max-width: 1280px) {
   .nav-link {
     font-size: var(--nav-font-size-sm);
   }
 }
 
-@media all and (max-width: 1024px) {
+@media all and (max-width: 1200px) {
   .nav-link[aria-current='true']::after,
   .nav-link:hover::after {
     position: absolute;
@@ -132,7 +132,7 @@ nav.navbar {
     width: 100%;
     height: 2px;
     left: 0;
-    bottom: 6px;
+    bottom: 0;
   }
 }
 
