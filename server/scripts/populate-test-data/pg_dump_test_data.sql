@@ -109,9 +109,9 @@ INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinal
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId") VALUES (25, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 3, 5, 2);
 INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "markedFinalAt", "atId", "exactAtVersionId", "browserId") VALUES (26, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-09-20 14:18:23.602-05', '2024-09-21', 3, 5, 3);
 --- Fully recommended TestPlanVersion [END]
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "minimumAtVersionId", "browserId", "vendorReviewStatus") VALUES (27, get_test_plan_version_id(text 'Color Viewer Slider', '2'), '2024-10-02 14:18:23.602-05', 3, 3, 3, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "markedFinalAt", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (28, get_test_plan_version_id(text 'Color Viewer Slider', '2'), '2024-10-02 14:18:23.602-05', 3, '2024-10-03 14:18:23.602-05', get_at_version_id(3, '13.0'), 3, 'READY');
-INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "markedFinalAt", "exactAtVersionId", "browserId", "vendorReviewStatus") VALUES (29, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-10-02 14:18:23.602-05', 3, '2024-10-03 14:18:23.602-05', get_at_version_id(3, '13.0'), 3, 'READY');
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "minimumAtVersionId", "browserId") VALUES (27, get_test_plan_version_id(text 'Color Viewer Slider', '2'), '2024-10-02 14:18:23.602-05', 3, 3, 3);
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "markedFinalAt", "exactAtVersionId", "browserId") VALUES (28, get_test_plan_version_id(text 'Color Viewer Slider', '2'), '2024-10-02 14:18:23.602-05', 3, '2024-10-03 14:18:23.602-05', get_at_version_id(3, '13.0'), 3);
+INSERT INTO "TestPlanReport" (id, "testPlanVersionId", "createdAt", "atId", "markedFinalAt", "exactAtVersionId", "browserId") VALUES (29, get_test_plan_version_id(text 'Action Menu Button Example Using aria-activedescendant', '2'), '2024-10-02 14:18:23.602-05', 3, '2024-10-03 14:18:23.602-05', get_at_version_id(3, '13.0'), 3);
 
 
 --
