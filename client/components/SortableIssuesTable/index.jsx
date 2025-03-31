@@ -1,13 +1,14 @@
 import React, { useMemo, useState } from 'react';
-import { ThemeTable, ThemeTableUnavailable } from '../common/ThemeTable';
+import PropTypes from 'prop-types';
+import { Table } from 'react-bootstrap';
 import { dates } from 'shared';
-import { NoneText } from '../TestPlanVersionsPage';
+import { None } from '@components/common/None';
 import SortableTableHeader, {
   TABLE_SORT_ORDERS
 } from '../common/SortableTableHeader';
 import FilterButtons from '../common/FilterButtons';
 import { IssuePropType } from '../common/proptypes';
-import PropTypes from 'prop-types';
+import commonStyles from '../common/styles.module.css';
 
 const FILTER_OPTIONS = {
   OPEN: 'Open',
@@ -100,6 +101,8 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
     setSortOrder(newSortOrder);
   };
 
+  const none = None('N/A');
+
   const renderTableHeader = () => (
     <thead>
       <tr>
@@ -116,7 +119,7 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
             title={title}
             active={activeSort === field}
             onSort={handleSort(field)}
-            data-test={`sort-${field.toLowerCase()}`}
+            data-testid={`sort-${field.toLowerCase()}`}
           />
         ))}
       </tr>
@@ -128,7 +131,7 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
       {sortedAndFilteredIssues.map(issue => (
         <tr
           key={issue.link}
-          data-test="issue-row"
+          data-testid="issue-row"
           data-status={issue.isOpen ? 'open' : 'closed'}
         >
           <td>
@@ -145,15 +148,13 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
               {issue.title}
             </a>
           </td>
-          <td data-test="issue-status">{issue.isOpen ? 'Open' : 'Closed'}</td>
+          <td data-testid="issue-status">{issue.isOpen ? 'Open' : 'Closed'}</td>
           <td>{issue.at?.name ?? 'AT not specified'}</td>
           <td>{dates.convertDateToString(issue.createdAt, 'MMM D, YYYY')}</td>
           <td>
-            {!issue.closedAt ? (
-              <NoneText>N/A</NoneText>
-            ) : (
-              dates.convertDateToString(issue.closedAt, 'MMM D, YYYY')
-            )}
+            {!issue.closedAt
+              ? none
+              : dates.convertDateToString(issue.closedAt, 'MMM D, YYYY')}
           </td>
         </tr>
       ))}
@@ -174,18 +175,23 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
         onFilterChange={setActiveFilter}
       />
       {!sortedAndFilteredIssues.length ? (
-        <ThemeTableUnavailable aria-labelledby="github-issues">
-          No GitHub Issues
-        </ThemeTableUnavailable>
-      ) : (
-        <ThemeTable
-          bordered
+        <div
+          className={commonStyles.themeTableUnavailable}
           aria-labelledby="github-issues"
-          data-test="issues-table"
+        >
+          No GitHub Issues
+        </div>
+      ) : (
+        <Table
+          bordered
+          responsive
+          aria-labelledby="github-issues"
+          data-testid="issues-table"
+          className={commonStyles.themeTable}
         >
           {renderTableHeader()}
           {renderTableBody()}
-        </ThemeTable>
+        </Table>
       )}
       {issueLink && (
         <div style={{ marginTop: '1rem' }}>

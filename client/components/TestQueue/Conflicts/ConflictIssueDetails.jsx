@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from '@emotion/styled';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faExclamationCircle,
@@ -8,95 +7,57 @@ import {
 import PropTypes from 'prop-types';
 import { IssuePropType } from '../../common/proptypes';
 import { dates } from 'shared';
-
-const IssuesContainer = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const IssueContainer = styled.div`
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  padding: 1rem;
-  margin: 1rem 0;
-`;
-
-const IssueHeader = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-`;
-
-const IssueTitle = styled.h4`
-  margin: 0;
-  margin-left: 0.5rem;
-  flex-grow: 1;
-`;
-
-const IssueGrid = styled.div`
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.5rem 1rem;
-`;
-
-const IssueLabel = styled.span`
-  font-weight: bold;
-`;
-
-const IssueValue = styled.span`
-  word-break: break-word;
-`;
-
-const IssueLink = styled.a`
-  color: #0366d6;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  margin-top: 0.5rem;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
+import styles from './Conflicts.module.css';
+import commonStyles from '../../common/styles.module.css';
 
 const ConflictIssueDetails = ({ issues }) => {
   if (!issues || issues.length === 0) return null;
 
   return (
-    <IssuesContainer>
+    <div>
       <h3>Related GitHub Issues</h3>
       {issues.map((issue, index) => (
-        <IssueContainer key={index}>
-          <IssueHeader>
+        <div className={styles.conflictIssueContainer} key={index}>
+          <div className={styles.conflictIssueHeaderContainer}>
             <FontAwesomeIcon
               icon={faExclamationCircle}
-              style={{ color: issue.isOpen ? '#28a745' : '#6a737d' }}
+              style={{
+                color: issue.isOpen
+                  ? 'var(--positive-green)'
+                  : 'var(--negative-gray)'
+              }}
             />
-            <IssueTitle>{issue.title}</IssueTitle>
-          </IssueHeader>
-          <IssueGrid>
-            <IssueLabel>Status:</IssueLabel>
-            <IssueValue>{issue.isOpen ? 'Open' : 'Closed'}</IssueValue>
-            <IssueLabel>Author:</IssueLabel>
-            <IssueValue>{issue.author}</IssueValue>
-            <IssueLabel>Type:</IssueLabel>
-            <IssueValue>{issue.feedbackType}</IssueValue>
-            <IssueLabel>Created:</IssueLabel>
-            <IssueValue>
+            <h4 className={styles.conflictIssueHeader}>{issue.title}</h4>
+          </div>
+          <div className={styles.conflictIssueGrid}>
+            <span className={commonStyles.boldFont}>Status:</span>
+            <span className={styles.conflictIssueValue}>
+              {issue.isOpen ? 'Open' : 'Closed'}
+            </span>
+            <span className={commonStyles.boldFont}>Author:</span>
+            <span className={styles.conflictIssueValue}>{issue.author}</span>
+            <span className={commonStyles.boldFont}>Type:</span>
+            <span className={styles.conflictIssueValue}>
+              {issue.feedbackType}
+            </span>
+            <span className={commonStyles.boldFont}>Created:</span>
+            <span className={styles.conflictIssueValue}>
               {dates.convertDateToString(issue.createdAt)}
-            </IssueValue>
+            </span>
             {issue.closedAt && (
               <>
-                <IssueLabel>Closed:</IssueLabel>
-                <IssueValue>
+                <span className={commonStyles.boldFont}>Closed:</span>
+                <span className={styles.conflictIssueValue}>
                   {dates.convertDateToString(issue.closedAt)}
-                </IssueValue>
+                </span>
               </>
             )}
-          </IssueGrid>
-          <IssueLink
+          </div>
+          <a
             href={issue.link}
             target="_blank"
             rel="noopener noreferrer"
+            className={styles.conflictIssueLink}
           >
             View on GitHub&nbsp;
             <FontAwesomeIcon
@@ -104,10 +65,10 @@ const ConflictIssueDetails = ({ issues }) => {
               size="sm"
               style={{ marginLeft: '0.25rem' }}
             />
-          </IssueLink>
-        </IssueContainer>
+          </a>
+        </div>
       ))}
-    </IssuesContainer>
+    </div>
   );
 };
 

@@ -1,0 +1,30 @@
+.progress {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+
+  height: var(--20px);
+  border-radius: 1rem;
+  margin-top: 0;
+  font-size: var(--12px);
+  border: 1px solid var(--border-gray);
+
+  .front {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    inset: 0;
+    background: var(--bg-light-gray);
+    color: black;
+  }
+
+  .back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: var(--primary-color);
+    color: var(--white);
+  }
+}

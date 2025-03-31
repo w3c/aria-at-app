@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
+import styles from './TestRun.module.css';
 
 const OptionButton = ({
   text,
@@ -12,7 +13,7 @@ const OptionButton = ({
 }) => {
   return (
     <Button
-      className="btn-options"
+      className={styles.optionBtn}
       variant="secondary"
       onClick={onClick}
       disabled={disabled}

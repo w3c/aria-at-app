@@ -1,0 +1,176 @@
+.test-renderer-container {
+  width: 100%;
+  border: black solid 2px;
+  border-radius: var(--4px);
+  padding: var(--16px);
+  font-size: var(--14px);
+}
+
+section.error-section {
+  &.hidden {
+    display: none;
+  }
+
+  &.visible {
+    display: block;
+  }
+}
+
+h2.instructions-heading {
+  margin-top: 0;
+}
+
+p.description-text {
+  > textarea {
+    width: 100%;
+  }
+}
+
+div.output-text-container {
+  > textarea {
+    width: 100%;
+    height: 3.5rem;
+  }
+}
+
+.no-output-checkbox {
+  display: inline-block;
+  float: right;
+  color: inherit;
+
+  > input {
+    cursor: pointer;
+    margin-right: 4px;
+  }
+
+  &.disabled {
+    color: var(--disabled-color);
+
+    > input {
+      cursor: not-allowed;
+    }
+  }
+}
+
+fieldset.test-renderer-fieldset {
+  display: block;
+  margin-inline-start: var(--2px);
+  margin-inline-end: var(--2px);
+  padding-block-start: var(--4px);
+  padding-inline-start: var(--10px);
+  padding-inline-end: var(--10px);
+  padding-block-end: var(--10px);
+
+  min-inline-size: min-content;
+
+  border-width: 2px;
+  border-style: groove;
+  border-color: threedface;
+  border-image: initial;
+
+  > legend {
+    display: block;
+
+    float: inherit;
+    width: auto;
+    margin: 0;
+    font-size: initial;
+
+    padding-inline-start: var(--2px);
+    padding-inline-end: var(--2px);
+    border-width: initial;
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+  }
+
+  > div {
+    > input[type='radio'] {
+      margin: 0 var(--6px) 0 0;
+      vertical-align: middle;
+    }
+
+    > input[type='checkbox'] {
+      margin: 0 var(--6px) 0 0;
+      vertical-align: middle;
+    }
+  }
+
+  &.problem-select {
+    margin-top: var(--14px);
+    margin-left: var(--14px);
+
+    > input[type='checkbox'] {
+      margin: 0 var(--6px) 0 0;
+      vertical-align: middle;
+    }
+  }
+}
+
+span.test-renderer-feedback {
+  &.required:not(.highlight-required) {
+    display: none;
+  }
+
+  &.required.highlight-required {
+    color: var(--report-status-error);
+
+    &.space {
+      margin-left: var(--4px);
+    }
+  }
+
+  &.off-screen {
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+  }
+}
+
+div.problem-option-container {
+  &.enabled {
+    margin-bottom: var(--16px);
+  }
+}
+
+label {
+  display: inline-block;
+
+  &.unexpected-behaviors-label {
+    width: 100%;
+    margin-bottom: var(--4px);
+
+    > select,
+    > input[type='text'] {
+      min-width: 7.5rem;
+      width: 50%;
+      height: var(--26px);
+      margin-left: var(--4px);
+    }
+
+    > input[type='checkbox'] {
+      margin-right: var(--4px);
+    }
+
+    &.off-screen {
+      position: absolute !important;
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+      clip: rect(1px, 1px, 1px, 1px);
+      white-space: nowrap;
+    }
+  }
+
+  &.assertions-label {
+    margin-bottom: var(--8px);
+    margin-right: var(--8px);
+
+    input {
+      margin-right: var(--4px);
+    }
+  }
+}

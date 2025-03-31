@@ -5,8 +5,8 @@ import React, {
   useState,
   useRef
 } from 'react';
-import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import { unescape } from 'lodash';
 import { getMetrics } from 'shared';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
@@ -28,126 +28,21 @@ import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
 import { AtPropType, TestResultPropType } from '../common/proptypes/index.js';
 import createIssueLink from '@client/utils/createIssueLink';
-
-const Container = styled.div`
-  width: 100%;
-
-  border: black solid 2px;
-  border-radius: 0.25rem;
-  padding: 1rem;
-
-  font-size: 14px;
-`;
-
-const ErrorSection = styled.section`
-  display: ${({ hasErrors }) => (hasErrors ? 'block' : 'none')};
-`;
-
-const InstructionsSection = styled.section``;
-
-const HeadingText = styled.h1``;
-
-const SubHeadingText = styled.h2`
-  &#instruction-list-heading {
-    margin-top: 0;
-  }
-`;
-
-const InnerSectionHeadingText = styled.h3``;
-
-const Text = styled.p`
-  > textarea {
-    width: 100%;
-  }
-`;
-
-export const Feedback = styled.span`
-  &.required:not(.highlight-required) {
-    display: none;
-  }
-
-  &.required.highlight-required {
-    color: red;
-  }
-
-  &.off-screen {
-    position: absolute !important;
-    height: 1px;
-    width: 1px;
-    overflow: hidden;
-    clip: rect(1px, 1px, 1px, 1px);
-    white-space: nowrap;
-  }
-`;
-
-export const Fieldset = styled.fieldset`
-  display: block;
-  margin-inline-start: 2px;
-  margin-inline-end: 2px;
-  padding-block-start: 0.35em;
-  padding-inline-start: 0.75em;
-  padding-inline-end: 0.75em;
-  padding-block-end: 0.75em;
-
-  min-inline-size: min-content;
-
-  border-width: 2px;
-  border-style: groove;
-  border-color: threedface;
-  border-image: initial;
-
-  > legend {
-    display: block;
-
-    float: inherit;
-    width: auto;
-    margin: 0;
-    font-size: initial;
-
-    padding-inline-start: 2px;
-    padding-inline-end: 2px;
-    border-width: initial;
-    border-style: none;
-    border-color: initial;
-    border-image: initial;
-  }
-
-  > div {
-    > input[type='radio'] {
-      margin: 0 5px 0 0;
-      vertical-align: middle;
-    }
-
-    > input[type='checkbox'] {
-      margin: 0 5px 0 0;
-      vertical-align: middle;
-    }
-  }
-
-  &.problem-select {
-    margin-top: 1em;
-    margin-left: 1em;
-
-    > input[type='checkbox'] {
-      margin: 0 5px 0 0;
-      vertical-align: middle;
-    }
-  }
-`;
-
-const NumberedList = styled.ol``;
-
-const Button = styled.button``;
-
-const ResultsSection = styled.section``;
+import styles from './TestRenderer.module.css';
 
 const ErrorComponent = ({ hasErrors = false }) => {
   return (
-    <ErrorSection id="errors" hasErrors={hasErrors}>
-      <h2>Test cannot be performed due to error(s)!</h2>
+    <section
+      id="errors"
+      className={clsx(
+        styles.errorSection,
+        hasErrors ? styles.visible : styles.hidden
+      )}
+    >
+      <h2>Test cannot be performed due to error(s)</h2>
       <ul />
       <hr />
-    </ErrorSection>
+    </section>
   );
 };
 
@@ -457,7 +352,7 @@ const TestRenderer = ({
 
     return (
       <>
-        <NumberedList aria-labelledby={labelIdRef}>{content}</NumberedList>
+        <ol aria-labelledby={labelIdRef}>{content}</ol>
         {settingsContent.length ? settingsContent : null}
       </>
     );
@@ -469,7 +364,7 @@ const TestRenderer = ({
     const assertions = [...pageContent.instructions.assertions.assertions];
     const content = parseListContent(assertions);
 
-    return <NumberedList aria-labelledby={labelIdRef}>{content}</NumberedList>;
+    return <ol aria-labelledby={labelIdRef}>{content}</ol>;
   };
 
   AssertionsContent.propTypes = { labelIdRef: PropTypes.string };
@@ -492,13 +387,13 @@ const TestRenderer = ({
 
     return (
       <>
-        <HeadingText>{header}</HeadingText>
-        <SubHeadingText id="overallstatus">
+        <h1>{header}</h1>
+        <h2 id="overallstatus">
           Test Results&nbsp;(
           {assertionsPassedCount} passed,&nbsp;
           {mustShouldAssertionsFailedCount} failed,&nbsp;
           {mayAssertionsFailedCount} unsupported)
-        </SubHeadingText>
+        </h2>
         <TestPlanResultsTable
           test={{ id: test.id, title: header, at }}
           testResult={testResult}
@@ -511,7 +406,7 @@ const TestRenderer = ({
   if (!pageContent) return null;
 
   return (
-    <Container>
+    <div className={styles.testRendererContainer}>
       {!isEdit &&
       submitResult &&
       submitResult.resultsJSON &&
@@ -522,21 +417,26 @@ const TestRenderer = ({
           <ErrorComponent
             hasErrors={pageContent.errors && pageContent.errors.length}
           />
-          <InstructionsSection>
-            <SubHeadingText id="instruction-list-heading">
+          <section>
+            <h2
+              id="instruction-list-heading"
+              className={styles.instructionsHeading}
+            >
               Instructions
-            </SubHeadingText>
+            </h2>
             <InstructionsContent labelIdRef="instruction-list-heading" />
-            <Button
+            <button
               disabled={!pageContent.instructions.openTestPage.enabled}
               onClick={pageContent.instructions.openTestPage.click}
             >
               {pageContent.instructions.openTestPage.button}
-            </Button>
-          </InstructionsSection>
-          <ResultsSection>
-            <SubHeadingText>{pageContent.results.header.header}</SubHeadingText>
-            <Text>{pageContent.results.header.description}</Text>
+            </button>
+          </section>
+          <section>
+            <h2>{pageContent.results.header.header}</h2>
+            <p className={styles.descriptionText}>
+              {pageContent.results.header.description}
+            </p>
             {pageContent.results.commands.map((value, commandIndex) => {
               const {
                 header,
@@ -554,7 +454,7 @@ const TestRenderer = ({
 
               return (
                 <Fragment key={`AtOutputKey_${commandIndex}`}>
-                  <InnerSectionHeadingText>{header}</InnerSectionHeadingText>
+                  <h3>{header}</h3>
                   <OutputTextArea
                     commandIndex={commandIndex}
                     atOutput={atOutput}
@@ -579,7 +479,7 @@ const TestRenderer = ({
                 </Fragment>
               );
             })}
-          </ResultsSection>
+          </section>
           <button
             ref={submitButtonRef}
             type="button"
@@ -594,7 +494,7 @@ const TestRenderer = ({
           </button>
         </>
       )}
-    </Container>
+    </div>
   );
 };
 

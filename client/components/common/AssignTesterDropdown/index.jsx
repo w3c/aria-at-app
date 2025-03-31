@@ -17,7 +17,6 @@ import { useMutation, useQuery } from '@apollo/client';
 import { LoadingStatus, useTriggerLoad } from '../LoadingStatus';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
 import { isSupportedByResponseCollector } from '../../../utils/automation';
-
 import './AssignTesterDropdown.css';
 import { TestPlanRunPropType, UserPropType } from '../proptypes';
 

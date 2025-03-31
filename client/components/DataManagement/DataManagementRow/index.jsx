@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
 import { Button } from 'react-bootstrap';
 import {
   UPDATE_TEST_PLAN_VERSION_PHASE,
@@ -13,10 +12,11 @@ import { derivePhaseName } from '@client/utils/aria';
 import { THEMES, useThemedModal } from '@client/hooks/useThemedModal';
 import BasicModal from '@components/common/BasicModal';
 import TestPlanReportStatusDialogWithButton from '../../TestPlanReportStatusDialog/WithButton';
-import ReportStatusDot from '../../common/ReportStatusDot';
+import ReportStatusDot, { REPORT_STATUSES } from '../../common/ReportStatusDot';
 import UpdateTargetDateModal from '@components/common/UpdateTargetDateModal';
 import VersionString from '../../common/VersionString';
 import PhasePill from '../../common/PhasePill';
+import { None } from '@components/common/None';
 import { differenceBy, uniq as unique, uniqBy as uniqueBy } from 'lodash';
 import { getVersionData } from '../utils';
 import {
@@ -24,129 +24,15 @@ import {
   TestPlanPropType,
   TestPlanVersionPropType
 } from '../../common/proptypes';
+import styles from './DataManagementRow.module.css';
 
-const StatusCell = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  .review-text {
-    margin-top: 1rem;
-    font-size: 14px;
-    text-align: center;
-
-    margin-bottom: 88px;
-  }
-
-  .versions-in-progress {
-    display: flex;
-    justify-content: center;
-    padding: 12px;
-    font-size: 14px;
-
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    color: #6a7989;
-    background: #f6f8fa;
-
-    > span.pill {
-      display: flex;
-      width: fit-content;
-      height: 20px;
-
-      justify-content: center;
-      align-items: center;
-      align-self: center;
-
-      margin-right: 6px;
-      min-width: 40px;
-      border-radius: 14px;
-
-      background: #6a7989;
-      color: white;
-    }
-  }
-`;
-
-const PhaseCell = styled.div`
-  padding: 0 !important; /* override padding for td and add margins into specific children */
-
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  > span.review-complete {
-    display: block;
-    font-size: 14px;
-    text-align: center;
-    margin: 12px 0.75rem;
-    color: #333f4d;
-  }
-
-  > span.more {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    padding: 0.5rem;
-    font-size: 14px;
-
-    margin-top: 6px;
-
-    color: #6a7989;
-    background: #f6f8fa;
-
-    > span.more-issues-container {
-      width: 100%;
-      text-align: center;
-
-      .issues {
-        margin-right: 4px;
-      }
-
-      align-items: center;
-    }
-
-    > span.target-days-container {
-      text-align: center;
-      margin-top: 8px;
-
-      button {
-        appearance: none;
-        border: none;
-        background: none;
-        color: inherit;
-
-        margin: 0;
-        padding: 0;
-      }
-    }
-  }
-
-  > .advance-button {
-    margin: 12px 0.75rem;
-    width: calc(100% - 1.5rem);
-  }
-`;
-
-const NoneText = styled.span`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  font-style: italic;
-  color: #6a7989;
-`;
+const noneOptions = {
+  centered: true,
+  absolutePositioning: true
+};
+const noneNA = None('N/A', noneOptions);
+const noneNotStarted = None('Not Started', noneOptions);
+const noneNoneYet = None('None Yet', noneOptions);
 
 const DataManagementRow = ({
   isAdmin,
@@ -355,7 +241,7 @@ const DataManagementRow = ({
         </div>
       );
     } else if (atNames.length === 1) return <b>{atNames[0]}</b>;
-    else return <NoneText>N/A</NoneText>;
+    else return noneNA;
   };
 
   const renderCellForOverallStatus = () => {
@@ -380,7 +266,7 @@ const DataManagementRow = ({
       return (
         <>
           <PhasePill>{phase}</PhasePill>
-          <p className="review-text">
+          <p className={styles.reviewText}>
             {phaseText}
             <b>{dateString}</b>
           </p>
@@ -390,9 +276,9 @@ const DataManagementRow = ({
 
     const versionsInProgressView = versionsCount => {
       return versionsCount ? (
-        <span className="versions-in-progress">
+        <span className={styles.versionsInProgress}>
           <>
-            <span className="pill">+{versionsCount}</span> New Version
+            <span className={styles.pill}>+{versionsCount}</span> New Version
             {versionsCount === 1 ? '' : 's'} in Progress
           </>
         </span>
@@ -456,10 +342,10 @@ const DataManagementRow = ({
       const versionsInProgressCount = otherVersionsInProgressCount(phase);
 
       return (
-        <StatusCell>
+        <div className={styles.statusCell}>
           {phaseView(phase, earliestVersionDate)}
           {versionsInProgressView(versionsInProgressCount)}
-        </StatusCell>
+        </div>
       );
     }
 
@@ -474,10 +360,10 @@ const DataManagementRow = ({
       ]);
 
       return (
-        <StatusCell>
+        <div className={styles.statusCell}>
           {phaseView(phase, earliestVersionDate)}
           {versionsInProgressView(versionsInProgressCount)}
-        </StatusCell>
+        </div>
       );
     }
 
@@ -493,10 +379,10 @@ const DataManagementRow = ({
       ]);
 
       return (
-        <StatusCell>
+        <div className={styles.statusCell}>
           {phaseView(phase, earliestVersionDate)}
           {versionsInProgressView(versionsInProgressCount)}
-        </StatusCell>
+        </div>
       );
     }
 
@@ -504,7 +390,11 @@ const DataManagementRow = ({
       const { latestVersion, latestVersionDate } =
         getVersionData(rdTestPlanVersions);
       const { phase } = latestVersion;
-      return <StatusCell>{phaseView(phase, latestVersionDate)}</StatusCell>;
+      return (
+        <div className={styles.statusCell}>
+          {phaseView(phase, latestVersionDate)}
+        </div>
+      );
     }
 
     // Should never be called but just in case
@@ -512,7 +402,7 @@ const DataManagementRow = ({
   };
 
   const renderCellForPhase = (phase, testPlanVersions = []) => {
-    const defaultView = <NoneText>N/A</NoneText>;
+    const defaultView = noneNA;
 
     const insertActivePhaseForTestPlan = testPlanVersion => {
       if (!activePhases[phase]) {
@@ -568,10 +458,14 @@ const DataManagementRow = ({
         insertActivePhaseForTestPlan(latestVersion);
 
         return (
-          <PhaseCell role="list" aria-setsize={isAdmin ? 2 : 1}>
+          <div
+            className={styles.phaseCell}
+            role="list"
+            aria-setsize={isAdmin ? 2 : 1}
+          >
             <VersionString
               role="listitem"
-              iconColor="#2BA51C"
+              iconColor="var(--positive-green)"
               linkHref={`/test-review/${latestVersion.id}`}
             >
               {latestVersion.versionString}
@@ -579,7 +473,7 @@ const DataManagementRow = ({
             {isAdmin && (
               <Button
                 ref={ref => setFocusRef(ref)}
-                className="advance-button"
+                className={styles.advanceButton}
                 variant="secondary"
                 onClick={async () => {
                   setShowAdvanceModal(true);
@@ -601,7 +495,7 @@ const DataManagementRow = ({
                 Advance to Draft
               </Button>
             )}
-          </PhaseCell>
+          </div>
         );
       }
       case 'DRAFT': {
@@ -630,7 +524,7 @@ const DataManagementRow = ({
         // If a version of the plan is not in the draft phase and there are no versions in
         // later phases, show string "Not Started"
         if (![...testPlanVersions, ...otherTestPlanVersions].length)
-          return <NoneText>Not Started</NoneText>;
+          return noneNotStarted;
 
         // If a version of the plan is not in the draft phase and there is a version in at
         // least one of candidate or recommended phases, show string "Review of
@@ -643,17 +537,17 @@ const DataManagementRow = ({
           const completionDate = otherLatestVersion.candidatePhaseReachedAt;
 
           return (
-            <PhaseCell role="list">
-              <VersionString role="listitem" iconColor="#818F98">
+            <div className={styles.phaseCell} role="list">
+              <VersionString role="listitem" iconColor="var(--negative-gray)">
                 {otherLatestVersion.versionString}
               </VersionString>
-              <span role="listitem" className="review-complete">
+              <span role="listitem" className={styles.reviewComplete}>
                 Review Completed&nbsp;
                 <b>
                   {dates.convertDateToString(completionDate, 'MMM D, YYYY')}
                 </b>
               </span>
-            </PhaseCell>
+            </div>
           );
         }
 
@@ -695,10 +589,14 @@ const DataManagementRow = ({
           insertActivePhaseForTestPlan(latestVersion);
 
           return (
-            <PhaseCell role="list" aria-setsize={isAdmin ? 3 : 2}>
+            <div
+              className={styles.phaseCell}
+              role="list"
+              aria-setsize={isAdmin ? 3 : 2}
+            >
               <VersionString
                 role="listitem"
-                iconColor="#2BA51C"
+                iconColor="var(--positive-green)"
                 linkRef={draftVersionStringRef}
                 linkHref={`/test-review/${latestVersion.id}`}
               >
@@ -707,7 +605,7 @@ const DataManagementRow = ({
               {isAdmin && completedRequiredReports(latestVersion) && (
                 <Button
                   ref={ref => setFocusRef(ref)}
-                  className="advance-button"
+                  className={styles.advanceButton}
                   variant="secondary"
                   onClick={async () => {
                     setShowAdvanceModal(true);
@@ -734,7 +632,7 @@ const DataManagementRow = ({
                   testPlanVersionId={latestVersion.id}
                 />
               </span>
-            </PhaseCell>
+            </div>
           );
         }
         return defaultView;
@@ -762,7 +660,7 @@ const DataManagementRow = ({
         // If a version of the plan is not in the candidate phase and there has not yet been
         // a recommended version, show string "Not Started"
         if (![...testPlanVersions, ...otherTestPlanVersions].length)
-          return <NoneText>Not Started</NoneText>;
+          return noneNotStarted;
 
         // If a version of the plan is not in the candidate phase and there is a recommended
         // version, show string "Review of VERSION_STRING completed DATE"
@@ -774,17 +672,17 @@ const DataManagementRow = ({
           const completionDate = otherLatestVersion.recommendedPhaseReachedAt;
 
           return (
-            <PhaseCell role="list">
-              <VersionString role="listitem" iconColor="#818F98">
+            <div className={styles.phaseCell} role="list">
+              <VersionString role="listitem" iconColor="var(--negative-gray)">
                 {otherLatestVersion.versionString}
               </VersionString>
-              <span role="listitem" className="review-complete">
+              <span role="listitem" className={styles.reviewComplete}>
                 Review Completed&nbsp;
                 <b>
                   {dates.convertDateToString(completionDate, 'MMM D, YYYY')}
                 </b>
               </span>
-            </PhaseCell>
+            </div>
           );
         }
 
@@ -899,7 +797,7 @@ const DataManagementRow = ({
 
             return (
               <>
-                <ReportStatusDot className="issues" />
+                <ReportStatusDot status={REPORT_STATUSES.ISSUES} />
                 {openIssuesComponent}
               </>
             );
@@ -939,10 +837,14 @@ const DataManagementRow = ({
           };
 
           return (
-            <PhaseCell role="list" aria-setsize={isAdmin ? 5 : 4}>
+            <div
+              className={styles.phaseCell}
+              role="list"
+              aria-setsize={isAdmin ? 5 : 4}
+            >
               <VersionString
                 role="listitem"
-                iconColor="#2BA51C"
+                iconColor="var(--positive-green)"
                 linkRef={candidateVersionStringRef}
                 linkHref={`/test-review/${latestVersion.id}`}
               >
@@ -951,7 +853,7 @@ const DataManagementRow = ({
               {isAdmin && (
                 <Button
                   ref={ref => setFocusRef(ref)}
-                  className="advance-button"
+                  className={styles.advanceButton}
                   variant="secondary"
                   onClick={async () => {
                     setShowAdvanceModal(true);
@@ -981,15 +883,15 @@ const DataManagementRow = ({
                   testPlanVersionId={latestVersion.id}
                 />
               </span>
-              <span className="more">
-                <span role="listitem" className="more-issues-container">
+              <span className={styles.more}>
+                <span role="listitem" className={styles.moreIssuesContainer}>
                   {linkToIssuesComponent()}
                 </span>
-                <span className="target-days-container">
+                <span className={styles.targetDaysContainer}>
                   {numberOfDaysToDateComponent()}
                 </span>
               </span>
-            </PhaseCell>
+            </div>
           );
         }
         return defaultView;
@@ -997,7 +899,7 @@ const DataManagementRow = ({
       case 'RECOMMENDED': {
         // If a version of the plan is not in the recommended phase, shows the string "None
         // Yet"
-        if (!testPlanVersions.length) return <NoneText>None Yet</NoneText>;
+        if (!testPlanVersions.length) return noneNoneYet;
 
         // Link with text "VERSION_STRING" that targets the single-page view of the plan
         const { latestVersion } = getVersionData(testPlanVersions);
@@ -1008,10 +910,10 @@ const DataManagementRow = ({
         insertActivePhaseForTestPlan(latestVersion);
 
         return (
-          <PhaseCell role="list">
+          <div className={styles.phaseCell} role="list">
             <VersionString
               role="listitem"
-              iconColor="#2BA51C"
+              iconColor="var(--positive-green)"
               linkRef={recommendedVersionStringRef}
               linkHref={`/test-review/${latestVersion.id}`}
             >
@@ -1022,11 +924,11 @@ const DataManagementRow = ({
                 testPlanVersionId={latestVersion.id}
               />
             </span>
-            <span role="listitem" className="review-complete">
+            <span role="listitem" className={styles.reviewComplete}>
               Approved&nbsp;
               <b>{dates.convertDateToString(completionDate, 'MMM D, YYYY')}</b>
             </span>
-          </PhaseCell>
+          </div>
         );
       }
     }

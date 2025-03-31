@@ -1,0 +1,53 @@
+.test-plan-report-status-dialog {
+  max-width: 1200px;
+  min-width: max-content;
+  padding: 1rem;
+}
+
+button.test-plan-report-status-dialog-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 0.5rem;
+  font-size: 0.875rem;
+
+  border: none;
+  border-radius: 0;
+
+  color: var(--dark-gray-text);
+  background: var(--bg-table-hover);
+
+  margin-top: auto;
+}
+
+.status-label {
+  display: inline;
+  font-size: 0.875rem;
+  padding: 0.15rem 0.65rem 0.15rem;
+  border-radius: var(--22px);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
+
+  &.conflicts {
+    background: #f9aeae;
+    color: #640303;
+  }
+
+  &.in-progress {
+    background: #d9f6de;
+    color: #2c6c37;
+  }
+
+  &.not-started {
+    background: #e7ecef;
+    color: #63697e;
+  }
+
+  &.complete {
+    background: #bcddfa;
+    color: #10548f;
+  }
+}
