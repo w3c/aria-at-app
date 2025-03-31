@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './ReportRerun.module.css';
 
 const RerunDashboard = ({ activeRuns, onRerunClick }) => (
   <>
-    <h2 id="rerun-heading" className="rerun-header">
+    <h2 id="rerun-heading" className={styles.rerunHeader}>
       Available Updates
     </h2>
-    <div className="rerun-dashboard">
+    <div className={styles.rerunDashboard}>
       {activeRuns.map(run => {
         const totalTestPlans = run.reportGroups.reduce(
           (sum, group) => sum + group.reportCount,
@@ -21,10 +22,10 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => (
           .join(', ')}.`;
 
         return (
-          <div key={run.id} className="rerun-opportunity">
+          <div key={run.id} className={styles.rerunOpportunity}>
             <h3
               id={`rerun-heading-${run.id}`}
-              className="bot-name"
+              className={styles.botName}
               aria-label={`Re-run available for ${run.botName} ${run.newVersion}`}
             >
               {run.botName} {run.newVersion}
@@ -32,64 +33,68 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => (
 
             <p className="sr-only">{versionDescription}</p>
 
-            <div className="version-update" aria-hidden="true">
-              <div className="version-info">
-                <div className="version-groups-container">
+            <div className={styles.versionUpdate} aria-hidden="true">
+              <div className={styles.versionInfo}>
+                <div className={styles.versionGroupsContainer}>
                   {run.reportGroups.map((group, index) => (
-                    <div key={index} className="version-box">
-                      <span className="version-number">
+                    <div key={index} className={styles.versionBox}>
+                      <span className={styles.versionNumber}>
                         {group.prevVersion}
                       </span>
-                      <span className="version-count">
+                      <span className={styles.versionCount}>
                         {group.reportCount} run{group.reportCount !== 1 && 's'}
                       </span>
                     </div>
                   ))}
                 </div>
                 <div
-                  className={`version-box highlight${
-                    !run.reportGroups.length ? ' no-reports' : ''
+                  className={`${styles.versionBox} ${styles.highlight}${
+                    !run.reportGroups.length ? ` ${styles.noReports}` : ''
                   }`}
                 >
-                  <span className="version-number">{run.newVersion}</span>
+                  <span className={styles.versionNumber}>{run.newVersion}</span>
                   {!run.reportGroups.length && (
-                    <span className="version-count">No reports to update</span>
+                    <span className={styles.versionCount}>
+                      No reports to update
+                    </span>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="plan-summary" aria-hidden="true">
+            <div className={styles.planSummary} aria-hidden="true">
               {run.reportGroups.length ? (
-                <div className="plan-count">
-                  <span className="plan-count-number">{totalTestPlans}</span>
-                  <span className="plan-count-label">
+                <div className={styles.planCount}>
+                  <span className={styles.planCountNumber}>
+                    {totalTestPlans}
+                  </span>
+                  <span className={styles.planCountLabel}>
                     {totalTestPlans === 1
                       ? 'Test plan version can be re-run'
                       : 'Test plan versions can be re-run'}
                   </span>
                 </div>
               ) : (
-                <div className="plan-count">
-                  <span className="plan-count-label">
+                <div className={styles.planCount}>
+                  <span className={styles.planCountLabel}>
                     No reports available for update
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="test-plans-preview">
+            <div className={styles.testPlansPreview}>
               {run.reportGroups.map((group, index) => (
-                <div key={index} className="version-group">
+                <div key={index} className={styles.versionGroup}>
                   <h4
-                    className="plans-preview-title"
+                    className={styles.plansPreviewTitle}
                     id={`plans-preview-title-${run.id}-${index}`}
                     aria-label={`${group.reportCount} Test Plan Versions from ${run.botName} ${group.prevVersion}`}
                   >
                     {group.reportCount} from {group.prevVersion}
                   </h4>
                   <ul
-                    className="plans-list"
+                    className={styles.plansList}
                     aria-labelledby={`plans-preview-title-${run.id}-${index}`}
                   >
                     {group.reports.map((report, idx) => (
@@ -104,9 +109,9 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => (
               ))}
             </div>
 
-            <div className="action-footer">
+            <div className={styles.actionFooter}>
               <button
-                className="rerun-button"
+                className={styles.rerunButton}
                 disabled={!run.reportGroups.length}
                 onClick={() => onRerunClick(run)}
                 aria-label={`Start automated test plan runs for ${totalTestPlans} test plan versions using ${run.botName} ${run.newVersion}`}

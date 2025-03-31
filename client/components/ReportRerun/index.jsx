@@ -5,8 +5,8 @@ import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import RerunDashboard from './RerunDashboard';
 import UpdateEventsPanel from './UpdateEventsPanel';
-import './ReportRerun.css';
 import { utils } from 'shared';
+import styles from './ReportRerun.module.css';
 import {
   GET_AUTOMATION_SUPPORTED_AT_VERSIONS,
   GET_RERUNNABLE_REPORTS_QUERY,
@@ -121,7 +121,7 @@ const ReportRerun = ({ onQueueUpdate }) => {
   };
 
   return (
-    <div className="rerun-section">
+    <div className={styles.rerunSection}>
       {isAdmin && (
         <RerunDashboard
           activeRuns={activeRuns}

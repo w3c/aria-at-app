@@ -15,7 +15,7 @@
           aria-label="Menu"
           class="navbar navbar-expand-xl navbar-light bg-light">
           <a aria-current="false" class="logo navbar-brand" href="/">ARIA-AT</a
-          ><a href="#main" class="css-32m7ay">Skip to main content</a
+          ><a class="skip-link" href="#main">Skip to main content</a
           ><button
             aria-controls="basic-navbar-nav"
             type="button"
@@ -84,24 +84,24 @@
       </div>
       <div class="container-fluid">
         <main id="main" tabindex="-1" class="container">
-          <h1 class="no-bottom-border">Test Queue</h1>
+          <h1 class="test-queue-heading">Test Queue</h1>
           <div class="tabs-container">
-            <div role="tablist" class="css-19fmu0t">
+            <div class="tab-list" role="tablist">
               <button
                 role="tab"
                 id="tab-0"
                 aria-selected="true"
                 aria-controls="panel-0"
-                tabindex="0"
-                class="css-1251q8d">
+                class="tab-button selected-tab"
+                tabindex="0">
                 <span>Manual Test Queue</span></button
               ><button
                 role="tab"
                 id="tab-1"
                 aria-selected="false"
                 aria-controls="panel-1"
-                tabindex="-1"
-                class="css-1v1erpc">
+                class="tab-button"
+                tabindex="-1">
                 <span>Automated Report Updates</span>
               </button>
             </div>
@@ -110,19 +110,19 @@
               id="panel-0"
               aria-labelledby="tab-0"
               tabindex="0"
-              class="css-x7anux">
+              class="tab-panel">
               <p data-testid="test-queue-instructions">
                 Manage the test plans, assign yourself a test plan or start
                 executing one that is already assigned to you.
               </p>
-              <div class="css-5akihl">
-                <h3>
+              <div class="disclosure-container stacked">
+                <h3 class="disclosure-heading">
                   <button
-                    id="disclosure-btn-manage-test-queue-Manage Assistive Technology Versions"
+                    class="disclosure-button stacked"
+                    id="disclosure-btn-manageTestQueue-Manage Assistive Technology Versions"
                     type="button"
                     aria-expanded="false"
-                    aria-controls="disclosure-btn-controls-manage-test-queue-Manage Assistive Technology Versions"
-                    class="css-10jxhio">
+                    aria-controls="disclosure-btn-controls-manageTestQueue-Manage Assistive Technology Versions">
                     Manage Assistive Technology Versions<svg
                       aria-hidden="true"
                       focusable="false"
@@ -139,11 +139,11 @@
                   </button>
                 </h3>
                 <div
+                  class="disclosure-content hidden stacked"
                   role="region"
-                  id="disclosure-container-manage-test-queue-Manage Assistive Technology Versions"
-                  aria-labelledby="disclosure-btn-manage-test-queue-Manage Assistive Technology Versions"
-                  class="css-19fsyrg">
-                  <div class="css-16uhkdf">
+                  id="disclosure-btn-controls-manageTestQueue-Manage Assistive Technology Versions"
+                  aria-labelledby="disclosure-btn-manageTestQueue-Manage Assistive Technology Versions">
+                  <div class="manage-disclosure-container">
                     <span
                       >Select an assistive technology and manage its versions in
                       the ARIA-AT App</span
@@ -202,13 +202,13 @@
                     </div>
                   </div>
                 </div>
-                <h3>
+                <h3 class="disclosure-heading">
                   <button
-                    id="disclosure-btn-manage-test-queue-Add Test Plans to the Test Queue"
+                    class="disclosure-button stacked"
+                    id="disclosure-btn-manageTestQueue-Add Test Plans to the Test Queue"
                     type="button"
                     aria-expanded="false"
-                    aria-controls="disclosure-btn-controls-manage-test-queue-Add Test Plans to the Test Queue"
-                    class="css-10jxhio">
+                    aria-controls="disclosure-btn-controls-manageTestQueue-Add Test Plans to the Test Queue">
                     Add Test Plans to the Test Queue<svg
                       aria-hidden="true"
                       focusable="false"
@@ -225,11 +225,11 @@
                   </button>
                 </h3>
                 <div
+                  class="disclosure-content hidden stacked"
                   role="region"
-                  id="disclosure-container-manage-test-queue-Add Test Plans to the Test Queue"
-                  aria-labelledby="disclosure-btn-manage-test-queue-Add Test Plans to the Test Queue"
-                  class="css-19fsyrg">
-                  <div class="css-16uhkdf">
+                  id="disclosure-btn-controls-manageTestQueue-Add Test Plans to the Test Queue"
+                  aria-labelledby="disclosure-btn-manageTestQueue-Add Test Plans to the Test Queue">
+                  <div class="manage-disclosure-container">
                     <span
                       >Select a test plan, assistive technology and browser to
                       add a new test plan report to the test queue.</span
@@ -285,12 +285,12 @@
                           >Assistive Technology Version</label
                         >
                         <div class="form-group-at-version">
-                          <div class="css-ov1ktg">
-                            <label class="css-r65lzy"
+                          <div class="d-flex">
+                            <label class="radio-box-label apply-checked-style"
                               ><input
                                 type="radio"
                                 name="atVersion"
-                                class="css-1brh7ys"
+                                class="radio-box-input"
                                 checked="" /><span style="position: relative"
                                 ><span
                                   style="position: absolute; font-weight: bold"
@@ -301,11 +301,11 @@
                                   >Exact Version</span
                                 ></span
                               ></label
-                            ><label class="css-1bcjvtp"
+                            ><label class="radio-box-label"
                               ><input
                                 type="radio"
                                 name="atVersion"
-                                class="css-1brh7ys" /><span
+                                class="radio-box-input" /><span
                                 style="position: relative"
                                 ><span
                                   style="
@@ -349,15 +349,15 @@
                 </div>
               </div>
               <h2 tabindex="-1" id="alert">Alert Example</h2>
-              <div class="css-b7x2fk">
-                <h3>
+              <div class="disclosure-container test-plan-disclosure">
+                <h3 class="disclosure-heading">
                   <button
+                    class="disclosure-button"
                     id="disclosure-btn-alert-0"
                     type="button"
                     aria-expanded="false"
-                    aria-controls="disclosure-btn-controls-alert-0"
-                    class="css-10jxhio">
-                    <span class="css-36z7cz"
+                    aria-controls="disclosure-btn-controls-alert-0">
+                    <span class="styled-pill"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -368,13 +368,13 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          color="#2BA51C">
+                          color="var(--positive-green)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V22.04.14</b></span
                       ></span
-                    >&nbsp;<span class="draft css-be9e2a">Draft</span
+                    >&nbsp;<span class="pill draft">Draft</span
                     ><svg
                       aria-hidden="true"
                       focusable="false"
@@ -391,38 +391,40 @@
                   </button>
                 </h3>
                 <div
+                  class="disclosure-content hidden"
                   role="region"
-                  id="disclosure-container-alert-0"
-                  aria-labelledby="disclosure-btn-alert-0"
-                  class="css-19fsyrg">
-                  <div class="css-25wfk">
+                  id="disclosure-btn-controls-alert-0"
+                  aria-labelledby="disclosure-btn-alert-0">
+                  <div class="metadata-container">
                     <a href="/test-review/1"
                       ><svg
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fas"
                         data-icon="arrow-up-right-from-square"
-                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs dark-gray"
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        color="#818F98">
+                        viewBox="0 0 512 512">
                         <path
                           fill="currentColor"
                           d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
                       >View tests in V22.04.14</a
-                    ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                    ><button
+                      type="button"
+                      class="test-plan-report-status-dialog-button btn btn-primary">
                       <span
-                        ><span class="reports-not-started css-fidnqg"></span
+                        ><span
+                          class="report-status-dot reports-not-started"></span
                         >Required Reports <strong>Not Started</strong></span
                       >
                     </button>
                     <div></div>
                   </div>
-                  <div class="css-1iwfp5o">
+                  <div class="table-responsive">
                     <table
                       aria-label="Reports for Alert Example V22.04.14 in draft phase"
-                      class="css-hfams3 table table-bordered">
+                      class="test-queue table table-bordered">
                       <thead>
                         <tr>
                           <th>Assistive Technology</th>
@@ -435,24 +437,24 @@
                       <tbody>
                         <tr>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               VoiceOver for macOS&nbsp;<span
                                 >11.6 (20G165) or later</span
                               >
                             </div>
                           </td>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               Firefox&nbsp;<span>Any version</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1578spe">
+                            <div class="assign-testers-container">
                               <div id="assign-testers-7" class="dropdown">
                                 <button
                                   type="button"
                                   aria-expanded="false"
-                                  class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                                  class="assign-testers-dropdown-button dropdown-toggle btn btn-secondary">
                                   <span class="sr-only">Assign Testers</span
                                   ><svg
                                     aria-hidden="true"
@@ -473,11 +475,11 @@
                                 Assign Yourself
                               </button>
                             </div>
-                            <ul class="css-9acwza"></ul>
+                            <ul class="assign-testers-list"></ul>
                           </td>
                           <td>
-                            <div class="css-78pgex">
-                              <div class="progress clipped">
+                            <div class="status-container">
+                              <div class="progress">
                                 <div
                                   class="front"
                                   style="
@@ -489,7 +491,7 @@
                             </div>
                           </td>
                           <td>
-                            <div class="css-1mwhzii">
+                            <div class="actions-container">
                               <button
                                 type="button"
                                 disabled=""
@@ -558,15 +560,15 @@
                 </div>
               </div>
               <h2 tabindex="-1" id="horizontal-slider">Color Viewer Slider</h2>
-              <div class="css-b7x2fk">
-                <h3>
+              <div class="disclosure-container test-plan-disclosure">
+                <h3 class="disclosure-heading">
                   <button
+                    class="disclosure-button"
                     id="disclosure-btn-horizontal-slider-0"
                     type="button"
                     aria-expanded="false"
-                    aria-controls="disclosure-btn-controls-horizontal-slider-0"
-                    class="css-10jxhio">
-                    <span class="css-36z7cz"
+                    aria-controls="disclosure-btn-controls-horizontal-slider-0">
+                    <span class="styled-pill"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -577,13 +579,13 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          color="#2BA51C">
+                          color="var(--positive-green)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V24.12.04</b></span
                       ></span
-                    >&nbsp;<span class="draft css-be9e2a">Draft</span
+                    >&nbsp;<span class="pill draft">Draft</span
                     ><svg
                       aria-hidden="true"
                       focusable="false"
@@ -600,38 +602,39 @@
                   </button>
                 </h3>
                 <div
+                  class="disclosure-content hidden"
                   role="region"
-                  id="disclosure-container-horizontal-slider-0"
-                  aria-labelledby="disclosure-btn-horizontal-slider-0"
-                  class="css-19fsyrg">
-                  <div class="css-25wfk">
+                  id="disclosure-btn-controls-horizontal-slider-0"
+                  aria-labelledby="disclosure-btn-horizontal-slider-0">
+                  <div class="metadata-container">
                     <a href="/test-review/84"
                       ><svg
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fas"
                         data-icon="arrow-up-right-from-square"
-                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs dark-gray"
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        color="#818F98">
+                        viewBox="0 0 512 512">
                         <path
                           fill="currentColor"
                           d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
                       >View tests in V24.12.04</a
-                    ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                    ><button
+                      type="button"
+                      class="test-plan-report-status-dialog-button btn btn-primary">
                       <span
-                        ><span class="reports-missing css-fidnqg"></span>Some
-                        Required Reports <strong>Missing</strong></span
+                        ><span class="report-status-dot reports-missing"></span
+                        >Some Required Reports <strong>Missing</strong></span
                       >
                     </button>
                     <div></div>
                   </div>
-                  <div class="css-1iwfp5o">
+                  <div class="table-responsive">
                     <table
                       aria-label="Reports for Color Viewer Slider V24.12.04 in draft phase"
-                      class="css-hfams3 table table-bordered">
+                      class="test-queue table table-bordered">
                       <thead>
                         <tr>
                           <th>Assistive Technology</th>
@@ -644,24 +647,24 @@
                       <tbody>
                         <tr>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               VoiceOver for macOS&nbsp;<span
                                 >11.6 (20G165) or later</span
                               >
                             </div>
                           </td>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               Safari&nbsp;<span>Any version</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1578spe">
+                            <div class="assign-testers-container">
                               <div id="assign-testers-27" class="dropdown">
                                 <button
                                   type="button"
                                   aria-expanded="false"
-                                  class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                                  class="assign-testers-dropdown-button dropdown-toggle btn btn-secondary">
                                   <span class="sr-only">Assign Testers</span
                                   ><svg
                                     aria-hidden="true"
@@ -682,8 +685,8 @@
                                 Assign Yourself
                               </button>
                             </div>
-                            <ul class="css-9acwza">
-                              <li>
+                            <ul class="assign-testers-list">
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/esmeralda-baggins"
                                   target="_blank"
@@ -694,8 +697,8 @@
                             </ul>
                           </td>
                           <td>
-                            <div class="css-78pgex">
-                              <div class="progress clipped">
+                            <div class="status-container">
+                              <div class="progress">
                                 <div
                                   class="front"
                                   style="
@@ -712,7 +715,7 @@
                             </div>
                           </td>
                           <td>
-                            <div class="css-1mwhzii">
+                            <div class="actions-container">
                               <button
                                 type="button"
                                 disabled=""
@@ -780,15 +783,15 @@
                 </div>
               </div>
               <h2 tabindex="-1" id="modal-dialog">Modal Dialog Example</h2>
-              <div class="css-b7x2fk">
-                <h3>
+              <div class="disclosure-container stacked test-plan-disclosure">
+                <h3 class="disclosure-heading">
                   <button
+                    class="disclosure-button stacked"
                     id="disclosure-btn-modal-dialog-0"
                     type="button"
                     aria-expanded="false"
-                    aria-controls="disclosure-btn-controls-modal-dialog-0"
-                    class="css-10jxhio">
-                    <span class="css-36z7cz"
+                    aria-controls="disclosure-btn-controls-modal-dialog-0">
+                    <span class="styled-pill"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -799,13 +802,13 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          color="#2BA51C">
+                          color="var(--positive-green)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V24.06.07</b></span
                       ></span
-                    >&nbsp;<span class="draft css-be9e2a">Draft</span
+                    >&nbsp;<span class="pill draft">Draft</span
                     ><svg
                       aria-hidden="true"
                       focusable="false"
@@ -822,38 +825,39 @@
                   </button>
                 </h3>
                 <div
+                  class="disclosure-content hidden stacked"
                   role="region"
-                  id="disclosure-container-modal-dialog-0"
-                  aria-labelledby="disclosure-btn-modal-dialog-0"
-                  class="css-19fsyrg">
-                  <div class="css-25wfk">
+                  id="disclosure-btn-controls-modal-dialog-0"
+                  aria-labelledby="disclosure-btn-modal-dialog-0">
+                  <div class="metadata-container">
                     <a href="/test-review/90"
                       ><svg
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fas"
                         data-icon="arrow-up-right-from-square"
-                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs dark-gray"
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        color="#818F98">
+                        viewBox="0 0 512 512">
                         <path
                           fill="currentColor"
                           d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
                       >View tests in V24.06.07</a
-                    ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                    ><button
+                      type="button"
+                      class="test-plan-report-status-dialog-button btn btn-primary">
                       <span
-                        ><span class="reports-missing css-fidnqg"></span>Some
-                        Required Reports <strong>Missing</strong></span
+                        ><span class="report-status-dot reports-missing"></span
+                        >Some Required Reports <strong>Missing</strong></span
                       >
                     </button>
                     <div></div>
                   </div>
-                  <div class="css-1iwfp5o">
+                  <div class="table-responsive">
                     <table
                       aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"
-                      class="css-hfams3 table table-bordered">
+                      class="test-queue table table-bordered">
                       <thead>
                         <tr>
                           <th>Assistive Technology</th>
@@ -866,22 +870,22 @@
                       <tbody>
                         <tr>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               NVDA&nbsp;<span>2020.4 or later</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               Chrome&nbsp;<span>Any version</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1578spe">
+                            <div class="assign-testers-container">
                               <div id="assign-testers-19" class="dropdown">
                                 <button
                                   type="button"
                                   aria-expanded="false"
-                                  class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                                  class="assign-testers-dropdown-button dropdown-toggle btn btn-secondary">
                                   <span class="sr-only">Assign Testers</span
                                   ><svg
                                     aria-hidden="true"
@@ -902,8 +906,8 @@
                                 Assign Yourself
                               </button>
                             </div>
-                            <ul class="css-9acwza">
-                              <li>
+                            <ul class="assign-testers-list">
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/esmeralda-baggins"
                                   target="_blank"
@@ -914,8 +918,8 @@
                             </ul>
                           </td>
                           <td>
-                            <div class="css-78pgex">
-                              <div class="progress clipped">
+                            <div class="status-container">
+                              <div class="progress">
                                 <div
                                   class="front"
                                   style="
@@ -932,7 +936,7 @@
                             </div>
                           </td>
                           <td>
-                            <div class="css-1mwhzii">
+                            <div class="actions-container">
                               <button
                                 type="button"
                                 disabled=""
@@ -995,14 +999,14 @@
                     </table>
                   </div>
                 </div>
-                <h3>
+                <h3 class="disclosure-heading">
                   <button
+                    class="disclosure-button stacked"
                     id="disclosure-btn-modal-dialog-1"
                     type="button"
                     aria-expanded="false"
-                    aria-controls="disclosure-btn-controls-modal-dialog-1"
-                    class="css-10jxhio">
-                    <span class="css-36z7cz"
+                    aria-controls="disclosure-btn-controls-modal-dialog-1">
+                    <span class="styled-pill"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -1013,13 +1017,13 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          color="#2BA51C">
+                          color="var(--positive-green)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V22.05.26</b></span
                       ></span
-                    >&nbsp;<span class="candidate css-be9e2a">Candidate</span
+                    >&nbsp;<span class="pill candidate">Candidate</span
                     ><svg
                       aria-hidden="true"
                       focusable="false"
@@ -1036,38 +1040,39 @@
                   </button>
                 </h3>
                 <div
+                  class="disclosure-content hidden stacked"
                   role="region"
-                  id="disclosure-container-modal-dialog-1"
-                  aria-labelledby="disclosure-btn-modal-dialog-1"
-                  class="css-19fsyrg">
-                  <div class="css-25wfk">
+                  id="disclosure-btn-controls-modal-dialog-1"
+                  aria-labelledby="disclosure-btn-modal-dialog-1">
+                  <div class="metadata-container">
                     <a href="/test-review/24"
                       ><svg
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fas"
                         data-icon="arrow-up-right-from-square"
-                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs dark-gray"
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        color="#818F98">
+                        viewBox="0 0 512 512">
                         <path
                           fill="currentColor"
                           d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
                       >View tests in V22.05.26</a
-                    ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                    ><button
+                      type="button"
+                      class="test-plan-report-status-dialog-button btn btn-primary">
                       <span
-                        ><span class="reports-complete css-fidnqg"></span
+                        ><span class="report-status-dot reports-complete"></span
                         >Required Reports <strong>Complete</strong></span
                       >
                     </button>
                     <div></div>
                   </div>
-                  <div class="css-1iwfp5o">
+                  <div class="table-responsive">
                     <table
                       aria-label="Reports for Modal Dialog Example V22.05.26 in candidate phase"
-                      class="css-hfams3 table table-bordered">
+                      class="test-queue table table-bordered">
                       <thead>
                         <tr>
                           <th>Assistive Technology</th>
@@ -1080,22 +1085,22 @@
                       <tbody>
                         <tr>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               JAWS&nbsp;<span>2021.2111.13 or later</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               Firefox&nbsp;<span>Any version</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1578spe">
+                            <div class="assign-testers-container">
                               <div id="assign-testers-8" class="dropdown">
                                 <button
                                   type="button"
                                   aria-expanded="false"
-                                  class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                                  class="assign-testers-dropdown-button dropdown-toggle btn btn-secondary">
                                   <span class="sr-only">Assign Testers</span
                                   ><svg
                                     aria-hidden="true"
@@ -1116,8 +1121,8 @@
                                 Assign Yourself
                               </button>
                             </div>
-                            <ul class="css-9acwza">
-                              <li>
+                            <ul class="assign-testers-list">
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/esmeralda-baggins"
                                   target="_blank"
@@ -1128,8 +1133,8 @@
                             </ul>
                           </td>
                           <td>
-                            <div class="css-78pgex">
-                              <div class="progress clipped">
+                            <div class="status-container">
+                              <div class="progress">
                                 <div
                                   class="front"
                                   style="
@@ -1146,7 +1151,7 @@
                             </div>
                           </td>
                           <td>
-                            <div class="css-1mwhzii">
+                            <div class="actions-container">
                               <button
                                 type="button"
                                 disabled=""
@@ -1207,22 +1212,22 @@
                         </tr>
                         <tr>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               NVDA&nbsp;<span>2020.4 or later</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               Firefox&nbsp;<span>Any version</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1578spe">
+                            <div class="assign-testers-container">
                               <div id="assign-testers-9" class="dropdown">
                                 <button
                                   type="button"
                                   aria-expanded="false"
-                                  class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                                  class="assign-testers-dropdown-button dropdown-toggle btn btn-secondary">
                                   <span class="sr-only">Assign Testers</span
                                   ><svg
                                     aria-hidden="true"
@@ -1243,8 +1248,8 @@
                                 Assign Yourself
                               </button>
                             </div>
-                            <ul class="css-9acwza">
-                              <li>
+                            <ul class="assign-testers-list">
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/esmeralda-baggins"
                                   target="_blank"
@@ -1255,8 +1260,8 @@
                             </ul>
                           </td>
                           <td>
-                            <div class="css-78pgex">
-                              <div class="progress clipped">
+                            <div class="status-container">
+                              <div class="progress">
                                 <div
                                   class="front"
                                   style="
@@ -1273,7 +1278,7 @@
                             </div>
                           </td>
                           <td>
-                            <div class="css-1mwhzii">
+                            <div class="actions-container">
                               <button
                                 type="button"
                                 disabled=""
@@ -1334,24 +1339,24 @@
                         </tr>
                         <tr>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               VoiceOver for macOS&nbsp;<span
                                 >11.6 (20G165) or later</span
                               >
                             </div>
                           </td>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               Chrome&nbsp;<span>Any version</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1578spe">
+                            <div class="assign-testers-container">
                               <div id="assign-testers-11" class="dropdown">
                                 <button
                                   type="button"
                                   aria-expanded="false"
-                                  class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                                  class="assign-testers-dropdown-button dropdown-toggle btn btn-secondary">
                                   <span class="sr-only">Assign Testers</span
                                   ><svg
                                     aria-hidden="true"
@@ -1372,8 +1377,8 @@
                                 Assign Yourself
                               </button>
                             </div>
-                            <ul class="css-9acwza">
-                              <li>
+                            <ul class="assign-testers-list">
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/esmeralda-baggins"
                                   target="_blank"
@@ -1384,8 +1389,8 @@
                             </ul>
                           </td>
                           <td>
-                            <div class="css-78pgex">
-                              <div class="progress clipped">
+                            <div class="status-container">
+                              <div class="progress">
                                 <div
                                   class="front"
                                   style="
@@ -1402,7 +1407,7 @@
                             </div>
                           </td>
                           <td>
-                            <div class="css-1mwhzii">
+                            <div class="actions-container">
                               <button
                                 type="button"
                                 disabled=""
@@ -1463,24 +1468,24 @@
                         </tr>
                         <tr>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               VoiceOver for macOS&nbsp;<span
                                 >11.6 (20G165) or later</span
                               >
                             </div>
                           </td>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               Firefox&nbsp;<span>Any version</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1578spe">
+                            <div class="assign-testers-container">
                               <div id="assign-testers-10" class="dropdown">
                                 <button
                                   type="button"
                                   aria-expanded="false"
-                                  class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                                  class="assign-testers-dropdown-button dropdown-toggle btn btn-secondary">
                                   <span class="sr-only">Assign Testers</span
                                   ><svg
                                     aria-hidden="true"
@@ -1501,8 +1506,8 @@
                                 Assign Yourself
                               </button>
                             </div>
-                            <ul class="css-9acwza">
-                              <li>
+                            <ul class="assign-testers-list">
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/esmeralda-baggins"
                                   target="_blank"
@@ -1513,8 +1518,8 @@
                             </ul>
                           </td>
                           <td>
-                            <div class="css-78pgex">
-                              <div class="progress clipped">
+                            <div class="status-container">
+                              <div class="progress">
                                 <div
                                   class="front"
                                   style="
@@ -1531,7 +1536,7 @@
                             </div>
                           </td>
                           <td>
-                            <div class="css-1mwhzii">
+                            <div class="actions-container">
                               <button
                                 type="button"
                                 disabled=""
@@ -1598,15 +1603,15 @@
               <h2 tabindex="-1" id="combobox-select-only">
                 Select Only Combobox Example
               </h2>
-              <div class="css-b7x2fk">
-                <h3>
+              <div class="disclosure-container test-plan-disclosure">
+                <h3 class="disclosure-heading">
                   <button
+                    class="disclosure-button"
                     id="disclosure-btn-combobox-select-only-0"
                     type="button"
                     aria-expanded="false"
-                    aria-controls="disclosure-btn-controls-combobox-select-only-0"
-                    class="css-10jxhio">
-                    <span class="css-36z7cz"
+                    aria-controls="disclosure-btn-controls-combobox-select-only-0">
+                    <span class="styled-pill"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -1617,13 +1622,13 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          color="#2BA51C">
+                          color="var(--positive-green)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V22.03.17</b></span
                       ></span
-                    >&nbsp;<span class="draft css-be9e2a">Draft</span
+                    >&nbsp;<span class="pill draft">Draft</span
                     ><svg
                       aria-hidden="true"
                       focusable="false"
@@ -1640,38 +1645,40 @@
                   </button>
                 </h3>
                 <div
+                  class="disclosure-content hidden"
                   role="region"
-                  id="disclosure-container-combobox-select-only-0"
-                  aria-labelledby="disclosure-btn-combobox-select-only-0"
-                  class="css-19fsyrg">
-                  <div class="css-25wfk">
+                  id="disclosure-btn-controls-combobox-select-only-0"
+                  aria-labelledby="disclosure-btn-combobox-select-only-0">
+                  <div class="metadata-container">
                     <a href="/test-review/7"
                       ><svg
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fas"
                         data-icon="arrow-up-right-from-square"
-                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs dark-gray"
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        color="#818F98">
+                        viewBox="0 0 512 512">
                         <path
                           fill="currentColor"
                           d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
                       >View tests in V22.03.17</a
-                    ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                    ><button
+                      type="button"
+                      class="test-plan-report-status-dialog-button btn btn-primary">
                       <span
-                        ><span class="reports-not-started css-fidnqg"></span
+                        ><span
+                          class="report-status-dot reports-not-started"></span
                         >Required Reports <strong>Not Started</strong></span
                       >
                     </button>
                     <div></div>
                   </div>
-                  <div class="css-1iwfp5o">
+                  <div class="table-responsive">
                     <table
                       aria-label="Reports for Select Only Combobox Example V22.03.17 in draft phase"
-                      class="css-hfams3 table table-bordered">
+                      class="test-queue table table-bordered">
                       <thead>
                         <tr>
                           <th>Assistive Technology</th>
@@ -1684,22 +1691,22 @@
                       <tbody>
                         <tr>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               NVDA&nbsp;<span>2020.4 or later</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               Firefox&nbsp;<span>Any version</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1578spe">
+                            <div class="assign-testers-container">
                               <div id="assign-testers-2" class="dropdown">
                                 <button
                                   type="button"
                                   aria-expanded="false"
-                                  class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                                  class="assign-testers-dropdown-button dropdown-toggle btn btn-secondary">
                                   <span class="sr-only">Assign Testers</span
                                   ><svg
                                     aria-hidden="true"
@@ -1720,8 +1727,8 @@
                                 Assign Yourself
                               </button>
                             </div>
-                            <ul class="css-9acwza">
-                              <li>
+                            <ul class="assign-testers-list">
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/esmeralda-baggins"
                                   target="_blank"
@@ -1730,7 +1737,7 @@
                                 ><em>18 of 21 tests complete</em>
                               </li>
                               <br />
-                              <li>
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/tom-proudfeet"
                                   target="_blank"
@@ -1741,8 +1748,8 @@
                             </ul>
                           </td>
                           <td>
-                            <div class="css-78pgex">
-                              <div class="progress clipped">
+                            <div class="status-container">
+                              <div class="progress">
                                 <div
                                   class="front"
                                   style="
@@ -1760,7 +1767,7 @@
                             </div>
                           </td>
                           <td>
-                            <div class="css-1mwhzii">
+                            <div class="actions-container">
                               <button
                                 type="button"
                                 disabled=""
@@ -1828,15 +1835,15 @@
                 </div>
               </div>
               <h2 tabindex="-1" id="toggle-button">Toggle Button</h2>
-              <div class="css-b7x2fk">
-                <h3>
+              <div class="disclosure-container test-plan-disclosure">
+                <h3 class="disclosure-heading">
                   <button
+                    class="disclosure-button"
                     id="disclosure-btn-toggle-button-0"
                     type="button"
                     aria-expanded="false"
-                    aria-controls="disclosure-btn-controls-toggle-button-0"
-                    class="css-10jxhio">
-                    <span class="css-36z7cz"
+                    aria-controls="disclosure-btn-controls-toggle-button-0">
+                    <span class="styled-pill"
                       ><span
                         ><svg
                           aria-hidden="true"
@@ -1847,13 +1854,13 @@
                           role="img"
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 512 512"
-                          color="#2BA51C">
+                          color="var(--positive-green)">
                           <path
                             fill="currentColor"
                             d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                         ><b>V22.05.18</b></span
                       ></span
-                    >&nbsp;<span class="draft css-be9e2a">Draft</span
+                    >&nbsp;<span class="pill draft">Draft</span
                     ><svg
                       aria-hidden="true"
                       focusable="false"
@@ -1870,38 +1877,40 @@
                   </button>
                 </h3>
                 <div
+                  class="disclosure-content hidden"
                   role="region"
-                  id="disclosure-container-toggle-button-0"
-                  aria-labelledby="disclosure-btn-toggle-button-0"
-                  class="css-19fsyrg">
-                  <div class="css-25wfk">
+                  id="disclosure-btn-controls-toggle-button-0"
+                  aria-labelledby="disclosure-btn-toggle-button-0">
+                  <div class="metadata-container">
                     <a href="/test-review/31"
                       ><svg
                         aria-hidden="true"
                         focusable="false"
                         data-prefix="fas"
                         data-icon="arrow-up-right-from-square"
-                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs"
+                        class="svg-inline--fa fa-arrow-up-right-from-square fa-xs dark-gray"
                         role="img"
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 512 512"
-                        color="#818F98">
+                        viewBox="0 0 512 512">
                         <path
                           fill="currentColor"
                           d="M320 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h82.7L201.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L448 109.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V32c0-17.7-14.3-32-32-32H320zM80 32C35.8 32 0 67.8 0 112V432c0 44.2 35.8 80 80 80H400c44.2 0 80-35.8 80-80V320c0-17.7-14.3-32-32-32s-32 14.3-32 32V432c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V112c0-8.8 7.2-16 16-16H192c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"></path></svg
                       >View tests in V22.05.18</a
-                    ><button type="button" class="css-1c4pbk0 btn btn-primary">
+                    ><button
+                      type="button"
+                      class="test-plan-report-status-dialog-button btn btn-primary">
                       <span
-                        ><span class="reports-in-progress css-fidnqg"></span
+                        ><span
+                          class="report-status-dot reports-in-progress"></span
                         >Required Reports <strong>In Progress</strong></span
                       >
                     </button>
                     <div></div>
                   </div>
-                  <div class="css-1iwfp5o">
+                  <div class="table-responsive">
                     <table
                       aria-label="Reports for Toggle Button V22.05.18 in draft phase"
-                      class="css-hfams3 table table-bordered">
+                      class="test-queue table table-bordered">
                       <thead>
                         <tr>
                           <th>Assistive Technology</th>
@@ -1914,22 +1923,22 @@
                       <tbody>
                         <tr>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               JAWS&nbsp;<span>2021.2111.13 or later</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1rahl5j">
+                            <div class="version-container">
                               Chrome&nbsp;<span>Any version</span>
                             </div>
                           </td>
                           <td>
-                            <div class="css-1578spe">
+                            <div class="assign-testers-container">
                               <div id="assign-testers-1" class="dropdown">
                                 <button
                                   type="button"
                                   aria-expanded="false"
-                                  class="css-1qdmm25 dropdown-toggle btn btn-secondary">
+                                  class="assign-testers-dropdown-button dropdown-toggle btn btn-secondary">
                                   <span class="sr-only">Assign Testers</span
                                   ><svg
                                     aria-hidden="true"
@@ -1950,8 +1959,8 @@
                                 Assign Yourself
                               </button>
                             </div>
-                            <ul class="css-9acwza">
-                              <li>
+                            <ul class="assign-testers-list">
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/esmeralda-baggins"
                                   target="_blank"
@@ -1960,7 +1969,7 @@
                                 ><em>12 of 16 tests complete</em>
                               </li>
                               <br />
-                              <li>
+                              <li class="completion-status-list-item">
                                 <a
                                   href="https://github.com/tom-proudfeet"
                                   target="_blank"
@@ -1971,8 +1980,8 @@
                             </ul>
                           </td>
                           <td>
-                            <div class="css-78pgex">
-                              <div class="progress clipped">
+                            <div class="status-container">
+                              <div class="progress">
                                 <div
                                   class="front"
                                   style="
@@ -1990,7 +1999,7 @@
                             </div>
                           </td>
                           <td>
-                            <div class="css-1mwhzii">
+                            <div class="actions-container">
                               <button
                                 type="button"
                                 disabled=""
@@ -2064,8 +2073,8 @@
               aria-labelledby="tab-1"
               hidden=""
               tabindex="0"
-              class="css-r25ey0">
-              <div class="rerun-section">
+              class="tab-panel">
+              <div>
                 <h2 id="rerun-heading" class="rerun-header">
                   Available Updates
                 </h2>
@@ -2227,7 +2236,7 @@
                     <div class="table-responsive">
                       <table
                         aria-label="Test plan rerun events history"
-                        class="css-1k1tjpf table">
+                        class="theme-table table">
                         <thead>
                           <tr>
                             <th scope="col">Time</th>
@@ -2254,7 +2263,10 @@
           </div>
         </main>
       </div>
-      <span aria-live="polite" aria-atomic="true" class="css-1wkn33"></span>
+      <span
+        class="visually-hidden-aria-live-region"
+        aria-live="polite"
+        aria-atomic="true"></span>
     </div>
     <script src="/bundle.js"></script>
   </body>

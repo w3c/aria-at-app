@@ -3,19 +3,28 @@ import PropTypes from 'prop-types';
 import RefreshButton from '../common/RefreshButton';
 import { convertStringFormatToAnotherFormat } from 'shared/dates';
 import { Table } from 'react-bootstrap';
+import styles from './ReportRerun.module.css';
 
 const UpdateEventsPanel = ({ events = [], isAdmin, onRefresh }) => {
   return (
-    <div className="events-section" tabIndex="-1">
-      <div className="events-header">
-        <div className="events-header-container">
+    <div className={styles.eventsSection} tabIndex="-1">
+      <div className={styles.eventsHeader}>
+        <div className={styles.eventsHeaderContainer}>
           <h2 id="events-heading">Update Events</h2>
           <RefreshButton onRefresh={onRefresh} />
         </div>
       </div>
-      <div className="events-content" aria-live="polite" aria-atomic="true">
+      <div
+        className={styles.eventsContent}
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {events.length ? (
-          <Table responsive aria-label="Test plan rerun events history">
+          <Table
+            responsive
+            aria-label="Test plan rerun events history"
+            className={styles.themeTable}
+          >
             <thead>
               <tr>
                 <th scope="col">Time</th>
@@ -25,20 +34,20 @@ const UpdateEventsPanel = ({ events = [], isAdmin, onRefresh }) => {
             <tbody>
               {events.map(event => (
                 <tr key={event.id}>
-                  <td className="timestamp-cell">
+                  <td className={styles.timestampCell}>
                     {convertStringFormatToAnotherFormat(
                       event.timestamp,
                       'DD-MM-YYYY HH:mm',
                       'D MMM YYYY HH:mm'
                     )}
                   </td>
-                  <td className="message-cell">{event.description}</td>
+                  <td className={styles.messageCell}>{event.description}</td>
                 </tr>
               ))}
             </tbody>
           </Table>
         ) : (
-          <p className="p-4 empty-events-message">
+          <p className={styles.emptyEventsMessage}>
             {isAdmin
               ? 'No update events to display yet. Start a rerun to see events here.'
               : 'No update events to display yet.'}

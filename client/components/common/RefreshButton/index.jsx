@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import './RefreshButton.css';
+import styles from './RefreshButton.module.css';
 
 const RefreshButton = ({ onRefresh }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -26,7 +26,7 @@ const RefreshButton = ({ onRefresh }) => {
   return (
     <button
       onClick={handleRefresh}
-      className="refresh-button"
+      className={styles.refreshButton}
       aria-label={isRefreshing ? 'Refreshing...' : 'Refresh'}
       disabled={isRefreshing}
     >
