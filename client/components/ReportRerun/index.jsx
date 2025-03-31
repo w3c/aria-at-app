@@ -107,7 +107,7 @@ const ReportRerun = ({ onQueueUpdate }) => {
         />
       )}
 
-      <UpdateEventsPanel events={updateEvents} />
+      <UpdateEventsPanel events={updateEvents} isAdmin={isAdmin} />
     </div>
   );
 };

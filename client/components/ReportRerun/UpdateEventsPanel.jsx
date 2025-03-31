@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { ThemeTable } from '../common/ThemeTable';
 import { convertDateToString } from 'shared/dates';
 
-const UpdateEventsPanel = ({ events = [] }) => {
+const UpdateEventsPanel = ({ events = [], isAdmin }) => {
   return (
     <div className="events-section" tabIndex="-1">
       <h2 id="events-heading" className="events-header">
@@ -34,7 +34,9 @@ const UpdateEventsPanel = ({ events = [] }) => {
           </ThemeTable>
         ) : (
           <p className="p-4 empty-events-message">
-            No update events to display yet. Start a rerun to see events here.
+            {isAdmin
+              ? 'No update events to display yet. Start a rerun to see events here.'
+              : 'No update events to display yet.'}
           </p>
         )}
       </div>
