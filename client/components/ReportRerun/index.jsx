@@ -6,6 +6,7 @@ import { evaluateAuth } from '../../utils/evaluateAuth';
 import RerunDashboard from './RerunDashboard';
 import UpdateEventsPanel from './UpdateEventsPanel';
 import './ReportRerun.css';
+import { utils } from 'shared';
 import {
   GET_AUTOMATION_SUPPORTED_AT_VERSIONS,
   GET_RERUNNABLE_REPORTS_QUERY,
@@ -59,19 +60,33 @@ const ReportRerun = ({ onQueueUpdate }) => {
   const activeRuns = useMemo(() => {
     return automatedVersions.map(({ at, version }, index) => {
       const { data: rerunnableData } = rerunnableReportsQueries[index];
+      const groups =
+        rerunnableData?.rerunnableReports?.previousVersionGroups || [];
+
+      const reportGroups = utils
+        .sortAtVersions(
+          groups.map(group => ({
+            name: group.previousVersion.name,
+            releasedAt: group.previousVersion.releasedAt
+          }))
+        )
+        .map(sortedVersion => {
+          const group = groups.find(
+            g => g.previousVersion.name === sortedVersion.name
+          );
+          return {
+            prevVersion: group.previousVersion.name,
+            releasedAt: group.previousVersion.releasedAt,
+            reportCount: group.reports.length,
+            reports: group.reports
+          };
+        });
 
       return {
         id: version.id,
         botName: `${at.name} Bot`,
         newVersion: version.name,
-        reportGroups:
-          rerunnableData?.rerunnableReports?.previousVersionGroups?.map(
-            group => ({
-              prevVersion: group.previousVersion.name,
-              reportCount: group.reports.length,
-              reports: group.reports
-            })
-          ) || []
+        reportGroups
       };
     });
   }, [automatedVersions, rerunnableReportsQueries]);

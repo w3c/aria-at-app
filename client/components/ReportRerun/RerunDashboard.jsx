@@ -84,9 +84,9 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => (
                   <h4
                     className="plans-preview-title"
                     id={`plans-preview-title-${run.id}-${index}`}
-                    aria-label={`Test Plan Versions from ${run.botName} ${group.prevVersion}`}
+                    aria-label={`${group.reportCount} Test Plan Versions from ${run.botName} ${group.prevVersion}`}
                   >
-                    From Version {group.prevVersion}
+                    {group.reportCount} from {group.prevVersion}
                   </h4>
                   <ul
                     className="plans-list"

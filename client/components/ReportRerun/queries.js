@@ -26,6 +26,7 @@ export const GET_RERUNNABLE_REPORTS_QUERY = gql`
         previousVersion {
           id
           name
+          releasedAt
         }
         reports {
           id
