@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ThemeTable } from '../common/ThemeTable';
-import { convertDateToString } from 'shared/dates';
+import { convertStringFormatToAnotherFormat } from 'shared/dates';
 
 const UpdateEventsPanel = ({ events = [], isAdmin }) => {
   return (
@@ -22,9 +22,10 @@ const UpdateEventsPanel = ({ events = [], isAdmin }) => {
               {events.map(event => (
                 <tr key={event.id}>
                   <td className="timestamp-cell">
-                    {convertDateToString(
-                      new Date(event.timestamp),
-                      'YYYY-MM-DD HH:mm'
+                    {convertStringFormatToAnotherFormat(
+                      event.timestamp,
+                      'DD-MM-YYYY HH:mm',
+                      'D MMM YYYY HH:mm'
                     )}
                   </td>
                   <td className="message-cell">{event.description}</td>
@@ -57,7 +58,8 @@ UpdateEventsPanel.propTypes = {
         'TEST_PLAN_REPORT'
       ]).isRequired
     })
-  )
+  ),
+  isAdmin: PropTypes.bool.isRequired
 };
 
 export default UpdateEventsPanel;
