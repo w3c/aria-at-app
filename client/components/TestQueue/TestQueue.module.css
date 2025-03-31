@@ -108,9 +108,13 @@ table.test-queue {
 .assign-testers-container {
   display: flex;
 
+  .dropdown-button-label {
+    margin-right: var(--8px);
+  }
+
   [role='menu'] {
-    width: 15.625rem;
-    max-height: 12.5rem;
+    width: 15rem;
+    max-height: 8rem;
     overflow-y: scroll;
   }
 
