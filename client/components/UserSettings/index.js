@@ -51,36 +51,34 @@ const UserSettings = () => {
 
   return (
     <Container id="main" as="main" tabIndex="-1">
-      <Container fluid>
-        <Helmet>
-          <title>Settings | ARIA-AT</title>
-        </Helmet>
-        <h1>Settings</h1>
-        <section>
-          <h2>User Details</h2>
-          <p>
-            <a
-              href={`https://github.com/${username}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {username}
-            </a>
-          </p>
-        </section>
-        {!isAdmin && isTester && !isVendor && (
-          <TesterSettings
-            ats={testerQueryData.ats}
-            meAts={testerQueryData.me.ats}
-          />
-        )}
-        {isAdmin && (
-          <AdminSettings
-            latestTestPlanVersion={adminQueryData.latestTestPlanVersion}
-            refetch={adminQueryRefetch}
-          />
-        )}
-      </Container>
+      <Helmet>
+        <title>Settings | ARIA-AT</title>
+      </Helmet>
+      <h1>Settings</h1>
+      <section>
+        <h2>User Details</h2>
+        <p>
+          <a
+            href={`https://github.com/${username}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {username}
+          </a>
+        </p>
+      </section>
+      {!isAdmin && isTester && !isVendor && (
+        <TesterSettings
+          ats={testerQueryData.ats}
+          meAts={testerQueryData.me.ats}
+        />
+      )}
+      {isAdmin && (
+        <AdminSettings
+          latestTestPlanVersion={adminQueryData.latestTestPlanVersion}
+          refetch={adminQueryRefetch}
+        />
+      )}
     </Container>
   );
 };

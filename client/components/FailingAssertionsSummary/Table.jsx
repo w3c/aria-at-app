@@ -4,7 +4,6 @@ import { Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { useFailingAssertions } from '../../hooks/useFailingAssertions';
 import { TestPlanReportPropType } from '../common/proptypes';
-import './FailingAssertionsSummary.css';
 
 const FailingAssertionsSummaryTable = ({
   testPlanReport,

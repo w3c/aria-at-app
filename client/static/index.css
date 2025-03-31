@@ -1,6 +1,153 @@
+@import url('https://use.fontawesome.com/releases/v5.0.1/css/all.css');
+
+:root {
+  /* Home */
+  --hero-text: #5c728e;
+  --hero-link: #0072ed;
+  --hero-link-hover: #0058b6;
+  --authorization-message-bg: #fff9ea;
+  --authorization-message-text: #654e29;
+  --improvements-bg: #f6fbfe;
+
+  /* Background colors */
+  --bg: #eaeaea;
+  --bg-table-headings: #e9ebee;
+  --bg-table-headings-hover: rgba(0, 0, 0, 0.075);
+  --bg-table-body: #fafbfc;
+  --bg-table-hover: #f6f8fa;
+  --bg-light-blue: #e9f0f8;
+  --bg-lighter-blue: #ecf6ff;
+  --bg-light-purple: #f0e1ff;
+  --bg-hover-light-blue: #def;
+  --bg-light-gray: #e9ecef;
+  --bg-lighter-gray: #f8f9fa;
+  --bg-dark-gray: #94979b;
+
+  /* Miscellaneous */
+  --default-gray: #d2d5d9;
+  --border-gray: #d2d5d9;
+  --border-light-blue: #b5cfec;
+  --border-dark-blue: #517dbc;
+  --border-light-purple: #d29fff;
+  --white: #fff;
+  --black: #000;
+
+  /* Font and Button Colors */
+  --font-black: #000;
+  --font-link: #0b60ab;
+  --font-link-hover-light: #cfcece;
+  --font-link-hover-dark: #214e86;
+  --font-primary: #0b60ab;
+
+  --primary-color: #0b60ab;
+  --primary-focus-bg: #fff;
+  --primary-dark: #09589e;
+  --primary-border: #095190;
+
+  --secondary-bg: #fff;
+  --secondary-dark: #e8e8e8;
+  --secondary-color: #111;
+  --secondary-border: #d2d5d9; /* Same as border-gray */
+
+  --danger-bg: #fff;
+  --danger-color: #bb2d3b;
+  --danger-border: #d2d5d9;
+
+  --disabled-bg: #f4f4f4;
+  --disabled-color: #999;
+  --disabled-border: #d2d5d9; /* Same as border-gray */
+
+  --dark-gray-text: #727272;
+  --required-color: #dc3545;
+
+  /* Other Colors */
+  --rd-color: #4177de;
+  --draft-color: #818f98;
+  --candidate-color: #f87f1b;
+  --recommended-color: #b253f8;
+  --deprecated-color: #ce1b4c;
+
+  --positive-green: #2ba51c;
+  --negative-gray: #818f98;
+
+  --success-status-color: #2ba51c;
+  --warning-status-color: #fab700;
+  --danger-status-color: #ce1b4c;
+
+  --report-status-issues: #f2ba00;
+  --report-status-not-started-skipped: #7c7c7c;
+  --report-status-complete: #2ba51c;
+  --report-status-in-progress-queued: #3876e8;
+  --report-status-missing: #ce1b4c;
+  --report-status-cancelled: #a231ff;
+  --report-status-error: #e3261f;
+  --report-status-running: #1e8f37;
+
+  --navigator-green: #1d8f37;
+  --navigator-warning: #ffcd00;
+  --navigator-warning-indicator: #976005;
+
+  --candidate-summary: #295fa6;
+  --candidate-feedback: #b253f8;
+  --candidate-changes-requested: #f87f1b;
+  --candidate-ready-for-review: #edbb1d;
+  --candidate-in-progress: #2560ab;
+  --candidate-approved: #309d08;
+
+  /* Shadows */
+  --button-shadow: rgba(103, 171, 197, 0.5);
+
+  /* Font sizes */
+  --default-font-size: 1rem;
+  --nav-font-size: 1rem;
+  --nav-font-size-sm: 0.875rem;
+  --font-weight-heavy: 700;
+  --font-weight-headings: 600;
+  --font-weight-medium: 500;
+  --font-weight-light: 400;
+  --font-weight-lighter: 400;
+
+  /* Dimensions */
+  --32px: 2rem;
+  --30px: 1.875rem;
+  --28px: 1.75rem;
+  --26px: 1.625rem;
+  --24px: 1.5rem;
+  --22px: 1.375rem;
+  --20px: 1.25rem;
+  --18px: 1.125rem;
+
+  --16px: 1rem;
+
+  --14px: 0.875rem;
+  --12px: 0.75rem;
+  --10px: 0.625rem;
+  --8px: 0.5rem;
+  --6px: 0.375rem;
+  --4px: 0.25rem;
+  --2px: 0.125rem;
+
+  /* Gaps */
+  --text-gap: 0.25rem;
+  --el-gap: 0.5rem;
+  --section-gap: 1rem;
+  --spacer-gap: 3rem;
+
+  /* Breakpoints */
+  --breakpoint-xs: 320px;
+  --breakpoint-sm: 480px;
+  --mobile-breakpoint: 600px;
+  --breakpoint-md: 768px;
+  --tablet-breakpoint: 900px;
+  --breakpoint-lg: 1024px;
+  --desktop-breakpoint: 1200px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-xxl: 1440px;
+}
+
 html,
 body {
   width: 100%;
   height: 100vh;
-  background: #eaeaea;
+  background: var(--bg);
 }

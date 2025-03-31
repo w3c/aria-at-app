@@ -1,14 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'react-bootstrap';
-import styled from '@emotion/styled';
 import { dates } from 'shared';
 import BasicModal from '../BasicModal';
-
-const ModalInnerSectionContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+import commonStyles from '../styles.module.css';
 
 const UpdateTargetDateModal = ({
   show = false,
@@ -90,8 +85,8 @@ const UpdateTargetDateModal = ({
       closeButton={false}
       title={title}
       content={
-        <ModalInnerSectionContainer>
-          <Form.Group className="form-group">
+        <div className={commonStyles.modalInnerSectionContainer}>
+          <Form.Group className={commonStyles.formGroup}>
             <Form.Label htmlFor="target-date-input">Target Date</Form.Label>
             <Form.Control
               id="target-date-input"
@@ -114,7 +109,7 @@ const UpdateTargetDateModal = ({
               </Form.Control.Feedback>
             )}
           </Form.Group>
-        </ModalInnerSectionContainer>
+        </div>
       }
       actions={[
         {

@@ -1,0 +1,6 @@
+.filter-buttons-container {
+  padding: 0 0.75rem;
+  border: 1px solid var(--border-gray);
+  border-radius: var(--4px);
+  margin-bottom: 2.5rem;
+}

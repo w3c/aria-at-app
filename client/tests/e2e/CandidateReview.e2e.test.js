@@ -45,7 +45,8 @@ describe('Candidate Review when signed in as vendor', () => {
         await page.waitForSelector('h3 ::-p-text(Review Status Summary)');
 
         // Test disclosure collapse interaction
-        const tableDisclosureContainerSelector = 'div#expand-at-1';
+        const tableDisclosureContainerSelector =
+          'div#disclosure-btn-controls-candidateReviewRuns-JAWS';
         const initialDisplayForTableDisclosureContainer = await display(
           page,
           tableDisclosureContainerSelector
@@ -74,16 +75,16 @@ describe('Candidate Review when signed in as vendor', () => {
 
       await page.waitForSelector('nav#test-navigator-nav ol');
       await page.waitForSelector('h1 ::-p-text(1.)');
-      await page.waitForSelector('h1[class="current-test-title"]');
+      await page.waitForSelector('h1[data-testid="current-test-title"]');
       await page.waitForSelector(
         '::-p-text(Review status by JAWS Representative: In Progress)'
       );
 
       // Expand Test Instructions and Test Results
       const instructionsDisclosureContainerSelector =
-        '[id="disclosure-container-test-instructions-and-results-Test Instructions"]';
+        '[id="disclosure-btn-controls-candidateReviewRun-Test Instructions"]';
       const testResultsDisclosureContainerSelector =
-        '[id^="disclosure-container-test-instructions-and-results-Test Results for"]';
+        '[id^="disclosure-btn-controls-candidateReviewRun-Test Results for"]';
       const initialInstructionsDisclosureDisplay = await display(
         page,
         instructionsDisclosureContainerSelector
@@ -126,7 +127,7 @@ describe('Candidate Review when signed in as vendor', () => {
 
         await page.waitForSelector('nav#test-navigator-nav ol');
         await page.waitForSelector('h1 ::-p-text(1.)');
-        await page.waitForSelector('h1[class="current-test-title"]');
+        await page.waitForSelector('h1[data-testid="current-test-title"]');
         await page.waitForSelector(
           '::-p-text(Review status by JAWS Representative: In Progress)'
         );
@@ -177,7 +178,7 @@ describe('Candidate Review when signed in as vendor', () => {
 
         await page.waitForSelector('nav#test-navigator-nav ol');
         await page.waitForSelector('h1 ::-p-text(1.)');
-        await page.waitForSelector('h1[class="current-test-title"]');
+        await page.waitForSelector('h1[data-testid="current-test-title"]');
         await page.waitForSelector(
           '::-p-text(Review status by JAWS Representative: In Progress)'
         );

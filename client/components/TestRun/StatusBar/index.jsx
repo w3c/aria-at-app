@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Button } from 'react-bootstrap';
-import { Octicon, Octicons } from 'octicons-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import nextId from 'react-id-generator';
+import styles from './StatusBar.module.css';
 
 const StatusBar = ({
   hasConflicts = false,
@@ -16,15 +18,11 @@ const StatusBar = ({
     if (hasConflicts) {
       const variant = 'warning';
       const action = (
-        <Button
-          className="ms-auto"
-          variant={variant}
-          onClick={handleReviewConflictsButtonClick}
-        >
+        <Button variant={variant} onClick={handleReviewConflictsButtonClick}>
           Review Conflicts
         </Button>
       );
-      const icon = 'alert';
+      const icon = faExclamationTriangle;
       const message = 'This test has conflicting results';
       statuses.push({
         action,
@@ -41,8 +39,8 @@ const StatusBar = ({
     <>
       {statuses.map(({ action, icon, message, variant }) => {
         return (
-          <Alert key={nextId()} variant={variant} className="status-bar">
-            <Octicon icon={Octicons[icon]} className="me-2" /> {message}
+          <Alert key={nextId()} variant={variant} className={styles.statusBar}>
+            <FontAwesomeIcon icon={icon} /> {message}
             {action}
           </Alert>
         );

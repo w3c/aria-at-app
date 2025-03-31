@@ -1,0 +1,43 @@
+.pill {
+  display: inline-block;
+  padding: var(--2px) var(--16px);
+  border-radius: var(--14px);
+
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  color: white;
+
+  &.full-width {
+    width: 100%;
+  }
+
+  &:not(.full-width) {
+    width: min-content;
+    padding: var(--2px) var(--16px);
+    vertical-align: middle;
+    position: relative;
+    top: -4px;
+    margin-top: 4px; /* Improve appearance when text wraps */
+  }
+
+  &.rd {
+    background: var(--rd-color);
+  }
+
+  &.draft {
+    background: var(--draft-color);
+  }
+
+  &.candidate {
+    background: var(--candidate-color);
+  }
+
+  &.recommended {
+    background: var(--recommended-color);
+  }
+
+  &.deprecated {
+    background: var(--deprecated-color);
+  }
+}

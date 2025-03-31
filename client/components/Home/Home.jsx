@@ -2,24 +2,29 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Container } from 'react-bootstrap';
+import clsx from 'clsx';
 import iconJoinCommunity from '../../assets/join-community.jpg';
 import iconWriteTests from '../../assets/write-tests.jpg';
 import iconReviewTests from '../../assets/review-tests.jpg';
 import iconReviewAssertions from '../../assets/review-assertion.jpg';
-// Icon which is no longer used
-// import iconFixIssue from '../../assets/fix-issue.jpg';
+import styles from './Home.module.css';
 
 const Home = () => {
   return (
-    <Container className="home-page" id="main" as="main" tabIndex="-1">
+    <Container
+      id="main"
+      as="main"
+      tabIndex="-1"
+      className={clsx(styles.homePage, styles.container)}
+    >
       <Helmet>
         <title>Home | ARIA-AT</title>
       </Helmet>
-      <section className="hero-section">
+      <section className={styles.heroSection}>
         <h1>Enabling Interoperability for Assistive Technology Users</h1>
-        <div className="hero-copy-and-video">
-          <div className="hero-copy">
-            <p className="w3c-authorization-message">
+        <div className={styles.heroCopyAndVideo}>
+          <div className={styles.heroCopy}>
+            <p className={styles.authorizationMessage}>
               <i aria-hidden="true">✨</i>
               <em>
                 <strong>Note:</strong> The{' '}
@@ -77,7 +82,7 @@ const Home = () => {
             </p>
             <p>
               <a
-                className="hero-link"
+                className={styles.heroLink}
                 href="https://github.com/w3c/aria-at/wiki/How-Gaps-in-Assistive-Technology-Interoperability-Hinder-Inclusion"
               >
                 Read more about how the AT interoperability gap hinders
@@ -85,7 +90,7 @@ const Home = () => {
               </a>
             </p>
           </div>
-          <div className="hero-video">
+          <div className={styles.heroVideo}>
             <iframe
               src="https://player.vimeo.com/video/651279608?h=45aefd646f&byline=false&dnt=true&portrait=false"
               width="640"
@@ -98,10 +103,10 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <section className="improvements">
-        <div className="improvements-container">
+      <section className={styles.improvements}>
+        <div className={styles.improvementsContainer}>
           <h2>How are we improving interoperability?</h2>
-          <ul className="improvement-list">
+          <ul className={styles.improvementList}>
             <li>
               <img src={iconWriteTests} alt="" />
               <h3>Proposing expectations for ATs</h3>
@@ -159,8 +164,8 @@ const Home = () => {
           </ul>
         </div>
       </section>
-      <section className="get-involved">
-        <div className="container">
+      <section className={styles.getInvolved}>
+        <div className={styles.container}>
           <h2>Get Involved</h2>
           <p>
             Enabling AT interoperability is a large, ongoing endeavor that

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
 import { Button, Table } from 'react-bootstrap';
 import { unescape } from 'lodash';
 import {
@@ -20,40 +19,15 @@ import { evaluateAtNameKey } from '../../../utils/aria.js';
 import commandsJson from '../../../resources/commands.json';
 import supportJson from '../../../resources/support.json';
 import { convertAssertionPriority } from 'shared';
-
-const NumberedList = styled.ol`
-  counter-reset: numbered-list;
-  list-style: none;
-  > li {
-    counter-increment: numbered-list;
-    position: relative;
-    margin-bottom: 10px;
-  }
-
-  > li::before {
-    content: counter(numbered-list);
-    position: absolute;
-    color: #78869c;
-    font-size: 1em;
-    --size: 25px;
-    left: calc(-1 * var(--size) - 10px);
-    line-height: var(--size);
-    width: var(--size);
-    height: var(--size);
-    top: 2px;
-    background: #edf6ff;
-    border-radius: 50%;
-    border: 1px solid #d5deec;
-    text-align: center;
-  }
-`;
+import styles from './CandidateTestPlanRun.module.css';
 
 const InstructionsRenderer = ({
   test,
   testPageUrl,
   at,
   headingLevel = 2,
-  testFormatVersion
+  testFormatVersion,
+  customClassNames
 }) => {
   const { renderableContent } = test;
   const [testRunExport, setTestRunExport] = useState();
@@ -172,8 +146,8 @@ const InstructionsRenderer = ({
   const Heading = `h${headingLevel}`;
 
   return (
-    <>
-      <NumberedList>{allInstructionsContent}</NumberedList>
+    <div className={customClassNames}>
+      <ol className={styles.numberedList}>{allInstructionsContent}</ol>
       {settingsContent.length ? settingsContent : null}
 
       {renderableContent.commands.map(
@@ -235,7 +209,12 @@ const InstructionsRenderer = ({
           if (isV2) {
             return (
               <React.Fragment key={`command-${id}-${i}`}>
-                <Heading id={scenarioId}>{scenarioTitle}</Heading>
+                <Heading
+                  id={scenarioId}
+                  className="instructions-assertions-table"
+                >
+                  {scenarioTitle}
+                </Heading>
                 <Table
                   key={`${id}-${i}`}
                   bordered
@@ -305,7 +284,7 @@ const InstructionsRenderer = ({
       >
         {pageContent.instructions.openTestPage.button}
       </Button>
-    </>
+    </div>
   );
 };
 
@@ -316,7 +295,8 @@ InstructionsRenderer.propTypes = {
     name: PropTypes.string.isRequired
   }),
   testFormatVersion: PropTypes.number,
-  headingLevel: PropTypes.number
+  headingLevel: PropTypes.number,
+  customClassNames: PropTypes.string
 };
 
 export default InstructionsRenderer;
