@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import nextId from 'react-id-generator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag, faCommentAlt } from '@fortawesome/free-solid-svg-icons';
-import './FeedbackListItem.css';
+import styles from './FeedbackListItem.module.css';
 
 export const FeedbackTypeMap = {
   FEEDBACK: 'FEEDBACK',
@@ -66,14 +66,17 @@ const FeedbackListItem = ({
   }
 
   return (
-    <li className="feedback-list-item" key={nextId()}>
-      {feedbackType === FeedbackTypeMap.FEEDBACK ? (
-        <FontAwesomeIcon icon={faCommentAlt} color="#B254F8" />
-      ) : (
-        <FontAwesomeIcon icon={faFlag} color="#F87F1C" />
-      )}
+    <li className={styles.feedbackListItem} key={nextId()}>
+      <FontAwesomeIcon
+        icon={feedbackType === FeedbackTypeMap.FEEDBACK ? faCommentAlt : faFlag}
+        color={
+          feedbackType === FeedbackTypeMap.FEEDBACK
+            ? 'var(--candidate-feedback)'
+            : 'var(--candidate-changes-requested)'
+        }
+      />
       {content}
-      <span className="feedback-indicator" title="Feedback Indicator" />
+      <span className={styles.feedbackIndicator} title="Feedback Indicator" />
     </li>
   );
 };

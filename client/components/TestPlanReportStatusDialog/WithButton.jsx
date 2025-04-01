@@ -3,27 +3,10 @@ import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import TestPlanReportStatusDialog from './index';
 import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
-import styled from '@emotion/styled';
-import ReportStatusDot from '../common/ReportStatusDot';
+import ReportStatusDot, { REPORT_STATUSES } from '../common/ReportStatusDot';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from './queries';
 import { useQuery } from '@apollo/client';
-
-const TestPlanReportStatusDialogButton = styled(Button)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 0.5rem;
-  font-size: 0.875rem;
-
-  border: none;
-  border-radius: 0;
-
-  color: #6a7989;
-  background: #f6f8fa;
-
-  margin-top: auto;
-`;
+import styles from './TestPlanReportStatusDialog.module.css';
 
 const TestPlanReportStatusDialogWithButton = ({
   testPlanVersionId,
@@ -69,14 +52,14 @@ const TestPlanReportStatusDialogWithButton = ({
     if (counts.missing === 0 && counts.inProgress === 0) {
       return (
         <span>
-          <ReportStatusDot className="reports-complete" />
+          <ReportStatusDot status={REPORT_STATUSES.REPORTS_COMPLETE} />
           Required Reports <strong>Complete</strong>
         </span>
       );
     } else if (counts.missing === 0 && counts.inProgress !== 0) {
       return (
         <span>
-          <ReportStatusDot className="reports-in-progress" />
+          <ReportStatusDot status={REPORT_STATUSES.REPORTS_IN_PROGRESS} />
           Required Reports <strong>In Progress</strong>
         </span>
       );
@@ -86,7 +69,7 @@ const TestPlanReportStatusDialogWithButton = ({
     ) {
       return (
         <span>
-          <ReportStatusDot className="reports-missing" />
+          <ReportStatusDot status={REPORT_STATUSES.REPORTS_MISSING} />
           Some Required Reports <strong>Missing</strong>
         </span>
       );
@@ -97,7 +80,7 @@ const TestPlanReportStatusDialogWithButton = ({
     ) {
       return (
         <span>
-          <ReportStatusDot className="reports-not-started" />
+          <ReportStatusDot status={REPORT_STATUSES.REPORTS_NOT_STARTED} />
           Required Reports <strong>Not Started</strong>
         </span>
       );
@@ -105,7 +88,7 @@ const TestPlanReportStatusDialogWithButton = ({
       // Fallback case
       return (
         <span>
-          <ReportStatusDot className="reports-not-started" />
+          <ReportStatusDot status={REPORT_STATUSES.REPORTS_NOT_STARTED} />
           Some Reports Complete
         </span>
       );
@@ -125,12 +108,13 @@ const TestPlanReportStatusDialogWithButton = ({
 
   return (
     <>
-      <TestPlanReportStatusDialogButton
+      <Button
         ref={buttonRef}
+        className={styles.testPlanReportStatusDialogButton}
         onClick={() => setShowDialog(true)}
       >
         {buttonLabel}
-      </TestPlanReportStatusDialogButton>
+      </Button>
       <TestPlanReportStatusDialog
         testPlanVersion={testPlanVersion}
         show={showDialog}

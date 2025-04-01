@@ -1,0 +1,79 @@
+.candidate-review-custom-disclosure-component {
+  border: 1px solid var(--border-gray);
+  border-radius: var(--4px);
+  margin-bottom: 3rem;
+
+  > .disclosure-content,
+  table {
+    padding: 0;
+    margin: 0;
+  }
+}
+
+span.cell-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+
+  svg {
+    align-self: center;
+    margin: 0;
+  }
+}
+
+span.status-text {
+  height: var(--24px);
+  font-size: var(--14px);
+  padding: var(--4px) var(--10px);
+  border-radius: var(--26px);
+  overflow: hidden;
+  white-space: nowrap;
+
+  span.dot {
+    display: inline-block;
+    height: var(--10px);
+    width: var(--10px);
+    padding: 0;
+    margin-right: var(--8px);
+    border-radius: 50%;
+  }
+
+  &.feedback {
+    border: 2px solid var(--candidate-feedback);
+    svg {
+      color: var(--candidate-feedback);
+    }
+  }
+
+  &.changes-requested {
+    border: 2px solid var(--candidate-changes-requested);
+    svg {
+      color: var(--candidate-changes-requested);
+    }
+  }
+
+  &.ready-for-review {
+    border: 2px solid var(--candidate-ready-for-review);
+    span.dot {
+      background: var(--candidate-ready-for-review);
+    }
+  }
+
+  &.in-progress {
+    border: 2px solid var(--candidate-in-progress);
+    span.dot {
+      background: var(--candidate-in-progress);
+    }
+  }
+
+  &.approved {
+    border: 2px solid var(--candidate-approved);
+    svg {
+      color: var(--candidate-approved);
+    }
+  }
+}

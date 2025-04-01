@@ -11,6 +11,7 @@ import ScrollFixer from '../../utils/ScrollFixer';
 import routes from '../../routes';
 import { ME_QUERY } from './queries';
 import SkipLink from '../SkipLink';
+import '@fortawesome/fontawesome-svg-core/styles.css';
 import './App.css';
 
 const App = () => {

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
+import clsx from 'clsx';
 import TestNavigator from '../../TestRun/TestNavigator';
 import InstructionsRenderer from './InstructionsRenderer';
 import OptionButton from '../../TestRun/OptionButton';
@@ -11,17 +12,10 @@ import {
   PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
   REVIEWER_STATUS_QUERY
 } from './queries';
-import Badge from 'react-bootstrap/Badge';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
+import { Badge, Container, Row, Col, Button } from 'react-bootstrap';
 import { useParams, useNavigate, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { getMetrics, dates } from 'shared';
-import './CandidateTestPlanRun.css';
-import '../../TestRun/TestRun.css';
-import '../../App/App.css';
 import { useMediaQuery } from 'react-responsive';
 import TestPlanResultsTable from '../../common/TestPlanResultsTable';
 import ProvideFeedbackModal from '../CandidateModals/ProvideFeedbackModal';
@@ -38,6 +32,11 @@ import { evaluateAuth } from '../../../utils/evaluateAuth';
 import NotApprovedModal from '../CandidateModals/NotApprovedModal';
 import FailingAssertionsSummaryTable from '../../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../../FailingAssertionsSummary/Heading';
+import styles from './CandidateTestPlanRun.module.css';
+import feedbackStyles from '../FeedbackListItem/FeedbackListItem.module.css';
+import testRunStyles from '../../TestRun/TestRun.module.css';
+import testRunHeadingStyles from '../../TestRun/Heading.module.css';
+import failingAssertionsSummaryStyles from '../../FailingAssertionsSummary/FailingAssertionsSummary.module.css';
 
 const atMap = {
   1: 'JAWS',
@@ -399,10 +398,12 @@ const CandidateTestPlanRun = () => {
 
   const getHeading = () => {
     return (
-      <div className="test-info-heading">
+      <div className="p-0">
         {isSummaryView ? (
           <>
-            <span className="task-label">Candidate Test Plan Review</span>
+            <span className={testRunStyles.taskLabel}>
+              Candidate Test Plan Review
+            </span>
             <FailingAssertionsSummaryHeading
               metrics={testPlanReport.metrics}
               as="h1"
@@ -417,16 +418,16 @@ const CandidateTestPlanRun = () => {
                 ? 'You are on the last test.'
                 : ''}
             </div>
-            <span className="task-label">
+            <span className={testRunStyles.taskLabel}>
               Reviewing Test {currentTest.seq} of {tests.length}:
             </span>
             <h1>
               {`${currentTest.seq}. ${currentTest.title}`}{' '}
-              <span className="using">using</span> {`${at}`}{' '}
+              <span className={styles.using}>using</span> {`${at}`}{' '}
               {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
               {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
               {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
-                <Badge className="viewed-badge" pill variant="secondary">
+                <Badge className={styles.viewedBadge} pill variant="secondary">
                   Previously Viewed
                 </Badge>
               )}
@@ -439,9 +440,14 @@ const CandidateTestPlanRun = () => {
 
   const getTestInfo = () => {
     return (
-      <div className="test-info-wrapper">
-        <div className="test-info-entity apg-example-name">
-          <div className="info-label">
+      <div className={testRunHeadingStyles.testInfoWrapper}>
+        <div
+          className={clsx(
+            testRunHeadingStyles.testInfoEntity,
+            testRunHeadingStyles.apgExampleName
+          )}
+        >
+          <div>
             <b>Candidate Test Plan:</b>{' '}
             <a href={`/test-review/${testPlanVersion.id}`}>
               {`${
@@ -452,14 +458,24 @@ const CandidateTestPlanRun = () => {
             </a>
           </div>
         </div>
-        <div className="test-info-entity review-status">
-          <div className="info-label">
+        <div
+          className={clsx(
+            testRunHeadingStyles.testInfoEntity,
+            testRunHeadingStyles.reviewStatus
+          )}
+        >
+          <div>
             <b>Review status by {at} Representative:</b>{' '}
             {`${reviewStatusText} `}
           </div>
         </div>
-        <div className="test-info-entity target-date">
-          <div className="info-label">
+        <div
+          className={clsx(
+            testRunHeadingStyles.testInfoEntity,
+            testRunHeadingStyles.targetDate
+          )}
+        >
+          <div>
             <b>Target Completion Date: </b>
             {targetCompletionDate}
           </div>
@@ -475,12 +491,14 @@ const CandidateTestPlanRun = () => {
     return (
       testPlanReport.issues.filter(({ isCandidateReview }) => isCandidateReview)
         .length > 0 && (
-        <div className="issues-container">
+        <div className={styles.issuesContainer}>
           <h2>
-            <span className="feedback-from-text">Feedback from</span>{' '}
+            <span className={feedbackStyles.feedbackFromText}>
+              Feedback from
+            </span>{' '}
             <b>{at} Representative</b>
           </h2>
-          <ul className="feedback-list">
+          <ul>
             {[
               otherChangesRequestedIssues,
               otherFeedbackIssues,
@@ -537,9 +555,13 @@ const CandidateTestPlanRun = () => {
 
   const getContent = () => {
     return (
-      <div className="results-container">
+      <div className="p-0">
         {isSummaryView ? (
-          <div className="failing-assertions-summary-table-container">
+          <div
+            className={
+              failingAssertionsSummaryStyles.failingAssertionsSummaryTableContainer
+            }
+          >
             <FailingAssertionsSummaryTable
               testPlanReport={testPlanReports[0]}
               atName={at}
@@ -548,9 +570,11 @@ const CandidateTestPlanRun = () => {
           </div>
         ) : (
           <>
-            <h1 className="current-test-title">{currentTest.title}</h1>
+            <h1 className="border-0" data-testid="current-test-title">
+              {currentTest.title}
+            </h1>
             <DisclosureComponent
-              componentId="test-instructions-and-results"
+              componentId="candidateReviewRun"
               headingLevel="1"
               title={[
                 'Test Instructions',
@@ -568,6 +592,9 @@ const CandidateTestPlanRun = () => {
               expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
               disclosureContainerView={[
                 <InstructionsRenderer
+                  customClassNames={
+                    styles.candidateReviewCustomInstructionsRenderer
+                  }
                   key={`instructions-${currentTest.id}`}
                   at={testPlanReport.at}
                   test={currentTest}
@@ -590,7 +617,7 @@ const CandidateTestPlanRun = () => {
 
                   return (
                     <>
-                      <h2 className="test-results-header">
+                      <h2 className={styles.testResultsHeader}>
                         Test Results&nbsp;(
                         {assertionsPassedCount} passed,&nbsp;
                         {mustShouldAssertionsFailedCount} failed,&nbsp;
@@ -610,7 +637,6 @@ const CandidateTestPlanRun = () => {
                   testId={currentTest.id}
                 />
               ]}
-              stacked
             ></DisclosureComponent>
           </>
         )}
@@ -619,7 +645,7 @@ const CandidateTestPlanRun = () => {
   };
 
   return (
-    <Container className="test-run-container">
+    <Container>
       <Helmet>
         <title>Candidate Test Run Page | ARIA-AT</title>
       </Helmet>
@@ -634,22 +660,21 @@ const CandidateTestPlanRun = () => {
           handleTestClick={handleTestClick}
           viewedTests={viewedTests}
         />
-        <Col className="candidate-test-area" id="main" as="main" tabIndex="-1">
+        <Col id="main" as="main" tabIndex="-1">
           <Row>
             {getHeading()}
             {getTestInfo()}
-            <Col className="results-container-col">
+            <Col className="p-0">
               <Row xs={1} s={1} md={2}>
-                <Col
-                  className="results-container"
-                  md={isLaptopOrLarger ? 9 : 12}
-                >
+                <Col className="p-0" md={isLaptopOrLarger ? 9 : 12}>
                   <Row>{getFeedback()}</Row>
-                  <Row className="results-container-row">{getContent()}</Row>
+                  <Row className={styles.candidateResultsContainer}>
+                    {getContent()}
+                  </Row>
                   <Row>
                     <ul
                       aria-labelledby="test-toolbar-heading"
-                      className="test-run-toolbar mt-1"
+                      className={testRunStyles.testRunToolbar}
                     >
                       {isSummaryView ||
                       (isFirstTest && !hasFailingAssertionsSummary) ? null : (
@@ -664,7 +689,7 @@ const CandidateTestPlanRun = () => {
                         </li>
                       )}
                       {isSummaryView ? (
-                        <li className="begin-review-button-container">
+                        <li className={styles.beginReviewButtonContainer}>
                           <Button
                             ref={nextButtonRef}
                             variant="secondary"
@@ -702,15 +727,16 @@ const CandidateTestPlanRun = () => {
                   </Row>
                 </Col>
                 <Col
-                  className={`current-test-options ${
-                    getFeedback() ? 'options-feedback' : ''
-                  }`}
+                  className={clsx(
+                    testRunStyles.currentTestOptions,
+                    getFeedback() && styles.optionsFeedback
+                  )}
                   md={isLaptopOrLarger ? 3 : 8}
                 >
                   <div role="complementary">
                     <h2 id="test-options-heading">Test Review Options</h2>
                     <ul
-                      className="options-wrapper"
+                      className={testRunStyles.optionsWrapper}
                       aria-labelledby="test-options-heading"
                     >
                       <li>
@@ -734,7 +760,7 @@ const CandidateTestPlanRun = () => {
                           href={fileBugUrl}
                         />
                       </li>
-                      <li>
+                      <li className={testRunStyles.helpLink}>
                         <a href="mailto:public-aria-at@w3.org">
                           Email us if you need help
                         </a>
