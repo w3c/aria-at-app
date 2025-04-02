@@ -21,7 +21,11 @@ const ALGORITHM = 'RS256';
 // > the workflow file is on the default branch.
 //
 // https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
-const WORKFLOW_REPO = 'bocoup/aria-at-gh-actions-helper';
+const WORKFLOW_REPO =
+  process.env.GITHUB_WORKFLOW_REPO ||
+  (process.env.ENVIRONMENT === 'production'
+    ? 'bocoup/aria-at-gh-actions-helper'
+    : 'bocoup/aria-at-gh-actions-helper-dev');
 
 // Generated from the GitHub.com UI
 let privateKey = null;
