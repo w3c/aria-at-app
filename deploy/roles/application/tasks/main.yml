@@ -119,4 +119,12 @@
 
 - import_tasks: service.yml
 
+- name: Create database dump after build in sandbox via curl
+  shell: >
+    curl -X POST \
+         -H "Content-Type: application/json" \
+         -d '{ "dumpFileName": "build_dump.sql" }' \
+         "http://localhost:{{ lookup('env', 'PORT', default='5000') }}/api/database/dump"
+  when: deployment_mode == 'sandbox'
+
 - include_tasks: cron.yml

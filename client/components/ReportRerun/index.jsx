@@ -13,6 +13,7 @@ import {
   CREATE_COLLECTION_JOBS_MUTATION,
   GET_UPDATE_EVENTS
 } from './queries';
+import ResetDbButton from '../common/ResetDbButton';
 
 const ReportRerun = ({ onQueueUpdate }) => {
   const client = useApolloClient();
@@ -134,6 +135,8 @@ const ReportRerun = ({ onQueueUpdate }) => {
         isAdmin={isAdmin}
         onRefresh={handleRefreshEvents}
       />
+
+      <ResetDbButton />
     </div>
   );
 };
