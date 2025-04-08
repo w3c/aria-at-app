@@ -50,10 +50,7 @@ const ResetDbButton = () => {
     );
   };
 
-  if (
-    process.env.ENVIRONMENT !== 'sandbox' &&
-    process.env.ENVIRONMENT !== 'dev'
-  ) {
+  if (process.env.ENVIRONMENT !== 'sandbox') {
     return null;
   }
 
