@@ -1,0 +1,16 @@
+.conflicts-container {
+  h2 {
+    margin-top: 0;
+  }
+
+  &.hide-headline {
+    h2 {
+      display: none;
+    }
+  }
+
+  ul li {
+    list-style: disc;
+    margin: 0 0 0.5rem 2rem;
+  }
+}

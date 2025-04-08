@@ -1,6 +1,6 @@
-const { Op } = require('sequelize');
 const { getAtVersions } = require('../models/services/AtService');
 const { AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS } = require('./constants');
+const { utils } = require('shared');
 
 const getAtVersionWithRequirements = async (
   atId,
@@ -19,30 +19,21 @@ const getAtVersionWithRequirements = async (
       );
     }
 
-    if (minimumAtVersion.supportedByAutomation) {
-      return minimumAtVersion;
-    }
-
+    // Get all versions for this AT without date filtering
     const matchingAtVersions = await getAtVersions({
-      where: {
-        atId,
-        releasedAt: { [Op.gte]: minimumAtVersion.releasedAt }
-      },
-      pagination: {
-        order: [['releasedAt', 'ASC']]
-      },
+      where: { atId },
       transaction
     });
 
-    const supportedVersions =
-      AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[
-        matchingAtVersions[0]?.at?.name
-      ] || [];
+    // Sort versions by semantic version and date
+    const sortedVersions = utils.sortAtVersions(matchingAtVersions);
 
-    const latestSupportedAtVersion = matchingAtVersions.find(
-      atv =>
-        supportedVersions.includes(atv.name) &&
-        new Date(atv.releasedAt) >= new Date(minimumAtVersion.releasedAt)
+    const supportedVersions =
+      AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[sortedVersions[0]?.at?.name] ||
+      [];
+
+    const latestSupportedAtVersion = sortedVersions.find(atv =>
+      supportedVersions.includes(atv.name.trim())
     );
 
     if (!latestSupportedAtVersion) {

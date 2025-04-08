@@ -1,19 +1,8 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
+import styles from './AriaLiveRegionProvider.module.css';
 
 const AriaLiveRegionContext = React.createContext();
-
-const VisuallyHiddenAriaLiveRegion = styled.span`
-  border: 0;
-  clip: rect(0 0 0 0);
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  padding: 0;
-  position: absolute;
-  width: 1px;
-`;
 
 export const useAriaLiveRegion = () => {
   const context = useContext(AriaLiveRegionContext);
@@ -31,9 +20,13 @@ export const AriaLiveRegionProvider = ({ children }) => {
   return (
     <AriaLiveRegionContext.Provider value={setAlertMessage}>
       {children}
-      <VisuallyHiddenAriaLiveRegion aria-live="polite" aria-atomic="true">
+      <span
+        className={styles.visuallyHiddenAriaLiveRegion}
+        aria-live="polite"
+        aria-atomic="true"
+      >
         {alertMessage}
-      </VisuallyHiddenAriaLiveRegion>
+      </span>
     </AriaLiveRegionContext.Provider>
   );
 };

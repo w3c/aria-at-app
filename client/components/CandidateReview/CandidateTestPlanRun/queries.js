@@ -12,25 +12,30 @@ import {
 } from '@components/common/fragments';
 
 export const ADD_VIEWER_MUTATION = gql`
-  mutation AddViewerMutation($testPlanVersionId: ID!, $testId: ID!) {
-    addViewer(testPlanVersionId: $testPlanVersionId, testId: $testId) {
+  mutation AddViewerMutation($testId: ID!, $testPlanReportId: ID!) {
+    addViewer(testId: $testId, testPlanReportId: $testPlanReportId) {
       username
     }
   }
 `;
 
 export const PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION = gql`
-  mutation UpdateVendorReviewStatusReport(
-    $testReportId: ID!
-    $reviewStatus: String!
-  ) {
+  mutation UpdateVendorReviewStatusReport($testReportId: ID!) {
     testPlanReport(id: $testReportId) {
-      promoteVendorReviewStatus(vendorReviewStatus: $reviewStatus) {
+      promoteVendorReviewStatus {
         testPlanReport {
           id
           vendorReviewStatus
         }
       }
+    }
+  }
+`;
+
+export const REVIEWER_STATUS_QUERY = gql`
+  query ReviewerStatusQuery($userId: ID!, $testPlanReportId: ID!) {
+    reviewerStatus(userId: $userId, testPlanReportId: $testPlanReportId) {
+      viewedTests
     }
   }
 `;
@@ -93,9 +98,6 @@ export const CANDIDATE_REPORTS_QUERY = gql`
       runnableTests {
         ...TestFieldsSimple
         renderableContent
-        viewers {
-          username
-        }
       }
       finalizedTestResults {
         ...TestResultFields

@@ -1,51 +1,8 @@
 import React, { useState } from 'react';
-import styled from '@emotion/styled';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  background: #f7f7f7;
-
-  border: 2px solid #d3d5d9;
-  border-radius: 0.5rem;
-
-  details {
-    font-weight: normal;
-    font-size: 1rem;
-
-    span > ol {
-      margin-bottom: 0;
-    }
-
-    summary {
-      width: fit-content;
-
-      list-style: none;
-
-      font-weight: bold;
-      text-align: left;
-      border: thin solid transparent;
-      background-color: transparent;
-
-      :hover,
-      :focus {
-        background-color: #eee;
-      }
-
-      ::-webkit-details-marker {
-        display: none;
-      }
-    }
-  }
-`;
+import styles from './DisclaimerInfo.module.css';
 
 const candidateTitle = 'Unapproved Report';
 const candidateMessageContent = (
@@ -101,17 +58,17 @@ const DisclaimerInfo = ({ phase }) => {
     content[phase]?.messageContent || content.CANDIDATE.messageContent;
 
   return (
-    <Container>
+    <div className={styles.disclaimerInfoContainer}>
       <details>
         <summary
           aria-expanded={expanded}
           aria-controls="description"
           onClick={() => setExpanded(!expanded)}
-          aria-label={`Warning! ${title}`}
+          aria-label={title}
         >
           <FontAwesomeIcon
             icon={faExclamationCircle}
-            color="#94979b"
+            color="var(--bg-dark-gray)"
             size="lg"
             aria-hidden={true}
           />
@@ -119,7 +76,7 @@ const DisclaimerInfo = ({ phase }) => {
         </summary>
         {messageContent}
       </details>
-    </Container>
+    </div>
   );
 };
 

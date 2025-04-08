@@ -37,11 +37,12 @@ describe('Test Queue admin traits when reports exist', () => {
   it('renders page with known pattern sections', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       const alertSectionHeaderSelector = 'h2 ::-p-text(Alert Example)';
-      const alertSectionContainerSelector = 'div#disclosure-container-alert-0';
+      const alertSectionContainerSelector =
+        'div#disclosure-btn-controls-alert-0';
       const modalDialogSectionHeaderSelector =
         'h2 ::-p-text(Modal Dialog Example)';
       const modalDialogSectionContainerSelector =
-        'div#disclosure-container-modal-dialog-0';
+        'div#disclosure-btn-controls-modal-dialog-0';
 
       const alertSectionTitle = await text(page, alertSectionHeaderSelector);
       const alertSectionDisplay = await display(
@@ -67,7 +68,7 @@ describe('Test Queue admin traits when reports exist', () => {
   it("renders page and open pattern section's table", async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       const modalDialogSectionContainerSelector =
-        'div#disclosure-container-modal-dialog-0';
+        'div#disclosure-btn-controls-modal-dialog-0';
       const modalDialogSectionButtonSelector =
         'button#disclosure-btn-modal-dialog-0';
       const modalDialogTableSelector =
@@ -259,11 +260,12 @@ describe('Test Queue tester traits when reports exist', () => {
   it('renders page with known pattern sections', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       const alertSectionHeaderSelector = 'h2 ::-p-text(Alert Example)';
-      const alertSectionContainerSelector = 'div#disclosure-container-alert-0';
+      const alertSectionContainerSelector =
+        'div#disclosure-btn-controls-alert-0';
       const modalDialogSectionHeaderSelector =
         'h2 ::-p-text(Modal Dialog Example)';
       const modalDialogSectionContainerSelector =
-        'div#disclosure-container-modal-dialog-0';
+        'div#disclosure-btn-controls-modal-dialog-0';
 
       const alertSectionTitle = await text(page, alertSectionHeaderSelector);
       const alertSectionDisplay = await display(
@@ -289,7 +291,7 @@ describe('Test Queue tester traits when reports exist', () => {
   it("renders page and open pattern section's table", async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       const modalDialogSectionContainerSelector =
-        'div#disclosure-container-modal-dialog-0';
+        'div#disclosure-btn-controls-modal-dialog-0';
       const modalDialogSectionButtonSelector =
         'button#disclosure-btn-modal-dialog-0';
       const modalDialogTableSelector =

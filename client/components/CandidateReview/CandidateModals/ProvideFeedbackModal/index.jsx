@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
 import '../common.css';
 import './ProvideFeedbackModal.css';
-import FeedbackListItem from '../../FeedbackListItem';
+import FeedbackListItem, { FeedbackTypeMap } from '../../FeedbackListItem';
 
 const ProvideFeedbackModal = ({
   at = '',
@@ -16,7 +16,8 @@ const ProvideFeedbackModal = ({
   changesRequestedIssues = [],
   changesRequestedGithubUrl = '',
   testPlan = '',
-  username = ''
+  username = '',
+  isAdmin = false
 }) => {
   const [selectedRadio, setSelectedRadio] = useState('not-approved-input');
 
@@ -31,16 +32,18 @@ const ProvideFeedbackModal = ({
         <div className="feedback-content">
           {changesRequestedIssues.length > 0 && (
             <FeedbackListItem
-              type="changes-requested"
-              differentAuthors={false}
+              authorMeIncluded
+              isGeneralFeedback
+              feedbackType={FeedbackTypeMap.CHANGES_REQUESTED}
               issues={changesRequestedIssues}
               githubUrl={changesRequestedGithubUrl}
             ></FeedbackListItem>
           )}
           {feedbackIssues.length > 0 && (
             <FeedbackListItem
-              type="feedback"
-              differentAuthors={false}
+              authorMeIncluded
+              isGeneralFeedback
+              feedbackType={FeedbackTypeMap.FEEDBACK}
               issues={feedbackIssues}
               githubUrl={feedbackGithubUrl}
             ></FeedbackListItem>
@@ -68,6 +71,8 @@ const ProvideFeedbackModal = ({
                   name="radio-feedback"
                   id="approve-input"
                   type="radio"
+                  disabled={isAdmin}
+                  aria-disabled={isAdmin}
                 />
                 <FormCheck.Label htmlFor="approve-input">
                   Approve
@@ -119,7 +124,8 @@ ProvideFeedbackModal.propTypes = {
   feedbackGithubUrl: PropTypes.string,
   show: PropTypes.bool,
   testPlan: PropTypes.string,
-  username: PropTypes.string
+  username: PropTypes.string,
+  isAdmin: PropTypes.bool
 };
 
 export default ProvideFeedbackModal;
