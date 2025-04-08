@@ -121,10 +121,16 @@
 
 - name: Create database dump after build in sandbox via curl
   shell: >
-    curl -X POST \
+    curl -v -X POST \
          -H "Content-Type: application/json" \
-         -d '{ "dumpFileName": "build_dump.sql" }' \
-         "http://localhost:{{ lookup('env', 'PORT', default='5000') }}/api/database/dump"
+         -d '{"dumpFileName":"build_dump.sql"}' \
+         "https://{{fqdn}}/api/database/dump" || echo "Curl failed with exit code $?"
+  register: curl_result
+  failed_when: "'Curl failed with exit code' in curl_result.stdout"
+  when: deployment_mode == 'sandbox'
+
+- debug:
+    var: curl_result.stdout_lines
   when: deployment_mode == 'sandbox'
 
 - include_tasks: cron.yml
