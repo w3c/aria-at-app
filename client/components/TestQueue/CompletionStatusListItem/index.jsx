@@ -9,6 +9,7 @@ import {
   TestPlanRunPropType,
   UserPropType
 } from '../../common/proptypes';
+import styles from '../TestQueue.module.css';
 
 const CompletionStatusListItem = ({
   rowId,
@@ -65,7 +66,7 @@ const CompletionStatusListItem = ({
   }
 
   return (
-    <li>
+    <li className={styles.completionStatusListItem}>
       {info}
       {completionStatus}
     </li>

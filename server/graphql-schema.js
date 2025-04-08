@@ -219,6 +219,10 @@ const graphqlSchema = gql`
     The browsers which are required to move a TestPlanVersion to RECOMMENDED phase.
     """
     recommendedBrowsers: [Browser]!
+    """
+    The vendor this assistive technology is affiliated with.
+    """
+    vendorId: ID!
   }
 
   """
@@ -556,10 +560,6 @@ const graphqlSchema = gql`
     info on the Assertion type.
     """
     assertions(priority: AssertionPriority): [Assertion]!
-    """
-    Vendors who viewed the tests
-    """
-    viewers: [User]
     """
     Version number to indicate which of the following test writing specs this test is based on:
     1: https://github.com/w3c/aria-at/wiki/Test-Format-V1-Definition
@@ -1022,9 +1022,27 @@ const graphqlSchema = gql`
     """
     isOpen: Boolean!
     """
-    Test Number the issue was raised for.
+    Test Row Number the issue was raised for. Because of how the tests are
+    generated using AT group separations or defined "presentation" numbers, even
+    if they are presented logically in order in the Test Run viewer for example
+    such that there is a test 1, test 2, test 3, etc. They could have row
+    numbers being test 5, test 8, test 16 and so on.
+
+    So the "true" test identifier, as these values are not expected to change.
     """
-    testNumberFilteredByAt: Float
+    testRowNumber: Float
+    """
+    Test Sequence Number the issue was raised for. The order in which the tests
+    are rendered in the Test Run viewer. So the logical order of test 1, test 2,
+    test 3 and so on.
+
+    This sequence could be altered between version updates. The Test Writer
+    admin could for example have 6.0, 7.1 and 7.2 as defined "presentation"
+    numbers which has been represented as 1, 2, 3 in the viewer but come up on
+    a situation where 6.1 has to be included -- so 6.0, 6.1, 7.1, 7.2 would now
+    be 1, 2 (new), 3 (old 2), 4 (old 3).
+    """
+    testSequenceNumber: Float
     """
     The time the issue was created, according to GitHub.
     """
@@ -1134,7 +1152,8 @@ const graphqlSchema = gql`
     """
     draftTestPlanRuns: [TestPlanRun]!
     """
-    The state of the vendor review, which can be "READY", "IN_PROGRESS", and "APPROVED"
+    The state of the vendor review, which can be "READY", "IN_PROGRESS", and "APPROVED".
+    Generated from ReviewerStatus.
     """
     vendorReviewStatus: String
     """
@@ -1165,6 +1184,39 @@ const graphqlSchema = gql`
     TestPlanVersion.earliestAtVersion as a default.
     """
     recommendedAtVersion: AtVersion
+  }
+
+  """
+  """
+  type ReviewerStatus {
+    """
+    The vendor representative who reviewed the test.
+    """
+    user: User!
+    """
+    The vendor representative's company.
+    """
+    vendor: Vendor!
+    """
+    The test plan report being reviewed.
+    """
+    testPlanReport: TestPlanReport!
+    """
+    The parent test plan version of the test plan report.
+    """
+    testPlanVersion: TestPlanVersion!
+    """
+    The current review status. Expected to be "IN_PROGRESS" or "APPROVED".
+    """
+    reviewStatus: String!
+    """
+    The list of tests the tester has viewed.
+    """
+    viewedTests: [String]!
+    """
+    The timestamp of when the approval was done if "reviewStatus" is "APPROVED".
+    """
+    approvedAt: Timestamp
   }
 
   """
@@ -1282,6 +1334,14 @@ const graphqlSchema = gql`
     Get all vendors.
     """
     vendors: [Vendor]!
+    """
+    Get a ReviewerStatus.
+    """
+    reviewerStatus(userId: ID!, testPlanReportId: ID!): ReviewerStatus!
+    """
+    Get all ReviewerStatuses.
+    """
+    reviewerStatuses: [ReviewerStatus]!
     """
     Get a particular TestPlanVersion by ID.
     """
@@ -1413,10 +1473,9 @@ const graphqlSchema = gql`
     """
     unmarkAsFinal: PopulatedData!
     """
-    Move the vendor review status from READY to IN PROGRESS
-    or IN PROGRESS to APPROVED
+    Move the vendor review status to APPROVED
     """
-    promoteVendorReviewStatus(vendorReviewStatus: String!): PopulatedData
+    promoteVendorReviewStatus: PopulatedData
     """
     Permanently deletes the TestPlanReport and all associated TestPlanRuns.
     Only available to admins.
@@ -1580,7 +1639,7 @@ const graphqlSchema = gql`
     """
     Add a viewer to a test
     """
-    addViewer(testPlanVersionId: ID!, testId: ID!): User!
+    addViewer(testId: ID!, testPlanReportId: ID!): User
     """
     Schedule a new CollectionJob through the Response Scheduler
     """

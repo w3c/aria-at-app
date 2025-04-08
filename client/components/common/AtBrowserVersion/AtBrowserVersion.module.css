@@ -1,0 +1,14 @@
+.version-container {
+  display: inline-block;
+  flex-wrap: wrap;
+  background: var(--bg-lighter-gray);
+  border-radius: 4px;
+  padding: 0 5px;
+  font-weight: bold;
+
+  & span {
+    font-weight: initial;
+    display: inline-block;
+    margin-left: 2px;
+  }
+}

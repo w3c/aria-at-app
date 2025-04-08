@@ -3,46 +3,31 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import { Container, Table } from 'react-bootstrap';
-import styled from '@emotion/styled';
+import clsx from 'clsx';
 import alphabetizeObjectBy from '../../utils/alphabetizeObjectBy';
 import { derivePhaseName } from '../../utils/aria';
-import { none } from './None';
+import { None } from '@components/common/None';
 import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
-import ClippedProgressBar from '@components/common/ClippedProgressBar';
+import ProgressBar from '@components/common/ProgressBar';
 import { TestPlanVersionPropType } from '../common/proptypes';
-
-const FullHeightContainer = styled(Container)`
-  min-height: calc(100vh - 64px);
-`;
-
-const PhaseText = styled.span`
-  font-size: 12px;
-  margin-left: 6px;
-  padding: 4px 6px;
-  border-radius: 12px;
-  overflow: hidden;
-  white-space: nowrap;
-  color: white;
-
-  &.candidate {
-    background: #f87f1b;
-  }
-
-  &.recommended {
-    background: #b253f8;
-  }
-`;
+import styles from './SummarizeTestPlanReports.module.css';
+import commonStyles from '../common/styles.module.css';
 
 const SummarizeTestPlanReports = ({ testPlanVersions }) => {
   if (!testPlanVersions.length) {
     return (
-      <FullHeightContainer id="main" as="main" tabIndex="-1">
+      <Container
+        id="main"
+        as="main"
+        tabIndex="-1"
+        className={commonStyles.fhContainer}
+      >
         <Helmet>
           <title>AT Interop Reports | ARIA-AT</title>
         </Helmet>
         <h1>Assistive Technology Interoperability Reports</h1>
         <p>There are no results to show just yet. Please check back soon!</p>
-      </FullHeightContainer>
+      </Container>
     );
   }
 
@@ -61,8 +46,15 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
     getTestPlanTargetTitle(keyValue[1])
   );
 
+  const none = None();
+
   return (
-    <FullHeightContainer id="main" as="main" tabIndex="-1">
+    <Container
+      id="main"
+      as="main"
+      tabIndex="-1"
+      className={commonStyles.fhContainer}
+    >
       <Helmet>
         <title>AT Interop Reports | ARIA-AT</title>
       </Helmet>
@@ -107,9 +99,15 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
                     >
                       {getTestPlanVersionTitle(testPlanVersion)}
                     </Link>
-                    <PhaseText className={phase.toLowerCase()} aria-hidden>
+                    <span
+                      className={clsx(
+                        styles.phaseText,
+                        styles[phase.toLowerCase()]
+                      )}
+                      aria-hidden
+                    >
                       {derivePhaseName(phase)}
-                    </PhaseText>
+                    </span>
                   </td>
                   {Object.values(testPlanTargetsById).map(testPlanTarget => {
                     const testPlanReport = testPlanReports.find(
@@ -135,9 +133,7 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
                           }
                           aria-label={`${metrics.supportPercent}%`}
                         >
-                          <ClippedProgressBar
-                            progress={metrics.supportPercent}
-                          />
+                          <ProgressBar progress={metrics.supportPercent} />
                         </Link>
                       </td>
                     );
@@ -147,7 +143,7 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
             })}
         </tbody>
       </Table>
-    </FullHeightContainer>
+    </Container>
   );
 };
 

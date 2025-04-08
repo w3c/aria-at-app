@@ -1,0 +1,84 @@
+/* Test Run Navigation */
+.test-run-toolbar {
+  display: flex;
+  width: 100%;
+
+  padding-left: 0;
+  padding-right: 0;
+
+  margin-top: var(--4px);
+
+  li {
+    margin-right: var(--8px);
+
+    &:first-of-type {
+      flex-grow: 1;
+    }
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+  }
+}
+
+.task-label {
+  display: block;
+  font-size: var(--18px);
+  font-weight: normal;
+  border-radius: var(--4px);
+}
+
+/* Test Run Options */
+.current-test-options {
+  padding-right: 0;
+
+  button {
+    margin: 0;
+  }
+
+  > div {
+    background: var(--bg-lighter-gray);
+    border: 1px solid var(--border-gray);
+    border-radius: var(--4px);
+  }
+
+  h2 {
+    margin-top: 0;
+    padding: 1rem;
+    background: var(--bg-table-headings);
+    font-size: var(--16px);
+    font-weight: var(--font-weight-heavy);
+    border-bottom: 1px solid var(--border-gray);
+    text-align: center;
+  }
+
+  .options-wrapper {
+    padding: 0.05rem 0.75rem;
+
+    a:hover {
+      text-decoration: none;
+    }
+
+    .option-btn {
+      width: 100%;
+    }
+
+    li {
+      margin-bottom: var(--4px);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .help-link {
+    font-size: var(--14px);
+    text-align: center;
+    margin-top: var(--10px);
+  }
+
+  @media (max-width: 768px) {
+    padding-left: 0;
+  }
+}

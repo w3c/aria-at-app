@@ -2,52 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from '@emotion/styled';
-
-const StyledPill = styled.span`
-  display: inline-block;
-
-  line-height: 2rem;
-  border-radius: 4px;
-
-  background: #f6f8fa;
-  white-space: nowrap;
-  text-align: center;
-
-  // Needed for presenting component on Version History page
-  &.full-width {
-    width: 100%;
-
-    /* Version strings can have different character counts and this keeps
-        them lined up in lists */
-    & b {
-      min-width: 6em;
-      display: inline-block;
-      text-align: left;
-    }
-  }
-
-  &:not(.full-width) {
-    width: 8em;
-    margin-right: 10px;
-  }
-
-  // Needed for presenting component on Data Management page
-  // Override full-width's width if both are set
-  &.auto-width {
-    width: auto;
-    margin: 0.75rem;
-  }
-`;
+import clsx from 'clsx';
+import styles from './VersionString.module.css';
 
 const VersionString = ({
   fullWidth = true,
   autoWidth = true,
-  iconColor = '#818F98',
+  iconColor = 'var(--negative-gray)',
   linkRef,
   linkHref,
-  children: versionString,
-  ...restProps
+  children: versionString
 }) => {
   const body = (
     <span>
@@ -75,13 +39,16 @@ const VersionString = ({
     possibleLink = body;
   }
 
-  let classes = fullWidth ? 'full-width' : '';
-  classes = autoWidth ? `${classes} auto-width` : classes;
-
   return (
-    <StyledPill className={classes} {...restProps}>
+    <span
+      className={clsx(
+        styles.styledPill,
+        fullWidth && styles.fullWidth,
+        autoWidth && styles.autoWidth
+      )}
+    >
       {possibleLink}
-    </StyledPill>
+    </span>
   );
 };
 

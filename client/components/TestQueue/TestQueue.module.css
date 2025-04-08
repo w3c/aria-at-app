@@ -1,0 +1,157 @@
+table.test-queue {
+  margin-bottom: 0;
+
+  th {
+    padding: 0.75rem;
+  }
+
+  th:first-of-type,
+  td:first-of-type {
+    border-left: none;
+  }
+
+  th:last-of-type,
+  td:last-of-type {
+    border-right: none;
+  }
+
+  tr:last-of-type,
+  tr:last-of-type td {
+    border-bottom: none;
+  }
+
+  th:nth-of-type(1),
+  td:nth-of-type(1) {
+    min-width: 13.75rem;
+  }
+
+  th:nth-of-type(2),
+  td:nth-of-type(2) {
+    min-width: 9.375rem;
+  }
+
+  th:nth-of-type(3),
+  td:nth-of-type(3) {
+    min-width: 14.375rem;
+  }
+
+  th:nth-of-type(4),
+  td:nth-of-type(4) {
+    width: 20%;
+    min-width: 7.8125rem;
+  }
+
+  th:nth-of-type(5),
+  td:nth-of-type(5) {
+    width: 20%;
+    min-width: 10.9375rem;
+  }
+}
+
+.status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+  color: var(--dark-gray-text);
+}
+
+.metadata-container {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0.5rem 1.25rem;
+  align-items: center;
+  min-height: 2.5rem; /* temp because the status dialog button keeps disappearing */
+
+  & button {
+    margin-bottom: 0;
+    margin-top: 0;
+    font-size: var(--16px);
+  }
+
+  & button:hover {
+    color: var(--white);
+  }
+
+  & button,
+  & button:focus {
+    color: var(--font-black);
+  }
+}
+
+.test-plan-disclosure {
+  h3 {
+    font-size: 1rem;
+
+    button {
+      font-size: unset;
+      font-weight: unset;
+    }
+  }
+
+  [role='region'] {
+    padding: 0;
+  }
+}
+
+.primary-test-run-select {
+  &[size]:not([size='1']) {
+    padding: 0 !important;
+  }
+
+  option {
+    padding: 0.5rem;
+  }
+}
+
+/* AssignTesters */
+.assign-testers-container {
+  display: flex;
+
+  [role='menu'] {
+    width: 15.625rem;
+    max-height: 12.5rem;
+    overflow-y: scroll;
+  }
+
+  [role='menuitem']:active {
+    background-color: var(--primary-color);
+  }
+}
+
+.assign-testers-dropdown-button {
+  width: min-content !important;
+  margin-right: 0.5rem;
+}
+
+.assign-testers-list {
+  font-weight: normal;
+  padding-top: 0.5rem;
+  text-align: center;
+
+  li:not(:last-of-type) {
+    padding-bottom: 0.25rem;
+  }
+}
+
+/* CompletionStatusItem */
+.completion-status-list-item {
+  a,
+  span {
+    font-weight: normal;
+    padding-right: 0.5rem;
+  }
+
+  em {
+    color: var(--dark-gray-text);
+    font-style: normal;
+    display: inline-block;
+  }
+}
+
+/* Actions */
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
