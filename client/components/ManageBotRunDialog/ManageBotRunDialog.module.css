@@ -1,0 +1,9 @@
+.manage-bot-run-dialog {
+  .assign-testers-dropdown-button {
+    margin-right: 0;
+  }
+
+  .modal-footer button:not([role='menuitemcheckbox']) {
+    font-size: var(--12px);
+  }
+}
