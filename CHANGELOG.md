@@ -1,3 +1,11 @@
+### [1.14.1](https://github.com/w3c/aria-at-app/compare/v1.14.0...v1.14.1) (2025-04-10)
+
+
+### Bug Fixes
+
+* Align `ManageBotDialog` with Test Queue V2 visual changes ([#1361](https://github.com/w3c/aria-at-app/issues/1361)) ([0c0fff5](https://github.com/w3c/aria-at-app/commit/0c0fff51d8a44a9d4328e451ccfa3d184d4b28dd))
+* Use cursor-based pagination for navigating GitHub issues ([#1372](https://github.com/w3c/aria-at-app/issues/1372)) ([0d1c2ee](https://github.com/w3c/aria-at-app/commit/0d1c2eea38968b544f12f260347ed87a5ee3fe65))
+
 ## [1.14.0](https://github.com/w3c/aria-at-app/compare/v1.13.1...v1.14.0) (2025-04-08)
 
 
