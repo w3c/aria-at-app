@@ -7,17 +7,18 @@ import { LoadingStatus, useTriggerLoad } from '../../common/LoadingStatus';
 import { CollectionJobPropType } from '../../common/proptypes';
 
 const StopRunningCollectionButton = ({ collectionJob, onClick = () => {} }) => {
-  if (!collectionJob) {
-    return null;
-  }
-
   const { triggerLoad, loadingMessage } = useTriggerLoad();
 
   const [cancelCollectionJob] = useMutation(CANCEL_COLLECTION_JOB, {
     variables: {
       collectionJobId: collectionJob.id
-    }
+    },
+    skip: !collectionJob
   });
+
+  if (!collectionJob) {
+    return null;
+  }
 
   const handleClick = async () => {
     await triggerLoad(async () => {
