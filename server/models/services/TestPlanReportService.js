@@ -441,6 +441,28 @@ const getOrCreateTestPlanReport = async ({
   return [testPlanReport, created];
 };
 
+const cloneTestPlanReportWithNewAtVersion = async (
+  historicalReport,
+  currentVersion,
+  transaction
+) => {
+  // Build a new report by copying over the necessary fields from the historical report and updating the AT version fields.
+  const newReportValues = {
+    testPlanVersionId: historicalReport.testPlanVersionId,
+    atId: historicalReport.atId,
+    exactAtVersionId: currentVersion.id,
+    minimumAtVersionId: null,
+    browserId: historicalReport.browserId,
+    markedFinalAt: null
+  };
+  const newReport = await createTestPlanReport({
+    values: newReportValues,
+    transaction
+  });
+
+  return newReport;
+};
+
 module.exports = {
   // Basic CRUD
   getTestPlanReportById,
@@ -448,5 +470,7 @@ module.exports = {
   createTestPlanReport,
   updateTestPlanReportById,
   removeTestPlanReportById,
-  getOrCreateTestPlanReport
+  getOrCreateTestPlanReport,
+  // Utils
+  cloneTestPlanReportWithNewAtVersion
 };

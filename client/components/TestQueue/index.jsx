@@ -20,6 +20,8 @@ import ProgressBar from '../common/ProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
+import ReportRerun from '../ReportRerun';
+import Tabs from '../common/Tabs';
 import styles from './TestQueue.module.css';
 import commonStyles from '../common/styles.module.css';
 
@@ -287,12 +289,8 @@ const TestQueue = () => {
 
   const hasTestPlanReports = !!testPlans.length;
 
-  return (
-    <Container id="main" as="main" tabIndex="-1">
-      <Helmet>
-        <title>Test Queue | ARIA-AT</title>
-      </Helmet>
-      <h1>Test Queue</h1>
+  const renderQueueContent = () => (
+    <>
       {hasTestPlanReports && (
         <p data-testid="test-queue-instructions">
           {isAdmin
@@ -316,7 +314,6 @@ const TestQueue = () => {
       {testPlans.length
         ? testPlans.map(testPlan => (
             <Fragment key={testPlan.directory}>
-              {/* ID needed for recovering focus after deleting a report */}
               <h2 tabIndex="-1" id={testPlan.directory}>
                 {testPlan.title}
               </h2>
@@ -324,6 +321,27 @@ const TestQueue = () => {
             </Fragment>
           ))
         : null}
+    </>
+  );
+
+  const tabs = [
+    {
+      label: 'Manual Test Queue',
+      content: renderQueueContent()
+    },
+    {
+      label: 'Automated Report Updates',
+      content: <ReportRerun onQueueUpdate={refetch} />
+    }
+  ];
+
+  return (
+    <Container id="main" as="main" tabIndex="-1">
+      <Helmet>
+        <title>Test Queue | ARIA-AT</title>
+      </Helmet>
+      <h1 className="test-queue-heading">Test Queue</h1>
+      <Tabs tabs={tabs} />
     </Container>
   );
 };

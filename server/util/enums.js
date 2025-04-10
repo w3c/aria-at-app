@@ -6,6 +6,13 @@ const COLLECTION_JOB_STATUS = {
   CANCELLED: 'CANCELLED'
 };
 
+const UPDATE_EVENT_TYPE = {
+  COLLECTION_JOB: 'COLLECTION_JOB',
+  GENERAL: 'GENERAL',
+  TEST_PLAN_RUN: 'TEST_PLAN_RUN',
+  TEST_PLAN_REPORT: 'TEST_PLAN_REPORT'
+};
+
 const isJobStatusFinal = status =>
   status === COLLECTION_JOB_STATUS.COMPLETED ||
   status === COLLECTION_JOB_STATUS.CANCELLED ||
@@ -13,5 +20,6 @@ const isJobStatusFinal = status =>
 
 module.exports = {
   COLLECTION_JOB_STATUS,
-  isJobStatusFinal
+  isJobStatusFinal,
+  UPDATE_EVENT_TYPE
 };

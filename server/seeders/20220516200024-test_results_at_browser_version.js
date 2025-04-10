@@ -4,7 +4,7 @@ const {
   getTestPlanRuns,
   updateTestPlanRunById
 } = require('../models/services/TestPlanRunService');
-const { getAtVersionByQuery } = require('../models/services/AtService');
+const { getAtVersionByQuery } = require('../models/services/AtVersionService');
 const {
   getBrowserVersionByQuery
 } = require('../models/services/BrowserService');

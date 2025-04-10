@@ -6,7 +6,9 @@ const db = require('../../models/index');
  * @returns {*}
  */
 const dbCleaner = async callback => {
-  const transaction = await db.sequelize.transaction();
+  const transaction = await db.sequelize.transaction({
+    isolationLevel: db.Sequelize.Transaction.ISOLATION_LEVELS.READ_UNCOMMITTED
+  });
   try {
     await callback(transaction);
     await transaction.rollback();
