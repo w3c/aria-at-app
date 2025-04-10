@@ -7,15 +7,18 @@ import RerunDashboard from './RerunDashboard';
 import UpdateEventsPanel from './UpdateEventsPanel';
 import { utils } from 'shared';
 import styles from './ReportRerun.module.css';
+import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import {
   GET_AUTOMATION_SUPPORTED_AT_VERSIONS,
   GET_RERUNNABLE_REPORTS_QUERY,
   CREATE_COLLECTION_JOBS_MUTATION,
   GET_UPDATE_EVENTS
 } from './queries';
+import ResetDbButton from '../common/ResetDbButton';
 
 const ReportRerun = ({ onQueueUpdate }) => {
   const client = useApolloClient();
+  const { triggerLoad, loadingMessage } = useTriggerLoad();
 
   const { data: { me } = {} } = useQuery(ME_QUERY);
   const { isAdmin } = evaluateAuth(me);
@@ -94,26 +97,24 @@ const ReportRerun = ({ onQueueUpdate }) => {
   const [createCollectionJobs] = useMutation(CREATE_COLLECTION_JOBS_MUTATION);
 
   const handleRerunClick = async run => {
-    try {
+    await triggerLoad(async () => {
       await createCollectionJobs({
         variables: { atVersionId: run.id }
       });
 
-      client.query({
+      await client.query({
         query: GET_RERUNNABLE_REPORTS_QUERY,
         variables: { atVersionId: run.id },
         fetchPolicy: 'network-only'
       });
 
-      client.query({
+      await client.query({
         query: GET_UPDATE_EVENTS,
         variables: { type: 'COLLECTION_JOB' },
         fetchPolicy: 'network-only'
       });
       onQueueUpdate();
-    } catch (error) {
-      console.error('Error creating collection jobs:', error);
-    }
+    }, 'Starting automated test plan runs...');
   };
 
   const handleRefreshEvents = async () => {
@@ -121,20 +122,24 @@ const ReportRerun = ({ onQueueUpdate }) => {
   };
 
   return (
-    <div className={styles.rerunSection}>
-      {isAdmin && (
-        <RerunDashboard
-          activeRuns={activeRuns}
-          onRerunClick={handleRerunClick}
-        />
-      )}
+    <LoadingStatus message={loadingMessage}>
+      <div className={styles.rerunSection}>
+        {isAdmin && (
+          <RerunDashboard
+            activeRuns={activeRuns}
+            onRerunClick={handleRerunClick}
+          />
+        )}
 
-      <UpdateEventsPanel
-        events={updateEvents}
-        isAdmin={isAdmin}
-        onRefresh={handleRefreshEvents}
-      />
-    </div>
+        <UpdateEventsPanel
+          events={updateEvents}
+          isAdmin={isAdmin}
+          onRefresh={handleRefreshEvents}
+        />
+
+        <ResetDbButton />
+      </div>
+    </LoadingStatus>
   );
 };
 
