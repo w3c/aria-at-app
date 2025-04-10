@@ -9,13 +9,14 @@ const RetryCanceledCollectionsButton = ({
   collectionJob,
   onClick = () => {}
 }) => {
+  const [retryCanceledCollections] = useMutation(RETRY_CANCELED_COLLECTIONS, {
+    variables: { collectionJobId: collectionJob.id },
+    skip: !collectionJob
+  });
+
   if (!collectionJob) {
     return null;
   }
-
-  const [retryCanceledCollections] = useMutation(RETRY_CANCELED_COLLECTIONS, {
-    variables: { collectionJobId: collectionJob.id }
-  });
 
   const handleClick = async () => {
     await retryCanceledCollections();
