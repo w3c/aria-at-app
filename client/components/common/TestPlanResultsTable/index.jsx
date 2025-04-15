@@ -184,7 +184,7 @@ const TestPlanResultsTable = ({
                 )}
               </tbody>
             </Table>
-            Other behaviors that create negative impact:{' '}
+            Negative side effects of {commandsString}:{' '}
             {scenarioResult.unexpectedBehaviors.length ? (
               <Table
                 bordered
