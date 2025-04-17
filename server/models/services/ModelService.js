@@ -2,6 +2,48 @@ const { isFunction, isEqualWith, sortBy } = require('lodash');
 const { sequelize } = require('..');
 
 /**
+ * Utility function to retry database operations that might deadlock
+ * @param {Function} operation - The database operation to perform
+ * @param {Object} options - Options for retry behavior
+ * @param {number} options.maxRetries - Maximum number of retry attempts (default: 3)
+ * @param {number} options.initialDelay - Initial delay in ms before retrying (default: 100)
+ * @param {number} options.backoffFactor - Factor to increase delay by on each retry (default: 2)
+ * @returns {Promise<*>} - Result of the operation
+ */
+const withDeadlockRetry = async (
+  operation,
+  { maxRetries = 3, initialDelay = 100, backoffFactor = 2 } = {}
+) => {
+  let lastError;
+  let delay = initialDelay;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error;
+
+      if (
+        error.name === 'SequelizeDatabaseError' &&
+        error.original &&
+        error.original.message &&
+        error.original.message.includes('deadlock detected')
+      ) {
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+          delay *= backoffFactor;
+          continue;
+        }
+      }
+
+      throw error;
+    }
+  }
+
+  throw lastError;
+};
+
+/**
  * Created Query Sequelize Example:
  * UserModel.findOne({
  *   where: { id },
@@ -188,7 +230,7 @@ const create = async (model, { values, transaction }) => {
         'needed'
     );
   }
-  return model.create(values, { transaction });
+  return withDeadlockRetry(() => model.create(values, { transaction }));
 };
 
 /**
@@ -230,7 +272,7 @@ const update = async (model, { values, where, transaction }) => {
     );
   }
 
-  return model.update(values, { where, transaction });
+  return withDeadlockRetry(() => model.update(values, { where, transaction }));
 };
 
 /**
@@ -448,35 +490,6 @@ const bulkGetOrReplace = async (Model, { where, valuesList, transaction }) => {
 };
 
 /**
- * See {@link https://sequelize.org/v5/class/lib/model.js~Model.html#static-method-destroy}
- * @param {Model} model - Sequelize Model instance to query for
- * @param {object} options
- * @param {number | string} options.id - ID of the Sequelize Model to be removed
- * @param {boolean} options.truncate - enables the truncate option to be used when running a deletion
- * @param {*} options.transaction - Sequelize transaction
- * @returns {Promise<boolean>} - returns true if record was deleted
- */
-const removeById = async (model, { id, truncate = false, transaction }) => {
-  if (!model) throw new Error('Model not defined');
-
-  if (!transaction && transaction !== false) {
-    throw new Error(
-      'Please provide a transaction via the "transaction" field or ' +
-        'pass a value of false to specify that a transaction is not ' +
-        'needed'
-    );
-  }
-
-  await model.destroy({
-    where: { id },
-    truncate,
-    transaction
-  });
-
-  return true;
-};
-
-/**
  * @param {Model} model - Sequelize Model instance to query for
  * @param {object} options
  * @param options.where - query params to be used to find the Sequelize Models to be removed
@@ -524,6 +537,33 @@ const rawQuery = async (query, { transaction }) => {
   return results;
 };
 
+/**
+ * @param {object} options
+ * @param {string} options.id - id of the Sequelize Model record to be removed
+ * @param {boolean} options.truncate - Sequelize specific deletion options that could be passed
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<boolean>}
+ */
+const removeById = async (model, { id, truncate = false, transaction }) => {
+  if (!model) throw new Error('Model not defined');
+
+  if (!transaction && transaction !== false) {
+    throw new Error(
+      'Please provide a transaction via the "transaction" field or ' +
+        'pass a value of false to specify that a transaction is not ' +
+        'needed'
+    );
+  }
+
+  return withDeadlockRetry(() =>
+    model.destroy({
+      where: { id },
+      truncate,
+      transaction
+    })
+  );
+};
+
 module.exports = {
   getById,
   getByQuery,
@@ -535,5 +575,6 @@ module.exports = {
   nestedGetOrCreate,
   removeById,
   removeByQuery,
-  rawQuery
+  rawQuery,
+  withDeadlockRetry
 };

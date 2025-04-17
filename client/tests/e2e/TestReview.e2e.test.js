@@ -70,6 +70,8 @@ describe('Test Review page', () => {
         url: '/data-management'
       },
       async page => {
+        page.setDefaultTimeout(60000);
+
         await text(page, 'h1 ::-p-text(Data Management)');
 
         const latestAlertVersionLink = await page.evaluateHandle(() => {

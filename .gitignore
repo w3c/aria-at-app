@@ -132,3 +132,6 @@ client/resources
 
 #temp files for import-tests
 server/scripts/import-tests/tmp
+
+#IDE settings
+.vscode/settings.json

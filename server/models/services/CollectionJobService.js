@@ -1,5 +1,9 @@
 const ModelService = require('./ModelService');
-const { CollectionJob, CollectionJobTestStatus } = require('../');
+const {
+  CollectionJob,
+  CollectionJobTestStatus,
+  TestPlanReport
+} = require('../');
 const {
   COLLECTION_JOB_ATTRIBUTES,
   TEST_PLAN_ATTRIBUTES,
@@ -11,13 +15,19 @@ const {
   USER_ATTRIBUTES,
   COLLECTION_JOB_TEST_STATUS_ATTRIBUTES
 } = require('./helpers');
-const { COLLECTION_JOB_STATUS } = require('../../util/enums');
+const {
+  COLLECTION_JOB_STATUS,
+  UPDATE_EVENT_TYPE
+} = require('../../util/enums');
 const { Op } = require('sequelize');
 const {
   createTestPlanRun,
   removeTestPlanRunById
 } = require('./TestPlanRunService');
-const { getTestPlanReportById } = require('./TestPlanReportService');
+const {
+  getTestPlanReportById,
+  cloneTestPlanReportWithNewAtVersion
+} = require('./TestPlanReportService');
 const { HttpQueryError } = require('apollo-server-core');
 
 const {
@@ -32,7 +42,11 @@ const {
 const runnableTestsResolver = require('../../resolvers/TestPlanReport/runnableTestsResolver');
 const getGraphQLContext = require('../../graphql-context');
 const { getBotUserByAtId } = require('./UserService');
-const getAtVersionWithRequirements = require('../../util/getAtVersionWithRequirements');
+const {
+  getAtVersionWithRequirements,
+  getRerunnableTestPlanReportsForVersion
+} = require('./AtVersionService');
+const { createUpdateEvent } = require('./UpdateEventService');
 
 // association helpers to be included with Models' results
 
@@ -388,7 +402,6 @@ const getCollectionJobs = async ({
 const triggerWorkflow = async (job, testIds, atVersion, { transaction }) => {
   const { testPlanVersion } = job.testPlanRun.testPlanReport;
   const { gitSha, directory } = testPlanVersion;
-
   try {
     if (isGithubWorkflowEnabled()) {
       // TODO: pass the reduced list of testIds along / deal with them somehow
@@ -523,12 +536,13 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
  * @param {object} input object for request to schedule job
  * @param {string} input.testPlanReportId id of test plan report to use for scheduling
  * @param {Array<string>} input.testIds optional: ids of tests to run
+ * @param {object} input.atVersion AT version to use for the job
  * @param {object} options
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const scheduleCollectionJob = async (
-  { testPlanReportId, testIds = null },
+  { testPlanReportId, testIds = null, atVersion },
   { transaction }
 ) => {
   const context = getGraphQLContext({ req: { transaction } });
@@ -584,13 +598,6 @@ const scheduleCollectionJob = async (
     },
     transaction
   });
-
-  const atVersion = await getAtVersionWithRequirements(
-    report.at.id,
-    report.exactAtVersion,
-    report.minimumAtVersion,
-    transaction
-  );
 
   return triggerWorkflow(
     job,
@@ -725,6 +732,119 @@ const updateCollectionJobTestStatusByQuery = ({
   });
 };
 
+/**
+ * Creates collection jobs for all test plan reports eligible for automation refresh.
+ * A test plan report is eligible when:
+ * - The Test Plan Version is in Candidate or Recommended
+ * - The Test Plan Report has been marked final
+ * - The Test Plan Report is the most recently "finalized" Report for the Test Plan Version
+ * - The most recent AT version used in any Test Plan Run is older than the specified AT Version
+ *
+ * @param {object} options
+ * @param {number} options.atVersionId - ID of the current AT version
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<Array>} - Array of created collection jobs
+ */
+const createCollectionJobsFromPreviousAtVersion = async ({
+  atVersionId,
+  transaction
+}) => {
+  const { currentVersion, previousVersionGroups } =
+    await getRerunnableTestPlanReportsForVersion({
+      currentAtVersionId: atVersionId,
+      transaction
+    });
+
+  if (!currentVersion || !previousVersionGroups) {
+    throw new Error('Failed to get rerunnable test plan reports');
+  }
+
+  if (previousVersionGroups.length === 0) {
+    return {
+      success: false,
+      description: `No rerunnable reports found for AT version ${currentVersion.name}`,
+      message: `No rerunnable reports found for AT version ${currentVersion.name}`
+    };
+  }
+
+  const collectionJobs = [];
+
+  for (const { reports } of previousVersionGroups) {
+    await Promise.all(
+      reports.map(async reportInfo => {
+        try {
+          const report = await TestPlanReport.findOne({
+            where: { id: reportInfo.id },
+            include: [
+              {
+                association: 'testPlanVersion',
+                include: [{ association: 'testPlan', required: true }],
+                required: true
+              },
+              { association: 'at', required: true }
+            ],
+            transaction
+          });
+
+          if (!report) return;
+
+          const newReport = await cloneTestPlanReportWithNewAtVersion(
+            report,
+            currentVersion,
+            transaction
+          );
+
+          const atVersion = await getAtVersionWithRequirements(
+            newReport.at.id,
+            currentVersion,
+            null,
+            transaction
+          );
+
+          if (!atVersion) return;
+
+          const job = await scheduleCollectionJob(
+            { testPlanReportId: newReport.id, atVersion },
+            { transaction }
+          );
+
+          collectionJobs.push(job);
+        } catch (error) {
+          console.error(
+            `Failed to create collection job for report ${reportInfo.id}:`,
+            error.message
+          );
+
+          await createUpdateEvent({
+            values: {
+              description: `Failed to start automated re-run for ${reportInfo.testPlanVersion.title} ${reportInfo.testPlanVersion.versionString} using ${currentVersion.at.name} ${currentVersion.name}: ${error.message}`,
+              type: UPDATE_EVENT_TYPE.COLLECTION_JOB
+            },
+            transaction
+          });
+        }
+      })
+    );
+  }
+
+  const message = `Created ${collectionJobs.length} re-run collection job${
+    collectionJobs.length === 1 ? '' : 's'
+  } for ${currentVersion.at.name} ${currentVersion.name}`;
+
+  await createUpdateEvent({
+    values: {
+      description: message,
+      type: UPDATE_EVENT_TYPE.COLLECTION_JOB
+    },
+    transaction
+  });
+
+  return {
+    collectionJobs,
+    message
+  };
+};
+
 module.exports = {
   // Basic CRUD
   createCollectionJob,
@@ -737,6 +857,7 @@ module.exports = {
   restartCollectionJob,
   cancelCollectionJob,
   retryCanceledCollections,
+  createCollectionJobsFromPreviousAtVersion,
   // Basic CRUD for CollectionJobTestStatus
   updateCollectionJobTestStatusByQuery
 };
