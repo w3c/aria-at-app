@@ -193,8 +193,6 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
           onRefresh={handleRefreshEvents}
           ref={eventsPanelRef}
         />
-
-        <ResetDbButton />
       </div>
     </LoadingStatus>
   );

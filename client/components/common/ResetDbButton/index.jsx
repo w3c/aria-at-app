@@ -74,6 +74,10 @@ const ResetDbButton = () => {
     );
   };
 
+  if (process.env.ENVIRONMENT !== 'sandbox') {
+    return null;
+  }
+
   return (
     <>
       <LoadingStatus message={loadingMessage} note={loadingNote} />
