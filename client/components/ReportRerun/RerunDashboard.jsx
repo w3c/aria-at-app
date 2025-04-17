@@ -96,7 +96,6 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
 
                   <div className={styles.reportTableContainer}>
                     <table className={`${styles.reportTable}`}>
-                      {' '}
                       <caption className="sr-only">{`Reports generated from prior ${run.botName} versions`}</caption>
                       <thead>
                         <tr>
