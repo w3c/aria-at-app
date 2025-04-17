@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './ReportRerun.module.css';
-import { convertStringFormatToAnotherFormat } from 'shared/dates'; // For formatting dates
-import DisclosureComponent from '../common/DisclosureComponent'; // Import DisclosureComponent
+import { convertStringFormatToAnotherFormat } from 'shared/dates';
+import DisclosureComponent from '../common/DisclosureComponent';
 
 const RerunDashboard = ({ activeRuns, onRerunClick }) => {
   const [expandedStates, setExpandedStates] = useState({});

@@ -5,7 +5,6 @@ import { convertStringFormatToAnotherFormat } from 'shared/dates';
 import { Table } from 'react-bootstrap';
 import styles from './ReportRerun.module.css';
 
-// Use React.forwardRef to allow parent components to focus this panel
 const UpdateEventsPanel = React.forwardRef(
   ({ events = [], isAdmin, onRefresh }, ref) => {
     return (
@@ -62,7 +61,6 @@ const UpdateEventsPanel = React.forwardRef(
   }
 );
 
-// Add display name for React DevTools
 UpdateEventsPanel.displayName = 'UpdateEventsPanel';
 
 UpdateEventsPanel.propTypes = {
