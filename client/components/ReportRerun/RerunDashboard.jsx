@@ -33,8 +33,13 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
             releasedAt: group.releasedAt,
             testPlanTitle: report.testPlanVersion.title,
             testPlanVersionString: report.testPlanVersion.versionString,
-            browserName: report.browser.name
+            browserName: report.browser.name,
+            markedFinalAt: report.markedFinalAt
           }))
+        );
+
+        flatReports.sort(
+          (a, b) => new Date(b.releasedAt) - new Date(a.releasedAt)
         );
 
         const buttonAriaLabel = `Start generating reports for ${totalReports} reports with ${run.botName} ${run.newVersion}`;
@@ -43,6 +48,11 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
           <span className={styles.botName}>
             {' '}
             {run.botName} {run.newVersion}
+            <span className={styles.reportCount}>
+              {' '}
+              ({totalReports} {totalReports === 1 ? 'Report' : 'Reports'}{' '}
+              Available)
+            </span>
           </span>
         );
 
@@ -85,13 +95,9 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
                   </div>
 
                   <div className={styles.reportTableContainer}>
-                    <table
-                      className={`${styles.reportTable} ${styles.themeTable}`}
-                    >
+                    <table className={`${styles.reportTable}`}>
                       {' '}
-                      <caption
-                        className={styles.reportTableCaption}
-                      >{`Reports generated from prior ${run.botName} versions`}</caption>
+                      <caption className="sr-only">{`Reports generated from prior ${run.botName} versions`}</caption>
                       <thead>
                         <tr>
                           <th scope="col">AT Version</th>
@@ -103,12 +109,12 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
                         {flatReports.map((report, index) => (
                           <tr key={index}>
                             <td>{report.prevVersion}</td>
-                            <td>{`${report.testPlanTitle} ${report.testPlanVersionString}`}</td>
+                            <td>{report.testPlanTitle}</td>
                             <td>
                               {convertStringFormatToAnotherFormat(
-                                report.releasedAt,
-                                'YYYY-MM-DDTHH:mm:ss.SSSZ', // Assume ISO
-                                'D MMM YYYY' // Display format
+                                report.markedFinalAt,
+                                'YYYY-MM-DDTHH:mm:ss.SSSZ',
+                                'D MMM YYYY'
                               )}
                             </td>
                           </tr>
