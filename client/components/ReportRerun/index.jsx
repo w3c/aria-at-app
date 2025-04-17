@@ -1,11 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import PropTypes from 'prop-types';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import RerunDashboard from './RerunDashboard';
 import UpdateEventsPanel from './UpdateEventsPanel';
-import { utils } from 'shared';
 import styles from './ReportRerun.module.css';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import {
@@ -16,9 +15,11 @@ import {
 } from './queries';
 import ResetDbButton from '../common/ResetDbButton';
 
-const ReportRerun = ({ onQueueUpdate }) => {
-  const client = useApolloClient();
+const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
+  const client = useApolloClient(); // Keep client instance for manual queries
   const { triggerLoad, loadingMessage } = useTriggerLoad();
+  const eventsPanelRef = useRef(null);
+  const [statusMessage, setStatusMessage] = useState('');
 
   const { data: { me } = {} } = useQuery(ME_QUERY);
   const { isAdmin } = evaluateAuth(me);
@@ -66,24 +67,20 @@ const ReportRerun = ({ onQueueUpdate }) => {
       const groups =
         rerunnableData?.rerunnableReports?.previousVersionGroups || [];
 
-      const reportGroups = utils
-        .sortAtVersions(
-          groups.map(group => ({
-            name: group.previousVersion.name,
-            releasedAt: group.previousVersion.releasedAt
-          }))
-        )
-        .map(sortedVersion => {
-          const group = groups.find(
-            g => g.previousVersion.name === sortedVersion.name
-          );
-          return {
-            prevVersion: group.previousVersion.name,
-            releasedAt: group.previousVersion.releasedAt,
-            reportCount: group.reports.length,
-            reports: group.reports
-          };
-        });
+      const sortedGroups = [...groups].sort((a, b) => {
+        const dateA = new Date(a.previousVersion.releasedAt);
+        const dateB = new Date(b.previousVersion.releasedAt);
+        return dateA - dateB;
+      });
+
+      const reportGroups = sortedGroups.map(group => {
+        return {
+          prevVersion: group.previousVersion.name,
+          releasedAt: group.previousVersion.releasedAt,
+          reportCount: group.reports.length,
+          reports: group.reports
+        };
+      });
 
       return {
         id: version.id,
@@ -94,27 +91,70 @@ const ReportRerun = ({ onQueueUpdate }) => {
     });
   }, [automatedVersions, rerunnableReportsQueries]);
 
+  useEffect(() => {
+    const totalAvailableRuns = activeRuns.reduce(
+      (total, run) =>
+        total +
+        run.reportGroups.reduce((sum, group) => sum + group.reportCount, 0),
+      0
+    );
+    if (onTotalRunsAvailable) {
+      onTotalRunsAvailable(totalAvailableRuns);
+    }
+  }, [activeRuns, onTotalRunsAvailable]);
+
+  const hasRerunnableReports = useMemo(() => {
+    return activeRuns.some(
+      run =>
+        run.reportGroups.reduce((sum, group) => sum + group.reportCount, 0) > 0
+    );
+  }, [activeRuns]);
+
   const [createCollectionJobs] = useMutation(CREATE_COLLECTION_JOBS_MUTATION);
 
   const handleRerunClick = async run => {
-    await triggerLoad(async () => {
-      await createCollectionJobs({
-        variables: { atVersionId: run.id }
-      });
+    const triggerLoadPromise = triggerLoad(async () => {
+      try {
+        await createCollectionJobs({
+          variables: { atVersionId: run.id }
+        });
 
-      await client.query({
-        query: GET_RERUNNABLE_REPORTS_QUERY,
-        variables: { atVersionId: run.id },
-        fetchPolicy: 'network-only'
-      });
+        await client.query({
+          query: GET_RERUNNABLE_REPORTS_QUERY,
+          variables: { atVersionId: run.id },
+          fetchPolicy: 'network-only'
+        });
 
-      await client.query({
-        query: GET_UPDATE_EVENTS,
-        variables: { type: 'COLLECTION_JOB' },
-        fetchPolicy: 'network-only'
-      });
-      onQueueUpdate();
-    }, 'Starting automated test plan runs...');
+        await refetchEvents();
+
+        onQueueUpdate();
+
+        setTimeout(() => {
+          eventsPanelRef.current?.focus();
+        }, 100);
+
+        setStatusMessage(
+          `Update successfully initiated for ${run.botName} ${run.newVersion}.`
+        );
+      } catch (error) {
+        console.error('Failed to create collection jobs:', error);
+        setStatusMessage(
+          `Error starting update for ${run.botName} ${run.newVersion}. Check console for details.`
+        );
+      }
+    }, `Starting automated test plan runs for ${run.botName} ${run.newVersion}...`);
+
+    try {
+      await triggerLoadPromise;
+      setStatusMessage(
+        `Update successfully initiated for ${run.botName} ${run.newVersion}.`
+      );
+    } catch (error) {
+      console.error('Failed to complete triggerLoad:', error);
+      setStatusMessage(
+        `Error starting update for ${run.botName} ${run.newVersion}. Check console for details.`
+      );
+    }
   };
 
   const handleRefreshEvents = async () => {
@@ -124,17 +164,34 @@ const ReportRerun = ({ onQueueUpdate }) => {
   return (
     <LoadingStatus message={loadingMessage}>
       <div className={styles.rerunSection}>
-        {isAdmin && (
+        {isAdmin && hasRerunnableReports && (
           <RerunDashboard
-            activeRuns={activeRuns}
+            activeRuns={activeRuns.filter(
+              run =>
+                run.reportGroups.reduce(
+                  (sum, group) => sum + group.reportCount,
+                  0
+                ) > 0
+            )}
             onRerunClick={handleRerunClick}
           />
+        )}
+
+        {statusMessage && (
+          <div
+            role="status"
+            aria-live="polite"
+            className={styles.statusMessage}
+          >
+            {statusMessage}
+          </div>
         )}
 
         <UpdateEventsPanel
           events={updateEvents}
           isAdmin={isAdmin}
           onRefresh={handleRefreshEvents}
+          ref={eventsPanelRef}
         />
 
         <ResetDbButton />
@@ -144,7 +201,8 @@ const ReportRerun = ({ onQueueUpdate }) => {
 };
 
 ReportRerun.propTypes = {
-  onQueueUpdate: PropTypes.func.isRequired
+  onQueueUpdate: PropTypes.func.isRequired,
+  onTotalRunsAvailable: PropTypes.func
 };
 
 export default ReportRerun;

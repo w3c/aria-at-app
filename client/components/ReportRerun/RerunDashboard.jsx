@@ -1,130 +1,122 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styles from './ReportRerun.module.css';
+import { convertStringFormatToAnotherFormat } from 'shared/dates'; // For formatting dates
+import DisclosureComponent from '../common/DisclosureComponent'; // Import DisclosureComponent
 
-const RerunDashboard = ({ activeRuns, onRerunClick }) => (
-  <>
-    <h2 id="rerun-heading" className={styles.rerunHeader}>
-      Available Updates
-    </h2>
-    <div className={styles.rerunDashboard}>
+const RerunDashboard = ({ activeRuns, onRerunClick }) => {
+  // Manage expanded state for all disclosures in one object
+  const [expandedStates, setExpandedStates] = useState({});
+
+  // Function to toggle state for a specific run ID
+  const toggleDisclosure = runId => {
+    setExpandedStates(prevStates => ({
+      ...prevStates,
+      [runId]: !prevStates[runId] // Toggle the boolean value
+    }));
+  };
+
+  return (
+    <>
+      <h2 id="rerun-heading" className={styles.rerunHeader}>
+        Available Updates
+      </h2>
       {activeRuns.map(run => {
-        const totalTestPlans = run.reportGroups.reduce(
+        const totalReports = run.reportGroups.reduce(
           (sum, group) => sum + group.reportCount,
           0
         );
-        const versionDescription = `${run.botName} ${
-          run.newVersion
-        } automation support has been added to the application. ${totalTestPlans} test plan versions can be re-run from ${
-          run.reportGroups.length
-        } previous versions, including ${run.reportGroups
-          .map(g => g.prevVersion)
-          .join(', ')}.`;
+
+        // Flatten reports for the table view
+        const flatReports = run.reportGroups.flatMap(group =>
+          group.reports.map(report => ({
+            prevVersion: group.prevVersion,
+            releasedAt: group.releasedAt,
+            testPlanTitle: report.testPlanVersion.title,
+            testPlanVersionString: report.testPlanVersion.versionString,
+            browserName: report.browser.name
+          }))
+        );
+
+        const buttonAriaLabel = `Start generating reports for ${totalReports} test plans with ${run.botName} ${run.newVersion}`;
+
+        // Title for the disclosure component
+        const disclosureTitle = (
+          <span className={styles.botName}>
+            {' '}
+            {/* Reuse botName style for title */}
+            {run.botName} {run.newVersion} ({totalReports}{' '}
+            {totalReports === 1 ? 'Report' : 'Reports'} Available)
+          </span>
+        );
 
         return (
           <div key={run.id} className={styles.rerunOpportunity}>
-            <h3
-              id={`rerun-heading-${run.id}`}
-              className={styles.botName}
-              aria-label={`Re-run available for ${run.botName} ${run.newVersion}`}
-            >
-              {run.botName} {run.newVersion}
-            </h3>
+            <DisclosureComponent
+              componentId={`rerun-disclosure-${run.id}`}
+              title={disclosureTitle}
+              // Get expanded state from the state object
+              expanded={!!expandedStates[run.id]} // Use !! to ensure boolean
+              onClick={() => toggleDisclosure(run.id)} // Use the new toggle function
+              disclosureContainerView={
+                <>
+                  {/* Action Button */}
+                  <div className={styles.actionHeader}>
+                    <button
+                      className={styles.rerunButton}
+                      disabled={totalReports === 0}
+                      onClick={() => onRerunClick(run)}
+                      aria-label={buttonAriaLabel}
+                    >
+                      Start Updates
+                    </button>
+                  </div>
 
-            <p className="sr-only">{versionDescription}</p>
-
-            <div className={styles.versionUpdate} aria-hidden="true">
-              <div className={styles.versionInfo}>
-                <div className={styles.versionGroupsContainer}>
-                  {run.reportGroups.map((group, index) => (
-                    <div key={index} className={styles.versionBox}>
-                      <span className={styles.versionNumber}>
-                        {group.prevVersion}
-                      </span>
-                      <span className={styles.versionCount}>
-                        {group.reportCount} run{group.reportCount !== 1 && 's'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-                <div
-                  className={`${styles.versionBox} ${styles.highlight}${
-                    !run.reportGroups.length ? ` ${styles.noReports}` : ''
-                  }`}
-                >
-                  <span className={styles.versionNumber}>{run.newVersion}</span>
-                  {!run.reportGroups.length && (
-                    <span className={styles.versionCount}>
-                      No reports to update
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.planSummary} aria-hidden="true">
-              {run.reportGroups.length ? (
-                <div className={styles.planCount}>
-                  <span className={styles.planCountNumber}>
-                    {totalTestPlans}
-                  </span>
-                  <span className={styles.planCountLabel}>
-                    {totalTestPlans === 1
-                      ? 'Test plan version can be re-run'
-                      : 'Test plan versions can be re-run'}
-                  </span>
-                </div>
-              ) : (
-                <div className={styles.planCount}>
-                  <span className={styles.planCountLabel}>
-                    No reports available for update
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div className={styles.testPlansPreview}>
-              {run.reportGroups.map((group, index) => (
-                <div key={index} className={styles.versionGroup}>
-                  <h4
-                    className={styles.plansPreviewTitle}
-                    id={`plans-preview-title-${run.id}-${index}`}
-                    aria-label={`${group.reportCount} Test Plan Versions from ${run.botName} ${group.prevVersion}`}
-                  >
-                    {group.reportCount} from {group.prevVersion}
-                  </h4>
-                  <ul
-                    className={styles.plansList}
-                    aria-labelledby={`plans-preview-title-${run.id}-${index}`}
-                  >
-                    {group.reports.map((report, idx) => (
-                      <li key={idx}>
-                        {report.testPlanVersion.title}{' '}
-                        {report.testPlanVersion.versionString},{' '}
-                        {report.browser.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-
-            <div className={styles.actionFooter}>
-              <button
-                className={styles.rerunButton}
-                disabled={!run.reportGroups.length}
-                onClick={() => onRerunClick(run)}
-                aria-label={`Start automated test plan runs for ${totalTestPlans} test plan versions using ${run.botName} ${run.newVersion}`}
-              >
-                Start Updates
-              </button>
-            </div>
+                  {/* Table */}
+                  <div className={styles.reportTableContainer}>
+                    <table
+                      className={`${styles.reportTable} ${styles.themeTable}`}
+                    >
+                      {' '}
+                      {/* Use themeTable for base styles */}
+                      <caption
+                        className={styles.reportTableCaption}
+                      >{`Reports generated from prior ${run.botName} versions`}</caption>
+                      <thead>
+                        <tr>
+                          <th scope="col">{`${run.botName} Version`}</th>
+                          <th scope="col">Test Plan</th>
+                          <th scope="col">Version Released</th>
+                          <th scope="col">Browser</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {flatReports.map((report, index) => (
+                          <tr key={index}>
+                            <td>{report.prevVersion}</td>
+                            <td>{`${report.testPlanTitle} ${report.testPlanVersionString}`}</td>
+                            <td>
+                              {convertStringFormatToAnotherFormat(
+                                report.releasedAt,
+                                'YYYY-MM-DDTHH:mm:ss.SSSZ', // Assume ISO
+                                'D MMM YYYY' // Display format
+                              )}
+                            </td>
+                            <td>{report.browserName}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              }
+            />
           </div>
         );
       })}
-    </div>
-  </>
-);
+    </>
+  );
+};
 
 RerunDashboard.propTypes = {
   activeRuns: PropTypes.arrayOf(
@@ -135,6 +127,7 @@ RerunDashboard.propTypes = {
       reportGroups: PropTypes.arrayOf(
         PropTypes.shape({
           prevVersion: PropTypes.string.isRequired,
+          releasedAt: PropTypes.string.isRequired,
           reportCount: PropTypes.number.isRequired,
           reports: PropTypes.arrayOf(
             PropTypes.shape({
