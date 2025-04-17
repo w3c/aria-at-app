@@ -217,3 +217,20 @@
 .rerunOpportunity > div:last-child > div {
   padding: 0;
 }
+
+/* Add styles for the descriptive text */
+.reportDescription {
+  padding: 0 var(--section-gap) var(--section-gap) var(--section-gap);
+  color: var(--dark-gray-text);
+  font-size: var(--default-font-size);
+  line-height: 1.6;
+}
+
+.reportDescription p {
+  margin-bottom: var(--el-gap); /* Add space between paragraphs */
+}
+
+.reportDescription p:last-child {
+  margin-bottom: 0; /* No space after the last paragraph */
+}
+/* End styles for descriptive text */

@@ -5,14 +5,12 @@ import { convertStringFormatToAnotherFormat } from 'shared/dates'; // For format
 import DisclosureComponent from '../common/DisclosureComponent'; // Import DisclosureComponent
 
 const RerunDashboard = ({ activeRuns, onRerunClick }) => {
-  // Manage expanded state for all disclosures in one object
   const [expandedStates, setExpandedStates] = useState({});
 
-  // Function to toggle state for a specific run ID
   const toggleDisclosure = runId => {
     setExpandedStates(prevStates => ({
       ...prevStates,
-      [runId]: !prevStates[runId] // Toggle the boolean value
+      [runId]: !prevStates[runId]
     }));
   };
 
@@ -27,7 +25,8 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
           0
         );
 
-        // Flatten reports for the table view
+        const previousVersionCount = run.reportGroups.length;
+
         const flatReports = run.reportGroups.flatMap(group =>
           group.reports.map(report => ({
             prevVersion: group.prevVersion,
@@ -38,15 +37,12 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
           }))
         );
 
-        const buttonAriaLabel = `Start generating reports for ${totalReports} test plans with ${run.botName} ${run.newVersion}`;
+        const buttonAriaLabel = `Start generating reports for ${totalReports} reports with ${run.botName} ${run.newVersion}`;
 
-        // Title for the disclosure component
         const disclosureTitle = (
           <span className={styles.botName}>
             {' '}
-            {/* Reuse botName style for title */}
-            {run.botName} {run.newVersion} ({totalReports}{' '}
-            {totalReports === 1 ? 'Report' : 'Reports'} Available)
+            {run.botName} {run.newVersion}
           </span>
         );
 
@@ -55,12 +51,28 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
             <DisclosureComponent
               componentId={`rerun-disclosure-${run.id}`}
               title={disclosureTitle}
-              // Get expanded state from the state object
-              expanded={!!expandedStates[run.id]} // Use !! to ensure boolean
-              onClick={() => toggleDisclosure(run.id)} // Use the new toggle function
+              expanded={!!expandedStates[run.id]}
+              onClick={() => toggleDisclosure(run.id)}
               disclosureContainerView={
                 <>
-                  {/* Action Button */}
+                  <div className={styles.reportDescription}>
+                    {' '}
+                    <p>
+                      {run.botName} {run.newVersion} has been recently added to
+                      the system.
+                    </p>
+                    <p>
+                      The following {totalReports}{' '}
+                      {totalReports === 1 ? 'report' : 'reports'} generated with{' '}
+                      {previousVersionCount}{' '}
+                      {previousVersionCount === 1
+                        ? 'earlier version'
+                        : 'earlier versions'}{' '}
+                      of {run.botName} can be automatically updated with the
+                      &quot;Start Generating Reports&quot; button below.
+                    </p>
+                  </div>
+
                   <div className={styles.actionHeader}>
                     <button
                       className={styles.rerunButton}
@@ -68,26 +80,23 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
                       onClick={() => onRerunClick(run)}
                       aria-label={buttonAriaLabel}
                     >
-                      Start Updates
+                      Start Generating Reports
                     </button>
                   </div>
 
-                  {/* Table */}
                   <div className={styles.reportTableContainer}>
                     <table
                       className={`${styles.reportTable} ${styles.themeTable}`}
                     >
                       {' '}
-                      {/* Use themeTable for base styles */}
                       <caption
                         className={styles.reportTableCaption}
                       >{`Reports generated from prior ${run.botName} versions`}</caption>
                       <thead>
                         <tr>
-                          <th scope="col">{`${run.botName} Version`}</th>
+                          <th scope="col">AT Version</th>
                           <th scope="col">Test Plan</th>
-                          <th scope="col">Version Released</th>
-                          <th scope="col">Browser</th>
+                          <th scope="col">Report Date</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -102,7 +111,6 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
                                 'D MMM YYYY' // Display format
                               )}
                             </td>
-                            <td>{report.browserName}</td>
                           </tr>
                         ))}
                       </tbody>

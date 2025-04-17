@@ -134,26 +134,25 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
         }, 100);
 
         setStatusMessage(
-          `Update successfully initiated for ${run.botName} ${run.newVersion}.`
+          `Report generation successfully initiated for ${run.botName} ${run.newVersion}. Monitor events below.`
         );
       } catch (error) {
         console.error('Failed to create collection jobs:', error);
         setStatusMessage(
-          `Error starting update for ${run.botName} ${run.newVersion}. Check console for details.`
+          `Error initiating report generation for ${run.botName} ${run.newVersion}. Check console for details.`
         );
       }
-    }, `Starting automated test plan runs for ${run.botName} ${run.newVersion}...`);
+    }, `Starting automated report generation for ${run.botName} ${run.newVersion}...`);
 
     try {
       await triggerLoadPromise;
-      setStatusMessage(
-        `Update successfully initiated for ${run.botName} ${run.newVersion}.`
-      );
     } catch (error) {
-      console.error('Failed to complete triggerLoad:', error);
-      setStatusMessage(
-        `Error starting update for ${run.botName} ${run.newVersion}. Check console for details.`
-      );
+      if (!statusMessage) {
+        console.error('Failed to complete the triggerLoad operation:', error);
+        setStatusMessage(
+          `An error occurred during the report generation process for ${run.botName} ${run.newVersion}. Check console.`
+        );
+      }
     }
   };
 
@@ -181,6 +180,7 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
           <div
             role="status"
             aria-live="polite"
+            aria-relevant="all"
             className={styles.statusMessage}
           >
             {statusMessage}
