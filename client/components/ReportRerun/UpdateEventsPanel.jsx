@@ -15,12 +15,7 @@ const UpdateEventsPanel = React.forwardRef(
             <RefreshButton onRefresh={onRefresh} />
           </div>
         </div>
-        <div
-          className={styles.eventsContent}
-          aria-live="polite"
-          aria-atomic="true"
-          role="log"
-        >
+        <div className={styles.eventsContent} aria-live="polite" role="log">
           {events.length ? (
             <Table
               responsive

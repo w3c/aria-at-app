@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useEffect, useState } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import PropTypes from 'prop-types';
 import { ME_QUERY } from '../App/queries';
@@ -7,18 +7,21 @@ import RerunDashboard from './RerunDashboard';
 import UpdateEventsPanel from './UpdateEventsPanel';
 import styles from './ReportRerun.module.css';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
+import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import {
   GET_AUTOMATION_SUPPORTED_AT_VERSIONS,
   GET_RERUNNABLE_REPORTS_QUERY,
   CREATE_COLLECTION_JOBS_MUTATION,
   GET_UPDATE_EVENTS
 } from './queries';
+import ResetDbButton from '../common/ResetDbButton';
 
 const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
-  const client = useApolloClient(); // Keep client instance for manual queries
+  const client = useApolloClient();
   const { triggerLoad, loadingMessage } = useTriggerLoad();
   const eventsPanelRef = useRef(null);
-  const [statusMessage, setStatusMessage] = useState('');
+  const announce = useAriaLiveRegion();
+  const previousEventsCountRef = useRef(0);
 
   const { data: { me } = {} } = useQuery(ME_QUERY);
   const { isAdmin } = evaluateAuth(me);
@@ -33,9 +36,35 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
   const { data: { updateEvents = [] } = {}, refetch: refetchEvents } = useQuery(
     GET_UPDATE_EVENTS,
     {
-      pollInterval: 10000
+      pollInterval: 10000,
+      onCompleted: data => {
+        const currentCount = data?.updateEvents?.length || 0;
+        const previousCount = previousEventsCountRef.current;
+        const newEventsCount = currentCount - previousCount;
+
+        if (currentCount > 0 && newEventsCount > 0) {
+          announce(
+            `Update events refreshed. ${newEventsCount} new event${
+              newEventsCount > 1 ? 's' : ''
+            } added.`
+          );
+        } else if (currentCount > 0 && previousCount === 0) {
+          announce(
+            `Loaded ${currentCount} update event${currentCount > 1 ? 's' : ''}.`
+          );
+        }
+        previousEventsCountRef.current = currentCount;
+      },
+      onError: () => {
+        announce('Error fetching update events.');
+        previousEventsCountRef.current = 0;
+      }
     }
   );
+
+  useEffect(() => {
+    previousEventsCountRef.current = updateEvents.length;
+  }, [updateEvents]);
 
   const automatedVersions = useMemo(() => {
     if (!atVersionsData?.ats) return [];
@@ -132,12 +161,12 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
           eventsPanelRef.current?.focus();
         }, 100);
 
-        setStatusMessage(
+        announce(
           `Report generation successfully initiated for ${run.botName} ${run.newVersion}. Monitor events below.`
         );
       } catch (error) {
         console.error('Failed to create collection jobs:', error);
-        setStatusMessage(
+        announce(
           `Error initiating report generation for ${run.botName} ${run.newVersion}. Check console for details.`
         );
       }
@@ -146,9 +175,9 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
     try {
       await triggerLoadPromise;
     } catch (error) {
-      if (!statusMessage) {
+      if (error) {
         console.error('Failed to complete the triggerLoad operation:', error);
-        setStatusMessage(
+        announce(
           `An error occurred during the report generation process for ${run.botName} ${run.newVersion}. Check console.`
         );
       }
@@ -156,7 +185,13 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
   };
 
   const handleRefreshEvents = async () => {
-    await refetchEvents();
+    announce('Refreshing update events...');
+    try {
+      await refetchEvents();
+    } catch (error) {
+      console.error('Failed to refetch events:', error);
+      announce('Error refreshing update events.');
+    }
   };
 
   return (
@@ -173,17 +208,6 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
             )}
             onRerunClick={handleRerunClick}
           />
-        )}
-
-        {statusMessage && (
-          <div
-            role="status"
-            aria-live="polite"
-            aria-relevant="all"
-            className={styles.statusMessage}
-          >
-            {statusMessage}
-          </div>
         )}
 
         <UpdateEventsPanel

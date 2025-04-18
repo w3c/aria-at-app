@@ -66,7 +66,6 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
               disclosureContainerView={
                 <>
                   <div className={styles.reportDescription}>
-                    {' '}
                     <p>
                       {run.botName} {run.newVersion} has been recently added to
                       the system.
