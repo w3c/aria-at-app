@@ -24,6 +24,8 @@ describe('Report Rerun tab', () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       await switchToReportRerunTab(page);
 
+      await page.waitForSelector('.rerun-opportunity');
+
       const rerunOpportunities = await page.evaluate(() => {
         return Array.from(document.querySelectorAll('.rerun-opportunity')).map(
           el => ({
@@ -83,13 +85,10 @@ describe('Report Rerun tab', () => {
         const button = nvdaBot.querySelector('.rerun-button');
         if (!button) return { found: false };
 
-        const testPlanCount =
-          nvdaBot.querySelector('.plan-count-number').textContent;
         button.click();
 
         return {
-          found: true,
-          testPlanCount
+          found: true
         };
       });
 

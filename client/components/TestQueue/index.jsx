@@ -1,4 +1,4 @@
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { useApolloClient, useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
@@ -27,6 +27,7 @@ import commonStyles from '../common/styles.module.css';
 
 const TestQueue = () => {
   const client = useApolloClient();
+  const [totalAutomatedRuns, setTotalAutomatedRuns] = useState(null);
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network'
   });
@@ -290,7 +291,7 @@ const TestQueue = () => {
   const hasTestPlanReports = !!testPlans.length;
 
   const renderQueueContent = () => (
-    <>
+    <div className={styles.tabContentPadding}>
       {hasTestPlanReports && (
         <p data-testid="test-queue-instructions">
           {isAdmin
@@ -321,7 +322,7 @@ const TestQueue = () => {
             </Fragment>
           ))
         : null}
-    </>
+    </div>
   );
 
   const tabs = [
@@ -330,8 +331,21 @@ const TestQueue = () => {
       content: renderQueueContent()
     },
     {
-      label: 'Automated Report Updates',
-      content: <ReportRerun onQueueUpdate={refetch} />
+      get label() {
+        return `Automated Report Updates${
+          typeof totalAutomatedRuns === 'number'
+            ? ` (${totalAutomatedRuns})`
+            : ''
+        }`;
+      },
+      content: (
+        <div className={styles.tabContentPadding}>
+          <ReportRerun
+            onQueueUpdate={refetch}
+            onTotalRunsAvailable={setTotalAutomatedRuns}
+          />
+        </div>
+      )
     }
   ];
 

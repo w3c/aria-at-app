@@ -35,6 +35,7 @@ export const GET_RERUNNABLE_REPORTS_QUERY = gql`
             title
             versionString
           }
+          markedFinalAt
           browser {
             id
             name

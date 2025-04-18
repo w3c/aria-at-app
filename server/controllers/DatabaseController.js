@@ -282,8 +282,30 @@ const cleanFolder = (req, res) => {
   }
 };
 
+const resetPostgresDatabase = async (req, res) => {
+  if (process.env.ENVIRONMENT === 'production') {
+    return res.status(405).send('This request is not permitted in production.');
+  }
+
+  try {
+    const BUILD_DUMP_DIR =
+      process.env.BUILD_DB_DUMP_DIR || path.join(os.homedir(), 'db_dumps');
+    const BUILD_DUMP_FILE = path.join(BUILD_DUMP_DIR, 'build_dump.sql');
+
+    if (!fs.existsSync(BUILD_DUMP_FILE)) {
+      return res.status(404).send('No build dump file found');
+    }
+
+    req.body.pathToFile = BUILD_DUMP_FILE;
+    await restorePostgresDatabase(req, res);
+  } catch (error) {
+    return res.status(500).send(sanitizeError(error.message));
+  }
+};
+
 module.exports = {
   dumpPostgresDatabase,
   restorePostgresDatabase,
-  cleanFolder
+  cleanFolder,
+  resetPostgresDatabase
 };
