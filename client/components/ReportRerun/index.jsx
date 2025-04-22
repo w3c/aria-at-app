@@ -5,7 +5,6 @@ import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import RerunDashboard from './RerunDashboard';
 import UpdateEventsPanel from './UpdateEventsPanel';
-import styles from './ReportRerun.module.css';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import {
@@ -195,27 +194,25 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
 
   return (
     <LoadingStatus message={loadingMessage}>
-      <div className={styles.rerunSection}>
-        {isAdmin && hasRerunnableReports && (
-          <RerunDashboard
-            activeRuns={activeRuns.filter(
-              run =>
-                run.reportGroups.reduce(
-                  (sum, group) => sum + group.reportCount,
-                  0
-                ) > 0
-            )}
-            onRerunClick={handleRerunClick}
-          />
-        )}
-
-        <UpdateEventsPanel
-          events={updateEvents}
-          isAdmin={isAdmin}
-          onRefresh={handleRefreshEvents}
-          ref={eventsPanelRef}
+      {isAdmin && hasRerunnableReports && (
+        <RerunDashboard
+          activeRuns={activeRuns.filter(
+            run =>
+              run.reportGroups.reduce(
+                (sum, group) => sum + group.reportCount,
+                0
+              ) > 0
+          )}
+          onRerunClick={handleRerunClick}
         />
-      </div>
+      )}
+
+      <UpdateEventsPanel
+        events={updateEvents}
+        isAdmin={isAdmin}
+        onRefresh={handleRefreshEvents}
+        ref={eventsPanelRef}
+      />
     </LoadingStatus>
   );
 };
