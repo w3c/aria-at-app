@@ -1,3 +1,22 @@
+### [1.14.1](https://github.com/w3c/aria-at-app/compare/v1.14.0...v1.14.1) (2025-04-10)
+
+### Bug Fixes
+
+- Align `ManageBotDialog` with Test Queue V2 visual changes ([#1361](https://github.com/w3c/aria-at-app/issues/1361)) ([0c0fff5](https://github.com/w3c/aria-at-app/commit/0c0fff51d8a44a9d4328e451ccfa3d184d4b28dd))
+- Use cursor-based pagination for navigating GitHub issues ([#1372](https://github.com/w3c/aria-at-app/issues/1372)) ([0d1c2ee](https://github.com/w3c/aria-at-app/commit/0d1c2eea38968b544f12f260347ed87a5ee3fe65))
+
+## [1.14.0](https://github.com/w3c/aria-at-app/compare/v1.13.1...v1.14.0) (2025-04-08)
+
+### Features
+
+- declare css variables; move away from styled components ([#1338](https://github.com/w3c/aria-at-app/issues/1338)) ([794fabc](https://github.com/w3c/aria-at-app/commit/794fabc52fd29a8a0de008d32a9c38ca6185bf2e))
+- Include `ReviewerStatus` table ([#1328](https://github.com/w3c/aria-at-app/issues/1328)) ([053d2f0](https://github.com/w3c/aria-at-app/commit/053d2f070ab53147e953de0b483b970e0e04f51b)), closes [#1343](https://github.com/w3c/aria-at-app/issues/1343)
+
+### Bug Fixes
+
+- `releasedAt` attribute-related fixes ([#1356](https://github.com/w3c/aria-at-app/issues/1356)) ([1d13640](https://github.com/w3c/aria-at-app/commit/1d1364030eafe932408ac5eb4fc0a04284f2d8bc))
+- Incorrect GitHub sourced-issues count and displays ([#1357](https://github.com/w3c/aria-at-app/issues/1357)) ([bb83bc1](https://github.com/w3c/aria-at-app/commit/bb83bc1e139abe859948397a3b78ca0be46d20eb))
+
 ### [1.13.1](https://github.com/w3c/aria-at-app/compare/v1.13.0...v1.13.1) (2025-03-17)
 
 ### Bug Fixes

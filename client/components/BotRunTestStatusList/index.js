@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import { TEST_PLAN_RUNS_TEST_RESULTS_QUERY } from './queries';
 import { useQuery } from '@apollo/client';
 import ReportStatusDot, { REPORT_STATUSES } from '../common/ReportStatusDot';
@@ -79,9 +80,9 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
 
   return (
     <>
-      <div className={styles.botRunTestContainer}>
+      <div className={clsx(styles.botRunTestContainer, 'text-secondary')}>
         Bot Status:
-        <ul className="text-secondary">
+        <ul>
           {RUNNING > 0 && (
             <li>
               <ReportStatusDot status={REPORT_STATUSES.TESTS_RUNNING} />

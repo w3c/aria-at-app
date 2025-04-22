@@ -2,12 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faCheck,
-  faChevronDown,
-  faRobot,
-  faUserPlus
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faRobot, faUser } from '@fortawesome/free-solid-svg-icons';
 import {
   ASSIGN_TESTER_MUTATION,
   REMOVE_TESTER_MUTATION,
@@ -17,8 +12,8 @@ import { useMutation, useQuery } from '@apollo/client';
 import { LoadingStatus, useTriggerLoad } from '../LoadingStatus';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../../AddTestToQueueWithConfirmation/queries';
 import { isSupportedByResponseCollector } from '../../../utils/automation';
-import './AssignTesterDropdown.css';
 import { TestPlanRunPropType, UserPropType } from '../proptypes';
+import testQueueStyles from '../../TestQueue/TestQueue.module.css';
 
 const AssignTesterDropdown = ({
   testPlanReportId,
@@ -96,23 +91,27 @@ const AssignTesterDropdown = ({
   };
 
   const renderLabel = () => {
-    if (label) {
-      return (
-        <span>
-          {label} <FontAwesomeIcon icon={faChevronDown} />
-        </span>
-      );
-    } else {
-      return <FontAwesomeIcon icon={faUserPlus} />;
-    }
+    return (
+      <>
+        {label ? (
+          <span className={testQueueStyles.dropdownButtonLabel}>{label}</span>
+        ) : (
+          <>
+            <span className="sr-only">Assign Testers</span>
+            <FontAwesomeIcon icon={faUser} />
+          </>
+        )}
+      </>
+    );
   };
+
   const clearAriaLiveRegion = () => {
     setAlertMessage('');
   };
 
-  const handleKeyDown = event => {
+  const onKeyDown = event => {
     const { key } = event;
-    if (key.match(/[0-9a-zA-Z]/)) {
+    if (key.length === 1 && key.match(/[a-zA-Z0-9]/)) {
       const container = event.target.closest('[role=menu]');
       const matchingMenuItem = Array.from(container.children).find(menuItem => {
         return menuItem.innerText
@@ -127,84 +126,88 @@ const AssignTesterDropdown = ({
     }
   };
 
+  const renderDropdownItem = ({ tester }) => {
+    const { id, username, isBot, ats } = tester;
+    const testerIsAssigned = isTesterAssigned(username);
+
+    if (isBot) {
+      // if our bot doesn't have a link to the at - hide it from the list
+      if (
+        !ats.find(
+          ({ id }) => id === testPlanReportAtBrowserQuery?.testPlanReport.at.id
+        )
+      ) {
+        return null;
+      }
+
+      const supportedByBot = isSupportedByResponseCollector(
+        testPlanReportAtBrowserQuery?.testPlanReport
+      );
+      if (!supportedByBot) {
+        return null;
+      }
+    }
+
+    let icon;
+    if (testerIsAssigned) icon = faCheck;
+    else if (isBot) icon = faRobot;
+
+    return (
+      <Dropdown.Item
+        key={id}
+        eventKey={id}
+        as="button"
+        role="menuitemcheckbox"
+        variant="secondary"
+        aria-checked={testerIsAssigned}
+        onClick={async () => {
+          const updatedIsAssigned = !testerIsAssigned;
+          setAlertMessage(
+            `${username} ${
+              updatedIsAssigned
+                ? 'now checked'
+                : `now unchecked. ${tester.username}'s test plan run has been deleted.`
+            }`
+          );
+          setTimeout(clearAriaLiveRegion, 6000);
+          await toggleTesterAssign(username);
+          await onChange();
+        }}
+      >
+        <span>
+          {icon && <FontAwesomeIcon icon={icon} />}
+          {`${tester.username}`}
+        </span>
+      </Dropdown.Item>
+    );
+  };
+
   return (
     <LoadingStatus message={loadingMessage}>
-      <Dropdown
-        focusFirstItemOnShow
-        aria-label="Assign testers menu"
-        onKeyDown={handleKeyDown}
-      >
-        <Dropdown.Toggle
-          ref={dropdownAssignTesterButtonRef}
-          aria-label="Assign testers"
-          className="assign-tester"
-          variant="secondary"
-          disabled={disabled}
+      <div className={testQueueStyles.assignTestersContainer}>
+        <Dropdown
+          focusFirstItemOnShow
+          aria-label="Assign testers menu"
+          onKeyDown={onKeyDown}
         >
-          {renderLabel()}
-        </Dropdown.Toggle>
-        <Dropdown.Menu role="menu" className="assign-menu">
-          {possibleTesters?.length ? (
-            possibleTesters.map(tester => {
-              const { username, isBot, ats } = tester;
-              const testerIsAssigned = isTesterAssigned(username);
-              const classname = [
-                testerIsAssigned ? 'assigned' : 'not-assigned',
-                isBot ? 'bot' : 'human'
-              ].join(' ');
-              let icon;
-              if (testerIsAssigned) {
-                icon = faCheck;
-              } else if (isBot) {
-                // if our bot doesn't have a link to the at - hide it from the list
-                if (
-                  !ats.find(
-                    ({ id }) =>
-                      id === testPlanReportAtBrowserQuery?.testPlanReport.at.id
-                  )
-                ) {
-                  return null;
-                }
-
-                const supportedByBot = isSupportedByResponseCollector(
-                  testPlanReportAtBrowserQuery?.testPlanReport
-                );
-                if (!supportedByBot) {
-                  return null;
-                }
-                icon = faRobot;
-              }
-              return (
-                <Dropdown.Item
-                  role="menuitemcheckbox"
-                  variant="secondary"
-                  as="button"
-                  key={`tpr-${testPlanReportId}-assign-tester-${username}`}
-                  aria-checked={testerIsAssigned ? true : false}
-                  onClick={async () => {
-                    const updatedIsAssigned = !testerIsAssigned;
-                    setAlertMessage(
-                      `${username} ${
-                        updatedIsAssigned
-                          ? 'now checked'
-                          : `now unchecked. ${tester.username}'s test plan run has been deleted.`
-                      }`
-                    );
-                    setTimeout(clearAriaLiveRegion, 6000);
-                    await toggleTesterAssign(username);
-                    await onChange();
-                  }}
-                >
-                  {icon && <FontAwesomeIcon icon={icon} />}
-                  <span className={classname}>{`${tester.username}`}</span>
-                </Dropdown.Item>
-              );
-            })
-          ) : (
-            <span className="not-assigned">No testers to assign</span>
-          )}
-        </Dropdown.Menu>
-      </Dropdown>
+          <Dropdown.Toggle
+            ref={dropdownAssignTesterButtonRef}
+            aria-label="Assign testers"
+            variant="secondary"
+            disabled={disabled}
+            className={testQueueStyles.assignTestersDropdownButton}
+          >
+            {renderLabel()}
+          </Dropdown.Toggle>
+          <Dropdown.Menu role="menu">
+            {possibleTesters?.length ? (
+              possibleTesters.map(tester => renderDropdownItem({ tester }))
+            ) : (
+              <span>No testers to assign</span>
+            )}
+          </Dropdown.Menu>
+        </Dropdown>
+      </div>
     </LoadingStatus>
   );
 };

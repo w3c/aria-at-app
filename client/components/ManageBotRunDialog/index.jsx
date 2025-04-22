@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import BasicModal from '../common/BasicModal';
 import AssignTesterDropdown from '../common/AssignTesterDropdown';
 import { useMutation, useQuery } from '@apollo/client';
@@ -10,14 +11,13 @@ import {
 } from './queries';
 import DeleteButton from '../common/DeleteButton';
 import BotRunTestStatusList from '../BotRunTestStatusList';
-
-import './ManageBotRunDialog.css';
 import MarkBotRunFinishedButton from './MarkBotRunFinishedButton';
 import RetryCanceledCollectionsButton from './RetryCanceledCollectionsButton';
 import StopRunningCollectionButton from './StopRunningCollectionButton';
 import ViewLogsButton from './ViewLogsButton';
 import { TestPlanRunPropType, UserPropType } from '../common/proptypes';
 import { COLLECTION_JOB_STATUS } from '../../utils/collectionJobStatus';
+import styles from './ManageBotRunDialog.module.css';
 
 const ManageBotRunDialog = ({
   testPlanReportId,
@@ -103,14 +103,18 @@ const ManageBotRunDialog = ({
         }
       },
       {
-        component: StopRunningCollectionButton,
+        component: collectionJobQuery?.collectionJobByTestPlanRunId
+          ? StopRunningCollectionButton
+          : null,
         props: {
           collectionJob: collectionJobQuery?.collectionJobByTestPlanRunId,
           onClick: onChange
         }
       },
       {
-        component: RetryCanceledCollectionsButton,
+        component: collectionJobQuery?.collectionJobByTestPlanRunId
+          ? RetryCanceledCollectionsButton
+          : null,
         props: {
           collectionJob: collectionJobQuery?.collectionJobByTestPlanRunId,
           onClick: onChange
@@ -151,10 +155,13 @@ const ManageBotRunDialog = ({
     </>
   );
   const content = (
-    <BotRunTestStatusList
-      testPlanReportId={testPlanReportId}
-      runnableTestsLength={runnableTestsLength}
-    />
+    <>
+      View the bot&apos;s status and perform administrative bot actions.
+      <BotRunTestStatusList
+        testPlanReportId={testPlanReportId}
+        runnableTestsLength={runnableTestsLength}
+      />
+    </>
   );
 
   return (
@@ -185,7 +192,7 @@ const ManageBotRunDialog = ({
         title={`Manage ${testPlanRun.tester?.username} Run`}
         cancelButton={false}
         content={content}
-        dialogClassName="manage-bot-run-dialog"
+        dialogClassName={clsx(styles.manageBotRunDialog, 'modal-60w')}
         actions={actions}
       />
     </>

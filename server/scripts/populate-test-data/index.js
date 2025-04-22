@@ -237,6 +237,7 @@ const populateTestDatabase = async transaction => {
 if (require.main === module)
   sequelize.transaction(populateTestDatabase).catch(error => {
     console.error(error);
+    process.exitCode = 1;
   });
 
 module.exports = populateTestDatabase;
