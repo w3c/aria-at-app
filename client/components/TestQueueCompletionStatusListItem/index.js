@@ -4,82 +4,80 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import BotTestCompletionStatus from './BotTestCompletionStatus';
 import PreviouslyAutomatedTestCompletionStatus from './PreviouslyAutomatedTestCompletionStatus';
-import { TestPlanRunPropType } from '../common/proptypes';
+import {
+  TestPlanReportPropType,
+  TestPlanRunPropType,
+  UserPropType
+} from '../common/proptypes';
+import testQueueStyles from '../TestQueue/TestQueue.module.css';
 
 const TestQueueCompletionStatusListItem = ({
-  runnableTestsLength,
+  rowId,
+  testPlanReport,
   testPlanRun,
-  id
+  tester
 }) => {
-  const { testResultsLength, tester } = testPlanRun;
+  const { username, isBot } = tester;
   const testPlanRunPreviouslyAutomated = useMemo(
     () => testPlanRun.initiatedByAutomation,
     [testPlanRun]
   );
 
-  const renderTesterInfo = () => {
-    if (tester.isBot) {
-      return (
-        <span aria-describedby={id}>
-          <FontAwesomeIcon icon={faRobot} />
-          {tester.username}
-        </span>
-      );
-    } else {
-      return (
-        <a
-          href={`https://github.com/` + `${tester.username}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          // Allows ATs to read the number of
-          // completed tests when tabbing to this
-          // link
-          aria-describedby={id}
-        >
-          {tester.username}
-        </a>
-      );
-    }
-  };
+  let info;
+  let completionStatus;
 
-  const renderTestCompletionStatus = () => {
-    if (tester.isBot) {
-      return (
-        <BotTestCompletionStatus
-          id={id}
-          testPlanRun={testPlanRun}
-          runnableTestsLength={runnableTestsLength}
-        />
-      );
-    } else if (testPlanRunPreviouslyAutomated) {
-      return (
-        <PreviouslyAutomatedTestCompletionStatus
-          id={id}
-          testPlanRunId={testPlanRun.id}
-          runnableTestsLength={runnableTestsLength}
-        />
-      );
-    } else {
-      return (
-        <div id={id} className="text-secondary">
-          {`${testResultsLength} of ${runnableTestsLength} tests complete`}
-        </div>
-      );
-    }
-  };
+  if (isBot) {
+    info = (
+      <span>
+        <FontAwesomeIcon icon={faRobot} />
+        {username}
+      </span>
+    );
+    completionStatus = (
+      <BotTestCompletionStatus
+        id={`BotTestCompletionStatus_${rowId}`}
+        testPlanRun={testPlanRun}
+        runnableTestsLength={testPlanReport.runnableTestsLength}
+      />
+    );
+  } else {
+    info = (
+      <a
+        href={`https://github.com/${username}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {username}
+      </a>
+    );
+
+    completionStatus = testPlanRunPreviouslyAutomated ? (
+      <PreviouslyAutomatedTestCompletionStatus
+        id={`PreviouslyAutomatedTestCompletionStatus_${rowId}`}
+        testPlanRunId={testPlanRun.id}
+        runnableTestsLength={testPlanReport.runnableTestsLength}
+      />
+    ) : (
+      <em>
+        {`${testPlanRun.testResultsLength} of ` +
+          `${testPlanReport.runnableTestsLength} tests complete`}
+      </em>
+    );
+  }
 
   return (
-    <li className="mb-2 text-nowrap">
-      {renderTesterInfo()}
-      {renderTestCompletionStatus()}
+    <li className={testQueueStyles.completionStatusListItem}>
+      {info}
+      {completionStatus}
     </li>
   );
 };
 
 TestQueueCompletionStatusListItem.propTypes = {
-  runnableTestsLength: PropTypes.number.isRequired,
+  rowId: PropTypes.string.isRequired,
+  testPlanReport: TestPlanReportPropType.isRequired,
   testPlanRun: TestPlanRunPropType.isRequired,
-  id: PropTypes.string.isRequired
+  tester: UserPropType.isRequired
 };
 
 export default TestQueueCompletionStatusListItem;

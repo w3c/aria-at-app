@@ -4,7 +4,7 @@ import { useApolloClient } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faRobot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Button, Dropdown } from 'react-bootstrap';
-import CompletionStatusListItem from './CompletionStatusListItem';
+import CompletionStatusListItem from '../TestQueueCompletionStatusListItem';
 import useConfirmationModal from '../../hooks/useConfirmationModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
