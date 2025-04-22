@@ -62,6 +62,7 @@ const testPlanVersionsQuery = ({
               id
             }
             draftTestPlanRuns {
+              id
               testResults {
                 id
                 completedAt
@@ -152,6 +153,8 @@ const updateVersionToPhaseQuery = (
                   id
                 }
                 draftTestPlanRuns {
+                  id
+                  initiatedByAutomation
                   testResults {
                     id
                     completedAt
@@ -929,6 +932,17 @@ describe('data management', () => {
       const [oldNVDARun] = oldNVDAReport.draftTestPlanRuns;
       const [oldVORun] = oldVOReport.draftTestPlanRuns;
 
+      // Simulate that runs were created using bots
+      await rawQuery(
+        `update "TestPlanRun" set "initiatedByAutomation" = true where id = ${oldNVDARun.id};`,
+        { transaction }
+      );
+
+      await rawQuery(
+        `update "TestPlanRun" set "initiatedByAutomation" = true where id = ${oldVORun.id};`,
+        { transaction }
+      );
+
       const oldJAWSAssertionsCollectedCount =
         countCollectedAssertionResults(oldJAWSRun);
       const oldNVDAAssertionsCollectedCount =
@@ -967,6 +981,11 @@ describe('data management', () => {
         countCollectedAssertionResults(newNVDARun);
       const newVOAssertionsCollectedCount =
         countCollectedAssertionResults(newVORun);
+
+      // Confirm that `initiatedByAutomation` persists across copying of results
+      expect(newJAWSRun.initiatedByAutomation).toBe(false);
+      expect(newNVDARun.initiatedByAutomation).toBe(true);
+      expect(newVORun.initiatedByAutomation).toBe(true);
 
       // The difference between them is that there have been updated settings for VoiceOver tests;
       // 2 were switched from 'quickNavOn' to 'singleQuickKeyNavOn' which means the tracked command
