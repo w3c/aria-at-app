@@ -28,6 +28,7 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
           __typename
           id
           output
+          untestable
           scenario {
             id
             commands {

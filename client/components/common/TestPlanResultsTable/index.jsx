@@ -10,17 +10,21 @@ import {
   TestResultPropType
 } from '../proptypes';
 
-const getAssertionResultText = (passed, priority) => {
-  if (priority === 'MAY') {
+const getAssertionResultText = (assertionResult, untestable) => {
+  const { passed, priorityString, failWhenUntestable } = assertionResult;
+  if (untestable) {
+    return failWhenUntestable ? 'Failed' : 'Untestable';
+  }
+  if (priorityString === 'MAY') {
     return passed ? 'Supported' : 'Unsupported';
   }
   return passed ? 'Passed' : 'Failed';
 };
 
-const renderAssertionRow = (assertionResult, priorityString) => {
+const renderAssertionRow = (assertionResult, untestable) => {
   return (
     <tr key={`${assertionResult.id}__${nextId()}`}>
-      <td>{priorityString}</td>
+      <td>{assertionResult.priorityString}</td>
       <td>
         {assertionResult.assertion.phrase
           ? assertionResult.assertion.phrase.charAt(0).toUpperCase() +
@@ -28,7 +32,7 @@ const renderAssertionRow = (assertionResult, priorityString) => {
           : assertionResult.assertion.text.charAt(0).toUpperCase() +
             assertionResult.assertion.text.slice(1)}
       </td>
-      <td>{getAssertionResultText(assertionResult.passed, priorityString)}</td>
+      <td>{getAssertionResultText(assertionResult, untestable)}</td>
     </tr>
   );
 };
@@ -126,8 +130,9 @@ const TestPlanResultsTable = ({
           {
             id: `UnexpectedBehavior_MUST_${nextId()}`,
             assertion: {
-              text: 'Other behaviors that create severe negative impacts are not exhibited'
+              text: 'Severe negative side effects do not occur'
             },
+            failWhenUntestable: true,
             passed: hasNoSevereUnexpectedBehavior,
             priorityString: 'MUST'
           },
@@ -139,7 +144,7 @@ const TestPlanResultsTable = ({
           {
             id: `UnexpectedBehavior_SHOULD_${nextId()}`,
             assertion: {
-              text: 'Other behaviors that create moderate negative impacts are not exhibited'
+              text: 'Moderate negative side effects do not occur'
             },
             passed: hasNoModerateUnexpectedBehavior,
             priorityString: 'SHOULD'
@@ -179,10 +184,7 @@ const TestPlanResultsTable = ({
               </thead>
               <tbody>
                 {sortedAssertionResults.map(assertionResult =>
-                  renderAssertionRow(
-                    assertionResult,
-                    assertionResult.priorityString
-                  )
+                  renderAssertionRow(assertionResult, scenarioResult.untestable)
                 )}
               </tbody>
             </Table>

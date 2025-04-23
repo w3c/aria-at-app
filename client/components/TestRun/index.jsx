@@ -418,7 +418,7 @@ const TestRun = () => {
       let unexpectedBehaviors = null;
 
       // collect variables
-      const { atOutput, assertions, unexpected } = commands[i];
+      const { atOutput, untestable, assertions, unexpected } = commands[i];
 
       // process assertion results
       for (let j = 0; j < assertions.length; j++) {
@@ -467,6 +467,7 @@ const TestRun = () => {
 
       // re-assign scenario result due to read only values
       scenarioResult.output = atOutput.value ? atOutput.value : null;
+      scenarioResult.untestable = untestable.value ? untestable : null;
       if (captureHighlightRequired)
         scenarioResult.highlightRequired = atOutput.highlightRequired;
       scenarioResult.assertionResults = [...assertionResults];
@@ -664,9 +665,10 @@ const TestRun = () => {
      * }
      * */
     const formattedScenarioResults = scenarioResults.map(
-      ({ assertionResults, id, output, unexpectedBehaviors }) => ({
+      ({ assertionResults, id, output, untestable, unexpectedBehaviors }) => ({
         id,
         output: output,
+        untestable: untestable ? untestable.value : false,
         unexpectedBehaviors: unexpectedBehaviors?.map(
           ({ id, impact, details }) => ({
             id,
