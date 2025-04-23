@@ -132,6 +132,7 @@ const TestRenderer = ({
     for (let i = 0; i < scenarioResults.length; i++) {
       let {
         output,
+        untestable,
         assertionResults,
         hasUnexpected,
         unexpectedBehaviors,
@@ -141,6 +142,8 @@ const TestRenderer = ({
 
       if (output) commands[i].atOutput.value = output;
       commands[i].atOutput.highlightRequired = highlightRequired;
+
+      if (untestable) commands[i].untestable.value = untestable;
 
       // Required because assertionResults can now be returned without an id if there is a 0-priority exception
       // applied
@@ -434,6 +437,7 @@ const TestRenderer = ({
                   key={commandIndex}
                   header={value.header}
                   atOutput={value.atOutput}
+                  untestable={value.untestable}
                   assertions={value.assertions}
                   unexpectedBehaviors={value.unexpectedBehaviors}
                   assertionsHeader={value.assertionsHeader}
