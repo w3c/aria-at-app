@@ -580,7 +580,9 @@ const TestRun = () => {
 
           // check to see if form was successfully submitted, if so, return to top of summary document
           const forceFocusOnSave = await saveForm(true);
-          if (forceFocusOnSave) if (titleRef.current) titleRef.current.focus();
+          if (forceFocusOnSave) {
+            if (titleRef.current) titleRef.current.focus();
+          }
         }
         break;
       }
@@ -880,13 +882,18 @@ const TestRun = () => {
 
   const handleAtAndBrowserDetailsModalCloseAction = () => {
     setIsShowingAtBrowserModal(false);
-    if (isEditAtBrowserDetailsModalClick)
+    if (
+      isEditAtBrowserDetailsModalClick &&
+      editAtBrowserDetailsButtonRef.current
+    ) {
       editAtBrowserDetailsButtonRef.current.focus();
+    }
   };
 
   const onThemedModalClose = () => {
     setShowThemedModal(false);
-    editAtBrowserDetailsButtonRef.current.focus();
+    if (editAtBrowserDetailsButtonRef.current)
+      editAtBrowserDetailsButtonRef.current.focus();
   };
 
   const renderTestContent = (testPlanReport, currentTest, heading) => {
