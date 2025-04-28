@@ -376,7 +376,8 @@ const processCopiedReports = async ({
       const newTestPlanRun = await createTestPlanRun({
         values: {
           testerUserId: oldTestPlanRun.testerUserId,
-          testPlanReportId: newTestPlanReport.id
+          testPlanReportId: newTestPlanReport.id,
+          isAutomated: oldTestPlanRun.initiatedByAutomation
         },
         transaction
       });
