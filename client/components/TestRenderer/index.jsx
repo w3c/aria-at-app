@@ -121,6 +121,35 @@ const TestRenderer = ({
     mounted.current && setTestRunExport(testRunExport);
   };
 
+  const openShellScript = async () => {
+    // Get the URL from the test page
+    let url = renderableContent.target?.referencePage
+      ? `${testPageUrl.substring(0, testPageUrl.indexOf('reference/'))}${
+          renderableContent.target.referencePage
+        }`
+      : testPageUrl;
+    url = `${window.location.host}${url}`;
+
+    try {
+      const response = await fetch('/api/scripts/open-web-page', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ url })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to execute script');
+      }
+
+      const result = await response.json();
+      console.log('Script execution result:', result);
+    } catch (error) {
+      console.error('Error executing script:', error);
+    }
+  };
+
   const remapState = (state, scenarioResults = []) => {
     const { commands } = state;
 
@@ -430,6 +459,14 @@ const TestRenderer = ({
               onClick={pageContent.instructions.openTestPage.click}
             >
               {pageContent.instructions.openTestPage.button}
+            </button>
+            <button
+              disabled={!pageContent.instructions.openTestPage.enabled}
+              onClick={async () => {
+                await openShellScript();
+              }}
+            >
+              Open Test Page on Android Device
             </button>
           </section>
           <section>

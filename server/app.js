@@ -9,6 +9,7 @@ const testRoutes = require('./routes/tests');
 const transactionRoutes = require('./routes/transactions');
 const automationSchedulerRoutes = require('./routes/automation');
 const databaseRoutes = require('./routes/database');
+const scriptRoutes = require('./routes/scripts');
 const path = require('path');
 const apolloServer = require('./graphql-server');
 const {
@@ -26,6 +27,7 @@ app.use('/test', testRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/jobs', automationSchedulerRoutes);
 app.use('/database', databaseRoutes);
+app.use('/scripts', scriptRoutes);
 
 apolloServer.start().then(() => {
   apolloServer.applyMiddleware({ app });
