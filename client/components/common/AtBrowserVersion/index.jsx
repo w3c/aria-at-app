@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { AtVersionPropType } from '../../common/proptypes';
 import styles from './AtBrowserVersion.module.css';
+import { utils } from '@shared';
 
 const AtVersion = ({
   at,
@@ -22,6 +23,10 @@ const AtVersion = ({
   let atVersionEl;
   if (minimumAtVersion) {
     if (allowAtVersionSelect) {
+      const sortedAtVersions = utils
+        .sortAtVersions(at.atVersions.slice())
+        .reverse();
+
       atVersionEl = (
         <span>
           <select
@@ -29,7 +34,7 @@ const AtVersion = ({
             defaultValue={minimumAtVersion.id}
             className={styles.minimumAtVersionSelect}
           >
-            {at.atVersions.map(atVersion => (
+            {sortedAtVersions.map(atVersion => (
               <option key={atVersion.id} value={atVersion.id}>
                 {atVersion.name}
               </option>
