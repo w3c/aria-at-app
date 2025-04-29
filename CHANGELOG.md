@@ -1,3 +1,11 @@
+### [1.14.2](https://github.com/w3c/aria-at-app/compare/v1.14.1...v1.14.2) (2025-04-29)
+
+
+### Bug Fixes
+
+* Preserve automation initiated status for runs across results copy ([#1380](https://github.com/w3c/aria-at-app/issues/1380) ([964148b](https://github.com/w3c/aria-at-app/commit/964148b5175ce1fec20a633131334560e726802a))
+
+
 ### [1.14.1](https://github.com/w3c/aria-at-app/compare/v1.14.0...v1.14.1) (2025-04-10)
 
 
