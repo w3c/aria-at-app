@@ -5,7 +5,7 @@ import styles from './AtBrowserVersion.module.css';
 
 const AtVersion = ({
   at,
-  isAdmin = false,
+  allowAtVersionSelect = false,
   minimumAtVersion,
   exactAtVersion,
   rowIndex,
@@ -21,7 +21,7 @@ const AtVersion = ({
 
   let atVersionEl;
   if (minimumAtVersion) {
-    if (isAdmin) {
+    if (allowAtVersionSelect) {
       atVersionEl = (
         <span>
           <select
@@ -54,7 +54,7 @@ AtVersion.propTypes = {
     name: PropTypes.string.isRequired,
     atVersions: PropTypes.arrayOf(AtVersionPropType)
   }).isRequired,
-  isAdmin: PropTypes.bool,
+  allowAtVersionSelect: PropTypes.bool,
   minimumAtVersion: PropTypes.shape({
     id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired

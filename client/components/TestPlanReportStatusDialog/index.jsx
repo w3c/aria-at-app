@@ -82,7 +82,7 @@ const TestPlanReportStatusDialog = ({
         <td>
           <AtVersion
             at={at}
-            isAdmin={key.includes('missing') && isAdmin}
+            allowAtVersionSelect={key.includes('missing') && isAdmin}
             minimumAtVersion={minimumAtVersion}
             exactAtVersion={exactAtVersion}
             rowIndex={index}
