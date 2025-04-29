@@ -4,7 +4,7 @@ const runnableTestsLengthResolver = async (
   context // eslint-disable-line no-unused-vars
 ) => {
   // Custom column added with sequelize.literal provides an array as such
-  // runnableTestsCount: [ x, y, z ] where x=jawsCount, y=nvdaCount, z=voCount
+  // runnableTestsCount: [ a, b, c, d ] where a=jawsCount, b=nvdaCount, c=voCount, d=talkbackCount
   return testPlanReport.testPlanVersion.dataValues.runnableTestsCount[
     testPlanReport.atId - 1
   ];
