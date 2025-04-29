@@ -1,24 +1,67 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { AtVersionPropType } from '../../common/proptypes';
 import styles from './AtBrowserVersion.module.css';
 
-const AtVersion = ({ at, minimumAtVersion, exactAtVersion }) => {
-  const atVersionFormatted = minimumAtVersion
-    ? `${minimumAtVersion.name} or later`
-    : exactAtVersion.name;
+const AtVersion = ({
+  at,
+  isAdmin = false,
+  minimumAtVersion,
+  exactAtVersion,
+  rowIndex,
+  onMinimumAtVersionChange
+}) => {
+  const handleMinimumAtVersionChange = e => {
+    const minimumAtVersionId = e.target.value;
+    const updatedMinimumAtVersion = at.atVersions.find(
+      atVersion => atVersion.id === minimumAtVersionId
+    );
+    onMinimumAtVersionChange(rowIndex, updatedMinimumAtVersion);
+  };
+
+  let atVersionEl;
+  if (minimumAtVersion) {
+    if (isAdmin) {
+      atVersionEl = (
+        <span>
+          <select
+            onChange={handleMinimumAtVersionChange}
+            defaultValue={minimumAtVersion.id}
+            className={styles.minimumAtVersionSelect}
+          >
+            {at.atVersions.map(atVersion => (
+              <option key={atVersion.id} value={atVersion.id}>
+                {atVersion.name}
+              </option>
+            ))}
+          </select>
+          &nbsp;or later
+        </span>
+      );
+    } else atVersionEl = <span>{minimumAtVersion.name} or later</span>;
+  } else atVersionEl = <span>{exactAtVersion.name}</span>;
 
   return (
     <div className={styles.versionContainer}>
       {at.name}&nbsp;
-      <span>{atVersionFormatted}</span>
+      {atVersionEl}
     </div>
   );
 };
 
 AtVersion.propTypes = {
-  at: PropTypes.shape({ name: PropTypes.string.isRequired }).isRequired,
-  minimumAtVersion: PropTypes.shape({ name: PropTypes.string.isRequired }),
-  exactAtVersion: PropTypes.shape({ name: PropTypes.string.isRequired })
+  at: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    atVersions: PropTypes.arrayOf(AtVersionPropType)
+  }).isRequired,
+  isAdmin: PropTypes.bool,
+  minimumAtVersion: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired
+  }),
+  exactAtVersion: PropTypes.shape({ name: PropTypes.string.isRequired }),
+  rowIndex: PropTypes.number,
+  onMinimumAtVersionChange: PropTypes.func
 };
 
 const BrowserVersion = ({ browser }) => {

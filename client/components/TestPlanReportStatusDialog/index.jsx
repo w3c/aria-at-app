@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import AddTestToQueueWithConfirmation from '../AddTestToQueueWithConfirmation';
 import { useQuery } from '@apollo/client';
@@ -42,15 +42,34 @@ const TestPlanReportStatusDialog = ({
     return { requiredReportsCount: requiredCount, sortedStatuses: sorted };
   }, [testPlanReportStatuses]);
 
-  const tableRows = sortedStatuses.map(status => {
+  const [tableRowMinimumAtVersions, setTableRowMinimumAtVersions] = useState(
+    sortedStatuses.map((status, index) => ({
+      index,
+      minimumAtVersion: status.minimumAtVersion
+    }))
+  );
+
+  const tableRowMinimumAtVersionChange = (index, newMinimumAtVersion) => {
+    setTableRowMinimumAtVersions(prevRows =>
+      prevRows.map(row =>
+        row.index === index
+          ? { ...row, minimumAtVersion: newMinimumAtVersion }
+          : row
+      )
+    );
+  };
+
+  const tableRows = sortedStatuses.map((status, index) => {
     const {
       isRequired,
       at,
       browser,
-      minimumAtVersion,
+      // minimumAtVersion,
       exactAtVersion,
       testPlanReport
     } = status;
+
+    const minimumAtVersion = tableRowMinimumAtVersions[index].minimumAtVersion;
 
     const key =
       `${at.name}-${browser.name}-` +
@@ -63,8 +82,11 @@ const TestPlanReportStatusDialog = ({
         <td>
           <AtVersion
             at={at}
+            isAdmin={key.includes('missing') && isAdmin}
             minimumAtVersion={minimumAtVersion}
             exactAtVersion={exactAtVersion}
+            rowIndex={index}
+            onMinimumAtVersionChange={tableRowMinimumAtVersionChange}
           />
         </td>
         <td>{browser.name}</td>
@@ -118,7 +140,9 @@ const TestPlanReportStatusDialog = ({
               {phase[0] + phase.slice(1).toLowerCase()}
             </span>
             &nbsp;{reviewDescription}.&nbsp;
-            <strong>{requiredReportsCount} AT/browser&nbsp;</strong>
+            <strong>
+              {requiredReportsCount} Assistive Technology / Browser&nbsp;
+            </strong>
             pairs {requirementNeedsDescription}.
           </p>
         )}
@@ -127,7 +151,7 @@ const TestPlanReportStatusDialog = ({
           <thead>
             <tr>
               <th>Required</th>
-              <th>AT</th>
+              <th>Assistive Technology</th>
               <th>Browser</th>
               <th>Report Status</th>
             </tr>
@@ -153,7 +177,7 @@ const TestPlanReportStatusDialog = ({
       useOnHide={true}
       animation={false}
       centered
-      dialogClassName={styles.testPlanReportStatusDialog}
+      dialogClassName={clsx(styles.testPlanReportStatusDialog, 'modal-60w')}
       content={getContent()}
       title={getTitle()}
     />
