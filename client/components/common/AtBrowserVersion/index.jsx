@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { AtVersionPropType } from '../../common/proptypes';
 import styles from './AtBrowserVersion.module.css';
-import { utils } from '@shared';
+import { utils } from 'shared';
 
 const AtVersion = ({
   at,
