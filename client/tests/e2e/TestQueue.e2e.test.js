@@ -279,7 +279,8 @@ describe('Test Queue admin traits when reports exist', () => {
       await requiredVoiceOverRow.evaluate(el => {
         // Set VoiceOver minimum AT Version
         const select = el.querySelector('select');
-        // TODO: Figure out why this isn't propagated through puppeteer + React. Various issues of 'Node not found in document' with alternative methods
+        // TODO: Figure out why this isn't propagated through puppeteer + React. Various issues of 'Node not found in document' with alternative methods when looking for add-button afterwards
+        // TODO: Including custom event dispatches or puppeteer's own page.select('selector', 'value');
         select.value = select.options[1].value; // Set to VoiceOver 14.0 (id is 5 in sample data); default id, 3 is 11.6
 
         // Add with the updated AT Version to the Test Queue
@@ -316,7 +317,7 @@ describe('Test Queue admin traits when reports exist', () => {
         }
       );
 
-      // TODO: Set this expect back to true when above puppeteer issue is solved
+      // TODO: Set this expect back to true when above event dispatch issue with the select is solved
       expect(
         minimumAtVersionCellText.includes('VoiceOver for macOS 14.0')
       ).toBe(false);
