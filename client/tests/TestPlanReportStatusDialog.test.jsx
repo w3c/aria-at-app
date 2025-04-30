@@ -71,10 +71,4 @@ describe('TestPlanReportStatusDialog', () => {
       expect(getByText('Report Status')).toBeInTheDocument();
     });
   });
-
-  test.skip('displays minimum version dropdown', async () => {
-    await waitFor(() => {
-      // TODO
-    });
-  });
 });
