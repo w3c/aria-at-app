@@ -56,7 +56,7 @@ const countAssertions = ({
   testResult, // Choose one to provide
   scenarioResult, // Choose one to provide
   priority,
-  passedOnly
+  status
 }) => {
   const countScenarioResult = scenarioResult => {
     const isClient =
@@ -92,7 +92,18 @@ const countAssertions = ({
         );
       });
     }
-    if (passedOnly) return all.filter(each => each.passed).length;
+
+    if (status === 'untestable') {
+      return scenarioResult.untestable ? all.length : 0;
+    }
+
+    if (status === 'passed') {
+      // In an untestable scenario, no assertions are considered passing.
+      return scenarioResult.untestable
+        ? 0
+        : all.filter(each => each.passed).length;
+    }
+
     return all.length;
   };
   return countAvailableData(countScenarioResult, {
@@ -156,15 +167,26 @@ const calculateAssertionPriorityCounts = (result, priority) => {
   const assertionsPassedCount = countAssertions({
     ...result,
     priority,
-    passedOnly: true
+    status: 'passed'
+  });
+  const assertionsUntestableCount = countAssertions({
+    ...result,
+    priority,
+    status: 'untestable'
   });
   const assertionsCount = countAssertions({
     ...result,
     priority
   });
-  const assertionsFailedCount = assertionsCount - assertionsPassedCount;
+  const assertionsFailedCount =
+    assertionsCount - assertionsPassedCount - assertionsUntestableCount;
 
-  return { assertionsCount, assertionsPassedCount, assertionsFailedCount };
+  return {
+    assertionsCount,
+    assertionsPassedCount,
+    assertionsFailedCount,
+    assertionsUntestableCount
+  };
 };
 
 const getMetrics = ({
@@ -197,7 +219,8 @@ const getMetrics = ({
   let {
     assertionsCount: mustAssertionsCount,
     assertionsPassedCount: mustAssertionsPassedCount,
-    assertionsFailedCount: mustAssertionsFailedCount
+    assertionsFailedCount: mustAssertionsFailedCount,
+    assertionsUntestableCount: mustAssertionsUntestableCount
   } = calculateAssertionPriorityCounts(result, 'MUST');
   mustAssertionsCount += commandsCount;
   mustAssertionsPassedCount += severeImpactPassedAssertionCount;
@@ -206,7 +229,8 @@ const getMetrics = ({
   let {
     assertionsCount: shouldAssertionsCount,
     assertionsPassedCount: shouldAssertionsPassedCount,
-    assertionsFailedCount: shouldAssertionsFailedCount
+    assertionsFailedCount: shouldAssertionsFailedCount,
+    assertionsUntestableCount: shouldAssertionsUntestableCount
   } = calculateAssertionPriorityCounts(result, 'SHOULD');
   shouldAssertionsCount += commandsCount;
   shouldAssertionsPassedCount += moderateImpactPassedAssertionCount;
@@ -215,7 +239,8 @@ const getMetrics = ({
   const {
     assertionsCount: mayAssertionsCount,
     assertionsPassedCount: mayAssertionsPassedCount,
-    assertionsFailedCount: mayAssertionsFailedCount
+    assertionsFailedCount: mayAssertionsFailedCount,
+    assertionsUntestableCount: mayAssertionsUntestableCount
   } = calculateAssertionPriorityCounts(result, 'MAY');
 
   const testsPassedCount = countTests({
@@ -249,9 +274,14 @@ const getMetrics = ({
     supportLevel = 'FULL';
   }
 
+  // Completely ignore untestable assertions in calculating the support
+  // percentage.
   const percentage = calculatePercentage(
     mustAssertionsPassedCount + shouldAssertionsPassedCount,
-    mustAssertionsCount + shouldAssertionsCount
+    mustAssertionsCount +
+      shouldAssertionsCount -
+      mustAssertionsUntestableCount -
+      shouldAssertionsUntestableCount
   );
   const supportPercent = trimDecimals(percentage);
 
@@ -265,18 +295,27 @@ const getMetrics = ({
     shouldAssertionsFailedCount +
     mayAssertionsFailedCount;
 
+  const assertionsUntestableCount =
+    mustAssertionsUntestableCount +
+    shouldAssertionsUntestableCount +
+    mayAssertionsUntestableCount;
+
   return {
     assertionsPassedCount,
     assertionsFailedCount,
+    assertionsUntestableCount,
     mustAssertionsPassedCount,
     mustAssertionsCount,
     mustAssertionsFailedCount,
+    mustAssertionsUntestableCount,
     shouldAssertionsPassedCount,
     shouldAssertionsCount,
     shouldAssertionsFailedCount,
+    shouldAssertionsUntestableCount,
     mayAssertionsPassedCount,
     mayAssertionsCount,
     mayAssertionsFailedCount,
+    mayAssertionsUntestableCount,
     testsPassedCount,
     testsCount,
     testsFailedCount,
