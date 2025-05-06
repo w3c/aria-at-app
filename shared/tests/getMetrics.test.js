@@ -22,12 +22,13 @@ function generateTestPlanReport(reportSpec) {
       return {
         id: id(),
         scenarioResults: testSpec.map(scenarioSpec => {
-          const { must, should, may, unexpected } = scenarioSpec;
+          const { must, should, may, untestable, unexpected } = scenarioSpec;
           return {
             id: id(),
             scenario: {
               commands: [{ id: 's' }]
             },
+            untestable,
             assertionResults: [...must, ...should, ...may].map(boolToAssertion),
             mustAssertionResults: must.map(boolToAssertion),
             shouldAssertionResults: should.map(boolToAssertion),
@@ -265,15 +266,19 @@ describe('getMetrics', () => {
           mustAssertionsFailedCount +
           shouldAssertionsFailedCount +
           mayAssertionsFailedCount,
+        assertionsUntestableCount: 0,
         mustAssertionsPassedCount,
         mustAssertionsCount,
         mustAssertionsFailedCount,
+        mustAssertionsUntestableCount: 0,
         shouldAssertionsPassedCount,
         shouldAssertionsCount,
         shouldAssertionsFailedCount,
+        shouldAssertionsUntestableCount: 0,
         mayAssertionsPassedCount,
         mayAssertionsCount,
         mayAssertionsFailedCount,
+        mayAssertionsUntestableCount: 0,
         testsPassedCount,
         testsCount,
         testsFailedCount,
@@ -322,14 +327,18 @@ describe('getMetrics', () => {
         mustAssertionsCount: 56,
         assertionsFailedCount: 37,
         assertionsPassedCount: 63,
+        assertionsUntestableCount: 0,
         shouldAssertionsCount: 36,
         unexpectedBehaviorCount: 7,
         mayAssertionsFailedCount: 6,
         mayAssertionsPassedCount: 2,
+        mayAssertionsUntestableCount: 0,
         mustAssertionsFailedCount: 15,
         mustAssertionsPassedCount: 41,
+        mustAssertionsUntestableCount: 0,
         shouldAssertionsFailedCount: 16,
         shouldAssertionsPassedCount: 20,
+        shouldAssertionsUntestableCount: 0,
         unexpectedBehaviorsFormatted: '7 found',
         severeImpactFailedAssertionCount: 7,
         severeImpactPassedAssertionCount: 13,
@@ -384,15 +393,19 @@ describe('getMetrics', () => {
     expect(getMetrics({ testPlanReport })).toEqual({
       assertionsPassedCount: 13,
       assertionsFailedCount: 4,
+      assertionsUntestableCount: 0,
       mustAssertionsPassedCount: 5,
       mustAssertionsCount: 7,
       mustAssertionsFailedCount: 2,
+      mustAssertionsUntestableCount: 0,
       shouldAssertionsPassedCount: 6,
       shouldAssertionsCount: 7,
       shouldAssertionsFailedCount: 1,
+      shouldAssertionsUntestableCount: 0,
       mayAssertionsPassedCount: 2,
       mayAssertionsCount: 3,
       mayAssertionsFailedCount: 1,
+      mayAssertionsUntestableCount: 0,
       testsPassedCount: 1,
       testsCount: 3,
       testsFailedCount: 2,
@@ -420,15 +433,19 @@ describe('getMetrics', () => {
     expect(getMetrics({ testPlanReport })).toEqual({
       assertionsPassedCount: 12,
       assertionsFailedCount: 5,
+      assertionsUntestableCount: 0,
       mustAssertionsPassedCount: 4,
       mustAssertionsCount: 7,
       mustAssertionsFailedCount: 3,
+      mustAssertionsUntestableCount: 0,
       shouldAssertionsPassedCount: 6,
       shouldAssertionsCount: 7,
       shouldAssertionsFailedCount: 1,
+      shouldAssertionsUntestableCount: 0,
       mayAssertionsPassedCount: 2,
       mayAssertionsCount: 3,
       mayAssertionsFailedCount: 1,
+      mayAssertionsUntestableCount: 0,
       testsPassedCount: 0,
       testsCount: 3,
       testsFailedCount: 3,
@@ -463,15 +480,19 @@ describe('getMetrics', () => {
     expect(getMetrics({ testPlanReport })).toEqual({
       assertionsPassedCount: 11,
       assertionsFailedCount: 6,
+      assertionsUntestableCount: 0,
       mustAssertionsPassedCount: 4,
       mustAssertionsCount: 7,
       mustAssertionsFailedCount: 3,
+      mustAssertionsUntestableCount: 0,
       shouldAssertionsPassedCount: 5,
       shouldAssertionsCount: 7,
       shouldAssertionsFailedCount: 2,
+      shouldAssertionsUntestableCount: 0,
       mayAssertionsPassedCount: 2,
       mayAssertionsCount: 3,
       mayAssertionsFailedCount: 1,
+      mayAssertionsUntestableCount: 0,
       testsPassedCount: 0,
       testsCount: 3,
       testsFailedCount: 3,
@@ -487,6 +508,54 @@ describe('getMetrics', () => {
       unexpectedBehaviorsFormatted: '2 found',
       supportLevel: 'FAILING',
       supportPercent: 64
+    });
+  });
+
+  it('returns expected metrics object for failing testPlanReport with untestable scenario', () => {
+    const testPlanReport = generateTestPlanReport([
+      [
+        {
+          must: [true],
+          should: [true],
+          may: [true],
+          untestable: true,
+          unexpected: ['SEVERE']
+        }
+      ],
+      [{ must: [true, false], should: [true], may: [true], unexpected: [] }],
+      [{ must: [false], should: [true, false], may: [false], unexpected: [] }]
+    ]);
+    expect(getMetrics({ testPlanReport })).toEqual({
+      assertionsPassedCount: 9,
+      assertionsFailedCount: 5,
+      assertionsUntestableCount: 3,
+      mustAssertionsPassedCount: 3,
+      mustAssertionsCount: 7,
+      mustAssertionsFailedCount: 3,
+      mustAssertionsUntestableCount: 1,
+      shouldAssertionsPassedCount: 5,
+      shouldAssertionsCount: 7,
+      shouldAssertionsFailedCount: 1,
+      shouldAssertionsUntestableCount: 1,
+      mayAssertionsPassedCount: 1,
+      mayAssertionsCount: 3,
+      mayAssertionsFailedCount: 1,
+      mayAssertionsUntestableCount: 1,
+      testsPassedCount: 0,
+      testsCount: 3,
+      testsFailedCount: 3,
+      unexpectedBehaviorCount: 1,
+      severeImpactPassedAssertionCount: 2,
+      severeImpactFailedAssertionCount: 1,
+      moderateImpactPassedAssertionCount: 3,
+      moderateImpactFailedAssertionCount: 0,
+      commandsCount: 3,
+      mustFormatted: '3 of 7 passed',
+      shouldFormatted: '5 of 7 passed',
+      mayFormatted: '1 of 3 supported',
+      unexpectedBehaviorsFormatted: '1 found',
+      supportLevel: 'FAILING',
+      supportPercent: 66
     });
   });
 });
