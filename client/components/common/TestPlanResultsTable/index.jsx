@@ -11,9 +11,15 @@ import {
 } from '../proptypes';
 
 const getAssertionResultText = (assertionResult, untestable) => {
-  const { passed, priorityString, failWhenUntestable } = assertionResult;
-  if (untestable) {
-    return failWhenUntestable ? 'Failed' : 'Untestable';
+  const { passed, priorityString, describesSideEffects } = assertionResult;
+
+  // In untestable scenarios, the result of test-specific assertions should be
+  // reported as "untestable" because their state is indeterminate. The other
+  // assertions (that is, those describing the presence of side effects) should
+  // be reported as "Passed" or "Failed" as normal because the absence/presence
+  // of side effects *can* be conclusively reported.
+  if (untestable && !describesSideEffects) {
+    return 'Untestable';
   }
   if (priorityString === 'MAY') {
     return passed ? 'Supported' : 'Unsupported';
@@ -132,7 +138,7 @@ const TestPlanResultsTable = ({
             assertion: {
               text: 'Severe negative side effects do not occur'
             },
-            failWhenUntestable: true,
+            describesSideEffects: true,
             passed: hasNoSevereUnexpectedBehavior,
             priorityString: 'MUST'
           },
@@ -146,6 +152,7 @@ const TestPlanResultsTable = ({
             assertion: {
               text: 'Moderate negative side effects do not occur'
             },
+            describesSideEffects: true,
             passed: hasNoModerateUnexpectedBehavior,
             priorityString: 'SHOULD'
           },
