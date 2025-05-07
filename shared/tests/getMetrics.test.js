@@ -1,5 +1,7 @@
 const getMetrics = require('../getMetrics');
 const { calculatePercentage, trimDecimals } = require('../calculations');
+// Based on real data from Color Viewer Slider V24.12.04 with VoiceOver for macOS and Safari
+// https://aria-at.w3.org/report/163630/targets/324
 // eslint-disable-next-line jest/no-mocks-import
 const testPlanReport = require('./__mocks__/testPlanReportForMetricsFromLiveData.json');
 
@@ -303,34 +305,36 @@ describe('getMetrics', () => {
   it('returns expected metrics object for testPlanReport with client data', () => {
     const metrics = getMetrics({ testPlanReport });
 
+    // Based on real data from Color Viewer Slider V24.12.04 with VoiceOver for macOS and Safari
+    // https://aria-at.w3.org/report/163630/targets/324
     expect(metrics).toEqual(
       expect.objectContaining({
-        assertionsPassedCount: 328,
-        assertionsFailedCount: 90,
-        mustAssertionsPassedCount: 206,
-        mustAssertionsCount: 206,
-        mustAssertionsFailedCount: 0,
-        shouldAssertionsPassedCount: 122,
-        shouldAssertionsCount: 206,
-        shouldAssertionsFailedCount: 84,
-        mayAssertionsPassedCount: 0,
-        mayAssertionsCount: 6,
-        mayAssertionsFailedCount: 6,
+        testsCount: 9,
+        mayFormatted: '2 of 8 supported',
+        supportLevel: 'FAILING',
+        commandsCount: 20,
+        mustFormatted: '41 of 56 passed',
+        supportPercent: 66,
+        shouldFormatted: '20 of 36 passed',
+        testsFailedCount: 7,
         testsPassedCount: 2,
-        testsCount: 15,
-        testsFailedCount: 13,
-        unexpectedBehaviorCount: 0,
-        severeImpactPassedAssertionCount: 55,
-        severeImpactFailedAssertionCount: 0,
-        moderateImpactPassedAssertionCount: 55,
+        mayAssertionsCount: 8,
+        mustAssertionsCount: 56,
+        assertionsFailedCount: 37,
+        assertionsPassedCount: 63,
+        shouldAssertionsCount: 36,
+        unexpectedBehaviorCount: 7,
+        mayAssertionsFailedCount: 6,
+        mayAssertionsPassedCount: 2,
+        mustAssertionsFailedCount: 15,
+        mustAssertionsPassedCount: 41,
+        shouldAssertionsFailedCount: 16,
+        shouldAssertionsPassedCount: 20,
+        unexpectedBehaviorsFormatted: '7 found',
+        severeImpactFailedAssertionCount: 7,
+        severeImpactPassedAssertionCount: 13,
         moderateImpactFailedAssertionCount: 0,
-        commandsCount: 55,
-        mustFormatted: '206 of 206 passed',
-        shouldFormatted: '122 of 206 passed',
-        mayFormatted: '0 of 6 supported',
-        unexpectedBehaviorsFormatted: false,
-        supportLevel: 'ALL_REQUIRED',
-        supportPercent: 79
+        moderateImpactPassedAssertionCount: 20
       })
     );
   });
