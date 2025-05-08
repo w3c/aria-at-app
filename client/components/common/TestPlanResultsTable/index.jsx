@@ -47,6 +47,7 @@ const CommandHeading = ({ level, commandsString, metrics }) => {
   const Heading = `h${level}`;
   const {
     assertionsPassedCount,
+    assertionsUntestableCount,
     mustAssertionsFailedCount,
     shouldAssertionsFailedCount,
     mayAssertionsFailedCount
@@ -54,13 +55,16 @@ const CommandHeading = ({ level, commandsString, metrics }) => {
 
   const mustShouldAssertionsFailedCount =
     mustAssertionsFailedCount + shouldAssertionsFailedCount;
+  const ambiguousText = assertionsUntestableCount
+    ? `${assertionsUntestableCount} untestable`
+    : `${mayAssertionsFailedCount} unsupported`;
 
   return (
     <Heading>
       {commandsString}&nbsp;Results:&nbsp;
       {assertionsPassedCount} passed,&nbsp;
       {mustShouldAssertionsFailedCount} failed,&nbsp;
-      {mayAssertionsFailedCount} unsupported
+      {ambiguousText}
     </Heading>
   );
 };
