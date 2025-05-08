@@ -4,7 +4,11 @@ import { Table } from 'react-bootstrap';
 import nextId from 'react-id-generator';
 import { getMetrics } from 'shared';
 import './TestPlanResultsTable.css';
-import { TestPropType, TestResultPropType } from '../proptypes';
+import {
+  TestPlanReportMetricsPropType,
+  TestPropType,
+  TestResultPropType
+} from '../proptypes';
 
 const getAssertionResultText = (passed, priority) => {
   if (priority === 'MAY') {
@@ -29,6 +33,34 @@ const renderAssertionRow = (assertionResult, priorityString) => {
   );
 };
 
+const CommandHeading = ({ level, commandsString, metrics }) => {
+  const Heading = `h${level}`;
+  const {
+    assertionsPassedCount,
+    mustAssertionsFailedCount,
+    shouldAssertionsFailedCount,
+    mayAssertionsFailedCount
+  } = metrics;
+
+  const mustShouldAssertionsFailedCount =
+    mustAssertionsFailedCount + shouldAssertionsFailedCount;
+
+  return (
+    <Heading>
+      {commandsString}&nbsp;Results:&nbsp;
+      {assertionsPassedCount} passed,&nbsp;
+      {mustShouldAssertionsFailedCount} failed,&nbsp;
+      {mayAssertionsFailedCount} unsupported
+    </Heading>
+  );
+};
+
+CommandHeading.propTypes = {
+  level: PropTypes.number.isRequired,
+  commandsString: PropTypes.string.isRequired,
+  metrics: TestPlanReportMetricsPropType.isRequired
+};
+
 const TestPlanResultsTable = ({
   test,
   testResult,
@@ -36,23 +68,15 @@ const TestPlanResultsTable = ({
   optionalHeader = null,
   commandHeadingLevel = 3
 }) => {
-  const CommandHeading = `h${commandHeadingLevel}`;
-
   return (
     <>
       {optionalHeader}
       {testResult.scenarioResults.map((scenarioResult, index) => {
+        const metrics = getMetrics({ scenarioResult });
         const {
-          assertionsPassedCount,
-          mustAssertionsFailedCount,
-          shouldAssertionsFailedCount,
-          mayAssertionsFailedCount,
           severeImpactPassedAssertionCount,
           moderateImpactPassedAssertionCount
-        } = getMetrics({ scenarioResult });
-
-        const mustShouldAssertionsFailedCount =
-          mustAssertionsFailedCount + shouldAssertionsFailedCount;
+        } = metrics;
 
         const hasNoSevereUnexpectedBehavior =
           severeImpactPassedAssertionCount > 0;
@@ -126,12 +150,11 @@ const TestPlanResultsTable = ({
 
         return (
           <React.Fragment key={scenarioResult.id}>
-            <CommandHeading>
-              {commandsString}&nbsp;Results:&nbsp;
-              {assertionsPassedCount} passed,&nbsp;
-              {mustShouldAssertionsFailedCount} failed,&nbsp;
-              {mayAssertionsFailedCount} unsupported
-            </CommandHeading>
+            <CommandHeading
+              level={commandHeadingLevel}
+              commandsString={commandsString}
+              metrics={metrics}
+            />
             <p className="test-plan-results-response-p">
               {test.at?.name} Response:
             </p>
