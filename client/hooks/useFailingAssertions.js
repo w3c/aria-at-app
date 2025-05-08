@@ -77,9 +77,27 @@ export const useFailingAssertions = testPlanReport => {
     );
 
     const uniqueCommandsWithFailures = new Set(
-      failingAssertions.map(a => a.commandId)
+      failingAssertions.map(a => a.scenarioCommands)
     );
     failingAssertions.uniqueCommandsCount = uniqueCommandsWithFailures.size;
+
+    const uniqueAssertionStatements = new Set(
+      failingAssertions.map(a => a.assertionText)
+    );
+    failingAssertions.uniqueAssertionStatementsCount =
+      uniqueAssertionStatements.size;
+
+    let totalAssertionsCount = 0;
+    if (testPlanReport?.finalizedTestResults) {
+      testPlanReport.finalizedTestResults.forEach(testResult => {
+        testResult.scenarioResults.forEach(scenarioResult => {
+          totalAssertionsCount +=
+            scenarioResult.mustAssertionResults.length +
+            scenarioResult.shouldAssertionResults.length;
+        });
+      });
+    }
+    failingAssertions.totalAssertionsCount = totalAssertionsCount;
 
     return failingAssertions;
   }, [testPlanReport]);
