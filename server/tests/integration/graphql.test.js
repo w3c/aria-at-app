@@ -4,10 +4,15 @@ const deepFlatFilter = require('../../util/deepFlatFilter');
 const { query, mutate } = require('../util/graphql-test-utilities');
 const db = require('../../models/index');
 const dbCleaner = require('../util/db-cleaner');
-const { getAtVersionByQuery } = require('../../models/services/AtService');
+const {
+  getAtVersionByQuery
+} = require('../../models/services/AtVersionService');
 const {
   getBrowserVersionByQuery
 } = require('../../models/services/BrowserService');
+const {
+  setupMockAutomationSchedulerServer
+} = require('../util/mock-automation-scheduler-server');
 
 /**
  * Get a function for making GraphQL queries - as well as functions to check
@@ -132,6 +137,7 @@ let checkForMissingFields;
 
 describe('graphql', () => {
   beforeAll(async () => {
+    await setupMockAutomationSchedulerServer();
     const excludedTypeNames = [
       // Items formatted like this:
       // 'TestResult'
@@ -283,6 +289,20 @@ describe('graphql', () => {
             id
             status
           }
+          updateEvent(id: 1) {
+            __typename
+            id
+            description
+            timestamp
+            type
+          }
+          updateEvents {
+            __typename
+            id
+            description
+            timestamp
+            type
+          }
           vendors {
             id
             name
@@ -366,7 +386,8 @@ describe('graphql', () => {
               isCandidateReview
               feedbackType
               isOpen
-              testNumberFilteredByAt
+              testRowNumber
+              testSequenceNumber
               createdAt
               closedAt
               at {
@@ -645,6 +666,32 @@ describe('graphql', () => {
               id
             }
           }
+          rerunnableReports(atVersionId: 4) {
+            __typename
+            currentVersion {
+              __typename
+              id
+              name
+            }
+            previousVersionGroups {
+              __typename
+              previousVersion {
+                __typename
+                id
+                name
+              }
+              reports {
+                __typename
+                id
+                at {
+                  id
+                }
+                browser {
+                  id
+                }
+              }
+            }
+          }
         }
       `,
       { transaction: false }
@@ -828,6 +875,14 @@ describe('graphql', () => {
               }
             }
             deleteCollectionJob(id: 1)
+            createCollectionJobsFromPreviousAtVersion(atVersionId: 6) {
+              __typename
+              collectionJobs {
+                __typename
+                id
+              }
+              message
+            }
           }
         `,
         {
@@ -958,7 +1013,12 @@ const getMutationInputs = async () => {
 
   const atVersion = await getAtVersionByQuery({
     where: { atId: at.id },
-    pagination: { order: [['releasedAt', 'DESC']] },
+    pagination: {
+      order: [
+        ['name', 'DESC'],
+        ['releasedAt', 'DESC']
+      ]
+    },
     transaction: false
   });
 

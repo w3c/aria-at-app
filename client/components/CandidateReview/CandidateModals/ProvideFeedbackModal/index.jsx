@@ -5,7 +5,7 @@ import Form from 'react-bootstrap/Form';
 import FormCheck from 'react-bootstrap/FormCheck';
 import '../common.css';
 import './ProvideFeedbackModal.css';
-import FeedbackListItem from '../../FeedbackListItem';
+import FeedbackListItem, { FeedbackTypeMap } from '../../FeedbackListItem';
 
 const ProvideFeedbackModal = ({
   at = '',
@@ -32,16 +32,18 @@ const ProvideFeedbackModal = ({
         <div className="feedback-content">
           {changesRequestedIssues.length > 0 && (
             <FeedbackListItem
-              type="changes-requested"
-              differentAuthors={false}
+              authorMeIncluded
+              isGeneralFeedback
+              feedbackType={FeedbackTypeMap.CHANGES_REQUESTED}
               issues={changesRequestedIssues}
               githubUrl={changesRequestedGithubUrl}
             ></FeedbackListItem>
           )}
           {feedbackIssues.length > 0 && (
             <FeedbackListItem
-              type="feedback"
-              differentAuthors={false}
+              authorMeIncluded
+              isGeneralFeedback
+              feedbackType={FeedbackTypeMap.FEEDBACK}
               issues={feedbackIssues}
               githubUrl={feedbackGithubUrl}
             ></FeedbackListItem>

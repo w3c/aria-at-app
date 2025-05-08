@@ -29,38 +29,45 @@ const graphQLEndpoint = `${GITHUB_GRAPHQL_SERVER}/graphql`;
 
 const getAllIssues = async () => {
   let currentResults = [];
-  let page = 1;
+  let url = `${GITHUB_ISSUES_API_URL}/issues?state=all&per_page=100`;
+
+  const auth = {
+    username: GITHUB_CLIENT_ID,
+    password: GITHUB_CLIENT_SECRET
+  };
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const issuesEndpoint = `${GITHUB_ISSUES_API_URL}/issues?state=all&per_page=100`;
-    const url = `${issuesEndpoint}&page=${page}`;
-    const auth = {
-      username: GITHUB_CLIENT_ID,
-      password: GITHUB_CLIENT_SECRET
-    };
-    const response = await axios.get(url, { auth });
+    try {
+      const response = await axios.get(url, { auth });
+      const issues = response.data
+        // https://docs.github.com/en/rest/issues/issues#list-repository-issues
+        // Filter out Pull Requests. GitHub's REST API v3 also considers every
+        // pull request an issue.
+        .filter(data => !data.pull_request)
+        // Our issue API should only return issues that were originally
+        // created by the app, indicated by the presence of metadata
+        // hidden in a comment
+        .filter(data => data.body?.includes('ARIA_AT_APP_ISSUE_DATA'));
 
-    const issues = response.data
-      // https://docs.github.com/en/rest/issues/issues#list-repository-issues
-      // Filter out Pull Requests. GitHub's REST API v3 also considers every
-      // pull request an issue.
-      .filter(data => !data.pull_request)
-      // Our issue API should only return issues that were originally
-      // created by the app, indicated by the presence of metadata
-      // hidden in a comment
-      .filter(data => data.body?.includes('ARIA_AT_APP_ISSUE_DATA'));
+      currentResults = [...currentResults, ...issues];
 
-    currentResults = [...currentResults, ...issues];
+      const linkHeader = response.headers.link;
 
-    const hasMoreResults = response.headers.link?.includes('rel="next"');
+      if (linkHeader) {
+        // From https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api?apiVersion=2022-11-28#example-creating-a-pagination-method
+        const match = linkHeader.match(/(?<=<)(\S*)(?=>; rel="next")/);
+        if (match && match[0]) {
+          url = match[0];
+          continue;
+        }
+      }
 
-    if (hasMoreResults) {
-      page += 1;
-      continue;
+      break;
+    } catch (error) {
+      console.error(error);
+      break;
     }
-
-    break;
   }
 
   return currentResults;

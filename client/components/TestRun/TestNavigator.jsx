@@ -8,7 +8,8 @@ import {
 import { Col } from 'react-bootstrap';
 import React, { useContext, useMemo } from 'react';
 import { Context as CollectionJobContext } from './CollectionJobContext';
-import '@fortawesome/fontawesome-svg-core/styles.css';
+import styles from './TestNavigator.module.css';
+import clsx from 'clsx';
 
 const TestNavigator = ({
   show = true,
@@ -42,18 +43,15 @@ const TestNavigator = ({
   }, [isVendor, testPlanReport]);
 
   return (
-    <Col className="test-navigator" md={show ? 3 : 12}>
-      <div className="test-navigator-toggle-container">
-        <h2
-          id="test-navigator-heading"
-          className="test-navigator-toggle-inner-container"
-        >
+    <Col className={styles.testNavigator} md={show ? 3 : 12}>
+      <div className={styles.testNavigatorToggleContainer}>
+        <h2 id="test-navigator-heading">
           <button
             aria-label="Test Navigation"
             aria-controls="test-navigator-nav"
             aria-expanded={show ? 'true' : 'false'}
             onClick={toggleShowClick}
-            className="test-navigator-toggle"
+            className={styles.testNavigatorToggle}
           >
             {show ? (
               <FontAwesomeIcon icon={faArrowLeft} />
@@ -67,35 +65,36 @@ const TestNavigator = ({
       <nav id="test-navigator-nav" hidden={!show} aria-label="Test">
         <ol
           aria-labelledby="test-navigator-heading"
-          className="test-navigator-list"
+          className={styles.testNavigatorList}
         >
           {shouldShowFailingAssertionsSummary && (
-            <div className="test-name-wrapper summary">
+            <div className={clsx(styles.testNameWrapper, styles.summary)}>
               <a
                 onClick={async e => {
                   e.preventDefault();
                   await handleTestClick(-1);
                 }}
                 href="#summary"
-                className="test-name"
+                className={styles.testName}
                 aria-current={currentTestIndex === -1}
               >
                 Summary of Failing Assertions
               </a>
               <span
-                className="progress-indicator"
+                className={styles.progressIndicator}
                 title="Summary of Failing Assertions"
               />
             </div>
           )}
           {tests.map((test, index) => {
-            let resultClassName = isReadOnly ? 'missing' : 'not-started';
+            let resultClassName = isReadOnly
+              ? styles.missing
+              : styles.notStarted;
             let resultStatus = isReadOnly ? 'Missing' : 'Not Started';
 
             const issuesExist = testPlanReport.issues?.filter(
               issue =>
-                issue.isCandidateReview &&
-                issue.testNumberFilteredByAt == test.seq
+                issue.isCandidateReview && issue.testRowNumber == test.rowNumber
             ).length;
 
             if (test) {
@@ -103,33 +102,33 @@ const TestNavigator = ({
                 const { status } =
                   testStatus.find(ts => ts.test.id === test.id) ?? {};
                 if (status === 'COMPLETED') {
-                  resultClassName = 'bot-complete';
+                  resultClassName = styles.botComplete;
                   resultStatus = 'Completed by Bot';
                 } else if (status === 'QUEUED') {
-                  resultClassName = 'bot-queued';
+                  resultClassName = styles.botQueued;
                   resultStatus = 'Queued by Bot';
                 } else if (status === 'RUNNING') {
-                  resultClassName = 'bot-running';
+                  resultClassName = styles.botRunning;
                   resultStatus = 'Running with Bot';
                 } else if (status === 'ERROR') {
-                  resultClassName = 'bot-error';
+                  resultClassName = styles.botError;
                   resultStatus = 'Error collecting with Bot';
                 } else if (status === 'CANCELLED') {
-                  resultClassName = 'bot-cancelled';
+                  resultClassName = styles.botCancelled;
                   resultStatus = 'Cancelled by Bot';
                 }
               } else {
                 // Non-bot tests
                 if (test.hasConflicts) {
-                  resultClassName = 'conflicts';
+                  resultClassName = styles.conflicts;
                   resultStatus = 'Has Conflicts';
                 } else if (!test.testResult && isReadOnly) {
-                  resultClassName = 'missing';
+                  resultClassName = styles.missing;
                   resultStatus = 'Missing';
                 } else if (test.testResult) {
                   resultClassName = test.testResult.completedAt
-                    ? 'complete'
-                    : 'in-progress';
+                    ? styles.complete
+                    : styles.inProgress;
                   resultStatus = test.testResult.completedAt
                     ? 'Complete Test'
                     : 'In Progress';
@@ -138,14 +137,14 @@ const TestNavigator = ({
                   !isVendor &&
                   test.index === currentTestIndex
                 ) {
-                  resultClassName = 'in-progress';
+                  resultClassName = styles.inProgress;
                   resultStatus = 'In Progress';
                 } else if (isVendor) {
                   if (issuesExist) {
-                    resultClassName = 'changes-requested';
+                    resultClassName = styles.changesRequested;
                     resultStatus = 'Changes Requested';
                   } else if (viewedTests.includes(test.id)) {
-                    resultClassName = 'complete';
+                    resultClassName = styles.complete;
                     resultStatus = 'Test Viewed';
                   }
                 }
@@ -153,7 +152,7 @@ const TestNavigator = ({
             }
             return (
               <li
-                className={`test-name-wrapper ${resultClassName}`}
+                className={clsx(styles.testNameWrapper, resultClassName)}
                 key={`TestNavigatorItem_${test.id}`}
               >
                 <a
@@ -162,13 +161,13 @@ const TestNavigator = ({
                     await handleTestClick(test.index);
                   }}
                   href={`#${index + 1}`}
-                  className="test-name"
+                  className={styles.testName}
                   aria-current={test.index === currentTestIndex}
                 >
                   {test.title}
                 </a>
                 <span
-                  className="progress-indicator"
+                  className={styles.progressIndicator}
                   title={`${resultStatus}`}
                 />
               </li>

@@ -36,11 +36,12 @@ import {
   TEST_RUN_PAGE_QUERY
 } from './queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import './TestRun.css';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
 import { Provider as CollectionJobContextProvider } from './CollectionJobContext';
 import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
+import styles from './TestRun.module.css';
+import atBrowserDetailsModalStyles from '../common/AtAndBrowserDetailsModal/AtAndBrowserDetails.module.css';
 
 const TestRun = () => {
   const params = useParams();
@@ -579,7 +580,9 @@ const TestRun = () => {
 
           // check to see if form was successfully submitted, if so, return to top of summary document
           const forceFocusOnSave = await saveForm(true);
-          if (forceFocusOnSave) if (titleRef.current) titleRef.current.focus();
+          if (forceFocusOnSave) {
+            if (titleRef.current) titleRef.current.focus();
+          }
         }
         break;
       }
@@ -879,13 +882,18 @@ const TestRun = () => {
 
   const handleAtAndBrowserDetailsModalCloseAction = () => {
     setIsShowingAtBrowserModal(false);
-    if (isEditAtBrowserDetailsModalClick)
+    if (
+      isEditAtBrowserDetailsModalClick &&
+      editAtBrowserDetailsButtonRef.current
+    ) {
       editAtBrowserDetailsButtonRef.current.focus();
+    }
   };
 
   const onThemedModalClose = () => {
     setShowThemedModal(false);
-    editAtBrowserDetailsButtonRef.current.focus();
+    if (editAtBrowserDetailsButtonRef.current)
+      editAtBrowserDetailsButtonRef.current.focus();
   };
 
   const renderTestContent = (testPlanReport, currentTest, heading) => {
@@ -918,7 +926,6 @@ const TestRun = () => {
     if (isComplete) {
       const editButton = (
         <Button
-          className="edit-results"
           variant="secondary"
           onClick={handleEditResultsClick}
           disabled={isReadOnly}
@@ -965,12 +972,18 @@ const TestRun = () => {
     const menuRightOfContent = (
       <div role="complementary">
         <h2 id="test-options-heading">Test Options</h2>
-        <ul className="options-wrapper" aria-labelledby="test-options-heading">
+        <ul
+          className={styles.optionsWrapper}
+          aria-labelledby="test-options-heading"
+        >
           <li>
             <OptionButton
               text="Raise an Issue"
               icon={
-                <FontAwesomeIcon icon={faExclamationCircle} color="#94979b" />
+                <FontAwesomeIcon
+                  icon={faExclamationCircle}
+                  color="var(--bg-dark-gray)"
+                />
               }
               target="_blank"
               href={issueLink}
@@ -988,7 +1001,9 @@ const TestRun = () => {
             <li>
               <OptionButton
                 text="Start Over"
-                icon={<FontAwesomeIcon icon={faRedo} color="#94979b" />}
+                icon={
+                  <FontAwesomeIcon icon={faRedo} color="var(--bg-dark-gray)" />
+                }
                 onClick={handleStartOverButtonClick}
                 disabled={!isSignedIn}
               />
@@ -1001,7 +1016,7 @@ const TestRun = () => {
               onClick={handleCloseRunClick}
             />
           </li>
-          <li className="help-link">
+          <li className={styles.helpLink}>
             <a href="mailto:public-aria-at@w3.org">Email us if you need help</a>
           </li>
         </ul>
@@ -1011,7 +1026,7 @@ const TestRun = () => {
     return (
       <>
         <h1 ref={titleRef} data-testid="testing-task" tabIndex={-1}>
-          <span className="task-label">Test {currentTest.seq}:</span>
+          <span className={styles.taskLabel}>Test {currentTest.seq}:</span>
           {currentTest.title}
         </h1>
         <span>{heading}</span>
@@ -1022,7 +1037,7 @@ const TestRun = () => {
         />
         {pageReady && (
           <Row>
-            <Col className="test-iframe-container" md={9}>
+            <Col className="p-0" md={9}>
               <Row>
                 <TestRenderer
                   key={nextId()}
@@ -1060,7 +1075,7 @@ const TestRun = () => {
                   </h2>
                   <ul
                     aria-labelledby="test-toolbar-heading"
-                    className="test-run-toolbar mt-1"
+                    className={styles.testRunToolbar}
                   >
                     {primaryButtons.map(button => (
                       <li key={nextId()}>{button}</li>
@@ -1069,7 +1084,7 @@ const TestRun = () => {
                 </Row>
               )}
             </Col>
-            <Col className="current-test-options" md={3}>
+            <Col className={styles.currentTestOptions} md={3}>
               {menuRightOfContent}
             </Col>
           </Row>
@@ -1191,7 +1206,7 @@ const TestRun = () => {
   return (
     pageReady && (
       <CollectionJobContextProvider testPlanRun={testPlanRun}>
-        <Container className="test-run-container">
+        <Container>
           <Helmet>
             <title>
               {testCount
@@ -1201,7 +1216,10 @@ const TestRun = () => {
             </title>
           </Helmet>
           {updateMessageComponent && (
-            <Alert variant="success" className="at-browser-details-modal-alert">
+            <Alert
+              variant="success"
+              className={atBrowserDetailsModalStyles.atBrowserDetailsModalAlert}
+            >
               {updateMessageComponent}
             </Alert>
           )}
@@ -1215,7 +1233,7 @@ const TestRun = () => {
               testPlanRun={testPlanRun}
               isReadOnly={isReadOnly}
             />
-            <Col className="main-test-area" id="main" as="main" tabIndex="-1">
+            <Col id="main" as="main" tabIndex="-1">
               <Row>
                 <Col>{content}</Col>
               </Row>

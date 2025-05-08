@@ -1,5 +1,7 @@
 const getMetrics = require('../getMetrics');
 const { calculatePercentage, trimDecimals } = require('../calculations');
+// Based on real data from Color Viewer Slider V24.12.04 with VoiceOver for macOS and Safari
+// https://aria-at.w3.org/report/163630/targets/324
 // eslint-disable-next-line jest/no-mocks-import
 const testPlanReport = require('./__mocks__/testPlanReportForMetricsFromLiveData.json');
 
@@ -7,7 +9,41 @@ const generateRandomNumber = (max, min = 1) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const generateTestPlanReport = () => {
+function generateTestPlanReport(reportSpec) {
+  let idCount = 0;
+  const id = () => String(++idCount);
+  const boolToAssertion = passed => ({ passed });
+  return {
+    id: id(),
+    runnableTests: Array(reportSpec.length)
+      .fill()
+      .map(() => ({ id: id() })),
+    finalizedTestResults: reportSpec.map(testSpec => {
+      return {
+        id: id(),
+        scenarioResults: testSpec.map(scenarioSpec => {
+          const { must, should, may, unexpected } = scenarioSpec;
+          return {
+            id: id(),
+            scenario: {
+              commands: [{ id: 's' }]
+            },
+            assertionResults: [...must, ...should, ...may].map(boolToAssertion),
+            mustAssertionResults: must.map(boolToAssertion),
+            shouldAssertionResults: should.map(boolToAssertion),
+            mayAssertionResults: may.map(boolToAssertion),
+            unexpectedBehaviors: unexpected.map(impact => ({
+              id: id(),
+              impact
+            }))
+          };
+        })
+      };
+    })
+  };
+}
+
+const generateRandomizedTestPlanReport = () => {
   let testPlanReport = {
     id: generateRandomNumber(200)
   };
@@ -188,7 +224,7 @@ describe('getMetrics', () => {
       unexpectedBehaviorCount,
       severeImpactFailedAssertionCount,
       moderateImpactFailedAssertionCount
-    } = generateTestPlanReport();
+    } = generateRandomizedTestPlanReport();
     const metrics = getMetrics({ testPlanReport });
 
     const testsFailedCount = testsCount - testsPassedCount;
@@ -269,35 +305,152 @@ describe('getMetrics', () => {
   it('returns expected metrics object for testPlanReport with client data', () => {
     const metrics = getMetrics({ testPlanReport });
 
+    // Based on real data from Color Viewer Slider V24.12.04 with VoiceOver for macOS and Safari
+    // https://aria-at.w3.org/report/163630/targets/324
     expect(metrics).toEqual(
       expect.objectContaining({
-        assertionsPassedCount: 328,
-        assertionsFailedCount: 90,
-        mustAssertionsPassedCount: 206,
-        mustAssertionsCount: 206,
-        mustAssertionsFailedCount: 0,
-        shouldAssertionsPassedCount: 122,
-        shouldAssertionsCount: 206,
-        shouldAssertionsFailedCount: 84,
-        mayAssertionsPassedCount: 0,
-        mayAssertionsCount: 6,
-        mayAssertionsFailedCount: 6,
+        testsCount: 9,
+        mayFormatted: '2 of 8 supported',
+        supportLevel: 'FAILING',
+        commandsCount: 20,
+        mustFormatted: '41 of 56 passed',
+        supportPercent: 66,
+        shouldFormatted: '20 of 36 passed',
+        testsFailedCount: 7,
         testsPassedCount: 2,
-        testsCount: 15,
-        testsFailedCount: 13,
-        unexpectedBehaviorCount: 0,
-        severeImpactPassedAssertionCount: 55,
-        severeImpactFailedAssertionCount: 0,
-        moderateImpactPassedAssertionCount: 55,
+        mayAssertionsCount: 8,
+        mustAssertionsCount: 56,
+        assertionsFailedCount: 37,
+        assertionsPassedCount: 63,
+        shouldAssertionsCount: 36,
+        unexpectedBehaviorCount: 7,
+        mayAssertionsFailedCount: 6,
+        mayAssertionsPassedCount: 2,
+        mustAssertionsFailedCount: 15,
+        mustAssertionsPassedCount: 41,
+        shouldAssertionsFailedCount: 16,
+        shouldAssertionsPassedCount: 20,
+        unexpectedBehaviorsFormatted: '7 found',
+        severeImpactFailedAssertionCount: 7,
+        severeImpactPassedAssertionCount: 13,
         moderateImpactFailedAssertionCount: 0,
-        commandsCount: 55,
-        mustFormatted: '206 of 206 passed',
-        shouldFormatted: '122 of 206 passed',
-        mayFormatted: '0 of 6 supported',
-        unexpectedBehaviorsFormatted: false,
-        supportLevel: 'ALL_REQUIRED',
-        supportPercent: 79
+        moderateImpactPassedAssertionCount: 20
       })
     );
+  });
+
+  it('returns expected metrics object for failing testPlanReport without unexpected behaviors', () => {
+    const testPlanReport = generateTestPlanReport([
+      [{ must: [true], should: [true], may: [true], unexpected: [] }],
+      [{ must: [true, false], should: [true], may: [true], unexpected: [] }],
+      [{ must: [false], should: [true, false], may: [false], unexpected: [] }]
+    ]);
+    expect(getMetrics({ testPlanReport })).toEqual({
+      assertionsPassedCount: 13,
+      assertionsFailedCount: 4,
+      mustAssertionsPassedCount: 5,
+      mustAssertionsCount: 7,
+      mustAssertionsFailedCount: 2,
+      shouldAssertionsPassedCount: 6,
+      shouldAssertionsCount: 7,
+      shouldAssertionsFailedCount: 1,
+      mayAssertionsPassedCount: 2,
+      mayAssertionsCount: 3,
+      mayAssertionsFailedCount: 1,
+      testsPassedCount: 1,
+      testsCount: 3,
+      testsFailedCount: 2,
+      unexpectedBehaviorCount: 0,
+      severeImpactPassedAssertionCount: 3,
+      severeImpactFailedAssertionCount: 0,
+      moderateImpactPassedAssertionCount: 3,
+      moderateImpactFailedAssertionCount: 0,
+      commandsCount: 3,
+      mustFormatted: '5 of 7 passed',
+      shouldFormatted: '6 of 7 passed',
+      mayFormatted: '2 of 3 supported',
+      unexpectedBehaviorsFormatted: false,
+      supportLevel: 'FAILING',
+      supportPercent: 78
+    });
+  });
+
+  it('returns expected metrics object for failing testPlanReport with 1 unexpected behavior', () => {
+    const testPlanReport = generateTestPlanReport([
+      [{ must: [true], should: [true], may: [true], unexpected: ['SEVERE'] }],
+      [{ must: [true, false], should: [true], may: [true], unexpected: [] }],
+      [{ must: [false], should: [true, false], may: [false], unexpected: [] }]
+    ]);
+    expect(getMetrics({ testPlanReport })).toEqual({
+      assertionsPassedCount: 12,
+      assertionsFailedCount: 5,
+      mustAssertionsPassedCount: 4,
+      mustAssertionsCount: 7,
+      mustAssertionsFailedCount: 3,
+      shouldAssertionsPassedCount: 6,
+      shouldAssertionsCount: 7,
+      shouldAssertionsFailedCount: 1,
+      mayAssertionsPassedCount: 2,
+      mayAssertionsCount: 3,
+      mayAssertionsFailedCount: 1,
+      testsPassedCount: 0,
+      testsCount: 3,
+      testsFailedCount: 3,
+      unexpectedBehaviorCount: 1,
+      severeImpactPassedAssertionCount: 2,
+      severeImpactFailedAssertionCount: 1,
+      moderateImpactPassedAssertionCount: 3,
+      moderateImpactFailedAssertionCount: 0,
+      commandsCount: 3,
+      mustFormatted: '4 of 7 passed',
+      shouldFormatted: '6 of 7 passed',
+      mayFormatted: '2 of 3 supported',
+      unexpectedBehaviorsFormatted: '1 found',
+      supportLevel: 'FAILING',
+      supportPercent: 71
+    });
+  });
+
+  it('returns expected metrics object for failing testPlanReport with 2 unexpected behaviors', () => {
+    const testPlanReport = generateTestPlanReport([
+      [{ must: [true], should: [true], may: [true], unexpected: ['SEVERE'] }],
+      [{ must: [true, false], should: [true], may: [true], unexpected: [] }],
+      [
+        {
+          must: [false],
+          should: [true, false],
+          may: [false],
+          unexpected: ['MODERATE']
+        }
+      ]
+    ]);
+    expect(getMetrics({ testPlanReport })).toEqual({
+      assertionsPassedCount: 11,
+      assertionsFailedCount: 6,
+      mustAssertionsPassedCount: 4,
+      mustAssertionsCount: 7,
+      mustAssertionsFailedCount: 3,
+      shouldAssertionsPassedCount: 5,
+      shouldAssertionsCount: 7,
+      shouldAssertionsFailedCount: 2,
+      mayAssertionsPassedCount: 2,
+      mayAssertionsCount: 3,
+      mayAssertionsFailedCount: 1,
+      testsPassedCount: 0,
+      testsCount: 3,
+      testsFailedCount: 3,
+      unexpectedBehaviorCount: 2,
+      severeImpactPassedAssertionCount: 2,
+      severeImpactFailedAssertionCount: 1,
+      moderateImpactPassedAssertionCount: 2,
+      moderateImpactFailedAssertionCount: 1,
+      commandsCount: 3,
+      mustFormatted: '4 of 7 passed',
+      shouldFormatted: '5 of 7 passed',
+      mayFormatted: '2 of 3 supported',
+      unexpectedBehaviorsFormatted: '2 found',
+      supportLevel: 'FAILING',
+      supportPercent: 64
+    });
   });
 });

@@ -1,0 +1,17 @@
+.phase-text {
+  font-size: var(--12px);
+  margin-left: var(--6px);
+  padding: var(--4px) var(--6px);
+  border-radius: var(--12px);
+  overflow: hidden;
+  white-space: nowrap;
+  color: white;
+
+  &.candidate {
+    background: var(--candidate-color);
+  }
+
+  &.recommended {
+    background: var(--recommended-color);
+  }
+}

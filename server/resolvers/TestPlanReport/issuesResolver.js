@@ -73,7 +73,8 @@ const getIssues = async ({ testPlanReport, testPlan, context }) => {
         isCandidateReview: hiddenIssueMetadata.isCandidateReview,
         feedbackType,
         isOpen: state === 'open',
-        testNumberFilteredByAt: hiddenIssueMetadata.testRowNumber,
+        testRowNumber: hiddenIssueMetadata.testRowNumber,
+        testSequenceNumber: hiddenIssueMetadata.testSequenceNumber,
         at,
         browser
       };

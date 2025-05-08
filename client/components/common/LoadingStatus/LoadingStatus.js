@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import clsx from 'clsx';
 import { Spinner } from 'react-bootstrap';
-import styled from '@emotion/styled';
 import BasicModal from '../../common/BasicModal';
-
-const SpinningContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  ${props => props.hasNote && `margin-bottom: 2rem;`}
-`;
 
 const LoadingStatus = ({ message, note, children }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,17 +25,14 @@ const LoadingStatus = ({ message, note, children }) => {
           showFooter={false}
           content={
             <>
-              <SpinningContainer hasNote={!!note}>
-                <Spinner
-                  animation="border"
-                  variant="primary"
-                  role="status"
-                  style={{
-                    width: '50px',
-                    height: '50px'
-                  }}
-                />
-              </SpinningContainer>
+              <div
+                className={clsx(
+                  'indeterminate-loading-container',
+                  !!note && 'has-note'
+                )}
+              >
+                <Spinner animation="border" variant="primary" role="status" />
+              </div>
               {note && (
                 <>
                   <b>Note:</b> {note}

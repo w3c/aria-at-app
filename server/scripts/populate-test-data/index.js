@@ -219,6 +219,16 @@ const populateTestDatabase = async transaction => {
     transaction
   });
 
+  await populateFakeTestResults(29, ['completeAndPassing'], {
+    transaction,
+    atVersionId: 5
+  });
+
+  await populateFakeTestResults(30, ['completeAndPassing'], {
+    transaction,
+    atVersionId: 5
+  });
+
   console.info(
     'Successfully populated. Please wait a moment for the process to close.'
   );
@@ -227,6 +237,7 @@ const populateTestDatabase = async transaction => {
 if (require.main === module)
   sequelize.transaction(populateTestDatabase).catch(error => {
     console.error(error);
+    process.exitCode = 1;
   });
 
 module.exports = populateTestDatabase;

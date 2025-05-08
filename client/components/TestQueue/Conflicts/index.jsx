@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Container } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import { useParams } from 'react-router-dom';
-import styled from '@emotion/styled';
 import { TEST_QUEUE_CONFLICTS_PAGE_QUERY } from '../queries';
 import PageStatus from '../../common/PageStatus';
 import DisclosureComponent from '../../common/DisclosureComponent';
@@ -13,49 +12,8 @@ import { evaluateAuth } from '../../../utils/evaluateAuth';
 import ConflictIssueDetails from './ConflictIssueDetails';
 import TestConflictsActions from './TestConflictsActions';
 import generateConflictMarkdown from '../../../utils/generateConflictMarkdown';
-
-const PageContainer = styled(Container)`
-  max-width: 1200px;
-  padding: 2rem;
-`;
-
-const Section = styled.section`
-  margin-bottom: 3rem;
-`;
-
-const SectionTitle = styled.h2`
-  margin-bottom: 1rem;
-`;
-
-const MetadataList = styled.ul`
-  list-style-type: none;
-  padding-left: 0;
-  margin-bottom: 2rem;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  padding: 1rem;
-`;
-
-const MetadataItem = styled.li`
-  margin-bottom: 0.5rem;
-  display: flex;
-  align-items: center;
-`;
-
-const MetadataLabel = styled.span`
-  font-weight: bold;
-  margin-right: 0.5rem;
-  min-width: 200px;
-`;
-
-const ConflictCount = styled.p`
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-  background-color: #e9ecef;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  display: inline-block;
-`;
+import styles from './Conflicts.module.css';
+import commonStyles from '../../common/styles.module.css';
 
 const TestQueueConflicts = () => {
   const [openDisclosures, setOpenDisclosures] = useState([]);
@@ -188,18 +146,14 @@ const TestQueueConflicts = () => {
 
     return Object.values(conflictsByTest).map(({ test, conflicts }) => {
       const issues = data?.testPlanReport?.issues?.filter(
-        issue =>
-          issue.testNumberFilteredByAt === getTestNumberFilteredByAt(test)
+        issue => issue.testRowNumber === test.rowNumber
       );
       return (
         <div key={test.id}>
           {Object.entries(conflicts).map(([commandKey, conflict]) => (
             <ConflictSummaryTable
               key={`${test.id}-${commandKey}`}
-              issueLink={getIssueLink(conflict)}
-              isAdmin={isAdmin}
               conflictingResults={conflict.conflictingResults}
-              testIndex={getTestNumberFilteredByAt(test)}
             />
           ))}
           {issues.length > 0 && <ConflictIssueDetails issues={issues} />}
@@ -256,7 +210,12 @@ const TestQueueConflicts = () => {
   const uniqueTestsLength = Object.keys(conflictsByTest).length;
 
   return (
-    <PageContainer id="main" as="main" tabIndex="-1">
+    <Container
+      id="main"
+      as="main"
+      tabIndex="-1"
+      className={commonStyles.fhContainer}
+    >
       <Helmet>
         <title>
           Conflicts {title} {versionString} | ARIA-AT
@@ -266,41 +225,41 @@ const TestQueueConflicts = () => {
         Conflicts for Test Plan Report {title} {versionString}
       </h1>
 
-      <Section>
-        <SectionTitle>Introduction</SectionTitle>
+      <section className="mb-5">
+        <h2 className="mb-3">Introduction</h2>
         <p>
           This page displays conflicts identified in the current test plan
           report. Conflicts occur when different testers report different
           outcomes for the same test assertions or unexpected behaviors.
         </p>
-      </Section>
+      </section>
 
-      <Section>
-        <SectionTitle>Test Plan Report</SectionTitle>
-        <MetadataList>
-          <MetadataItem>
-            <MetadataLabel>Test Plan Version:</MetadataLabel>
+      <section className="mb-5">
+        <h2 className="mb-3">Test Plan Report</h2>
+        <ul className={styles.metadataList}>
+          <li className={styles.metadataItem}>
+            <span className={styles.metadataLabel}>Test Plan Version:</span>
             <a href={`/test-review/${testPlanVersionId}`}>
               {title} {versionString}
             </a>
-          </MetadataItem>
-          <MetadataItem>
-            <MetadataLabel>Assistive Technology:</MetadataLabel>
+          </li>
+          <li className={styles.metadataItem}>
+            <span className={styles.metadataLabel}>Assistive Technology:</span>
             {atName}
             {exactAtVersionName
               ? ` (${exactAtVersionName})`
               : ` (${minimumAtVersionName} and above)`}
-          </MetadataItem>
-          <MetadataItem>
-            <MetadataLabel>Browser:</MetadataLabel>
+          </li>
+          <li className={styles.metadataItem}>
+            <span className={styles.metadataLabel}>Browser:</span>
             {browserName}
-          </MetadataItem>
-        </MetadataList>
-      </Section>
+          </li>
+        </ul>
+      </section>
 
-      <Section>
-        <SectionTitle>Conflicts</SectionTitle>
-        <ConflictCount>
+      <section className="mb-5">
+        <h2 className="mb-3">Conflicts</h2>
+        <p className={styles.conflictsCount}>
           There are currently
           <strong> {data?.testPlanReport?.conflicts?.length} conflicts </strong>
           across
@@ -308,16 +267,15 @@ const TestQueueConflicts = () => {
           and
           <strong> {uniqueConflictsByAssertion.length} assertions </strong>
           for this test plan report.
-        </ConflictCount>
+        </p>
         <DisclosureComponent
           title={disclosureLabels}
-          stacked
           onClick={disclosureClickHandlers}
           disclosureContainerView={disclosureContents}
           expanded={openDisclosures}
         />
-      </Section>
-    </PageContainer>
+      </section>
+    </Container>
   );
 };
 

@@ -1,3053 +1,2041 @@
 {
-  "id": "242",
+  "id": "324",
   "runnableTests": [
     {
-      "id": "NjRhMeyIyIjoiNzUzMjIifQzQ0OG"
+      "id": "NDdiOeyIyIjoiMTYzNjMwIn0TAyMm",
+      "title": "Navigate forwards to a slider",
+      "rowNumber": 5,
+      "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-05-navForwardsToSlider-voiceover_macos.collected.html",
+      "testFormatVersion": 2
     },
     {
-      "id": "MjE0ZeyIyIjoiNzUzMjIifQDE2YW"
+      "id": "MWFlMeyIyIjoiMTYzNjMwIn0jU1OD",
+      "title": "Navigate backwards to a slider",
+      "rowNumber": 6,
+      "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-06-navBackToSlider-voiceover_macos.collected.html",
+      "testFormatVersion": 2
     },
     {
-      "id": "MmUxYeyIyIjoiNzUzMjIifQWNmOW"
+      "id": "OTQzYeyIyIjoiMTYzNjMwIn0WIxNj",
+      "title": "Request information about a slider",
+      "rowNumber": 9,
+      "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-09-reqInfoAboutSlider-voiceover_macos.collected.html",
+      "testFormatVersion": 2
     },
     {
-      "id": "Y2EzOeyIyIjoiNzUzMjIifQTJkM2"
+      "id": "NGJiNeyIyIjoiMTYzNjMwIn0TBkNz",
+      "title": "Increment a slider by one step",
+      "rowNumber": 11,
+      "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-11-incrementSliderByOneStep-voiceover_macos.collected.html",
+      "testFormatVersion": 2
     },
     {
-      "id": "ZTAxOeyIyIjoiNzUzMjIifQDgwZj"
+      "id": "YWNhNeyIyIjoiMTYzNjMwIn0zQwZj",
+      "title": "Decrement a slider by one step",
+      "rowNumber": 13,
+      "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-13-decrementSliderByOneStep-voiceover_macos.collected.html",
+      "testFormatVersion": 2
     },
     {
-      "id": "NjMzYeyIyIjoiNzUzMjIifQjc1YW"
+      "id": "Y2I1ZeyIyIjoiMTYzNjMwIn0jg4ZT",
+      "title": "Increment a slider by ten steps",
+      "rowNumber": 15,
+      "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-15-incrementSliderByTenSteps-voiceover_macos.collected.html",
+      "testFormatVersion": 2
     },
     {
-      "id": "OTRiZeyIyIjoiNzUzMjIifQDhkOG"
+      "id": "NDYxZeyIyIjoiMTYzNjMwIn0mUzYz",
+      "title": "Decrement a slider by ten steps",
+      "rowNumber": 17,
+      "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-17-decrementSliderByTenSteps-voiceover_macos.collected.html",
+      "testFormatVersion": 2
     },
     {
-      "id": "OWIyNeyIyIjoiNzUzMjIifQ2U4ZW"
+      "id": "MmI4ZeyIyIjoiMTYzNjMwIn0jQ3Mz",
+      "title": "Decrement a slider to the minimum value",
+      "rowNumber": 19,
+      "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-19-decrementSliderToMinimumValue-voiceover_macos.collected.html",
+      "testFormatVersion": 2
     },
     {
-      "id": "NzJiNeyIyIjoiNzUzMjIifQjc1ND"
-    },
-    {
-      "id": "MjE3NeyIyIjoiNzUzMjIifQmQ3ZW"
-    },
-    {
-      "id": "ZjZjMeyIyIjoiNzUzMjIifQGFiOD"
-    },
-    {
-      "id": "NTgxYeyIyIjoiNzUzMjIifQTg1N2"
-    },
-    {
-      "id": "ZTMzNeyIyIjoiNzUzMjIifQTIzYW"
-    },
-    {
-      "id": "YzE1MeyIyIjoiNzUzMjIifQTg5MT"
-    },
-    {
-      "id": "MGY5MeyIyIjoiNzUzMjIifQmM5Ym"
+      "id": "ZTVhMeyIyIjoiMTYzNjMwIn0TI3YT",
+      "title": "Increment a slider to the maximum value",
+      "rowNumber": 21,
+      "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-21-incrementSliderToMaximumValue-voiceover_macos.collected.html",
+      "testFormatVersion": 2
     }
   ],
   "finalizedTestResults": [
     {
-      "id": "ODZiYeyIxMiI6NTU1fQjgyZm",
+      "id": "YWQ5OeyIxMiI6Nzc2fQGQ0Yj",
+      "startedAt": "2024-12-11T17:00:08.023Z",
+      "completedAt": "2024-07-24T17:08:21.706Z",
+      "test": {
+        "id": "NDdiOeyIyIjoiMTYzNjMwIn0TAyMm",
+        "title": "Navigate forwards to a slider",
+        "rowNumber": 5,
+        "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-05-navForwardsToSlider-voiceover_macos.collected.html",
+        "testFormatVersion": 2
+      },
       "scenarioResults": [
         {
-          "id": "ZjFlZeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9jQ1M2",
+          "id": "MDE1NeyIxMyI6IllXUTVPZXlJeE1pSTZOemMyZlFHUTBZaiJ9zAyZT",
+          "output": "\nRed\nYou are currently on a selectable text.\n128 Red slider\nYou are currently on a slider. To start interacting with the slider, press Control-Option-Shift-Down Arrow.",
           "scenario": {
             "commands": [
               {
-                "id": "f"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "OTlkNeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9DM4Zm",
-          "scenario": {
-            "commands": [
-              {
-                "id": "a"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "M2NkNeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9TVjYj",
-          "scenario": {
-            "commands": [
-              {
-                "id": "down"
+                "id": "ctrl+opt+right",
+                "text": "Control+Option+Right Arrow",
+                "atOperatingMode": "defaultMode"
               },
               {
-                "id": "down"
+                "id": "ctrl+opt+right",
+                "text": "Control+Option+Right Arrow",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
+              "id": "YzI0NeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9GE2Mj",
+              "passed": true,
+              "assertion": {
+                "id": "ZDRlNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQDExNm",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "MjU3OeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9GI3ZG",
+              "passed": true,
+              "assertion": {
+                "id": "MDIzNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQGRlOT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "MjUzNeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9DRmZD",
+              "passed": true,
+              "assertion": {
+                "id": "NDdjMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQzdmYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZTI3MeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ92RkNT",
+              "passed": false,
+              "assertion": {
+                "id": "OTBkNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTlmND",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
             },
             {
-              "passed": true
+              "id": "NTk4ZeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9jZiYj",
+              "passed": false,
+              "assertion": {
+                "id": "MGMyMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQ2NlND",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
+              "id": "ZDJjOeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9DBjNT",
+              "passed": false,
+              "assertion": {
+                "id": "MTE0OeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTZkMz",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "OGQ0NeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9zhiMT",
+              "passed": false,
+              "assertion": {
+                "id": "Mzc5NeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQmIwZD",
+                "text": "Screen reader switched from reading mode to interaction mode",
+                "phrase": "switch from reading mode to interaction mode",
+                "priority": "EXCLUDE"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
+              "id": "YzI0NeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9GE2Mj",
+              "passed": true,
+              "assertion": {
+                "id": "ZDRlNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQDExNm",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "MjU3OeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9GI3ZG",
+              "passed": true,
+              "assertion": {
+                "id": "MDIzNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQGRlOT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "MjUzNeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9DRmZD",
+              "passed": true,
+              "assertion": {
+                "id": "NDdjMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQzdmYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             }
           ],
           "shouldAssertionResults": [
             {
-              "passed": true
+              "id": "NTk4ZeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9jZiYj",
+              "passed": false,
+              "assertion": {
+                "id": "MGMyMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQ2NlND",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "ZDJjOeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ9DBjNT",
+              "passed": false,
+              "assertion": {
+                "id": "MTE0OeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTZkMz",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
-          "mayAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "id": "ZTI3MeyIxNCI6Ik1ERTFOZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6QXlaVCJ92RkNT",
+              "passed": false,
+              "assertion": {
+                "id": "OTBkNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTlmND",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
+            }
+          ],
           "unexpectedBehaviors": []
         },
         {
-          "id": "ODhjZeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9DM3OG",
+          "id": "ZDI2YeyIxMyI6IllXUTVPZXlJeE1pSTZOemMyZlFHUTBZaiJ9zExYz",
+          "output": "\n128 Red slider\nYou are currently on a slider. To start interacting with the slider, press Control-Option-Shift-Down Arrow.",
           "scenario": {
             "commands": [
               {
-                "id": "tab"
+                "id": "tab",
+                "text": "Tab",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
+              "id": "ZmFlYeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9jAzYz",
+              "passed": true,
+              "assertion": {
+                "id": "ZDRlNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQDExNm",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZTM5ZeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9TI2MW",
+              "passed": true,
+              "assertion": {
+                "id": "MDIzNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQGRlOT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZDM2NeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9jE5NW",
+              "passed": true,
+              "assertion": {
+                "id": "NDdjMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQzdmYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "YjIzZeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9DljMm",
+              "passed": false,
+              "assertion": {
+                "id": "OTBkNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTlmND",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
             },
             {
-              "passed": true
+              "id": "ZDk5YeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9zc0YT",
+              "passed": false,
+              "assertion": {
+                "id": "MGMyMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQ2NlND",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
+              "id": "NzMwYeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9jk5OW",
+              "passed": false,
+              "assertion": {
+                "id": "MTE0OeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTZkMz",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "NmY2NeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9GNlYm",
+              "passed": false,
+              "assertion": {
+                "id": "Mzc5NeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQmIwZD",
+                "text": "Screen reader switched from reading mode to interaction mode",
+                "phrase": "switch from reading mode to interaction mode",
+                "priority": "EXCLUDE"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
+              "id": "ZmFlYeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9jAzYz",
+              "passed": true,
+              "assertion": {
+                "id": "ZDRlNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQDExNm",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZTM5ZeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9TI2MW",
+              "passed": true,
+              "assertion": {
+                "id": "MDIzNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQGRlOT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZDM2NeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9jE5NW",
+              "passed": true,
+              "assertion": {
+                "id": "NDdjMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQzdmYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             }
           ],
           "shouldAssertionResults": [
             {
-              "passed": true
+              "id": "ZDk5YeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9zc0YT",
+              "passed": false,
+              "assertion": {
+                "id": "MGMyMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQ2NlND",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "NzMwYeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9jk5OW",
+              "passed": false,
+              "assertion": {
+                "id": "MTE0OeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTZkMz",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
-          "mayAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "id": "YjIzZeyIxNCI6IlpESTJZZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjl6RXhZeiJ9DljMm",
+              "passed": false,
+              "assertion": {
+                "id": "OTBkNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTlmND",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
+            }
+          ],
           "unexpectedBehaviors": []
         },
         {
-          "id": "NzdmZeyIxMyI6Ik9EWmlZZXlJeE1pSTZOVFUxZlFqZ3labSJ9jI1Nj",
+          "id": "ZTYzZeyIxMyI6IllXUTVPZXlJeE1pSTZOemMyZlFHUTBZaiJ9DE0M2",
+          "output": "\n128 Red slider\nYou are currently on a slider. To start interacting with the slider, press Control-Option-Shift-Down Arrow.",
           "scenario": {
             "commands": [
               {
-                "id": "tab"
+                "id": "j",
+                "text": "j (single quick key nav on)",
+                "atOperatingMode": "singleQuickKeyNavOn"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
+              "id": "NGIwMeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9mU3NG",
+              "passed": true,
+              "assertion": {
+                "id": "ZDRlNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQDExNm",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZDIwYeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9TMyOT",
+              "passed": true,
+              "assertion": {
+                "id": "MDIzNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQGRlOT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZmYzMeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ92I3ZT",
+              "passed": true,
+              "assertion": {
+                "id": "NDdjMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQzdmYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "M2YyYeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9mE3OD",
+              "passed": false,
+              "assertion": {
+                "id": "OTBkNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTlmND",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
             },
             {
-              "passed": true
+              "id": "NmM2MeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9mQ2Yz",
+              "passed": false,
+              "assertion": {
+                "id": "MGMyMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQ2NlND",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
+              "id": "YzhkMeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9jhlNm",
+              "passed": false,
+              "assertion": {
+                "id": "MTE0OeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTZkMz",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": false
+              "id": "OTc0ZeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9jcwMm",
+              "passed": false,
+              "assertion": {
+                "id": "Mzc5NeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQmIwZD",
+                "text": "Screen reader switched from reading mode to interaction mode",
+                "phrase": "switch from reading mode to interaction mode",
+                "priority": "EXCLUDE"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
+              "id": "NGIwMeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9mU3NG",
+              "passed": true,
+              "assertion": {
+                "id": "ZDRlNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQDExNm",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZDIwYeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9TMyOT",
+              "passed": true,
+              "assertion": {
+                "id": "MDIzNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQGRlOT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZmYzMeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ92I3ZT",
+              "passed": true,
+              "assertion": {
+                "id": "NDdjMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQzdmYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             }
           ],
           "shouldAssertionResults": [
             {
-              "passed": true
+              "id": "NmM2MeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9mQ2Yz",
+              "passed": false,
+              "assertion": {
+                "id": "MGMyMeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQ2NlND",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
+              "id": "YzhkMeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9jhlNm",
+              "passed": false,
+              "assertion": {
+                "id": "MTE0OeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTZkMz",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
-          "mayAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "id": "M2YyYeyIxNCI6IlpUWXpaZXlJeE15STZJbGxYVVRWUFpYbEplRTFwU1RaT2VtTXlabEZIVVRCWmFpSjlERTBNMiJ9mE3OD",
+              "passed": false,
+              "assertion": {
+                "id": "OTBkNeyIzIjoiTkRkaU9leUl5SWpvaU1UWXpOak13SW4wVEF5TW0ifQTlmND",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
+            }
+          ],
           "unexpectedBehaviors": []
         }
-      ]
+      ],
+      "atVersion": {
+        "id": "55",
+        "name": "14.5",
+        "releasedAt": "2024-06-13T13:11:33.809Z",
+        "supportedByAutomation": false
+      },
+      "browserVersion": {
+        "id": "87",
+        "name": "17.5"
+      }
     },
     {
-      "id": "MDVkZeyIxMiI6NTU1fQDY0Mm",
+      "id": "OTZkMeyIxMiI6Nzc2fQjgzNG",
+      "startedAt": "2024-12-11T17:00:08.400Z",
+      "completedAt": "2024-07-18T22:30:50.455Z",
+      "test": {
+        "id": "MWFlMeyIyIjoiMTYzNjMwIn0jU1OD",
+        "title": "Navigate backwards to a slider",
+        "rowNumber": 6,
+        "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-06-navBackToSlider-voiceover_macos.collected.html",
+        "testFormatVersion": 2
+      },
       "scenarioResults": [
         {
-          "id": "Y2NiOeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ9TRmZj",
+          "id": "OTgyOeyIxMyI6Ik9UWmtNZXlJeE1pSTZOemMyZlFqZ3pORyJ9TgzMT",
+          "output": "\n128 Red slider\nYou are currently on a slider. To start interacting with the slider, press Control-Option-Shift-Down Arrow.\nRed\nYou are currently on a selectable text.",
           "scenario": {
             "commands": [
               {
-                "id": "shift+f"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "YzcxNeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ9DdkMz",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+a"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "OTVjMeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ9DA3OT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "up"
+                "id": "ctrl+opt+left",
+                "text": "Control+Option+Left Arrow",
+                "atOperatingMode": "defaultMode"
               },
               {
-                "id": "up"
+                "id": "ctrl+opt+left",
+                "text": "Control+Option+Left Arrow",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
+              "id": "N2FjZeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9TI0MW",
+              "passed": true,
+              "assertion": {
+                "id": "YjFjYeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQWZiYW",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "MDEwNeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9GZmOD",
+              "passed": true,
+              "assertion": {
+                "id": "ZjgyMeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmMzMG",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "Mjk1YeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9jI2Yj",
+              "passed": true,
+              "assertion": {
+                "id": "MWI0OeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQGMxYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "MmQ1ZeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9jFlMD",
+              "passed": false,
+              "assertion": {
+                "id": "Y2QxOeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQTQ2ZD",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
             },
             {
-              "passed": false
+              "id": "MjNkNeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ92FlOD",
+              "passed": false,
+              "assertion": {
+                "id": "YmI4NeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQjliZT",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
+              "id": "OWFmOeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9WY4Nz",
+              "passed": false,
+              "assertion": {
+                "id": "YTI3ZeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmNjNT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "MjgwOeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9DQyZG",
+              "passed": false,
+              "assertion": {
+                "id": "NTg3YeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQTU0Mz",
+                "text": "Screen reader switched from reading mode to interaction mode",
+                "phrase": "switch from reading mode to interaction mode",
+                "priority": "EXCLUDE"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
+              "id": "N2FjZeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9TI0MW",
+              "passed": true,
+              "assertion": {
+                "id": "YjFjYeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQWZiYW",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "MDEwNeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9GZmOD",
+              "passed": true,
+              "assertion": {
+                "id": "ZjgyMeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmMzMG",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "Mjk1YeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9jI2Yj",
+              "passed": true,
+              "assertion": {
+                "id": "MWI0OeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQGMxYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             }
           ],
           "shouldAssertionResults": [
             {
-              "passed": true
+              "id": "MjNkNeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ92FlOD",
+              "passed": false,
+              "assertion": {
+                "id": "YmI4NeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQjliZT",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "OWFmOeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9WY4Nz",
+              "passed": false,
+              "assertion": {
+                "id": "YTI3ZeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmNjNT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
-          "mayAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "id": "MmQ1ZeyIxNCI6Ik9UZ3lPZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUZ3pNVCJ9jFlMD",
+              "passed": false,
+              "assertion": {
+                "id": "Y2QxOeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQTQ2ZD",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
+            }
+          ],
           "unexpectedBehaviors": []
         },
         {
-          "id": "YTY5OeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ9DY3YT",
+          "id": "NjVjMeyIxMyI6Ik9UWmtNZXlJeE1pSTZOemMyZlFqZ3pORyJ9Tc1OG",
+          "output": "\n128 Red slider\nYou are currently on a slider. To start interacting with the slider, press Control-Option-Shift-Down Arrow.",
           "scenario": {
             "commands": [
               {
-                "id": "shift+tab"
+                "id": "shift+tab",
+                "text": "Shift+Tab",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
+              "id": "MjIyMeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9GJhYT",
+              "passed": true,
+              "assertion": {
+                "id": "YjFjYeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQWZiYW",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "YWIwMeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9mM1Yj",
+              "passed": true,
+              "assertion": {
+                "id": "ZjgyMeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmMzMG",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZWVlZeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9jNjNz",
+              "passed": true,
+              "assertion": {
+                "id": "MWI0OeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQGMxYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "YzgzYeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9mZjMD",
+              "passed": false,
+              "assertion": {
+                "id": "Y2QxOeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQTQ2ZD",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
             },
             {
-              "passed": true
+              "id": "N2ViMeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9zhkNT",
+              "passed": false,
+              "assertion": {
+                "id": "YmI4NeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQjliZT",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
+              "id": "ZjNjZeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9mEwMz",
+              "passed": false,
+              "assertion": {
+                "id": "YTI3ZeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmNjNT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "OTQ5ZeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9TBmOG",
+              "passed": false,
+              "assertion": {
+                "id": "NTg3YeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQTU0Mz",
+                "text": "Screen reader switched from reading mode to interaction mode",
+                "phrase": "switch from reading mode to interaction mode",
+                "priority": "EXCLUDE"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
+              "id": "MjIyMeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9GJhYT",
+              "passed": true,
+              "assertion": {
+                "id": "YjFjYeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQWZiYW",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "YWIwMeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9mM1Yj",
+              "passed": true,
+              "assertion": {
+                "id": "ZjgyMeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmMzMG",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZWVlZeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9jNjNz",
+              "passed": true,
+              "assertion": {
+                "id": "MWI0OeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQGMxYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             }
           ],
           "shouldAssertionResults": [
             {
-              "passed": true
+              "id": "N2ViMeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9zhkNT",
+              "passed": false,
+              "assertion": {
+                "id": "YmI4NeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQjliZT",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "ZjNjZeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9mEwMz",
+              "passed": false,
+              "assertion": {
+                "id": "YTI3ZeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmNjNT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
-          "mayAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "id": "YzgzYeyIxNCI6Ik5qVmpNZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjlUYzFPRyJ9mZjMD",
+              "passed": false,
+              "assertion": {
+                "id": "Y2QxOeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQTQ2ZD",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
+            }
+          ],
           "unexpectedBehaviors": []
         },
         {
-          "id": "ZDEyYeyIxMyI6Ik1EVmtaZXlJeE1pSTZOVFUxZlFEWTBNbSJ92EwZD",
+          "id": "OGJiZeyIxMyI6Ik9UWmtNZXlJeE1pSTZOemMyZlFqZ3pORyJ9mRiNj",
+          "output": "\nRun Test Setup dimmed button\nYou are currently on a button. This item is dimmed.",
           "scenario": {
             "commands": [
               {
-                "id": "shift+tab"
+                "id": "shift+j",
+                "text": "Shift+j (single quick key nav on)",
+                "atOperatingMode": "singleQuickKeyNavOn"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
+              "id": "ZWJiMeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9zU3YT",
+              "passed": false,
+              "assertion": {
+                "id": "YjFjYeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQWZiYW",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZjdmZeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9jk4Yj",
+              "passed": false,
+              "assertion": {
+                "id": "ZjgyMeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmMzMG",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "MTllMeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9TU4Nj",
+              "passed": false,
+              "assertion": {
+                "id": "MWI0OeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQGMxYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ODZmOeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9GVjN2",
+              "passed": false,
+              "assertion": {
+                "id": "Y2QxOeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQTQ2ZD",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
             },
             {
-              "passed": true
+              "id": "NWRhNeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9WU5OD",
+              "passed": false,
+              "assertion": {
+                "id": "YmI4NeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQjliZT",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
+              "id": "ZDM0MeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9TdkZT",
+              "passed": false,
+              "assertion": {
+                "id": "YTI3ZeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmNjNT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": false
+              "id": "MWM3NeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ92VkMz",
+              "passed": false,
+              "assertion": {
+                "id": "NTg3YeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQTU0Mz",
+                "text": "Screen reader switched from reading mode to interaction mode",
+                "phrase": "switch from reading mode to interaction mode",
+                "priority": "EXCLUDE"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
+              "id": "ZWJiMeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9zU3YT",
+              "passed": false,
+              "assertion": {
+                "id": "YjFjYeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQWZiYW",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZjdmZeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9jk4Yj",
+              "passed": false,
+              "assertion": {
+                "id": "ZjgyMeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmMzMG",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "MTllMeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9TU4Nj",
+              "passed": false,
+              "assertion": {
+                "id": "MWI0OeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQGMxYj",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             }
           ],
           "shouldAssertionResults": [
             {
-              "passed": true
+              "id": "NWRhNeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9WU5OD",
+              "passed": false,
+              "assertion": {
+                "id": "YmI4NeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQjliZT",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
+              "id": "ZDM0MeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9TdkZT",
+              "passed": false,
+              "assertion": {
+                "id": "YTI3ZeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQmNjNT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "mayAssertionResults": [
+            {
+              "id": "ODZmOeyIxNCI6Ik9HSmlaZXlJeE15STZJazlVV210TlpYbEplRTFwU1RaT2VtTXlabEZxWjNwT1J5SjltUmlOaiJ9GVjN2",
+              "passed": false,
+              "assertion": {
+                "id": "Y2QxOeyIzIjoiTVdGbE1leUl5SWpvaU1UWXpOak13SW4walUxT0QifQTQ2ZD",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
+            }
+          ],
+          "unexpectedBehaviors": [
+            {
+              "id": "UNEXPECTED_CURSOR_POSITION",
+              "text": "Reading cursor position changed in an unexpected manner",
+              "impact": "SEVERE",
+              "details": "Cursor moves to the \" Run Test Setup button\""
+            }
+          ]
         }
-      ]
+      ],
+      "atVersion": {
+        "id": "55",
+        "name": "14.5",
+        "releasedAt": "2024-06-13T13:11:33.809Z",
+        "supportedByAutomation": false
+      },
+      "browserVersion": {
+        "id": "68",
+        "name": "17"
+      }
     },
     {
-      "id": "ODk1NeyIxMiI6NTU1fQjYyMG",
+      "id": "MDgyMeyIxMiI6Nzc2fQDNkMj",
+      "startedAt": "2024-12-11T17:00:08.663Z",
+      "completedAt": "2024-07-18T22:32:42.812Z",
+      "test": {
+        "id": "OTQzYeyIyIjoiMTYzNjMwIn0WIxNj",
+        "title": "Request information about a slider",
+        "rowNumber": 9,
+        "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-09-reqInfoAboutSlider-voiceover_macos.collected.html",
+        "testFormatVersion": 2
+      },
       "scenarioResults": [
         {
-          "id": "YWJiOeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9GU5Nz",
+          "id": "MTVjNeyIxMyI6Ik1EZ3lNZXlJeE1pSTZOemMyZlFETmtNaiJ9jAwMT",
+          "output": "\n128 Red horizontal slider is in the VoiceOver cursor",
           "scenario": {
             "commands": [
               {
-                "id": "f"
+                "id": "ctrl+opt+f3",
+                "text": "Control+Option+F3",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
+              "id": "ODdhMeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9WRkZj",
+              "passed": true,
+              "assertion": {
+                "id": "ZTU5ZeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQTBlYj",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZWU3MeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9WJhNm",
+              "passed": true,
+              "assertion": {
+                "id": "OTgzOeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQWY3OT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZjE0NeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9WI1OW",
+              "passed": true,
+              "assertion": {
+                "id": "MDAxNeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQGRkZT",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "YWY3ZeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9TA5OG",
+              "passed": true,
+              "assertion": {
+                "id": "ODE4NeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQzgzYz",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
             },
             {
-              "passed": true
+              "id": "ZGE1MeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9jUyY2",
+              "passed": false,
+              "assertion": {
+                "id": "NGQzMeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQTMyMG",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "YmYxNeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9DNmZm",
+              "passed": false,
+              "assertion": {
+                "id": "NDQxNeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQzNlMT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
+              "id": "ODdhMeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9WRkZj",
+              "passed": true,
+              "assertion": {
+                "id": "ZTU5ZeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQTBlYj",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "ZWU3MeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9WJhNm",
+              "passed": true,
+              "assertion": {
+                "id": "OTgzOeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQWY3OT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": true
+              "id": "ZjE0NeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9WI1OW",
+              "passed": true,
+              "assertion": {
+                "id": "MDAxNeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQGRkZT",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             }
           ],
           "shouldAssertionResults": [
             {
-              "passed": true
+              "id": "ZGE1MeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9jUyY2",
+              "passed": false,
+              "assertion": {
+                "id": "NGQzMeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQTMyMG",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "YmYxNeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9DNmZm",
+              "passed": false,
+              "assertion": {
+                "id": "NDQxNeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQzNlMT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
-          "mayAssertionResults": [],
+          "mayAssertionResults": [
+            {
+              "id": "YWY3ZeyIxNCI6Ik1UVmpOZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlqQXdNVCJ9TA5OG",
+              "passed": true,
+              "assertion": {
+                "id": "ODE4NeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQzgzYz",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
+            }
+          ],
           "unexpectedBehaviors": []
         },
         {
-          "id": "MDI0MeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9DE3OD",
+          "id": "NzMwYeyIxMyI6Ik1EZ3lNZXlJeE1pSTZOemMyZlFETmtNaiJ9WYyNj",
+          "output": "\n128 Red horizontal slider has keyboard focus",
           "scenario": {
             "commands": [
               {
-                "id": "a"
+                "id": "ctrl+opt+f4",
+                "text": "Control+Option+F4",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
+              "id": "YmYyYeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9mZmY2",
+              "passed": true,
+              "assertion": {
+                "id": "ZTU5ZeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQTBlYj",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "OGM5ZeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9TA1Yj",
+              "passed": true,
+              "assertion": {
+                "id": "OTgzOeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQWY3OT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "NzgwNeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9jcyNG",
+              "passed": true,
+              "assertion": {
+                "id": "MDAxNeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQGRkZT",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "NDg3NeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9DRlM2",
+              "passed": true,
+              "assertion": {
+                "id": "ODE4NeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQzgzYz",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
             },
             {
-              "passed": true
+              "id": "MTZjNeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ92U2M2",
+              "passed": false,
+              "assertion": {
+                "id": "NGQzMeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQTMyMG",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "YWQ3YeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9jIzND",
+              "passed": false,
+              "assertion": {
+                "id": "NDQxNeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQzNlMT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
+              "id": "YmYyYeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9mZmY2",
+              "passed": true,
+              "assertion": {
+                "id": "ZTU5ZeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQTBlYj",
+                "text": "Role 'slider' is conveyed",
+                "phrase": "convey role 'slider'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
+              "id": "OGM5ZeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9TA1Yj",
+              "passed": true,
+              "assertion": {
+                "id": "OTgzOeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQWY3OT",
+                "text": "Name 'Red' is conveyed",
+                "phrase": "convey name 'Red'",
+                "priority": "MUST"
+              }
             },
             {
-              "passed": true
-            },
-            {
-              "passed": true
+              "id": "NzgwNeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9jcyNG",
+              "passed": true,
+              "assertion": {
+                "id": "MDAxNeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQGRkZT",
+                "text": "Value '128' is conveyed",
+                "phrase": "convey value '128'",
+                "priority": "MUST"
+              }
             }
           ],
           "shouldAssertionResults": [
             {
-              "passed": true
+              "id": "MTZjNeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ92U2M2",
+              "passed": false,
+              "assertion": {
+                "id": "NGQzMeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQTMyMG",
+                "text": "Minimum value '0' is conveyed",
+                "phrase": "convey minimum value '0'",
+                "priority": "SHOULD"
+              }
             },
             {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "YWQ3YeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9jIzND",
+              "passed": false,
+              "assertion": {
+                "id": "NDQxNeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQzNlMT",
+                "text": "Maximum value '255' is conveyed",
+                "phrase": "convey maximum value '255'",
+                "priority": "SHOULD"
+              }
             }
           ],
+          "mayAssertionResults": [
+            {
+              "id": "NDg3NeyIxNCI6Ik56TXdZZXlJeE15STZJazFFWjNsTlpYbEplRTFwU1RaT2VtTXlabEZFVG10TmFpSjlXWXlOaiJ9DRlM2",
+              "passed": true,
+              "assertion": {
+                "id": "ODE4NeyIzIjoiT1RRellleUl5SWpvaU1UWXpOak13SW4wV0l4TmoifQzgzYz",
+                "text": "Orientation 'horizontal' is conveyed",
+                "phrase": "convey orientation 'horizontal'",
+                "priority": "MAY"
+              }
+            }
+          ],
+          "unexpectedBehaviors": []
+        }
+      ],
+      "atVersion": {
+        "id": "55",
+        "name": "14.5",
+        "releasedAt": "2024-06-13T13:11:33.809Z",
+        "supportedByAutomation": false
+      },
+      "browserVersion": {
+        "id": "68",
+        "name": "17"
+      }
+    },
+    {
+      "id": "MTk0ZeyIxMiI6Nzc2fQTAyZj",
+      "startedAt": "2024-12-11T17:00:08.800Z",
+      "completedAt": "2024-07-18T22:42:26.876Z",
+      "test": {
+        "id": "NGJiNeyIyIjoiMTYzNjMwIn0TBkNz",
+        "title": "Increment a slider by one step",
+        "rowNumber": 11,
+        "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-11-incrementSliderByOneStep-voiceover_macos.collected.html",
+        "testFormatVersion": 2
+      },
+      "scenarioResults": [
+        {
+          "id": "ZDUyZeyIxMyI6Ik1UazBaZXlJeE1pSTZOemMyZlFUQXlaaiJ9jIzYT",
+          "output": "\n129",
+          "scenario": {
+            "commands": [
+              {
+                "id": "right",
+                "text": "Right Arrow (quick nav off)",
+                "atOperatingMode": "quickNavOff"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "id": "Y2FjOeyIxNCI6IlpEVXlaZXlJeE15STZJazFVYXpCYVpYbEplRTFwU1RaT2VtTXlabEZVUVhsYWFpSjlqSXpZVCJ9DdmMD",
+              "passed": true,
+              "assertion": {
+                "id": "NzNkNeyIzIjoiTkdKaU5leUl5SWpvaU1UWXpOak13SW4wVEJrTnoifQmUxY2",
+                "text": "Value '129' is conveyed",
+                "phrase": "convey value '129'",
+                "priority": "MUST"
+              }
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "id": "Y2FjOeyIxNCI6IlpEVXlaZXlJeE15STZJazFVYXpCYVpYbEplRTFwU1RaT2VtTXlabEZVUVhsYWFpSjlqSXpZVCJ9DdmMD",
+              "passed": true,
+              "assertion": {
+                "id": "NzNkNeyIzIjoiTkdKaU5leUl5SWpvaU1UWXpOak13SW4wVEJrTnoifQmUxY2",
+                "text": "Value '129' is conveyed",
+                "phrase": "convey value '129'",
+                "priority": "MUST"
+              }
+            }
+          ],
+          "shouldAssertionResults": [],
           "mayAssertionResults": [],
           "unexpectedBehaviors": []
         },
         {
-          "id": "NDJkMeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9jMxNj",
+          "id": "MDk2NeyIxMyI6Ik1UazBaZXlJeE1pSTZOemMyZlFUQXlaaiJ9zY4MT",
+          "output": "\n129",
           "scenario": {
             "commands": [
               {
-                "id": "down"
+                "id": "up",
+                "text": "Up Arrow (quick nav off)",
+                "atOperatingMode": "quickNavOff"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "id": "ZTYxOeyIxNCI6Ik1EazJOZXlJeE15STZJazFVYXpCYVpYbEplRTFwU1RaT2VtTXlabEZVUVhsYWFpSjl6WTRNVCJ9TljNG",
+              "passed": true,
+              "assertion": {
+                "id": "NzNkNeyIzIjoiTkdKaU5leUl5SWpvaU1UWXpOak13SW4wVEJrTnoifQmUxY2",
+                "text": "Value '129' is conveyed",
+                "phrase": "convey value '129'",
+                "priority": "MUST"
+              }
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "id": "ZTYxOeyIxNCI6Ik1EazJOZXlJeE15STZJazFVYXpCYVpYbEplRTFwU1RaT2VtTXlabEZVUVhsYWFpSjl6WTRNVCJ9TljNG",
+              "passed": true,
+              "assertion": {
+                "id": "NzNkNeyIzIjoiTkdKaU5leUl5SWpvaU1UWXpOak13SW4wVEJrTnoifQmUxY2",
+                "text": "Value '129' is conveyed",
+                "phrase": "convey value '129'",
+                "priority": "MUST"
+              }
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "ZDA5MeyIxMyI6Ik1UazBaZXlJeE1pSTZOemMyZlFUQXlaaiJ9mIyMW",
+          "output": "\n128",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ctrl+opt+shift+down",
+                "text": "Control+Option+Shift+Down Arrow",
+                "atOperatingMode": "defaultMode"
               },
               {
-                "id": "down"
+                "id": "ctrl+opt+up",
+                "text": "Control+Option+Up Arrow",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "YmIwMeyIxNCI6IlpEQTVNZXlJeE15STZJazFVYXpCYVpYbEplRTFwU1RaT2VtTXlabEZVUVhsYWFpSjltSXlNVyJ9zc1OT",
+              "passed": false,
+              "assertion": {
+                "id": "NzNkNeyIzIjoiTkdKaU5leUl5SWpvaU1UWXpOak13SW4wVEJrTnoifQmUxY2",
+                "text": "Value '129' is conveyed",
+                "phrase": "convey value '129'",
+                "priority": "MUST"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
+              "id": "YmIwMeyIxNCI6IlpEQTVNZXlJeE15STZJazFVYXpCYVpYbEplRTFwU1RaT2VtTXlabEZVUVhsYWFpSjltSXlNVyJ9zc1OT",
+              "passed": false,
+              "assertion": {
+                "id": "NzNkNeyIzIjoiTkdKaU5leUl5SWpvaU1UWXpOak13SW4wVEJrTnoifQmUxY2",
+                "text": "Value '129' is conveyed",
+                "phrase": "convey value '129'",
+                "priority": "MUST"
+              }
             }
           ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
+          "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "unexpectedBehaviors": [
+            {
+              "id": "OTHER",
+              "text": "Other",
+              "impact": "SEVERE",
+              "details": "VoiceOver announces the wrong value."
+            }
+          ]
         },
         {
-          "id": "ZWRhYeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9TdjMG",
+          "id": "YmQ2YeyIxMyI6Ik1UazBaZXlJeE1pSTZOemMyZlFUQXlaaiJ9zEwYW",
+          "output": "\n128",
           "scenario": {
             "commands": [
               {
-                "id": "tab"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "NWJlYeyIxMyI6Ik9EazFOZXlJeE1pSTZOVFUxZlFqWXlNRyJ9zcyYW",
-          "scenario": {
-            "commands": [
-              {
-                "id": "tab"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        }
-      ]
-    },
-    {
-      "id": "Mzc5OeyIxMiI6NTU1fQTkzZD",
-      "scenarioResults": [
-        {
-          "id": "MDM3ZeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ9jlkNT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+f"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "MmY5MeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ92ExMG",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+a"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "OGNlOeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ9TdiNT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "up"
+                "id": "ctrl+opt+shift+down",
+                "text": "Control+Option+Shift+Down Arrow",
+                "atOperatingMode": "defaultMode"
               },
               {
-                "id": "up"
+                "id": "ctrl+opt+right",
+                "text": "Control+Option+Right Arrow",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "NWNmYeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ9zVkOT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+tab"
+              "id": "NDA1MeyIxNCI6IlltUTJZZXlJeE15STZJazFVYXpCYVpYbEplRTFwU1RaT2VtTXlabEZVUVhsYWFpSjl6RXdZVyJ9DRjMD",
+              "passed": false,
+              "assertion": {
+                "id": "NzNkNeyIzIjoiTkdKaU5leUl5SWpvaU1UWXpOak13SW4wVEJrTnoifQmUxY2",
+                "text": "Value '129' is conveyed",
+                "phrase": "convey value '129'",
+                "priority": "MUST"
               }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "NWE0MeyIxMyI6Ik16YzVPZXlJeE1pSTZOVFUxZlFUa3paRCJ9GUzND",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+tab"
+              "id": "NDA1MeyIxNCI6IlltUTJZZXlJeE15STZJazFVYXpCYVpYbEplRTFwU1RaT2VtTXlabEZVUVhsYWFpSjl6RXdZVyJ9DRjMD",
+              "passed": false,
+              "assertion": {
+                "id": "NzNkNeyIzIjoiTkdKaU5leUl5SWpvaU1UWXpOak13SW4wVEJrTnoifQmUxY2",
+                "text": "Value '129' is conveyed",
+                "phrase": "convey value '129'",
+                "priority": "MUST"
               }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        }
-      ]
-    },
-    {
-      "id": "ZjIyMeyIxMiI6NTU1fQzJkOD",
-      "scenarioResults": [
-        {
-          "id": "NTBiOeyIxMyI6IlpqSXlNZXlJeE1pSTZOVFUxZlF6SmtPRCJ9TQ4Nj",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+u"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
             }
           ],
           "shouldAssertionResults": [],
-          "mayAssertionResults": [
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": [
             {
-              "passed": false
+              "id": "OTHER",
+              "text": "Other",
+              "impact": "SEVERE",
+              "details": "VoiceOver announces the wrong value."
             }
-          ],
-          "unexpectedBehaviors": []
-        },
+          ]
+        }
+      ],
+      "atVersion": {
+        "id": "55",
+        "name": "14.5",
+        "releasedAt": "2024-06-13T13:11:33.809Z",
+        "supportedByAutomation": false
+      },
+      "browserVersion": {
+        "id": "68",
+        "name": "17"
+      }
+    },
+    {
+      "id": "YTY5OeyIxMiI6Nzc2fQTAwYz",
+      "startedAt": "2024-12-11T17:00:08.871Z",
+      "completedAt": "2024-07-18T22:48:28.002Z",
+      "test": {
+        "id": "YWNhNeyIyIjoiMTYzNjMwIn0zQwZj",
+        "title": "Decrement a slider by one step",
+        "rowNumber": 13,
+        "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-13-decrementSliderByOneStep-voiceover_macos.collected.html",
+        "testFormatVersion": 2
+      },
+      "scenarioResults": [
         {
-          "id": "YWE4NeyIxMyI6IlpqSXlNZXlJeE1pSTZOVFUxZlF6SmtPRCJ9TY2YT",
+          "id": "MGZhYeyIxMyI6IllUWTVPZXlJeE1pSTZOemMyZlFUQXdZeiJ9jVkMG",
+          "output": "\n127",
           "scenario": {
             "commands": [
               {
-                "id": "up"
+                "id": "left",
+                "text": "Left Arrow (quick nav off)",
+                "atOperatingMode": "quickNavOff"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "id": "NzQyZeyIxNCI6Ik1HWmhZZXlJeE15STZJbGxVV1RWUFpYbEplRTFwU1RaT2VtTXlabEZVUVhkWmVpSjlqVmtNRyJ9jhjMG",
+              "passed": true,
+              "assertion": {
+                "id": "NmRmZeyIzIjoiWVdOaE5leUl5SWpvaU1UWXpOak13SW4welF3WmoifQjA1Nj",
+                "text": "Value '127' is conveyed",
+                "phrase": "convey value '127'",
+                "priority": "MUST"
+              }
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "id": "NzQyZeyIxNCI6Ik1HWmhZZXlJeE15STZJbGxVV1RWUFpYbEplRTFwU1RaT2VtTXlabEZVUVhkWmVpSjlqVmtNRyJ9jhjMG",
+              "passed": true,
+              "assertion": {
+                "id": "NmRmZeyIzIjoiWVdOaE5leUl5SWpvaU1UWXpOak13SW4welF3WmoifQjA1Nj",
+                "text": "Value '127' is conveyed",
+                "phrase": "convey value '127'",
+                "priority": "MUST"
+              }
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "YjEwNeyIxMyI6IllUWTVPZXlJeE1pSTZOemMyZlFUQXdZeiJ9zdiND",
+          "output": "\n127",
+          "scenario": {
+            "commands": [
+              {
+                "id": "down",
+                "text": "Down Arrow (quick nav off)",
+                "atOperatingMode": "quickNavOff"
+              }
+            ]
+          },
+          "assertionResults": [
+            {
+              "id": "YTY1YeyIxNCI6IllqRXdOZXlJeE15STZJbGxVV1RWUFpYbEplRTFwU1RaT2VtTXlabEZVUVhkWmVpSjl6ZGlORCJ9TFjNz",
+              "passed": true,
+              "assertion": {
+                "id": "NmRmZeyIzIjoiWVdOaE5leUl5SWpvaU1UWXpOak13SW4welF3WmoifQjA1Nj",
+                "text": "Value '127' is conveyed",
+                "phrase": "convey value '127'",
+                "priority": "MUST"
+              }
+            }
+          ],
+          "mustAssertionResults": [
+            {
+              "id": "YTY1YeyIxNCI6IllqRXdOZXlJeE15STZJbGxVV1RWUFpYbEplRTFwU1RaT2VtTXlabEZVUVhkWmVpSjl6ZGlORCJ9TFjNz",
+              "passed": true,
+              "assertion": {
+                "id": "NmRmZeyIzIjoiWVdOaE5leUl5SWpvaU1UWXpOak13SW4welF3WmoifQjA1Nj",
+                "text": "Value '127' is conveyed",
+                "phrase": "convey value '127'",
+                "priority": "MUST"
+              }
+            }
+          ],
+          "shouldAssertionResults": [],
+          "mayAssertionResults": [],
+          "unexpectedBehaviors": []
+        },
+        {
+          "id": "ZGM4YeyIxMyI6IllUWTVPZXlJeE1pSTZOemMyZlFUQXdZeiJ9WIzYW",
+          "output": "128",
+          "scenario": {
+            "commands": [
+              {
+                "id": "ctrl+opt+shift+down",
+                "text": "Control+Option+Shift+Down Arrow",
+                "atOperatingMode": "defaultMode"
               },
               {
-                "id": "up"
+                "id": "ctrl+opt+down",
+                "text": "Control+Option+Down Arrow",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
+              "id": "ZjlmMeyIxNCI6IlpHTTRZZXlJeE15STZJbGxVV1RWUFpYbEplRTFwU1RaT2VtTXlabEZVUVhkWmVpSjlXSXpZVyJ92IxZG",
+              "passed": false,
+              "assertion": {
+                "id": "NmRmZeyIzIjoiWVdOaE5leUl5SWpvaU1UWXpOak13SW4welF3WmoifQjA1Nj",
+                "text": "Value '127' is conveyed",
+                "phrase": "convey value '127'",
+                "priority": "MUST"
+              }
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
+              "id": "ZjlmMeyIxNCI6IlpHTTRZZXlJeE15STZJbGxVV1RWUFpYbEplRTFwU1RaT2VtTXlabEZVUVhkWmVpSjlXSXpZVyJ92IxZG",
+              "passed": false,
+              "assertion": {
+                "id": "NmRmZeyIzIjoiWVdOaE5leUl5SWpvaU1UWXpOak13SW4welF3WmoifQjA1Nj",
+                "text": "Value '127' is conveyed",
+                "phrase": "convey value '127'",
+                "priority": "MUST"
+              }
             }
           ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            }
-          ],
+          "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "unexpectedBehaviors": [
+            {
+              "id": "OTHER",
+              "text": "Other",
+              "impact": "SEVERE",
+              "details": "VoiceOver announces the wrong value."
+            }
+          ]
         },
         {
-          "id": "NjY3ZeyIxMyI6IlpqSXlNZXlJeE1pSTZOVFUxZlF6SmtPRCJ9mQ3ZT",
+          "id": "OTM2MeyIxMyI6IllUWTVPZXlJeE1pSTZOemMyZlFUQXdZeiJ9mJjMj",
+          "output": "128",
           "scenario": {
             "commands": [
               {
-                "id": "shift+tab"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [],
-          "mayAssertionResults": [
-            {
-              "passed": false
-            }
-          ],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "YTVjYeyIxMyI6IlpqSXlNZXlJeE1pSTZOVFUxZlF6SmtPRCJ9mQxNT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+tab"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [],
-          "mayAssertionResults": [
-            {
-              "passed": false
-            }
-          ],
-          "unexpectedBehaviors": []
-        }
-      ]
-    },
-    {
-      "id": "ODdhOeyIxMiI6NTU1fQDI5NT",
-      "scenarioResults": [
-        {
-          "id": "ZTIyNeyIxMyI6Ik9EZGhPZXlJeE1pSTZOVFUxZlFESTVOVCJ9mI2OT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "u"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [],
-          "mayAssertionResults": [
-            {
-              "passed": false
-            }
-          ],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "YzFjYeyIxMyI6Ik9EZGhPZXlJeE1pSTZOVFUxZlFESTVOVCJ9mM3NT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "down"
+                "id": "ctrl+opt+shift+down",
+                "text": "Control+Option+Shift+Down Arrow",
+                "atOperatingMode": "defaultMode"
               },
               {
-                "id": "down"
+                "id": "ctrl+opt+left",
+                "text": "Control+Option+Left Arrow",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "M2U2ZeyIxMyI6Ik9EZGhPZXlJeE1pSTZOVFUxZlFESTVOVCJ9TdjNG",
-          "scenario": {
-            "commands": [
-              {
-                "id": "tab"
+              "id": "NGQ0YeyIxNCI6Ik9UTTJNZXlJeE15STZJbGxVV1RWUFpYbEplRTFwU1RaT2VtTXlabEZVUVhkWmVpSjltSmpNaiJ9zhlMW",
+              "passed": false,
+              "assertion": {
+                "id": "NmRmZeyIzIjoiWVdOaE5leUl5SWpvaU1UWXpOak13SW4welF3WmoifQjA1Nj",
+                "text": "Value '127' is conveyed",
+                "phrase": "convey value '127'",
+                "priority": "MUST"
               }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [],
-          "mayAssertionResults": [
-            {
-              "passed": false
-            }
-          ],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "NzgxNeyIxMyI6Ik9EZGhPZXlJeE1pSTZOVFUxZlFESTVOVCJ92RiOG",
-          "scenario": {
-            "commands": [
-              {
-                "id": "tab"
+              "id": "NGQ0YeyIxNCI6Ik9UTTJNZXlJeE15STZJbGxVV1RWUFpYbEplRTFwU1RaT2VtTXlabEZVUVhkWmVpSjltSmpNaiJ9zhlMW",
+              "passed": false,
+              "assertion": {
+                "id": "NmRmZeyIzIjoiWVdOaE5leUl5SWpvaU1UWXpOak13SW4welF3WmoifQjA1Nj",
+                "text": "Value '127' is conveyed",
+                "phrase": "convey value '127'",
+                "priority": "MUST"
               }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [],
-          "mayAssertionResults": [
-            {
-              "passed": false
-            }
-          ],
-          "unexpectedBehaviors": []
-        }
-      ]
-    },
-    {
-      "id": "MDBiNeyIxMiI6NTU1fQDMwMD",
-      "scenarioResults": [
-        {
-          "id": "MzgxZeyIxMyI6Ik1EQmlOZXlJeE1pSTZOVFUxZlFETXdNRCJ9WMyOT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "f"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "NTFlZeyIxMyI6Ik1EQmlOZXlJeE1pSTZOVFUxZlFETXdNRCJ9TRlZj",
-          "scenario": {
-            "commands": [
-              {
-                "id": "a"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "ZmJhMeyIxMyI6Ik1EQmlOZXlJeE1pSTZOVFUxZlFETXdNRCJ92VkMD",
-          "scenario": {
-            "commands": [
-              {
-                "id": "down"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        }
-      ]
-    },
-    {
-      "id": "MDdhZeyIxMiI6NTU1fQDBlNz",
-      "scenarioResults": [
-        {
-          "id": "NGU1NeyIxMyI6Ik1EZGhaZXlJeE1pSTZOVFUxZlFEQmxOeiJ9zcxY2",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+f"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "ODY2ZeyIxMyI6Ik1EZGhaZXlJeE1pSTZOVFUxZlFEQmxOeiJ9GMwMW",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+a"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "MzQ1OeyIxMyI6Ik1EZGhaZXlJeE1pSTZOVFUxZlFEQmxOeiJ9TQyNT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "up"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        }
-      ]
-    },
-    {
-      "id": "NTBlNeyIxMiI6NTU1fQjY0Ym",
-      "scenarioResults": [
-        {
-          "id": "NDlkYeyIxMyI6Ik5UQmxOZXlJeE1pSTZOVFUxZlFqWTBZbSJ9WI3Yz",
-          "scenario": {
-            "commands": [
-              {
-                "id": "f"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "YjA0NeyIxMyI6Ik5UQmxOZXlJeE1pSTZOVFUxZlFqWTBZbSJ9jRlMm",
-          "scenario": {
-            "commands": [
-              {
-                "id": "a"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "MDQ4ZeyIxMyI6Ik5UQmxOZXlJeE1pSTZOVFUxZlFqWTBZbSJ9jUxYm",
-          "scenario": {
-            "commands": [
-              {
-                "id": "down"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        }
-      ]
-    },
-    {
-      "id": "NzkwYeyIxMiI6NTU1fQmUzYj",
-      "scenarioResults": [
-        {
-          "id": "OWM4ZeyIxMyI6Ik56a3dZZXlJeE1pSTZOVFUxZlFtVXpZaiJ9WJjNz",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+f"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "YTRjMeyIxMyI6Ik56a3dZZXlJeE1pSTZOVFUxZlFtVXpZaiJ9Tg4MD",
-          "scenario": {
-            "commands": [
-              {
-                "id": "shift+a"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "MTZmZeyIxMyI6Ik56a3dZZXlJeE1pSTZOVFUxZlFtVXpZaiJ9jdjYW",
-          "scenario": {
-            "commands": [
-              {
-                "id": "up"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        }
-      ]
-    },
-    {
-      "id": "YmIzMeyIxMiI6NTU1fQWVlOT",
-      "scenarioResults": [
-        {
-          "id": "ZjIwMeyIxMyI6IlltSXpNZXlJeE1pSTZOVFUxZlFXVmxPVCJ9DU1MT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "space"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
             }
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
+          "unexpectedBehaviors": [
+            {
+              "id": "OTHER",
+              "text": "Other",
+              "impact": "SEVERE",
+              "details": "VoiceOver announces the wrong value."
+            }
+          ]
+        }
+      ],
+      "atVersion": {
+        "id": "55",
+        "name": "14.5",
+        "releasedAt": "2024-06-13T13:11:33.809Z",
+        "supportedByAutomation": false
+      },
+      "browserVersion": {
+        "id": "68",
+        "name": "17"
+      }
+    },
+    {
+      "id": "ZDhkNeyIxMiI6Nzc2fQ2IyNm",
+      "startedAt": "2024-12-11T17:00:08.941Z",
+      "completedAt": "2024-07-18T22:49:30.572Z",
+      "test": {
+        "id": "Y2I1ZeyIyIjoiMTYzNjMwIn0jg4ZT",
+        "title": "Increment a slider by ten steps",
+        "rowNumber": 15,
+        "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-15-incrementSliderByTenSteps-voiceover_macos.collected.html",
+        "testFormatVersion": 2
+      },
+      "scenarioResults": [
         {
-          "id": "OTFjYeyIxMyI6IlltSXpNZXlJeE1pSTZOVFUxZlFXVmxPVCJ9zI1NG",
+          "id": "OTg3NeyIxMyI6IlpEaGtOZXlJeE1pSTZOemMyZlEySXlObSJ9zlkZW",
+          "output": "138",
           "scenario": {
             "commands": [
               {
-                "id": "enter"
+                "id": "pageUp",
+                "text": "Page Up",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "MzFiYeyIxMyI6IlltSXpNZXlJeE1pSTZOVFUxZlFXVmxPVCJ9jQ3Yj",
-          "scenario": {
-            "commands": [
-              {
-                "id": "space"
+              "id": "ZmUwZeyIxNCI6Ik9UZzNOZXlJeE15STZJbHBFYUd0T1pYbEplRTFwU1RaT2VtTXlabEV5U1hsT2JTSjl6bGtaVyJ9TE3MW",
+              "passed": true,
+              "assertion": {
+                "id": "OGQwZeyIzIjoiWTJJMVpleUl5SWpvaU1UWXpOak13SW4wamc0WlQifQWViM2",
+                "text": "Value '138' is conveyed",
+                "phrase": "convey value '138'",
+                "priority": "MUST"
               }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
+              "id": "ZmUwZeyIxNCI6Ik9UZzNOZXlJeE15STZJbHBFYUd0T1pYbEplRTFwU1RaT2VtTXlabEV5U1hsT2JTSjl6bGtaVyJ9TE3MW",
+              "passed": true,
+              "assertion": {
+                "id": "OGQwZeyIzIjoiWTJJMVpleUl5SWpvaU1UWXpOak13SW4wamc0WlQifQWViM2",
+                "text": "Value '138' is conveyed",
+                "phrase": "convey value '138'",
+                "priority": "MUST"
+              }
             }
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
           "unexpectedBehaviors": []
         }
-      ]
+      ],
+      "atVersion": {
+        "id": "55",
+        "name": "14.5",
+        "releasedAt": "2024-06-13T13:11:33.809Z",
+        "supportedByAutomation": false
+      },
+      "browserVersion": {
+        "id": "68",
+        "name": "17"
+      }
     },
     {
-      "id": "NTZkMeyIxMiI6NTU1fQzJhY2",
+      "id": "NTZkNeyIxMiI6Nzc2fQDRhZD",
+      "startedAt": "2024-12-11T17:00:08.991Z",
+      "completedAt": "2024-07-18T22:50:03.031Z",
+      "test": {
+        "id": "NDYxZeyIyIjoiMTYzNjMwIn0mUzYz",
+        "title": "Decrement a slider by ten steps",
+        "rowNumber": 17,
+        "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-17-decrementSliderByTenSteps-voiceover_macos.collected.html",
+        "testFormatVersion": 2
+      },
       "scenarioResults": [
         {
-          "id": "ZmE0ZeyIxMyI6Ik5UWmtNZXlJeE1pSTZOVFUxZlF6SmhZMiJ9jAxZD",
+          "id": "ZGEzYeyIxMyI6Ik5UWmtOZXlJeE1pSTZOemMyZlFEUmhaRCJ9WZmMz",
+          "output": "118",
           "scenario": {
             "commands": [
               {
-                "id": "down"
+                "id": "pageDown",
+                "text": "Page Down",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "ZjE3OeyIxMyI6Ik5UWmtNZXlJeE1pSTZOVFUxZlF6SmhZMiJ9WQxZj",
-          "scenario": {
-            "commands": [
-              {
-                "id": "right"
+              "id": "NTE1MeyIxNCI6IlpHRXpZZXlJeE15STZJazVVV210T1pYbEplRTFwU1RaT2VtTXlabEZFVW1oYVJDSjlXWm1NeiJ9GY4OT",
+              "passed": true,
+              "assertion": {
+                "id": "OWEwNeyIzIjoiTkRZeFpleUl5SWpvaU1UWXpOak13SW4wbVV6WXoifQGFjZW",
+                "text": "Value '118' is conveyed",
+                "phrase": "convey value '118'",
+                "priority": "MUST"
               }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
+              "id": "NTE1MeyIxNCI6IlpHRXpZZXlJeE15STZJazVVV210T1pYbEplRTFwU1RaT2VtTXlabEZFVW1oYVJDSjlXWm1NeiJ9GY4OT",
+              "passed": true,
+              "assertion": {
+                "id": "OWEwNeyIzIjoiTkRZeFpleUl5SWpvaU1UWXpOak13SW4wbVV6WXoifQGFjZW",
+                "text": "Value '118' is conveyed",
+                "phrase": "convey value '118'",
+                "priority": "MUST"
+              }
             }
           ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
+          "shouldAssertionResults": [],
           "mayAssertionResults": [],
           "unexpectedBehaviors": []
         }
-      ]
+      ],
+      "atVersion": {
+        "id": "55",
+        "name": "14.5",
+        "releasedAt": "2024-06-13T13:11:33.809Z",
+        "supportedByAutomation": false
+      },
+      "browserVersion": {
+        "id": "68",
+        "name": "17"
+      }
     },
     {
-      "id": "ZTQ3NeyIxMiI6NTU1fQzNjND",
+      "id": "MmI0ZeyIxMiI6Nzc2fQTg2Ym",
+      "startedAt": "2024-12-11T17:00:09.042Z",
+      "completedAt": "2024-07-18T22:51:41.321Z",
+      "test": {
+        "id": "MmI4ZeyIyIjoiMTYzNjMwIn0jQ3Mz",
+        "title": "Decrement a slider to the minimum value",
+        "rowNumber": 19,
+        "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-19-decrementSliderToMinimumValue-voiceover_macos.collected.html",
+        "testFormatVersion": 2
+      },
       "scenarioResults": [
         {
-          "id": "YzJmOeyIxMyI6IlpUUTNOZXlJeE1pSTZOVFUxZlF6TmpORCJ9WQzYz",
+          "id": "NWI4NeyIxMyI6Ik1tSTBaZXlJeE1pSTZOemMyZlFUZzJZbSJ9DE0MT",
+          "output": "\nheading level 3 Color Viewer",
           "scenario": {
             "commands": [
               {
-                "id": "up"
+                "id": "home",
+                "text": "Home",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "NzJiZeyIxMyI6IlpUUTNOZXlJeE1pSTZOVFUxZlF6TmpORCJ9GNlNj",
-          "scenario": {
-            "commands": [
-              {
-                "id": "left"
+              "id": "ZTBiNeyIxNCI6Ik5XSTROZXlJeE15STZJazF0U1RCYVpYbEplRTFwU1RaT2VtTXlabEZVWnpKWmJTSjlERTBNVCJ9zIwOW",
+              "passed": false,
+              "assertion": {
+                "id": "NTJmNeyIzIjoiTW1JNFpleUl5SWpvaU1UWXpOak13SW4walEzTXoifQGE4OG",
+                "text": "Value '0' is conveyed",
+                "phrase": "convey value '0'",
+                "priority": "MUST"
               }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
+              "id": "ZTBiNeyIxNCI6Ik5XSTROZXlJeE15STZJazF0U1RCYVpYbEplRTFwU1RaT2VtTXlabEZVWnpKWmJTSjlERTBNVCJ9zIwOW",
+              "passed": false,
+              "assertion": {
+                "id": "NTJmNeyIzIjoiTW1JNFpleUl5SWpvaU1UWXpOak13SW4walEzTXoifQGE4OG",
+                "text": "Value '0' is conveyed",
+                "phrase": "convey value '0'",
+                "priority": "MUST"
+              }
             }
           ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
+          "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "unexpectedBehaviors": [
+            {
+              "id": "UNEXPECTED_CURSOR_POSITION",
+              "text": "Reading cursor position changed in an unexpected manner",
+              "impact": "SEVERE",
+              "details": "Cursor moves to heading."
+            }
+          ]
         }
-      ]
+      ],
+      "atVersion": {
+        "id": "55",
+        "name": "14.5",
+        "releasedAt": "2024-06-13T13:11:33.809Z",
+        "supportedByAutomation": false
+      },
+      "browserVersion": {
+        "id": "68",
+        "name": "17"
+      }
     },
     {
-      "id": "M2U1MeyIxMiI6NTU1fQzIyNz",
+      "id": "YmU5OeyIxMiI6Nzc2fQWNhNT",
+      "startedAt": "2024-12-11T17:00:09.089Z",
+      "completedAt": "2024-07-25T19:43:30.176Z",
+      "test": {
+        "id": "ZTVhMeyIyIjoiMTYzNjMwIn0TI3YT",
+        "title": "Increment a slider to the maximum value",
+        "rowNumber": 21,
+        "renderedUrl": "/aria-at/ed744e7bc3063e17ddd08c6e738195296c119757/build/tests/horizontal-slider/test-21-incrementSliderToMaximumValue-voiceover_macos.collected.html",
+        "testFormatVersion": 2
+      },
       "scenarioResults": [
         {
-          "id": "YzExMeyIxMyI6Ik0yVTFNZXlJeE1pSTZOVFUxZlF6SXlOeiJ92YwNm",
+          "id": "MTc4NeyIxMyI6IlltVTVPZXlJeE1pSTZOemMyZlFXTmhOVCJ92Q0NG",
+          "output": "\n255, 128, 128\nYou are currently on a slider. To start interacting with the slider, press Control-Option-Shift-Down Arrow.",
           "scenario": {
             "commands": [
               {
-                "id": "ins+tab"
+                "id": "end",
+                "text": "End",
+                "atOperatingMode": "defaultMode"
               }
             ]
           },
           "assertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "Yjc1YeyIxMyI6Ik0yVTFNZXlJeE1pSTZOVFUxZlF6SXlOeiJ92VjYT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "ins+up"
+              "id": "ZmVlYeyIxNCI6Ik1UYzROZXlJeE15STZJbGx0VlRWUFpYbEplRTFwU1RaT2VtTXlabEZYVG1oT1ZDSjkyUTBORyJ9TVhYj",
+              "passed": true,
+              "assertion": {
+                "id": "MjZjYeyIzIjoiWlRWaE1leUl5SWpvaU1UWXpOak13SW4wVEkzWVQifQmI4OT",
+                "text": "Value '255' is conveyed",
+                "phrase": "convey value '255'",
+                "priority": "MUST"
               }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
             }
           ],
           "mustAssertionResults": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "NDdmZeyIxMyI6Ik0yVTFNZXlJeE1pSTZOVFUxZlF6SXlOeiJ9jg3Yz",
-          "scenario": {
-            "commands": [
-              {
-                "id": "ins+tab"
+              "id": "ZmVlYeyIxNCI6Ik1UYzROZXlJeE15STZJbGx0VlRWUFpYbEplRTFwU1RaT2VtTXlabEZYVG1oT1ZDSjkyUTBORyJ9TVhYj",
+              "passed": true,
+              "assertion": {
+                "id": "MjZjYeyIzIjoiWlRWaE1leUl5SWpvaU1UWXpOak13SW4wVEkzWVQifQmI4OT",
+                "text": "Value '255' is conveyed",
+                "phrase": "convey value '255'",
+                "priority": "MUST"
               }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
             }
           ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
+          "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "OGEwOeyIxMyI6Ik0yVTFNZXlJeE1pSTZOVFUxZlF6SXlOeiJ9WI3Yz",
-          "scenario": {
-            "commands": [
-              {
-                "id": "ins+up"
-              }
-            ]
-          },
-          "assertionResults": [
+          "unexpectedBehaviors": [
             {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
+              "id": "EXCESSIVELY_VERBOSE",
+              "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
+              "impact": "SEVERE",
+              "details": "VoiceOver announces the previous value several times after moving to the maximum value."
             }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          ]
         }
-      ]
-    },
-    {
-      "id": "YTFmZeyIxMiI6NTU1fQWFiZm",
-      "scenarioResults": [
-        {
-          "id": "MDhiNeyIxMyI6IllURm1aZXlJeE1pSTZOVFUxZlFXRmlabSJ9TY4Nm",
-          "scenario": {
-            "commands": [
-              {
-                "id": "ins+tab"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "ZGFmZeyIxMyI6IllURm1aZXlJeE1pSTZOVFUxZlFXRmlabSJ9Dk5Nj",
-          "scenario": {
-            "commands": [
-              {
-                "id": "ins+up"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "MDM0YeyIxMyI6IllURm1aZXlJeE1pSTZOVFUxZlFXRmlabSJ9mU4ND",
-          "scenario": {
-            "commands": [
-              {
-                "id": "ins+tab"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        },
-        {
-          "id": "OWYzZeyIxMyI6IllURm1aZXlJeE1pSTZOVFUxZlFXRmlabSJ9jM0YT",
-          "scenario": {
-            "commands": [
-              {
-                "id": "ins+up"
-              }
-            ]
-          },
-          "assertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mustAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            }
-          ],
-          "shouldAssertionResults": [
-            {
-              "passed": true
-            },
-            {
-              "passed": true
-            },
-            {
-              "passed": false
-            },
-            {
-              "passed": false
-            }
-          ],
-          "mayAssertionResults": [],
-          "unexpectedBehaviors": []
-        }
-      ]
+      ],
+      "atVersion": {
+        "id": "55",
+        "name": "14.5",
+        "releasedAt": "2024-06-13T13:11:33.809Z",
+        "supportedByAutomation": false
+      },
+      "browserVersion": {
+        "id": "87",
+        "name": "17.5"
+      }
     }
   ]
 }

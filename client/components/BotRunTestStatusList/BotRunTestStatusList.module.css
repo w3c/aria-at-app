@@ -1,0 +1,15 @@
+.bot-run-test-container {
+  font-size: var(--14px) !important;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+
+  background: var(--bg-lighter-gray);
+  border-radius: 0.25rem;
+
+  text-align: left;
+  white-space: nowrap;
+
+  ul {
+    margin: 0;
+  }
+}

@@ -1,11 +1,10 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import styled from '@emotion/styled';
 import { useApolloClient } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faRobot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Button, Dropdown } from 'react-bootstrap';
-import CompletionStatusListItem from './CompletionStatusListItem';
+import CompletionStatusListItem from '../TestQueueCompletionStatusListItem';
 import useConfirmationModal from '../../hooks/useConfirmationModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
@@ -20,45 +19,7 @@ import {
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../AddTestToQueueWithConfirmation/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
 import { TestPlanReportPropType, UserPropType } from '../common/proptypes';
-
-const AssignTestersContainer = styled.div`
-  display: flex;
-
-  [role='menu'] {
-    width: 250px;
-    max-height: 200px;
-    overflow-y: scroll;
-  }
-
-  [role='menuitem']:active {
-    background-color: #0b60ab;
-  }
-`;
-
-const AssignTestersDropdownButton = styled(Dropdown.Toggle)`
-  width: min-content !important;
-  margin-right: 0.5rem;
-`;
-
-const AssignedTestersUl = styled.ul`
-  font-weight: normal;
-  padding-top: 0.5rem;
-  text-align: center;
-
-  li:not(:last-of-type) {
-    padding-bottom: 0.25rem;
-  }
-  a,
-  span {
-    font-weight: normal;
-    padding-right: 0.5rem;
-  }
-  em {
-    color: rgb(var(--bs-secondary-rgb));
-    font-style: normal;
-    display: inline-block;
-  }
-`;
+import styles from './TestQueue.module.css';
 
 const AssignTesters = ({ me, testers, testPlanReport }) => {
   const { triggerLoad, loadingMessage } = useTriggerLoad();
@@ -271,7 +232,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
 
   return (
     <LoadingStatus message={loadingMessage}>
-      <AssignTestersContainer>
+      <div className={styles.assignTestersContainer}>
         {isAdmin && (
           <Dropdown
             id={`assign-testers-${testPlanReport.id}`}
@@ -279,13 +240,14 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
             onSelect={onSelect}
             onKeyDown={onKeyDown}
           >
-            <AssignTestersDropdownButton
+            <Dropdown.Toggle
               variant="secondary"
               ref={dropdownButtonRef}
+              className={styles.assignTestersDropdownButton}
             >
               <span className="sr-only">Assign Testers</span>
               <FontAwesomeIcon icon={faUser} />
-            </AssignTestersDropdownButton>
+            </Dropdown.Toggle>
             <Dropdown.Menu role="menu">
               {testers.map(tester => renderDropdownItem({ tester }))}
             </Dropdown.Menu>
@@ -300,8 +262,8 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
             {isSelfAssigned ? 'Unassign Yourself' : 'Assign Yourself'}
           </Button>
         )}
-      </AssignTestersContainer>
-      <AssignedTestersUl>
+      </div>
+      <ul className={styles.assignTestersList}>
         {testPlanReport.draftTestPlanRuns
           .slice()
           .sort((a, b) => a.tester.username.localeCompare(b.tester.username))
@@ -323,7 +285,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
               </React.Fragment>
             );
           })}
-      </AssignedTestersUl>
+      </ul>
     </LoadingStatus>
   );
 };
