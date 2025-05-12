@@ -87,13 +87,22 @@ export const useFailingAssertions = testPlanReport => {
     failingAssertions.uniqueAssertionStatementsCount =
       uniqueAssertionStatements.size;
 
+    // NOTE: Each command has 2 additional assertions:
+    // * Other behaviors that create severe negative impact
+    // * Other behaviors that create moderate negative impact
+    // TODO: Include this from the db assertions now that this has been agreed upon
+    const OTHER_BEHAVIOR_SEVERE_PER_COMMAND_COUNT = 1;
+    const OTHER_BEHAVIOR_MODERATE_PER_COMMAND_COUNT = 1;
+
     let totalAssertionsCount = 0;
     if (testPlanReport?.finalizedTestResults) {
       testPlanReport.finalizedTestResults.forEach(testResult => {
         testResult.scenarioResults.forEach(scenarioResult => {
           totalAssertionsCount +=
             scenarioResult.mustAssertionResults.length +
-            scenarioResult.shouldAssertionResults.length;
+            OTHER_BEHAVIOR_SEVERE_PER_COMMAND_COUNT +
+            scenarioResult.shouldAssertionResults.length +
+            OTHER_BEHAVIOR_MODERATE_PER_COMMAND_COUNT;
         });
       });
     }
