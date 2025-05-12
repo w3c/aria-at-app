@@ -176,11 +176,12 @@ const getMetrics = ({
 }) => {
   const result = { scenarioResult, testResult, testPlanReport };
 
-  // Each command has 2 additional assertions:
-  // * Other behaviors that create severe negative impact
-  // * Other behaviors that create moderate negative impact
   const commandsCount = countCommands({ ...result });
 
+  // NOTE: Each command has 2 additional assertions:
+  // * Other behaviors that create severe negative impact
+  // * Other behaviors that create moderate negative impact
+  // TODO: Include this from the db assertions now that this has been agreed upon
   const severeImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
     { ...result },
     'SEVERE'
