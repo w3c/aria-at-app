@@ -15,6 +15,7 @@ import {
 } from '../../resources/aria-at-test-io-format.mjs';
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../utils/aria';
+import summarizeAssertions from '../../utils/summarizeAssertions.js';
 import CommandResults from './CommandResults';
 import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
@@ -364,27 +365,16 @@ const TestRenderer = ({
     const { results } = submitResult;
     const { header } = results;
 
-    const {
-      assertionsPassedCount,
-      mustAssertionsFailedCount,
-      shouldAssertionsFailedCount,
-      mayAssertionsFailedCount
-    } = getMetrics({
-      testResult
-    });
-
-    const mustShouldAssertionsFailedCount =
-      mustAssertionsFailedCount + shouldAssertionsFailedCount;
+    const assertionsSummary = summarizeAssertions(
+      getMetrics({
+        testResult
+      })
+    );
 
     return (
       <>
         <h1>{header}</h1>
-        <h2 id="overallstatus">
-          Test Results&nbsp;(
-          {assertionsPassedCount} passed,&nbsp;
-          {mustShouldAssertionsFailedCount} failed,&nbsp;
-          {mayAssertionsFailedCount} unsupported)
-        </h2>
+        <h2 id="overallstatus">Test Results&nbsp;({assertionsSummary})</h2>
         <TestPlanResultsTable
           test={{ id: test.id, title: header, at }}
           testResult={testResult}
