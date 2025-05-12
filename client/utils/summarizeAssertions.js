@@ -9,6 +9,7 @@
 export default metrics => {
   const {
     assertionsPassedCount,
+    assertionsUntestableCount,
     mustAssertionsFailedCount,
     shouldAssertionsFailedCount,
     mayAssertionsFailedCount
@@ -20,6 +21,9 @@ export default metrics => {
   return (
     `${assertionsPassedCount} passed, ` +
     `${mustShouldAssertionsFailedCount} failed, ` +
-    `${mayAssertionsFailedCount} unsupported`
+    `${mayAssertionsFailedCount} unsupported` +
+    (assertionsUntestableCount
+      ? `, ${assertionsUntestableCount} untestable`
+      : '')
   );
 };
