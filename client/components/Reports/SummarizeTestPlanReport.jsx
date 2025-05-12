@@ -17,6 +17,7 @@ import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
+import summarizeAssertions from '../../utils/summarizeAssertions.js';
 import RunHistory from '../common/RunHistory';
 import {
   TestPlanReportPropType,
@@ -288,26 +289,17 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
           'https://aria-at.netlify.app'
         );
 
-        const {
-          assertionsPassedCount,
-          mustAssertionsFailedCount,
-          shouldAssertionsFailedCount,
-          mayAssertionsFailedCount
-        } = getMetrics({
-          testResult
-        });
-
-        const mustShouldAssertionsFailedCount =
-          mustAssertionsFailedCount + shouldAssertionsFailedCount;
+        const assertionsSummary = summarizeAssertions(
+          getMetrics({
+            testResult
+          })
+        );
 
         return (
           <Fragment key={testResult.id}>
             <div className={styles.testResultHeading}>
               <h2 id={`result-${testResult.id}`} tabIndex="-1">
-                Test {index + 1}: {test.title}&nbsp;(
-                {assertionsPassedCount} passed,&nbsp;
-                {mustShouldAssertionsFailedCount} failed,&nbsp;
-                {mayAssertionsFailedCount} unsupported)
+                Test {index + 1}: {test.title}&nbsp;({assertionsSummary})
                 <DisclaimerInfo phase={testPlanVersion.phase} />
               </h2>
               <div className={styles.testResultButtons}>

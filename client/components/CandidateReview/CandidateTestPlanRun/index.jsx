@@ -29,6 +29,7 @@ import createIssueLink, {
 import RunHistory from '../../common/RunHistory';
 import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
 import { evaluateAuth } from '../../../utils/evaluateAuth';
+import summarizeAssertions from '../../../utils/summarizeAssertions.js';
 import NotApprovedModal from '../CandidateModals/NotApprovedModal';
 import FailingAssertionsSummaryTable from '../../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../../FailingAssertionsSummary/Heading';
@@ -611,23 +612,16 @@ const CandidateTestPlanRun = () => {
                   const testResult =
                     testPlanReport.finalizedTestResults[currentTestIndex];
 
-                  const {
-                    assertionsPassedCount,
-                    mustAssertionsFailedCount,
-                    shouldAssertionsFailedCount,
-                    mayAssertionsFailedCount
-                  } = getMetrics({ testResult });
-
-                  const mustShouldAssertionsFailedCount =
-                    mustAssertionsFailedCount + shouldAssertionsFailedCount;
+                  const assertionsSummary = summarizeAssertions(
+                    getMetrics({
+                      testResult
+                    })
+                  );
 
                   return (
                     <>
                       <h2 className={styles.testResultsHeader}>
-                        Test Results&nbsp;(
-                        {assertionsPassedCount} passed,&nbsp;
-                        {mustShouldAssertionsFailedCount} failed,&nbsp;
-                        {mayAssertionsFailedCount} unsupported)
+                        Test Results&nbsp;({assertionsSummary})
                       </h2>
                       <TestPlanResultsTable
                         key={`${testPlanReport.id} + ${testResult.id}`}
