@@ -68,6 +68,8 @@ const TestPlanResultsTable = ({
   optionalHeader = null,
   commandHeadingLevel = 3
 }) => {
+  const NegativeSideEffectsHeading = `h${commandHeadingLevel}`;
+
   return (
     <>
       {optionalHeader}
@@ -184,35 +186,39 @@ const TestPlanResultsTable = ({
                 )}
               </tbody>
             </Table>
-            Negative side effects of {commandsString}:{' '}
             {scenarioResult.unexpectedBehaviors.length ? (
-              <Table
-                bordered
-                responsive
-                aria-label={`Undesirable behaviors for test ${test.title}`}
-                className={`test-plan-unexpected-behaviors-table ${tableClassName}`}
-              >
-                <thead>
-                  <tr>
-                    <th>Behavior</th>
-                    <th>Details</th>
-                    <th>Impact</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scenarioResult.unexpectedBehaviors.map(
-                    ({ id, text, details, impact }) => (
-                      <tr key={id}>
-                        <td>{text}</td>
-                        <td>{details}</td>
-                        <td>{impact}</td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </Table>
+              <>
+                <NegativeSideEffectsHeading>
+                  Negative side effects of {commandsString}
+                </NegativeSideEffectsHeading>
+                <Table
+                  bordered
+                  responsive
+                  aria-label={`Negative side effects of ${commandsString}`}
+                  className={`test-plan-unexpected-behaviors-table ${tableClassName}`}
+                >
+                  <thead>
+                    <tr>
+                      <th>Side Effect</th>
+                      <th>Details</th>
+                      <th>Impact</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {scenarioResult.unexpectedBehaviors.map(
+                      ({ id, text, details, impact }) => (
+                        <tr key={id}>
+                          <td>{text}</td>
+                          <td>{details}</td>
+                          <td>{impact}</td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </Table>
+              </>
             ) : (
-              'None'
+              `The command '${commandsString}' did not cause any negative side effects.`
             )}
             {/* Do not show separator below last item */}
             {index !== testResult.scenarioResults.length - 1 ? (
