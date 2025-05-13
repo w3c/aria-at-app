@@ -10,13 +10,11 @@ const countTests = ({
   passedOnly
 }) => {
   const countScenarioResult = scenarioResult => {
-    return (
-      (scenarioResult?.assertionResults?.every(
-        assertionResult => assertionResult.passed
-      ) &&
-        scenarioResult.unexpectedBehaviors.length === 0) ||
-      0
-    );
+    return scenarioResult?.assertionResults?.every(
+      assertionResult => assertionResult.passed
+    ) && scenarioResult.unexpectedBehaviors.length === 0
+      ? 1
+      : 0;
   };
 
   const countTestResult = testResult => {

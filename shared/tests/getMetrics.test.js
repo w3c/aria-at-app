@@ -339,6 +339,42 @@ describe('getMetrics', () => {
     );
   });
 
+  it('returns expected metrics object for passing scenarioResult', () => {
+    const testPlanReport = generateTestPlanReport([
+      [{ must: [true], should: [], may: [true], unexpected: [] }]
+    ]);
+    const scenarioResult =
+      testPlanReport.finalizedTestResults[0].scenarioResults[0];
+    expect(getMetrics({ scenarioResult })).toEqual({
+      assertionsPassedCount: 4,
+      assertionsFailedCount: 0,
+      mustAssertionsPassedCount: 2,
+      mustAssertionsCount: 2,
+      mustAssertionsFailedCount: 0,
+      shouldAssertionsPassedCount: 1,
+      shouldAssertionsCount: 1,
+      shouldAssertionsFailedCount: 0,
+      mayAssertionsPassedCount: 1,
+      mayAssertionsCount: 1,
+      mayAssertionsFailedCount: 0,
+      testsPassedCount: 1,
+      testsCount: 1,
+      testsFailedCount: 0,
+      unexpectedBehaviorCount: 0,
+      severeImpactPassedAssertionCount: 1,
+      severeImpactFailedAssertionCount: 0,
+      moderateImpactPassedAssertionCount: 1,
+      moderateImpactFailedAssertionCount: 0,
+      commandsCount: 1,
+      mustFormatted: '2 of 2 passed',
+      shouldFormatted: '1 of 1 passed',
+      mayFormatted: '1 of 1 supported',
+      unexpectedBehaviorsFormatted: false,
+      supportLevel: 'FULL',
+      supportPercent: 100
+    });
+  });
+
   it('returns expected metrics object for failing testPlanReport without unexpected behaviors', () => {
     const testPlanReport = generateTestPlanReport([
       [{ must: [true], should: [true], may: [true], unexpected: [] }],
