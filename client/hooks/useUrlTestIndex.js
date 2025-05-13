@@ -1,14 +1,25 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
+/**
+ * In the context of this hook, two negative values for test indices carry
+ * special meaning:
+ *
+ * * -1: display the "Summary of Failing Assertions"
+ * * -2: display the "Summary of Negative Side Effects"
+ */
 export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [currentTestIndex, setCurrentTestIndex] = useState(minTestIndex);
 
   const getTestIndex = () => {
-    if (location.hash === '#summary') {
+    if (location.hash === '#summary-assertions') {
       return -1;
+    }
+
+    if (location.hash === '#summary-side-effects') {
+      return -2;
     }
 
     // Remove the '#' character
@@ -30,7 +41,11 @@ export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
   const updateTestIndex = index => {
     // Special case for summary
     if (index === -1) {
-      navigate(`${location.pathname}#summary`, { replace: true });
+      navigate(`${location.pathname}#summary-assertions`, { replace: true });
+      return;
+    }
+    if (index === -2) {
+      navigate(`${location.pathname}#summary-side-effects`, { replace: true });
       return;
     }
 

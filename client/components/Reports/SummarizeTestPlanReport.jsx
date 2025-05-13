@@ -25,6 +25,8 @@ import {
 } from '../common/proptypes';
 import FailingAssertionsSummaryTable from '../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../FailingAssertionsSummary/Heading';
+import NegativeSideEffectsSummaryTable from '../NegativeSideEffectsSummary/Table';
+import NegativeSideEffectsSummaryHeading from '../NegativeSideEffectsSummary/Heading';
 import styles from './SummarizeTestPlanReport.module.css';
 import commonStyles from '../common/styles.module.css';
 
@@ -188,6 +190,25 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     );
   };
 
+  const renderNegativeSideEffectsSummary = () => {
+    if (testPlanReport.metrics.unexpectedBehaviorCount === 0) {
+      return null;
+    }
+
+    return (
+      <>
+        <NegativeSideEffectsSummaryHeading metrics={testPlanReport.metrics} />
+        <NegativeSideEffectsSummaryTable
+          testPlanReport={testPlanReport}
+          atName={testPlanReport.at.name}
+          getLinkUrl={assertion =>
+            `/report/${testPlanVersion.id}/targets/${testPlanReport.id}#result-${assertion.testResultId}`
+          }
+        />
+      </>
+    );
+  };
+
   return (
     <Container id="main" as="main" tabIndex="-1">
       <Helmet>
@@ -263,6 +284,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
       {renderVersionsSummaryTable()}
       {renderResultsForTargetTable()}
       {renderFailingAssertionsSummary()}
+      {renderNegativeSideEffectsSummary()}
       {testPlanReport.finalizedTestResults.map((testResult, index) => {
         const test = testResult.test;
 
