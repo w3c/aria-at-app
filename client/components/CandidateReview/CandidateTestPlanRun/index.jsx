@@ -312,6 +312,10 @@ const CandidateTestPlanRun = () => {
   const { testPlanVersion } = testPlanReport;
   const { recommendedPhaseTargetDate } = testPlanVersion;
 
+  const pageTitle = `${currentTestIndex + 1}. ${currentTest?.title} | ${
+    testPlanVersion.title
+  } | Candidate Review | ARIA-AT`;
+
   const reviewStatusText = vendorReviewStatusMap[reviewStatus];
 
   const targetCompletionDate = dates.convertDateToString(
@@ -647,7 +651,7 @@ const CandidateTestPlanRun = () => {
   return (
     <Container>
       <Helmet>
-        <title>Candidate Test Run Page | ARIA-AT</title>
+        <title>{pageTitle}</title>
       </Helmet>
       <Row>
         <TestNavigator
