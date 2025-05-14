@@ -312,9 +312,11 @@ const CandidateTestPlanRun = () => {
   const { testPlanVersion } = testPlanReport;
   const { recommendedPhaseTargetDate } = testPlanVersion;
 
-  const pageTitle = `${currentTestIndex + 1}. ${currentTest?.title} | ${
-    testPlanVersion.title
-  } | Candidate Review | ARIA-AT`;
+  const pageTitlePrefix = isSummaryView
+    ? 'Summary of Failing Assertions'
+    : `${currentTestIndex + 1}. ${currentTest?.title}`;
+
+  const pageTitle = `${pageTitlePrefix} | ${testPlanVersion.title} | Candidate Review | ARIA-AT`;
 
   const reviewStatusText = vendorReviewStatusMap[reviewStatus];
 
