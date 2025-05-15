@@ -126,14 +126,27 @@
                   aria-labelledby="test-navigator-heading"
                   class="test-navigator-list">
                   <div class="test-name-wrapper summary">
-                    <a href="#summary" class="test-name" aria-current="true"
+                    <a
+                      href="#summary-assertions"
+                      class="test-name"
+                      aria-current="false"
                       >Summary of Failing Assertions</a
                     ><span
                       class="progress-indicator"
                       title="Summary of Failing Assertions"></span>
                   </div>
+                  <div class="test-name-wrapper summary">
+                    <a
+                      href="#summary-side-effects"
+                      class="test-name"
+                      aria-current="false"
+                      >Summary of Negative Side Effects</a
+                    ><span
+                      class="progress-indicator"
+                      title="Summary of Negative Side Effects"></span>
+                  </div>
                   <li class="test-name-wrapper changes-requested">
-                    <a href="#1" class="test-name" aria-current="false"
+                    <a href="#1" class="test-name" aria-current="true"
                       >Open a Modal Dialog in reading mode</a
                     ><span
                       class="progress-indicator"
@@ -272,9 +285,14 @@
             <main id="main" tabindex="-1" class="col">
               <div class="row">
                 <div class="p-0">
-                  <span class="task-label">Candidate Test Plan Review</span>
-                  <h1 id="failing-assertions-heading">
-                    Summary of Failing Assertions (2 must, 1 should)
+                  <div class="sr-only" aria-live="polite" aria-atomic="true">
+                    Viewing Test Open a Modal Dialog in reading mode, Test 1 of
+                    18
+                  </div>
+                  <span class="task-label">Reviewing Test 1 of 18:</span>
+                  <h1>
+                    1. Open a Modal Dialog in reading mode
+                    <span class="using">using</span> JAWS 2021.2111.13
                   </h1>
                 </div>
                 <div class="test-info-wrapper">
@@ -293,71 +311,412 @@
                 <div class="p-0 col">
                   <div s="1" class="row row-cols-md-2 row-cols-1">
                     <div class="p-0 col-md-9">
-                      <div class="row"></div>
+                      <div class="row">
+                        <div class="issues-container">
+                          <h2>
+                            <span class="feedback-from-text"
+                              >Feedback from</span
+                            >
+                            <b>JAWS Representative</b>
+                          </h2>
+                          <ul>
+                            <li class="feedback-list-item">
+                              <svg
+                                aria-hidden="true"
+                                focusable="false"
+                                data-prefix="fas"
+                                data-icon="flag"
+                                class="svg-inline--fa fa-flag"
+                                role="img"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 448 512"
+                                color="var(--candidate-changes-requested)">
+                                <path
+                                  fill="currentColor"
+                                  d="M64 32C64 14.3 49.7 0 32 0S0 14.3 0 32V64 368 480c0 17.7 14.3 32 32 32s32-14.3 32-32V352l64.3-16.1c41.1-10.3 84.6-5.5 122.5 13.4c44.2 22.1 95.5 24.8 141.7 7.4l34.7-13c12.5-4.7 20.8-16.6 20.8-30V66.1c0-23-24.2-38-44.8-27.7l-9.6 4.8c-46.3 23.2-100.8 23.2-147.1 0c-35.1-17.6-75.4-22-113.5-12.5L64 48V32z"></path></svg
+                              ><a
+                                href="https://github.com/bocoup/aria-at/issues?q=label:candidate-review%20label:changes-requested%20label:jaws%20%22Modal%20Dialog%20Example%20Test%201%22%20V22.05.26"
+                                target="_blank"
+                                rel="noreferrer"
+                                >1 person requested changes</a
+                              >
+                              for this test in 1 issue<span
+                                class="feedback-indicator"
+                                title="Feedback Indicator"></span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
                       <div class="candidate-results-container row">
                         <div class="p-0">
-                          <div
-                            class="failing-assertions-summary-table-container">
-                            <p>3 of 143 total assertions fail across:</p>
-                            <ul>
-                              <li>3 tests</li>
-                              <li>2 unique assertion statements</li>
-                              <li>2 unique commands</li>
-                            </ul>
-                            <div class="table-responsive">
-                              <table
-                                aria-labelledby="failing-assertions-heading"
-                                class="table table-bordered">
-                                <thead>
-                                  <tr>
-                                    <th>Test Name</th>
-                                    <th>Command</th>
-                                    <th>Assertion Priority</th>
-                                    <th>Assertion</th>
-                                    <th>JAWS Response</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>
-                                      <a href="/candidate-test-plan/24/1#3"
-                                        >Close a modal dialog in reading mode</a
-                                      >
-                                    </td>
-                                    <td>Escape</td>
-                                    <td>MUST</td>
-                                    <td>Role 'button' is conveyed</td>
-                                    <td>automatically seeded sample output</td>
-                                  </tr>
-                                  <tr>
-                                    <td>
-                                      <a href="/candidate-test-plan/24/1#4"
-                                        >Close a modal dialog in interaction
-                                        mode</a
-                                      >
-                                    </td>
-                                    <td>Escape</td>
-                                    <td>MUST</td>
-                                    <td>Role 'button' is conveyed</td>
-                                    <td>automatically seeded sample output</td>
-                                  </tr>
-                                  <tr>
-                                    <td>
-                                      <a href="/candidate-test-plan/24/1#5"
-                                        >Close a modal dialog using a button in
-                                        reading mode</a
-                                      >
-                                    </td>
-                                    <td>Space</td>
-                                    <td>SHOULD</td>
-                                    <td>
-                                      Other behaviors that create moderate
-                                      negative impacts are not exhibited
-                                    </td>
-                                    <td>Other</td>
-                                  </tr>
-                                </tbody>
-                              </table>
+                          <h1 class="border-0" data-testid="current-test-title">
+                            Open a Modal Dialog in reading mode
+                          </h1>
+                          <div class="disclosure-container stacked">
+                            <h1 class="disclosure-heading">
+                              <button
+                                class="disclosure-button stacked"
+                                id="disclosure-btn-candidateReviewRun-Test Instructions"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="disclosure-btn-controls-candidateReviewRun-Test Instructions">
+                                Test Instructions<svg
+                                  aria-hidden="true"
+                                  focusable="false"
+                                  data-prefix="fas"
+                                  data-icon="chevron-down"
+                                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                                  role="img"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 512 512">
+                                  <path
+                                    fill="currentColor"
+                                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                                </svg>
+                              </button>
+                            </h1>
+                            <div
+                              class="disclosure-content hidden stacked"
+                              role="region"
+                              id="disclosure-btn-controls-candidateReviewRun-Test Instructions"
+                              aria-labelledby="disclosure-btn-candidateReviewRun-Test Instructions">
+                              <div
+                                class="candidate-review-custom-instructions-renderer">
+                                <ol class="numbered-list">
+                                  <li>
+                                    Configure JAWS with default settings. For
+                                    help, read
+                                    <a
+                                      href="https://github.com/w3c/aria-at/wiki/Configuring-Screen-Readers-for-Testing"
+                                      >Configuring Screen Readers for Testing</a
+                                    >.
+                                  </li>
+                                  <li>
+                                    Activate the "Open test page" button, which
+                                    opens the example to test in a new window
+                                    and runs a script that sets focus on the
+                                    'Add Delivery Address' button
+                                  </li>
+                                  <li>
+                                    With the reading cursor on the 'Add Delivery
+                                    Address' button, open the dialog.
+                                  </li>
+                                  <li>
+                                    With the reading cursor on the 'Add Delivery
+                                    Address' button, open the dialog. Do this
+                                    with each of the following commands or
+                                    command sequences.
+                                    <ul class="bullet-list">
+                                      <li>Space</li>
+                                      <li>Enter</li>
+                                    </ul>
+                                  </li>
+                                </ol>
+                                <h2 id="JAWS-test1-SPACE-cmd0">
+                                  Space: 4 MUST, 0 SHOULD, 0 MAY Assertions
+                                </h2>
+                                <div class="table-responsive">
+                                  <table
+                                    aria-labelledby="JAWS-test1-SPACE-cmd0"
+                                    class="table table-bordered">
+                                    <thead>
+                                      <tr>
+                                        <th>Priority</th>
+                                        <th>Assertion Statement</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>Role 'dialog' is conveyed</td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          Name 'Add Delivery Address' is
+                                          conveyed
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          Name of input ('Street') is conveyed
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          The ability to enter or edit text is
+                                          conveyed
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <h2 id="JAWS-test1-ENTER-cmd1">
+                                  Enter: 4 MUST, 0 SHOULD, 0 MAY Assertions
+                                </h2>
+                                <div class="table-responsive">
+                                  <table
+                                    aria-labelledby="JAWS-test1-ENTER-cmd1"
+                                    class="table table-bordered">
+                                    <thead>
+                                      <tr>
+                                        <th>Priority</th>
+                                        <th>Assertion Statement</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>Role 'dialog' is conveyed</td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          Name 'Add Delivery Address' is
+                                          conveyed
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          Name of input ('Street') is conveyed
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>MUST</td>
+                                        <td>
+                                          The ability to enter or edit text is
+                                          conveyed
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <button type="button" class="btn btn-primary">
+                                  Open Test Page
+                                </button>
+                              </div>
+                            </div>
+                            <h1 class="disclosure-heading">
+                              <button
+                                class="disclosure-button stacked"
+                                id="disclosure-btn-candidateReviewRun-Test Results for Chrome"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="disclosure-btn-controls-candidateReviewRun-Test Results for Chrome">
+                                Test Results for Chrome<svg
+                                  aria-hidden="true"
+                                  focusable="false"
+                                  data-prefix="fas"
+                                  data-icon="chevron-down"
+                                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                                  role="img"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 512 512">
+                                  <path
+                                    fill="currentColor"
+                                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                                </svg>
+                              </button>
+                            </h1>
+                            <div
+                              class="disclosure-content hidden stacked"
+                              role="region"
+                              id="disclosure-btn-controls-candidateReviewRun-Test Results for Chrome"
+                              aria-labelledby="disclosure-btn-candidateReviewRun-Test Results for Chrome">
+                              <h2 class="test-results-header">
+                                Test Results&nbsp;(12 passed, 0 failed, 0
+                                unsupported)
+                              </h2>
+                              <h3>
+                                Space&nbsp;Results:&nbsp;6 passed,&nbsp;0
+                                failed,&nbsp;0 unsupported
+                              </h3>
+                              <p class="test-plan-results-response-p">
+                                JAWS Response:
+                              </p>
+                              <blockquote class="test-plan-results-blockquote">
+                                automatically seeded sample output
+                              </blockquote>
+                              <div class="table-responsive">
+                                <table
+                                  aria-label="Results for test Open a Modal Dialog in reading mode"
+                                  class="test-plan-results-table table table-bordered">
+                                  <caption>
+                                    Space Results
+                                  </caption>
+                                  <thead>
+                                    <tr>
+                                      <th>Priority</th>
+                                      <th>Assertion</th>
+                                      <th>Result</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>Role 'dialog' is conveyed</td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>
+                                        Name 'Add Delivery Address' is conveyed
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>
+                                        Name of input ('Street') is conveyed
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>
+                                        The ability to enter or edit text is
+                                        conveyed
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>
+                                        Severe negative side effects do not
+                                        occur
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>SHOULD</td>
+                                      <td>
+                                        Moderate negative side effects do not
+                                        occur
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              The command 'Space' did not cause any negative
+                              side effects.
+                              <hr aria-hidden="true" />
+                              <h3>
+                                Enter&nbsp;Results:&nbsp;6 passed,&nbsp;0
+                                failed,&nbsp;0 unsupported
+                              </h3>
+                              <p class="test-plan-results-response-p">
+                                JAWS Response:
+                              </p>
+                              <blockquote class="test-plan-results-blockquote">
+                                automatically seeded sample output
+                              </blockquote>
+                              <div class="table-responsive">
+                                <table
+                                  aria-label="Results for test Open a Modal Dialog in reading mode"
+                                  class="test-plan-results-table table table-bordered">
+                                  <caption>
+                                    Enter Results
+                                  </caption>
+                                  <thead>
+                                    <tr>
+                                      <th>Priority</th>
+                                      <th>Assertion</th>
+                                      <th>Result</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>Role 'dialog' is conveyed</td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>
+                                        Name 'Add Delivery Address' is conveyed
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>
+                                        Name of input ('Street') is conveyed
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>
+                                        The ability to enter or edit text is
+                                        conveyed
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>MUST</td>
+                                      <td>
+                                        Severe negative side effects do not
+                                        occur
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                    <tr>
+                                      <td>SHOULD</td>
+                                      <td>
+                                        Moderate negative side effects do not
+                                        occur
+                                      </td>
+                                      <td>Passed</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              The command 'Enter' did not cause any negative
+                              side effects.
+                            </div>
+                            <h1 class="disclosure-heading">
+                              <button
+                                class="disclosure-button stacked"
+                                id="disclosure-btn-candidateReviewRun-Run History"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="disclosure-btn-controls-candidateReviewRun-Run History">
+                                Run History<svg
+                                  aria-hidden="true"
+                                  focusable="false"
+                                  data-prefix="fas"
+                                  data-icon="chevron-down"
+                                  class="svg-inline--fa fa-chevron-down disclosure-icon"
+                                  role="img"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 512 512">
+                                  <path
+                                    fill="currentColor"
+                                    d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+                                </svg>
+                              </button>
+                            </h1>
+                            <div
+                              class="disclosure-content hidden stacked"
+                              role="region"
+                              id="disclosure-btn-controls-candidateReviewRun-Run History"
+                              aria-labelledby="disclosure-btn-candidateReviewRun-Run History">
+                              <ul style="margin-bottom: 0px">
+                                <li class="run-history-item">
+                                  Tested with <b>JAWS 2021.2111.13</b> and
+                                  <b>Chrome 99.0.4844.84</b> by
+                                  <b
+                                    ><a
+                                      href="https://github.com/esmeralda-baggins"
+                                      >esmeralda-baggins</a
+                                    ></b
+                                  >
+                                </li>
+                              </ul>
                             </div>
                           </div>
                         </div>
@@ -366,9 +725,14 @@
                         <ul
                           aria-labelledby="test-toolbar-heading"
                           class="test-run-toolbar">
-                          <li class="begin-review-button-container">
+                          <li>
                             <button type="button" class="btn btn-secondary">
-                              Begin Review
+                              Summary
+                            </button>
+                          </li>
+                          <li>
+                            <button type="button" class="btn btn-primary">
+                              Next Test
                             </button>
                           </li>
                           <li>
@@ -382,7 +746,7 @@
                         </ul>
                       </div>
                     </div>
-                    <div class="current-test-options col-md-3">
+                    <div class="current-test-options options-feedback col-md-3">
                       <div role="complementary">
                         <h2 id="test-options-heading">Test Review Options</h2>
                         <ul
@@ -392,7 +756,7 @@
                             <a
                               role="button"
                               tabindex="0"
-                              href="https://github.com/bocoup/aria-at/issues/new?title=JAWS%20General%20Feedback:%20Modal%20Dialog%20Example%20V22.05.26%20for%20Candidate%20Report&amp;labels=candidate-review,jaws,changes-requested&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22modal-dialog%22%2C%22versionString%22%3A%22V22.05.26%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3Anull%2C%22testRowNumber%22%3Anull%2C%22testSequenceNumber%22%3Anull%2C%22isCandidateReview%22%3Atrue%2C%22isCandidateReviewChangesRequested%22%3Atrue%7D%20--%3E"
+                              href="https://github.com/bocoup/aria-at/issues/new?title=JAWS%20Changes%20Requested:%20%22Open%20a%20Modal%20Dialog%20in%20reading%20mode%22%20(Modal%20Dialog%20Example,%20Test%201,%20V22.05.26)%20for%20Candidate%20Report&amp;labels=candidate-review,jaws,changes-requested&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-01-open-a-modal-dialog-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fmodal-dialog%2Ftest-01-open-a-modal-dialog-reading-jaws.collected.html)%0A-%20AT%3A%20JAWS%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22modal-dialog%22%2C%22versionString%22%3A%22V22.05.26%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3Anull%2C%22testRowNumber%22%3A1%2C%22testSequenceNumber%22%3A1%2C%22isCandidateReview%22%3Atrue%2C%22isCandidateReviewChangesRequested%22%3Atrue%7D%20--%3E"
                               target="_blank"
                               aria-disabled="false"
                               class="option-btn btn btn-secondary"
@@ -403,7 +767,7 @@
                             <a
                               role="button"
                               tabindex="0"
-                              href="https://github.com/bocoup/aria-at/issues/new?title=JAWS%20General%20Feedback:%20Modal%20Dialog%20Example%20V22.05.26%20for%20Candidate%20Report&amp;labels=candidate-review,jaws,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22modal-dialog%22%2C%22versionString%22%3A%22V22.05.26%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3Anull%2C%22testRowNumber%22%3Anull%2C%22testSequenceNumber%22%3Anull%2C%22isCandidateReview%22%3Atrue%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
+                              href="https://github.com/bocoup/aria-at/issues/new?title=JAWS%20Feedback:%20%22Open%20a%20Modal%20Dialog%20in%20reading%20mode%22%20(Modal%20Dialog%20Example,%20Test%201,%20V22.05.26)%20for%20Candidate%20Report&amp;labels=candidate-review,jaws,feedback&amp;body=%23%23%20Description%20of%20Behavior%0A%0A%3C!--%20Write%20your%20description%20here%20--%3E%0A%0A%23%23%20Test%20Setup%0A%0A-%20Test%20File%3A%20%5Btest-01-open-a-modal-dialog-reading-jaws.collected.html%5D(https%3A%2F%2Faria-at.netlify.app%2Ftests%2Fmodal-dialog%2Ftest-01-open-a-modal-dialog-reading-jaws.collected.html)%0A-%20AT%3A%20JAWS%0A%0A%3C!--%20The%20following%20data%20allows%20the%20issue%20to%20be%20imported%20into%20the%20ARIA%20AT%20App%20--%3E%0A%3C!--%20ARIA_AT_APP_ISSUE_DATA%20%3D%20%7B%22testPlanDirectory%22%3A%22modal-dialog%22%2C%22versionString%22%3A%22V22.05.26%22%2C%22atName%22%3A%22JAWS%22%2C%22browserName%22%3Anull%2C%22testRowNumber%22%3A1%2C%22testSequenceNumber%22%3A1%2C%22isCandidateReview%22%3Atrue%2C%22isCandidateReviewChangesRequested%22%3Afalse%7D%20--%3E"
                               target="_blank"
                               aria-disabled="false"
                               class="option-btn btn btn-secondary"
