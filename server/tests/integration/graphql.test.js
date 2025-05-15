@@ -534,6 +534,7 @@ describe('graphql', () => {
                   }
                   output
                   hasUnexpected
+                  untestable
                   assertionResults {
                     __typename
                     id
@@ -1038,6 +1039,7 @@ const getMutationInputs = async () => {
           id
           output
           hasUnexpected
+          untestable
           assertionResults {
             id
             passed
