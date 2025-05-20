@@ -2,7 +2,8 @@ const { Router } = require('express');
 const {
   dumpPostgresDatabase,
   restorePostgresDatabase,
-  cleanFolder
+  cleanFolder,
+  resetPostgresDatabase
 } = require('../controllers/DatabaseController');
 
 const router = Router();
@@ -10,5 +11,6 @@ const router = Router();
 router.post('/dump', dumpPostgresDatabase);
 router.post('/restore', restorePostgresDatabase);
 router.post('/cleanFolder', cleanFolder);
+router.post('/reset', resetPostgresDatabase);
 
 module.exports = router;

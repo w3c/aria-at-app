@@ -6,7 +6,7 @@ export const useFailingAssertions = testPlanReport => {
       return [];
     }
 
-    return testPlanReport.finalizedTestResults.flatMap(
+    const failingAssertions = testPlanReport.finalizedTestResults.flatMap(
       (testResult, testIndex) => {
         return testResult.scenarioResults.flatMap(scenarioResult => {
           const commonResult = {
@@ -27,7 +27,10 @@ export const useFailingAssertions = testPlanReport => {
                 // Some revision of how that key combination + setting is rendered may be useful
                 return cmd.text.split(' (')[0];
               })
-              .join(' then ')
+              .join(' then '),
+            commandId: `${
+              scenarioResult.scenario.id
+            }_${scenarioResult.scenario.commands.map(cmd => cmd.id).join('_')}`
           };
 
           /**
@@ -72,5 +75,39 @@ export const useFailingAssertions = testPlanReport => {
         });
       }
     );
+
+    const uniqueCommandsWithFailures = new Set(
+      failingAssertions.map(a => a.scenarioCommands)
+    );
+    failingAssertions.uniqueCommandsCount = uniqueCommandsWithFailures.size;
+
+    const uniqueAssertionStatements = new Set(
+      failingAssertions.map(a => a.assertionText)
+    );
+    failingAssertions.uniqueAssertionStatementsCount =
+      uniqueAssertionStatements.size;
+
+    // NOTE: Each command has 2 additional assertions:
+    // * Other behaviors that create severe negative impact
+    // * Other behaviors that create moderate negative impact
+    // TODO: Include this from the db assertions now that this has been agreed upon
+    const OTHER_BEHAVIOR_SEVERE_PER_COMMAND_COUNT = 1;
+    const OTHER_BEHAVIOR_MODERATE_PER_COMMAND_COUNT = 1;
+
+    let totalAssertionsCount = 0;
+    if (testPlanReport?.finalizedTestResults) {
+      testPlanReport.finalizedTestResults.forEach(testResult => {
+        testResult.scenarioResults.forEach(scenarioResult => {
+          totalAssertionsCount +=
+            scenarioResult.mustAssertionResults.length +
+            OTHER_BEHAVIOR_SEVERE_PER_COMMAND_COUNT +
+            scenarioResult.shouldAssertionResults.length +
+            OTHER_BEHAVIOR_MODERATE_PER_COMMAND_COUNT;
+        });
+      });
+    }
+    failingAssertions.totalAssertionsCount = totalAssertionsCount;
+
+    return failingAssertions;
   }, [testPlanReport]);
 };

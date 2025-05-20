@@ -93,6 +93,10 @@ const TestPlanResultsTable = ({
             ...e,
             priorityString: 'MUST'
           })),
+          // NOTE: Each command has 2 additional assertions:
+          // * Other behaviors that create severe negative impact
+          // * Other behaviors that create moderate negative impact
+          // TODO: Include this from the db assertions now that this has been agreed upon
           {
             id: `UnexpectedBehavior_MUST_${nextId()}`,
             assertion: {
@@ -105,6 +109,7 @@ const TestPlanResultsTable = ({
             ...e,
             priorityString: 'SHOULD'
           })),
+          // TODO: Include this in the assertions now that it has been agreed upon
           {
             id: `UnexpectedBehavior_SHOULD_${nextId()}`,
             assertion: {

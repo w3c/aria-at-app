@@ -1,6 +1,6 @@
 const {
   getUniqueAtVersionsForReport
-} = require('../../models/services/AtService');
+} = require('../../models/services/AtVersionService');
 
 const latestAtVersionReleasedAtResolver = async (
   testPlanReport,

@@ -1,4 +1,4 @@
-import React, { Fragment, useRef } from 'react';
+import React, { Fragment, useRef, useState } from 'react';
 import { useApolloClient, useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
@@ -20,11 +20,14 @@ import ProgressBar from '../common/ProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
+import ReportRerun from '../ReportRerun';
+import Tabs from '../common/Tabs';
 import styles from './TestQueue.module.css';
 import commonStyles from '../common/styles.module.css';
 
 const TestQueue = () => {
   const client = useApolloClient();
+  const [totalAutomatedRuns, setTotalAutomatedRuns] = useState(null);
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network'
   });
@@ -287,12 +290,8 @@ const TestQueue = () => {
 
   const hasTestPlanReports = !!testPlans.length;
 
-  return (
-    <Container id="main" as="main" tabIndex="-1">
-      <Helmet>
-        <title>Test Queue | ARIA-AT</title>
-      </Helmet>
-      <h1>Test Queue</h1>
+  const renderQueueContent = () => (
+    <div className={styles.tabContentPadding}>
       {hasTestPlanReports && (
         <p data-testid="test-queue-instructions">
           {isAdmin
@@ -316,7 +315,6 @@ const TestQueue = () => {
       {testPlans.length
         ? testPlans.map(testPlan => (
             <Fragment key={testPlan.directory}>
-              {/* ID needed for recovering focus after deleting a report */}
               <h2 tabIndex="-1" id={testPlan.directory}>
                 {testPlan.title}
               </h2>
@@ -324,6 +322,40 @@ const TestQueue = () => {
             </Fragment>
           ))
         : null}
+    </div>
+  );
+
+  const tabs = [
+    {
+      label: 'Manual Test Queue',
+      content: renderQueueContent()
+    },
+    {
+      get label() {
+        return `Automated Report Updates${
+          typeof totalAutomatedRuns === 'number'
+            ? ` (${totalAutomatedRuns})`
+            : ''
+        }`;
+      },
+      content: (
+        <div className={styles.tabContentPadding}>
+          <ReportRerun
+            onQueueUpdate={refetch}
+            onTotalRunsAvailable={setTotalAutomatedRuns}
+          />
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <Container id="main" as="main" tabIndex="-1">
+      <Helmet>
+        <title>Test Queue | ARIA-AT</title>
+      </Helmet>
+      <h1 className="test-queue-heading">Test Queue</h1>
+      <Tabs tabs={tabs} />
     </Container>
   );
 };
