@@ -533,6 +533,7 @@ describe('graphql', () => {
                     id
                   }
                   output
+                  hasUnexpected
                   assertionResults {
                     __typename
                     id
@@ -1036,6 +1037,7 @@ const getMutationInputs = async () => {
         scenarioResults {
           id
           output
+          hasUnexpected
           assertionResults {
             id
             passed
@@ -1090,6 +1092,7 @@ const getMutationInputs = async () => {
       scenarioResult => ({
         ...scenarioResult,
         output: 'sample output',
+        hasUnexpected: 'doesNotHaveUnexpected',
         assertionResults: scenarioResult.assertionResults.map(
           assertionResult => ({
             ...assertionResult,
