@@ -155,7 +155,7 @@ const TestRenderer = ({
           highlightRequired;
       }
 
-      if (unexpectedBehaviors && unexpectedBehaviors.length) {
+      if (unexpectedBehaviors) {
         commands[i].unexpected.hasUnexpected = 'hasUnexpected';
 
         for (let k = 0; k < unexpectedBehaviors.length; k++) {
@@ -180,10 +180,7 @@ const TestRenderer = ({
           commands[i].unexpected.behaviors[index].more.highlightRequired =
             highlightRequired;
         }
-      } else if (unexpectedBehaviors)
-        // but not populated
-        commands[i].unexpected.hasUnexpected = 'doesNotHaveUnexpected';
-      else commands[i].unexpected.hasUnexpected = 'notSet';
+      } else commands[i].unexpected.hasUnexpected = 'notSet';
 
       commands[i].unexpected.highlightRequired =
         unexpectedBehaviorHighlightRequired;
