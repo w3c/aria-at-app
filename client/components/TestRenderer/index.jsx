@@ -156,7 +156,19 @@ const TestRenderer = ({
           highlightRequired;
       }
 
-      commands[i].unexpected.hasUnexpected = hasUnexpected || 'notSet';
+      // Historically, the value of `hasUnexpected` was not persisted in the
+      // database and instead inferred from the presence of elements in the
+      // `unexpectedBehaviors` array. Preserve the legacy behavior for test
+      // plan runs which do not specify a value for `hasUnexpected`.
+      if (hasUnexpected) {
+        commands[i].unexpected.hasUnexpected = hasUnexpected;
+      } else if (unexpectedBehaviors) {
+        commands[i].unexpected.hasUnexpected = unexpectedBehaviors.length
+          ? 'hasUnexpected'
+          : 'doesNotHaveUnexpected';
+      } else {
+        commands[i].unexpected.hasUnexpected = 'notSet';
+      }
 
       if (unexpectedBehaviors) {
         for (let k = 0; k < unexpectedBehaviors.length; k++) {
