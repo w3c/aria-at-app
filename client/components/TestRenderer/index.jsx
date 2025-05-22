@@ -132,6 +132,7 @@ const TestRenderer = ({
       let {
         output,
         assertionResults,
+        hasUnexpected,
         unexpectedBehaviors,
         highlightRequired = false, // atOutput
         unexpectedBehaviorHighlightRequired = false
@@ -155,9 +156,9 @@ const TestRenderer = ({
           highlightRequired;
       }
 
-      if (unexpectedBehaviors) {
-        commands[i].unexpected.hasUnexpected = 'hasUnexpected';
+      commands[i].unexpected.hasUnexpected = hasUnexpected || 'notSet';
 
+      if (unexpectedBehaviors) {
         for (let k = 0; k < unexpectedBehaviors.length; k++) {
           /**
            * 0 = EXCESSIVELY_VERBOSE
@@ -180,7 +181,7 @@ const TestRenderer = ({
           commands[i].unexpected.behaviors[index].more.highlightRequired =
             highlightRequired;
         }
-      } else commands[i].unexpected.hasUnexpected = 'notSet';
+      }
 
       commands[i].unexpected.highlightRequired =
         unexpectedBehaviorHighlightRequired;
