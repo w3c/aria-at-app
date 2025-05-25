@@ -1095,6 +1095,7 @@ const getMutationInputs = async () => {
         ...scenarioResult,
         output: 'sample output',
         hasUnexpected: 'doesNotHaveUnexpected',
+        untestable: false,
         assertionResults: scenarioResult.assertionResults.map(
           assertionResult => ({
             ...assertionResult,
