@@ -467,9 +467,14 @@ const TestRun = () => {
 
       // re-assign scenario result due to read only values
       scenarioResult.output = atOutput.value ? atOutput.value : null;
-      scenarioResult.untestable = untestable.value ? untestable : null;
       if (captureHighlightRequired)
         scenarioResult.highlightRequired = atOutput.highlightRequired;
+
+      scenarioResult.untestable = untestable.value ? untestable.value : null;
+      if (captureHighlightRequired && untestable)
+        scenarioResult.untestableHighlightRequired =
+          untestable.highlightRequired;
+
       scenarioResult.assertionResults = [...assertionResults];
       scenarioResult.hasUnexpected = hasUnexpected;
       scenarioResult.unexpectedBehaviors = unexpectedBehaviors
@@ -677,7 +682,7 @@ const TestRun = () => {
       }) => ({
         id,
         output: output,
-        untestable: untestable ? untestable.value : false,
+        untestable: untestable,
         hasUnexpected,
         unexpectedBehaviors: unexpectedBehaviors?.map(
           ({ id, impact, details }) => ({

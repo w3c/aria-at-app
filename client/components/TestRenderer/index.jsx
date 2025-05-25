@@ -133,6 +133,7 @@ const TestRenderer = ({
       let {
         output,
         untestable,
+        untestableHighlightRequired,
         assertionResults,
         hasUnexpected,
         unexpectedBehaviors,
@@ -144,6 +145,7 @@ const TestRenderer = ({
       commands[i].atOutput.highlightRequired = highlightRequired;
 
       if (untestable) commands[i].untestable.value = untestable;
+      commands[i].untestable.highlightRequired = !!untestableHighlightRequired;
 
       // Required because assertionResults can now be returned without an id if there is a 0-priority exception
       // applied
@@ -270,6 +272,9 @@ const TestRenderer = ({
         const atOutputError = item.atOutput.highlightRequired;
         if (atOutputError) return true;
 
+        const untestableError = item.untestable.highlightRequired;
+        if (untestableError) return true;
+
         const unexpectedError = item.unexpected.highlightRequired;
         if (unexpectedError) return true;
 
@@ -292,6 +297,10 @@ const TestRenderer = ({
       return commands.some(item => {
         const atOutputError = item.atOutput.description[1].highlightRequired;
         if (atOutputError) return true;
+
+        const untestableError =
+          item.untestable.description[1].highlightRequired;
+        if (untestableError) return true;
 
         const unexpectedBehaviorError =
           item.unexpectedBehaviors.description[1].highlightRequired;
