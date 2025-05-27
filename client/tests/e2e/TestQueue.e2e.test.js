@@ -343,8 +343,8 @@ describe('Test Queue admin traits when reports exist', () => {
         .$('select.minimum-at-version-select');
 
       await page.evaluate(select => {
-        // Set to VoiceOver 14.0 (At.id is 5 from sample data). Default At.id was 3 (VoiceOver 11.6 (20G165))
-        select.value = '5';
+        // Set to VoiceOver 14.0 (At.id is 6 from sample data). Default At.id was 3 (VoiceOver 11.6 (20G165))
+        select.value = '6';
         select.dispatchEvent(new Event('input', { bubbles: true }));
         select.dispatchEvent(new Event('change', { bubbles: true }));
       }, atVersionSelectHandle);
