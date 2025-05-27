@@ -17,7 +17,7 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
   return (
     <>
       <h2 id="rerun-heading" className={styles.rerunHeader}>
-        Available Updates
+        Reports with Available Updates
       </h2>
       {activeRuns.map(run => {
         const totalReports = run.reportGroups.reduce(
@@ -50,8 +50,8 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
             {run.botName} {run.newVersion}
             <span className={styles.reportCount}>
               {' '}
-              ({totalReports} {totalReports === 1 ? 'Report' : 'Reports'}{' '}
-              Available)
+              ({totalReports} {totalReports === 1 ? 'report' : 'reports'} to
+              update)
             </span>
           </span>
         );
