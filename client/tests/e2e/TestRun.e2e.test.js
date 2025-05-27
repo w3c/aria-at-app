@@ -395,6 +395,65 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
+  it('persists the presence of unexpected behaviors', async () => {
+    const countChecked = page => {
+      return page.evaluate(() => {
+        return Array.from(document.querySelectorAll('input[id^=problem-]')).map(
+          el => el.checked
+        );
+      });
+    };
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page, {
+        testPlanSectionButtonSelector: 'button#disclosure-btn-alert-0',
+        testPlanTableSelector:
+          'table[aria-label="Reports for Alert Example V22.04.14 in draft phase"]'
+      });
+
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      expect(await countChecked(page)).toEqual([
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]);
+
+      await page.evaluate(() => {
+        document.querySelector('#problem-1-true').click();
+        document.querySelector('#problem-2-false').click();
+      });
+
+      expect(await countChecked(page)).toEqual([
+        false,
+        false,
+        true,
+        false,
+        false,
+        true
+      ]);
+
+      await page.click(
+        'button[class="btn btn-primary"] ::-p-text(Submit Results)'
+      );
+
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      expect(await countChecked(page)).toEqual([
+        false,
+        false,
+        true,
+        false,
+        false,
+        true
+      ]);
+    });
+  });
+
   it('inputs results and successfully submits', async () => {
     await getPage(
       { role: 'tester', url: '/test-queue' },

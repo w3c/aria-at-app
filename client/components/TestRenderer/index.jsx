@@ -132,6 +132,7 @@ const TestRenderer = ({
       let {
         output,
         assertionResults,
+        hasUnexpected,
         unexpectedBehaviors,
         highlightRequired = false, // atOutput
         unexpectedBehaviorHighlightRequired = false
@@ -155,9 +156,21 @@ const TestRenderer = ({
           highlightRequired;
       }
 
-      if (unexpectedBehaviors && unexpectedBehaviors.length) {
-        commands[i].unexpected.hasUnexpected = 'hasUnexpected';
+      // Historically, the value of `hasUnexpected` was not persisted in the
+      // database and instead inferred from the presence of elements in the
+      // `unexpectedBehaviors` array. Preserve the legacy behavior for test
+      // plan runs which do not specify a value for `hasUnexpected`.
+      if (hasUnexpected) {
+        commands[i].unexpected.hasUnexpected = hasUnexpected;
+      } else if (unexpectedBehaviors) {
+        commands[i].unexpected.hasUnexpected = unexpectedBehaviors.length
+          ? 'hasUnexpected'
+          : 'doesNotHaveUnexpected';
+      } else {
+        commands[i].unexpected.hasUnexpected = 'notSet';
+      }
 
+      if (unexpectedBehaviors) {
         for (let k = 0; k < unexpectedBehaviors.length; k++) {
           /**
            * 0 = EXCESSIVELY_VERBOSE
@@ -180,10 +193,7 @@ const TestRenderer = ({
           commands[i].unexpected.behaviors[index].more.highlightRequired =
             highlightRequired;
         }
-      } else if (unexpectedBehaviors)
-        // but not populated
-        commands[i].unexpected.hasUnexpected = 'doesNotHaveUnexpected';
-      else commands[i].unexpected.hasUnexpected = 'notSet';
+      }
 
       commands[i].unexpected.highlightRequired =
         unexpectedBehaviorHighlightRequired;

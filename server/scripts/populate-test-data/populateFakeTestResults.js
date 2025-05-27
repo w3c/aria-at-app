@@ -301,6 +301,7 @@ const getFake = async ({
     scenarioResults: baseTestResult.scenarioResults.map(scenarioResult => ({
       ...scenarioResult,
       output: 'automatically seeded sample output',
+      hasUnexpected: 'doesNotHaveUnexpected',
       assertionResults: scenarioResult.assertionResults.map(
         assertionResult => ({
           ...assertionResult,
