@@ -60,14 +60,7 @@ const TestPlanReportStatusDialog = ({
   };
 
   const tableRows = sortedStatuses.map((status, index) => {
-    const {
-      isRequired,
-      at,
-      browser,
-      // minimumAtVersion,
-      exactAtVersion,
-      testPlanReport
-    } = status;
+    const { isRequired, at, browser, exactAtVersion, testPlanReport } = status;
 
     const minimumAtVersion = tableRowMinimumAtVersions[index].minimumAtVersion;
 
