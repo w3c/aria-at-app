@@ -247,11 +247,16 @@ const TestPlans = ({ testPlanVersions, ats, me }) => {
             </thead>
             <tbody>
               {Object.values(testPlanVersions)
-                .sort((a, b) => (a.title < b.title ? -1 : 1))
+                .sort((a, b) =>
+                  a.recommendedPhaseTargetDate < b.recommendedPhaseTargetDate
+                    ? -1
+                    : 1
+                )
                 .map(testPlanVersion => {
                   const testPlanReports =
                     testPlanVersion.testPlanReports.filter(
-                      ({ at }) => at.id === atId
+                      ({ at, vendorReviewStatus }) =>
+                        at.id === atId && vendorReviewStatus !== 'APPROVED'
                     );
                   const candidatePhaseReachedAt =
                     testPlanVersion.candidatePhaseReachedAt;

@@ -1,10 +1,21 @@
-### [1.14.2](https://github.com/w3c/aria-at-app/compare/v1.14.1...v1.14.2) (2025-04-29)
+## [1.15.0](https://github.com/w3c/aria-at-app/compare/v1.14.2...v1.15.0) (2025-05-28)
+
+
+### Features
+
+* Report Rerun ([#1348](https://github.com/w3c/aria-at-app/issues/1348)) ([e752e66](https://github.com/w3c/aria-at-app/commit/e752e669219e73127de4273ab14f6d5f83840eeb))
+* updates sorting and filtering for AT-specific tables on Candidate Review Page ([#1402](https://github.com/w3c/aria-at-app/issues/1402)) ([dc8587b](https://github.com/w3c/aria-at-app/commit/dc8587b0bcbaa3fed8c6727b41f9c26cb345fbd2)), closes [#1382](https://github.com/w3c/aria-at-app/issues/1382)
 
 
 ### Bug Fixes
 
-* Preserve automation initiated status for runs across results copy ([#1380](https://github.com/w3c/aria-at-app/issues/1380) ([964148b](https://github.com/w3c/aria-at-app/commit/964148b5175ce1fec20a633131334560e726802a))
+* Correct type of metrics ([#1403](https://github.com/w3c/aria-at-app/issues/1403)) ([726e1e3](https://github.com/w3c/aria-at-app/commit/726e1e3bbb6defb657e8774ffd020be5cee974bd))
+* corrected content in failing assertions summary table subheader ([#1358](https://github.com/w3c/aria-at-app/issues/1358)) ([3901ba4](https://github.com/w3c/aria-at-app/commit/3901ba42a6c1dacf6a9b6fb9d2a105b5bdf4b212))
+* Improve accuracy of rendered TestRenderer form ([#1409](https://github.com/w3c/aria-at-app/issues/1409)) ([c9fb427](https://github.com/w3c/aria-at-app/commit/c9fb427326d29e07ad05ef4a32e86a2cfe933522))
+* Update text in Test Queue's Rerun Reports Tab ([#1413](https://github.com/w3c/aria-at-app/issues/1413)) ([5a9bc7b](https://github.com/w3c/aria-at-app/commit/5a9bc7bb72ead13dfe857a4a9602eb339330a7eb))
+* Update the format for the Candidate Test Plan Run page titles ([#1406](https://github.com/w3c/aria-at-app/issues/1406)) ([88ef807](https://github.com/w3c/aria-at-app/commit/88ef807b9b004ca80c5aa58c92614ce6fe2ce158))
 
+### [1.14.2](https://github.com/w3c/aria-at-app/compare/v1.14.1...v1.14.2) (2025-04-29)
 
 ### [1.14.1](https://github.com/w3c/aria-at-app/compare/v1.14.0...v1.14.1) (2025-04-10)
 

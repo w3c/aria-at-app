@@ -1,4 +1,5 @@
-const { getAts, getAtVersionById } = require('../../models/services/AtService');
+const { getAts } = require('../../models/services/AtService');
+const { getAtVersionById } = require('../../models/services/AtVersionService');
 const {
   getTestPlanReports
 } = require('../../models/services/TestPlanReportService');

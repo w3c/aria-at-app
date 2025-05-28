@@ -37,6 +37,22 @@ const graphqlSchema = gql`
     VENDOR
   }
 
+  enum HasUnexpected {
+    """
+    The author of the Test Plan Run has not specified whether or not they
+    observed unexpected behaviors.
+    """
+    notSet
+    """
+    The author of the Test Plan Run observed unexpected behaviors.
+    """
+    hasUnexpected
+    """
+    The author of the Test Plan Run did not observe unexpected behaviors.
+    """
+    doesNotHaveUnexpected
+  }
+
   type User {
     """
     Postgres-provided numeric ID.
@@ -790,6 +806,13 @@ const graphqlSchema = gql`
     """
     assertionResults(priority: AssertionPriority): [AssertionResult]!
     """
+    Whether or not the Tester observed unexpected behaviors. This is generally
+    reinforced by the value of "unexpectedBehaviors", but it is tracked as a
+    distinct value in order to preserve the state of incomplete test results.
+    Submitted test results require this field to be filled in.
+    """
+    hasUnexpected: HasUnexpected
+    """
     Failure states like "AT became excessively sluggish" which would count
     as a failure for any scenario, even when the assertions otherwise pass.
     Submitted test results require this field to be filled in.
@@ -813,6 +836,10 @@ const graphqlSchema = gql`
     See ScenarioResult type for more information.
     """
     assertionResults: [AssertionResultInput]!
+    """
+    See ScenarioResult type for more information.
+    """
+    hasUnexpected: String
     """
     See ScenarioResult type for more information.
     """
@@ -1286,6 +1313,30 @@ const graphqlSchema = gql`
     assertionResult: AssertionResult
   }
 
+  type PreviousVersionGroup {
+    previousVersion: AtVersion!
+    reports: [TestPlanReport!]!
+  }
+
+  type RerunnableReportsResponse {
+    currentVersion: AtVersion!
+    previousVersionGroups: [PreviousVersionGroup!]!
+  }
+
+  enum UpdateEventType {
+    COLLECTION_JOB
+    GENERAL
+    TEST_PLAN_RUN
+    TEST_PLAN_REPORT
+  }
+
+  type UpdateEvent {
+    id: ID!
+    timestamp: String!
+    description: String!
+    type: UpdateEventType!
+  }
+
   type Query {
     """
     Get the currently-logged-in user or null if you are not logged in.
@@ -1388,6 +1439,18 @@ const graphqlSchema = gql`
     Get all CollectionJobs.
     """
     collectionJobs: [CollectionJob]!
+    """
+    Get rerunnable test plan reports for an AT version that can be used for automation re-runs
+    """
+    rerunnableReports(atVersionId: ID!): RerunnableReportsResponse
+    """
+    Get update events
+    """
+    updateEvents(type: UpdateEventType): [UpdateEvent!]!
+    """
+    Get a particular update event by ID
+    """
+    updateEvent(id: ID!): UpdateEvent
   }
 
   # Mutation-specific types below
@@ -1679,6 +1742,17 @@ const graphqlSchema = gql`
     Delete a CollectionJob
     """
     deleteCollectionJob(id: ID!): NoResponse!
+    """
+    Create collection jobs for all test plan reports eligible for automation refresh
+    """
+    createCollectionJobsFromPreviousAtVersion(
+      atVersionId: ID!
+    ): CreateCollectionJobsFromPreviousVersionResponse!
+  }
+
+  type CreateCollectionJobsFromPreviousVersionResponse {
+    collectionJobs: [CollectionJob!]!
+    message: String!
   }
 `;
 

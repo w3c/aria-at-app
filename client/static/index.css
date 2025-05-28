@@ -26,6 +26,8 @@
   /* Miscellaneous */
   --default-gray: #d2d5d9;
   --border-gray: #d2d5d9;
+  --dark-gray: #495057;
+  --darkest-gray: #24292f;
   --border-light-blue: #b5cfec;
   --border-dark-blue: #517dbc;
   --border-light-purple: #d29fff;
@@ -96,6 +98,7 @@
 
   /* Shadows */
   --button-shadow: rgba(103, 171, 197, 0.5);
+  --box-shadow-gray: rgba(0, 0, 0, 0.05);
 
   /* Font sizes */
   --default-font-size: 1rem;

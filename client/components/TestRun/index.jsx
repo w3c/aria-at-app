@@ -470,6 +470,7 @@ const TestRun = () => {
       if (captureHighlightRequired)
         scenarioResult.highlightRequired = atOutput.highlightRequired;
       scenarioResult.assertionResults = [...assertionResults];
+      scenarioResult.hasUnexpected = hasUnexpected;
       scenarioResult.unexpectedBehaviors = unexpectedBehaviors
         ? [...unexpectedBehaviors]
         : null;
@@ -653,6 +654,7 @@ const TestRun = () => {
      * ....},
      * ....other assertionResults,
      * ..],
+     * ..hasUnexpected,
      * ..unexpectedBehaviors: [
      * ....{
      * ......id
@@ -664,9 +666,16 @@ const TestRun = () => {
      * }
      * */
     const formattedScenarioResults = scenarioResults.map(
-      ({ assertionResults, id, output, unexpectedBehaviors }) => ({
+      ({
+        assertionResults,
+        id,
+        output,
+        hasUnexpected,
+        unexpectedBehaviors
+      }) => ({
         id,
         output: output,
+        hasUnexpected,
         unexpectedBehaviors: unexpectedBehaviors?.map(
           ({ id, impact, details }) => ({
             id,
