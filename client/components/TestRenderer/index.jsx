@@ -1,10 +1,4 @@
-import React, {
-  Fragment,
-  useEffect,
-  useLayoutEffect,
-  useState,
-  useRef
-} from 'react';
+import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { unescape } from 'lodash';
@@ -21,13 +15,10 @@ import {
 } from '../../resources/aria-at-test-io-format.mjs';
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../utils/aria';
-import OutputTextArea from './OutputTextArea';
-import AssertionsFieldset from './AssertionsFieldset';
-import UnexpectedBehaviorsFieldset from './UnexpectedBehaviorsFieldset';
+import CommandResults from './CommandResults';
 import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
 import { AtPropType, TestResultPropType } from '../common/proptypes/index.js';
-import createIssueLink from '@client/utils/createIssueLink';
 import styles from './TestRenderer.module.css';
 
 const ErrorComponent = ({ hasErrors = false }) => {
@@ -141,6 +132,7 @@ const TestRenderer = ({
       let {
         output,
         assertionResults,
+        hasUnexpected,
         unexpectedBehaviors,
         highlightRequired = false, // atOutput
         unexpectedBehaviorHighlightRequired = false
@@ -164,9 +156,21 @@ const TestRenderer = ({
           highlightRequired;
       }
 
-      if (unexpectedBehaviors && unexpectedBehaviors.length) {
-        commands[i].unexpected.hasUnexpected = 'hasUnexpected';
+      // Historically, the value of `hasUnexpected` was not persisted in the
+      // database and instead inferred from the presence of elements in the
+      // `unexpectedBehaviors` array. Preserve the legacy behavior for test
+      // plan runs which do not specify a value for `hasUnexpected`.
+      if (hasUnexpected) {
+        commands[i].unexpected.hasUnexpected = hasUnexpected;
+      } else if (unexpectedBehaviors) {
+        commands[i].unexpected.hasUnexpected = unexpectedBehaviors.length
+          ? 'hasUnexpected'
+          : 'doesNotHaveUnexpected';
+      } else {
+        commands[i].unexpected.hasUnexpected = 'notSet';
+      }
 
+      if (unexpectedBehaviors) {
         for (let k = 0; k < unexpectedBehaviors.length; k++) {
           /**
            * 0 = EXCESSIVELY_VERBOSE
@@ -189,10 +193,7 @@ const TestRenderer = ({
           commands[i].unexpected.behaviors[index].more.highlightRequired =
             highlightRequired;
         }
-      } else if (unexpectedBehaviors)
-        // but not populated
-        commands[i].unexpected.hasUnexpected = 'doesNotHaveUnexpected';
-      else commands[i].unexpected.hasUnexpected = 'notSet';
+      }
 
       commands[i].unexpected.highlightRequired =
         unexpectedBehaviorHighlightRequired;
@@ -438,45 +439,20 @@ const TestRenderer = ({
               {pageContent.results.header.description}
             </p>
             {pageContent.results.commands.map((value, commandIndex) => {
-              const {
-                header,
-                atOutput,
-                assertions,
-                unexpectedBehaviors,
-                assertionsHeader
-              } = value;
-
-              const commandString = header.replace('After ', '');
-              const issueLink = createIssueLink({
-                ...commonIssueContent,
-                commandString
-              });
-
               return (
-                <Fragment key={`AtOutputKey_${commandIndex}`}>
-                  <h3>{header}</h3>
-                  <OutputTextArea
-                    commandIndex={commandIndex}
-                    atOutput={atOutput}
-                    isSubmitted={isSubmitted}
-                    readOnly={isReviewingBot || isReadOnly}
-                  />
-                  <AssertionsFieldset
-                    assertions={assertions}
-                    commandIndex={commandIndex}
-                    assertionsHeader={assertionsHeader}
-                    readOnly={isReadOnly}
-                  />
-                  <UnexpectedBehaviorsFieldset
-                    commandIndex={commandIndex}
-                    unexpectedBehaviors={unexpectedBehaviors}
-                    isSubmitted={isSubmitted}
-                    readOnly={isReadOnly}
-                  />
-                  <a href={issueLink} target="_blank" rel="noreferrer">
-                    Raise an issue for {commandString}
-                  </a>
-                </Fragment>
+                <CommandResults
+                  key={commandIndex}
+                  header={value.header}
+                  atOutput={value.atOutput}
+                  assertions={value.assertions}
+                  unexpectedBehaviors={value.unexpectedBehaviors}
+                  assertionsHeader={value.assertionsHeader}
+                  commonIssueContent={commonIssueContent}
+                  commandIndex={commandIndex}
+                  isSubmitted={isSubmitted}
+                  isReviewingBot={isReviewingBot}
+                  isReadOnly={isReadOnly}
+                />
               );
             })}
           </section>

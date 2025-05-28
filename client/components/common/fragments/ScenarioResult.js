@@ -29,6 +29,7 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
           id
           output
           scenario {
+            id
             commands {
               id
               text
@@ -47,6 +48,7 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
           mayAssertionResults: assertionResults(priority: MAY) {
             ...AssertionResultFields
           }
+          hasUnexpected
           unexpectedBehaviors {
             id
             text
