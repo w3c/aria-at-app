@@ -1,3 +1,10 @@
+### [1.15.2](https://github.com/w3c/aria-at-app/compare/v1.15.0...v1.15.2) (2025-06-03)
+
+
+### Bug Fixes
+
+* Add migration to remove automated reports ([#1419](https://github.com/w3c/aria-at-app/issues/1419)) ([204f2d4](https://github.com/w3c/aria-at-app/commit/204f2d46caaf1db8cfff9e88ac4343cb8d06d20d)), closes [#1417](https://github.com/w3c/aria-at-app/issues/1417)
+
 ## [1.15.0](https://github.com/w3c/aria-at-app/compare/v1.14.2...v1.15.0) (2025-05-28)
 
 
