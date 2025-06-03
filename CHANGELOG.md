@@ -1,4 +1,4 @@
-### [1.15.1](https://github.com/w3c/aria-at-app/compare/v1.15.0...v1.15.1) (2025-06-03)
+### [1.15.2](https://github.com/w3c/aria-at-app/compare/v1.15.0...v1.15.2) (2025-06-03)
 
 
 ### Bug Fixes
