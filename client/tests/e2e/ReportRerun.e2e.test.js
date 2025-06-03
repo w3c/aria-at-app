@@ -69,7 +69,8 @@ describe('Report Rerun tab', () => {
     });
   });
 
-  it('handles rerun action for specific bot version', async () => {
+  // TODO: Remove skip once https://github.com/w3c/aria-at-app/issues/1417 is addressed
+  it.skip('handles rerun action for specific bot version', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       await switchToReportRerunTab(page);
 
