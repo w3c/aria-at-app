@@ -52,6 +52,8 @@ const vendorReviewStatusMap = {
   IN_PROGRESS: 'In Progress',
   APPROVED: 'Approved'
 };
+const FAILING_ASSERTIONS_INDEX = -1;
+const NEGATIVE_SIDE_EFFECTS = -2;
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -129,7 +131,9 @@ const CandidateTestPlanRun = () => {
     skip: !testPlanReport
   });
 
-  const isSummaryView = currentTestIndex === -1 || currentTestIndex === -2;
+  const isSummaryView =
+    currentTestIndex === FAILING_ASSERTIONS_INDEX ||
+    currentTestIndex === NEGATIVE_SIDE_EFFECTS;
 
   const isLaptopOrLarger = useMediaQuery({
     query: '(min-width: 792px)'
@@ -406,7 +410,7 @@ const CandidateTestPlanRun = () => {
   const fileBugUrl = AtBugTrackerMap[at];
 
   const getHeading = () => {
-    if (currentTestIndex === -1) {
+    if (currentTestIndex === FAILING_ASSERTIONS_INDEX) {
       return (
         <>
           <span className={testRunStyles.taskLabel}>
@@ -420,7 +424,7 @@ const CandidateTestPlanRun = () => {
       );
     }
 
-    if (currentTestIndex === -2) {
+    if (currentTestIndex === NEGATIVE_SIDE_EFFECTS) {
       return (
         <>
           <span className={testRunStyles.taskLabel}>
@@ -575,8 +579,7 @@ const CandidateTestPlanRun = () => {
   };
 
   const getContent = () => {
-    //const isSummaryView = currentTestIndex === -1 || currentTestIndex === -2;
-    if (currentTestIndex === -1) {
+    if (currentTestIndex === FAILING_ASSERTIONS_INDEX) {
       return (
         <div
           className={
@@ -591,7 +594,7 @@ const CandidateTestPlanRun = () => {
         </div>
       );
     }
-    if (currentTestIndex === -2) {
+    if (currentTestIndex === NEGATIVE_SIDE_EFFECTS) {
       return (
         <div
           className={

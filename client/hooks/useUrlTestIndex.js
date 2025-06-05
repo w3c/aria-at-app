@@ -8,6 +8,9 @@ import { useEffect, useState } from 'react';
  * * -1: display the "Summary of Failing Assertions"
  * * -2: display the "Summary of Negative Side Effects"
  */
+const FAILING_ASSERTIONS_INDEX = -1;
+const NEGATIVE_SIDE_EFFECTS = -2;
+
 export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -15,11 +18,11 @@ export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
 
   const getTestIndex = () => {
     if (location.hash === '#summary-assertions') {
-      return -1;
+      return FAILING_ASSERTIONS_INDEX;
     }
 
     if (location.hash === '#summary-side-effects') {
-      return -2;
+      return NEGATIVE_SIDE_EFFECTS;
     }
 
     // Remove the '#' character
@@ -40,11 +43,11 @@ export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
 
   const updateTestIndex = index => {
     // Special case for summary
-    if (index === -1) {
+    if (index === FAILING_ASSERTIONS_INDEX) {
       navigate(`${location.pathname}#summary-assertions`, { replace: true });
       return;
     }
-    if (index === -2) {
+    if (index === NEGATIVE_SIDE_EFFECTS) {
       navigate(`${location.pathname}#summary-side-effects`, { replace: true });
       return;
     }
