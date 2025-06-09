@@ -66,7 +66,7 @@ describe('TestPlanReportStatusDialog', () => {
   test('displays the table headers', async () => {
     await waitFor(() => {
       expect(getByText('Required')).toBeInTheDocument();
-      expect(getByText('AT')).toBeInTheDocument();
+      expect(getByText('Assistive Technology')).toBeInTheDocument();
       expect(getByText('Browser')).toBeInTheDocument();
       expect(getByText('Report Status')).toBeInTheDocument();
     });

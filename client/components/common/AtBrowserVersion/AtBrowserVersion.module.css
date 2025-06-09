@@ -12,3 +12,9 @@
     margin-left: 2px;
   }
 }
+
+select.minimum-at-version-select {
+  background: none;
+  border: 1px solid var(--border-gray);
+  border-radius: var(--4px);
+}

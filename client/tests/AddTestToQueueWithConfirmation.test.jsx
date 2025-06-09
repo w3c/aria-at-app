@@ -5,13 +5,10 @@
 import React from 'react';
 import { render, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { MockedProvider } from '@apollo/client/testing';
-
-// eslint-disable-next-line jest/no-mocks-import
-import { TEST_QUEUE_MUTATION_MOCK } from './__mocks__/GraphQLMocks';
-import AddTestToQueueWithConfirmation from '../components/AddTestToQueueWithConfirmation';
 import { BrowserRouter } from 'react-router-dom';
 import { InMemoryCache, useMutation, useQuery } from '@apollo/client';
+import { MockedProvider } from '@apollo/client/testing';
+import AddTestToQueueWithConfirmation from '../components/AddTestToQueueWithConfirmation';
 
 jest.mock('@apollo/client');
 
@@ -86,7 +83,7 @@ const commonSetup = mockMutation => {
 
 describe('AddTestToQueueWithConfirmation', () => {
   beforeEach(() => {
-    mutationMock = jest.fn().mockResolvedValue(TEST_QUEUE_MUTATION_MOCK);
+    mutationMock = jest.fn();
     commonSetup(mutationMock);
   });
 
