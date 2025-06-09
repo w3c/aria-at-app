@@ -802,6 +802,11 @@ const graphqlSchema = gql`
     """
     output: String
     """
+    A tester may designate a scenario as "untestable" if the observed behavior
+    renders the associated assertions incoherent.
+    """
+    untestable: Boolean
+    """
     The outcomes of the assertions based on the output field.
     """
     assertionResults(priority: AssertionPriority): [AssertionResult]!
@@ -832,6 +837,10 @@ const graphqlSchema = gql`
     See ScenarioResult type for more information.
     """
     output: String
+    """
+    See ScenarioResult type for more information.
+    """
+    untestable: Boolean
     """
     See ScenarioResult type for more information.
     """

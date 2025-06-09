@@ -7,7 +7,8 @@ const AssertionsFieldset = ({
   assertions,
   commandIndex,
   assertionsHeader,
-  readOnly = false
+  readOnly = false,
+  disabled
 }) => {
   // Handle case where build process didn't include assertionResponseQuestion
   const normalizedHeader = useMemo(() => {
@@ -28,6 +29,7 @@ const AssertionsFieldset = ({
           <fieldset
             className={styles.testRendererFieldset}
             key={`AssertionKey_${commandIndex}_${assertionIndex}`}
+            disabled={disabled}
           >
             <legend>{description[0]}</legend>
             <label className={styles.assertionsLabel}>
@@ -63,7 +65,8 @@ AssertionsFieldset.propTypes = {
   assertions: PropTypes.array.isRequired,
   commandIndex: PropTypes.number.isRequired,
   assertionsHeader: PropTypes.object.isRequired,
-  readOnly: PropTypes.bool
+  readOnly: PropTypes.bool,
+  disabled: PropTypes.bool.isRequired
 };
 
 export default AssertionsFieldset;

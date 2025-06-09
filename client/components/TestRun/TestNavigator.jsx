@@ -42,6 +42,10 @@ const TestNavigator = ({
     );
   }, [isVendor, testPlanReport]);
 
+  const shouldShowNegativeSideEffectsSummary = useMemo(() => {
+    return isVendor && testPlanReport.metrics.unexpectedBehaviorCount > 0;
+  }, [isVendor, testPlanReport]);
+
   return (
     <Col className={styles.testNavigator} md={show ? 3 : 12}>
       <div className={styles.testNavigatorToggleContainer}>
@@ -74,7 +78,7 @@ const TestNavigator = ({
                   e.preventDefault();
                   await handleTestClick(-1);
                 }}
-                href="#summary"
+                href="#summary-assertions"
                 className={styles.testName}
                 aria-current={currentTestIndex === -1}
               >
@@ -83,6 +87,25 @@ const TestNavigator = ({
               <span
                 className={styles.progressIndicator}
                 title="Summary of Failing Assertions"
+              />
+            </div>
+          )}
+          {shouldShowNegativeSideEffectsSummary && (
+            <div className={clsx(styles.testNameWrapper, styles.summary)}>
+              <a
+                onClick={async e => {
+                  e.preventDefault();
+                  await handleTestClick(-2);
+                }}
+                href="#summary-side-effects"
+                className={styles.testName}
+                aria-current={currentTestIndex === -2}
+              >
+                Summary of Negative Side Effects
+              </a>
+              <span
+                className={styles.progressIndicator}
+                title="Summary of Negative Side Effects"
               />
             </div>
           )}
