@@ -165,6 +165,14 @@ label {
     }
   }
 
+  &.untestable-label {
+    margin-bottom: var(--8px);
+
+    input {
+      margin-right: var(--4px);
+    }
+  }
+
   &.assertions-label {
     margin-bottom: var(--8px);
     margin-right: var(--8px);

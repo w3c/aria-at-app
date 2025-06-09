@@ -17,6 +17,7 @@ import TestPlanResultsTable from '../common/TestPlanResultsTable';
 import DisclosureComponent from '../common/DisclosureComponent';
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import createIssueLink from '../../utils/createIssueLink';
+import summarizeAssertions from '../../utils/summarizeAssertions.js';
 import RunHistory from '../common/RunHistory';
 import {
   TestPlanReportPropType,
@@ -24,6 +25,8 @@ import {
 } from '../common/proptypes';
 import FailingAssertionsSummaryTable from '../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../FailingAssertionsSummary/Heading';
+import NegativeSideEffectsSummaryTable from '../NegativeSideEffectsSummary/Table';
+import NegativeSideEffectsSummaryHeading from '../NegativeSideEffectsSummary/Heading';
 import styles from './SummarizeTestPlanReport.module.css';
 import commonStyles from '../common/styles.module.css';
 
@@ -187,6 +190,25 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     );
   };
 
+  const renderNegativeSideEffectsSummary = () => {
+    if (testPlanReport.metrics.unexpectedBehaviorCount === 0) {
+      return null;
+    }
+
+    return (
+      <>
+        <NegativeSideEffectsSummaryHeading metrics={testPlanReport.metrics} />
+        <NegativeSideEffectsSummaryTable
+          testPlanReport={testPlanReport}
+          atName={testPlanReport.at.name}
+          getLinkUrl={assertion =>
+            `/report/${testPlanVersion.id}/targets/${testPlanReport.id}#result-${assertion.testResultId}`
+          }
+        />
+      </>
+    );
+  };
+
   return (
     <Container id="main" as="main" tabIndex="-1">
       <Helmet>
@@ -262,6 +284,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
       {renderVersionsSummaryTable()}
       {renderResultsForTargetTable()}
       {renderFailingAssertionsSummary()}
+      {renderNegativeSideEffectsSummary()}
       {testPlanReport.finalizedTestResults.map((testResult, index) => {
         const test = testResult.test;
 
@@ -288,26 +311,17 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
           'https://aria-at.netlify.app'
         );
 
-        const {
-          assertionsPassedCount,
-          mustAssertionsFailedCount,
-          shouldAssertionsFailedCount,
-          mayAssertionsFailedCount
-        } = getMetrics({
-          testResult
-        });
-
-        const mustShouldAssertionsFailedCount =
-          mustAssertionsFailedCount + shouldAssertionsFailedCount;
+        const assertionsSummary = summarizeAssertions(
+          getMetrics({
+            testResult
+          })
+        );
 
         return (
           <Fragment key={testResult.id}>
             <div className={styles.testResultHeading}>
               <h2 id={`result-${testResult.id}`} tabIndex="-1">
-                Test {index + 1}: {test.title}&nbsp;(
-                {assertionsPassedCount} passed,&nbsp;
-                {mustShouldAssertionsFailedCount} failed,&nbsp;
-                {mayAssertionsFailedCount} unsupported)
+                Test {index + 1}: {test.title}&nbsp;({assertionsSummary})
                 <DisclaimerInfo phase={testPlanVersion.phase} />
               </h2>
               <div className={styles.testResultButtons}>
