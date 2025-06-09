@@ -3,7 +3,7 @@
 const spawn = require('cross-spawn');
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-const ariaAtDefaultBranch = 'gh-1352-test-blocked';
+const ariaAtDefaultBranch = 'master';
 
 /**
  * Executes a git command and returns its output.
