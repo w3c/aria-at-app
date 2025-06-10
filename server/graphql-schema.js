@@ -37,6 +37,22 @@ const graphqlSchema = gql`
     VENDOR
   }
 
+  enum HasUnexpected {
+    """
+    The author of the Test Plan Run has not specified whether or not they
+    observed unexpected behaviors.
+    """
+    notSet
+    """
+    The author of the Test Plan Run observed unexpected behaviors.
+    """
+    hasUnexpected
+    """
+    The author of the Test Plan Run did not observe unexpected behaviors.
+    """
+    doesNotHaveUnexpected
+  }
+
   type User {
     """
     Postgres-provided numeric ID.
@@ -786,9 +802,21 @@ const graphqlSchema = gql`
     """
     output: String
     """
+    A tester may designate a scenario as "untestable" if the observed behavior
+    renders the associated assertions incoherent.
+    """
+    untestable: Boolean
+    """
     The outcomes of the assertions based on the output field.
     """
     assertionResults(priority: AssertionPriority): [AssertionResult]!
+    """
+    Whether or not the Tester observed unexpected behaviors. This is generally
+    reinforced by the value of "unexpectedBehaviors", but it is tracked as a
+    distinct value in order to preserve the state of incomplete test results.
+    Submitted test results require this field to be filled in.
+    """
+    hasUnexpected: HasUnexpected
     """
     Failure states like "AT became excessively sluggish" which would count
     as a failure for any scenario, even when the assertions otherwise pass.
@@ -812,7 +840,15 @@ const graphqlSchema = gql`
     """
     See ScenarioResult type for more information.
     """
+    untestable: Boolean
+    """
+    See ScenarioResult type for more information.
+    """
     assertionResults: [AssertionResultInput]!
+    """
+    See ScenarioResult type for more information.
+    """
+    hasUnexpected: String
     """
     See ScenarioResult type for more information.
     """

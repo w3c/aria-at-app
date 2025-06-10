@@ -17,7 +17,7 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
   return (
     <>
       <h2 id="rerun-heading" className={styles.rerunHeader}>
-        Available Updates
+        Reports with Available Updates
       </h2>
       {activeRuns.map(run => {
         const totalReports = run.reportGroups.reduce(
@@ -50,8 +50,8 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
             {run.botName} {run.newVersion}
             <span className={styles.reportCount}>
               {' '}
-              ({totalReports} {totalReports === 1 ? 'Report' : 'Reports'}{' '}
-              Available)
+              ({totalReports} {totalReports === 1 ? 'report' : 'reports'} to
+              update)
             </span>
           </span>
         );
@@ -79,13 +79,19 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
                         : 'earlier versions'}{' '}
                       of {run.botName} can be automatically updated with the
                       &quot;Start Generating Reports&quot; button below.
+                      {/* TODO: Remove below when https://github.com/w3c/aria-at-app/issues/1417 is addressed */}
+                      <br />
+                      <br />
+                      Note: The button is temporarily disabled while we work on
+                      upcoming feature updates.
                     </p>
                   </div>
 
                   <div className={styles.actionHeader}>
+                    {/* TODO: Re-enable when https://github.com/w3c/aria-at-app/issues/1417 is addressed */}
                     <button
                       className={styles.rerunButton}
-                      disabled={totalReports === 0}
+                      disabled={true /* totalReports === 0 */}
                       onClick={() => onRerunClick(run)}
                       aria-label={buttonAriaLabel}
                     >

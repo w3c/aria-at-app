@@ -7,10 +7,10 @@ const UnexpectedBehaviorsFieldset = ({
   commandIndex,
   unexpectedBehaviors,
   isSubmitted,
-  readOnly = false
+  readOnly = false,
+  forceYes
 }) => {
   const impactOptions = ['Moderate', 'Severe'];
-
   const handleUnexpectedBehaviorsExistRadioClick = e => {
     if (readOnly) e.preventDefault();
     else {
@@ -45,8 +45,9 @@ const UnexpectedBehaviorsFieldset = ({
           id={`problem-${commandIndex}-true`}
           name={`problem-${commandIndex}`}
           autoFocus={isSubmitted && unexpectedBehaviors.passChoice.focus}
-          defaultChecked={unexpectedBehaviors.passChoice.checked}
-          onClick={handleUnexpectedBehaviorsExistRadioClick}
+          checked={unexpectedBehaviors.passChoice.checked}
+          onChange={handleUnexpectedBehaviorsExistRadioClick}
+          disabled={forceYes}
         />
         <label
           id={`problem-${commandIndex}-true-label`}
@@ -62,8 +63,8 @@ const UnexpectedBehaviorsFieldset = ({
           id={`problem-${commandIndex}-false`}
           name={`problem-${commandIndex}`}
           autoFocus={isSubmitted && unexpectedBehaviors.failChoice.focus}
-          defaultChecked={unexpectedBehaviors.failChoice.checked}
-          onClick={handleUnexpectedBehaviorsExistRadioClick}
+          checked={unexpectedBehaviors.failChoice.checked}
+          onChange={handleUnexpectedBehaviorsExistRadioClick}
         />
         <label
           id={`problem-${commandIndex}-false-label`}
@@ -119,7 +120,7 @@ const UnexpectedBehaviorsFieldset = ({
                       else change(e.target.checked);
                     }}
                   />
-                  {description} behavior occurred
+                  {description}
                 </label>
 
                 {/* Impact select */}
@@ -201,7 +202,8 @@ UnexpectedBehaviorsFieldset.propTypes = {
   commandIndex: PropTypes.number.isRequired,
   unexpectedBehaviors: PropTypes.object.isRequired,
   isSubmitted: PropTypes.bool,
-  readOnly: PropTypes.bool
+  readOnly: PropTypes.bool,
+  forceYes: PropTypes.bool.isRequired
 };
 
 export default UnexpectedBehaviorsFieldset;

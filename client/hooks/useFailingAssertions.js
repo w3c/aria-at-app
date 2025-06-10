@@ -58,9 +58,9 @@ export const useFailingAssertions = testPlanReport => {
               ...commonResult,
               assertionText:
                 unexpectedBehavior.impact.toLowerCase() === 'moderate'
-                  ? 'Other behaviors that create moderate negative impacts are not exhibited'
+                  ? 'Moderate negative side effects do not occur'
                   : unexpectedBehavior.impact.toLowerCase() === 'severe'
-                  ? 'Other behaviors that create severe negative impacts are not exhibited'
+                  ? 'Severe negative side effects do not occur'
                   : 'N/A',
               priority:
                 unexpectedBehavior.impact.toLowerCase() === 'moderate'

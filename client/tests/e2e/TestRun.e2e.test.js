@@ -110,6 +110,8 @@ describe('Test Run when not signed in', () => {
 });
 
 describe('Test Run when signed in as tester', () => {
+  const submitResultsButtonSelector =
+    'button[class="btn btn-primary"] ::-p-text(Submit Results)';
   const assignSelfAndNavigateToRun = async (
     page,
     {
@@ -171,8 +173,6 @@ describe('Test Run when signed in as tester', () => {
     // Confirm that submission cannot happen with empty form
     // Specificity with selector because there's a 2nd 'hidden' button coming
     // from the harness which is what is actually called for the submit event
-    const submitResultsButtonSelector =
-      'button[class="btn btn-primary"] ::-p-text(Submit Results)';
     await page.waitForSelector(submitResultsButtonSelector);
     await page.click(submitResultsButtonSelector);
     await page.waitForNetworkIdle();
@@ -313,27 +313,27 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
-  it('inputs results and navigates between tests to confirm saving', async () => {
-    async function getGeneratedCheckedAssertionCount(page) {
-      return await page.evaluate(() => {
-        const radioGroups = document.querySelectorAll(
-          'input[type="radio"][id^="pass-"]'
-        );
-        let yesCount = 0;
+  async function getGeneratedCheckedAssertionCount(page) {
+    return await page.evaluate(() => {
+      const radioGroups = document.querySelectorAll(
+        'input[type="radio"][id^="pass-"]'
+      );
+      let yesCount = 0;
 
-        for (let i = 0; i < radioGroups.length; i += 2) {
-          if (i % 4 === 0) {
-            radioGroups[i].click(); // Click 'Yes' radio
-            yesCount++;
-          } else {
-            radioGroups[i + 1].click(); // Click 'No' radio
-          }
+      for (let i = 0; i < radioGroups.length; i += 2) {
+        if (i % 4 === 0) {
+          radioGroups[i].click(); // Click 'Yes' radio
+          yesCount++;
+        } else {
+          radioGroups[i + 1].click(); // Click 'No' radio
         }
+      }
 
-        return yesCount;
-      });
-    }
+      return yesCount;
+    });
+  }
 
+  it('inputs results and navigates between tests to confirm saving', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page);
 
@@ -392,6 +392,173 @@ describe('Test Run when signed in as tester', () => {
       expect(test1CheckedCount).toBe(generatedCheckedTest1Count);
       expect(test2CheckedCount).toBe(generatedCheckedTest2Count * 2); // Both 'Yes' and 'No' are checked
       expect(test3CheckedCount).toBe(0);
+    });
+  });
+
+  it('persists the presence of unexpected behaviors', async () => {
+    const countChecked = page => {
+      return page.evaluate(() => {
+        return Array.from(document.querySelectorAll('input[id^=problem-]')).map(
+          el => el.checked
+        );
+      });
+    };
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page, {
+        testPlanSectionButtonSelector: 'button#disclosure-btn-alert-0',
+        testPlanTableSelector:
+          'table[aria-label="Reports for Alert Example V22.04.14 in draft phase"]'
+      });
+
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      expect(await countChecked(page)).toEqual([
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]);
+
+      await page.evaluate(() => {
+        document.querySelector('#problem-1-true').click();
+        document.querySelector('#problem-2-false').click();
+      });
+
+      expect(await countChecked(page)).toEqual([
+        false,
+        false,
+        true,
+        false,
+        false,
+        true
+      ]);
+
+      await page.click(
+        'button[class="btn btn-primary"] ::-p-text(Submit Results)'
+      );
+
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      expect(await countChecked(page)).toEqual([
+        false,
+        false,
+        true,
+        false,
+        false,
+        true
+      ]);
+    });
+  });
+
+  it('marks assertions as untestable', async () => {
+    const countChecked = page => {
+      return page.evaluate(() => {
+        return {
+          passing: document.querySelectorAll(
+            '[type="radio"][id$=-yes]:not(:disabled):checked'
+          ).length,
+          failing: document.querySelectorAll(
+            '[type="radio"][id$=-no]:not(:disabled):checked'
+          ).length
+        };
+      });
+    };
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page, {
+        testPlanSectionButtonSelector: 'button#disclosure-btn-alert-0',
+        testPlanTableSelector:
+          'table[aria-label="Reports for Alert Example V22.04.14 in draft phase"]'
+      });
+
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      expect(await countChecked(page)).toEqual({
+        passing: 0,
+        failing: 0
+      });
+
+      await getGeneratedCheckedAssertionCount(page);
+
+      expect(await countChecked(page)).toEqual({
+        passing: 3,
+        failing: 3
+      });
+
+      await page.click('label ::-p-text(untestable)');
+
+      expect(await countChecked(page)).toEqual({
+        passing: 2,
+        failing: 2
+      });
+
+      // The initial submission should fail because no SEVERE unexpected
+      // behaviors have been specified.
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      await page.click('label ::-p-text(excessively verbose)');
+      await page.select('.unexpected-behaviors-label select', 'SEVERE');
+      await page.type(
+        '.unexpected-behaviors-label input[type=text]',
+        'anything'
+      );
+
+      await handlePageSubmit(page, { expectConflicts: false });
+
+      const text = await page.evaluate(() => {
+        // Scrape text and normalize empty space characters.
+        const text = el => el.innerText.replace(/\s/g, ' ');
+        const readTable = el => {
+          return Array.from(el.querySelectorAll('tr')).map(tr =>
+            Array.from(tr.querySelectorAll('td')).map(td => text(td))
+          );
+        };
+        return [text(document.querySelector('main h2'))].concat(
+          Array.from(document.querySelectorAll('main h3, main tbody')).map(el =>
+            el.tagName === 'H3' ? text(el) : readTable(el)
+          )
+        );
+      });
+
+      expect(text).toEqual([
+        'Test Results (7 passed, 3 failed, 0 unsupported, 2 untestable)',
+        'Control+Option+Space Results: 1 passed, 1 failed, 2 untestable',
+        [
+          ['MUST', "Role 'alert' is conveyed", 'Untestable'],
+          ['MUST', "Text 'Hello' is conveyed", 'Untestable'],
+          ['MUST', 'Severe negative side effects do not occur', 'Failed'],
+          ['SHOULD', 'Moderate negative side effects do not occur', 'Passed']
+        ],
+        'Negative side effects of Control+Option+Space',
+        [
+          [
+            'Output is excessively verbose, e.g., includes redundant and/or irrelevant speech',
+            'anything',
+            'SEVERE'
+          ]
+        ],
+        'Space Results: 3 passed, 1 failed, 0 unsupported',
+        [
+          ['MUST', "Text 'Hello' is conveyed", 'Failed'],
+          ['MUST', "Role 'alert' is conveyed", 'Passed'],
+          ['MUST', 'Severe negative side effects do not occur', 'Passed'],
+          ['SHOULD', 'Moderate negative side effects do not occur', 'Passed']
+        ],
+        'Enter Results: 3 passed, 1 failed, 0 unsupported',
+        [
+          ['MUST', "Text 'Hello' is conveyed", 'Failed'],
+          ['MUST', "Role 'alert' is conveyed", 'Passed'],
+          ['MUST', 'Severe negative side effects do not occur', 'Passed'],
+          ['SHOULD', 'Moderate negative side effects do not occur', 'Passed']
+        ]
+      ]);
     });
   });
 
