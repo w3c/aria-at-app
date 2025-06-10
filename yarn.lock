@@ -14496,9 +14496,9 @@ raw-loader@^4.0.2:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
 
-"rawgit@https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52":
+"rawgit@git+https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52":
   version "0.0.1"
-  resolved "https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52"
+  resolved "git+https://github.com/rgrove/rawgit.git#eaa9b36aa2143041894866ba9db72e51d05c2a52"
   dependencies:
     express "4.16.3"
     express-handlebars "3.0.0"
