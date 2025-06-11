@@ -16,8 +16,7 @@ const ProvideFeedbackModal = ({
   changesRequestedIssues = [],
   changesRequestedGithubUrl = '',
   testPlan = '',
-  username = '',
-  isAdmin = false
+  username = ''
 }) => {
   const [selectedRadio, setSelectedRadio] = useState('not-approved-input');
 
@@ -71,8 +70,6 @@ const ProvideFeedbackModal = ({
                   name="radio-feedback"
                   id="approve-input"
                   type="radio"
-                  disabled={isAdmin}
-                  aria-disabled={isAdmin}
                 />
                 <FormCheck.Label htmlFor="approve-input">
                   Approve
@@ -124,8 +121,7 @@ ProvideFeedbackModal.propTypes = {
   feedbackGithubUrl: PropTypes.string,
   show: PropTypes.bool,
   testPlan: PropTypes.string,
-  username: PropTypes.string,
-  isAdmin: PropTypes.bool
+  username: PropTypes.string
 };
 
 export default ProvideFeedbackModal;

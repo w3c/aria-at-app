@@ -827,7 +827,6 @@ const CandidateTestPlanRun = () => {
           changesRequestedGithubUrl={changesRequestedGithubUrl}
           handleAction={submitApproval}
           handleHide={() => setFeedbackModalShowing(false)}
-          isAdmin={isAdmin}
         />
       )}
       {!!confirmationModal && confirmationModal}
