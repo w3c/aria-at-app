@@ -18,18 +18,19 @@ const promoteVendorReviewStatusResolver = async (
     throw new AuthenticationError();
   }
 
-  if (user.vendorId || user.company?.id) {
-    await updateReviewerStatusByIds({
-      testPlanReportId,
-      userId: user.id,
-      vendorId: user.vendorId || user.company?.id,
-      values: {
-        reviewStatus: 'APPROVED',
-        approvedAt: new Date()
-      },
-      transaction
-    });
-  }
+  // This being null means approval is from admin
+  const vendorId = user.vendorId || user.company?.id;
+
+  await updateReviewerStatusByIds({
+    testPlanReportId,
+    userId: user.id,
+    vendorId,
+    values: {
+      reviewStatus: 'APPROVED',
+      approvedAt: new Date()
+    },
+    transaction
+  });
   return populateData({ testPlanReportId }, { context });
 };
 
