@@ -4,7 +4,9 @@ on: [push]
 jobs:
   runtest_task:
     name: Using NodeJS and Postgres 12
-    runs-on: ubuntu-latest
+    runs-on:
+      - ubuntu-latest
+      - windows-latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
