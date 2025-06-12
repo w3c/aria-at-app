@@ -91,7 +91,9 @@ const createIssueLink = ({
   if (hasTest) {
     // TODO: fix renderedUrl
     let modifiedRenderedUrl = testRenderedUrl.replace(
-      /.+(?=\/tests)/,
+      // replace the path to the tests up to the "tests" folder with the netlify url
+      // ensure original path matches both / and \ path separators
+      /.+(?=[/\\]tests)/,
       'https://aria-at.netlify.app'
     );
 
