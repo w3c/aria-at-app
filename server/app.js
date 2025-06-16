@@ -39,8 +39,8 @@ const listener = express();
 listener.use('/api', app).use('/embed', embedApp);
 
 // Create HTTP server and attach WebSocket server
-const httpServer = require('http').createServer(listener);
-const wss = setupWebSocketServer(httpServer);
+const server = require('http').createServer(listener);
+const wss = setupWebSocketServer(server);
 
 // Log when WebSocket server is ready
 wss.on('listening', () => {
@@ -83,4 +83,4 @@ listener.use((error, req, res, next) => {
   next(error);
 });
 
-module.exports = { app, listener, server: httpServer };
+module.exports = { app, listener, server };
