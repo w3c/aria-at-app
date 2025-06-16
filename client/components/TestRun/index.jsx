@@ -418,7 +418,7 @@ const TestRun = () => {
       let unexpectedBehaviors = null;
 
       // collect variables
-      const { atOutput, assertions, unexpected } = commands[i];
+      const { atOutput, untestable, assertions, unexpected } = commands[i];
 
       // process assertion results
       for (let j = 0; j < assertions.length; j++) {
@@ -469,6 +469,12 @@ const TestRun = () => {
       scenarioResult.output = atOutput.value ? atOutput.value : null;
       if (captureHighlightRequired)
         scenarioResult.highlightRequired = atOutput.highlightRequired;
+
+      scenarioResult.untestable = untestable.value ? untestable.value : null;
+      if (captureHighlightRequired && untestable)
+        scenarioResult.untestableHighlightRequired =
+          untestable.highlightRequired;
+
       scenarioResult.assertionResults = [...assertionResults];
       scenarioResult.hasUnexpected = hasUnexpected;
       scenarioResult.unexpectedBehaviors = unexpectedBehaviors
@@ -670,11 +676,13 @@ const TestRun = () => {
         assertionResults,
         id,
         output,
+        untestable,
         hasUnexpected,
         unexpectedBehaviors
       }) => ({
         id,
         output: output,
+        untestable: untestable,
         hasUnexpected,
         unexpectedBehaviors: unexpectedBehaviors?.map(
           ({ id, impact, details }) => ({

@@ -1,3 +1,10 @@
+## [1.16.0](https://github.com/w3c/aria-at-app/compare/v1.15.2...v1.16.0) (2025-06-16)
+
+
+### Features
+
+* Allow setting minimum AT version from test plan report status dialog ([#1386](https://github.com/w3c/aria-at-app/issues/1386)) ([1cf606d](https://github.com/w3c/aria-at-app/commit/1cf606d6279a09f21aedad70de2a648d2fad99af))
+
 ### [1.15.2](https://github.com/w3c/aria-at-app/compare/v1.15.0...v1.15.2) (2025-06-03)
 
 

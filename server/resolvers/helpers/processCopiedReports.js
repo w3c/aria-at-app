@@ -436,6 +436,7 @@ const processCopiedReports = async ({
           }
 
           eachScenarioResult.output = oldScenarioResult.output;
+          eachScenarioResult.untestable = oldScenarioResult.untestable;
           eachScenarioResult.unexpectedBehaviors =
             oldScenarioResult.unexpectedBehaviors;
 

@@ -35,6 +35,8 @@ const getTests = parentRecord => {
           if (isV2) {
             const screenText = at?.settings[scenario.settings]?.screenText;
             const commandKVs = getCommandV2(commandId);
+
+            if (!commandKVs[0]) return { id: '', text: '' };
             if (commandKVs.length) {
               // `scenario` has an identifier to the settings being displayed.
               // May be best to display the settings text instead, ie.
