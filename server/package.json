@@ -55,7 +55,8 @@
     "sequelize": "^6.37.3",
     "shared": "1.0.0",
     "supertest-session": "^4.1.0",
-    "uuid": "^10.0.0"
+    "uuid": "^10.0.0",
+    "ws": "^8.18.2"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.3.1",

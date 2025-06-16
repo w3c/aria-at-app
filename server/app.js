@@ -16,6 +16,8 @@ const {
   setupMockAutomationSchedulerServer
 } = require('./tests/util/mock-automation-scheduler-server');
 const transactionMiddleware = require('./middleware/transactionMiddleware');
+const { setupWebSocketServer } = require('./websocket');
+
 const app = express();
 
 // test session
@@ -35,6 +37,16 @@ apolloServer.start().then(() => {
 
 const listener = express();
 listener.use('/api', app).use('/embed', embedApp);
+
+// Create HTTP server and attach WebSocket server
+const httpServer = require('http').createServer(listener);
+const wss = setupWebSocketServer(httpServer);
+
+// Log when WebSocket server is ready
+wss.on('listening', () => {
+  // eslint-disable-next-line no-console
+  console.info('WebSocket server is listening');
+});
 
 const baseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;
@@ -71,4 +83,4 @@ listener.use((error, req, res, next) => {
   next(error);
 });
 
-module.exports = { app, listener };
+module.exports = { app, listener, server: httpServer };

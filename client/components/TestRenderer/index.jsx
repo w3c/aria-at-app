@@ -1,4 +1,10 @@
-import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+  useCallback
+} from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { unescape } from 'lodash';
@@ -64,6 +70,189 @@ const TestRenderer = ({
   const [submitResult, setSubmitResult] = useState(null);
   const [submitCalled, setSubmitCalled] = useState(false);
 
+  const [captureSocket, setCaptureSocket] = useState(null);
+  const [capturedUtterances, setCapturedUtterances] = useState([]);
+  const wsRef = useRef(null);
+  const [, setWsConnected] = useState(false);
+  const [, setWsError] = useState(null);
+
+  // Proof of concept in case we need to inject buttons ourselves on the test
+  // page
+  // May not be needed outside the testing of this prototype
+  const injectButton = testWindow => {
+    if (!testWindow || !testWindow.document) return;
+
+    // Create button container if it doesn't exist
+    let container = testWindow.document.getElementById(
+      'aria-at-injected-buttons'
+    );
+    if (!container) {
+      container = testWindow.document.createElement('div');
+      container.id = 'aria-at-injected-buttons';
+      container.style.position = 'fixed';
+      container.style.top = '10px';
+      container.style.right = '10px';
+      container.style.zIndex = '9999';
+      testWindow.document.body.appendChild(container);
+    }
+
+    // Create and add the open on Android button
+    const androidButton = testWindow.document.createElement('button');
+    androidButton.textContent = 'Open on Android Device';
+    androidButton.style.padding = '8px 16px';
+    androidButton.style.margin = '4px';
+    androidButton.style.backgroundColor = '#2196F3';
+    androidButton.style.color = 'white';
+    androidButton.style.border = 'none';
+    androidButton.style.borderRadius = '4px';
+    androidButton.style.cursor = 'pointer';
+
+    androidButton.onclick = async () => {
+      await runAndroidScripts();
+    };
+
+    container.appendChild(androidButton);
+  };
+
+  const startCaptureUtterances = useCallback(async () => {
+    if (wsRef.current) {
+      console.error('WebSocket connection already exists, closing...');
+      wsRef.current.close();
+    }
+
+    const sessionId = Date.now().toString();
+    // eslint-disable-next-line no-console
+    console.info('Starting capture with session ID:', sessionId);
+
+    // Update WebSocket URL to include path and session ID
+    const wsUrl = `ws://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
+    // const wsUrl = `ws://https://7c3f-2600-1700-4aa1-c810-6143-faa0-da66-1efb.ngrok-free.app/ws?sessionId=${sessionId}`;
+    // const wsUrl = `ws://192.168.1.183:3000/ws?sessionId=${sessionId}`;
+
+    // eslint-disable-next-line no-console
+    console.info('Connecting to WebSocket:', wsUrl);
+
+    const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      // eslint-disable-next-line no-console
+      console.info('WebSocket connection opened');
+
+      setWsConnected(true);
+      const startMessage = { type: 'startCapture' };
+
+      // eslint-disable-next-line no-console
+      console.info('Sending start utterances capture message:', startMessage);
+      ws.send(JSON.stringify(startMessage));
+    };
+
+    ws.onmessage = event => {
+      // eslint-disable-next-line no-console
+      console.info('Received WebSocket message:', event.data);
+      try {
+        const data = JSON.parse(event.data);
+        // eslint-disable-next-line no-console
+        console.info('Parsed message data:', data);
+
+        if (data.type === 'utterance') {
+          setCapturedUtterances(prev => [...prev, data.data]);
+        } else if (data.type === 'error') {
+          console.error('Capture error', data.error);
+          setWsError(data.error);
+        } else if (data.type === 'started') {
+          // eslint-disable-next-line no-console
+          console.info('Capture started', data.message);
+        } else if (data.type === 'stopped') {
+          // eslint-disable-next-line no-console
+          console.info('Capture stopped', data.message);
+        } else if (data.type === 'exit') {
+          // eslint-disable-next-line no-console
+          console.info('Capture process exited with code:', data.code);
+        } else {
+          // eslint-disable-next-line no-console
+          console.info('Unknown message type:', data.type);
+        }
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    ws.onerror = error => {
+      console.error('WebSocket error', error);
+      setWsError('WebSocket connection error');
+      setWsConnected(false);
+    };
+
+    ws.onclose = event => {
+      // eslint-disable-next-line no-console
+      console.info('WebSocket connection closed', event.code, event.reason);
+      setWsConnected(false);
+      wsRef.current = null;
+    };
+  }, []);
+
+  const stopCaptureUtterances = useCallback(() => {
+    if (captureSocket) {
+      captureSocket.send(JSON.stringify({ type: 'stopCapture' }));
+      captureSocket.close();
+      setCaptureSocket(null);
+    }
+  }, [captureSocket]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (captureSocket) captureSocket.close();
+    };
+  }, [captureSocket]);
+
+  const runAndroidScripts = async () => {
+    // Get the URL from the test page
+    let url = renderableContent.target?.referencePage
+      ? `${testPageUrl.substring(0, testPageUrl.indexOf('reference/'))}${
+          renderableContent.target.referencePage
+        }`
+      : testPageUrl;
+    // url = `${window.location.hostname}${url}`;
+    // url = `https://7c3f-2600-1700-4aa1-c810-6143-faa0-da66-1efb.ngrok-free.app${url}`;
+    url = `192.168.1.183:3000${url}`;
+
+    try {
+      const response = await fetch('/api/scripts/enable-talkback');
+      if (!response.ok) {
+        throw new Error(
+          `Failed to execute enable-talkback script: ${response.status}`
+        );
+      }
+      await response.json();
+    } catch (error) {
+      console.error('enable.talkback.error', error);
+    }
+
+    try {
+      const response = await fetch('/api/scripts/open-web-page', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ url })
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to execute open-web-page script: ${response.status}`
+        );
+      }
+      await response.json();
+    } catch (error) {
+      console.error('open.web.page.error', error);
+    }
+
+    // Start capturing utterances via WebSocket
+    await startCaptureUtterances();
+  };
+
   const setup = async () => {
     const testRunIO = new TestRunInputOutput();
 
@@ -93,6 +282,11 @@ const TestRenderer = ({
         },
         windowClosed() {
           testRunExport.dispatch(userCloseWindow());
+          // Stop capturing utterances when the test window is closed
+          stopCaptureUtterances();
+        },
+        windowPrepared() {
+          injectButton(testWindow.window);
         }
       }
     });
@@ -111,35 +305,6 @@ const TestRenderer = ({
     });
     mounted.current && setTestRendererState(_state);
     mounted.current && setTestRunExport(testRunExport);
-  };
-
-  const openShellScript = async () => {
-    // Get the URL from the test page
-    let url = renderableContent.target?.referencePage
-      ? `${testPageUrl.substring(0, testPageUrl.indexOf('reference/'))}${
-          renderableContent.target.referencePage
-        }`
-      : testPageUrl;
-    url = `${window.location.host}${url}`;
-
-    try {
-      const response = await fetch('/api/scripts/open-web-page', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to execute script');
-      }
-
-      const result = await response.json();
-      console.log('Script execution result:', result);
-    } catch (error) {
-      console.error('Error executing script:', error);
-    }
   };
 
   const remapState = (state, scenarioResults = []) => {
@@ -466,11 +631,17 @@ const TestRenderer = ({
             <button
               disabled={!pageContent.instructions.openTestPage.enabled}
               onClick={async () => {
-                await openShellScript();
+                await runAndroidScripts();
               }}
             >
               Open Test Page on Android Device
             </button>
+            {capturedUtterances.length > 0 && (
+              <div className={styles.captureOutput}>
+                <h3>Captured Utterances:</h3>
+                <pre>{capturedUtterances.join('\n')}</pre>
+              </div>
+            )}
           </section>
           <section>
             <h2>{pageContent.results.header.header}</h2>
