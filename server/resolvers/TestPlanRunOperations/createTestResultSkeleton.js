@@ -49,6 +49,7 @@ const createTestResultSkeleton = ({
           id: scenarioResultId,
           scenarioId: scenario.id,
           output: null,
+          untestable: false,
           assertionResults: test.assertions
             // Filter out assertionResults for the current scenario which were marked
             // with a 0-priority exception

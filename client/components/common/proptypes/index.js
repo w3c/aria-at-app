@@ -354,3 +354,18 @@ export const AtOutputPropType = PropTypes.shape({
   change: PropTypes.func.isRequired,
   focus: PropTypes.bool.isRequired
 });
+
+export const UntestablePropType = PropTypes.shape({
+  description: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({
+        highlightRequired: PropTypes.bool.isRequired,
+        description: PropTypes.string.isRequired
+      })
+    ])
+  ).isRequired,
+  change: PropTypes.func.isRequired,
+  value: PropTypes.bool.isRequired,
+  focus: PropTypes.bool.isRequired
+});

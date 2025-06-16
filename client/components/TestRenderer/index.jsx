@@ -15,6 +15,7 @@ import {
 } from '../../resources/aria-at-test-io-format.mjs';
 import { TestWindow } from '../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../utils/aria';
+import summarizeAssertions from '../../utils/summarizeAssertions.js';
 import CommandResults from './CommandResults';
 import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
@@ -131,6 +132,8 @@ const TestRenderer = ({
     for (let i = 0; i < scenarioResults.length; i++) {
       let {
         output,
+        untestable,
+        untestableHighlightRequired,
         assertionResults,
         hasUnexpected,
         unexpectedBehaviors,
@@ -140,6 +143,9 @@ const TestRenderer = ({
 
       if (output) commands[i].atOutput.value = output;
       commands[i].atOutput.highlightRequired = highlightRequired;
+
+      if (untestable) commands[i].untestable.value = untestable;
+      commands[i].untestable.highlightRequired = !!untestableHighlightRequired;
 
       // Required because assertionResults can now be returned without an id if there is a 0-priority exception
       // applied
@@ -266,6 +272,9 @@ const TestRenderer = ({
         const atOutputError = item.atOutput.highlightRequired;
         if (atOutputError) return true;
 
+        const untestableError = item.untestable.highlightRequired;
+        if (untestableError) return true;
+
         const unexpectedError = item.unexpected.highlightRequired;
         if (unexpectedError) return true;
 
@@ -288,6 +297,10 @@ const TestRenderer = ({
       return commands.some(item => {
         const atOutputError = item.atOutput.description[1].highlightRequired;
         if (atOutputError) return true;
+
+        const untestableError =
+          item.untestable.description[1].highlightRequired;
+        if (untestableError) return true;
 
         const unexpectedBehaviorError =
           item.unexpectedBehaviors.description[1].highlightRequired;
@@ -374,27 +387,16 @@ const TestRenderer = ({
     const { results } = submitResult;
     const { header } = results;
 
-    const {
-      assertionsPassedCount,
-      mustAssertionsFailedCount,
-      shouldAssertionsFailedCount,
-      mayAssertionsFailedCount
-    } = getMetrics({
-      testResult
-    });
-
-    const mustShouldAssertionsFailedCount =
-      mustAssertionsFailedCount + shouldAssertionsFailedCount;
+    const assertionsSummary = summarizeAssertions(
+      getMetrics({
+        testResult
+      })
+    );
 
     return (
       <>
         <h1>{header}</h1>
-        <h2 id="overallstatus">
-          Test Results&nbsp;(
-          {assertionsPassedCount} passed,&nbsp;
-          {mustShouldAssertionsFailedCount} failed,&nbsp;
-          {mayAssertionsFailedCount} unsupported)
-        </h2>
+        <h2 id="overallstatus">Test Results&nbsp;({assertionsSummary})</h2>
         <TestPlanResultsTable
           test={{ id: test.id, title: header, at }}
           testResult={testResult}
@@ -444,6 +446,7 @@ const TestRenderer = ({
                   key={commandIndex}
                   header={value.header}
                   atOutput={value.atOutput}
+                  untestable={value.untestable}
                   assertions={value.assertions}
                   unexpectedBehaviors={value.unexpectedBehaviors}
                   assertionsHeader={value.assertionsHeader}

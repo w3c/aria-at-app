@@ -4,19 +4,33 @@ import { Table } from 'react-bootstrap';
 import nextId from 'react-id-generator';
 import { getMetrics } from 'shared';
 import './TestPlanResultsTable.css';
-import { TestPropType, TestResultPropType } from '../proptypes';
+import {
+  TestPlanReportMetricsPropType,
+  TestPropType,
+  TestResultPropType
+} from '../proptypes';
 
-const getAssertionResultText = (passed, priority) => {
-  if (priority === 'MAY') {
+const getAssertionResultText = (assertionResult, untestable) => {
+  const { passed, priorityString, describesSideEffects } = assertionResult;
+
+  // In untestable scenarios, the result of test-specific assertions should be
+  // reported as "untestable" because their state is indeterminate. The other
+  // assertions (that is, those describing the presence of side effects) should
+  // be reported as "Passed" or "Failed" as normal because the absence/presence
+  // of side effects *can* be conclusively reported.
+  if (untestable && !describesSideEffects) {
+    return 'Untestable';
+  }
+  if (priorityString === 'MAY') {
     return passed ? 'Supported' : 'Unsupported';
   }
   return passed ? 'Passed' : 'Failed';
 };
 
-const renderAssertionRow = (assertionResult, priorityString) => {
+const renderAssertionRow = (assertionResult, untestable) => {
   return (
     <tr key={`${assertionResult.id}__${nextId()}`}>
-      <td>{priorityString}</td>
+      <td>{assertionResult.priorityString}</td>
       <td>
         {assertionResult.assertion.phrase
           ? assertionResult.assertion.phrase.charAt(0).toUpperCase() +
@@ -24,9 +38,41 @@ const renderAssertionRow = (assertionResult, priorityString) => {
           : assertionResult.assertion.text.charAt(0).toUpperCase() +
             assertionResult.assertion.text.slice(1)}
       </td>
-      <td>{getAssertionResultText(assertionResult.passed, priorityString)}</td>
+      <td>{getAssertionResultText(assertionResult, untestable)}</td>
     </tr>
   );
+};
+
+const CommandHeading = ({ level, commandsString, metrics }) => {
+  const Heading = `h${level}`;
+  const {
+    assertionsPassedCount,
+    assertionsUntestableCount,
+    mustAssertionsFailedCount,
+    shouldAssertionsFailedCount,
+    mayAssertionsFailedCount
+  } = metrics;
+
+  const mustShouldAssertionsFailedCount =
+    mustAssertionsFailedCount + shouldAssertionsFailedCount;
+  const ambiguousText = assertionsUntestableCount
+    ? `${assertionsUntestableCount} untestable`
+    : `${mayAssertionsFailedCount} unsupported`;
+
+  return (
+    <Heading>
+      {commandsString}&nbsp;Results:&nbsp;
+      {assertionsPassedCount} passed,&nbsp;
+      {mustShouldAssertionsFailedCount} failed,&nbsp;
+      {ambiguousText}
+    </Heading>
+  );
+};
+
+CommandHeading.propTypes = {
+  level: PropTypes.number.isRequired,
+  commandsString: PropTypes.string.isRequired,
+  metrics: TestPlanReportMetricsPropType.isRequired
 };
 
 const TestPlanResultsTable = ({
@@ -36,23 +82,17 @@ const TestPlanResultsTable = ({
   optionalHeader = null,
   commandHeadingLevel = 3
 }) => {
-  const CommandHeading = `h${commandHeadingLevel}`;
+  const NegativeSideEffectsHeading = `h${commandHeadingLevel}`;
 
   return (
     <>
       {optionalHeader}
       {testResult.scenarioResults.map((scenarioResult, index) => {
+        const metrics = getMetrics({ scenarioResult });
         const {
-          assertionsPassedCount,
-          mustAssertionsFailedCount,
-          shouldAssertionsFailedCount,
-          mayAssertionsFailedCount,
           severeImpactPassedAssertionCount,
           moderateImpactPassedAssertionCount
-        } = getMetrics({ scenarioResult });
-
-        const mustShouldAssertionsFailedCount =
-          mustAssertionsFailedCount + shouldAssertionsFailedCount;
+        } = metrics;
 
         const hasNoSevereUnexpectedBehavior =
           severeImpactPassedAssertionCount > 0;
@@ -100,8 +140,9 @@ const TestPlanResultsTable = ({
           {
             id: `UnexpectedBehavior_MUST_${nextId()}`,
             assertion: {
-              text: 'Other behaviors that create severe negative impacts are not exhibited'
+              text: 'Severe negative side effects do not occur'
             },
+            describesSideEffects: true,
             passed: hasNoSevereUnexpectedBehavior,
             priorityString: 'MUST'
           },
@@ -113,8 +154,9 @@ const TestPlanResultsTable = ({
           {
             id: `UnexpectedBehavior_SHOULD_${nextId()}`,
             assertion: {
-              text: 'Other behaviors that create moderate negative impacts are not exhibited'
+              text: 'Moderate negative side effects do not occur'
             },
+            describesSideEffects: true,
             passed: hasNoModerateUnexpectedBehavior,
             priorityString: 'SHOULD'
           },
@@ -126,12 +168,11 @@ const TestPlanResultsTable = ({
 
         return (
           <React.Fragment key={scenarioResult.id}>
-            <CommandHeading>
-              {commandsString}&nbsp;Results:&nbsp;
-              {assertionsPassedCount} passed,&nbsp;
-              {mustShouldAssertionsFailedCount} failed,&nbsp;
-              {mayAssertionsFailedCount} unsupported
-            </CommandHeading>
+            <CommandHeading
+              level={commandHeadingLevel}
+              commandsString={commandsString}
+              metrics={metrics}
+            />
             <p className="test-plan-results-response-p">
               {test.at?.name} Response:
             </p>
@@ -154,42 +195,43 @@ const TestPlanResultsTable = ({
               </thead>
               <tbody>
                 {sortedAssertionResults.map(assertionResult =>
-                  renderAssertionRow(
-                    assertionResult,
-                    assertionResult.priorityString
-                  )
+                  renderAssertionRow(assertionResult, scenarioResult.untestable)
                 )}
               </tbody>
             </Table>
-            Other behaviors that create negative impact:{' '}
             {scenarioResult.unexpectedBehaviors.length ? (
-              <Table
-                bordered
-                responsive
-                aria-label={`Undesirable behaviors for test ${test.title}`}
-                className={`test-plan-unexpected-behaviors-table ${tableClassName}`}
-              >
-                <thead>
-                  <tr>
-                    <th>Behavior</th>
-                    <th>Details</th>
-                    <th>Impact</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scenarioResult.unexpectedBehaviors.map(
-                    ({ id, text, details, impact }) => (
-                      <tr key={id}>
-                        <td>{text}</td>
-                        <td>{details}</td>
-                        <td>{impact}</td>
-                      </tr>
-                    )
-                  )}
-                </tbody>
-              </Table>
+              <>
+                <NegativeSideEffectsHeading>
+                  Negative side effects of {commandsString}
+                </NegativeSideEffectsHeading>
+                <Table
+                  bordered
+                  responsive
+                  aria-label={`Negative side effects of ${commandsString}`}
+                  className={`test-plan-unexpected-behaviors-table ${tableClassName}`}
+                >
+                  <thead>
+                    <tr>
+                      <th>Side Effect</th>
+                      <th>Details</th>
+                      <th>Impact</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {scenarioResult.unexpectedBehaviors.map(
+                      ({ id, text, details, impact }) => (
+                        <tr key={id}>
+                          <td>{text}</td>
+                          <td>{details}</td>
+                          <td>{impact}</td>
+                        </tr>
+                      )
+                    )}
+                  </tbody>
+                </Table>
+              </>
             ) : (
-              'None'
+              `The command '${commandsString}' did not cause any negative side effects.`
             )}
             {/* Do not show separator below last item */}
             {index !== testResult.scenarioResults.length - 1 ? (

@@ -29,9 +29,12 @@ import createIssueLink, {
 import RunHistory from '../../common/RunHistory';
 import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
 import { evaluateAuth } from '../../../utils/evaluateAuth';
+import summarizeAssertions from '../../../utils/summarizeAssertions.js';
 import NotApprovedModal from '../CandidateModals/NotApprovedModal';
 import FailingAssertionsSummaryTable from '../../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../../FailingAssertionsSummary/Heading';
+import NegativeSideEffectsSummaryTable from '../../NegativeSideEffectsSummary/Table';
+import NegativeSideEffectsSummaryHeading from '../../NegativeSideEffectsSummary/Heading';
 import styles from './CandidateTestPlanRun.module.css';
 import feedbackStyles from '../FeedbackListItem/FeedbackListItem.module.css';
 import testRunStyles from '../../TestRun/TestRun.module.css';
@@ -49,6 +52,8 @@ const vendorReviewStatusMap = {
   IN_PROGRESS: 'In Progress',
   APPROVED: 'Approved'
 };
+const FAILING_ASSERTIONS_INDEX = -1;
+const NEGATIVE_SIDE_EFFECTS = -2;
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -62,7 +67,7 @@ const CandidateTestPlanRun = () => {
   const [viewedTests, setViewedTests] = useState([]);
   const [testsLength, setTestsLength] = useState(0);
   const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex({
-    minTestIndex: -1,
+    minTestIndex: -2,
     maxTestIndex: testsLength
   });
   const [showTestNavigator, setShowTestNavigator] = useState(true);
@@ -126,7 +131,9 @@ const CandidateTestPlanRun = () => {
     skip: !testPlanReport
   });
 
-  const isSummaryView = currentTestIndex === -1;
+  const isSummaryView =
+    currentTestIndex === FAILING_ASSERTIONS_INDEX ||
+    currentTestIndex === NEGATIVE_SIDE_EFFECTS;
 
   const isLaptopOrLarger = useMediaQuery({
     query: '(min-width: 792px)'
@@ -139,7 +146,7 @@ const CandidateTestPlanRun = () => {
   }, [data?.testPlanReports]);
   const handleTestClick = async index => {
     setCurrentTestIndex(index);
-    if (index === -1) {
+    if (index < 0) {
       // Summary view
       setIsFirstTest(false);
       setIsLastTest(false);
@@ -403,44 +410,56 @@ const CandidateTestPlanRun = () => {
   const fileBugUrl = AtBugTrackerMap[at];
 
   const getHeading = () => {
+    if (currentTestIndex === FAILING_ASSERTIONS_INDEX) {
+      return (
+        <>
+          <span className={testRunStyles.taskLabel}>
+            Candidate Test Plan Review
+          </span>
+          <FailingAssertionsSummaryHeading
+            metrics={testPlanReport.metrics}
+            as="h1"
+          />
+        </>
+      );
+    }
+
+    if (currentTestIndex === NEGATIVE_SIDE_EFFECTS) {
+      return (
+        <>
+          <span className={testRunStyles.taskLabel}>
+            Candidate Test Plan Review
+          </span>
+          <NegativeSideEffectsSummaryHeading
+            metrics={testPlanReport.metrics}
+            as="h1"
+          />
+        </>
+      );
+    }
+
     return (
-      <div className="p-0">
-        {isSummaryView ? (
-          <>
-            <span className={testRunStyles.taskLabel}>
-              Candidate Test Plan Review
-            </span>
-            <FailingAssertionsSummaryHeading
-              metrics={testPlanReport.metrics}
-              as="h1"
-            />
-          </>
-        ) : (
-          <>
-            <div className="sr-only" aria-live="polite" aria-atomic="true">
-              Viewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
-              {tests.length}
-              {currentTest.seq === tests.length
-                ? 'You are on the last test.'
-                : ''}
-            </div>
-            <span className={testRunStyles.taskLabel}>
-              Reviewing Test {currentTest.seq} of {tests.length}:
-            </span>
-            <h1>
-              {`${currentTest.seq}. ${currentTest.title}`}{' '}
-              <span className={styles.using}>using</span> {`${at}`}{' '}
-              {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
-              {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
-              {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
-                <Badge className={styles.viewedBadge} pill variant="secondary">
-                  Previously Viewed
-                </Badge>
-              )}
-            </h1>
-          </>
-        )}
-      </div>
+      <>
+        <div className="sr-only" aria-live="polite" aria-atomic="true">
+          Viewing Test {currentTest.title}, Test {currentTest.seq} of{' '}
+          {tests.length}
+          {currentTest.seq === tests.length ? 'You are on the last test.' : ''}
+        </div>
+        <span className={testRunStyles.taskLabel}>
+          Reviewing Test {currentTest.seq} of {tests.length}:
+        </span>
+        <h1>
+          {`${currentTest.seq}. ${currentTest.title}`}{' '}
+          <span className={styles.using}>using</span> {`${at}`}{' '}
+          {`${testPlanReport?.latestAtVersionReleasedAt?.name ?? ''}`}
+          {viewedTests.includes(currentTest.id) && !firstTimeViewing && ' '}
+          {viewedTests.includes(currentTest.id) && !firstTimeViewing && (
+            <Badge className={styles.viewedBadge} pill variant="secondary">
+              Previously Viewed
+            </Badge>
+          )}
+        </h1>
+      </>
     );
   };
 
@@ -560,93 +579,100 @@ const CandidateTestPlanRun = () => {
   };
 
   const getContent = () => {
+    if (currentTestIndex === FAILING_ASSERTIONS_INDEX) {
+      return (
+        <div
+          className={
+            failingAssertionsSummaryStyles.failingAssertionsSummaryTableContainer
+          }
+        >
+          <FailingAssertionsSummaryTable
+            testPlanReport={testPlanReports[0]}
+            atName={at}
+            getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
+          />
+        </div>
+      );
+    }
+    if (currentTestIndex === NEGATIVE_SIDE_EFFECTS) {
+      return (
+        <div
+          className={
+            failingAssertionsSummaryStyles.failingAssertionsSummaryTableContainer
+          }
+        >
+          <NegativeSideEffectsSummaryTable
+            testPlanReport={testPlanReports[0]}
+            atName={at}
+            getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
+          />
+        </div>
+      );
+    }
     return (
-      <div className="p-0">
-        {isSummaryView ? (
-          <div
-            className={
-              failingAssertionsSummaryStyles.failingAssertionsSummaryTableContainer
-            }
-          >
-            <FailingAssertionsSummaryTable
-              testPlanReport={testPlanReports[0]}
-              atName={at}
-              getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
+      <>
+        <h1 className="border-0" data-testid="current-test-title">
+          {currentTest.title}
+        </h1>
+        <DisclosureComponent
+          componentId="candidateReviewRun"
+          headingLevel="1"
+          title={[
+            'Test Instructions',
+            ...testPlanReports.map(
+              testPlanReport =>
+                `Test Results for ${testPlanReport.browser.name}`
+            ),
+            'Run History'
+          ]}
+          onClick={[
+            () => setShowInstructions(!showInstructions),
+            ...showBrowserClicks,
+            () => setShowRunHistory(!showRunHistory)
+          ]}
+          expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
+          disclosureContainerView={[
+            <InstructionsRenderer
+              customClassNames={
+                styles.candidateReviewCustomInstructionsRenderer
+              }
+              key={`instructions-${currentTest.id}`}
+              at={testPlanReport.at}
+              test={currentTest}
+              testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
+              testFormatVersion={testPlanVersion.metadata.testFormatVersion}
+            />,
+            ...testPlanReports.map(testPlanReport => {
+              const testResult =
+                testPlanReport.finalizedTestResults[currentTestIndex];
+
+              const assertionsSummary = summarizeAssertions(
+                getMetrics({
+                  testResult
+                })
+              );
+
+              return (
+                <>
+                  <h2 className={styles.testResultsHeader}>
+                    Test Results&nbsp;({assertionsSummary})
+                  </h2>
+                  <TestPlanResultsTable
+                    key={`${testPlanReport.id} + ${testResult.id}`}
+                    test={{ ...currentTest, at: { name: at } }}
+                    testResult={testResult}
+                  />
+                </>
+              );
+            }),
+            <RunHistory
+              key="run-history"
+              testPlanReports={testPlanReports}
+              testId={currentTest.id}
             />
-          </div>
-        ) : (
-          <>
-            <h1 className="border-0" data-testid="current-test-title">
-              {currentTest.title}
-            </h1>
-            <DisclosureComponent
-              componentId="candidateReviewRun"
-              headingLevel="1"
-              title={[
-                'Test Instructions',
-                ...testPlanReports.map(
-                  testPlanReport =>
-                    `Test Results for ${testPlanReport.browser.name}`
-                ),
-                'Run History'
-              ]}
-              onClick={[
-                () => setShowInstructions(!showInstructions),
-                ...showBrowserClicks,
-                () => setShowRunHistory(!showRunHistory)
-              ]}
-              expanded={[showInstructions, ...showBrowserBools, showRunHistory]}
-              disclosureContainerView={[
-                <InstructionsRenderer
-                  customClassNames={
-                    styles.candidateReviewCustomInstructionsRenderer
-                  }
-                  key={`instructions-${currentTest.id}`}
-                  at={testPlanReport.at}
-                  test={currentTest}
-                  testPageUrl={testPlanReport.testPlanVersion.testPageUrl}
-                  testFormatVersion={testPlanVersion.metadata.testFormatVersion}
-                />,
-                ...testPlanReports.map(testPlanReport => {
-                  const testResult =
-                    testPlanReport.finalizedTestResults[currentTestIndex];
-
-                  const {
-                    assertionsPassedCount,
-                    mustAssertionsFailedCount,
-                    shouldAssertionsFailedCount,
-                    mayAssertionsFailedCount
-                  } = getMetrics({ testResult });
-
-                  const mustShouldAssertionsFailedCount =
-                    mustAssertionsFailedCount + shouldAssertionsFailedCount;
-
-                  return (
-                    <>
-                      <h2 className={styles.testResultsHeader}>
-                        Test Results&nbsp;(
-                        {assertionsPassedCount} passed,&nbsp;
-                        {mustShouldAssertionsFailedCount} failed,&nbsp;
-                        {mayAssertionsFailedCount} unsupported)
-                      </h2>
-                      <TestPlanResultsTable
-                        key={`${testPlanReport.id} + ${testResult.id}`}
-                        test={{ ...currentTest, at: { name: at } }}
-                        testResult={testResult}
-                      />
-                    </>
-                  );
-                }),
-                <RunHistory
-                  key="run-history"
-                  testPlanReports={testPlanReports}
-                  testId={currentTest.id}
-                />
-              ]}
-            ></DisclosureComponent>
-          </>
-        )}
-      </div>
+          ]}
+        ></DisclosureComponent>
+      </>
     );
   };
 
@@ -668,14 +694,14 @@ const CandidateTestPlanRun = () => {
         />
         <Col id="main" as="main" tabIndex="-1">
           <Row>
-            {getHeading()}
+            <div className="p-0">{getHeading()}</div>
             {getTestInfo()}
             <Col className="p-0">
               <Row xs={1} s={1} md={2}>
                 <Col className="p-0" md={isLaptopOrLarger ? 9 : 12}>
                   <Row>{getFeedback()}</Row>
                   <Row className={styles.candidateResultsContainer}>
-                    {getContent()}
+                    <div className="p-0">{getContent()}</div>
                   </Row>
                   <Row>
                     <ul
