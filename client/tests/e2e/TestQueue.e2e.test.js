@@ -11,6 +11,24 @@ describe('Test Queue common traits', () => {
 });
 
 describe('Test Queue admin traits when reports exist', () => {
+  const getVoRowFromTestPlanReportStatusDialog = async page => {
+    return await page.evaluateHandle(() => {
+      let rows = Array.from(document.querySelectorAll('.modal-body table tr'));
+      for (let row of rows) {
+        let rowHasVoiceOver,
+          rowHasSafari = false;
+        for (const cell of Array.from(row.querySelectorAll('td'))) {
+          if (rowHasVoiceOver && rowHasSafari) break;
+          if (cell.innerText.includes('VoiceOver for macOS'))
+            rowHasVoiceOver = true;
+          if (cell.innerText.includes('Safari')) rowHasSafari = true;
+        }
+        if (rowHasVoiceOver && rowHasSafari) return row;
+      }
+      return null;
+    });
+  };
+
   it('renders page h1', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       const h1Element = await text(page, 'h1');
@@ -234,6 +252,136 @@ describe('Test Queue admin traits when reports exist', () => {
       });
 
       expect(validTable).toBe(true);
+    });
+  });
+
+  it("renders page, opens pattern section's table and creates report using test plan report status dialog", async () => {
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      const modalDialogSectionButtonSelector =
+        'button#disclosure-btn-modal-dialog-0';
+      const modalDialogRequiredReportsButtonSelector =
+        'div#disclosure-btn-controls-modal-dialog-0 div.metadata-container button.test-plan-report-status-dialog-button';
+      const modalDialogTableSelector =
+        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+
+      await page.waitForSelector(modalDialogSectionButtonSelector);
+
+      // Expand Modal Dialog's V24.06.07 section
+      await page.click(modalDialogSectionButtonSelector);
+
+      // Wait for the table to render
+      await page.waitForSelector(modalDialogTableSelector);
+
+      await page.waitForSelector(modalDialogRequiredReportsButtonSelector);
+      await page.click(modalDialogRequiredReportsButtonSelector);
+
+      await page.waitForSelector('.modal-title ::-p-text(Report Status for)');
+
+      // Get required VoiceOver row
+      const voRowBeforeAddToQueue =
+        await getVoRowFromTestPlanReportStatusDialog(page);
+      const addButtonToTestQueueHandle = await voRowBeforeAddToQueue
+        .asElement()
+        .$('button[data-testid="add-button"]');
+
+      await addButtonToTestQueueHandle.click();
+      await page.waitForNetworkIdle();
+
+      // The modal which pops up for the assigning an automation bot on report creation
+      await page.click('button[data-testid="add-run-later"]');
+      await page.waitForNetworkIdle();
+
+      const voRowAfterAddToQueue = await getVoRowFromTestPlanReportStatusDialog(
+        page
+      );
+
+      // Get values from cells in required VO row
+      const [minimumAtVersionCellText, reportStatusCellText] =
+        await voRowAfterAddToQueue.evaluate(el => {
+          const atCell = el.querySelectorAll('td')[1]; // Assistive Technology is 2nd column
+          const reportStatusCell = el.querySelectorAll('td')[3]; // Report Status is 4th column
+          return [atCell.innerText, reportStatusCell.innerText];
+        });
+
+      expect(
+        minimumAtVersionCellText.includes('VoiceOver for macOS') &&
+          minimumAtVersionCellText.includes('11.6 (20G165) or later')
+      ).toBe(true);
+      expect(
+        reportStatusCellText.includes('In test queue with no testers assigned')
+      ).toBe(true);
+    });
+  });
+
+  it("renders page, opens pattern section's table and creates report using test plan report status dialog after updating minimum AT version", async () => {
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      const modalDialogSectionButtonSelector =
+        'button#disclosure-btn-modal-dialog-0';
+      const modalDialogRequiredReportsButtonSelector =
+        'div#disclosure-btn-controls-modal-dialog-0 div.metadata-container button.test-plan-report-status-dialog-button';
+      const modalDialogTableSelector =
+        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+
+      await page.waitForSelector(modalDialogSectionButtonSelector);
+
+      // Expand Modal Dialog's V24.06.07 section
+      await page.click(modalDialogSectionButtonSelector);
+
+      // Wait for the table to render
+      await page.waitForSelector(modalDialogTableSelector);
+
+      await page.waitForSelector(modalDialogRequiredReportsButtonSelector);
+      await page.click(modalDialogRequiredReportsButtonSelector);
+
+      await page.waitForSelector('.modal-title ::-p-text(Report Status for)');
+
+      // Get required VoiceOver row
+      const voRowBeforeSelectChange =
+        await getVoRowFromTestPlanReportStatusDialog(page);
+      const atVersionSelectHandle = await voRowBeforeSelectChange
+        .asElement()
+        .$('select.minimum-at-version-select');
+
+      await page.evaluate(select => {
+        // Set to VoiceOver 14.0 (At.id is 6 from sample data). Default At.id was 3 (VoiceOver 11.6 (20G165))
+        select.value = '6';
+        select.dispatchEvent(new Event('input', { bubbles: true }));
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      }, atVersionSelectHandle);
+
+      // Refetch row, since DOM may have changed from React re-render
+      const voRowAfterSelectChange =
+        await getVoRowFromTestPlanReportStatusDialog(page);
+      const addButtonToTestQueueHandle = await voRowAfterSelectChange
+        .asElement()
+        .$('button[data-testid="add-button"]');
+
+      await addButtonToTestQueueHandle.click();
+      await page.waitForNetworkIdle();
+
+      // The modal which pops up for the assigning an automation bot on report creation
+      await page.click('button[data-testid="add-run-later"]');
+      await page.waitForNetworkIdle();
+
+      const voRowAfterAddToQueue = await getVoRowFromTestPlanReportStatusDialog(
+        page
+      );
+
+      // Get values from cells in required VO row
+      const [minimumAtVersionCellText, reportStatusCellText] =
+        await voRowAfterAddToQueue.evaluate(el => {
+          const atCell = el.querySelectorAll('td')[1]; // Assistive Technology is 2nd column
+          const reportStatusCell = el.querySelectorAll('td')[3]; // Report Status is 4th column
+          return [atCell.innerText, reportStatusCell.innerText];
+        });
+
+      expect(
+        minimumAtVersionCellText.includes('VoiceOver for macOS') &&
+          minimumAtVersionCellText.includes('14.0 or later')
+      ).toBe(true);
+      expect(
+        reportStatusCellText.includes('In test queue with no testers assigned')
+      ).toBe(true);
     });
   });
 });
