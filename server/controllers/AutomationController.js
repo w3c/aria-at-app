@@ -261,47 +261,69 @@ const updateOrCreateTestResultWithResponses = async ({
     );
   }
 
-  const getAutomatedResultFromOutput = ({ baseTestResult, outputs }) => ({
-    ...baseTestResult,
-    atVersionId,
-    browserVersionId,
-    scenarioResults: baseTestResult.scenarioResults.map((scenarioResult, i) => {
-      // Check if output matches historical output
-      const outputMatches =
+  const getAutomatedResultFromOutput = ({ baseTestResult, outputs }) => {
+    const resultWithVerdictsCopied = {
+      ...baseTestResult,
+      atVersionId,
+      browserVersionId,
+      scenarioResults: baseTestResult.scenarioResults.map(
+        (scenarioResult, i) => {
+          // Check if output matches historical output
+          const outputMatches =
+            historicalTestResult &&
+            historicalTestResult.scenarioResults[i] &&
+            historicalTestResult.scenarioResults[i].output === outputs[i];
+
+          return {
+            ...scenarioResult,
+            output: outputs[i],
+            assertionResults: scenarioResult.assertionResults.map(
+              (assertionResult, j) => ({
+                ...assertionResult,
+                passed: outputMatches
+                  ? historicalTestResult.scenarioResults[i].assertionResults[j]
+                      .passed
+                  : false,
+                failedReason: outputMatches
+                  ? historicalTestResult.scenarioResults[i].assertionResults[j]
+                      .failedReason
+                  : 'AUTOMATED_OUTPUT'
+              })
+            ),
+            unexpectedBehaviors: outputMatches
+              ? historicalTestResult.scenarioResults[i].unexpectedBehaviors
+              : null,
+            hasUnexpected: outputMatches
+              ? historicalTestResult.scenarioResults[i].hasUnexpected
+              : null
+          };
+        }
+      )
+    };
+
+    // Check if all outputs matched historical outputs (verdicts were copied)
+    const allOutputsMatched = baseTestResult.scenarioResults.every(
+      (scenarioResult, i) =>
         historicalTestResult &&
         historicalTestResult.scenarioResults[i] &&
-        historicalTestResult.scenarioResults[i].output === outputs[i];
+        historicalTestResult.scenarioResults[i].output === outputs[i]
+    );
 
-      return {
-        ...scenarioResult,
-        output: outputs[i],
-        assertionResults: scenarioResult.assertionResults.map(
-          (assertionResult, j) => ({
-            ...assertionResult,
-            passed: outputMatches
-              ? historicalTestResult.scenarioResults[i].assertionResults[j]
-                  .passed
-              : false,
-            failedReason: outputMatches
-              ? historicalTestResult.scenarioResults[i].assertionResults[j]
-                  .failedReason
-              : 'AUTOMATED_OUTPUT'
-          })
-        ),
-        unexpectedBehaviors: null
-      };
-    })
+    return {
+      result: resultWithVerdictsCopied,
+      shouldSubmit: allOutputsMatched
+    };
+  };
+
+  const { result, shouldSubmit } = getAutomatedResultFromOutput({
+    baseTestResult: testResult,
+    outputs: responses
   });
 
   return saveTestResultCommon({
     testResultId: testResult.id,
-    input: convertTestResultToInput(
-      getAutomatedResultFromOutput({
-        baseTestResult: testResult,
-        outputs: responses
-      })
-    ),
-    isSubmit: false,
+    input: convertTestResultToInput(result),
+    isSubmit: shouldSubmit,
     context
   });
 };
