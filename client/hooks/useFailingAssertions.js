@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES } from '../utils/constants';
 
 export const useFailingAssertions = testPlanReport => {
   return useMemo(() => {
@@ -58,9 +59,9 @@ export const useFailingAssertions = testPlanReport => {
               ...commonResult,
               assertionText:
                 unexpectedBehavior.impact.toLowerCase() === 'moderate'
-                  ? 'Moderate negative side effects do not occur'
+                  ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
                   : unexpectedBehavior.impact.toLowerCase() === 'severe'
-                  ? 'Severe negative side effects do not occur'
+                  ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
                   : 'N/A',
               priority:
                 unexpectedBehavior.impact.toLowerCase() === 'moderate'
