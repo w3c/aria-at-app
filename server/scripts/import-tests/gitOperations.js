@@ -3,7 +3,7 @@
 const spawn = require('cross-spawn');
 
 const ariaAtRepo = 'https://github.com/w3c/aria-at.git';
-const ariaAtDefaultBranch = 'master';
+const ariaAtDefaultBranch = 'fix-1002-test'; // TODO: Revert to master before merging; based on test PR https://github.com/w3c/aria-at/pull/1126
 
 /**
  * Executes a git command and returns its output.
