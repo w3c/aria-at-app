@@ -1,4 +1,4 @@
-const { server } = require('./app');
+const { listener, server } = require('./app');
 const port = process.env.PORT || 8000;
 
 server.listen(port, () => {
@@ -6,4 +6,4 @@ server.listen(port, () => {
   console.log(`Listening on ${port}`);
 });
 
-module.exports = { server };
+module.exports = { listener, server };

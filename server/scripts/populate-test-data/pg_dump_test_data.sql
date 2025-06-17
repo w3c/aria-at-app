@@ -30,7 +30,7 @@ $$;
 CREATE OR REPLACE FUNCTION get_at_version_id(atId integer, p_name text) RETURNS integer
 LANGUAGE plpgsql
 AS $$
-DECLARE 
+DECLARE
   at_version_id integer;
 BEGIN
   SELECT id INTO at_version_id
@@ -50,6 +50,12 @@ $$;
 INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2023.3.3', '2023-12-02');
 INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '13.0', '2023-12-02');
 INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (3, '14.0', '2024-09-23');
+-- TODO: Note related TODO in seeders/20250429165451-addTalkBack.js
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (4, '14.1', '2023-04-25');
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (4, '14.2', '2023-04-26');
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (4, '15.0', '2023-04-27');
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (4, '15.1', '2023-04-28');
+INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (4, '15.2.1', '2023-04-29');
 
 
 -- INSERT INTO "AtVersion" ("atId", "name", "releasedAt") VALUES (2, '2019.3', '2022-05-02');

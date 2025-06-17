@@ -125,7 +125,8 @@ const TestRenderer = ({
     console.info('Starting capture with session ID:', sessionId);
 
     // Update WebSocket URL to include path and session ID
-    const wsUrl = `ws://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
+    const wsUrl = `wss://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
+    // const wsUrl = `ws://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
     // const wsUrl = `ws://https://7c3f-2600-1700-4aa1-c810-6143-faa0-da66-1efb.ngrok-free.app/ws?sessionId=${sessionId}`;
     // const wsUrl = `ws://192.168.1.183:3000/ws?sessionId=${sessionId}`;
 
@@ -214,9 +215,9 @@ const TestRenderer = ({
           renderableContent.target.referencePage
         }`
       : testPageUrl;
-    // url = `${window.location.hostname}${url}`;
+    url = `${window.location.hostname}${url}`;
     // url = `https://7c3f-2600-1700-4aa1-c810-6143-faa0-da66-1efb.ngrok-free.app${url}`;
-    url = `192.168.1.183:3000${url}`;
+    // url = `192.168.1.183:3000${url}`;
 
     try {
       const response = await fetch('/api/scripts/enable-talkback');

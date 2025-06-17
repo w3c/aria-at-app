@@ -50,38 +50,40 @@ module.exports = {
       );
 
       // Add AtVersions for TalkBack
-      await queryInterface.bulkInsert(
-        'AtVersion',
-        [
-          // TODO: Fix fake dates
-          {
-            atId: talkbackAtId,
-            name: '15.2.1',
-            releasedAt: new Date('2023-04-29')
-          },
-          {
-            atId: talkbackAtId,
-            name: '15.1',
-            releasedAt: new Date('2023-04-28')
-          },
-          {
-            atId: talkbackAtId,
-            name: '15.0',
-            releasedAt: new Date('2023-04-27')
-          },
-          {
-            atId: talkbackAtId,
-            name: '14.2',
-            releasedAt: new Date('2023-04-26')
-          },
-          {
-            atId: talkbackAtId,
-            name: '14.1',
-            releasedAt: new Date('2023-04-27')
-          }
-        ],
-        { transaction }
-      );
+      // TODO: Issues with populated data sample data, will revisit at a later
+      //  date
+      // await queryInterface.bulkInsert(
+      //   'AtVersion',
+      //   [
+      //     // TODO: Fix fake dates
+      //     {
+      //       atId: talkbackAtId,
+      //       name: '15.2.1',
+      //       releasedAt: new Date('2023-04-29')
+      //     },
+      //     {
+      //       atId: talkbackAtId,
+      //       name: '15.1',
+      //       releasedAt: new Date('2023-04-28')
+      //     },
+      //     {
+      //       atId: talkbackAtId,
+      //       name: '15.0',
+      //       releasedAt: new Date('2023-04-27')
+      //     },
+      //     {
+      //       atId: talkbackAtId,
+      //       name: '14.2',
+      //       releasedAt: new Date('2023-04-26')
+      //     },
+      //     {
+      //       atId: talkbackAtId,
+      //       name: '14.1',
+      //       releasedAt: new Date('2023-04-27')
+      //     }
+      //   ],
+      //   { transaction }
+      // );
     });
   },
 
