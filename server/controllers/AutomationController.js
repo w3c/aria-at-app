@@ -470,43 +470,70 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
     );
     if (!historicalResults) return;
 
+    let differentResponsesCount = 0;
+    let allOutputsMatch = true;
+
     // Validate each applicable test's results against historical results
     for (const test of applicableTests) {
       const currResult = testPlanRun.testResults.find(
         tr => String(tr.testId) === String(test.id)
       );
+
+      if (!currResult) continue;
+
       const histResult = historicalResults.find(
         hr => String(hr.testId) === String(test.id)
       );
-      if (!currResult || !histResult) return;
-      if (
-        !currResult.scenarioResults ||
-        currResult.scenarioResults.length !== histResult.scenarioResults.length
-      )
-        return;
+
+      if (!currResult?.scenarioResults || !histResult?.scenarioResults) {
+        allOutputsMatch = false;
+        continue;
+      }
+
       for (let i = 0; i < currResult.scenarioResults.length; i++) {
-        if (
-          currResult.scenarioResults[i].output !==
-          histResult.scenarioResults[i].output
-        )
-          return;
+        const currOutput = currResult.scenarioResults[i]?.output;
+        const histOutput = histResult.scenarioResults[i]?.output;
+
+        if (currOutput !== histOutput) {
+          differentResponsesCount++;
+          allOutputsMatch = false;
+        }
       }
     }
 
-    // All tests match historical results; mark the report as final
-    const updatedReport = await updateTestPlanReportById({
-      id: testPlanReport.id,
-      values: { markedFinalAt: new Date() },
-      transaction
-    });
+    if (allOutputsMatch) {
+      // All tests match historical results; mark the report as final
+      const updatedReport = await updateTestPlanReportById({
+        id: testPlanReport.id,
+        values: { markedFinalAt: new Date() },
+        transaction
+      });
 
-    await createUpdateEvent({
-      values: {
-        description: `Test plan report for ${updatedReport.testPlanVersion.title} ${updatedReport.testPlanVersion.versionString} with ${updatedReport.at.name} ${updatedReport.exactAtVersion.name} and ${updatedReport.browser.name} had identical outputs to the previous finalized report, verdicts were copied, and the report was finalized`,
-        type: UPDATE_EVENT_TYPE.TEST_PLAN_REPORT
-      },
-      transaction
-    });
+      await createUpdateEvent({
+        values: {
+          description: `Test plan report for ${updatedReport.testPlanVersion.title} ${updatedReport.testPlanVersion.versionString} with ${updatedReport.at.name} ${updatedReport.exactAtVersion.name} and ${updatedReport.browser.name} had identical outputs to the previous finalized report, verdicts were copied, and the report was finalized`,
+          type: UPDATE_EVENT_TYPE.TEST_PLAN_REPORT
+        },
+        transaction
+      });
+    } else {
+      // Not all outputs match, but job is complete - create completion event
+      await createUpdateEvent({
+        values: {
+          description: `Automated update for ${
+            updatedReport.testPlanVersion.title
+          } ${updatedReport.testPlanVersion.versionString} with ${
+            updatedReport.at.name
+          } ${updatedReport.exactAtVersion.name} and ${
+            updatedReport.browser.name
+          } is 100% complete with ${differentResponsesCount} different response${
+            differentResponsesCount === 1 ? '' : 's'
+          }`,
+          type: UPDATE_EVENT_TYPE.TEST_PLAN_REPORT
+        },
+        transaction
+      });
+    }
   } catch (error) {
     throw new HttpQueryError(
       error.statusCode || 500,
