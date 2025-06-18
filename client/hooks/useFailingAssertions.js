@@ -48,10 +48,12 @@ export const useFailingAssertions = testPlanReport => {
               }));
           };
 
-          const assertionResults = [
-            ...processPriorityAssertionResults('MUST'),
-            ...processPriorityAssertionResults('SHOULD')
-          ];
+          const assertionResults = scenarioResult.untestable
+            ? []
+            : [
+                ...processPriorityAssertionResults('MUST'),
+                ...processPriorityAssertionResults('SHOULD')
+              ];
 
           const unexpectedResults = scenarioResult.unexpectedBehaviors.map(
             unexpectedBehavior => ({
