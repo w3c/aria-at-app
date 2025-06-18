@@ -125,8 +125,8 @@ const TestRenderer = ({
     console.info('Starting capture with session ID:', sessionId);
 
     // Update WebSocket URL to include path and session ID
-    const wsUrl = `wss://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
-    // const wsUrl = `ws://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
+    // const wsUrl = `wss://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
+    const wsUrl = `ws://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
     // const wsUrl = `ws://192.168.1.183:3000/ws?sessionId=${sessionId}`;
 
     // eslint-disable-next-line no-console
