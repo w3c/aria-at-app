@@ -7,9 +7,11 @@ import { useEffect, useState } from 'react';
  *
  * * -1: display the "Summary of Failing Assertions"
  * * -2: display the "Summary of Negative Side Effects"
+ * * -3: display the "Summary of Untestable Assertions"
  */
 const FAILING_ASSERTIONS_INDEX = -1;
 const NEGATIVE_SIDE_EFFECTS = -2;
+const UNTESTABLE_ASSERTIONS_INDEX = -3;
 
 export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
   const location = useLocation();
@@ -17,12 +19,16 @@ export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
   const [currentTestIndex, setCurrentTestIndex] = useState(minTestIndex);
 
   const getTestIndex = () => {
-    if (location.hash === '#summary-assertions') {
+    if (location.hash === '#summary-failing-assertions') {
       return FAILING_ASSERTIONS_INDEX;
     }
 
     if (location.hash === '#summary-side-effects') {
       return NEGATIVE_SIDE_EFFECTS;
+    }
+
+    if (location.hash === '#summary-untestable-assertions') {
+      return UNTESTABLE_ASSERTIONS_INDEX;
     }
 
     // Remove the '#' character
@@ -44,11 +50,19 @@ export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
   const updateTestIndex = index => {
     // Special case for summary
     if (index === FAILING_ASSERTIONS_INDEX) {
-      navigate(`${location.pathname}#summary-assertions`, { replace: true });
+      navigate(`${location.pathname}#summary-failing-assertions`, {
+        replace: true
+      });
       return;
     }
     if (index === NEGATIVE_SIDE_EFFECTS) {
       navigate(`${location.pathname}#summary-side-effects`, { replace: true });
+      return;
+    }
+    if (index === UNTESTABLE_ASSERTIONS_INDEX) {
+      navigate(`${location.pathname}#summary-untestable-assertions`, {
+        replace: true
+      });
       return;
     }
 

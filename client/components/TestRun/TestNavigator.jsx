@@ -46,6 +46,10 @@ const TestNavigator = ({
     return isVendor && testPlanReport.metrics.unexpectedBehaviorCount > 0;
   }, [isVendor, testPlanReport]);
 
+  const shouldShowUntestableAssertionsSummary = useMemo(() => {
+    return isVendor && testPlanReport.metrics.assertionsUntestableCount > 0;
+  }, [isVendor, testPlanReport]);
+
   return (
     <Col className={styles.testNavigator} md={show ? 3 : 12}>
       <div className={styles.testNavigatorToggleContainer}>
@@ -78,7 +82,7 @@ const TestNavigator = ({
                   e.preventDefault();
                   await handleTestClick(-1);
                 }}
-                href="#summary-assertions"
+                href="#summary-failing-assertions"
                 className={styles.testName}
                 aria-current={currentTestIndex === -1}
               >
@@ -106,6 +110,25 @@ const TestNavigator = ({
               <span
                 className={styles.progressIndicator}
                 title="Summary of Negative Side Effects"
+              />
+            </div>
+          )}
+          {shouldShowUntestableAssertionsSummary && (
+            <div className={clsx(styles.testNameWrapper, styles.summary)}>
+              <a
+                onClick={async e => {
+                  e.preventDefault();
+                  await handleTestClick(-3);
+                }}
+                href="#summary-untestable-assertions"
+                className={styles.testName}
+                aria-current={currentTestIndex === -3}
+              >
+                Summary of Untestable Assertions
+              </a>
+              <span
+                className={styles.progressIndicator}
+                title="Summary of Untestable Assertions"
               />
             </div>
           )}
