@@ -132,7 +132,7 @@ describe('Candidate Review when signed in as vendor', () => {
           '::-p-text(Review status by JAWS Representative: In Progress)'
         );
 
-        await page.click('a[href="#summary-assertions"]');
+        await page.click('a[href="#summary-failing-assertions"]');
 
         // Check navigation buttons in summary view
         const previousButton = await page.$('button::-p-text(Previous Test)');
@@ -147,7 +147,7 @@ describe('Candidate Review when signed in as vendor', () => {
         await page.waitForSelector('h1::-p-text(1.)');
         // Check summary link aria-current attribute
         const summaryLinkAriaCurrent = await page.$eval(
-          'a[href="#summary-assertions"]',
+          'a[href="#summary-failing-assertions"]',
           el => el.getAttribute('aria-current')
         );
         expect(summaryLinkAriaCurrent).toBe('false');
@@ -160,7 +160,7 @@ describe('Candidate Review when signed in as vendor', () => {
 
         // Should be back on summary
         await page.waitForSelector(
-          'a[href="#summary-assertions"][aria-current="true"]'
+          'a[href="#summary-failing-assertions"][aria-current="true"]'
         );
 
         expect(consoleErrors).toHaveLength(0);
@@ -186,7 +186,7 @@ describe('Candidate Review when signed in as vendor', () => {
         );
 
         // Check for summary specific content
-        await page.click('a[href="#summary-assertions"]');
+        await page.click('a[href="#summary-failing-assertions"]');
         await page.waitForSelector(
           'h1::-p-text(Summary of Failing Assertions)'
         );

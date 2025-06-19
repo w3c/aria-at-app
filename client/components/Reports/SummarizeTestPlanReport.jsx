@@ -27,6 +27,8 @@ import FailingAssertionsSummaryTable from '../FailingAssertionsSummary/Table';
 import FailingAssertionsSummaryHeading from '../FailingAssertionsSummary/Heading';
 import NegativeSideEffectsSummaryTable from '../NegativeSideEffectsSummary/Table';
 import NegativeSideEffectsSummaryHeading from '../NegativeSideEffectsSummary/Heading';
+import UntestableAssertionsSummaryTable from '../UntestableAssertionsSummary/Table';
+import UntestableAssertionsSummaryHeading from '../UntestableAssertionsSummary/Heading';
 import styles from './SummarizeTestPlanReport.module.css';
 import commonStyles from '../common/styles.module.css';
 
@@ -209,6 +211,31 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
     );
   };
 
+  const renderUntestableAssertionsSummary = () => {
+    // Use truthiness check (rather than strict equality to zero) in order to
+    // support legacy reports whose metrics have been memoized and thus do not
+    // include properties for untestable assertions.
+    if (
+      !testPlanReport.metrics.mustAssertionsUntestableCount &&
+      !testPlanReport.metrics.shouldAssertionsUntestableCount
+    ) {
+      return null;
+    }
+
+    return (
+      <>
+        <UntestableAssertionsSummaryHeading metrics={testPlanReport.metrics} />
+        <UntestableAssertionsSummaryTable
+          testPlanReport={testPlanReport}
+          atName={testPlanReport.at.name}
+          getLinkUrl={assertion =>
+            `/report/${testPlanVersion.id}/targets/${testPlanReport.id}#result-${assertion.testResultId}`
+          }
+        />
+      </>
+    );
+  };
+
   return (
     <Container id="main" as="main" tabIndex="-1">
       <Helmet>
@@ -285,6 +312,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
       {renderResultsForTargetTable()}
       {renderFailingAssertionsSummary()}
       {renderNegativeSideEffectsSummary()}
+      {renderUntestableAssertionsSummary()}
       {testPlanReport.finalizedTestResults.map((testResult, index) => {
         const test = testResult.test;
 

@@ -35,11 +35,14 @@ import FailingAssertionsSummaryTable from '../../FailingAssertionsSummary/Table'
 import FailingAssertionsSummaryHeading from '../../FailingAssertionsSummary/Heading';
 import NegativeSideEffectsSummaryTable from '../../NegativeSideEffectsSummary/Table';
 import NegativeSideEffectsSummaryHeading from '../../NegativeSideEffectsSummary/Heading';
+import UntestableAssertionsSummaryTable from '../../UntestableAssertionsSummary/Table';
+import UntestableAssertionsSummaryHeading from '../../UntestableAssertionsSummary/Heading';
 import styles from './CandidateTestPlanRun.module.css';
 import feedbackStyles from '../FeedbackListItem/FeedbackListItem.module.css';
 import testRunStyles from '../../TestRun/TestRun.module.css';
 import testRunHeadingStyles from '../../TestRun/Heading.module.css';
 import failingAssertionsSummaryStyles from '../../FailingAssertionsSummary/FailingAssertionsSummary.module.css';
+import untestableAssertionsSummaryStyles from '../../UntestableAssertionsSummary/UntestableAssertionsSummary.module.css';
 
 const atMap = {
   1: 'JAWS',
@@ -54,6 +57,7 @@ const vendorReviewStatusMap = {
 };
 const FAILING_ASSERTIONS_INDEX = -1;
 const NEGATIVE_SIDE_EFFECTS = -2;
+const UNTESTABLE_ASSERTIONS_INDEX = -3;
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -132,7 +136,8 @@ const CandidateTestPlanRun = () => {
 
   const isSummaryView =
     currentTestIndex === FAILING_ASSERTIONS_INDEX ||
-    currentTestIndex === NEGATIVE_SIDE_EFFECTS;
+    currentTestIndex === NEGATIVE_SIDE_EFFECTS ||
+    currentTestIndex === UNTESTABLE_ASSERTIONS_INDEX;
 
   const isLaptopOrLarger = useMediaQuery({
     query: '(min-width: 792px)'
@@ -437,6 +442,20 @@ const CandidateTestPlanRun = () => {
       );
     }
 
+    if (currentTestIndex === UNTESTABLE_ASSERTIONS_INDEX) {
+      return (
+        <>
+          <span className={testRunStyles.taskLabel}>
+            Candidate Test Plan Review
+          </span>
+          <UntestableAssertionsSummaryHeading
+            metrics={testPlanReport.metrics}
+            as="h1"
+          />
+        </>
+      );
+    }
+
     return (
       <>
         <div className="sr-only" aria-live="polite" aria-atomic="true">
@@ -601,6 +620,21 @@ const CandidateTestPlanRun = () => {
           }
         >
           <NegativeSideEffectsSummaryTable
+            testPlanReport={testPlanReports[0]}
+            atName={at}
+            getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
+          />
+        </div>
+      );
+    }
+    if (currentTestIndex === UNTESTABLE_ASSERTIONS_INDEX) {
+      return (
+        <div
+          className={
+            untestableAssertionsSummaryStyles.untestableAssertionsSummaryTableContainer
+          }
+        >
+          <UntestableAssertionsSummaryTable
             testPlanReport={testPlanReports[0]}
             atName={at}
             getLinkUrl={assertion => `#${assertion.testIndex + 1}`}

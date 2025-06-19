@@ -274,14 +274,9 @@ const getMetrics = ({
     supportLevel = 'FULL';
   }
 
-  // Completely ignore untestable assertions in calculating the support
-  // percentage.
   const percentage = calculatePercentage(
     mustAssertionsPassedCount + shouldAssertionsPassedCount,
-    mustAssertionsCount +
-      shouldAssertionsCount -
-      mustAssertionsUntestableCount -
-      shouldAssertionsUntestableCount
+    mustAssertionsCount + shouldAssertionsCount
   );
   const supportPercent = trimDecimals(percentage);
 
