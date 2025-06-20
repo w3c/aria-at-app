@@ -290,6 +290,27 @@ button.test-navigator-toggle {
     }
   }
 
+  &.bot-output-only {
+    .progress-indicator {
+      background: var(--navigator-green-awaiting-verdicts);
+
+      &:before {
+        display: inline-block;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        font-family: 'Font Awesome 5 Free';
+        font-weight: var(--font-weight-heavy);
+        content: '\f111'; /* Plain circle */
+        color: var(--white);
+        font-size: var(--8px);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
+
   &.bot-running .progress-indicator {
     background: var(--default-gray);
     border: 2px solid var(--navigator-green);
