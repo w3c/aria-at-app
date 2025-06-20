@@ -517,6 +517,10 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
         transaction
       });
     } else {
+      const updatedReport = await getTestPlanReportById({
+        id: testPlanReport.id,
+        transaction
+      });
       // Not all outputs match, but job is complete - create completion event
       await createUpdateEvent({
         values: {
