@@ -40,6 +40,7 @@ const {
   getTestPlanVersionById
 } = require('../models/services/TestPlanVersionService');
 const { createUpdateEvent } = require('../models/services/UpdateEventService');
+const { outputsMatch } = require('../util/outputNormalization');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -272,7 +273,10 @@ const updateOrCreateTestResultWithResponses = async ({
           const outputMatches =
             historicalTestResult &&
             historicalTestResult.scenarioResults[i] &&
-            historicalTestResult.scenarioResults[i].output === outputs[i];
+            outputsMatch(
+              historicalTestResult.scenarioResults[i].output,
+              outputs[i]
+            );
 
           return {
             ...scenarioResult,
@@ -306,7 +310,7 @@ const updateOrCreateTestResultWithResponses = async ({
       (scenarioResult, i) =>
         historicalTestResult &&
         historicalTestResult.scenarioResults[i] &&
-        historicalTestResult.scenarioResults[i].output === outputs[i]
+        outputsMatch(historicalTestResult.scenarioResults[i].output, outputs[i])
     );
 
     return {
@@ -494,7 +498,7 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
         const currOutput = currResult.scenarioResults[i]?.output;
         const histOutput = histResult.scenarioResults[i]?.output;
 
-        if (currOutput !== histOutput) {
+        if (!outputsMatch(currOutput, histOutput)) {
           differentResponsesCount++;
           allOutputsMatch = false;
         }
