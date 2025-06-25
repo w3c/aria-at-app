@@ -22,6 +22,7 @@ import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
 import ReportRerun from '../ReportRerun';
 import Tabs from '../common/Tabs';
+import ADB from '../common/ADB';
 import styles from './TestQueue.module.css';
 import commonStyles from '../common/styles.module.css';
 
@@ -356,6 +357,7 @@ const TestQueue = () => {
       </Helmet>
       <h1 className="test-queue-heading">Test Queue</h1>
       <Tabs tabs={tabs} />
+      <ADB />
     </Container>
   );
 };
