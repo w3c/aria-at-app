@@ -39,35 +39,35 @@ describe('normalizeScreenreaderOutput', () => {
     );
   });
 
-  it('converts to lowercase', () => {
-    expect(normalizeScreenreaderOutput('Hello World')).toBe('hello world');
-    expect(normalizeScreenreaderOutput('HELLO WORLD')).toBe('hello world');
-    expect(normalizeScreenreaderOutput('HeLLo WoRLd')).toBe('hello world');
+  it('preserves original case', () => {
+    expect(normalizeScreenreaderOutput('Hello World')).toBe('Hello World');
+    expect(normalizeScreenreaderOutput('HELLO WORLD')).toBe('HELLO WORLD');
+    expect(normalizeScreenreaderOutput('HeLLo WoRLd')).toBe('HeLLo WoRLd');
   });
 
   it('handles complex screenreader output', () => {
     const input =
       '  \n\tButton   "Click  Me"\n  You are currently on a button.\n\n  ';
-    const expected = 'button "click me" you are currently on a button.';
+    const expected = 'Button "Click Me" You are currently on a button.';
     expect(normalizeScreenreaderOutput(input)).toBe(expected);
   });
 
   it('handles newlines within text', () => {
     expect(normalizeScreenreaderOutput('Line 1\nLine 2\nLine 3')).toBe(
-      'line 1 line 2 line 3'
+      'Line 1 Line 2 Line 3'
     );
     expect(normalizeScreenreaderOutput('Text\n\n\nMore text')).toBe(
-      'text more text'
+      'Text More text'
     );
     expect(normalizeScreenreaderOutput('Start\r\nMiddle\r\nEnd')).toBe(
-      'start middle end'
+      'Start Middle End'
     );
   });
 
   it('handles mixed whitespace characters', () => {
     const input =
       'Start\u00A0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000End';
-    expect(normalizeScreenreaderOutput(input)).toBe('start end');
+    expect(normalizeScreenreaderOutput(input)).toBe('Start End');
   });
 });
 
@@ -78,10 +78,9 @@ describe('outputsMatch', () => {
   });
 
   it('returns true for strings that normalize to the same value', () => {
-    expect(outputsMatch('Hello World', 'hello world')).toBe(true);
     expect(outputsMatch('  hello   world  ', 'hello world')).toBe(true);
     expect(outputsMatch('hello\nworld', 'hello world')).toBe(true);
-    expect(outputsMatch('HELLO\t\tWORLD', 'hello world')).toBe(true);
+    expect(outputsMatch('HELLO\t\tWORLD', 'HELLO WORLD')).toBe(true);
   });
 
   it('returns false for different content', () => {
@@ -110,17 +109,13 @@ describe('outputsMatch', () => {
     expect(outputsMatch('', 'hello')).toBe(false);
   });
 
-  it('handles complex screenreader scenarios', () => {
+  it('handles complex screenreader scenarios with whitespace normalization', () => {
     const output1 =
       '  Button "Save"\n  You are currently on a button.\n  To activate press Enter.  ';
     const output2 =
-      'button "save" you are currently on a button. to activate press enter.';
-    const output3 =
-      'BUTTON\t"SAVE"\nYou Are Currently On A Button.\nTo Activate Press Enter.';
+      'Button "Save" You are currently on a button. To activate press Enter.';
 
     expect(outputsMatch(output1, output2)).toBe(true);
-    expect(outputsMatch(output1, output3)).toBe(true);
-    expect(outputsMatch(output2, output3)).toBe(true);
   });
 
   it('detects meaningful differences despite formatting similarities', () => {
