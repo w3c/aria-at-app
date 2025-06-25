@@ -483,8 +483,6 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
         tr => String(tr.testId) === String(test.id)
       );
 
-      if (!currResult) continue;
-
       const histResult = historicalResults.find(
         hr => String(hr.testId) === String(test.id)
       );
