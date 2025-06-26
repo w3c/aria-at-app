@@ -4,6 +4,7 @@ import { Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import ManageBotRunDialog from '.';
+import { useTestPlanRunIsFinished } from '../../hooks/useTestPlanRunIsFinished';
 import { TestPlanRunPropType, UserPropType } from '../common/proptypes';
 
 const ManageBotRunDialogWithButton = ({
@@ -13,7 +14,11 @@ const ManageBotRunDialogWithButton = ({
   testers,
   onChange
 }) => {
+  const { runIsFinished } = useTestPlanRunIsFinished(testPlanRun.id);
   const [showDialog, setShowDialog] = useState(false);
+  if (runIsFinished) {
+    return null;
+  }
 
   return (
     <>

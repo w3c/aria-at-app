@@ -40,7 +40,6 @@ const {
   getTestPlanVersionById
 } = require('../models/services/TestPlanVersionService');
 const { createUpdateEvent } = require('../models/services/UpdateEventService');
-const { outputsMatch } = require('../util/outputNormalization');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -262,72 +261,47 @@ const updateOrCreateTestResultWithResponses = async ({
     );
   }
 
-  const getAutomatedResultFromOutput = ({ baseTestResult, outputs }) => {
-    const resultWithVerdictsCopied = {
-      ...baseTestResult,
-      atVersionId,
-      browserVersionId,
-      scenarioResults: baseTestResult.scenarioResults.map(
-        (scenarioResult, i) => {
-          // Check if output matches historical output
-          const outputMatches =
-            historicalTestResult &&
-            historicalTestResult.scenarioResults[i] &&
-            outputsMatch(
-              historicalTestResult.scenarioResults[i].output,
-              outputs[i]
-            );
-
-          return {
-            ...scenarioResult,
-            output: outputs[i],
-            assertionResults: scenarioResult.assertionResults.map(
-              (assertionResult, j) => ({
-                ...assertionResult,
-                passed: outputMatches
-                  ? historicalTestResult.scenarioResults[i].assertionResults[j]
-                      .passed
-                  : false,
-                failedReason: outputMatches
-                  ? historicalTestResult.scenarioResults[i].assertionResults[j]
-                      .failedReason
-                  : 'AUTOMATED_OUTPUT'
-              })
-            ),
-            unexpectedBehaviors: outputMatches
-              ? historicalTestResult.scenarioResults[i].unexpectedBehaviors
-              : null,
-            hasUnexpected: outputMatches
-              ? historicalTestResult.scenarioResults[i].hasUnexpected
-              : null
-          };
-        }
-      )
-    };
-
-    // Check if all outputs matched historical outputs (verdicts were copied)
-    const allOutputsMatched = baseTestResult.scenarioResults.every(
-      (scenarioResult, i) =>
+  const getAutomatedResultFromOutput = ({ baseTestResult, outputs }) => ({
+    ...baseTestResult,
+    atVersionId,
+    browserVersionId,
+    scenarioResults: baseTestResult.scenarioResults.map((scenarioResult, i) => {
+      // Check if output matches historical output
+      const outputMatches =
         historicalTestResult &&
         historicalTestResult.scenarioResults[i] &&
-        outputsMatch(historicalTestResult.scenarioResults[i].output, outputs[i])
-    );
+        historicalTestResult.scenarioResults[i].output === outputs[i];
 
-    return {
-      result: resultWithVerdictsCopied,
-      shouldSubmit: allOutputsMatched
-    };
-  };
-
-  const { result, shouldSubmit } = getAutomatedResultFromOutput({
-    baseTestResult: testResult,
-    outputs: responses
+      return {
+        ...scenarioResult,
+        output: outputs[i],
+        assertionResults: scenarioResult.assertionResults.map(
+          (assertionResult, j) => ({
+            ...assertionResult,
+            passed: outputMatches
+              ? historicalTestResult.scenarioResults[i].assertionResults[j]
+                  .passed
+              : false,
+            failedReason: outputMatches
+              ? historicalTestResult.scenarioResults[i].assertionResults[j]
+                  .failedReason
+              : 'AUTOMATED_OUTPUT'
+          })
+        ),
+        unexpectedBehaviors: null
+      };
+    })
   });
 
   return saveTestResultCommon({
     testResultId: testResult.id,
-    input: convertTestResultToInput(result),
-    isSubmit: shouldSubmit,
+    input: convertTestResultToInput(
+      getAutomatedResultFromOutput({
+        baseTestResult: testResult,
+        outputs: responses
+      })
+    ),
+    isSubmit: false,
     context
   });
 };
@@ -474,72 +448,43 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
     );
     if (!historicalResults) return;
 
-    let differentResponsesCount = 0;
-    let allOutputsMatch = true;
-
     // Validate each applicable test's results against historical results
     for (const test of applicableTests) {
       const currResult = testPlanRun.testResults.find(
         tr => String(tr.testId) === String(test.id)
       );
-
       const histResult = historicalResults.find(
         hr => String(hr.testId) === String(test.id)
       );
-
-      if (!currResult?.scenarioResults || !histResult?.scenarioResults) {
-        allOutputsMatch = false;
-        continue;
-      }
-
+      if (!currResult || !histResult) return;
+      if (
+        !currResult.scenarioResults ||
+        currResult.scenarioResults.length !== histResult.scenarioResults.length
+      )
+        return;
       for (let i = 0; i < currResult.scenarioResults.length; i++) {
-        const currOutput = currResult.scenarioResults[i]?.output;
-        const histOutput = histResult.scenarioResults[i]?.output;
-
-        if (!outputsMatch(currOutput, histOutput)) {
-          differentResponsesCount++;
-          allOutputsMatch = false;
-        }
+        if (
+          currResult.scenarioResults[i].output !==
+          histResult.scenarioResults[i].output
+        )
+          return;
       }
     }
 
-    if (allOutputsMatch) {
-      // All tests match historical results; mark the report as final
-      const updatedReport = await updateTestPlanReportById({
-        id: testPlanReport.id,
-        values: { markedFinalAt: new Date() },
-        transaction
-      });
+    // All tests match historical results; mark the report as final
+    const updatedReport = await updateTestPlanReportById({
+      id: testPlanReport.id,
+      values: { markedFinalAt: new Date() },
+      transaction
+    });
 
-      await createUpdateEvent({
-        values: {
-          description: `Test plan report for ${updatedReport.testPlanVersion.title} ${updatedReport.testPlanVersion.versionString} with ${updatedReport.at.name} ${updatedReport.exactAtVersion.name} and ${updatedReport.browser.name} had identical outputs to the previous finalized report, verdicts were copied, and the report was finalized`,
-          type: UPDATE_EVENT_TYPE.TEST_PLAN_REPORT
-        },
-        transaction
-      });
-    } else {
-      const updatedReport = await getTestPlanReportById({
-        id: testPlanReport.id,
-        transaction
-      });
-      // Not all outputs match, but job is complete - create completion event
-      await createUpdateEvent({
-        values: {
-          description: `Automated update for ${
-            updatedReport.testPlanVersion.title
-          } ${updatedReport.testPlanVersion.versionString} with ${
-            updatedReport.at.name
-          } ${updatedReport.exactAtVersion.name} and ${
-            updatedReport.browser.name
-          } is 100% complete with ${differentResponsesCount} different response${
-            differentResponsesCount === 1 ? '' : 's'
-          }`,
-          type: UPDATE_EVENT_TYPE.TEST_PLAN_REPORT
-        },
-        transaction
-      });
-    }
+    await createUpdateEvent({
+      values: {
+        description: `Test plan report for ${updatedReport.testPlanVersion.title} ${updatedReport.testPlanVersion.versionString} with ${updatedReport.at.name} ${updatedReport.exactAtVersion.name} and ${updatedReport.browser.name} had identical outputs to the previous finalized report, verdicts were copied, and the report was finalized`,
+        type: UPDATE_EVENT_TYPE.TEST_PLAN_REPORT
+      },
+      transaction
+    });
   } catch (error) {
     throw new HttpQueryError(
       error.statusCode || 500,

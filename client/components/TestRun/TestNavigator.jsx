@@ -125,14 +125,8 @@ const TestNavigator = ({
                 const { status } =
                   testStatus.find(ts => ts.test.id === test.id) ?? {};
                 if (status === 'COMPLETED') {
-                  if (test.testResult?.completedAt) {
-                    resultClassName = styles.botComplete;
-                    resultStatus = 'Completed by Bot';
-                  } else {
-                    resultClassName = styles.botOutputOnly;
-                    resultStatus =
-                      'Output Collected by Bot, Needs Assertion Verdicts';
-                  }
+                  resultClassName = styles.botComplete;
+                  resultStatus = 'Completed by Bot';
                 } else if (status === 'QUEUED') {
                   resultClassName = styles.botQueued;
                   resultStatus = 'Queued by Bot';
