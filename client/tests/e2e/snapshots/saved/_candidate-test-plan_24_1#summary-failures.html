@@ -7,8 +7,7 @@
 
     <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
     <title>
-      Summary of Failing Assertions | Modal Dialog Example | Candidate Review |
-      ARIA-AT
+      Summary of Failures | Modal Dialog Example | Candidate Review | ARIA-AT
     </title>
   </head>
   <body>
@@ -127,23 +126,13 @@
                   class="test-navigator-list">
                   <div class="test-name-wrapper summary">
                     <a
-                      href="#summary-assertions"
+                      href="#summary-failures"
                       class="test-name"
                       aria-current="true"
-                      >Summary of Failing Assertions</a
+                      >Summary of Failures</a
                     ><span
                       class="progress-indicator"
-                      title="Summary of Failing Assertions"></span>
-                  </div>
-                  <div class="test-name-wrapper summary">
-                    <a
-                      href="#summary-side-effects"
-                      class="test-name"
-                      aria-current="false"
-                      >Summary of Negative Side Effects</a
-                    ><span
-                      class="progress-indicator"
-                      title="Summary of Negative Side Effects"></span>
+                      title="Summary of Failures"></span>
                   </div>
                   <li class="test-name-wrapper changes-requested">
                     <a href="#1" class="test-name" aria-current="false"
@@ -286,9 +275,7 @@
               <div class="row">
                 <div class="p-0">
                   <span class="task-label">Candidate Test Plan Review</span>
-                  <h1 id="failing-assertions-heading">
-                    Summary of Failing Assertions (2 must, 1 should)
-                  </h1>
+                  <h1>Summary of Failures</h1>
                 </div>
                 <div class="test-info-wrapper">
                   <div class="test-info-entity apg-example-name">
@@ -309,6 +296,9 @@
                       <div class="row"></div>
                       <div class="candidate-results-container row">
                         <div class="p-0">
+                          <h2 id="failing-assertions-heading">
+                            Summary of Failing Assertions (2 must, 1 should)
+                          </h2>
                           <div
                             class="failing-assertions-summary-table-container">
                             <p>3 of 143 total assertions fail across:</p>
@@ -368,6 +358,42 @@
                                       occur
                                     </td>
                                     <td>Other</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                          <h2 id="negative-side-effects-heading">
+                            Summary of Negative Side Effects (0 severe, 1
+                            moderate)
+                          </h2>
+                          <div
+                            class="failing-assertions-summary-table-container">
+                            <div class="table-responsive">
+                              <table
+                                aria-labelledby="negative-side-effects-heading"
+                                class="table table-bordered">
+                                <thead>
+                                  <tr>
+                                    <th>Test Name</th>
+                                    <th>Command</th>
+                                    <th>Side Effect</th>
+                                    <th>Details</th>
+                                    <th>Impact</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                      <a href="/candidate-test-plan/24/1#5"
+                                        >Close a modal dialog using a button in
+                                        reading mode</a
+                                      >
+                                    </td>
+                                    <td>Space</td>
+                                    <td>Other</td>
+                                    <td>Seeded other unexpected behavior</td>
+                                    <td>MODERATE</td>
                                   </tr>
                                 </tbody>
                               </table>
