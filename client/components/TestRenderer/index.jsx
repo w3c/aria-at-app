@@ -69,12 +69,36 @@ const TestRenderer = ({
   const [testRendererState, setTestRendererState] = useState(null);
   const [submitResult, setSubmitResult] = useState(null);
   const [submitCalled, setSubmitCalled] = useState(false);
-
   const [captureSocket, setCaptureSocket] = useState(null);
   const [capturedUtterances, setCapturedUtterances] = useState([]);
   const wsRef = useRef(null);
   const [, setWsConnected] = useState(false);
   const [, setWsError] = useState(null);
+
+  // Get the machine's network IP for Android device access
+  const getNetworkUrl = path => {
+    // Check if we have a configured external URL
+    const externalHost = process.env.REACT_APP_EXTERNAL_HOST;
+    if (externalHost) {
+      return `http://${externalHost}${path}`;
+    }
+
+    // Fallback: try to auto-detect network IP
+    // This works in development when the client connects from the same network
+    const hostname = window.location.hostname;
+
+    // If we're already on a network IP (not localhost), use it
+    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      return `${window.location.protocol}//${hostname}:${window.location.port}${path}`;
+    }
+
+    // For localhost, we need the user to configure their network IP
+    // or use the default localhost (which won't work for Android)
+    console.warn(
+      'Using localhost URL for Android device. Configure REACT_APP_EXTERNAL_HOST in your environment for network access.'
+    );
+    return `${window.location.protocol}//${hostname}:${window.location.port}${path}`;
+  };
 
   // Proof of concept in case we need to inject buttons ourselves on the test
   // page
@@ -157,6 +181,9 @@ const TestRenderer = ({
 
         if (data.type === 'utterance') {
           setCapturedUtterances(prev => [...prev, data.data]);
+        } else if (data.type === 'utterances_collected') {
+          // Handle final collected utterances (formatted for clipboard)
+          setCapturedUtterances(prev => [data.data]);
         } else if (data.type === 'error') {
           console.error('Capture error', data.error);
           setWsError(data.error);
@@ -214,7 +241,8 @@ const TestRenderer = ({
           renderableContent.target.referencePage
         }`
       : testPageUrl;
-    url = `${window.location.hostname}${url}`;
+
+    url = getNetworkUrl(url);
     // url = `192.168.1.183:3000${url}`;
 
     try {

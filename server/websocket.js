@@ -4,55 +4,271 @@ const path = require('path');
 const os = require('os');
 
 const platform = os.platform();
+const axios = require('axios');
+
+const TALKBACK_PACKAGE_NAME = 'com.google.android.marvin.talkback';
+const PROXY_URL = process.env.ADB_PROXY_URL || 'http://localhost:3080';
+const POLL_INTERVAL = 1000; // Poll every 1 second
 
 // Store active capture sessions
 const captureSessions = new Map();
 
-const getPlatformSpecificCommand = script => {
-  let scriptPath;
-  let command = null;
+const runAdbCommand = async command => {
+  try {
+    const response = await axios.post(`${PROXY_URL}/run-adb`, {
+      command: command
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(`ADB command failed: ${error.response.data.error}`);
+    } else if (error.request) {
+      throw new Error('Unable to connect to ADB proxy');
+    } else {
+      throw new Error(`Request failed: ${error.message}`);
+    }
+  }
+};
 
-  switch (platform) {
-    case 'darwin': // macOS
-      scriptPath = path.join(
-        __dirname,
-        `scripts/talkback-capture/${script}.sh`
-      );
-      command = `sh ${scriptPath}`;
+const checkDeviceConnected = async () => {
+  const result = await runAdbCommand('devices');
+  const lines = result.output
+    .split('\n')
+    .filter(line => line.trim() && !line.includes('List of devices'));
+  return lines.length > 0 && lines.some(line => line.includes('device'));
+};
+
+const checkDeveloperMode = async () => {
+  const result = await runAdbCommand(
+    'shell settings get global development_settings_enabled'
+  );
+  return result.output.trim() === '1';
+};
+
+const checkTalkbackEnabled = async () => {
+  const result = await runAdbCommand(
+    'shell settings get secure enabled_accessibility_services'
+  );
+  return result.output.includes(TALKBACK_PACKAGE_NAME);
+};
+
+const getTalkbackPid = async () => {
+  const result = await runAdbCommand(`shell pidof -s ${TALKBACK_PACKAGE_NAME}`);
+  const pid = result.output.trim();
+  return pid && !isNaN(pid) ? pid : null;
+};
+
+const clearLogcat = async () => {
+  await runAdbCommand('logcat -c');
+};
+
+const getLogcatDump = async pid => {
+  const result = await runAdbCommand(`logcat --pid=${pid} -v threadtime -d`);
+  return result.output;
+};
+
+const extractUtterances = (logOutput, lastProcessedTime = null) => {
+  const lines = logOutput.split('\n');
+  const utterances = [];
+  let startCapturing = false;
+
+  for (const line of lines) {
+    if (!line.trim()) continue;
+
+    // Skip lines before lastProcessedTime if provided
+    if (lastProcessedTime) {
+      const timeMatch = line.match(/(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})/);
+      if (timeMatch) {
+        const lineTime = timeMatch[1];
+        if (lineTime <= lastProcessedTime) {
+          continue;
+        }
+      }
+    }
+
+    // Look for ACTION_CLICK and Run Test Setup in the same line
+    if (line.includes('ACTION_CLICK') && line.includes('Run Test Setup')) {
+      startCapturing = true;
+      continue;
+    }
+
+    if (!startCapturing) continue;
+
+    // Check for "End of Example" text
+    if (line.includes('End of Example')) {
+      startCapturing = false;
       break;
-    case 'linux':
-      scriptPath = path.join(
-        __dirname,
-        `scripts/talkback-capture/linux/${script}.sh`
-      );
-      command = `sh ${scriptPath}`;
-      break;
-    case 'win32':
-      scriptPath = path.join(
-        __dirname,
-        `scripts/talkback-capture/win32/${script}.ps1`
-      );
-      command = scriptPath;
-      break;
-    default:
-      break;
+    }
+
+    // Extract text from lines containing "text=" and "utterance"
+    if (line.includes('text=') && line.includes('utterance')) {
+      const textMatch = line.match(/text="([^"]*)"/);
+      if (textMatch && textMatch[1]) {
+        utterances.push(textMatch[1]);
+      }
+    }
   }
 
-  // eslint-disable-next-line no-console
-  console.info(
-    `Platform: ${platform} || Script path: ${scriptPath} || Command: ${command}`
-  );
-  return command;
+  return utterances;
+};
+
+const getLastLogTime = logOutput => {
+  const lines = logOutput.split('\n').reverse();
+  for (const line of lines) {
+    const timeMatch = line.match(/(\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3})/);
+    if (timeMatch) {
+      return timeMatch[1];
+    }
+  }
+  return null;
+};
+
+const startCaptureSession = async (sessionId, ws) => {
+  try {
+    // Validation checks
+    if (!(await checkDeviceConnected())) {
+      throw new Error('No Android device connected');
+    }
+
+    if (!(await checkDeveloperMode())) {
+      throw new Error('Developer mode is not enabled on the device');
+    }
+
+    if (!(await checkTalkbackEnabled())) {
+      throw new Error('TalkBack is not enabled on the device');
+    }
+
+    const pid = await getTalkbackPid();
+    if (!pid) {
+      throw new Error('TalkBack process not found');
+    }
+
+    // Clear logcat buffer
+    await clearLogcat();
+
+    console.info(
+      `Starting capture session ${sessionId} for TalkBack PID ${pid}`
+    );
+
+    // Initialize session state
+    const session = {
+      pid,
+      ws,
+      isActive: true,
+      lastProcessedTime: null,
+      collectedUtterances: [],
+      pollInterval: null
+    };
+
+    captureSessions.set(sessionId, session);
+
+    // Start polling for logs
+    const pollLogs = async () => {
+      if (!session.isActive) return;
+
+      try {
+        const logOutput = await getLogcatDump(session.pid);
+        const newUtterances = extractUtterances(
+          logOutput,
+          session.lastProcessedTime
+        );
+
+        if (newUtterances.length > 0) {
+          session.collectedUtterances.push(...newUtterances);
+
+          // Send each utterance to the client
+          for (const utterance of newUtterances) {
+            if (session.isActive) {
+              ws.send(
+                JSON.stringify({
+                  type: 'utterance',
+                  data: utterance
+                })
+              );
+            }
+          }
+        }
+
+        // Update last processed time
+        const lastTime = getLastLogTime(logOutput);
+        if (lastTime) {
+          session.lastProcessedTime = lastTime;
+        }
+
+        // Schedule next poll
+        if (session.isActive) {
+          session.pollInterval = setTimeout(pollLogs, POLL_INTERVAL);
+        }
+      } catch (error) {
+        console.error('Error polling logs:', error);
+        if (session.isActive) {
+          ws.send(
+            JSON.stringify({
+              type: 'error',
+              error: error.message
+            })
+          );
+        }
+      }
+    };
+
+    // Start the polling loop
+    pollLogs();
+
+    ws.send(
+      JSON.stringify({
+        type: 'started',
+        message: 'Started capturing utterances'
+      })
+    );
+  } catch (error) {
+    console.error('Error starting capture session:', error);
+    ws.send(
+      JSON.stringify({
+        type: 'error',
+        error: error.message
+      })
+    );
+  }
+};
+
+const stopCaptureSession = sessionId => {
+  const session = captureSessions.get(sessionId);
+  if (session) {
+    session.isActive = false;
+
+    if (session.pollInterval) {
+      clearTimeout(session.pollInterval);
+      session.pollInterval = null;
+    }
+
+    // Send collected utterances
+    if (session.collectedUtterances.length > 0) {
+      session.ws.send(
+        JSON.stringify({
+          type: 'utterances_collected',
+          data: session.collectedUtterances.join('  ') // Match original format
+        })
+      );
+    }
+
+    session.ws.send(
+      JSON.stringify({
+        type: 'stopped',
+        message: 'Stopped capturing utterances'
+      })
+    );
+
+    captureSessions.delete(sessionId);
+    console.info(`Stopped capture session ${sessionId}`);
+  }
 };
 
 const setupWebSocketServer = server => {
   const wss = new WebSocket.Server({ server, path: '/ws' });
 
   wss.on('connection', (ws, req) => {
-    // eslint-disable-next-line no-console
-    console.info(
-      `New WebSocket connection attempt\nConnection URL: ${req.url}\nConnection headers: ${req.headers}`
-    );
+    console.info('New WebSocket connection attempt');
 
     const sessionId = req.url.split('?sessionId=')[1];
     if (!sessionId) {
@@ -61,106 +277,28 @@ const setupWebSocketServer = server => {
       return;
     }
 
-    // eslint-disable-next-line no-console
     console.info(`New WebSocket connection for session ${sessionId}`);
 
     ws.on('message', async message => {
-      // eslint-disable-next-line no-console
       console.info(`Raw message: ${message}`);
       try {
         const data = JSON.parse(message);
-        // eslint-disable-next-line no-console
         console.info('Parsed message data', data);
 
         if (data.type === 'startCapture') {
-          // eslint-disable-next-line no-console
           console.info('Starting utterance capture for session', sessionId);
 
-          // If there's already a session running, close it
+          // If there's already a session running, stop it
           if (captureSessions.has(sessionId)) {
             console.warn('Found existing session, cleaning up...');
-
-            const existingSession = captureSessions.get(sessionId);
-            existingSession.process.kill('SIGINT');
-
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if (existingSession.process) {
-              existingSession.process.kill('SIGKILL');
-            }
-            captureSessions.delete(sessionId);
+            stopCaptureSession(sessionId);
+            await new Promise(resolve => setTimeout(resolve, 100));
           }
 
-          const command = getPlatformSpecificCommand('captureUtterances');
-          if (!command) {
-            console.error('No command available for platform', platform);
-            ws.send(
-              JSON.stringify({ type: 'error', error: 'Unsupported platform' })
-            );
-            return;
-          }
-
-          // eslint-disable-next-line no-console
-          console.info('Spawning process with command', command);
-          const process = spawn(
-            command.split(' ')[0],
-            command.split(' ').slice(1),
-            { shell: true }
-          );
-
-          // Store the session
-          captureSessions.set(sessionId, { process, ws });
-          // eslint-disable-next-line no-console
-          console.info('Session stored', Array.from(captureSessions.keys()));
-
-          // Handle process output
-          process.stdout.on('data', data => {
-            const output = data.toString();
-
-            // eslint-disable-next-line no-console
-            console.info('stdout', output);
-            ws.send(JSON.stringify({ type: 'utterance', data: output }));
-          });
-
-          process.stderr.on('data', data => {
-            console.error('process.stderr', data.toString());
-          });
-
-          process.on('error', error => {
-            console.error('process.error', error);
-            ws.send(JSON.stringify({ type: 'error', error: error.message }));
-            captureSessions.delete(sessionId);
-          });
-
-          process.on('exit', code => {
-            console.warn('process.exit', code);
-            ws.send(JSON.stringify({ type: 'exit', code }));
-            captureSessions.delete(sessionId);
-          });
-
-          ws.send(
-            JSON.stringify({
-              type: 'started',
-              message: 'Started capturing utterances'
-            })
-          );
+          await startCaptureSession(sessionId, ws);
         } else if (data.type === 'stopCapture') {
-          // eslint-disable-next-line no-console
           console.info('Stopping utterance capture for session', sessionId);
-          const session = captureSessions.get(sessionId);
-          if (session) {
-            session.process.kill('SIGINT');
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if (session.process) {
-              session.process.kill('SIGKILL');
-            }
-            captureSessions.delete(sessionId);
-            ws.send(
-              JSON.stringify({
-                type: 'stopped',
-                message: 'Stopped capturing utterances'
-              })
-            );
-          }
+          stopCaptureSession(sessionId);
         } else {
           console.warn('Unknown message type', data.type);
         }
@@ -171,23 +309,8 @@ const setupWebSocketServer = server => {
     });
 
     ws.on('close', () => {
-      // eslint-disable-next-line no-console
       console.info(`WebSocket connection closed for session ${sessionId}`);
-
-      // Clean up session if it exists
-      const session = captureSessions.get(sessionId);
-      if (session) {
-        // eslint-disable-next-line no-console
-        console.info('Cleaning up session on close');
-
-        session.process.kill('SIGINT');
-        setTimeout(() => {
-          if (session.process) {
-            session.process.kill('SIGKILL');
-          }
-        }, 1000);
-        captureSessions.delete(sessionId);
-      }
+      stopCaptureSession(sessionId);
     });
 
     ws.on('error', error => {
