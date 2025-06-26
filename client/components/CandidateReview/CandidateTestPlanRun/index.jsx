@@ -52,8 +52,7 @@ const vendorReviewStatusMap = {
   IN_PROGRESS: 'In Progress',
   APPROVED: 'Approved'
 };
-const FAILING_ASSERTIONS_INDEX = -1;
-const NEGATIVE_SIDE_EFFECTS = -2;
+const SUMMARY_OF_FAILURES_INDEX = -1;
 
 const CandidateTestPlanRun = () => {
   const { atId, testPlanVersionId } = useParams();
@@ -67,7 +66,7 @@ const CandidateTestPlanRun = () => {
   const [viewedTests, setViewedTests] = useState([]);
   const [testsLength, setTestsLength] = useState(0);
   const [currentTestIndex, setCurrentTestIndex] = useUrlTestIndex({
-    minTestIndex: -2,
+    minTestIndex: SUMMARY_OF_FAILURES_INDEX,
     maxTestIndex: testsLength
   });
   const [showTestNavigator, setShowTestNavigator] = useState(true);
@@ -130,9 +129,18 @@ const CandidateTestPlanRun = () => {
     skip: !testPlanReport
   });
 
-  const isSummaryView =
-    currentTestIndex === FAILING_ASSERTIONS_INDEX ||
-    currentTestIndex === NEGATIVE_SIDE_EFFECTS;
+  const isSummaryView = currentTestIndex === SUMMARY_OF_FAILURES_INDEX;
+
+  const shouldShowFailingAssertionsSummary = useMemo(() => {
+    return (
+      testPlanReport?.metrics.mustAssertionsFailedCount > 0 ||
+      testPlanReport?.metrics.shouldAssertionsFailedCount > 0
+    );
+  }, [testPlanReport]);
+
+  const shouldShowNegativeSideEffectsSummary = useMemo(() => {
+    return testPlanReport?.metrics.unexpectedBehaviorCount > 0;
+  }, [testPlanReport]);
 
   const isLaptopOrLarger = useMediaQuery({
     query: '(min-width: 792px)'
@@ -319,7 +327,7 @@ const CandidateTestPlanRun = () => {
   const { recommendedPhaseTargetDate } = testPlanVersion;
 
   const pageTitlePrefix = isSummaryView
-    ? 'Summary of Failing Assertions'
+    ? 'Summary of Failures'
     : `${currentTestIndex + 1}. ${currentTest?.title}`;
 
   const pageTitle = `${pageTitlePrefix} | ${testPlanVersion.title} | Candidate Review | ARIA-AT`;
@@ -409,30 +417,14 @@ const CandidateTestPlanRun = () => {
   const fileBugUrl = AtBugTrackerMap[at];
 
   const getHeading = () => {
-    if (currentTestIndex === FAILING_ASSERTIONS_INDEX) {
+    if (currentTestIndex === SUMMARY_OF_FAILURES_INDEX) {
       return (
         <>
           <span className={testRunStyles.taskLabel}>
             Candidate Test Plan Review
           </span>
-          <FailingAssertionsSummaryHeading
-            metrics={testPlanReport.metrics}
-            as="h1"
-          />
-        </>
-      );
-    }
 
-    if (currentTestIndex === NEGATIVE_SIDE_EFFECTS) {
-      return (
-        <>
-          <span className={testRunStyles.taskLabel}>
-            Candidate Test Plan Review
-          </span>
-          <NegativeSideEffectsSummaryHeading
-            metrics={testPlanReport.metrics}
-            as="h1"
-          />
+          <h1>Summary of Failures</h1>
         </>
       );
     }
@@ -578,34 +570,51 @@ const CandidateTestPlanRun = () => {
   };
 
   const getContent = () => {
-    if (currentTestIndex === FAILING_ASSERTIONS_INDEX) {
+    if (currentTestIndex === SUMMARY_OF_FAILURES_INDEX) {
       return (
-        <div
-          className={
-            failingAssertionsSummaryStyles.failingAssertionsSummaryTableContainer
-          }
-        >
-          <FailingAssertionsSummaryTable
-            testPlanReport={testPlanReports[0]}
-            atName={at}
-            getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
-          />
-        </div>
-      );
-    }
-    if (currentTestIndex === NEGATIVE_SIDE_EFFECTS) {
-      return (
-        <div
-          className={
-            failingAssertionsSummaryStyles.failingAssertionsSummaryTableContainer
-          }
-        >
-          <NegativeSideEffectsSummaryTable
-            testPlanReport={testPlanReports[0]}
-            atName={at}
-            getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
-          />
-        </div>
+        <>
+          {shouldShowFailingAssertionsSummary && (
+            <>
+              <FailingAssertionsSummaryHeading
+                metrics={testPlanReport.metrics}
+                as="h2"
+              />
+
+              <div
+                className={
+                  failingAssertionsSummaryStyles.failingAssertionsSummaryTableContainer
+                }
+              >
+                <FailingAssertionsSummaryTable
+                  testPlanReport={testPlanReports[0]}
+                  atName={at}
+                  getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
+                />
+              </div>
+            </>
+          )}
+
+          {shouldShowNegativeSideEffectsSummary && (
+            <>
+              <NegativeSideEffectsSummaryHeading
+                metrics={testPlanReport.metrics}
+                as="h2"
+              />
+
+              <div
+                className={
+                  failingAssertionsSummaryStyles.failingAssertionsSummaryTableContainer
+                }
+              >
+                <NegativeSideEffectsSummaryTable
+                  testPlanReport={testPlanReports[0]}
+                  atName={at}
+                  getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
+                />
+              </div>
+            </>
+          )}
+        </>
       );
     }
     return (
