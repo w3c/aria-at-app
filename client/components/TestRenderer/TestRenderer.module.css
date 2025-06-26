@@ -167,9 +167,25 @@ label {
 
   &.untestable-label {
     margin-bottom: var(--8px);
+    position: relative;
 
     input {
       margin-right: var(--4px);
+    }
+
+    &:hover [role='tooltip'],
+    input:focus + [role='tooltip'] {
+      visibility: visible;
+    }
+
+    [role='tooltip'] {
+      position: absolute;
+      top: 100%;
+
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 1em;
+      border-color: #999;
+      visibility: hidden;
     }
   }
 
