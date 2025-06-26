@@ -9,6 +9,7 @@ import {
   TestPropType,
   TestResultPropType
 } from '../proptypes';
+import { NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES } from '../../../utils/constants';
 
 const getAssertionResultText = (assertionResult, untestable) => {
   const { passed, priorityString, describesSideEffects } = assertionResult;
@@ -140,7 +141,7 @@ const TestPlanResultsTable = ({
           {
             id: `UnexpectedBehavior_MUST_${nextId()}`,
             assertion: {
-              text: 'Severe negative side effects do not occur'
+              text: NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
             },
             describesSideEffects: true,
             passed: hasNoSevereUnexpectedBehavior,
@@ -154,7 +155,7 @@ const TestPlanResultsTable = ({
           {
             id: `UnexpectedBehavior_SHOULD_${nextId()}`,
             assertion: {
-              text: 'Moderate negative side effects do not occur'
+              text: NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
             },
             describesSideEffects: true,
             passed: hasNoModerateUnexpectedBehavior,
