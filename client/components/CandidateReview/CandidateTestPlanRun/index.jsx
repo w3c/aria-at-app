@@ -35,6 +35,8 @@ import FailingAssertionsSummaryTable from '../../FailingAssertionsSummary/Table'
 import FailingAssertionsSummaryHeading from '../../FailingAssertionsSummary/Heading';
 import NegativeSideEffectsSummaryTable from '../../NegativeSideEffectsSummary/Table';
 import NegativeSideEffectsSummaryHeading from '../../NegativeSideEffectsSummary/Heading';
+import UntestableAssertionsSummaryTable from '../../UntestableAssertionsSummary/Table';
+import UntestableAssertionsSummaryHeading from '../../UntestableAssertionsSummary/Heading';
 import styles from './CandidateTestPlanRun.module.css';
 import feedbackStyles from '../FeedbackListItem/FeedbackListItem.module.css';
 import testRunStyles from '../../TestRun/TestRun.module.css';
@@ -140,6 +142,10 @@ const CandidateTestPlanRun = () => {
 
   const shouldShowNegativeSideEffectsSummary = useMemo(() => {
     return testPlanReport?.metrics.unexpectedBehaviorCount > 0;
+  }, [testPlanReport]);
+
+  const shouldShowUntestableAssertionsSummary = useMemo(() => {
+    return testPlanReport?.metrics.assertionsUntestableCount > 0;
   }, [testPlanReport]);
 
   const isLaptopOrLarger = useMediaQuery({
@@ -607,6 +613,27 @@ const CandidateTestPlanRun = () => {
                 }
               >
                 <NegativeSideEffectsSummaryTable
+                  testPlanReport={testPlanReports[0]}
+                  atName={at}
+                  getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
+                />
+              </div>
+            </>
+          )}
+
+          {shouldShowUntestableAssertionsSummary && (
+            <>
+              <UntestableAssertionsSummaryHeading
+                metrics={testPlanReport.metrics}
+                as="h2"
+              />
+
+              <div
+                className={
+                  failingAssertionsSummaryStyles.failingAssertionsSummaryTableContainer
+                }
+              >
+                <UntestableAssertionsSummaryTable
                   testPlanReport={testPlanReports[0]}
                   atName={at}
                   getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
