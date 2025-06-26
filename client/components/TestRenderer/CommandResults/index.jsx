@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import createIssueLink from '@client/utils/createIssueLink';
 import { AtOutputPropType, UntestablePropType } from '../../common/proptypes';
 import PropTypes from 'prop-types';
@@ -7,6 +7,8 @@ import AssertionsFieldset from '../AssertionsFieldset';
 import OutputTextArea from '../OutputTextArea';
 import UnexpectedBehaviorsFieldset from '../UnexpectedBehaviorsFieldset';
 import styles from '../TestRenderer.module.css';
+
+let tooltipCount = 0;
 
 const CommandResults = ({
   header,
@@ -26,6 +28,7 @@ const CommandResults = ({
     ...commonIssueContent,
     commandString
   });
+  const tooltipID = useMemo(() => `untestable-tooltip-${++tooltipCount}`, []);
 
   return (
     <>
@@ -43,8 +46,12 @@ const CommandResults = ({
           onChange={e => untestable.change(e.target.checked)}
           autoFocus={isSubmitted && untestable.focus}
           checked={untestable.value}
+          aria-describedby={tooltipID}
         />
-        {untestable.description[0]}
+        <span role="tooltip" id={tooltipID}>
+          {untestable.description[0]}
+        </span>
+        Command is untestable
         {isSubmitted && (
           <span
             className={clsx(

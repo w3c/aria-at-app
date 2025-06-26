@@ -489,7 +489,7 @@ describe('Test Run when signed in as tester', () => {
         failing: 3
       });
 
-      await page.click('label ::-p-text(untestable)');
+      await page.click('label ::-p-text(Command is untestable)');
 
       expect(await countChecked(page)).toEqual({
         passing: 2,
