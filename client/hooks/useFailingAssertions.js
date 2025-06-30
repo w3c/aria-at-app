@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES } from '../utils/constants';
+import getAssertionPhraseOrText from '../utils/getAssertionPhraseOrText';
 
 export const useFailingAssertions = testPlanReport => {
   return useMemo(() => {
@@ -44,7 +45,9 @@ export const useFailingAssertions = testPlanReport => {
               .map(assertionResult => ({
                 ...commonResult,
                 priority,
-                assertionText: assertionResult.assertion.text,
+                assertionText: getAssertionPhraseOrText(
+                  assertionResult.assertion
+                ),
                 output: scenarioResult.output
               }));
           };
