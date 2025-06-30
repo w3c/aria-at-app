@@ -11,6 +11,8 @@ import { Context as CollectionJobContext } from './CollectionJobContext';
 import styles from './TestNavigator.module.css';
 import clsx from 'clsx';
 
+const SUMMARY_OF_FAILURES_INDEX = -1;
+
 const TestNavigator = ({
   show = true,
   isSignedIn = false,
@@ -34,16 +36,13 @@ const TestNavigator = ({
     [collectionJob]
   );
 
-  const shouldShowFailingAssertionsSummary = useMemo(() => {
+  const shouldShowSummaryOfFailures = useMemo(() => {
     return (
       isVendor &&
       (testPlanReport.metrics.mustAssertionsFailedCount > 0 ||
-        testPlanReport.metrics.shouldAssertionsFailedCount > 0)
+        testPlanReport.metrics.shouldAssertionsFailedCount > 0 ||
+        testPlanReport.metrics.unexpectedBehaviorCount > 0)
     );
-  }, [isVendor, testPlanReport]);
-
-  const shouldShowNegativeSideEffectsSummary = useMemo(() => {
-    return isVendor && testPlanReport.metrics.unexpectedBehaviorCount > 0;
   }, [isVendor, testPlanReport]);
 
   return (
@@ -71,41 +70,22 @@ const TestNavigator = ({
           aria-labelledby="test-navigator-heading"
           className={styles.testNavigatorList}
         >
-          {shouldShowFailingAssertionsSummary && (
+          {shouldShowSummaryOfFailures && (
             <div className={clsx(styles.testNameWrapper, styles.summary)}>
               <a
                 onClick={async e => {
                   e.preventDefault();
-                  await handleTestClick(-1);
+                  await handleTestClick(SUMMARY_OF_FAILURES_INDEX);
                 }}
-                href="#summary-assertions"
+                href="#summary-failures"
                 className={styles.testName}
-                aria-current={currentTestIndex === -1}
+                aria-current={currentTestIndex === SUMMARY_OF_FAILURES_INDEX}
               >
-                Summary of Failing Assertions
+                Summary of Failures
               </a>
               <span
                 className={styles.progressIndicator}
-                title="Summary of Failing Assertions"
-              />
-            </div>
-          )}
-          {shouldShowNegativeSideEffectsSummary && (
-            <div className={clsx(styles.testNameWrapper, styles.summary)}>
-              <a
-                onClick={async e => {
-                  e.preventDefault();
-                  await handleTestClick(-2);
-                }}
-                href="#summary-side-effects"
-                className={styles.testName}
-                aria-current={currentTestIndex === -2}
-              >
-                Summary of Negative Side Effects
-              </a>
-              <span
-                className={styles.progressIndicator}
-                title="Summary of Negative Side Effects"
+                title="Summary of Failures"
               />
             </div>
           )}
