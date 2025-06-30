@@ -1,4 +1,6 @@
 import { useMemo } from 'react';
+import { NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES } from '../utils/constants';
+import getAssertionPhraseOrText from '../utils/getAssertionPhraseOrText';
 import summarizeScenario from '../utils/summarizeScenario';
 
 export const useFailingAssertions = testPlanReport => {
@@ -26,7 +28,9 @@ export const useFailingAssertions = testPlanReport => {
               .map(assertionResult => ({
                 ...commonResult,
                 priority,
-                assertionText: assertionResult.assertion.text,
+                assertionText: getAssertionPhraseOrText(
+                  assertionResult.assertion
+                ),
                 output: scenarioResult.output
               }));
           };
@@ -43,9 +47,9 @@ export const useFailingAssertions = testPlanReport => {
               ...commonResult,
               assertionText:
                 unexpectedBehavior.impact.toLowerCase() === 'moderate'
-                  ? 'Moderate negative side effects do not occur'
+                  ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
                   : unexpectedBehavior.impact.toLowerCase() === 'severe'
-                  ? 'Severe negative side effects do not occur'
+                  ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
                   : 'N/A',
               priority:
                 unexpectedBehavior.impact.toLowerCase() === 'moderate'

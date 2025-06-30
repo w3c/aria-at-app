@@ -9,6 +9,8 @@ import {
   TestPropType,
   TestResultPropType
 } from '../proptypes';
+import { NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES } from '../../../utils/constants';
+import getAssertionPhraseOrText from '../../../utils/getAssertionPhraseOrText';
 
 const getAssertionResultText = (assertionResult, untestable) => {
   const { passed, priorityString, describesSideEffects } = assertionResult;
@@ -31,13 +33,7 @@ const renderAssertionRow = (assertionResult, untestable) => {
   return (
     <tr key={`${assertionResult.id}__${nextId()}`}>
       <td>{assertionResult.priorityString}</td>
-      <td>
-        {assertionResult.assertion.phrase
-          ? assertionResult.assertion.phrase.charAt(0).toUpperCase() +
-            assertionResult.assertion.phrase.slice(1)
-          : assertionResult.assertion.text.charAt(0).toUpperCase() +
-            assertionResult.assertion.text.slice(1)}
-      </td>
+      <td>{getAssertionPhraseOrText(assertionResult.assertion)}</td>
       <td>{getAssertionResultText(assertionResult, untestable)}</td>
     </tr>
   );
@@ -140,7 +136,7 @@ const TestPlanResultsTable = ({
           {
             id: `UnexpectedBehavior_MUST_${nextId()}`,
             assertion: {
-              text: 'Severe negative side effects do not occur'
+              text: NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
             },
             describesSideEffects: true,
             passed: hasNoSevereUnexpectedBehavior,
@@ -154,7 +150,7 @@ const TestPlanResultsTable = ({
           {
             id: `UnexpectedBehavior_SHOULD_${nextId()}`,
             assertion: {
-              text: 'Moderate negative side effects do not occur'
+              text: NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
             },
             describesSideEffects: true,
             passed: hasNoModerateUnexpectedBehavior,

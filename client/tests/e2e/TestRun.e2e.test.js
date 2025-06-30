@@ -533,8 +533,8 @@ describe('Test Run when signed in as tester', () => {
         [
           ['MUST', "Role 'alert' is conveyed", 'Untestable'],
           ['MUST', "Text 'Hello' is conveyed", 'Untestable'],
-          ['MUST', 'Severe negative side effects do not occur', 'Failed'],
-          ['SHOULD', 'Moderate negative side effects do not occur', 'Passed']
+          ['MUST', 'Not cause severe negative side effects', 'Failed'],
+          ['SHOULD', 'Not cause moderate negative side effects', 'Passed']
         ],
         'Negative side effects of Control+Option+Space',
         [
@@ -548,15 +548,15 @@ describe('Test Run when signed in as tester', () => {
         [
           ['MUST', "Text 'Hello' is conveyed", 'Failed'],
           ['MUST', "Role 'alert' is conveyed", 'Passed'],
-          ['MUST', 'Severe negative side effects do not occur', 'Passed'],
-          ['SHOULD', 'Moderate negative side effects do not occur', 'Passed']
+          ['MUST', 'Not cause severe negative side effects', 'Passed'],
+          ['SHOULD', 'Not cause moderate negative side effects', 'Passed']
         ],
         'Enter Results: 3 passed, 1 failed, 0 unsupported',
         [
           ['MUST', "Text 'Hello' is conveyed", 'Failed'],
           ['MUST', "Role 'alert' is conveyed", 'Passed'],
-          ['MUST', 'Severe negative side effects do not occur', 'Passed'],
-          ['SHOULD', 'Moderate negative side effects do not occur', 'Passed']
+          ['MUST', 'Not cause severe negative side effects', 'Passed'],
+          ['SHOULD', 'Not cause moderate negative side effects', 'Passed']
         ]
       ]);
     });
