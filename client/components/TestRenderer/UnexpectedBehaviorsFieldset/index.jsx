@@ -135,6 +135,7 @@ const UnexpectedBehaviorsFieldset = ({
                   Impact:
                   <select
                     onChange={e => impactchange(e.target.value)}
+                    autoFocus={isSubmitted && more && more.focusImpact}
                     disabled={!checked}
                     defaultValue={impact}
                   >
@@ -167,7 +168,7 @@ const UnexpectedBehaviorsFieldset = ({
                       <input
                         type="text"
                         className={`undesirable-${descriptionId.toLowerCase()}-details`}
-                        autoFocus={isSubmitted && more.focus}
+                        autoFocus={isSubmitted && more.focusDetails}
                         value={more.value}
                         onChange={e => more.change(e.target.value)}
                         disabled={!checked}
