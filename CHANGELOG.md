@@ -1,3 +1,19 @@
+## [1.17.0](https://github.com/w3c/aria-at-app/compare/v1.16.0...v1.17.0) (2025-07-01)
+
+
+### Features
+
+* add at versions and browser version to conflicts table ([#1445](https://github.com/w3c/aria-at-app/issues/1445)) ([5e1cae6](https://github.com/w3c/aria-at-app/commit/5e1cae6bf1db07dfc8a5cd0f55e6c776e0bfec2e))
+
+
+### Bug Fixes
+
+* Allow admins to approve Candidate Reports ([#1428](https://github.com/w3c/aria-at-app/issues/1428)) ([27fe7f2](https://github.com/w3c/aria-at-app/commit/27fe7f2ac5b9e7e8d71ef46f97b0ea95ee5ab332))
+* Fix negative side effect phrases in test plan reports ([#1438](https://github.com/w3c/aria-at-app/issues/1438)) ([d7a7663](https://github.com/w3c/aria-at-app/commit/d7a7663348ef3be9b9379b94619ea6b63090958d))
+* improve feedback on results of automated report update ([#1441](https://github.com/w3c/aria-at-app/issues/1441)) ([511a73a](https://github.com/w3c/aria-at-app/commit/511a73a067fce805e484bc978a5169483046a0fb))
+* Improve form UI for untestable assertions ([#1446](https://github.com/w3c/aria-at-app/issues/1446)) ([f391bf8](https://github.com/w3c/aria-at-app/commit/f391bf8451f47aec7246cc16870bb413c92e8a72))
+* table row minimum at fix ([#1443](https://github.com/w3c/aria-at-app/issues/1443)) ([6e1709a](https://github.com/w3c/aria-at-app/commit/6e1709ae4c2911254d080032803c3b34cd8d8cad))
+
 ## [1.16.0](https://github.com/w3c/aria-at-app/compare/v1.15.2...v1.16.0) (2025-06-16)
 
 
