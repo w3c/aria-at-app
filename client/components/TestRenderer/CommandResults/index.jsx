@@ -42,7 +42,9 @@ const CommandResults = ({
       />
 
       <Tooltip>
-        <TooltipContent>{untestable.description[0]}</TooltipContent>
+        <TooltipContent id={tooltipID}>
+          {untestable.description[0]}
+        </TooltipContent>
         <TooltipTrigger asChild>
           <label className={styles.untestableLabel}>
             <input
