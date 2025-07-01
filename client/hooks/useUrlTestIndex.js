@@ -2,14 +2,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 /**
- * In the context of this hook, two negative values for test indices carry
+ * In the context of this hook, one negative value for test indices carries
  * special meaning:
  *
- * * -1: display the "Summary of Failing Assertions"
- * * -2: display the "Summary of Negative Side Effects"
+ * * -1: display the "Summary of Failures"
  */
-const FAILING_ASSERTIONS_INDEX = -1;
-const NEGATIVE_SIDE_EFFECTS = -2;
+const SUMMARY_OF_FAILURES_INDEX = -1;
 
 export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
   const location = useLocation();
@@ -17,12 +15,8 @@ export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
   const [currentTestIndex, setCurrentTestIndex] = useState(minTestIndex);
 
   const getTestIndex = () => {
-    if (location.hash === '#summary-assertions') {
-      return FAILING_ASSERTIONS_INDEX;
-    }
-
-    if (location.hash === '#summary-side-effects') {
-      return NEGATIVE_SIDE_EFFECTS;
+    if (location.hash === '#summary-failures') {
+      return SUMMARY_OF_FAILURES_INDEX;
     }
 
     // Remove the '#' character
@@ -43,12 +37,8 @@ export const useUrlTestIndex = ({ minTestIndex = 0, maxTestIndex }) => {
 
   const updateTestIndex = index => {
     // Special case for summary
-    if (index === FAILING_ASSERTIONS_INDEX) {
-      navigate(`${location.pathname}#summary-assertions`, { replace: true });
-      return;
-    }
-    if (index === NEGATIVE_SIDE_EFFECTS) {
-      navigate(`${location.pathname}#summary-side-effects`, { replace: true });
+    if (index === SUMMARY_OF_FAILURES_INDEX) {
+      navigate(`${location.pathname}#summary-failures`, { replace: true });
       return;
     }
 

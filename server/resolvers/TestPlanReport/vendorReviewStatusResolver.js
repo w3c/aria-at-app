@@ -1,4 +1,3 @@
-const { Op } = require('sequelize');
 const {
   getReviewerStatuses
 } = require('../../models/services/ReviewerStatusService');
@@ -10,15 +9,14 @@ const vendorReviewStatusResolver = async (
   const { transaction } = context;
 
   const where = {
-    testPlanReportId: testPlanReport.id,
-    vendorId: { [Op.ne]: null } // Only if approval comes from a vendor
+    testPlanReportId: testPlanReport.id
   };
   const reviewerStatuses = await getReviewerStatuses({
     where,
     transaction
   });
 
-  // TODO: Use enum for review values
+  // TODO: Use enum for review status values
   if (!reviewerStatuses.length) return 'READY';
 
   // TODO: Determine what to do if there is a difference in statuses; ie. 1 APPROVED and 2 other IN_PROGRESS
@@ -27,7 +25,13 @@ const vendorReviewStatusResolver = async (
     ({ reviewStatus }) => reviewStatus === 'APPROVED'
   );
   if (isApprovingReview) return 'APPROVED';
-  return 'IN_PROGRESS';
+
+  const isInProgressReview = reviewerStatuses
+    .filter(({ vendorId }) => !!vendorId) // Only consider as in progress if an assigned has viewed
+    .some(({ reviewStatus }) => reviewStatus === 'IN_PROGRESS');
+  if (isInProgressReview) return 'IN_PROGRESS';
+
+  return 'READY';
 };
 
 module.exports = vendorReviewStatusResolver;
