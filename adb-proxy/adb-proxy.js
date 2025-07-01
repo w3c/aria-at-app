@@ -1,13 +1,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 const cors = require('cors');
+const path = require('path');
+const UtteranceCapture = require('./capture-utterances');
 
 const app = express();
 const PORT = 3080;
 
 app.use(cors()); // Allow access from React web app
 app.use(bodyParser.json());
+
+// Handle preflight requests for streaming endpoint
+app.options('/stream-capture-utterances', cors());
 
 // Whitelist of allowed commands and patterns
 const SAFE_COMMANDS = [
@@ -75,6 +80,83 @@ app.post('/run-adb', (req, res) => {
     }
     res.json({ output: stdout });
   });
+});
+
+// Stream capture utterances using Node.js implementation
+app.post('/stream-capture-utterances', (req, res) => {
+  // Set headers for Server-Sent Events
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    Connection: 'keep-alive',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Cache-Control'
+  });
+
+  console.log('Starting utterance capture');
+
+  const capture = new UtteranceCapture();
+  let captureEnded = false;
+
+  // Handle utterance events
+  capture.on('utterance', utteranceData => {
+    res.write(
+      `data: ${JSON.stringify({ type: 'utterance', data: utteranceData })}\n\n`
+    );
+  });
+
+  capture.on('status', message => {
+    res.write(`data: ${JSON.stringify({ type: 'status', data: message })}\n\n`);
+  });
+
+  capture.on('utterances_collected', allUtterances => {
+    res.write(
+      `data: ${JSON.stringify({
+        type: 'utterances_collected',
+        data: allUtterances
+      })}\n\n`
+    );
+    captureEnded = true;
+    res.end();
+  });
+
+  capture.on('error', error => {
+    console.error('Capture error:', error);
+    res.write(`data: ${JSON.stringify({ type: 'error', error })}\n\n`);
+    captureEnded = true;
+    res.end();
+  });
+
+  capture.on('exit', code => {
+    if (!captureEnded) {
+      res.write(`data: ${JSON.stringify({ type: 'exit', code })}\n\n`);
+      res.end();
+    }
+  });
+
+  // Handle client disconnect
+  req.on('close', () => {
+    capture.stop();
+  });
+
+  // Start the capture
+  capture
+    .start()
+    .then(() => {
+      res.write(
+        `data: ${JSON.stringify({
+          type: 'started',
+          message: 'Started capturing utterances'
+        })}\n\n`
+      );
+    })
+    .catch(error => {
+      console.error('Failed to start capture:', error);
+      res.write(
+        `data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`
+      );
+      res.end();
+    });
 });
 
 app.listen(PORT, () => {

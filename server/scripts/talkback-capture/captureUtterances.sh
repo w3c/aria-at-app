@@ -81,7 +81,7 @@ $ADB_LOCATION logcat -c
 $ADB_LOCATION logcat --pid=$($ADB_LOCATION shell pidof -s $TALKBACK_PACKAGE_NAME) | grep -i "talkback\|utterance" | while read -r line; do
   # Look for ACTION_CLICK and Run Test Setup in the same line
   # https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo.AccessibilityAction#ACTION_CLICK
-  if echo "$line" | grep -q "ACTION_CLICK.*Run Test Setup"; then
+  if echo "$line" | grep -q "text.*Run Test Setup"; then
     echo "--- Start of Example ---\n"
     # Continue capturing the next utterances
     while read -r next_line; do

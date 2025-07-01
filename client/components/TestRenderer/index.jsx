@@ -75,31 +75,6 @@ const TestRenderer = ({
   const [, setWsConnected] = useState(false);
   const [, setWsError] = useState(null);
 
-  // Get the machine's network IP for Android device access
-  const getNetworkUrl = path => {
-    // Check if we have a configured external URL
-    const externalHost = process.env.REACT_APP_EXTERNAL_HOST;
-    if (externalHost) {
-      return `http://${externalHost}${path}`;
-    }
-
-    // Fallback: try to auto-detect network IP
-    // This works in development when the client connects from the same network
-    const hostname = window.location.hostname;
-
-    // If we're already on a network IP (not localhost), use it
-    if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-      return `${window.location.protocol}//${hostname}:${window.location.port}${path}`;
-    }
-
-    // For localhost, we need the user to configure their network IP
-    // or use the default localhost (which won't work for Android)
-    console.warn(
-      'Using localhost URL for Android device. Configure REACT_APP_EXTERNAL_HOST in your environment for network access.'
-    );
-    return `${window.location.protocol}//${hostname}:${window.location.port}${path}`;
-  };
-
   // Proof of concept in case we need to inject buttons ourselves on the test
   // page
   // May not be needed outside the testing of this prototype
@@ -149,9 +124,9 @@ const TestRenderer = ({
     console.info('Starting capture with session ID:', sessionId);
 
     // Update WebSocket URL to include path and session ID
-    // const wsUrl = `wss://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
-    const wsUrl = `ws://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
-    // const wsUrl = `ws://192.168.1.183:3000/ws?sessionId=${sessionId}`;
+    // const wsUrl = `ws://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
+    const wsUrl = `ws://192.168.1.125:8000/ws?sessionId=${sessionId}`;
+    // const wsUrl = `ws://192.168.1.125:3000/ws?sessionId=${sessionId}`;
 
     // eslint-disable-next-line no-console
     console.info('Connecting to WebSocket:', wsUrl);
@@ -180,7 +155,9 @@ const TestRenderer = ({
         console.info('Parsed message data:', data);
 
         if (data.type === 'utterance') {
-          setCapturedUtterances(prev => [...prev, data.data]);
+          const utteranceText =
+            typeof data.data === 'object' ? data.data.text : data.data;
+          setCapturedUtterances(prev => [...prev, utteranceText]);
         } else if (data.type === 'utterances_collected') {
           // Handle final collected utterances (formatted for clipboard)
           setCapturedUtterances(prev => [data.data]);
@@ -242,8 +219,8 @@ const TestRenderer = ({
         }`
       : testPageUrl;
 
-    url = getNetworkUrl(url);
-    // url = `192.168.1.183:3000${url}`;
+    // url = getNetworkUrl(url);
+    url = `http://192.168.1.125:8000${url}`;
 
     try {
       const response = await fetch('/api/scripts/enable-talkback');
