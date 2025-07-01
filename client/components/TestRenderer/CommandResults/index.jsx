@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import AssertionsFieldset from '../AssertionsFieldset';
 import OutputTextArea from '../OutputTextArea';
 import UnexpectedBehaviorsFieldset from '../UnexpectedBehaviorsFieldset';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../../Tooltip';
 import styles from '../TestRenderer.module.css';
 
 let tooltipCount = 0;
@@ -40,32 +41,34 @@ const CommandResults = ({
         readOnly={isReviewingBot || isReadOnly}
       />
 
-      <label className={styles.untestableLabel}>
-        <input
-          type="checkbox"
-          onChange={e => untestable.change(e.target.checked)}
-          autoFocus={isSubmitted && untestable.focus}
-          checked={untestable.value}
-          aria-describedby={tooltipID}
-        />
-        <span role="tooltip" id={tooltipID}>
-          {untestable.description[0]}
-        </span>
-        Command is untestable
-        {isSubmitted && (
-          <span
-            className={clsx(
-              styles.testRendererFeedback,
-              styles.space,
-              'required',
-              untestable.description[1].highlightRequired &&
-                'highlight-required'
+      <Tooltip>
+        <TooltipContent>{untestable.description[0]}</TooltipContent>
+        <TooltipTrigger asChild>
+          <label className={styles.untestableLabel}>
+            <input
+              type="checkbox"
+              onChange={e => untestable.change(e.target.checked)}
+              autoFocus={isSubmitted && untestable.focus}
+              checked={untestable.value}
+              aria-describedby={tooltipID}
+            />
+            Command is untestable
+            {isSubmitted && (
+              <span
+                className={clsx(
+                  styles.testRendererFeedback,
+                  styles.space,
+                  'required',
+                  untestable.description[1].highlightRequired &&
+                    'highlight-required'
+                )}
+              >
+                {untestable.description[1].description}
+              </span>
             )}
-          >
-            {untestable.description[1].description}
-          </span>
-        )}
-      </label>
+          </label>
+        </TooltipTrigger>
+      </Tooltip>
 
       <AssertionsFieldset
         assertions={assertions}
