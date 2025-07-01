@@ -167,6 +167,7 @@ label {
 
   &.untestable-label {
     margin-bottom: var(--8px);
+    position: relative;
 
     input {
       margin-right: var(--4px);

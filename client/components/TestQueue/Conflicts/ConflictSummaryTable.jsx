@@ -52,21 +52,26 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
           <tr>
             <th>Tester</th>
             <th>Output</th>
+            <th>Assistive Technology Version</th>
+            <th>Browser Version</th>
           </tr>
         </thead>
         <tbody>
-          {testers.map(tester => (
-            <tr key={tester.username}>
-              <td>{tester.username}</td>
-              <td>
-                {
-                  conflictingResults.find(
-                    cr => cr.testPlanRun.tester.id === tester.id
-                  ).scenarioResult.output
-                }
-              </td>
-            </tr>
-          ))}
+          {testers.map(tester => {
+            const conflictingResult = conflictingResults.find(
+              cr => cr.testPlanRun.tester.id === tester.id
+            );
+            return (
+              <tr key={tester.username}>
+                <td>{tester.username}</td>
+                <td>{conflictingResult.scenarioResult.output}</td>
+                <td>{conflictingResult.atVersion?.name || 'Not available'}</td>
+                <td>
+                  {conflictingResult.browserVersion?.name || 'Not available'}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
 

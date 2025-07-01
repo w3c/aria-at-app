@@ -125,6 +125,12 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
           testPlanRun {
             ...TestPlanRunFields
           }
+          atVersion {
+            name
+          }
+          browserVersion {
+            name
+          }
           test {
             id
             rowNumber

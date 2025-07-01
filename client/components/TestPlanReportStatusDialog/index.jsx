@@ -42,27 +42,27 @@ const TestPlanReportStatusDialog = ({
     return { requiredReportsCount: requiredCount, sortedStatuses: sorted };
   }, [testPlanReportStatuses]);
 
-  const [tableRowMinimumAtVersions, setTableRowMinimumAtVersions] = useState(
-    sortedStatuses.map((status, index) => ({
-      index,
-      minimumAtVersion: status.minimumAtVersion
-    }))
+  // Track only user overrides for minimum AT versions using Map to avoid array sync issues
+  const [minimumAtVersionOverrides, setMinimumAtVersionOverrides] = useState(
+    new Map()
   );
 
   const tableRowMinimumAtVersionChange = (index, newMinimumAtVersion) => {
-    setTableRowMinimumAtVersions(prevRows =>
-      prevRows.map(row =>
-        row.index === index
-          ? { ...row, minimumAtVersion: newMinimumAtVersion }
-          : row
-      )
-    );
+    setMinimumAtVersionOverrides(prev => {
+      const next = new Map(prev);
+      next.set(index, newMinimumAtVersion);
+      return next;
+    });
+  };
+
+  const getMinimumAtVersionForIndex = (index, status) => {
+    return minimumAtVersionOverrides.get(index) || status.minimumAtVersion;
   };
 
   const tableRows = sortedStatuses.map((status, index) => {
     const { isRequired, at, browser, exactAtVersion, testPlanReport } = status;
 
-    const minimumAtVersion = tableRowMinimumAtVersions[index].minimumAtVersion;
+    const minimumAtVersion = getMinimumAtVersionForIndex(index, status);
 
     const key =
       `${at.name}-${browser.name}-` +
