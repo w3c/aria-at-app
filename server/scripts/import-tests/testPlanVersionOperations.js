@@ -103,11 +103,11 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
 
   // To ensure build folder is clean when multiple commits are being processed
   // to prevent `EPERM` errors
-  console.log('Running `npm run cleanup` ...\n');
-  const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
+  console.log('Running `npx shx rm -fr build` ...\n');
+  const cleanupOutput = spawn.sync('npx', ['shx', 'rm -fr', 'build'], {
     cwd: gitCloneDirectory
   });
-  console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
+  console.log('`npx shx rm -fr build` output', cleanupOutput.stdout.toString());
 };
 
 /**
