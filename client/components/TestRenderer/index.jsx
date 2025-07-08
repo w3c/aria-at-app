@@ -123,10 +123,10 @@ const TestRenderer = ({
     // eslint-disable-next-line no-console
     console.info('Starting capture with session ID:', sessionId);
 
-    // Update WebSocket URL to include path and session ID
-    // const wsUrl = `ws://${window.location.hostname}:8000/ws?sessionId=${sessionId}`;
-    const wsUrl = `ws://192.168.1.125:8000/ws?sessionId=${sessionId}`;
-    // const wsUrl = `ws://192.168.1.125:3000/ws?sessionId=${sessionId}`;
+    // Use external host for Android device access, fallback to API server
+    const externalHost = process.env.REACT_APP_EXTERNAL_HOST;
+    const host = externalHost ? externalHost.split(':')[0] : 'localhost';
+    const wsUrl = `ws://${host}:8000/ws?sessionId=${sessionId}`;
 
     // eslint-disable-next-line no-console
     console.info('Connecting to WebSocket:', wsUrl);
@@ -219,8 +219,10 @@ const TestRenderer = ({
         }`
       : testPageUrl;
 
-    // url = getNetworkUrl(url);
-    url = `http://192.168.1.125:8000${url}`;
+    // Use external host for Android device access, fallback to API server
+    const externalHost = process.env.REACT_APP_EXTERNAL_HOST;
+    const host = externalHost ? externalHost.split(':')[0] : 'localhost';
+    url = `http://${host}:8000${url}`;
 
     try {
       const response = await fetch('/api/scripts/enable-talkback');
