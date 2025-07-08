@@ -85,6 +85,7 @@ class UtteranceCapture extends EventEmitter {
 
       // Look for "text.*Run Test Setup" to start capturing (only once)
       // Note: this will need to work with interaction, not just read in future
+      // TODO: Combine with Howard's work
       if (
         !this.exampleStarted &&
         line.includes('text=') &&
@@ -96,7 +97,7 @@ class UtteranceCapture extends EventEmitter {
       }
 
       if (this.exampleStarted) {
-=        if (line.includes('End of Example')) {
+        if (line.includes('End of Example')) {
           this.emit('status', '--- End of Example ---');
           this.stop();
           this.emit('utterances_collected', this.utterances.join('  '));

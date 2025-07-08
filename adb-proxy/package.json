@@ -1,10 +1,26 @@
 {
+  "name": "adb-proxy",
+  "version": "1.0.0",
+  "description": "Portable ADB proxy for TalkBack utterance capture",
+  "main": "adb-proxy.js",
   "scripts": {
-    "start": "node adb-proxy.js"
+    "start": "node adb-proxy.js",
+    "build-windows": "pkg adb-proxy.js --targets node18-win-x64 --out-path dist/windows && node build-platforms.js windows",
+    "build-linux": "pkg adb-proxy.js --targets node18-linux-x64 --out-path dist/linux && node build-platforms.js linux",
+    "build-macos": "pkg adb-proxy.js --targets node18-macos-x64 --out-path dist/macos && node build-platforms.js macos",
+    "build-all": "npm run build-windows && npm run build-linux && npm run build-macos"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@yao-pkg/pkg": "^6.5.1"
+  },
+  "pkg": {
+    "assets": [
+      "capture-utterances.js"
+    ]
   }
 }

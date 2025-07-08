@@ -1,45 +1,77 @@
-# adb-proxy
+# ADB Proxy - Portable Executable
 
-Lightweight local proxy to be packaged and used for working with adb commands.
+This ADB proxy creates portable executables that don't require Node.js or ADB to be installed locally.
 
-## Prerequisites
+## For End Users
 
-1. [ADB Tools](https://developer.android.com/tools/releases/platform-tools) are locally available.
-2. Ensure Android device has USB Debugging enabled.
+### Quick Start
 
-## How to use
+1. **Download** the appropriate build for your platform from releases
+2. **Extract** the archive to any folder
+3. **Connect** your Android device with USB debugging enabled
+4. **Double-click** the startup script:
+   - **Windows**: `start.bat`
+   - **macOS**: `start.command`
+   - **Linux**: `start.sh`
 
-```sh
-cd adb-proxy
+The proxy will start on `http://localhost:3080`
+
+## For Developers
+
+### Building Executables
+
+```bash
+# Install dependencies
 yarn install
-yarn start
+
+# Build for specific platforms
+yarn build-windows   # Creates dist/windows/
+yarn build-linux     # Creates dist/linux/
+yarn build-macos     # Creates dist/macos/
+
+# Build for all platforms
+yarn build-all
 ```
 
-Local proxy should now be running on http://localhost:3080.
+### How It Works
 
-To confirm it works:
+The build process uses [@yao-pkg/pkg](https://github.com/yao-pkg/pkg) (maintained fork) to create standalone executables:
 
-First, connect your Android device to the computer (and allow any relevant permissions related to debugging)
+1. **pkg** bundles the Node.js application into a single executable
+2. **build-platforms.js** downloads platform-specific ADB binaries
+3. **Everything** is packaged together with startup scripts
 
-1. Run the following to display the id(s) of the currently connected Android device(s):
+### Distribution
 
-```sh
-curl -X POST http://localhost:3080/run-adb \
-     -H "Content-Type: application/json" \
-     -d '{ "command": "devices" }'
+Each platform build creates a `dist/{platform}/` directory with:
+
+```
+📁 dist/windows/          📁 dist/macos/            📁 dist/linux/
+├── 🟢 start.bat          ├── 🟢 start.command      ├── 🟢 start.sh
+├── ⚙️ adb-proxy.exe      ├── ⚙️ adb-proxy          ├── ⚙️ adb-proxy
+├── 🔧 adb.exe            ├── 🔧 adb                ├── 🔧 adb
+├── 📄 README.txt         ├── 📄 README.txt         ├── 📄 README.txt
+└── 📚 USER-GUIDE.md      └── 📚 USER-GUIDE.md      └── 📚 USER-GUIDE.md
 ```
 
-2. Observe that the connected device(s) is returned in the result.
+### File Sizes
 
-OR
+- **Windows**: ~70MB
+- **Linux**: ~55MB
+- **macOS**: ~70MB
 
-1. Navigate to the Test Queue, inspect the page and remove the `display: none` style from the last `<div>` in the `<main>`.
-1. That should reveal a 'List Devices' button. Pressing that button displays the device id(s) of the Android device(s) currently connected to the computer.
+## Development
 
-TODO:
+### Project Structure
 
-1. Whitelist the remaining adb commands currently used in the `aria-at-talkback-capture` scripts
-1. Rework the current server's `api/scripts` endpoints and the capture utterances web socket implementation to be usable by this proxy
-1. Package this proxy as a portable executable so testers won't have to install node (or adb) locally
-1. If the above cannot be easily done for adb, provide an easy way to pull and add ADB to a tester's PATH depending on platform, and easily remove afterwards
-1. Tests(?)
+```
+adb-proxy/
+├── adb-proxy.js           # Main server application
+├── capture-utterances.js  # TalkBack capture logic
+├── build-platforms.js     # Build system for all platforms
+├── package.json           # Dependencies and build scripts
+└── dist/                  # Built executables (generated)
+    ├── windows/
+    ├── linux/
+    └── macos/
+```

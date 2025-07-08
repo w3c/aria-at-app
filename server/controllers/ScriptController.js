@@ -162,7 +162,6 @@ const executeOpenWebPage = async (req, res) => {
     }
 
     const command = `shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d "${url}"`;
-    console.log('Sending command to proxy:', JSON.stringify(command));
 
     await runAdbCommand(command);
 

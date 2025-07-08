@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const WebSocket = require('ws');
 const http = require('http');
 const { URL } = require('url');

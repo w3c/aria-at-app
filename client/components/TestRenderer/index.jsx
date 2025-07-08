@@ -160,7 +160,7 @@ const TestRenderer = ({
           setCapturedUtterances(prev => [...prev, utteranceText]);
         } else if (data.type === 'utterances_collected') {
           // Handle final collected utterances (formatted for clipboard)
-          setCapturedUtterances(prev => [data.data]);
+          setCapturedUtterances(() => [data.data]);
         } else if (data.type === 'error') {
           console.error('Capture error', data.error);
           setWsError(data.error);
