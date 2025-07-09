@@ -1,4 +1,5 @@
 module.exports = {
   'NVDA Bot': 9999,
-  'VoiceOver Bot': 9998
+  'VoiceOver Bot': 9998,
+  'JAWS Bot': 9997
 };
