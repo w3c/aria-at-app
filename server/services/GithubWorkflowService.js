@@ -133,7 +133,8 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   const atKey = job.testPlanRun.testPlanReport.at.key;
   const workflowFilename = {
     nvda: 'nvda-test.yml',
-    voiceover_macos: 'voiceover-test.yml'
+    voiceover_macos: 'voiceover-test.yml',
+    jaws: 'jaws-test.yml'
   }[atKey];
 
   if (!workflowFilename) {
@@ -160,6 +161,9 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
     inputs.macos_version = atVersion?.name?.split('.')[0];
     inputs.browser = browser;
   }
+  if (atKey == 'jaws') {
+    inputs.browser = browser;
+  }
   const axiosConfig = {
     method: 'POST',
     url: `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${workflowFilename}/dispatches`,
@@ -170,7 +174,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
       'X-GitHub-Api-Version': '2022-11-28'
     },
     data: JSON.stringify({
-      ref: 'main',
+      ref: 'jaws',
       inputs
     }),
     validateStatus: () => true,
