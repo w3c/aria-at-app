@@ -6,10 +6,28 @@ const TEST_PLAN_REPORT_FIELDS = gql`
     id
     metrics
     isFinal
+    isRerun
     createdAt
     markedFinalAt
     conflictsLength
     runnableTestsLength
+    historicalReport {
+      id
+      createdAt
+      markedFinalAt
+      at {
+        id
+        name
+      }
+      exactAtVersion {
+        id
+        name
+      }
+      minimumAtVersion {
+        id
+        name
+      }
+    }
   }
 `;
 

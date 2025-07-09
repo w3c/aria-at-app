@@ -22,12 +22,14 @@ import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
 import ReportRerun from '../ReportRerun';
 import Tabs from '../common/Tabs';
+import FilterButtons from '../common/FilterButtons';
 import styles from './TestQueue.module.css';
 import commonStyles from '../common/styles.module.css';
 
 const TestQueue = () => {
   const client = useApolloClient();
   const [totalAutomatedRuns, setTotalAutomatedRuns] = useState(null);
+  const [activeFilter, setActiveFilter] = useState('manual');
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network'
   });
@@ -120,6 +122,70 @@ const TestQueue = () => {
   const testers = data.users
     .filter(user => user.roles.includes('TESTER'))
     .sort((a, b) => a.username.localeCompare(b.username));
+
+  // Calculate filter counts and apply filtering
+  const calculateFilterCounts = testPlans => {
+    let allCount = 0;
+    let manualCount = 0;
+    let automatedCount = 0;
+
+    testPlans.forEach(testPlan => {
+      testPlan.testPlanVersions.forEach(testPlanVersion => {
+        testPlanVersion.testPlanReports.forEach(testPlanReport => {
+          allCount++;
+          const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
+            ({ tester }) => tester.isBot
+          );
+          if (hasBotRun) {
+            automatedCount++;
+          } else {
+            manualCount++;
+          }
+        });
+      });
+    });
+
+    return { allCount, manualCount, automatedCount };
+  };
+
+  const { allCount, manualCount, automatedCount } =
+    calculateFilterCounts(testPlans);
+
+  const filterOptions = {
+    all: `All test runs (${allCount})`,
+    manual: `Manual test runs (${manualCount})`,
+    ...(automatedCount > 0 && {
+      automated: `Automated updates with run failures (${automatedCount})`
+    })
+  };
+
+  const applyFilter = (testPlans, filter) => {
+    if (filter === 'all') return testPlans;
+
+    return testPlans
+      .map(testPlan => ({
+        ...testPlan,
+        testPlanVersions: testPlan.testPlanVersions
+          .map(testPlanVersion => ({
+            ...testPlanVersion,
+            testPlanReports: testPlanVersion.testPlanReports.filter(
+              testPlanReport => {
+                const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
+                  ({ tester }) => tester.isBot
+                );
+
+                if (filter === 'manual') return !hasBotRun;
+                if (filter === 'automated') return hasBotRun;
+                return true;
+              }
+            )
+          }))
+          .filter(testPlanVersion => testPlanVersion.testPlanReports.length > 0)
+      }))
+      .filter(testPlan => testPlan.testPlanVersions.length > 0);
+  };
+
+  const filteredTestPlans = applyFilter(testPlans, activeFilter);
 
   const renderTestPlanDisclosure = ({ testPlan }) => {
     return (
@@ -302,7 +368,14 @@ const TestQueue = () => {
         </p>
       )}
 
-      {!testPlans.length ? renderNoReportsMessage() : null}
+      {hasTestPlanReports && (
+        <FilterButtons
+          filterLabel="Filter test runs by type"
+          filterOptions={filterOptions}
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
+        />
+      )}
 
       {isAdmin && (
         <ManageTestQueue
@@ -312,8 +385,10 @@ const TestQueue = () => {
         />
       )}
 
-      {testPlans.length
-        ? testPlans.map(testPlan => (
+      {!filteredTestPlans.length ? renderNoReportsMessage() : null}
+
+      {filteredTestPlans.length
+        ? filteredTestPlans.map(testPlan => (
             <Fragment key={testPlan.directory}>
               <h2 tabIndex="-1" id={testPlan.directory}>
                 {testPlan.title}

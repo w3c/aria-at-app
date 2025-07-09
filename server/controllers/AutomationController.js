@@ -287,11 +287,11 @@ const updateOrCreateTestResultWithResponses = async ({
                 passed: outputMatches
                   ? historicalTestResult.scenarioResults[i].assertionResults[j]
                       .passed
-                  : false,
+                  : null,
                 failedReason: outputMatches
                   ? historicalTestResult.scenarioResults[i].assertionResults[j]
                       .failedReason
-                  : 'AUTOMATED_OUTPUT'
+                  : 'AUTOMATED_OUTPUT_DIFFERS'
               })
             ),
             unexpectedBehaviors: outputMatches

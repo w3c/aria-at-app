@@ -3,6 +3,8 @@ import createIssueLink from '@client/utils/createIssueLink';
 import { AtOutputPropType, UntestablePropType } from '../../common/proptypes';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import AssertionsFieldset from '../AssertionsFieldset';
 import OutputTextArea from '../OutputTextArea';
 import UnexpectedBehaviorsFieldset from '../UnexpectedBehaviorsFieldset';
@@ -22,7 +24,11 @@ const CommandResults = ({
   commandIndex,
   isSubmitted,
   isReviewingBot,
-  isReadOnly
+  isReadOnly,
+  isRerunReport = false,
+  historicalOutput = null,
+  historicalAtName = null,
+  historicalAtVersion = null
 }) => {
   const commandString = header.replace('After ', '');
   const issueLink = createIssueLink({
@@ -31,14 +37,40 @@ const CommandResults = ({
   });
   const tooltipID = useMemo(() => `untestable-tooltip-${++tooltipCount}`, []);
 
+  // Check if output differs from historical output for rerun reports
+  const hasConflictingOutput =
+    isRerunReport &&
+    historicalOutput !== null &&
+    atOutput.value !== historicalOutput &&
+    atOutput.value &&
+    historicalOutput;
+
+  const errorMessage = hasConflictingOutput
+    ? `This output differs from output reported for ${historicalAtName} ${historicalAtVersion}`
+    : null;
+
   return (
     <>
-      <h3>{header}</h3>
+      <h3>
+        {hasConflictingOutput && (
+          <FontAwesomeIcon
+            icon={faExclamationTriangle}
+            style={{ color: '#ce1b4c', marginRight: '8px' }}
+            aria-label="Conflicting Output"
+          />
+        )}
+        {header}
+      </h3>
       <OutputTextArea
         commandIndex={commandIndex}
         atOutput={atOutput}
         isSubmitted={isSubmitted}
         readOnly={isReviewingBot || isReadOnly}
+        errorMessage={errorMessage}
+        isRerunReport={isRerunReport}
+        historicalOutput={historicalOutput}
+        historicalAtName={historicalAtName}
+        historicalAtVersion={historicalAtVersion}
       />
 
       <Tooltip>
@@ -104,7 +136,11 @@ CommandResults.propTypes = {
   commandIndex: PropTypes.number.isRequired,
   isSubmitted: PropTypes.bool.isRequired,
   isReviewingBot: PropTypes.bool.isRequired,
-  isReadOnly: PropTypes.bool.isRequired
+  isReadOnly: PropTypes.bool.isRequired,
+  isRerunReport: PropTypes.bool,
+  historicalOutput: PropTypes.string,
+  historicalAtName: PropTypes.string,
+  historicalAtVersion: PropTypes.string
 };
 
 export default CommandResults;
