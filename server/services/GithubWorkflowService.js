@@ -161,7 +161,6 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
     nvda: 'nvda-test.yml',
     voiceover_macos: uniqueWorkflowByAtVersion(atKey, atVersion)
   }[atKey];
-  console.log('createGithubWorkflow.check', atKey, atVersion, workflowFilename);
 
   if (!workflowFilename) {
     throw new Error(`Unsupported AT workflow for ${atKey}`);
@@ -194,7 +193,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
       'X-GitHub-Api-Version': '2022-11-28'
     },
     data: JSON.stringify({
-      ref: 'self-hosted-macos-15',
+      ref: 'self-hosted',
       inputs
     }),
     validateStatus: () => true,
