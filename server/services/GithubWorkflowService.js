@@ -159,7 +159,8 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   const atKey = job.testPlanRun.testPlanReport.at.key;
   const workflowFilename = {
     nvda: 'nvda-test.yml',
-    voiceover_macos: uniqueWorkflowByAtVersion(atKey, atVersion)
+    voiceover_macos: uniqueWorkflowByAtVersion(atKey, atVersion),
+    jaws: 'jaws-test.yml'
   }[atKey];
 
   if (!workflowFilename) {
@@ -181,6 +182,9 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   }
   if (atKey === 'voiceover_macos') {
     inputs.macos_version = getMacOSVersionName(atVersion);
+    inputs.browser = browser;
+  }
+  if (atKey === 'jaws') {
     inputs.browser = browser;
   }
   const axiosConfig = {
