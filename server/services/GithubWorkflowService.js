@@ -174,7 +174,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
       'X-GitHub-Api-Version': '2022-11-28'
     },
     data: JSON.stringify({
-      ref: 'jaws',
+      ref: 'main',
       inputs
     }),
     validateStatus: () => true,
