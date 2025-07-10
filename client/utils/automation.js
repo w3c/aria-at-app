@@ -24,8 +24,16 @@ export const isSupportedByResponseCollector = ctx => {
     (browserKey === 'safari_macos' ||
       browserKey === 'chrome' ||
       browserKey === 'firefox');
+  const isJawsWithSupportedBrowser =
+    atKey === 'jaws' && (browserKey === 'chrome' || browserKey === 'firefox');
 
-  if (!isNvdaWithSupportedBrowser && !isVoiceOverMacWithSupportedBrowser) {
+  if (
+    !(
+      isNvdaWithSupportedBrowser ||
+      isVoiceOverMacWithSupportedBrowser ||
+      isJawsWithSupportedBrowser
+    )
+  ) {
     return false;
   }
 
