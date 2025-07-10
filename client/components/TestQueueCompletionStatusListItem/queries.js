@@ -8,6 +8,7 @@ export const TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY = gql`
         id
         completedAt
         scenarioResults {
+          output
           assertionResults {
             passed
             failedReason

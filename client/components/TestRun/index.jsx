@@ -1083,6 +1083,27 @@ const TestRun = () => {
                   isEdit={isTestEditClicked}
                   setIsRendererReady={setIsRendererReady}
                   commonIssueContent={commonIssueContent}
+                  isRerunReport={testPlanReport.isRerun}
+                  historicalTestResult={
+                    testPlanReport.isRerun && testPlanReport.historicalReport
+                      ? testPlanReport.historicalReport.finalizedTestResults?.find(
+                          result => result.test.id === currentTest.id
+                        )
+                      : null
+                  }
+                  historicalAtName={
+                    testPlanReport.isRerun && testPlanReport.historicalReport
+                      ? testPlanReport.historicalReport.at.name
+                      : null
+                  }
+                  historicalAtVersion={
+                    testPlanReport.isRerun && testPlanReport.historicalReport
+                      ? (
+                          testPlanReport.historicalReport.exactAtVersion ||
+                          testPlanReport.historicalReport.minimumAtVersion
+                        )?.name
+                      : null
+                  }
                 />
               </Row>
               {isRendererReady && (

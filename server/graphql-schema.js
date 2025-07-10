@@ -860,6 +860,7 @@ const graphqlSchema = gql`
     INCORRECT_OUTPUT
     NO_OUTPUT
     AUTOMATED_OUTPUT
+    AUTOMATED_OUTPUT_DIFFERS
   }
 
   """

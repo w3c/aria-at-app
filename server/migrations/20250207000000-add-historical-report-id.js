@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async queryInterface => {
     await queryInterface.addColumn('TestPlanReport', 'historicalReportId', {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -18,7 +18,7 @@ module.exports = {
     });
   },
 
-  down: async (queryInterface, Sequelize) => {
+  down: async queryInterface => {
     await queryInterface.removeIndex(
       'TestPlanReport',
       'idx_test_plan_report_historical_report_id'
