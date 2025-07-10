@@ -135,13 +135,10 @@ const getMacOSVersionName = atVersion => {
  * @param {object} atVersion
  * @param {string} atVersion.name
  */
-const uniqueWorkflowByAtVersion = (atKey, atVersion) => {
-  if (atKey === 'voiceover_macos') {
-    const atVersionName = getMacOSVersionName(atVersion);
-    if (atVersionName === '15') return 'self-hosted-macos-15.yml';
-    else return 'voiceover-test.yml';
-  }
-  return null;
+const getWorkflowNameForMacOS = (atKey, atVersion) => {
+  const atVersionName = getMacOSVersionName(atVersion);
+  if (atVersionName === '15') return 'self-hosted-macos-15.yml';
+  else return 'voiceover-test.yml';
 };
 
 const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
@@ -159,7 +156,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   const atKey = job.testPlanRun.testPlanReport.at.key;
   const workflowFilename = {
     nvda: 'nvda-test.yml',
-    voiceover_macos: uniqueWorkflowByAtVersion(atKey, atVersion),
+    voiceover_macos: getWorkflowNameForMacOS(atKey, atVersion),
     jaws: 'jaws-test.yml'
   }[atKey];
 
