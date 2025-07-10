@@ -590,6 +590,15 @@ const scheduleCollectionJob = async (
     );
   }
 
+  if (!atVersion) {
+    atVersion = await getAtVersionWithRequirements(
+      report.at.id,
+      report.exactAtVersion,
+      report.minimumAtVersion,
+      transaction
+    );
+  }
+
   const job = await createCollectionJob({
     values: {
       status: COLLECTION_JOB_STATUS.QUEUED,
