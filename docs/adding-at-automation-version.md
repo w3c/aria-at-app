@@ -57,6 +57,7 @@ This document describes the process for adding a new version of an AT to the ARI
 ## VoiceOver
 
 1. Add the newly available version to the `options` for `macos_version` in [aria-at-gh-actions-helper/.github/workflows/voiceover-test.yml](https://github.com/bocoup/aria-at-gh-actions-helper/blob/main/.github/workflows/voiceover-test.yml)
+   1. Note that a separate workflow exists to support `macos_version=15` in [aria-at-gh-actions-helper/.github/workflows/self-hosted-macos-15.yml](https://github.com/bocoup/aria-at-gh-actions-helper/blob/main/.github/workflows/self-hosted-macos-15.yml)
 
 ## Update Aria-AT App
 
