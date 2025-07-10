@@ -118,6 +118,32 @@ const fetchInstallationAccessToken = async (jsonWebToken, installationID) => {
   return JSON.parse(response.data).token;
 };
 
+/**
+ * We just want the whole number of the macOS version
+ * due to limitations on Github workflow runners
+ * See https://github.com/w3c/aria-at-app/issues/1143 for more info
+ *
+ * @param {object} atVersion
+ * @param {string} atVersion.name
+ */
+const getMacOSVersionName = atVersion => {
+  return atVersion?.name?.split('.')[0];
+};
+
+/**
+ * @param {string} atKey
+ * @param {object} atVersion
+ * @param {string} atVersion.name
+ */
+const uniqueWorkflowByAtVersion = (atKey, atVersion) => {
+  if (atKey === 'voiceover_macos') {
+    const atVersionName = getMacOSVersionName(atVersion);
+    if (atVersionName === '15') return 'self-hosted-macos-15.yml';
+    else return 'voiceover-test.yml';
+  }
+  return null;
+};
+
 const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   const payload = {
     iat: calculateIssuedAt(),
@@ -133,8 +159,9 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   const atKey = job.testPlanRun.testPlanReport.at.key;
   const workflowFilename = {
     nvda: 'nvda-test.yml',
-    voiceover_macos: 'voiceover-test.yml'
+    voiceover_macos: uniqueWorkflowByAtVersion(atKey, atVersion)
   }[atKey];
+  console.log('createGithubWorkflow.check', atKey, atVersion, workflowFilename);
 
   if (!workflowFilename) {
     throw new Error(`Unsupported AT workflow for ${atKey}`);
@@ -154,10 +181,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
     inputs.nvda_version = atVersion?.name;
   }
   if (atKey === 'voiceover_macos') {
-    // We just want the whole number of the macOS version
-    // due to limitations on Github workflow runners
-    // See https://github.com/w3c/aria-at-app/issues/1143 for more info
-    inputs.macos_version = atVersion?.name?.split('.')[0];
+    inputs.macos_version = getMacOSVersionName(atVersion);
     inputs.browser = browser;
   }
   const axiosConfig = {
@@ -170,7 +194,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
       'X-GitHub-Api-Version': '2022-11-28'
     },
     data: JSON.stringify({
-      ref: 'main',
+      ref: 'self-hosted-macos-15',
       inputs
     }),
     validateStatus: () => true,
