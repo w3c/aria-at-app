@@ -26,10 +26,16 @@ import FilterButtons from '../common/FilterButtons';
 import styles from './TestQueue.module.css';
 import commonStyles from '../common/styles.module.css';
 
+const FILTER_KEYS = {
+  ALL: 'all',
+  MANUAL: 'manual',
+  AUTOMATED: 'automated'
+};
+
 const TestQueue = () => {
   const client = useApolloClient();
   const [totalAutomatedRuns, setTotalAutomatedRuns] = useState(null);
-  const [activeFilter, setActiveFilter] = useState('manual');
+  const [activeFilter, setActiveFilter] = useState(FILTER_KEYS.MANUAL);
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network'
   });
@@ -152,15 +158,15 @@ const TestQueue = () => {
     calculateFilterCounts(testPlans);
 
   const filterOptions = {
-    all: `All test runs (${allCount})`,
-    manual: `Manual test runs (${manualCount})`,
+    [FILTER_KEYS.ALL]: `All test runs (${allCount})`,
+    [FILTER_KEYS.MANUAL]: `Manual test runs (${manualCount})`,
     ...(automatedCount > 0 && {
-      automated: `Automated updates with run failures (${automatedCount})`
+      [FILTER_KEYS.AUTOMATED]: `Automated updates with run failures (${automatedCount})`
     })
   };
 
   const applyFilter = (testPlans, filter) => {
-    if (filter === 'all') return testPlans;
+    if (filter === FILTER_KEYS.ALL) return testPlans;
 
     return testPlans
       .map(testPlan => ({
@@ -174,8 +180,12 @@ const TestQueue = () => {
                   ({ tester }) => tester.isBot
                 );
 
-                if (filter === 'manual') return !hasBotRun;
-                if (filter === 'automated') return hasBotRun;
+                const isRerun = !!testPlanReport.historicalReport;
+
+                if (filter === FILTER_KEYS.MANUAL)
+                  return !hasBotRun || !isRerun;
+                if (filter === FILTER_KEYS.AUTOMATED)
+                  return hasBotRun && isRerun;
                 return true;
               }
             )
