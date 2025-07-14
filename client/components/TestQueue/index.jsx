@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useState } from 'react';
+import React, { Fragment, useRef, useState, useMemo } from 'react';
 import { useApolloClient, useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
@@ -40,8 +40,146 @@ const TestQueue = () => {
     fetchPolicy: 'cache-and-network'
   });
 
+  const hasBotRun = testPlanReport => {
+    return testPlanReport.draftTestPlanRuns?.some(({ tester }) => tester.isBot);
+  };
+
   const openDisclosuresRef = useRef({});
   const forceUpdate = useForceUpdate();
+
+  // Process data for hooks - must be done before any early returns
+  const processedData = useMemo(() => {
+    if (!data) return { testPlans: [], testers: [] };
+
+    const testPlanVersions = [];
+    data.testPlans.forEach(testPlan => {
+      // testPlan.directory is needed by ManageTestQueue
+      const populatedTestPlanVersions = testPlan.testPlanVersions.map(
+        testPlanVersion => ({
+          ...testPlanVersion,
+          testPlan: { directory: testPlan.directory }
+        })
+      );
+      testPlanVersions.push(...populatedTestPlanVersions);
+    });
+
+    // Remove any test plans or test plan versions without reports and sort
+    const sortTestPlanVersions = testPlanVersions => {
+      return [...testPlanVersions]
+        .filter(testPlanVersion => testPlanVersion.testPlanReports.length)
+        .sort((a, b) => {
+          return b.versionString.localeCompare(a.versionString);
+        })
+        .map(testPlanVersion => {
+          return {
+            ...testPlanVersion,
+            testPlanReports: sortTestPlanReports(
+              testPlanVersion.testPlanReports
+            )
+          };
+        });
+    };
+
+    const sortTestPlanReports = testPlanReports => {
+      return [...testPlanReports].sort((a, b) => {
+        if (a.at.name !== b.at.name) {
+          return a.at.name.localeCompare(b.at.name);
+        }
+        if (a.browser.name !== b.browser.name) {
+          return a.browser.name.localeCompare(b.browser.name);
+        }
+        const dateA = new Date(
+          (a.minimumAtVersion ?? a.exactAtVersion).releasedAt
+        );
+        const dateB = new Date(
+          (a.minimumAtVersion ?? a.exactAtVersion).releasedAt
+        );
+        return dateB - dateA;
+      });
+    };
+
+    const testPlans = data.testPlans
+      .filter(testPlan => {
+        for (const testPlanVersion of testPlan.testPlanVersions) {
+          if (testPlanVersion.testPlanReports.length) return true;
+        }
+      })
+      .map(testPlan => {
+        return {
+          ...testPlan,
+          testPlanVersions: sortTestPlanVersions(testPlan.testPlanVersions)
+        };
+      })
+      .sort((a, b) => {
+        return a.title.localeCompare(b.title);
+      });
+
+    const testers = data.users
+      .filter(user => user.roles.includes('TESTER'))
+      .sort((a, b) => a.username.localeCompare(b.username));
+
+    return { testPlans, testers };
+  }, [data]);
+
+  // Filter counts calculation
+  const { allCount, manualCount, automatedCount } = useMemo(() => {
+    let allCount = 0;
+    let manualCount = 0;
+    let automatedCount = 0;
+
+    processedData.testPlans.forEach(testPlan => {
+      testPlan.testPlanVersions.forEach(testPlanVersion => {
+        testPlanVersion.testPlanReports.forEach(testPlanReport => {
+          allCount++;
+          if (hasBotRun(testPlanReport)) {
+            automatedCount++;
+          } else {
+            manualCount++;
+          }
+        });
+      });
+    });
+
+    return { allCount, manualCount, automatedCount };
+  }, [processedData.testPlans]);
+
+  const filterOptions = useMemo(
+    () => ({
+      [FILTER_KEYS.ALL]: `All test runs (${allCount})`,
+      [FILTER_KEYS.MANUAL]: `Manual test runs (${manualCount})`,
+      ...(automatedCount > 0 && {
+        [FILTER_KEYS.AUTOMATED]: `Automated updates with run failures (${automatedCount})`
+      })
+    }),
+    [allCount, manualCount, automatedCount]
+  );
+
+  const filteredTestPlans = useMemo(() => {
+    if (activeFilter === FILTER_KEYS.ALL) return processedData.testPlans;
+
+    return processedData.testPlans
+      .map(testPlan => ({
+        ...testPlan,
+        testPlanVersions: testPlan.testPlanVersions
+          .map(testPlanVersion => ({
+            ...testPlanVersion,
+            testPlanReports: testPlanVersion.testPlanReports.filter(
+              testPlanReport => {
+                const hasBot = hasBotRun(testPlanReport);
+                const isRerun = !!testPlanReport.historicalReport;
+
+                if (activeFilter === FILTER_KEYS.MANUAL)
+                  return !hasBot || !isRerun;
+                if (activeFilter === FILTER_KEYS.AUTOMATED)
+                  return hasBot && isRerun;
+                return true;
+              }
+            )
+          }))
+          .filter(testPlanVersion => testPlanVersion.testPlanReports.length > 0)
+      }))
+      .filter(testPlan => testPlan.testPlanVersions.length > 0);
+  }, [processedData.testPlans, activeFilter]);
 
   if (error) {
     return (
@@ -64,138 +202,16 @@ const TestQueue = () => {
 
   const { isAdmin } = evaluateAuth(data.me);
 
-  const testPlanVersions = [];
-  data.testPlans.forEach(testPlan => {
-    // testPlan.directory is needed by ManageTestQueue
-    const populatedTestPlanVersions = testPlan.testPlanVersions.map(
-      testPlanVersion => ({
-        ...testPlanVersion,
-        testPlan: { directory: testPlan.directory }
-      })
-    );
-    testPlanVersions.push(...populatedTestPlanVersions);
-  });
+  // Use processed data from useMemo hooks
+  const { testPlans, testers } = processedData;
 
-  // Remove any test plans or test plan versions without reports and sort
-  const sortTestPlanVersions = testPlanVersions => {
-    return [...testPlanVersions]
-      .filter(testPlanVersion => testPlanVersion.testPlanReports.length)
-      .sort((a, b) => {
-        return b.versionString.localeCompare(a.versionString);
-      })
-      .map(testPlanVersion => {
-        return {
-          ...testPlanVersion,
-          testPlanReports: sortTestPlanReports(testPlanVersion.testPlanReports)
-        };
-      });
-  };
-
-  const sortTestPlanReports = testPlanReports => {
-    return [...testPlanReports].sort((a, b) => {
-      if (a.at.name !== b.at.name) {
-        return a.at.name.localeCompare(b.at.name);
-      }
-      if (a.browser.name !== b.browser.name) {
-        return a.browser.name.localeCompare(b.browser.name);
-      }
-      const dateA = new Date(
-        (a.minimumAtVersion ?? a.exactAtVersion).releasedAt
-      );
-      const dateB = new Date(
-        (a.minimumAtVersion ?? a.exactAtVersion).releasedAt
-      );
-      return dateB - dateA;
-    });
-  };
-
-  const testPlans = data.testPlans
-    .filter(testPlan => {
-      for (const testPlanVersion of testPlan.testPlanVersions) {
-        if (testPlanVersion.testPlanReports.length) return true;
-      }
-    })
-    .map(testPlan => {
-      return {
-        ...testPlan,
-        testPlanVersions: sortTestPlanVersions(testPlan.testPlanVersions)
-      };
-    })
-    .sort((a, b) => {
-      return a.title.localeCompare(b.title);
-    });
-
-  const testers = data.users
-    .filter(user => user.roles.includes('TESTER'))
-    .sort((a, b) => a.username.localeCompare(b.username));
-
-  // Calculate filter counts and apply filtering
-  const calculateFilterCounts = testPlans => {
-    let allCount = 0;
-    let manualCount = 0;
-    let automatedCount = 0;
-
-    testPlans.forEach(testPlan => {
-      testPlan.testPlanVersions.forEach(testPlanVersion => {
-        testPlanVersion.testPlanReports.forEach(testPlanReport => {
-          allCount++;
-          const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
-            ({ tester }) => tester.isBot
-          );
-          if (hasBotRun) {
-            automatedCount++;
-          } else {
-            manualCount++;
-          }
-        });
-      });
-    });
-
-    return { allCount, manualCount, automatedCount };
-  };
-
-  const { allCount, manualCount, automatedCount } =
-    calculateFilterCounts(testPlans);
-
-  const filterOptions = {
-    [FILTER_KEYS.ALL]: `All test runs (${allCount})`,
-    [FILTER_KEYS.MANUAL]: `Manual test runs (${manualCount})`,
-    ...(automatedCount > 0 && {
-      [FILTER_KEYS.AUTOMATED]: `Automated updates with run failures (${automatedCount})`
-    })
-  };
-
-  const applyFilter = (testPlans, filter) => {
-    if (filter === FILTER_KEYS.ALL) return testPlans;
-
-    return testPlans
-      .map(testPlan => ({
-        ...testPlan,
-        testPlanVersions: testPlan.testPlanVersions
-          .map(testPlanVersion => ({
-            ...testPlanVersion,
-            testPlanReports: testPlanVersion.testPlanReports.filter(
-              testPlanReport => {
-                const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
-                  ({ tester }) => tester.isBot
-                );
-
-                const isRerun = !!testPlanReport.historicalReport;
-
-                if (filter === FILTER_KEYS.MANUAL)
-                  return !hasBotRun || !isRerun;
-                if (filter === FILTER_KEYS.AUTOMATED)
-                  return hasBotRun && isRerun;
-                return true;
-              }
-            )
-          }))
-          .filter(testPlanVersion => testPlanVersion.testPlanReports.length > 0)
-      }))
-      .filter(testPlan => testPlan.testPlanVersions.length > 0);
-  };
-
-  const filteredTestPlans = applyFilter(testPlans, activeFilter);
+  // Create testPlanVersions for ManageTestQueue component
+  const testPlanVersions = testPlans.flatMap(testPlan =>
+    testPlan.testPlanVersions.map(testPlanVersion => ({
+      ...testPlanVersion,
+      testPlan: { directory: testPlan.directory }
+    }))
+  );
 
   const renderTestPlanDisclosure = ({ testPlan }) => {
     return (
