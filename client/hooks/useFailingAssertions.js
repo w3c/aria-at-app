@@ -1,4 +1,7 @@
 import { useMemo } from 'react';
+import { NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES } from '../utils/constants';
+import getAssertionPhraseOrText from '../utils/getAssertionPhraseOrText';
+import summarizeScenario from '../utils/summarizeScenario';
 
 export const useFailingAssertions = testPlanReport => {
   return useMemo(() => {
@@ -9,29 +12,11 @@ export const useFailingAssertions = testPlanReport => {
     const failingAssertions = testPlanReport.finalizedTestResults.flatMap(
       (testResult, testIndex) => {
         return testResult.scenarioResults.flatMap(scenarioResult => {
-          const commonResult = {
-            testResultId: testResult.id,
+          const commonResult = summarizeScenario(
+            testResult,
             testIndex,
-            testTitle: testResult.test.title,
-            scenarioCommands: scenarioResult.scenario.commands
-              .map((cmd, index) => {
-                if (index === scenarioResult.scenario.commands.length - 1) {
-                  return cmd.text;
-                }
-                // Prevent instances of duplicated setting in brackets.
-                // eg. Down Arrow (virtual cursor active) then Down Arrow (virtual cursor active)
-                //
-                // Expectation is Down Arrow then Down Arrow (virtual cursor active), because the setting will always be
-                // the same for the listed key combination.
-                //
-                // Some revision of how that key combination + setting is rendered may be useful
-                return cmd.text.split(' (')[0];
-              })
-              .join(' then '),
-            commandId: `${
-              scenarioResult.scenario.id
-            }_${scenarioResult.scenario.commands.map(cmd => cmd.id).join('_')}`
-          };
+            scenarioResult
+          );
 
           /**
            * @param {'MUST'|'SHOULD'} priority
@@ -43,24 +28,28 @@ export const useFailingAssertions = testPlanReport => {
               .map(assertionResult => ({
                 ...commonResult,
                 priority,
-                assertionText: assertionResult.assertion.text,
+                assertionText: getAssertionPhraseOrText(
+                  assertionResult.assertion
+                ),
                 output: scenarioResult.output
               }));
           };
 
-          const assertionResults = [
-            ...processPriorityAssertionResults('MUST'),
-            ...processPriorityAssertionResults('SHOULD')
-          ];
+          const assertionResults = scenarioResult.untestable
+            ? []
+            : [
+                ...processPriorityAssertionResults('MUST'),
+                ...processPriorityAssertionResults('SHOULD')
+              ];
 
           const unexpectedResults = scenarioResult.unexpectedBehaviors.map(
             unexpectedBehavior => ({
               ...commonResult,
               assertionText:
                 unexpectedBehavior.impact.toLowerCase() === 'moderate'
-                  ? 'Moderate negative side effects do not occur'
+                  ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
                   : unexpectedBehavior.impact.toLowerCase() === 'severe'
-                  ? 'Severe negative side effects do not occur'
+                  ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
                   : 'N/A',
               priority:
                 unexpectedBehavior.impact.toLowerCase() === 'moderate'

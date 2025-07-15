@@ -14,7 +14,7 @@ const snapshotRoutes = [
   '/run/2',
   '/data-management/meter',
   '/candidate-test-plan/24/1',
-  '/candidate-test-plan/24/1#summary-assertions',
+  '/candidate-test-plan/24/1#summary-failures',
   '/test-queue/2/conflicts',
   '/report/67/targets/20'
 ];

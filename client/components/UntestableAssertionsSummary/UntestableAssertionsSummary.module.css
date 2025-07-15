@@ -1,0 +1,26 @@
+.untestable-assertions-summary-table-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+}
+
+.untestable-assertions-summary-table-container p {
+  margin: 0;
+}
+
+.untestable-assertions-summary-table-container ul li {
+  margin-left: var(--16px);
+  list-style-type: disc;
+}
+
+.untestable-assertions-summary-table-container table {
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+}
+
+.untestable-assertions-summary-table-container th,
+.untestable-assertions-summary-table-container td {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}

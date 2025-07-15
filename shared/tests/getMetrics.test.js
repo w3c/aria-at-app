@@ -559,7 +559,7 @@ describe('getMetrics', () => {
       mayFormatted: '1 of 3 supported',
       unexpectedBehaviorsFormatted: '1 found',
       supportLevel: 'FAILING',
-      supportPercent: 66
+      supportPercent: 57
     });
   });
 });
