@@ -351,7 +351,10 @@ const TestQueue = () => {
 
               // Refocus on testers assignment dropdown button
               const selector = `#assign-testers-${testPlanReport.id} button`;
-              document.querySelector(selector).focus();
+              const element = document.querySelector(selector);
+              if (element) {
+                element.focus();
+              }
             }}
           />
         </td>
