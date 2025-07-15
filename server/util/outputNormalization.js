@@ -8,17 +8,17 @@ const normalizeScreenreaderOutput = output => {
 
   let normalized = output.replace(/\s+/g, ' ').trim();
 
+  if (REMOVE_JAWS_SEPARATOR_TOKENS) {
+    normalized = normalized.replace(/[\u001d\u001e]/g, ' ');
+  }
+
   if (NORMALIZE_PUNCTUATION_CAPITALIZATION) {
     normalized = normalized
       .replace(/\s*-\s*/g, '-')
       .replace(/[^\w\s-]/g, '')
-      .replace(/\b[A-Z](?=[a-z])/g, match => match.toLowerCase())
       .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  if (REMOVE_JAWS_SEPARATOR_TOKENS) {
-    normalized = normalized.replace(/[\u001d\u001e]/g, '');
+      .trim()
+      .replace(/\b[A-Z](?=[a-z])/g, match => match.toLowerCase());
   }
 
   return normalized;
