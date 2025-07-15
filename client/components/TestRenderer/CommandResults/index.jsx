@@ -37,19 +37,16 @@ const CommandResults = ({
   });
   const tooltipID = useMemo(() => `untestable-tooltip-${++tooltipCount}`, []);
 
-  // Check if assertions have null verdicts (indicating mismatched output requiring human review)
   const hasUnresolvedAssertions = assertions.some(
     assertion => assertion.passed === null
   );
 
-  // Only show error state and historical output when assertions are null (require human review)
   const hasConflictingOutput = isRerunReport && hasUnresolvedAssertions;
 
   const errorMessage = hasConflictingOutput
     ? `This output differs from output reported for ${historicalAtName} ${historicalAtVersion}`
     : null;
 
-  // Only show historical output when assertions are null (need human review)
   const shouldShowHistoricalOutput =
     hasConflictingOutput && historicalOutput !== null;
 
