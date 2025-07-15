@@ -1098,10 +1098,9 @@ const TestRun = () => {
                   }
                   historicalAtVersion={
                     testPlanReport.isRerun && testPlanReport.historicalReport
-                      ? (
-                          testPlanReport.historicalReport.exactAtVersion ||
-                          testPlanReport.historicalReport.minimumAtVersion
-                        )?.name
+                      ? testPlanReport.historicalReport.finalizedTestResults?.find(
+                          result => result.test.id === currentTest.id
+                        )?.atVersion?.name
                       : null
                   }
                 />
