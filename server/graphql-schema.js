@@ -1232,7 +1232,7 @@ const graphqlSchema = gql`
     """
     The vendor representative's company.
     """
-    vendor: Vendor!
+    vendor: Vendor
     """
     The test plan report being reviewed.
     """
