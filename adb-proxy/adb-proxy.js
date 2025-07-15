@@ -92,7 +92,8 @@ app.post('/stream-capture-utterances', (req, res) => {
     'Access-Control-Allow-Headers': 'Cache-Control'
   });
 
-  console.log('Starting utterance capture');
+  // eslint-disable-next-line no-console
+  console.info('Starting utterance capture');
 
   const capture = new UtteranceCapture();
   let captureEnded = false;

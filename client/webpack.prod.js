@@ -78,7 +78,10 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env.API_SERVER': JSON.stringify(process.env.API_SERVER),
-      'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT)
+      'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT),
+      'process.env.REACT_APP_EXTERNAL_HOST': JSON.stringify(
+        process.env.REACT_APP_EXTERNAL_HOST
+      )
     })
   ],
   performance: {

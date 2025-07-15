@@ -7,7 +7,9 @@ class UtteranceCapture extends EventEmitter {
     this.logcatProcess = null;
     this.isCapturing = false;
     this.utterances = [];
+    this.runTestSetupButtonFound = false;
     this.exampleStarted = false;
+    this.talkbackPackage = 'com.google.android.marvin.talkback';
   }
 
   async start() {
@@ -27,7 +29,7 @@ class UtteranceCapture extends EventEmitter {
         'shell',
         'pidof',
         '-s',
-        'com.google.android.marvin.talkback'
+        this.talkbackPackage
       ]);
       const talkbackPid = pidOutput.trim();
 
@@ -83,20 +85,32 @@ class UtteranceCapture extends EventEmitter {
 
       if (!/talkback|utterance/i.test(line)) continue;
 
-      // Look for "text.*Run Test Setup" to start capturing (only once)
-      // Note: this will need to work with interaction, not just read in future
-      // TODO: Combine with Howard's work
       if (
+        !this.runTestSetupButtonFound &&
         !this.exampleStarted &&
         line.includes('text=') &&
         line.includes('Run Test Setup')
+      ) {
+        this.runTestSetupButtonFound = true;
+        this.emit('status', 'RUN TEST SETUP BUTTON [FOUND]');
+        continue;
+      }
+
+      // Look for "text.*Run Test Setup" to start capturing (only once)
+      // Note: this will need to work with interaction, not just read in future
+      if (
+        this.runTestSetupButtonFound &&
+        !this.exampleStarted &&
+        (line.includes('ACTION_CLICK') ||
+          line.includes('TYPE_VIEW_CLICKED') ||
+          line.includes('VIEW_CLICKED'))
       ) {
         this.exampleStarted = true;
         this.emit('status', '--- Start of Example ---');
         continue;
       }
 
-      if (this.exampleStarted) {
+      if (this.runTestSetupButtonFound && this.exampleStarted) {
         if (line.includes('End of Example')) {
           this.emit('status', '--- End of Example ---');
           this.stop();
@@ -104,6 +118,7 @@ class UtteranceCapture extends EventEmitter {
           return;
         }
 
+        // TODO: include other text that determines potential utterance
         if (line.includes('text=') && /utterance/i.test(line)) {
           const utteranceMatch = line.match(/text="([^"]*)"/);
 
@@ -142,7 +157,7 @@ class UtteranceCapture extends EventEmitter {
 
   runAdbCommand(args) {
     return new Promise((resolve, reject) => {
-      const process = spawn('adb', args, { stdio: ['ignore', 'pipe', 'pipe'] });
+      const process = spawn('adb', args, { stdio: ['ignore', 'pipe'] });
       let stdout = '';
       let stderr = '';
 
