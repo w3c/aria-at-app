@@ -7,6 +7,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { unescape } from 'lodash';
 import { getMetrics } from 'shared';
 import TestPlanResultsTable from '../common/TestPlanResultsTable';
@@ -71,14 +73,33 @@ const TestRenderer = ({
   const [submitCalled, setSubmitCalled] = useState(false);
   const [captureSocket, setCaptureSocket] = useState(null);
   const [capturedUtterances, setCapturedUtterances] = useState([]);
+  const [proxyUrl, setProxyUrl] = useState('');
+  const [proxyUrlMessage, setProxyUrlMessage] = useState('');
+  const [proxyUrlMessageType, setProxyUrlMessageType] = useState('');
   const wsRef = useRef(null);
   const [, setWsConnected] = useState(false);
   const [, setWsError] = useState(null);
 
+  const copyToClipboard = async text => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      console.error('copy.utterances.error', err);
+
+      // fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  };
+
   // Proof of concept in case we need to inject buttons ourselves on the test
   // page
   // May not be needed outside the testing of this prototype
-  const injectButton = testWindow => {
+  /*const injectButton = testWindow => {
     if (!testWindow || !testWindow.document) return;
 
     // Create button container if it doesn't exist
@@ -111,7 +132,7 @@ const TestRenderer = ({
     };
 
     container.appendChild(androidButton);
-  };
+  };*/
 
   const startCaptureUtterances = useCallback(async () => {
     if (wsRef.current) {
@@ -126,7 +147,9 @@ const TestRenderer = ({
     // Use external host for Android device access, fallback to API server
     const externalHost = process.env.REACT_APP_EXTERNAL_HOST;
     const host = externalHost ? externalHost.split(':')[0] : 'localhost';
-    const wsUrl = `ws://${host}:8000/ws?sessionId=${sessionId}`;
+    const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const wsPort = window.location.protocol === 'https:' ? '' : ':8000';
+    const wsUrl = `${protocol}://${host}${wsPort}/ws?sessionId=${sessionId}`;
 
     // eslint-disable-next-line no-console
     console.info('Connecting to WebSocket:', wsUrl);
@@ -139,7 +162,10 @@ const TestRenderer = ({
       console.info('WebSocket connection opened');
 
       setWsConnected(true);
-      const startMessage = { type: 'startCapture' };
+      const startMessage = {
+        type: 'startCapture',
+        proxyUrl: proxyUrl || null
+      };
 
       // eslint-disable-next-line no-console
       console.info('Sending start utterances capture message:', startMessage);
@@ -194,7 +220,7 @@ const TestRenderer = ({
       setWsConnected(false);
       wsRef.current = null;
     };
-  }, []);
+  }, [proxyUrl]);
 
   const stopCaptureUtterances = useCallback(() => {
     if (captureSocket) {
@@ -204,12 +230,59 @@ const TestRenderer = ({
     }
   }, [captureSocket]);
 
+  // Load proxy URL on component mount
+  useEffect(() => {
+    fetchCurrentProxyUrl();
+  }, []);
+
   // Cleanup
   useEffect(() => {
     return () => {
       if (captureSocket) captureSocket.close();
     };
   }, [captureSocket]);
+
+  const fetchCurrentProxyUrl = async () => {
+    try {
+      const response = await fetch('/api/scripts/proxy-url');
+      if (response.ok) {
+        const data = await response.json();
+        setProxyUrl(data.proxyUrl || '');
+      } else {
+        console.error('Failed to fetch proxy URL');
+      }
+    } catch (error) {
+      console.error('Error fetching proxy URL:', error);
+    }
+  };
+
+  const handleProxyUrlSubmit = async event => {
+    event.preventDefault();
+    setProxyUrlMessage('');
+
+    try {
+      const response = await fetch('/api/scripts/proxy-url', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ proxyUrl })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setProxyUrlMessage(data.message || 'Proxy URL updated successfully');
+        setProxyUrlMessageType('success');
+      } else {
+        setProxyUrlMessage(data.error || 'Failed to update proxy URL');
+        setProxyUrlMessageType('error');
+      }
+    } catch (error) {
+      setProxyUrlMessage('Error updating proxy URL: ' + error.message);
+      setProxyUrlMessageType('error');
+    }
+  };
 
   const runAndroidScripts = async () => {
     // Get the URL from the test page
@@ -222,7 +295,11 @@ const TestRenderer = ({
     // Use external host for Android device access, fallback to API server
     const externalHost = process.env.REACT_APP_EXTERNAL_HOST;
     const host = externalHost ? externalHost.split(':')[0] : 'localhost';
-    url = `http://${host}:8000${url}`;
+    const urlPort = window.location.protocol === 'https:' ? '' : ':3000';
+    url = `${window.location.protocol}//${host}${urlPort}${url}`;
+
+    // eslint-disable-next-line no-console
+    console.info('runAndroidScripts.url', url);
 
     try {
       const response = await fetch('/api/scripts/enable-talkback');
@@ -292,7 +369,9 @@ const TestRenderer = ({
           stopCaptureUtterances();
         },
         windowPrepared() {
-          injectButton(testWindow.window);
+          // eslint-disable-next-line no-console
+          console.info('windowPrepared.called');
+          // injectButton(testWindow.window);
         }
       }
     });
@@ -637,13 +716,89 @@ const TestRenderer = ({
             <button
               disabled={!pageContent.instructions.openTestPage.enabled}
               onClick={async () => {
+                // TODO: Show some feedback on this click that the page should
+                //  open on android device. This will not wake the screen so
+                //  note to user the phone has to be awake first
                 await runAndroidScripts();
               }}
             >
               Open Test Page on Android Device
             </button>
+
+            {/* TODO: Bundle ngrok into proxy start up and update instructions on how to retrieve URL */}
+            {/* TODO: (attempt to copy directly to clipboard when they start proxy) */}
+            {/* TODO: Conditionally show this in the future */}
+            <div className={styles.proxyUrlSection}>
+              <h3>ADB Proxy Configuration</h3>
+              <p>
+                Configure your personal ADB proxy URL for Android device
+                automation. This setting is saved per user session and will not
+                affect other users.
+              </p>
+
+              {proxyUrlMessage && (
+                <div
+                  className={`${styles.message} ${styles[proxyUrlMessageType]}`}
+                >
+                  {proxyUrlMessage}
+                  <button
+                    className={styles.closeMessage}
+                    onClick={() => setProxyUrlMessage('')}
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+
+              <form onSubmit={handleProxyUrlSubmit}>
+                <div className={styles.proxyUrlInput}>
+                  <label htmlFor="proxyUrl">ADB Proxy URL:</label>
+                  <input
+                    id="proxyUrl"
+                    type="url"
+                    placeholder="Your proxy URL"
+                    value={proxyUrl}
+                    onChange={e => setProxyUrl(e.target.value)}
+                    required
+                  />
+                  <button type="submit">Save Proxy URL</button>
+                </div>
+              </form>
+
+              <div className={styles.proxyInstructions}>
+                <h4>Setup Instructions:</h4>
+                <ol>
+                  <li>
+                    Set up an ADB proxy server (e.g., using the adb-proxy tool)
+                  </li>
+                  <li>
+                    Create a public tunnel (e.g., using ngrok) to expose your
+                    ADB proxy
+                  </li>
+                  <li>
+                    Enter the public URL above (e.g.,
+                    https://abc123.ngrok-free.app)
+                  </li>
+                  <li>Connect an Android device with USB debugging enabled</li>
+                  <li>
+                    Use the &quot;Open Test Page on Android Device&quot; button
+                    above
+                  </li>
+                </ol>
+              </div>
+            </div>
+
             {capturedUtterances.length > 0 && (
               <div className={styles.captureOutput}>
+                {/* TODO: Focus on this button when it's detected that user is no longer capturing utterances */}
+                <button
+                  className={styles.copyButton}
+                  title="Copy utterances to clipboard"
+                  aria-label="Copy utterances to clipboard"
+                  onClick={() => copyToClipboard(capturedUtterances.join('\n'))}
+                >
+                  <FontAwesomeIcon icon={faCopy} />
+                </button>
                 <h3>Captured Utterances:</h3>
                 <pre>{capturedUtterances.join('\n')}</pre>
               </div>

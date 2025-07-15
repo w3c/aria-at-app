@@ -96,6 +96,14 @@
   --candidate-in-progress: #2560ab;
   --candidate-approved: #309d08;
 
+  --success-green: #155724;
+  --success-green-bg: #d4edda;
+  --success-green-border-color: #c3e6cb;
+
+  --error-red: #721c24;
+  --error-red-bg: #f8d7da;
+  --error-red-border-color: #f5c6cb;
+
   /* Shadows */
   --button-shadow: rgba(103, 171, 197, 0.5);
   --box-shadow-gray: rgba(0, 0, 0, 0.05);

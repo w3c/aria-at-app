@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 const WebSocket = require('ws');
 const http = require('http');
+const https = require('https');
 const { URL } = require('url');
 
 const PROXY_URL = process.env.ADB_PROXY_URL || 'http://localhost:3080';
@@ -45,9 +46,13 @@ const setupWebSocketServer = server => {
             await new Promise(resolve => setTimeout(resolve, 100));
           }
 
+          // Use proxy URL from the message, fallback to default
+          const effectiveProxyUrl = data.proxyUrl || PROXY_URL;
+          console.info('Using proxy URL:', effectiveProxyUrl);
+
           try {
             console.info(
-              `Connecting to proxy streaming endpoint at ${PROXY_URL}`
+              `Connecting to proxy streaming endpoint at ${effectiveProxyUrl}`
             );
 
             // Create abort controller for this session
@@ -58,12 +63,15 @@ const setupWebSocketServer = server => {
             console.info('Session stored', Array.from(captureSessions.keys()));
 
             // Start streaming from proxy using native HTTP (axios closes SSE streams)
-            const proxyUrl = new URL(`${PROXY_URL}/stream-capture-utterances`);
+            const proxyUrl = new URL(
+              `${effectiveProxyUrl}/stream-capture-utterances`
+            );
             const postData = JSON.stringify({});
 
             const options = {
               hostname: proxyUrl.hostname,
-              port: proxyUrl.port,
+              port:
+                proxyUrl.port || (proxyUrl.protocol === 'https:' ? 443 : 80),
               path: proxyUrl.pathname,
               method: 'POST',
               headers: {
@@ -74,7 +82,10 @@ const setupWebSocketServer = server => {
               }
             };
 
-            const req = http.request(options, response => {
+            // Use https for ngrok or similar URLs, http for localhost
+            const requestModule = proxyUrl.protocol === 'https:' ? https : http;
+
+            const req = requestModule.request(options, response => {
               console.info(
                 `Connected to proxy, status: ${response.statusCode}`
               );
@@ -183,6 +194,13 @@ const setupWebSocketServer = server => {
             });
 
             console.info('Sending HTTP request to proxy...');
+            console.info('Request options:', {
+              hostname: options.hostname,
+              port: options.port,
+              path: options.path,
+              method: options.method,
+              protocol: proxyUrl.protocol
+            });
             // Send the request data and end to properly initiate the POST request
             req.write(postData);
             req.end();
