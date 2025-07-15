@@ -233,6 +233,8 @@ const TestRenderer = ({
   // Load proxy URL on component mount
   useEffect(() => {
     fetchCurrentProxyUrl();
+    // Try to auto-detect ngrok URL
+    detectNgrokUrl();
   }, []);
 
   // Cleanup
@@ -254,6 +256,34 @@ const TestRenderer = ({
     } catch (error) {
       console.error('Error fetching proxy URL:', error);
     }
+  };
+
+  const detectNgrokUrl = async () => {
+    // not in a deployed environment, no need to check
+    if (window.location.protocol !== 'https:') {
+      const dataUrl = 'http://localhost:3080';
+      setProxyUrl(dataUrl);
+      setProxyUrlMessage(`Auto-detected ngrok URL: ${dataUrl}`);
+      setProxyUrlMessageType('success');
+      return dataUrl;
+    }
+
+    try {
+      // Try to get ngrok URL from local adb-proxy server
+      const response = await fetch('http://localhost:3080/ngrok-url');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.url) {
+          setProxyUrl(data.url);
+          setProxyUrlMessage(`Auto-detected ngrok URL: ${data.url}`);
+          setProxyUrlMessageType('success');
+          return data.url;
+        }
+      }
+    } catch (error) {
+      console.info('No local ngrok tunnel detected:', error.message);
+    }
+    return null;
   };
 
   const handleProxyUrlSubmit = async event => {
@@ -725,9 +755,7 @@ const TestRenderer = ({
               Open Test Page on Android Device
             </button>
 
-            {/* TODO: Bundle ngrok into proxy start up and update instructions on how to retrieve URL */}
-            {/* TODO: (attempt to copy directly to clipboard when they start proxy) */}
-            {/* TODO: Conditionally show this in the future */}
+            {/* TODO: Conditionally show this in the future (could also be fully hidden with ngrok auto detect) */}
             <div className={styles.proxyUrlSection}>
               <h3>ADB Proxy Configuration</h3>
               <p>
@@ -762,6 +790,9 @@ const TestRenderer = ({
                     required
                   />
                   <button type="submit">Save Proxy URL</button>
+                  <button type="button" onClick={detectNgrokUrl}>
+                    Auto-Detect ngrok
+                  </button>
                 </div>
               </form>
 

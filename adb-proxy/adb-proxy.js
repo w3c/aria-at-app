@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { exec } = require('child_process');
 const cors = require('cors');
+const path = require('path');
 const UtteranceCapture = require('./capture-utterances');
 
 const app = express();
@@ -9,6 +10,102 @@ const PORT = 3080;
 
 app.use(cors()); // Allow access from React web app
 app.use(bodyParser.json());
+
+// Global variable to store ngrok URL
+let ngrokUrl = null;
+let ngrokProcess = null;
+
+// Function to start ngrok tunnel
+function startNgrokTunnel() {
+  return new Promise((resolve, reject) => {
+    console.info('Starting ngrok tunnel...');
+
+    // Check if ngrok binary exists
+    const ngrokBinary = process.platform === 'win32' ? 'ngrok.exe' : 'ngrok';
+
+    // When built with pkg, binaries are in the same directory as the executable
+    // process.execPath gives us the path to the current executable
+    const executableDir = path.dirname(process.execPath);
+    const ngrokPath = path.join(executableDir, ngrokBinary);
+
+    console.info('Checking for ngrok at:', ngrokPath);
+
+    if (!require('fs').existsSync(ngrokPath)) {
+      console.warn('ngrok binary not found at:', ngrokPath);
+      console.warn(
+        'Available files in directory:',
+        require('fs').readdirSync(executableDir)
+      );
+      resolve(null);
+      return;
+    }
+
+    console.info('Found ngrok binary at:', ngrokPath);
+
+    // Start ngrok tunnel
+    ngrokProcess = exec(
+      `${ngrokPath} http ${PORT} --log=stdout`,
+      (error, stdout, stderr) => {
+        if (stdout) console.info(stdout);
+        if (stderr) {
+          console.error('stderr:', stderr);
+        }
+        if (error) {
+          console.error('ngrok error:', error);
+          reject(error);
+        }
+      }
+    );
+
+    // Parse ngrok output to get the public URL
+    ngrokProcess.stdout.on('data', data => {
+      const output = data.toString();
+      console.info('ngrok output:', output);
+
+      // Look for the public URL in ngrok output
+      const urlMatch = output.match(/https:\/\/[a-zA-Z0-9-]+\.ngrok-free\.app/);
+      if (urlMatch && !ngrokUrl) {
+        ngrokUrl = urlMatch[0];
+        console.info('ngrok tunnel established:', ngrokUrl);
+        resolve(ngrokUrl);
+      }
+    });
+
+    ngrokProcess.stderr.on('data', data => {
+      console.error('ngrok stderr:', data.toString());
+    });
+
+    // Timeout after 10 seconds
+    setTimeout(() => {
+      if (!ngrokUrl) {
+        console.warn('ngrok tunnel not established within 10 seconds');
+        resolve(null);
+      }
+    }, 10000);
+  });
+}
+
+// Start ngrok tunnel when server starts
+startNgrokTunnel()
+  .then(url => {
+    if (url) {
+      console.info('✅ ngrok tunnel ready:', url);
+      console.info(
+        '📋 Copy this URL to your aria-at-app adb proxy configuration'
+      );
+    }
+  })
+  .catch(error => {
+    console.error('❌ Failed to start ngrok tunnel:', error);
+  });
+
+app.get('/ngrok-url', (req, res) => {
+  if (ngrokUrl) {
+    res.json({ url: ngrokUrl });
+  } else {
+    res.status(404).json({ error: 'ngrok tunnel not ready' });
+  }
+});
 
 // Handle preflight requests for streaming endpoint
 app.options('/stream-capture-utterances', cors());
@@ -162,4 +259,21 @@ app.post('/stream-capture-utterances', (req, res) => {
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.info(`ADB proxy running on http://localhost:${PORT}`);
+});
+
+// Cleanup ngrok process on server shutdown
+process.on('SIGINT', () => {
+  console.info('Shutting down...');
+  if (ngrokProcess) {
+    ngrokProcess.kill();
+  }
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.info('Shutting down...');
+  if (ngrokProcess) {
+    ngrokProcess.kill();
+  }
+  process.exit(0);
 });
