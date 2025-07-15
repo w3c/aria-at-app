@@ -170,7 +170,12 @@ app.post('/run-adb', (req, res) => {
     return res.status(400).json({ error: 'Invalid or unsafe command.' });
   }
 
-  exec(`adb ${command}`, (error, stdout, stderr) => {
+  // Get the correct ADB path
+  const executableDir = path.dirname(process.execPath);
+  const adbBinary = process.platform === 'win32' ? 'adb.exe' : 'adb';
+  const adbPath = path.join(executableDir, adbBinary);
+
+  exec(`${adbPath} ${command}`, (error, stdout, stderr) => {
     if (error) {
       return res.status(500).json({ error: stderr || error.message });
     }

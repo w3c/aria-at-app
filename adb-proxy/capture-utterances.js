@@ -1,5 +1,6 @@
 const { spawn } = require('child_process');
 const { EventEmitter } = require('events');
+const path = require('path');
 
 class UtteranceCapture extends EventEmitter {
   constructor() {
@@ -10,6 +11,14 @@ class UtteranceCapture extends EventEmitter {
     this.runTestSetupButtonFound = false;
     this.exampleStarted = false;
     this.talkbackPackage = 'com.google.android.marvin.talkback';
+    this.adbPath = this.getAdbPath();
+  }
+
+  getAdbPath() {
+    // When built with pkg, binaries are in the same directory as the executable
+    const executableDir = path.dirname(process.execPath);
+    const adbBinary = process.platform === 'win32' ? 'adb.exe' : 'adb';
+    return path.join(executableDir, adbBinary);
   }
 
   async start() {
@@ -18,6 +27,9 @@ class UtteranceCapture extends EventEmitter {
     }
 
     try {
+      // Start ADB server first (important for Windows)
+      await this.runAdbCommand(['start-server']);
+
       // Check if device is connected
       const devices = await this.runAdbCommand(['devices']);
       if (!devices.includes('\tdevice')) {
@@ -45,7 +57,7 @@ class UtteranceCapture extends EventEmitter {
 
       // Start logcat for TalkBack
       this.logcatProcess = spawn(
-        'adb',
+        this.adbPath,
         ['logcat', `--pid=${talkbackPid}`, '-v', 'threadtime'],
         {
           stdio: ['ignore', 'pipe', 'pipe']
@@ -157,7 +169,11 @@ class UtteranceCapture extends EventEmitter {
 
   runAdbCommand(args) {
     return new Promise((resolve, reject) => {
-      const process = spawn('adb', args, { stdio: ['ignore', 'pipe'] });
+      console.info(`Running ADB command: ${this.adbPath} ${args.join(' ')}`);
+
+      const process = spawn(this.adbPath, args, {
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
       let stdout = '';
       let stderr = '';
 
@@ -171,14 +187,21 @@ class UtteranceCapture extends EventEmitter {
 
       process.on('exit', code => {
         if (code === 0) {
+          console.info(`ADB command succeeded: ${args.join(' ')}`);
           resolve(stdout);
         } else {
-          reject(new Error(`ADB command failed: ${stderr || stdout}`));
+          const errorMsg = `ADB command failed (exit code ${code}): ${
+            stderr || stdout
+          }`;
+          console.error(errorMsg);
+          reject(new Error(errorMsg));
         }
       });
 
       process.on('error', error => {
-        reject(error);
+        const errorMsg = `ADB process error: ${error.message}`;
+        console.error(errorMsg);
+        reject(new Error(errorMsg));
       });
     });
   }
