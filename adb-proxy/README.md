@@ -48,17 +48,19 @@ Each platform build creates a `dist/{platform}/` directory with:
 ```
 📁 dist/windows/          📁 dist/macos/            📁 dist/linux/
 ├── 🟢 start.bat          ├── 🟢 start.command      ├── 🟢 start.sh
-├── ⚙️ adb-proxy.exe      ├── ⚙️ adb-proxy          ├── ⚙️ adb-proxy
 ├── 🔧 adb.exe            ├── 🔧 adb                ├── 🔧 adb
-├── 📄 README.txt         ├── 📄 README.txt         ├── 📄 README.txt
-└── 📚 USER-GUIDE.md      └── 📚 USER-GUIDE.md      └── 📚 USER-GUIDE.md
+├── ⚙️ adb-proxy.exe      ├── ⚙️ adb-proxy          ├── ⚙️ adb-proxy
+├── 📄 adbwinapi.dll      ├── 📄 README.txt         ├── 📄 README.txt
+├── 📄 adbwinusbapi.dll   └── 📚 USER-GUIDE.md      └── 📚 USER-GUIDE.md
+├── 📄 README.txt
+└── 📚 USER-GUIDE.md
 ```
 
 ### File Sizes
 
-- **Windows**: ~70MB
-- **Linux**: ~55MB
-- **macOS**: ~70MB
+- **Windows**: ~52MB
+- **macOS**: ~75MB
+- **Linux**: ~63MB
 
 ## Development
 

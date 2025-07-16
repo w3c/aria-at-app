@@ -133,27 +133,43 @@ async function buildForPlatform(platform) {
   }
 
   // Download and extract ngrok (optional, for ngrok tunnel type)
-  console.info(`📥 Downloading ngrok for ${platform} (optional)...`);
-  const ngrokArchiveExt = platform === 'windows' ? 'zip' : 'tgz';
-  const ngrokArchive = path.join(buildDir, `ngrok-archive.${ngrokArchiveExt}`);
+  const includeNgrok = process.env.INCLUDE_NGROK === 'true';
 
-  try {
-    await downloadFile(config.ngrokUrl, ngrokArchive);
-    await extractArchive(ngrokArchive, buildDir);
+  if (includeNgrok) {
+    console.info(`📥 Downloading ngrok for ${platform}...`);
+    const ngrokArchiveExt = platform === 'windows' ? 'zip' : 'tgz';
+    const ngrokArchive = path.join(
+      buildDir,
+      `ngrok-archive.${ngrokArchiveExt}`
+    );
 
-    // Find and copy ngrok binary
-    const ngrokBinary = platform === 'windows' ? 'ngrok.exe' : 'ngrok';
-    const ngrokPath = path.join(buildDir, ngrokBinary);
-    if (fs.existsSync(ngrokPath)) {
-      console.info(`✅ ngrok binary copied for ${platform}`);
+    try {
+      await downloadFile(config.ngrokUrl, ngrokArchive);
+      await extractArchive(ngrokArchive, buildDir);
+
+      // Find and copy ngrok binary
+      const ngrokBinary = platform === 'windows' ? 'ngrok.exe' : 'ngrok';
+      const ngrokPath = path.join(buildDir, ngrokBinary);
+      if (fs.existsSync(ngrokPath)) {
+        console.info(`✅ ngrok binary copied for ${platform}`);
+      }
+
+      if (fs.existsSync(ngrokArchive)) {
+        fs.unlinkSync(ngrokArchive);
+      }
+    } catch (error) {
+      console.warn(
+        `⚠️ Failed to download ngrok for ${platform}:`,
+        error.message
+      );
+      console.info(
+        'ℹ️ ngrok is optional - localtunnel will be used by default'
+      );
     }
-
-    if (fs.existsSync(ngrokArchive)) {
-      fs.unlinkSync(ngrokArchive);
-    }
-  } catch (error) {
-    console.warn(`⚠️ Failed to download ngrok for ${platform}:`, error.message);
-    console.info('ℹ️ ngrok is optional - localtunnel will be used by default');
+  } else {
+    console.info(
+      `⏭️ Skipping ngrok download for ${platform} (INCLUDE_NGROK not set to 'true')`
+    );
   }
 
   // Create startup script/batch file
@@ -209,16 +225,17 @@ export PATH="$DIR:$PATH"
     fs.chmodSync(path.join(buildDir, scriptName), '755');
   }
 
-  // Create ngrok-specific startup script
-  const ngrokScriptName =
-    platform === 'windows'
-      ? 'start-ngrok.bat'
-      : platform === 'macos'
-      ? 'start-ngrok.command'
-      : 'start-ngrok.sh';
-  const ngrokStartupScript =
-    platform === 'windows'
-      ? `@echo off
+  // Create ngrok-specific startup script (only if ngrok is included)
+  if (includeNgrok) {
+    const ngrokScriptName =
+      platform === 'windows'
+        ? 'start-ngrok.bat'
+        : platform === 'macos'
+        ? 'start-ngrok.command'
+        : 'start-ngrok.sh';
+    const ngrokStartupScript =
+      platform === 'windows'
+        ? `@echo off
 title ADB Proxy for aria-at Testing (ngrok)
 color 0B
 echo.
@@ -240,7 +257,7 @@ echo.
 set TUNNEL_TYPE=ngrok
 "%~dp0${config.executable}"
 pause`
-      : `#!/bin/bash
+        : `#!/bin/bash
 echo "========================================"
 echo "  ADB Proxy for aria-at Testing"
 echo "  Using ngrok tunnel"
@@ -261,20 +278,30 @@ export PATH="$DIR:$PATH"
 export TUNNEL_TYPE=ngrok
 "$DIR/${config.executable}"`;
 
-  fs.writeFileSync(path.join(buildDir, ngrokScriptName), ngrokStartupScript);
-  if (platform !== 'windows') {
-    fs.chmodSync(path.join(buildDir, ngrokScriptName), '755');
+    fs.writeFileSync(path.join(buildDir, ngrokScriptName), ngrokStartupScript);
+    if (platform !== 'windows') {
+      fs.chmodSync(path.join(buildDir, ngrokScriptName), '755');
+    }
   }
 
   // Create README
   const ngrokBinary = platform === 'windows' ? 'ngrok.exe' : 'ngrok';
+  const ngrokScriptName = includeNgrok
+    ? platform === 'windows'
+      ? 'start-ngrok.bat'
+      : platform === 'macos'
+      ? 'start-ngrok.command'
+      : 'start-ngrok.sh'
+    : 'N/A';
+
   const readme = `# ADB Proxy - Portable Version
 
 This is a portable version of the ADB Proxy that includes:
 - ADB Proxy executable
 - ADB binary
-- localtunnel (built-in, default tunnel)
-- ngrok binary (optional, for ngrok tunnel type)
+- localtunnel (built-in, default tunnel)${
+    includeNgrok ? '\n- ngrok binary (optional, for ngrok tunnel type)' : ''
+  }
 - Startup script
 - Complete user guide
 
@@ -294,23 +321,32 @@ The proxy will start on http://localhost:3080
 ## Tunnel Types
 
 The proxy supports two tunnel types:
-- **localtunnel** (default): Uses localtunnel service for public access
-- **ngrok**: Uses ngrok service for public access (requires ngrok binary)
+- **localtunnel** (default): Uses localtunnel service for public access${
+    includeNgrok
+      ? '\n- **ngrok**: Uses ngrok service for public access (requires ngrok binary)'
+      : ''
+  }
 
-To use ngrok, set the TUNNEL_TYPE environment variable:
+${
+  includeNgrok
+    ? `To use ngrok, set the TUNNEL_TYPE environment variable:
 \`\`\`
 TUNNEL_TYPE=ngrok ./start.sh
 \`\`\`
 
-## Files
+`
+    : ''
+}## Files
 
 - ${config.executable}: Main proxy executable (generated by @yao-pkg/pkg)
 - ${adbBinary}: Android Debug Bridge binary${
     platform === 'windows' ? ' (with required DLL files)' : ''
+  }${includeNgrok ? `\n- ${ngrokBinary}: ngrok binary (optional)` : ''}
+- ${scriptName}: Startup script (uses localtunnel by default)${
+    includeNgrok
+      ? `\n- ${ngrokScriptName}: Startup script for ngrok tunnel`
+      : ''
   }
-- ${ngrokBinary}: ngrok binary (optional)
-- ${scriptName}: Startup script (uses localtunnel by default)
-- ${ngrokScriptName}: Startup script for ngrok tunnel
 `;
 
   fs.writeFileSync(path.join(buildDir, 'README.txt'), readme);

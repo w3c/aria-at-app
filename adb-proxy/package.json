@@ -10,7 +10,11 @@
     "build-windows": "pkg adb-proxy.js --targets node18-win-x64 --out-path dist/windows && node build-platforms.js windows",
     "build-linux": "pkg adb-proxy.js --targets node18-linux-x64 --out-path dist/linux && node build-platforms.js linux",
     "build-macos": "pkg adb-proxy.js --targets node18-macos-x64 --out-path dist/macos && node build-platforms.js macos",
-    "build-all": "npm run build-windows && npm run build-linux && npm run build-macos"
+    "build-all": "npm run build-windows && npm run build-linux && npm run build-macos",
+    "build-windows:ngrok": "pkg adb-proxy.js --targets node18-win-x64 --out-path dist/windows && INCLUDE_NGROK=true node build-platforms.js windows",
+    "build-linux:ngrok": "pkg adb-proxy.js --targets node18-linux-x64 --out-path dist/linux && INCLUDE_NGROK=true node build-platforms.js linux",
+    "build-macos:ngrok": "pkg adb-proxy.js --targets node18-macos-x64 --out-path dist/macos && INCLUDE_NGROK=true node build-platforms.js macos",
+    "build-all:ngrok": "npm run build-windows:ngrok && npm run build-linux:ngrok && npm run build-macos:ngrok"
   },
   "dependencies": {
     "body-parser": "^2.2.0",

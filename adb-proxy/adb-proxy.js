@@ -166,9 +166,6 @@ startTunnel()
   .then(url => {
     if (url) {
       console.info('✅ Tunnel ready:', url);
-      console.info(
-        '📋 Copy this URL to your aria-at-app adb proxy configuration'
-      );
     } else {
       console.warn(
         '⚠️ No tunnel established. The proxy will only be available locally.'
@@ -341,9 +338,37 @@ app.post('/stream-capture-utterances', (req, res) => {
     });
 });
 
+// Initialize ADB server on startup (helps with Windows startup time)
+function initializeAdb() {
+  const executableDir = path.dirname(process.execPath);
+  const adbBinary = process.platform === 'win32' ? 'adb.exe' : 'adb';
+  const adbPath = path.join(executableDir, adbBinary);
+
+  console.info('🔧 Initializing ADB server...');
+
+  // Kill any existing ADB server first (helps with Windows)
+  exec(`${adbPath} kill-server`, error => {
+    if (error) {
+      console.warn('⚠️ Could not kill existing ADB server:', error.message);
+    }
+
+    // Start ADB server
+    exec(`${adbPath} start-server`, error => {
+      if (error) {
+        console.error('❌ Failed to start ADB server:', error.message);
+      } else {
+        console.info('✅ ADB server initialized');
+      }
+    });
+  });
+}
+
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.info(`ADB proxy running on http://localhost:${PORT}`);
+
+  // Initialize ADB server after the web server starts
+  initializeAdb();
 });
 
 // Cleanup tunnel process on server shutdown
