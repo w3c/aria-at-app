@@ -5,20 +5,85 @@ const cors = require('cors');
 const path = require('path');
 const UtteranceCapture = require('./capture-utterances');
 
+// Import localtunnel
+let localtunnel;
+try {
+  localtunnel = require('localtunnel');
+} catch (error) {
+  console.warn('localtunnel not available:', error.message);
+}
+
 const app = express();
 const PORT = 3080;
 
 app.use(cors()); // Allow access from React web app
 app.use(bodyParser.json());
 
-// Global variable to store ngrok URL
-let ngrokUrl = null;
-let ngrokProcess = null;
+// Global variable to store tunnel URL
+let tunnelUrl = null;
+let tunnelProcess = null;
+let tunnelType = process.env.TUNNEL_TYPE || 'localtunnel';
+
+// Function to start localtunnel
+async function startLocaltunnel() {
+  if (!localtunnel) {
+    console.error(
+      '❌ localtunnel not available. Please install it with: npm install localtunnel'
+    );
+    return null;
+  }
+
+  try {
+    console.info('🌐 Starting localtunnel...');
+
+    const tunnel = await localtunnel({
+      port: PORT,
+      subdomain: 'adb-proxy-' + Math.random().toString(36).substring(2, 8), // Random subdomain
+      host: 'https://loca.lt'
+    });
+
+    tunnelUrl = tunnel.url;
+    console.info('✅ localtunnel established:', tunnelUrl);
+
+    // Log all tunnel events
+    tunnel.on('url', url => {
+      console.info('🔗 localtunnel URL assigned:', url);
+      tunnelUrl = url;
+    });
+
+    tunnel.on('request', info => {
+      console.info('📨 localtunnel request:', {
+        method: info.method,
+        path: info.path,
+        headers: info.headers,
+        timestamp: new Date().toISOString()
+      });
+    });
+
+    tunnel.on('error', error => {
+      console.error('❌ localtunnel error:', error);
+    });
+
+    tunnel.on('close', () => {
+      console.info('🔒 localtunnel connection closed');
+      tunnelUrl = null;
+    });
+
+    tunnel.on('reconnect', () => {
+      console.info('🔄 localtunnel reconnecting...');
+    });
+
+    return tunnelUrl;
+  } catch (error) {
+    console.error('❌ Failed to start localtunnel:', error);
+    return null;
+  }
+}
 
 // Function to start ngrok tunnel
 function startNgrokTunnel() {
   return new Promise((resolve, reject) => {
-    console.info('Starting ngrok tunnel...');
+    console.info('🚀 Starting ngrok tunnel...');
 
     // Check if ngrok binary exists
     const ngrokBinary = process.platform === 'win32' ? 'ngrok.exe' : 'ngrok';
@@ -28,87 +93,91 @@ function startNgrokTunnel() {
     const executableDir = path.dirname(process.execPath);
     const ngrokPath = path.join(executableDir, ngrokBinary);
 
-    console.info('Checking for ngrok at:', ngrokPath);
+    console.info('🔍 Checking for ngrok at:', ngrokPath);
 
     if (!require('fs').existsSync(ngrokPath)) {
-      console.warn('ngrok binary not found at:', ngrokPath);
+      console.warn('⚠️ ngrok binary not found at:', ngrokPath);
       console.warn(
-        'Available files in directory:',
+        '📁 Available files in directory:',
         require('fs').readdirSync(executableDir)
       );
       resolve(null);
       return;
     }
 
-    console.info('Found ngrok binary at:', ngrokPath);
+    console.info('✅ Found ngrok binary at:', ngrokPath);
 
     // Start ngrok tunnel
-    ngrokProcess = exec(
+    tunnelProcess = exec(
       `${ngrokPath} http ${PORT} --log=stdout`,
       (error, stdout, stderr) => {
-        if (stdout) console.info(stdout);
+        if (stdout) console.info('📤 ngrok stdout:', stdout);
         if (stderr) {
-          console.error('stderr:', stderr);
+          console.error('📥 ngrok stderr:', stderr);
         }
         if (error) {
-          console.error('ngrok error:', error);
+          console.error('❌ ngrok error:', error);
           reject(error);
         }
       }
     );
 
     // Parse ngrok output to get the public URL
-    ngrokProcess.stdout.on('data', data => {
+    tunnelProcess.stdout.on('data', data => {
       const output = data.toString();
-      console.info('ngrok output:', output);
+      console.info('📋 ngrok output:', output);
 
       // Look for the public URL in ngrok output
       const urlMatch = output.match(/https:\/\/[a-zA-Z0-9-]+\.ngrok-free\.app/);
-      if (urlMatch && !ngrokUrl) {
-        ngrokUrl = urlMatch[0];
-        console.info('ngrok tunnel established:', ngrokUrl);
-        resolve(ngrokUrl);
+      if (urlMatch && !tunnelUrl) {
+        tunnelUrl = urlMatch[0];
+        console.info('✅ ngrok tunnel established:', tunnelUrl);
+        resolve(tunnelUrl);
       }
     });
 
-    ngrokProcess.stderr.on('data', data => {
-      console.error('ngrok stderr:', data.toString());
+    tunnelProcess.stderr.on('data', data => {
+      console.error('📥 ngrok stderr:', data.toString());
     });
 
     // Timeout after 10 seconds
     setTimeout(() => {
-      if (!ngrokUrl) {
-        console.warn('ngrok tunnel not established within 10 seconds');
+      if (!tunnelUrl) {
+        console.warn('⏰ ngrok tunnel not established within 10 seconds');
         resolve(null);
       }
     }, 10000);
   });
 }
 
-// Start ngrok tunnel when server starts
-startNgrokTunnel()
+// Function to start tunnel based on configuration
+async function startTunnel() {
+  console.info(`🚀 Starting tunnel with type: ${tunnelType}`);
+
+  if (tunnelType === 'ngrok') {
+    return await startNgrokTunnel();
+  } else {
+    return await startLocaltunnel();
+  }
+}
+
+// Start tunnel when server starts
+startTunnel()
   .then(url => {
     if (url) {
-      console.info('✅ ngrok tunnel ready:', url);
+      console.info('✅ Tunnel ready:', url);
       console.info(
         '📋 Copy this URL to your aria-at-app adb proxy configuration'
+      );
+    } else {
+      console.warn(
+        '⚠️ No tunnel established. The proxy will only be available locally.'
       );
     }
   })
   .catch(error => {
-    console.error('❌ Failed to start ngrok tunnel:', error);
+    console.error('❌ Failed to start tunnel:', error);
   });
-
-app.get('/proxy-public-url', (req, res) => {
-  if (ngrokUrl) {
-    res.json({ url: ngrokUrl });
-  } else {
-    res.status(404).json({ error: 'ngrok tunnel not ready' });
-  }
-});
-
-// Handle preflight requests for streaming endpoint
-app.options('/stream-capture-utterances', cors());
 
 // Whitelist of allowed commands and patterns
 const SAFE_COMMANDS = [
@@ -162,6 +231,17 @@ function isSafeCommand(cmd) {
 
   return false;
 }
+
+app.get('/tunnel-url', (req, res) => {
+  if (tunnelUrl) {
+    res.json({ url: tunnelUrl, type: tunnelType });
+  } else {
+    res.status(404).json({ error: 'tunnel not ready', type: tunnelType });
+  }
+});
+
+// Handle preflight requests for streaming endpoint
+app.options('/stream-capture-utterances', cors());
 
 app.post('/run-adb', (req, res) => {
   const command = req.body.command;
@@ -266,19 +346,19 @@ app.listen(PORT, () => {
   console.info(`ADB proxy running on http://localhost:${PORT}`);
 });
 
-// Cleanup ngrok process on server shutdown
+// Cleanup tunnel process on server shutdown
 process.on('SIGINT', () => {
   console.info('Shutting down...');
-  if (ngrokProcess) {
-    ngrokProcess.kill();
+  if (tunnelProcess) {
+    tunnelProcess.kill();
   }
   process.exit(0);
 });
 
 process.on('SIGTERM', () => {
   console.info('Shutting down...');
-  if (ngrokProcess) {
-    ngrokProcess.kill();
+  if (tunnelProcess) {
+    tunnelProcess.kill();
   }
   process.exit(0);
 });

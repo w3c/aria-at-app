@@ -5,6 +5,8 @@
   "main": "adb-proxy.js",
   "scripts": {
     "start": "node adb-proxy.js",
+    "start:ngrok": "TUNNEL_TYPE=ngrok node adb-proxy.js",
+    "start:localtunnel": "TUNNEL_TYPE=localtunnel node adb-proxy.js",
     "build-windows": "pkg adb-proxy.js --targets node18-win-x64 --out-path dist/windows && node build-platforms.js windows",
     "build-linux": "pkg adb-proxy.js --targets node18-linux-x64 --out-path dist/linux && node build-platforms.js linux",
     "build-macos": "pkg adb-proxy.js --targets node18-macos-x64 --out-path dist/macos && node build-platforms.js macos",
@@ -13,7 +15,8 @@
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "localtunnel": "^2.0.2"
   },
   "devDependencies": {
     "@yao-pkg/pkg": "^6.5.1"

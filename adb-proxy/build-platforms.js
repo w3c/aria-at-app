@@ -132,22 +132,28 @@ async function buildForPlatform(platform) {
     fs.rmSync(platformToolsDir, { recursive: true });
   }
 
-  // Download and extract ngrok
-  console.info(`📥 Downloading ngrok for ${platform}...`);
+  // Download and extract ngrok (optional, for ngrok tunnel type)
+  console.info(`📥 Downloading ngrok for ${platform} (optional)...`);
   const ngrokArchiveExt = platform === 'windows' ? 'zip' : 'tgz';
   const ngrokArchive = path.join(buildDir, `ngrok-archive.${ngrokArchiveExt}`);
-  await downloadFile(config.ngrokUrl, ngrokArchive);
-  await extractArchive(ngrokArchive, buildDir);
 
-  // Find and copy ngrok binary
-  const ngrokBinary = platform === 'windows' ? 'ngrok.exe' : 'ngrok';
-  const ngrokPath = path.join(buildDir, ngrokBinary);
-  if (fs.existsSync(ngrokPath)) {
-    console.info(`✅ ngrok binary copied for ${platform}`);
-  }
+  try {
+    await downloadFile(config.ngrokUrl, ngrokArchive);
+    await extractArchive(ngrokArchive, buildDir);
 
-  if (fs.existsSync(ngrokArchive)) {
-    fs.unlinkSync(ngrokArchive);
+    // Find and copy ngrok binary
+    const ngrokBinary = platform === 'windows' ? 'ngrok.exe' : 'ngrok';
+    const ngrokPath = path.join(buildDir, ngrokBinary);
+    if (fs.existsSync(ngrokPath)) {
+      console.info(`✅ ngrok binary copied for ${platform}`);
+    }
+
+    if (fs.existsSync(ngrokArchive)) {
+      fs.unlinkSync(ngrokArchive);
+    }
+  } catch (error) {
+    console.warn(`⚠️ Failed to download ngrok for ${platform}:`, error.message);
+    console.info('ℹ️ ngrok is optional - localtunnel will be used by default');
   }
 
   // Create startup script/batch file
@@ -172,6 +178,7 @@ echo  2. Ensure USB debugging is enabled on your device
 echo  3. This window will stay open while the proxy runs
 echo.
 echo  The proxy will be available at: http://localhost:3080
+echo  Using localtunnel for public access (default)
 echo.
 echo  Starting proxy...
 echo.
@@ -188,6 +195,7 @@ echo "2. Ensure USB debugging is enabled on your device"
 echo "3. This terminal will stay open while the proxy runs"
 echo
 echo "The proxy will be available at: http://localhost:3080"
+echo "Using localtunnel for public access (default)"
 echo
 echo "Starting proxy..."
 echo
@@ -201,13 +209,72 @@ export PATH="$DIR:$PATH"
     fs.chmodSync(path.join(buildDir, scriptName), '755');
   }
 
+  // Create ngrok-specific startup script
+  const ngrokScriptName =
+    platform === 'windows'
+      ? 'start-ngrok.bat'
+      : platform === 'macos'
+      ? 'start-ngrok.command'
+      : 'start-ngrok.sh';
+  const ngrokStartupScript =
+    platform === 'windows'
+      ? `@echo off
+title ADB Proxy for aria-at Testing (ngrok)
+color 0B
+echo.
+echo  ========================================
+echo   ADB Proxy for aria-at Testing
+echo   Using ngrok tunnel
+echo  ========================================
+echo.
+echo  1. Make sure your Android device is connected via USB
+echo  2. Ensure USB debugging is enabled on your device
+echo  3. This window will stay open while the proxy runs
+echo.
+echo  The proxy will be available at: http://localhost:3080
+echo  Using ngrok for public access
+echo.
+echo  Starting proxy...
+echo.
+
+set TUNNEL_TYPE=ngrok
+"%~dp0${config.executable}"
+pause`
+      : `#!/bin/bash
+echo "========================================"
+echo "  ADB Proxy for aria-at Testing"
+echo "  Using ngrok tunnel"
+echo "========================================"
+echo
+echo "1. Make sure your Android device is connected via USB"
+echo "2. Ensure USB debugging is enabled on your device"
+echo "3. This terminal will stay open while the proxy runs"
+echo
+echo "The proxy will be available at: http://localhost:3080"
+echo "Using ngrok for public access"
+echo
+echo "Starting proxy..."
+echo
+
+DIR="$( cd "$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
+export PATH="$DIR:$PATH"
+export TUNNEL_TYPE=ngrok
+"$DIR/${config.executable}"`;
+
+  fs.writeFileSync(path.join(buildDir, ngrokScriptName), ngrokStartupScript);
+  if (platform !== 'windows') {
+    fs.chmodSync(path.join(buildDir, ngrokScriptName), '755');
+  }
+
   // Create README
+  const ngrokBinary = platform === 'windows' ? 'ngrok.exe' : 'ngrok';
   const readme = `# ADB Proxy - Portable Version
 
 This is a portable version of the ADB Proxy that includes:
 - ADB Proxy executable
 - ADB binary
-- ngrok binary
+- localtunnel (built-in, default tunnel)
+- ngrok binary (optional, for ngrok tunnel type)
 - Startup script
 - Complete user guide
 
@@ -224,14 +291,26 @@ This is a portable version of the ADB Proxy that includes:
 
 The proxy will start on http://localhost:3080
 
+## Tunnel Types
+
+The proxy supports two tunnel types:
+- **localtunnel** (default): Uses localtunnel service for public access
+- **ngrok**: Uses ngrok service for public access (requires ngrok binary)
+
+To use ngrok, set the TUNNEL_TYPE environment variable:
+\`\`\`
+TUNNEL_TYPE=ngrok ./start.sh
+\`\`\`
+
 ## Files
 
 - ${config.executable}: Main proxy executable (generated by @yao-pkg/pkg)
 - ${adbBinary}: Android Debug Bridge binary${
     platform === 'windows' ? ' (with required DLL files)' : ''
   }
-- ${ngrokBinary}: ngrok binary
-- ${scriptName}: Startup script
+- ${ngrokBinary}: ngrok binary (optional)
+- ${scriptName}: Startup script (uses localtunnel by default)
+- ${ngrokScriptName}: Startup script for ngrok tunnel
 `;
 
   fs.writeFileSync(path.join(buildDir, 'README.txt'), readme);

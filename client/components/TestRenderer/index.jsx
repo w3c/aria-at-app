@@ -233,8 +233,8 @@ const TestRenderer = ({
   // Load proxy URL on component mount
   useEffect(() => {
     fetchCurrentProxyUrl();
-    // Try to auto-detect ngrok URL
-    detectNgrokUrl();
+    // Try to auto-detect tunnel URL
+    detectTunnelUrl();
   }, []);
 
   // Cleanup
@@ -262,7 +262,7 @@ const TestRenderer = ({
    * @param {boolean} forceDetection - when true, force the auto-detected proxy url if not in a deployed environment
    * @returns {Promise<null|string>}
    */
-  const detectNgrokUrl = async (forceDetection = false) => {
+  const detectTunnelUrl = async (forceDetection = false) => {
     // Most likely local dev environment
     if (window.location.protocol === 'http:' && !forceDetection) {
       const dataUrl = 'http://localhost:3080';
@@ -273,8 +273,8 @@ const TestRenderer = ({
     }
 
     try {
-      // Try to get ngrok URL from local adb-proxy server
-      const response = await fetch('http://localhost:3080/proxy-public-url');
+      // Try to get tunnel URL from local adb-proxy server
+      const response = await fetch('http://localhost:3080/tunnel-url');
       if (response.ok) {
         const data = await response.json();
         if (data.url) {
@@ -285,7 +285,7 @@ const TestRenderer = ({
         }
       }
     } catch (error) {
-      console.info('No local ngrok tunnel detected:', error.message);
+      console.info('No local tunnel tunnel detected:', error.message);
       return null;
     }
     return null;
@@ -770,13 +770,13 @@ const TestRenderer = ({
                 }}
               >
                 {proxyUrlMessage}
-                <button type="button" onClick={() => detectNgrokUrl(true)}>
+                <button type="button" onClick={() => detectTunnelUrl(true)}>
                   Auto-Detect
                 </button>
               </div>
             )}
 
-            {/* TODO: Conditionally show this in the future (could also be fully hidden with ngrok auto detect) */}
+            {/* TODO: Conditionally show this in the future (could also be fully hidden with tunnel auto detect) */}
             {/*<div className={styles.proxyUrlSection}>*/}
             {/*  <h3>ADB Proxy Configuration</h3>*/}
             {/*  <p>Configure your ADB proxy URL for Android device automation.</p>*/}
@@ -807,33 +807,11 @@ const TestRenderer = ({
             {/*        required*/}
             {/*      />*/}
             {/*      <button type="submit">Save Proxy URL</button>*/}
-            {/*      <button type="button" onClick={detectNgrokUrl}>*/}
+            {/*      <button type="button" onClick={detectTunnelUrl}>*/}
             {/*        Auto-Detect Public Proxy URL*/}
             {/*      </button>*/}
             {/*    </div>*/}
             {/*  </form>*/}
-
-            {/*  <div className={styles.proxyInstructions}>*/}
-            {/*    <h4>Setup Instructions:</h4>*/}
-            {/*    <ol>*/}
-            {/*      <li>*/}
-            {/*        Set up an ADB proxy server (e.g., using the adb-proxy tool)*/}
-            {/*      </li>*/}
-            {/*      <li>*/}
-            {/*        Create a public tunnel (e.g., using ngrok) to expose your*/}
-            {/*        ADB proxy*/}
-            {/*      </li>*/}
-            {/*      <li>*/}
-            {/*        Enter the public URL above (e.g.,*/}
-            {/*        https://abc123.ngrok-free.app)*/}
-            {/*      </li>*/}
-            {/*      <li>Connect an Android device with USB debugging enabled</li>*/}
-            {/*      <li>*/}
-            {/*        Use the &quot;Open Test Page on Android Device&quot; button*/}
-            {/*        above*/}
-            {/*      </li>*/}
-            {/*    </ol>*/}
-            {/*  </div>*/}
             {/*</div>*/}
 
             {capturedUtterances.length > 0 && (
