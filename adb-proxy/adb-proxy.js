@@ -99,7 +99,7 @@ startNgrokTunnel()
     console.error('❌ Failed to start ngrok tunnel:', error);
   });
 
-app.get('/ngrok-url', (req, res) => {
+app.get('/proxy-public-url', (req, res) => {
   if (ngrokUrl) {
     res.json({ url: ngrokUrl });
   } else {

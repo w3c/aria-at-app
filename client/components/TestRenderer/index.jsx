@@ -258,61 +258,66 @@ const TestRenderer = ({
     }
   };
 
-  const detectNgrokUrl = async () => {
-    // not in a deployed environment, no need to check
-    if (window.location.protocol !== 'https:') {
+  /**
+   * @param {boolean} forceDetection - when true, force the auto-detected proxy url if not in a deployed environment
+   * @returns {Promise<null|string>}
+   */
+  const detectNgrokUrl = async (forceDetection = false) => {
+    // Most likely local dev environment
+    if (window.location.protocol === 'http:' && !forceDetection) {
       const dataUrl = 'http://localhost:3080';
       setProxyUrl(dataUrl);
-      setProxyUrlMessage(`Auto-detected ngrok URL: ${dataUrl}`);
+      setProxyUrlMessage(`Auto-detected proxy URL: ${dataUrl}`);
       setProxyUrlMessageType('success');
       return dataUrl;
     }
 
     try {
       // Try to get ngrok URL from local adb-proxy server
-      const response = await fetch('http://localhost:3080/ngrok-url');
+      const response = await fetch('http://localhost:3080/proxy-public-url');
       if (response.ok) {
         const data = await response.json();
         if (data.url) {
           setProxyUrl(data.url);
-          setProxyUrlMessage(`Auto-detected ngrok URL: ${data.url}`);
+          setProxyUrlMessage(`Auto-detected proxy URL: ${data.url}`);
           setProxyUrlMessageType('success');
           return data.url;
         }
       }
     } catch (error) {
       console.info('No local ngrok tunnel detected:', error.message);
+      return null;
     }
     return null;
   };
 
-  const handleProxyUrlSubmit = async event => {
-    event.preventDefault();
-    setProxyUrlMessage('');
-
-    try {
-      const response = await fetch('/api/scripts/proxy-url', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ proxyUrl })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setProxyUrlMessage(data.message || 'Proxy URL updated successfully');
-        setProxyUrlMessageType('success');
-      } else {
-        setProxyUrlMessage(data.error || 'Failed to update proxy URL');
-        setProxyUrlMessageType('error');
-      }
-    } catch (error) {
-      setProxyUrlMessage('Error updating proxy URL: ' + error.message);
-      setProxyUrlMessageType('error');
-    }
-  };
+  // const handleProxyUrlSubmit = async event => {
+  //   event.preventDefault();
+  //   setProxyUrlMessage('');
+  //
+  //   try {
+  //     const response = await fetch('/api/scripts/proxy-url', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({ proxyUrl })
+  //     });
+  //
+  //     const data = await response.json();
+  //
+  //     if (response.ok) {
+  //       setProxyUrlMessage(data.message || 'Proxy URL updated successfully');
+  //       setProxyUrlMessageType('success');
+  //     } else {
+  //       setProxyUrlMessage(data.error || 'Failed to update proxy URL');
+  //       setProxyUrlMessageType('error');
+  //     }
+  //   } catch (error) {
+  //     setProxyUrlMessage('Error updating proxy URL: ' + error.message);
+  //     setProxyUrlMessageType('error');
+  //   }
+  // };
 
   const runAndroidScripts = async () => {
     // Get the URL from the test page
@@ -755,69 +760,81 @@ const TestRenderer = ({
               Open Test Page on Android Device
             </button>
 
-            {/* TODO: Conditionally show this in the future (could also be fully hidden with ngrok auto detect) */}
-            <div className={styles.proxyUrlSection}>
-              <h3>ADB Proxy Configuration</h3>
-              <p>
-                Configure your personal ADB proxy URL for Android device
-                automation. This setting is saved per user session and will not
-                affect other users.
-              </p>
-
-              {proxyUrlMessage && (
-                <div
-                  className={`${styles.message} ${styles[proxyUrlMessageType]}`}
-                >
-                  {proxyUrlMessage}
-                  <button
-                    className={styles.closeMessage}
-                    onClick={() => setProxyUrlMessage('')}
-                  >
-                    ×
-                  </button>
-                </div>
-              )}
-
-              <form onSubmit={handleProxyUrlSubmit}>
-                <div className={styles.proxyUrlInput}>
-                  <label htmlFor="proxyUrl">ADB Proxy URL:</label>
-                  <input
-                    id="proxyUrl"
-                    type="url"
-                    placeholder="Your proxy URL"
-                    value={proxyUrl}
-                    onChange={e => setProxyUrl(e.target.value)}
-                    required
-                  />
-                  <button type="submit">Save Proxy URL</button>
-                  <button type="button" onClick={detectNgrokUrl}>
-                    Auto-Detect ngrok
-                  </button>
-                </div>
-              </form>
-
-              <div className={styles.proxyInstructions}>
-                <h4>Setup Instructions:</h4>
-                <ol>
-                  <li>
-                    Set up an ADB proxy server (e.g., using the adb-proxy tool)
-                  </li>
-                  <li>
-                    Create a public tunnel (e.g., using ngrok) to expose your
-                    ADB proxy
-                  </li>
-                  <li>
-                    Enter the public URL above (e.g.,
-                    https://abc123.ngrok-free.app)
-                  </li>
-                  <li>Connect an Android device with USB debugging enabled</li>
-                  <li>
-                    Use the &quot;Open Test Page on Android Device&quot; button
-                    above
-                  </li>
-                </ol>
+            {proxyUrlMessage && (
+              <div
+                className={`${styles.message} ${styles[proxyUrlMessageType]}`}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center'
+                }}
+              >
+                {proxyUrlMessage}
+                <button type="button" onClick={() => detectNgrokUrl(true)}>
+                  Auto-Detect
+                </button>
               </div>
-            </div>
+            )}
+
+            {/* TODO: Conditionally show this in the future (could also be fully hidden with ngrok auto detect) */}
+            {/*<div className={styles.proxyUrlSection}>*/}
+            {/*  <h3>ADB Proxy Configuration</h3>*/}
+            {/*  <p>Configure your ADB proxy URL for Android device automation.</p>*/}
+
+            {/*  {proxyUrlMessage && (*/}
+            {/*    <div*/}
+            {/*      className={`${styles.message} ${styles[proxyUrlMessageType]}`}*/}
+            {/*    >*/}
+            {/*      {proxyUrlMessage}*/}
+            {/*      <button*/}
+            {/*        className={styles.closeMessage}*/}
+            {/*        onClick={() => setProxyUrlMessage('')}*/}
+            {/*      >*/}
+            {/*        ×*/}
+            {/*      </button>*/}
+            {/*    </div>*/}
+            {/*  )}*/}
+
+            {/*  <form onSubmit={handleProxyUrlSubmit}>*/}
+            {/*    <div className={styles.proxyUrlInput}>*/}
+            {/*      <label htmlFor="proxyUrl">ADB Proxy URL:</label>*/}
+            {/*      <input*/}
+            {/*        id="proxyUrl"*/}
+            {/*        type="url"*/}
+            {/*        placeholder="Your proxy URL"*/}
+            {/*        value={proxyUrl}*/}
+            {/*        onChange={e => setProxyUrl(e.target.value)}*/}
+            {/*        required*/}
+            {/*      />*/}
+            {/*      <button type="submit">Save Proxy URL</button>*/}
+            {/*      <button type="button" onClick={detectNgrokUrl}>*/}
+            {/*        Auto-Detect Public Proxy URL*/}
+            {/*      </button>*/}
+            {/*    </div>*/}
+            {/*  </form>*/}
+
+            {/*  <div className={styles.proxyInstructions}>*/}
+            {/*    <h4>Setup Instructions:</h4>*/}
+            {/*    <ol>*/}
+            {/*      <li>*/}
+            {/*        Set up an ADB proxy server (e.g., using the adb-proxy tool)*/}
+            {/*      </li>*/}
+            {/*      <li>*/}
+            {/*        Create a public tunnel (e.g., using ngrok) to expose your*/}
+            {/*        ADB proxy*/}
+            {/*      </li>*/}
+            {/*      <li>*/}
+            {/*        Enter the public URL above (e.g.,*/}
+            {/*        https://abc123.ngrok-free.app)*/}
+            {/*      </li>*/}
+            {/*      <li>Connect an Android device with USB debugging enabled</li>*/}
+            {/*      <li>*/}
+            {/*        Use the &quot;Open Test Page on Android Device&quot; button*/}
+            {/*        above*/}
+            {/*      </li>*/}
+            {/*    </ol>*/}
+            {/*  </div>*/}
+            {/*</div>*/}
 
             {capturedUtterances.length > 0 && (
               <div className={styles.captureOutput}>
