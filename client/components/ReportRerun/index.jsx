@@ -1,5 +1,5 @@
-import React, { useMemo, useRef, useEffect } from 'react';
-import { useQuery, useMutation, useApolloClient } from '@apollo/client';
+import React, { useMemo, useRef, useEffect, useState } from 'react';
+import { useQuery, useLazyQuery, useMutation } from '@apollo/client';
 import PropTypes from 'prop-types';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
@@ -15,11 +15,12 @@ import {
 } from './queries';
 
 const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
-  const client = useApolloClient();
   const { triggerLoad, loadingMessage } = useTriggerLoad();
   const eventsPanelRef = useRef(null);
   const announce = useAriaLiveRegion();
   const previousEventsCountRef = useRef(0);
+
+  const [rerunnableReportsData, setRerunnableReportsData] = useState({});
 
   const { data: { me } = {} } = useQuery(ME_QUERY);
   const { isAdmin } = evaluateAuth(me);
@@ -80,16 +81,60 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
       .filter(Boolean);
   }, [atVersionsData]);
 
-  const rerunnableReportsQueries = automatedVersions.map(({ version }) =>
-    useQuery(GET_RERUNNABLE_REPORTS_QUERY, {
-      variables: { atVersionId: version.id },
-      fetchPolicy: 'cache-and-network'
-    })
-  );
+  const [getRerunnableReports] = useLazyQuery(GET_RERUNNABLE_REPORTS_QUERY, {
+    fetchPolicy: 'cache-and-network'
+  });
+
+  useEffect(() => {
+    if (automatedVersions.length > 0) {
+      const currentVersionIds = automatedVersions.map(
+        ({ version }) => version.id
+      );
+
+      setRerunnableReportsData(prev => {
+        const filtered = {};
+        currentVersionIds.forEach(versionId => {
+          if (prev[versionId]) {
+            filtered[versionId] = prev[versionId];
+          }
+        });
+        return filtered;
+      });
+
+      const fetchAllReports = async () => {
+        try {
+          const promises = automatedVersions.map(async ({ version }) => {
+            const result = await getRerunnableReports({
+              variables: { atVersionId: version.id }
+            });
+            return { versionId: version.id, result };
+          });
+
+          const results = await Promise.all(promises);
+
+          setRerunnableReportsData(prev => {
+            const newData = { ...prev };
+            results.forEach(({ versionId, result }) => {
+              if (result.data?.rerunnableReports) {
+                newData[versionId] = result.data;
+              }
+            });
+            return newData;
+          });
+        } catch (error) {
+          console.error('Error fetching rerunnable reports:', error);
+        }
+      };
+
+      fetchAllReports();
+    }
+  }, [automatedVersions, getRerunnableReports]);
 
   const activeRuns = useMemo(() => {
-    return automatedVersions.map(({ at, version }, index) => {
-      const { data: rerunnableData } = rerunnableReportsQueries[index];
+    if (!automatedVersions.length) return [];
+
+    return automatedVersions.map(({ at, version }) => {
+      const rerunnableData = rerunnableReportsData[version.id];
       const groups =
         rerunnableData?.rerunnableReports?.previousVersionGroups || [];
 
@@ -115,7 +160,7 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
         reportGroups
       };
     });
-  }, [automatedVersions, rerunnableReportsQueries]);
+  }, [automatedVersions, rerunnableReportsData]);
 
   useEffect(() => {
     const totalAvailableRuns = activeRuns.reduce(
@@ -145,8 +190,7 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
           variables: { atVersionId: run.id }
         });
 
-        await client.query({
-          query: GET_RERUNNABLE_REPORTS_QUERY,
+        await getRerunnableReports({
           variables: { atVersionId: run.id },
           fetchPolicy: 'network-only'
         });
