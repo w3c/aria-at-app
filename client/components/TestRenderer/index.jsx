@@ -71,6 +71,9 @@ const TestRenderer = ({
   const [testRendererState, setTestRendererState] = useState(null);
   const [submitResult, setSubmitResult] = useState(null);
   const [submitCalled, setSubmitCalled] = useState(false);
+
+  // WebSocket for Android utterance capture related state and refs;
+  const copyUtterancesButtonRef = useRef(null);
   const [captureSocket, setCaptureSocket] = useState(null);
   const [capturedUtterances, setCapturedUtterances] = useState([]);
   const [proxyUrl, setProxyUrl] = useState('');
@@ -196,9 +199,15 @@ const TestRenderer = ({
         } else if (data.type === 'stopped') {
           // eslint-disable-next-line no-console
           console.info('Capture stopped', data.message);
+          if (copyUtterancesButtonRef.current) {
+            copyUtterancesButtonRef.current.focus();
+          }
         } else if (data.type === 'exit') {
           // eslint-disable-next-line no-console
           console.info('Capture process exited with code:', data.code);
+          if (copyUtterancesButtonRef.current) {
+            copyUtterancesButtonRef.current.focus();
+          }
         } else {
           // eslint-disable-next-line no-console
           console.info('Unknown message type:', data.type);
@@ -775,7 +784,6 @@ const TestRenderer = ({
               </button>
             </div>
 
-            {/* TODO: Conditionally show this in the future (could also be fully hidden with tunnel auto detect) */}
             {/*<div className={styles.proxyUrlSection}>*/}
             {/*  <h3>ADB Proxy Configuration</h3>*/}
             {/*  <p>Configure your ADB proxy URL for Android device automation.</p>*/}
@@ -812,17 +820,18 @@ const TestRenderer = ({
             {/*</div>*/}
             {capturedUtterances.length > 0 && (
               <div className={styles.captureOutput}>
-                {/* TODO: Focus on this button when it's detected that user is no longer capturing utterances */}
+                <h3>Captured Utterances:</h3>
+                <pre id="utterances-text">{capturedUtterances.join('\n')}</pre>
                 <button
+                  ref={copyUtterancesButtonRef}
                   className={styles.copyButton}
                   title="Copy utterances to clipboard"
                   aria-label="Copy utterances to clipboard"
                   onClick={() => copyToClipboard(capturedUtterances.join('\n'))}
+                  aria-describedby="utterances-text"
                 >
                   <FontAwesomeIcon icon={faCopy} />
                 </button>
-                <h3>Captured Utterances:</h3>
-                <pre>{capturedUtterances.join('\n')}</pre>
               </div>
             )}
           </section>
