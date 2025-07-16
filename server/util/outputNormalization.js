@@ -9,6 +9,7 @@ const normalizeScreenreaderOutput = output => {
   let normalized = output.replace(/\s+/g, ' ').trim();
 
   if (REMOVE_JAWS_SEPARATOR_TOKENS) {
+    // eslint-disable-next-line no-control-regex
     normalized = normalized.replace(/[\u001d\u001e]/g, ' ');
   }
 
