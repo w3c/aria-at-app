@@ -28,6 +28,7 @@ import CommandResults from './CommandResults';
 import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
 import { AtPropType, TestResultPropType } from '../common/proptypes/index.js';
+import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import styles from './TestRenderer.module.css';
 
 const ErrorComponent = ({ hasErrors = false }) => {
@@ -73,6 +74,7 @@ const TestRenderer = ({
   const [submitCalled, setSubmitCalled] = useState(false);
 
   // WebSocket for Android utterance capture related state and refs;
+  const announce = useAriaLiveRegion();
   const copyUtterancesButtonRef = useRef(null);
   const [captureSocket, setCaptureSocket] = useState(null);
   const [capturedUtterances, setCapturedUtterances] = useState([]);
@@ -86,6 +88,7 @@ const TestRenderer = ({
   const copyToClipboard = async text => {
     try {
       await navigator.clipboard.writeText(text);
+      announce('Utterances copied to clipboard');
     } catch (err) {
       console.error('copy.utterances.error', err);
 
@@ -96,6 +99,7 @@ const TestRenderer = ({
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
+      announce('Utterances copied to clipboard');
     }
   };
 
