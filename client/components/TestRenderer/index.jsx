@@ -269,6 +269,7 @@ const TestRenderer = ({
       setProxyUrl(dataUrl);
       setProxyUrlMessage(`Auto-detected proxy URL: ${dataUrl}`);
       setProxyUrlMessageType('success');
+      await handleProxyUrlSubmit(null, dataUrl);
       return dataUrl;
     }
 
@@ -281,6 +282,7 @@ const TestRenderer = ({
           setProxyUrl(data.url);
           setProxyUrlMessage(`Auto-detected proxy URL: ${data.url}`);
           setProxyUrlMessageType('success');
+          await handleProxyUrlSubmit(null, data.url);
           return data.url;
         }
       }
@@ -291,33 +293,33 @@ const TestRenderer = ({
     return null;
   };
 
-  // const handleProxyUrlSubmit = async event => {
-  //   event.preventDefault();
-  //   setProxyUrlMessage('');
-  //
-  //   try {
-  //     const response = await fetch('/api/scripts/proxy-url', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       body: JSON.stringify({ proxyUrl })
-  //     });
-  //
-  //     const data = await response.json();
-  //
-  //     if (response.ok) {
-  //       setProxyUrlMessage(data.message || 'Proxy URL updated successfully');
-  //       setProxyUrlMessageType('success');
-  //     } else {
-  //       setProxyUrlMessage(data.error || 'Failed to update proxy URL');
-  //       setProxyUrlMessageType('error');
-  //     }
-  //   } catch (error) {
-  //     setProxyUrlMessage('Error updating proxy URL: ' + error.message);
-  //     setProxyUrlMessageType('error');
-  //   }
-  // };
+  const handleProxyUrlSubmit = async (event, _proxyUrl) => {
+    if (event) event.preventDefault();
+    setProxyUrlMessage('');
+
+    try {
+      const response = await fetch('/api/scripts/proxy-url', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ proxyUrl: _proxyUrl || proxyUrl })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setProxyUrlMessage(data.message || 'Proxy URL updated successfully');
+        setProxyUrlMessageType('success');
+      } else {
+        setProxyUrlMessage(data.error || 'Failed to update proxy URL');
+        setProxyUrlMessageType('error');
+      }
+    } catch (error) {
+      setProxyUrlMessage('Error updating proxy URL: ' + error.message);
+      setProxyUrlMessageType('error');
+    }
+  };
 
   const runAndroidScripts = async () => {
     // Get the URL from the test page
@@ -759,28 +761,24 @@ const TestRenderer = ({
             >
               Open Test Page on Android Device
             </button>
-
-            {proxyUrlMessage && (
-              <div
-                className={`${styles.message} ${styles[proxyUrlMessageType]}`}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}
-              >
-                {proxyUrlMessage}
-                <button type="button" onClick={() => detectTunnelUrl(true)}>
-                  Auto-Detect
-                </button>
-              </div>
-            )}
+            <div
+              className={`${styles.message} ${styles[proxyUrlMessageType]}`}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              {proxyUrlMessage ? proxyUrlMessage : 'No proxy URL found'}
+              <button type="button" onClick={() => detectTunnelUrl(true)}>
+                Auto-Detect
+              </button>
+            </div>
 
             {/* TODO: Conditionally show this in the future (could also be fully hidden with tunnel auto detect) */}
             {/*<div className={styles.proxyUrlSection}>*/}
             {/*  <h3>ADB Proxy Configuration</h3>*/}
             {/*  <p>Configure your ADB proxy URL for Android device automation.</p>*/}
-
             {/*  {proxyUrlMessage && (*/}
             {/*    <div*/}
             {/*      className={`${styles.message} ${styles[proxyUrlMessageType]}`}*/}
@@ -794,7 +792,6 @@ const TestRenderer = ({
             {/*      </button>*/}
             {/*    </div>*/}
             {/*  )}*/}
-
             {/*  <form onSubmit={handleProxyUrlSubmit}>*/}
             {/*    <div className={styles.proxyUrlInput}>*/}
             {/*      <label htmlFor="proxyUrl">ADB Proxy URL:</label>*/}
@@ -813,7 +810,6 @@ const TestRenderer = ({
             {/*    </div>*/}
             {/*  </form>*/}
             {/*</div>*/}
-
             {capturedUtterances.length > 0 && (
               <div className={styles.captureOutput}>
                 {/* TODO: Focus on this button when it's detected that user is no longer capturing utterances */}
