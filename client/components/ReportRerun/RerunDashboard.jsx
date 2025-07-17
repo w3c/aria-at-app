@@ -83,7 +83,6 @@ const RerunDashboard = ({ activeRuns, onRerunClick }) => {
                   </div>
 
                   <div className={styles.actionHeader}>
-                    {/* TODO: Re-enable when https://github.com/w3c/aria-at-app/issues/1417 is addressed */}
                     <button
                       className={styles.rerunButton}
                       disabled={totalReports === 0}
