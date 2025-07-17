@@ -1,81 +1,269 @@
-// const os = require('os');
-const { exec } = require('child_process');
-const path = require('path');
+const axios = require('axios');
 
-// const platform = os.platform();
+const TALKBACK_PACKAGE_NAME = 'com.google.android.marvin.talkback';
+const PROXY_URL = process.env.ADB_PROXY_URL || 'http://localhost:3080';
 
-const getPlatformSpecificCommand = script => {
-  let scriptPath;
-  let command = null;
+const getCurrentProxyUrl = req => {
+  // Get proxy URL from user session, fallback to default
+  return req.session?.proxyUrl || PROXY_URL;
+};
 
-  // TODO: Complete buildout of this when platform-agnostic need exists.
-  //  Matters less right now since deployed on linux environment
-  //  WIP branch exists on aria-at-talkback-capture
-  /*switch (platform) {
-    case 'darwin': // macOS
-      scriptPath = path.join(
-        __dirname,
-        `../scripts/talkback-capture/${script}.sh`
+const updateProxyUrl = (req, url) => {
+  // Store proxy URL in user session
+  if (!req.session) req.session = {};
+  req.session.proxyUrl = url;
+};
+
+const runAdbCommand = async (command, req) => {
+  const proxyUrl = getCurrentProxyUrl(req);
+  try {
+    const response = await axios.post(`${proxyUrl}/run-adb`, {
+      command: command
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      throw new Error(`ADB command failed: ${error.response.data.error}`);
+    } else if (error.request) {
+      throw new Error(
+        'Unable to connect to ADB proxy. Please ensure it is running on ' +
+          proxyUrl
       );
-      command = `sh ${scriptPath}`;
-      break;
-    case 'linux':
-      scriptPath = path.join(
-        __dirname,
-        `../scripts/talkback-capture/linux/${script}.sh`
-      );
-      command = `sh ${scriptPath}`;
-      break;
-    case 'win32':
-      scriptPath = path.join(
-        __dirname,
-        `../scripts/talkback-capture/win32/${script}.ps1`
-      );
-      command = scriptPath;
-      break;
-    default:
-      break;
-  }*/
+    } else {
+      throw new Error(`Request failed: ${error.message}`);
+    }
+  }
+};
 
-  scriptPath = path.join(__dirname, `../scripts/talkback-capture/${script}.sh`);
-  command = `sh ${scriptPath}`;
-  return command;
+const checkDeviceConnected = async req => {
+  const result = await runAdbCommand('devices', req);
+  const lines = result.output
+    .split('\n')
+    .filter(line => line.trim() && !line.includes('List of devices'));
+  return lines.length > 0 && lines.some(line => line.includes('device'));
+};
+
+const checkDeveloperMode = async req => {
+  const result = await runAdbCommand(
+    'shell settings get global development_settings_enabled',
+    req
+  );
+  return result.output.trim() === '1';
+};
+
+const checkTalkbackInstalled = async req => {
+  const result = await runAdbCommand('shell pm list packages', req);
+  return result.output.includes(TALKBACK_PACKAGE_NAME);
+};
+
+const checkTalkbackEnabled = async req => {
+  const result = await runAdbCommand(
+    'shell settings get secure enabled_accessibility_services',
+    req
+  );
+  return result.output.includes(TALKBACK_PACKAGE_NAME);
+};
+
+const checkChromeInstalled = async req => {
+  const result = await runAdbCommand('shell pm list packages', req);
+  return result.output.includes('com.android.chrome');
+};
+
+const checkDeviceStatus = async (req, res) => {
+  try {
+    const deviceConnected = await checkDeviceConnected(req);
+
+    if (!deviceConnected) {
+      return res.json({
+        connected: false,
+        message: 'No Android device connected'
+      });
+    }
+
+    const developerMode = await checkDeveloperMode(req);
+    const talkbackInstalled = await checkTalkbackInstalled(req);
+    const talkbackEnabled = await checkTalkbackEnabled(req);
+    const chromeInstalled = await checkChromeInstalled(req);
+
+    res.json({
+      connected: true,
+      developerMode,
+      talkbackInstalled,
+      talkbackEnabled,
+      chromeInstalled,
+      message: 'Device status checked successfully'
+    });
+  } catch (error) {
+    console.error(`Error checking device status: ${error.message}`);
+    res.status(500).json({
+      error: error.message
+    });
+  }
 };
 
 const executeEnableTalkback = async (req, res) => {
-  const command = getPlatformSpecificCommand('enableTalkback');
-  if (!command) return res.status(400).json({ error: 'Unsupported platform' });
-
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing script: ${error}`);
-      return res.status(500).json({ error: 'Failed to execute script' });
+  try {
+    if (!(await checkDeviceConnected(req))) {
+      return res.status(400).json({
+        error:
+          'No Android device connected. Please connect a device with USB debugging enabled.'
+      });
     }
-    if (stderr) console.error(`Script stderr: ${stderr}`);
 
-    res.json({ success: true, output: stdout });
-  });
+    if (!(await checkDeveloperMode(req))) {
+      return res.status(400).json({
+        error: 'Developer mode is not enabled on the device.'
+      });
+    }
+
+    if (!(await checkTalkbackInstalled(req))) {
+      return res.status(400).json({
+        error: 'TalkBack is not installed on the device.'
+      });
+    }
+
+    if (await checkTalkbackEnabled(req)) {
+      return res.json({
+        success: true,
+        output: 'TalkBack is already enabled.'
+      });
+    }
+
+    await runAdbCommand(
+      `shell settings put secure enabled_accessibility_services ${TALKBACK_PACKAGE_NAME}/${TALKBACK_PACKAGE_NAME}.TalkBackService`,
+      req
+    );
+    await runAdbCommand(
+      'shell settings put secure accessibility_verbose_logging 1',
+      req
+    );
+    await runAdbCommand(
+      'shell settings put secure accessibility_enabled 1',
+      req
+    );
+
+    if (!(await checkTalkbackEnabled(req))) {
+      return res.status(500).json({
+        error: 'Failed to enable TalkBack.'
+      });
+    }
+
+    res.json({
+      success: true,
+      output: 'TalkBack has been enabled successfully.'
+    });
+  } catch (error) {
+    console.error(`Error enabling TalkBack: ${error.message}`);
+    res.status(500).json({
+      error: error.message
+    });
+  }
+};
+
+const executeWakeScreen = async (req, res) => {
+  try {
+    if (!(await checkDeviceConnected(req))) {
+      return res.status(400).json({
+        error:
+          'No Android device connected. Please connect a device with USB debugging enabled.'
+      });
+    }
+
+    await runAdbCommand('shell input keyevent KEYCODE_WAKEUP', req);
+
+    res.json({
+      success: true,
+      output: 'Screen wake command sent successfully.'
+    });
+  } catch (error) {
+    console.error(`Error waking screen: ${error.message}`);
+    res.status(500).json({
+      error: error.message
+    });
+  }
 };
 
 const executeOpenWebPage = async (req, res) => {
   const { url } = req.body;
-  if (!url) return res.status(400).json({ error: 'URL is required' });
+  if (!url) {
+    return res.status(400).json({ error: 'URL is required' });
+  }
 
-  const command = getPlatformSpecificCommand('openWebPage');
-  if (!command) return res.status(400).json({ error: 'Unsupported platform' });
-
-  exec(`${command} "${url}"`, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error executing script: ${error}`);
-      return res.status(500).json({ error: 'Failed to execute script' });
+  try {
+    if (!(await checkDeviceConnected(req))) {
+      return res.status(400).json({
+        error:
+          'No Android device connected. Please connect a device with USB debugging enabled.'
+      });
     }
-    if (stderr) console.error(`Script stderr: ${stderr}`);
 
-    res.json({ success: true, output: stdout });
-  });
+    if (!(await checkChromeInstalled(req))) {
+      return res.status(400).json({
+        error: 'Chrome is not installed on the device.'
+      });
+    }
+
+    const command = `shell am start -n com.android.chrome/com.google.android.apps.chrome.Main -a android.intent.action.VIEW -d "${url}"`;
+
+    await runAdbCommand(command, req);
+
+    res.json({
+      success: true,
+      output: `URL opened successfully in Chrome: ${url}`
+    });
+  } catch (error) {
+    console.error(`Error opening web page: ${error.message}`);
+    res.status(500).json({
+      error: error.message
+    });
+  }
+};
+
+const setProxyUrl = async (req, res) => {
+  const { proxyUrl } = req.body;
+
+  if (!proxyUrl) {
+    return res.status(400).json({ error: 'Proxy URL is required' });
+  }
+
+  try {
+    // Basic URL validation
+    new URL(proxyUrl);
+
+    updateProxyUrl(req, proxyUrl);
+
+    res.json({
+      success: true,
+      message: `Proxy URL updated to: ${proxyUrl}`,
+      proxyUrl: proxyUrl
+    });
+  } catch (error) {
+    console.error(`Error setting proxy URL: ${error.message}`);
+    res.status(400).json({
+      error: 'Invalid URL format'
+    });
+  }
+};
+
+const getProxyUrl = async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      proxyUrl: getCurrentProxyUrl(req)
+    });
+  } catch (error) {
+    console.error(`Error getting proxy URL: ${error.message}`);
+    res.status(500).json({
+      error: error.message
+    });
+  }
 };
 
 module.exports = {
   executeEnableTalkback,
-  executeOpenWebPage
+  executeWakeScreen,
+  executeOpenWebPage,
+  checkDeviceStatus,
+  setProxyUrl,
+  getProxyUrl
 };
