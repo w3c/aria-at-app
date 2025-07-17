@@ -10,8 +10,7 @@ const {
 const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const {
-  findOrCreateAtVersion,
-  getHistoricalReportsForVerdictCopying
+  findOrCreateAtVersion
 } = require('../models/services/AtVersionService');
 const { getAts } = require('../models/services/AtService');
 const {
