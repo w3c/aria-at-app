@@ -121,8 +121,7 @@ const TestQueue = () => {
     return { testPlans, testers };
   }, [data]);
 
-  // Filter counts calculation
-  const { allCount, manualCount, automatedCount } = useMemo(() => {
+  const filterOptions = useMemo(() => {
     let allCount = 0;
     let manualCount = 0;
     let automatedCount = 0;
@@ -140,19 +139,14 @@ const TestQueue = () => {
       });
     });
 
-    return { allCount, manualCount, automatedCount };
-  }, [processedData.testPlans]);
-
-  const filterOptions = useMemo(
-    () => ({
+    return {
       [FILTER_KEYS.ALL]: `All test runs (${allCount})`,
       [FILTER_KEYS.MANUAL]: `Manual test runs (${manualCount})`,
       ...(automatedCount > 0 && {
         [FILTER_KEYS.AUTOMATED]: `Automated updates with run failures (${automatedCount})`
       })
-    }),
-    [allCount, manualCount, automatedCount]
-  );
+    };
+  }, [processedData.testPlans]);
 
   const filteredTestPlans = useMemo(() => {
     if (activeFilter === FILTER_KEYS.ALL) return processedData.testPlans;
