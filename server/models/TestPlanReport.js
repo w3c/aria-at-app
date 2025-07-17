@@ -35,6 +35,10 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.DATE,
         defaultValue: null,
         allowNull: true
+      },
+      historicalReportId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
       }
     },
     {
@@ -92,6 +96,11 @@ module.exports = function (sequelize, DataTypes) {
       ...Model.TEST_PLAN_RUN_ASSOCIATION,
       foreignKey: 'testPlanReportId',
       sourceKey: 'id'
+    });
+
+    Model.belongsTo(models.TestPlanReport, {
+      as: 'historicalReport',
+      foreignKey: 'historicalReportId'
     });
   };
 

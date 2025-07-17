@@ -10,8 +10,7 @@ const {
 const convertTestResultToInput = require('../resolvers/TestPlanRunOperations/convertTestResultToInput');
 const saveTestResultCommon = require('../resolvers/TestResultOperations/saveTestResultCommon');
 const {
-  findOrCreateAtVersion,
-  getHistoricalReportsForVerdictCopying
+  findOrCreateAtVersion
 } = require('../models/services/AtVersionService');
 const { getAts } = require('../models/services/AtService');
 const {
@@ -24,9 +23,7 @@ const {
   isJobStatusFinal,
   UPDATE_EVENT_TYPE
 } = require('../util/enums');
-const {
-  getFinalizedTestResults
-} = require('../models/services/TestResultReadService');
+const { getTestResults } = require('../models/services/TestResultReadService');
 const http = require('http');
 const { NO_OUTPUT_STRING } = require('../util/constants');
 const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
@@ -149,6 +146,18 @@ const updateJobStatus = async (req, res) => {
   res.json(graphqlResponse);
 };
 
+// TODO: Remove if getFinalizedTestResults and finalizedTestResultsResolver are unified
+// Use the same logic as finalizedTestResultsResolver - only use primary test plan run
+const getPrimaryTestPlanRun = testPlanReport => {
+  return (
+    testPlanReport.testPlanRuns.find(({ isPrimary }) => isPrimary) ||
+    testPlanReport.testPlanRuns.find(testPlanRun =>
+      testPlanRun.testResults?.some(testResult => !!testResult.completedAt)
+    ) ||
+    testPlanReport.testPlanRuns[0]
+  );
+};
+
 const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
   const { testPlanReport } = await populateData(
     { testPlanReportId: testPlanRun.testPlanReport.id },
@@ -158,64 +167,54 @@ const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
   // If the current report is finalized
   // Use the finalized test results (from another run)
   if (testPlanReport.markedFinalAt !== null) {
-    return getFinalizedTestResults({ testPlanReport, context });
-  }
-
-  // Otherwise, fallback to historical report from previous automatable AT version
-  // Refresh collection jobs will have an exactAtVersion
-  const currentAtVersionId = testPlanReport.exactAtVersion?.id;
-
-  if (!currentAtVersionId) {
-    return null;
-  }
-
-  const { previousVersionGroups } = await getHistoricalReportsForVerdictCopying(
-    {
-      currentAtVersionId,
-      transaction: context.transaction
+    if (!testPlanReport.testPlanRuns.length) {
+      return null;
     }
-  );
 
-  if (!previousVersionGroups?.length) {
-    return null;
+    const testPlanRun = getPrimaryTestPlanRun(testPlanReport);
+
+    const testResults = testPlanRun.testResults.filter(
+      testResult => !!testResult.completedAt
+    );
+
+    return getTestResults({
+      testPlanRun: { testPlanReport, testResults },
+      context
+    });
   }
 
-  // Fetch all candidate historical reports concurrently
-  const historicalReports = await Promise.all(
-    previousVersionGroups.flatMap(group =>
-      group.reports.map(report =>
-        getTestPlanReportById({
-          id: report.id,
-          transaction: context.transaction
-        })
-      )
-    )
-  );
+  if (testPlanReport.historicalReportId) {
+    const historicalReport = await getTestPlanReportById({
+      id: testPlanReport.historicalReportId,
+      transaction: context.transaction
+    });
 
-  // Select the historical report matching the same test plan version and that is finalized
-  const historicalReport = historicalReports.find(report => {
-    const matches =
-      report.testPlanVersion.id === testPlanReport.testPlanVersion.id &&
-      report.markedFinalAt !== null;
-    return matches;
-  });
+    if (historicalReport && historicalReport.markedFinalAt) {
+      const finalHistoricalReport = await populateData(
+        { testPlanReportId: historicalReport.id },
+        { context }
+      );
+      if (finalHistoricalReport) {
+        const testPlanReport = finalHistoricalReport.testPlanReport;
+        if (!testPlanReport.testPlanRuns.length) {
+          return null;
+        }
 
-  if (!historicalReport) {
-    return null;
+        const testPlanRun = getPrimaryTestPlanRun(testPlanReport);
+
+        const testResults = testPlanRun.testResults.filter(
+          testResult => !!testResult.completedAt
+        );
+
+        return getTestResults({
+          testPlanRun: { testPlanReport, testResults },
+          context
+        });
+      }
+    }
   }
 
-  const finalHistoricalReport = await populateData(
-    { testPlanReportId: historicalReport.id },
-    { context }
-  );
-  if (!finalHistoricalReport) {
-    return null;
-  }
-
-  return getFinalizedTestResults({
-    testPlanReport: finalHistoricalReport.testPlanReport,
-    context
-  });
+  return null;
 };
 
 const getTestByRowNumber = async ({ testPlanRun, testRowNumber, context }) => {
@@ -252,14 +251,16 @@ const updateOrCreateTestResultWithResponses = async ({
     return each.testId === testId;
   });
 
-  if (
-    historicalTestResult &&
-    historicalTestResult.scenarioResults?.length !==
-      testResult.scenarioResults.length
-  ) {
-    throw new Error(
-      'Historical test result does not match current test result'
-    );
+  if (testResult.scenarioResults && historicalTestResult?.scenarioResults) {
+    if (
+      historicalTestResult &&
+      historicalTestResult.scenarioResults?.length !==
+        testResult.scenarioResults.length
+    ) {
+      throw new Error(
+        'Historical test result does not match current test result'
+      );
+    }
   }
 
   const getAutomatedResultFromOutput = ({ baseTestResult, outputs }) => {
@@ -270,13 +271,14 @@ const updateOrCreateTestResultWithResponses = async ({
       scenarioResults: baseTestResult.scenarioResults.map(
         (scenarioResult, i) => {
           // Check if output matches historical output
+          const historicalOutput =
+            historicalTestResult?.scenarioResults[i]?.output;
+          const currentOutput = outputs[i];
+
           const outputMatches =
             historicalTestResult &&
             historicalTestResult.scenarioResults[i] &&
-            outputsMatch(
-              historicalTestResult.scenarioResults[i].output,
-              outputs[i]
-            );
+            outputsMatch(historicalOutput, currentOutput);
 
           return {
             ...scenarioResult,
@@ -287,11 +289,11 @@ const updateOrCreateTestResultWithResponses = async ({
                 passed: outputMatches
                   ? historicalTestResult.scenarioResults[i].assertionResults[j]
                       .passed
-                  : false,
+                  : null,
                 failedReason: outputMatches
                   ? historicalTestResult.scenarioResults[i].assertionResults[j]
                       .failedReason
-                  : 'AUTOMATED_OUTPUT'
+                  : 'AUTOMATED_OUTPUT_DIFFERS'
               })
             ),
             unexpectedBehaviors: outputMatches
