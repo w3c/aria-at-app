@@ -381,6 +381,20 @@ const TestRenderer = ({
       console.info('runAndroidScripts.url', url);
 
       try {
+        const response = await fetch('/api/scripts/wake-screen', {
+          method: 'POST'
+        });
+        if (!response.ok) {
+          throw new Error(
+            `Failed to execute wake-screen script: ${response.status}`
+          );
+        }
+        await response.json();
+      } catch (error) {
+        console.error('wake.screen.error', error);
+      }
+
+      try {
         const response = await fetch('/api/scripts/enable-talkback');
         if (!response.ok) {
           throw new Error(
@@ -809,8 +823,8 @@ const TestRenderer = ({
               <div className={styles.androidDeviceNote}>
                 Before continuing, please ensure that you are running the{' '}
                 <code>start</code> script provided to you, and make sure your
-                device is unlocked and awake. For additional details on
-                prerequisites and testing instructions, please review{' '}
+                device is unlocked. For additional details on prerequisites and
+                testing instructions, please review{' '}
                 <a
                   href="https://github.com/w3c/aria-at-app/wiki/Android-Results-Capture-Prototype-Workflow#how-to-test-the-prototype"
                   target="_blank"

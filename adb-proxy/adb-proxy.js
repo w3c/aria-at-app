@@ -182,7 +182,8 @@ const SAFE_COMMANDS = [
   'logcat -c',
   'shell pm list packages',
   'shell settings get global development_settings_enabled',
-  'shell settings get secure enabled_accessibility_services'
+  'shell settings get secure enabled_accessibility_services',
+  'shell input keyevent KEYCODE_WAKEUP'
 ];
 
 // Command patterns that require parameter validation

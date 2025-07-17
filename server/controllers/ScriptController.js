@@ -160,6 +160,29 @@ const executeEnableTalkback = async (req, res) => {
   }
 };
 
+const executeWakeScreen = async (req, res) => {
+  try {
+    if (!(await checkDeviceConnected(req))) {
+      return res.status(400).json({
+        error:
+          'No Android device connected. Please connect a device with USB debugging enabled.'
+      });
+    }
+
+    await runAdbCommand('shell input keyevent KEYCODE_WAKEUP', req);
+
+    res.json({
+      success: true,
+      output: 'Screen wake command sent successfully.'
+    });
+  } catch (error) {
+    console.error(`Error waking screen: ${error.message}`);
+    res.status(500).json({
+      error: error.message
+    });
+  }
+};
+
 const executeOpenWebPage = async (req, res) => {
   const { url } = req.body;
   if (!url) {
@@ -238,6 +261,7 @@ const getProxyUrl = async (req, res) => {
 
 module.exports = {
   executeEnableTalkback,
+  executeWakeScreen,
   executeOpenWebPage,
   checkDeviceStatus,
   setProxyUrl,
