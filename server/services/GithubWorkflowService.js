@@ -184,9 +184,27 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   if (atKey === 'jaws') {
     inputs.browser = browser;
   }
+
+  // ****************************************************************
+  // TEMPORARY WORKAROUND
+  // Force staging to use prod on self-hosted jobs
+  // Note that in local development, these will still get sent to the
+  // dev actions repo where they will not be able to run.
+  // TODO: Remove this once we have a way to run self-hosted jobs on staging
+  let WORKAROUND_WORKFLOW_REPO = WORKFLOW_REPO;
+  if (process.env.ENVIRONMENT === 'staging') {
+    if (
+      getWorkflowNameForMacOS(atKey, atVersion) === 'self-hosted-macos-15.yml'
+    ) {
+      WORKAROUND_WORKFLOW_REPO = 'bocoup/aria-at-gh-actions-helper';
+    }
+  }
+  // END TEMPORARY WORKAROUND
+  // ****************************************************************
+
   const axiosConfig = {
     method: 'POST',
-    url: `https://api.github.com/repos/${WORKFLOW_REPO}/actions/workflows/${workflowFilename}/dispatches`,
+    url: `https://api.github.com/repos/${WORKAROUND_WORKFLOW_REPO}/actions/workflows/${workflowFilename}/dispatches`,
 
     headers: {
       Accept: 'application/vnd.github+json',
