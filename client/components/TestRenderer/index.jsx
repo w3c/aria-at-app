@@ -75,9 +75,11 @@ const TestRenderer = ({
 
   // WebSocket for Android utterance capture related state and refs;
   const announce = useAriaLiveRegion();
-  const copyUtterancesButtonRef = useRef(null);
   const [captureSocket, setCaptureSocket] = useState(null);
   const [capturedUtterances, setCapturedUtterances] = useState([]);
+  const [currentUtteranceCollection, setCurrentUtteranceCollection] = useState(
+    []
+  );
   const [proxyUrl, setProxyUrl] = useState('');
   const [proxyUrlMessage, setProxyUrlMessage] = useState('');
   const [proxyUrlMessageType, setProxyUrlMessageType] = useState('');
@@ -86,12 +88,13 @@ const TestRenderer = ({
   const [, setWsConnected] = useState(false);
   const [, setWsError] = useState(null);
 
-  const copyToClipboard = async text => {
+  const copyToClipboard = async utterances => {
     // Don't preserve any content before 'Run Test Setup' if that phrase is found
     // Additionally, remove 'Run Test Setup' and/or 'button' and 'Double-tap to activate' if any of those statements
     // immediately follow 'Run Test Setup'
     const pattern = /Run Test Setup(\s+button)?(\s+Double-tap to activate)?\s*/;
 
+    const text = Array.isArray(utterances) ? utterances.join('\n') : utterances;
     const matchIndex = text.search(pattern);
     const sanitizedText =
       matchIndex !== -1
@@ -160,7 +163,6 @@ const TestRenderer = ({
     }
 
     const sessionId = Date.now().toString();
-    // eslint-disable-next-line no-console
     console.info('Starting capture with session ID:', sessionId);
 
     // Use external host for Android device access, fallback to API server
@@ -170,14 +172,12 @@ const TestRenderer = ({
     const wsPort = window.location.protocol === 'https:' ? '' : ':8000';
     const wsUrl = `${protocol}://${host}${wsPort}/ws?sessionId=${sessionId}`;
 
-    // eslint-disable-next-line no-console
     console.info('Connecting to WebSocket:', wsUrl);
 
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
     ws.onopen = () => {
-      // eslint-disable-next-line no-console
       console.info('WebSocket connection opened');
 
       setWsConnected(true);
@@ -186,17 +186,14 @@ const TestRenderer = ({
         proxyUrl: proxyUrl || null
       };
 
-      // eslint-disable-next-line no-console
       console.info('Sending start utterances capture message:', startMessage);
       ws.send(JSON.stringify(startMessage));
     };
 
     ws.onmessage = event => {
-      // eslint-disable-next-line no-console
       console.info('Received WebSocket message:', event.data);
       try {
         const data = JSON.parse(event.data);
-        // eslint-disable-next-line no-console
         console.info('Parsed message data:', data);
 
         if (data.type === 'status' && data.data.includes('TalkBack found')) {
@@ -208,13 +205,20 @@ const TestRenderer = ({
         if (data.type === 'utterance') {
           const utteranceText =
             typeof data.data === 'object' ? data.data.text : data.data;
-          setCapturedUtterances(prev => [...prev, utteranceText]);
+          setCurrentUtteranceCollection(prev => [...prev, utteranceText]);
         } else if (data.type === 'utterances_collected') {
           // Handle final collected utterances (formatted for clipboard)
-          setCapturedUtterances(() => [data.data]);
+          const collection = {
+            id: Date.now(),
+            date: new Date(),
+            utterances: Array.isArray(data.data) ? data.data : [data.data]
+          };
+
+          setCapturedUtterances(prev => [...prev, collection]);
+          setCurrentUtteranceCollection([]);
 
           // Should request permissions from user's browser
-          copyToClipboard([data.data].join('\n'));
+          copyToClipboard(collection.utterances);
         } else if (data.type === 'error') {
           console.error('Capture error', data.error);
           setWsError(data.error);
@@ -222,22 +226,30 @@ const TestRenderer = ({
             'Failed to connect with android device. Please check your connection and try again.'
           );
         } else if (data.type === 'started') {
-          // eslint-disable-next-line no-console
           console.info('Capture started', data.message);
         } else if (data.type === 'stopped') {
-          // eslint-disable-next-line no-console
           console.info('Capture stopped', data.message);
-          if (copyUtterancesButtonRef.current) {
-            copyUtterancesButtonRef.current.focus();
-          }
+          // Focus on the latest collection copy button (most recent completed collection)
+          setTimeout(() => {
+            const latestCollectionButton = document.querySelector(
+              '[aria-describedby^="utterances-text-"]'
+            );
+            if (latestCollectionButton) {
+              latestCollectionButton.focus();
+            }
+          }, 100);
         } else if (data.type === 'exit') {
-          // eslint-disable-next-line no-console
           console.info('Capture process exited with code:', data.code);
-          if (copyUtterancesButtonRef.current) {
-            copyUtterancesButtonRef.current.focus();
-          }
+          // Focus on the latest collection copy button (most recent completed collection)
+          setTimeout(() => {
+            const latestCollectionButton = document.querySelector(
+              '[aria-describedby^="utterances-text-"]'
+            );
+            if (latestCollectionButton) {
+              latestCollectionButton.focus();
+            }
+          }, 100);
         } else {
-          // eslint-disable-next-line no-console
           console.info('Unknown message type:', data.type);
         }
       } catch (error) {
@@ -252,7 +264,6 @@ const TestRenderer = ({
     };
 
     ws.onclose = event => {
-      // eslint-disable-next-line no-console
       console.info('WebSocket connection closed', event.code, event.reason);
       setWsConnected(false);
       wsRef.current = null;
@@ -348,6 +359,9 @@ const TestRenderer = ({
   const runAndroidScripts = async () => {
     setIsOpeningAndroid(true);
 
+    // Start a new utterance collection
+    setCurrentUtteranceCollection([]);
+
     try {
       // Get the URL from the test page
       let url = renderableContent.target?.referencePage
@@ -362,7 +376,6 @@ const TestRenderer = ({
       const urlPort = window.location.protocol === 'https:' ? '' : ':3000';
       url = `${window.location.protocol}//${host}${urlPort}${url}`;
 
-      // eslint-disable-next-line no-console
       console.info('runAndroidScripts.url', url);
 
       try {
@@ -455,7 +468,6 @@ const TestRenderer = ({
           stopCaptureUtterances();
         },
         windowPrepared() {
-          // eslint-disable-next-line no-console
           console.info('windowPrepared.called');
           // injectButton(testWindow.window);
         }
@@ -861,20 +873,61 @@ const TestRenderer = ({
               )}
             </div>
 
-            {capturedUtterances.length > 0 && (
+            {(capturedUtterances.length > 0 ||
+              currentUtteranceCollection.length > 0) && (
               <div className={styles.captureOutput}>
                 <h3>Captured Utterances:</h3>
-                <pre id="utterances-text">{capturedUtterances.join('\n')}</pre>
-                <button
-                  ref={copyUtterancesButtonRef}
-                  className={styles.copyButton}
-                  title="Copy utterances to clipboard"
-                  aria-label="Copy utterances to clipboard"
-                  onClick={() => copyToClipboard(capturedUtterances.join('\n'))}
-                  aria-describedby="utterances-text"
-                >
-                  <FontAwesomeIcon icon={faCopy} />
-                </button>
+
+                {/* Show live utterances from current session */}
+                {currentUtteranceCollection.length > 0 && (
+                  <div className={styles.utteranceCollection}>
+                    <h4>Current Session (Live)</h4>
+                    <pre id="current-utterances-text">
+                      {currentUtteranceCollection.join('\n')}
+                    </pre>
+                    <button
+                      className={styles.copyButton}
+                      title="Copy current utterances to clipboard"
+                      aria-label="Copy current utterances to clipboard"
+                      onClick={() =>
+                        copyToClipboard(currentUtteranceCollection)
+                      }
+                      aria-describedby="current-utterances-text"
+                    >
+                      <FontAwesomeIcon icon={faCopy} />
+                    </button>
+                  </div>
+                )}
+
+                {/* Show completed collections (most recent first) */}
+                {capturedUtterances
+                  .slice()
+                  .reverse()
+                  .map((collection, index) => (
+                    <div
+                      key={collection.id}
+                      className={styles.utteranceCollection}
+                    >
+                      <h4>
+                        Utterance Collection {capturedUtterances.length - index}
+                        &nbsp;- {collection.date.toLocaleTimeString()}
+                      </h4>
+                      <pre id={`utterances-text-${collection.id}`}>
+                        {collection.utterances.join('\n')}
+                      </pre>
+                      <button
+                        className={styles.copyButton}
+                        title="Copy utterances to clipboard"
+                        aria-label={`Copy utterances from collection ${
+                          capturedUtterances.length - index
+                        } to clipboard`}
+                        onClick={() => copyToClipboard(collection.utterances)}
+                        aria-describedby={`utterances-text-${collection.id}`}
+                      >
+                        <FontAwesomeIcon icon={faCopy} />
+                      </button>
+                    </div>
+                  ))}
               </div>
             )}
           </section>

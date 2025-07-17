@@ -190,11 +190,29 @@ label {
   background-color: var(--bg-lighter-gray);
   border-radius: 4px;
   border: 1px solid var(--border-gray);
-  position: relative;
 
   h3 {
     margin: 0 0 0.5rem 0;
     font-size: 1rem;
+    color: var(--darkest-gray);
+  }
+}
+
+.utterance-collection {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid var(--border-gray);
+  position: relative;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
     color: var(--darkest-gray);
   }
 
@@ -205,8 +223,12 @@ label {
     font-family: monospace;
     font-size: 0.75rem;
     color: var(--dark-gray);
-    max-height: 18.75rem;
+    max-height: 12.5rem;
     overflow-y: auto;
+    background-color: var(--bg-lighter-gray);
+    padding: 0.5rem;
+    border-radius: 2px;
+    border: 1px solid var(--border-gray);
   }
 }
 
