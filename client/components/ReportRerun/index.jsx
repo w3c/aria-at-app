@@ -190,10 +190,17 @@ const ReportRerun = ({ onQueueUpdate, onTotalRunsAvailable }) => {
           variables: { atVersionId: run.id }
         });
 
-        await getRerunnableReports({
+        const result = await getRerunnableReports({
           variables: { atVersionId: run.id },
           fetchPolicy: 'network-only'
         });
+
+        if (result.data?.rerunnableReports) {
+          setRerunnableReportsData(prev => ({
+            ...prev,
+            [run.id]: result.data
+          }));
+        }
 
         await refetchEvents();
 
