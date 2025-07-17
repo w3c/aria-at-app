@@ -121,6 +121,15 @@ const TestQueue = () => {
     return { testPlans, testers };
   }, [data]);
 
+  const shouldShowReport = (testPlanReport, filter) => {
+    const hasBot = hasBotRun(testPlanReport);
+    const isRerun = !!testPlanReport.historicalReport;
+
+    if (filter === FILTER_KEYS.MANUAL) return !hasBot || !isRerun;
+    if (filter === FILTER_KEYS.AUTOMATED) return hasBot && isRerun;
+    return true;
+  };
+
   const filterOptions = useMemo(() => {
     let allCount = 0;
     let manualCount = 0;
@@ -130,10 +139,11 @@ const TestQueue = () => {
       testPlan.testPlanVersions.forEach(testPlanVersion => {
         testPlanVersion.testPlanReports.forEach(testPlanReport => {
           allCount++;
-          if (hasBotRun(testPlanReport)) {
-            automatedCount++;
-          } else {
+          if (shouldShowReport(testPlanReport, FILTER_KEYS.MANUAL)) {
             manualCount++;
+          }
+          if (shouldShowReport(testPlanReport, FILTER_KEYS.AUTOMATED)) {
+            automatedCount++;
           }
         });
       });
@@ -152,26 +162,27 @@ const TestQueue = () => {
     if (activeFilter === FILTER_KEYS.ALL) return processedData.testPlans;
 
     return processedData.testPlans
-      .map(testPlan => ({
-        ...testPlan,
-        testPlanVersions: testPlan.testPlanVersions
-          .map(testPlanVersion => ({
-            ...testPlanVersion,
-            testPlanReports: testPlanVersion.testPlanReports.filter(
-              testPlanReport => {
-                const hasBot = hasBotRun(testPlanReport);
-                const isRerun = !!testPlanReport.historicalReport;
+      .map(testPlan => {
+        const filteredVersions = testPlan.testPlanVersions
+          .map(testPlanVersion => {
+            const filteredReports = testPlanVersion.testPlanReports.filter(
+              testPlanReport => shouldShowReport(testPlanReport, activeFilter)
+            );
 
-                if (activeFilter === FILTER_KEYS.MANUAL)
-                  return !hasBot || !isRerun;
-                if (activeFilter === FILTER_KEYS.AUTOMATED)
-                  return hasBot && isRerun;
-                return true;
-              }
-            )
-          }))
-          .filter(testPlanVersion => testPlanVersion.testPlanReports.length > 0)
-      }))
+            return {
+              ...testPlanVersion,
+              testPlanReports: filteredReports
+            };
+          })
+          .filter(
+            testPlanVersion => testPlanVersion.testPlanReports.length > 0
+          );
+
+        return {
+          ...testPlan,
+          testPlanVersions: filteredVersions
+        };
+      })
       .filter(testPlan => testPlan.testPlanVersions.length > 0);
   }, [processedData.testPlans, activeFilter]);
 
