@@ -81,6 +81,7 @@ const TestRenderer = ({
   const [proxyUrl, setProxyUrl] = useState('');
   const [proxyUrlMessage, setProxyUrlMessage] = useState('');
   const [proxyUrlMessageType, setProxyUrlMessageType] = useState('');
+  const [isOpeningAndroid, setIsOpeningAndroid] = useState(false);
   const wsRef = useRef(null);
   const [, setWsConnected] = useState(false);
   const [, setWsError] = useState(null);
@@ -187,6 +188,12 @@ const TestRenderer = ({
         // eslint-disable-next-line no-console
         console.info('Parsed message data:', data);
 
+        if (data.type === 'status' && data.data.includes('TalkBack found')) {
+          announce(
+            'Test page opened on Android device. Please ensure your phone screen is awake.'
+          );
+        }
+
         if (data.type === 'utterance') {
           const utteranceText =
             typeof data.data === 'object' ? data.data.text : data.data;
@@ -197,6 +204,9 @@ const TestRenderer = ({
         } else if (data.type === 'error') {
           console.error('Capture error', data.error);
           setWsError(data.error);
+          announce(
+            'Failed to connect with android device. Please check your connection and try again.'
+          );
         } else if (data.type === 'started') {
           // eslint-disable-next-line no-console
           console.info('Capture started', data.message);
@@ -337,55 +347,66 @@ const TestRenderer = ({
   };
 
   const runAndroidScripts = async () => {
-    // Get the URL from the test page
-    let url = renderableContent.target?.referencePage
-      ? `${testPageUrl.substring(0, testPageUrl.indexOf('reference/'))}${
-          renderableContent.target.referencePage
-        }`
-      : testPageUrl;
-
-    // Use external host for Android device access, fallback to API server
-    const externalHost = process.env.REACT_APP_EXTERNAL_HOST;
-    const host = externalHost ? externalHost.split(':')[0] : 'localhost';
-    const urlPort = window.location.protocol === 'https:' ? '' : ':3000';
-    url = `${window.location.protocol}//${host}${urlPort}${url}`;
-
-    // eslint-disable-next-line no-console
-    console.info('runAndroidScripts.url', url);
+    setIsOpeningAndroid(true);
 
     try {
-      const response = await fetch('/api/scripts/enable-talkback');
-      if (!response.ok) {
-        throw new Error(
-          `Failed to execute enable-talkback script: ${response.status}`
-        );
+      // Get the URL from the test page
+      let url = renderableContent.target?.referencePage
+        ? `${testPageUrl.substring(0, testPageUrl.indexOf('reference/'))}${
+            renderableContent.target.referencePage
+          }`
+        : testPageUrl;
+
+      // Use external host for Android device access, fallback to API server
+      const externalHost = process.env.REACT_APP_EXTERNAL_HOST;
+      const host = externalHost ? externalHost.split(':')[0] : 'localhost';
+      const urlPort = window.location.protocol === 'https:' ? '' : ':3000';
+      url = `${window.location.protocol}//${host}${urlPort}${url}`;
+
+      // eslint-disable-next-line no-console
+      console.info('runAndroidScripts.url', url);
+
+      try {
+        const response = await fetch('/api/scripts/enable-talkback');
+        if (!response.ok) {
+          throw new Error(
+            `Failed to execute enable-talkback script: ${response.status}`
+          );
+        }
+        await response.json();
+      } catch (error) {
+        console.error('enable.talkback.error', error);
       }
-      await response.json();
-    } catch (error) {
-      console.error('enable.talkback.error', error);
-    }
 
-    try {
-      const response = await fetch('/api/scripts/open-web-page', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url })
-      });
+      try {
+        const response = await fetch('/api/scripts/open-web-page', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ url })
+        });
 
-      if (!response.ok) {
-        throw new Error(
-          `Failed to execute open-web-page script: ${response.status}`
-        );
+        if (!response.ok) {
+          throw new Error(
+            `Failed to execute open-web-page script: ${response.status}`
+          );
+        }
+        await response.json();
+      } catch (error) {
+        console.error('open.web.page.error', error);
       }
-      await response.json();
-    } catch (error) {
-      console.error('open.web.page.error', error);
-    }
 
-    // Start capturing utterances via WebSocket
-    await startCaptureUtterances();
+      // Start capturing utterances via WebSocket
+      await startCaptureUtterances();
+    } catch (error) {
+      console.error('runAndroidScripts.error', error);
+      announce(
+        'Failed to open test page on Android device. Please check your connection and try again.'
+      );
+    } finally {
+      setIsOpeningAndroid(false);
+    }
   };
 
   const setup = async () => {
@@ -773,8 +794,9 @@ const TestRenderer = ({
 
               <div className={styles.androidDeviceNote}>
                 Before continuing, please ensure that you are running the{' '}
-                <code>start</code> script provided to you. For additional
-                details and testing instructions, please review{' '}
+                <code>start</code> script provided to you, and make sure your
+                device is unlocked and awake. For additional details on
+                prerequisites and testing instructions, please review{' '}
                 <a
                   href="https://github.com/w3c/aria-at-app/wiki/Android-Results-Capture-Prototype-Workflow#how-to-test-the-prototype"
                   target="_blank"
@@ -808,12 +830,10 @@ const TestRenderer = ({
                 style={{ width: '100%' }}
                 disabled={
                   !pageContent.instructions.openTestPage.enabled ||
-                  proxyUrlMessageType !== 'success'
+                  proxyUrlMessageType !== 'success' ||
+                  isOpeningAndroid
                 }
                 onClick={async () => {
-                  // TODO: Show some feedback on this click that the page should
-                  //  open on android device. This will not wake the screen so
-                  //  note to user the phone has to be awake first
                   await runAndroidScripts();
                 }}
               >

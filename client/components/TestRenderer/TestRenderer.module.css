@@ -184,22 +184,33 @@ label {
   }
 }
 
-.captureOutput {
+.capture-output {
   margin-top: 1rem;
   padding: 1rem;
   background-color: var(--bg-lighter-gray);
   border-radius: 4px;
   border: 1px solid var(--border-gray);
   position: relative;
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--darkest-gray);
+  }
+
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--dark-gray);
+    max-height: 18.75rem;
+    overflow-y: auto;
+  }
 }
 
-.captureOutput h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1rem;
-  color: var(--darkest-gray);
-}
-
-.copyButton {
+.copy-button {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
@@ -223,17 +234,12 @@ label {
   &:active {
     background-color: var(--bg-light-gray);
   }
-}
 
-.captureOutput pre {
-  margin: 0;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  font-family: monospace;
-  font-size: 0.75rem;
-  color: var(--dark-gray);
-  max-height: 18.75rem;
-  overflow-y: auto;
+  &:focus {
+    outline: solid;
+    border: 1px solid var(--darkest-gray);
+    border-radius: 4px;
+  }
 }
 
 .proxy-message {
