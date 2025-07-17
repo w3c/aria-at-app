@@ -315,6 +315,15 @@ app.post('/stream-capture-utterances', (req, res) => {
 
   // Handle client disconnect
   req.on('close', () => {
+    console.warn('Response stream close');
+    captureEnded = true;
+    capture.stop();
+  });
+
+  // Handle response errors
+  res.on('error', error => {
+    console.error('Response stream error:', error);
+    captureEnded = true;
     capture.stop();
   });
 
@@ -363,12 +372,32 @@ function initializeAdb() {
   });
 }
 
+// Error handling middleware for Express
+app.use((error, req, res) => {
+  console.error('❌ Express error:', error);
+  if (!res.headersSent) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.info(`ADB proxy running on http://localhost:${PORT}`);
 
   // Initialize ADB server after the web server starts
   initializeAdb();
+});
+
+// Global error handlers to prevent crashes
+process.on('uncaughtException', error => {
+  console.error('❌ Uncaught Exception:', error);
+  console.error('Stack trace:', error.stack);
+  // Don't exit the process, just log the error
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit the process, just log the error
 });
 
 // Cleanup tunnel process on server shutdown
