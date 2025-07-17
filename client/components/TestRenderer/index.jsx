@@ -87,15 +87,26 @@ const TestRenderer = ({
   const [, setWsError] = useState(null);
 
   const copyToClipboard = async text => {
+    // Don't preserve any content before 'Run Test Setup' if that phrase is found
+    // Additionally, remove 'Run Test Setup' and/or 'button' and 'Double-tap to activate' if any of those statements
+    // immediately follow 'Run Test Setup'
+    const pattern = /Run Test Setup(\s+button)?(\s+Double-tap to activate)?\s*/;
+
+    const matchIndex = text.search(pattern);
+    const sanitizedText =
+      matchIndex !== -1
+        ? text.slice(matchIndex + text.match(pattern)[0].length)
+        : text;
+
     try {
-      await navigator.clipboard.writeText(text);
+      await navigator.clipboard.writeText(sanitizedText);
       announce('Utterances copied to clipboard');
     } catch (err) {
       console.error('copy.utterances.error', err);
 
       // fallback for older browsers
       const textArea = document.createElement('textarea');
-      textArea.value = text;
+      textArea.value = sanitizedText;
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
@@ -201,6 +212,9 @@ const TestRenderer = ({
         } else if (data.type === 'utterances_collected') {
           // Handle final collected utterances (formatted for clipboard)
           setCapturedUtterances(() => [data.data]);
+
+          // Should request permissions from user's browser
+          copyToClipboard([data.data].join('\n'));
         } else if (data.type === 'error') {
           console.error('Capture error', data.error);
           setWsError(data.error);
