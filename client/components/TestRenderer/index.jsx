@@ -300,7 +300,9 @@ const TestRenderer = ({
         }
       }
     } catch (error) {
-      console.info('No local tunnel tunnel detected:', error.message);
+      console.error('No local tunnel tunnel detected', error.message);
+      setProxyUrlMessage('Failed to auto-detect proxy URL');
+      setProxyUrlMessageType('error');
       return null;
     }
     return null;
@@ -763,65 +765,69 @@ const TestRenderer = ({
             >
               {pageContent.instructions.openTestPage.button}
             </button>
-            <button
-              disabled={!pageContent.instructions.openTestPage.enabled}
-              onClick={async () => {
-                // TODO: Show some feedback on this click that the page should
-                //  open on android device. This will not wake the screen so
-                //  note to user the phone has to be awake first
-                await runAndroidScripts();
-              }}
-            >
-              Open Test Page on Android Device
-            </button>
-            <div
-              className={`${styles.message} ${styles[proxyUrlMessageType]}`}
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}
-            >
-              {proxyUrlMessage ? proxyUrlMessage : 'No proxy URL found'}
-              <button type="button" onClick={() => detectTunnelUrl(true)}>
-                Auto-Detect
+
+            <div className={styles.androidDeviceSection}>
+              <div className={styles.androidDeviceHeader}>
+                <h3>Android Device Testing</h3>
+              </div>
+
+              <div className={styles.androidDeviceNote}>
+                Before continuing, please ensure that you are running the{' '}
+                <code>start</code> script provided to you. For additional
+                details and testing instructions, please review{' '}
+                <a
+                  href="https://github.com/w3c/aria-at-app/wiki/Android-Results-Capture-Prototype-Workflow#how-to-test-the-prototype"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  the instructions on how to test this android workflow
+                  prototype
+                </a>
+                .
+              </div>
+
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => detectTunnelUrl(true)}
+              >
+                Auto-Detect Proxy
               </button>
+
+              {proxyUrlMessage && (
+                <div
+                  className={`${styles.proxyMessage} ${styles[proxyUrlMessageType]}`}
+                >
+                  {proxyUrlMessage}
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="btn btn-success"
+                style={{ width: '100%' }}
+                disabled={
+                  !pageContent.instructions.openTestPage.enabled ||
+                  proxyUrlMessageType !== 'success'
+                }
+                onClick={async () => {
+                  // TODO: Show some feedback on this click that the page should
+                  //  open on android device. This will not wake the screen so
+                  //  note to user the phone has to be awake first
+                  await runAndroidScripts();
+                }}
+              >
+                Open Test Page on Android Device
+              </button>
+
+              {proxyUrlMessageType === 'error' && (
+                <p className={styles.androidDeviceNote}>
+                  Note: The &ldquo;Open Test Page on Android Device&rdquo;
+                  button will be enabled once a local proxy is detected.
+                </p>
+              )}
             </div>
 
-            {/*<div className={styles.proxyUrlSection}>*/}
-            {/*  <h3>ADB Proxy Configuration</h3>*/}
-            {/*  <p>Configure your ADB proxy URL for Android device automation.</p>*/}
-            {/*  {proxyUrlMessage && (*/}
-            {/*    <div*/}
-            {/*      className={`${styles.message} ${styles[proxyUrlMessageType]}`}*/}
-            {/*    >*/}
-            {/*      {proxyUrlMessage}*/}
-            {/*      <button*/}
-            {/*        className={styles.closeMessage}*/}
-            {/*        onClick={() => setProxyUrlMessage('')}*/}
-            {/*      >*/}
-            {/*        ×*/}
-            {/*      </button>*/}
-            {/*    </div>*/}
-            {/*  )}*/}
-            {/*  <form onSubmit={handleProxyUrlSubmit}>*/}
-            {/*    <div className={styles.proxyUrlInput}>*/}
-            {/*      <label htmlFor="proxyUrl">ADB Proxy URL:</label>*/}
-            {/*      <input*/}
-            {/*        id="proxyUrl"*/}
-            {/*        type="url"*/}
-            {/*        placeholder="Your proxy URL"*/}
-            {/*        value={proxyUrl}*/}
-            {/*        onChange={e => setProxyUrl(e.target.value)}*/}
-            {/*        required*/}
-            {/*      />*/}
-            {/*      <button type="submit">Save Proxy URL</button>*/}
-            {/*      <button type="button" onClick={detectTunnelUrl}>*/}
-            {/*        Auto-Detect Public Proxy URL*/}
-            {/*      </button>*/}
-            {/*    </div>*/}
-            {/*  </form>*/}
-            {/*</div>*/}
             {capturedUtterances.length > 0 && (
               <div className={styles.captureOutput}>
                 <h3>Captured Utterances:</h3>
