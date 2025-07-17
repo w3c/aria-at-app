@@ -57,6 +57,7 @@ const CommandResults = ({
           <FontAwesomeIcon
             icon={faExclamationTriangle}
             style={{ color: '#ce1b4c', marginRight: '8px' }}
+            aria-hidden="false"
             aria-label="Conflicting Output"
           />
         )}
