@@ -269,7 +269,6 @@ const TestRenderer = ({
 
   // Load proxy URL on component mount
   useEffect(() => {
-    fetchCurrentProxyUrl();
     // Try to auto-detect tunnel URL
     detectTunnelUrl();
   }, []);
@@ -280,20 +279,6 @@ const TestRenderer = ({
       if (captureSocket) captureSocket.close();
     };
   }, [captureSocket]);
-
-  const fetchCurrentProxyUrl = async () => {
-    try {
-      const response = await fetch('/api/scripts/proxy-url');
-      if (response.ok) {
-        const data = await response.json();
-        setProxyUrl(data.proxyUrl || '');
-      } else {
-        console.error('Failed to fetch proxy URL');
-      }
-    } catch (error) {
-      console.error('Error fetching proxy URL:', error);
-    }
-  };
 
   /**
    * @param {boolean} forceDetection - when true, force the auto-detected proxy url if not in a deployed environment
