@@ -157,6 +157,9 @@ describe('outputsMatch', () => {
     expect(outputsMatch('Start\u001dMiddle\u001eEnd', 'Start Middle End')).toBe(
       true
     );
+    expect(
+      outputsMatch('Start \u001d Middle \u001e End', 'Start Middle End')
+    ).toBe(true);
   });
 
   it('returns false for different content', () => {
