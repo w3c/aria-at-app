@@ -1,14 +1,25 @@
 export const calculatePercentComplete = ({ metrics, draftTestPlanRuns }) => {
   if (!metrics || !draftTestPlanRuns) return 0;
-  const assignedUserCount = draftTestPlanRuns.length || 1;
-  const totalTestsPossible = metrics.testsCount * assignedUserCount;
-  let totalTestsCompleted = 0;
+
+  let totalAssertionsPossible = 0;
+  let totalValidatedAssertions = 0;
+
   draftTestPlanRuns.forEach(draftTestPlanRun => {
-    totalTestsCompleted += draftTestPlanRun.testResults.filter(
-      ({ completedAt }) => !!completedAt
-    ).length;
+    draftTestPlanRun.testResults.forEach(test => {
+      test.scenarioResults.forEach(scenario => {
+        scenario.assertionResults.forEach(assertion => {
+          totalAssertionsPossible++;
+          if (assertion.passed !== null) {
+            totalValidatedAssertions++;
+          }
+        });
+      });
+    });
   });
-  const percentage = (totalTestsCompleted / totalTestsPossible) * 100;
+
+  if (totalAssertionsPossible === 0) return 0;
+
+  const percentage = (totalValidatedAssertions / totalAssertionsPossible) * 100;
   if (isNaN(percentage) || !isFinite(percentage)) return 0;
   return Math.floor(percentage);
 };

@@ -26,6 +26,21 @@ const TestPlanReportStatusDialogWithButton = ({
   const [showDialog, setShowDialog] = useState(false);
   const { testPlanReportStatuses } = testPlanVersion ?? {};
 
+  const percentageMap = useMemo(() => {
+    if (!testPlanReportStatuses) return new Map();
+
+    const map = new Map();
+    testPlanReportStatuses.forEach(status => {
+      if (status.isRequired && status.testPlanReport) {
+        map.set(
+          status.testPlanReport.id,
+          calculatePercentComplete(status.testPlanReport)
+        );
+      }
+    });
+    return map;
+  }, [testPlanReportStatuses]);
+
   const buttonLabel = useMemo(() => {
     if (!testPlanReportStatuses) return;
 
@@ -37,7 +52,7 @@ const TestPlanReportStatusDialogWithButton = ({
       const { testPlanReport } = status;
 
       if (testPlanReport) {
-        const percentComplete = calculatePercentComplete(testPlanReport);
+        const percentComplete = percentageMap.get(testPlanReport.id);
 
         if (percentComplete === 100 && testPlanReport.markedFinalAt) {
           counts.completed += 1;
@@ -93,7 +108,7 @@ const TestPlanReportStatusDialogWithButton = ({
         </span>
       );
     }
-  }, [testPlanReportStatuses]);
+  }, [testPlanReportStatuses, percentageMap]);
 
   if (
     loading ||

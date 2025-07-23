@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { dates } from 'shared';
 import { calculatePercentComplete } from '../../../utils/calculatePercentComplete';
@@ -14,6 +14,10 @@ const ReportStatusSummary = ({
   testPlanReport,
   fromTestQueue = false
 }) => {
+  const percentComplete = useMemo(
+    () => (testPlanReport ? calculatePercentComplete(testPlanReport) : 0),
+    [testPlanReport]
+  );
   const renderCompleteReportStatus = testPlanReport => {
     const formattedDate = dates.convertDateToString(
       testPlanReport.markedFinalAt,
@@ -43,7 +47,6 @@ const ReportStatusSummary = ({
     const { metrics, draftTestPlanRuns } = testPlanReport;
 
     const conflictsCount = metrics.conflictsCount ?? 0;
-    const percentComplete = calculatePercentComplete(testPlanReport);
     switch (draftTestPlanRuns?.length) {
       case 0:
         return fromTestQueue ? (
