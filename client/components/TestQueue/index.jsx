@@ -40,10 +40,6 @@ const TestQueue = () => {
     fetchPolicy: 'cache-and-network'
   });
 
-  const hasBotRun = testPlanReport => {
-    return testPlanReport.draftTestPlanRuns?.some(({ tester }) => tester.isBot);
-  };
-
   const openDisclosuresRef = useRef({});
   const forceUpdate = useForceUpdate();
 
