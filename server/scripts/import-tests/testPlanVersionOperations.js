@@ -4,6 +4,7 @@ const path = require('path');
 const fse = require('fs-extra');
 const { pathToFileURL } = require('url');
 const spawn = require('cross-spawn');
+const yauzl = require('yauzl');
 const { At, sequelize } = require('../../models');
 const {
   createTestPlanVersion,
@@ -16,14 +17,63 @@ const {
 } = require('../../models/services/TestPlanService');
 const { hashTests } = require('../../util/aria');
 const { dates } = require('shared');
-const { readCommit, readDirectoryGitInfo } = require('./gitOperations');
+const { readCommit } = require('./gitOperations');
 const { parseTests } = require('./testParser');
 const {
   gitCloneDirectory,
   builtTestsDirectory,
-  testsDirectory
+  testsDirectory,
+  getZipCommitPath,
+  getZipCommitTmpDirectory,
+  PRE_BUILT_ZIP_COMMITS
 } = require('./settings');
 const { getAppUrl } = require('./utils');
+
+/**
+ * Extracts a zip file to a target directory.
+ * @param {string} zipPath - Path to the zip file.
+ * @param {string} targetPath - Path to extract to.
+ * @returns {Promise<void>}
+ */
+const extractZipFile = (zipPath, targetPath) => {
+  return new Promise((resolve, reject) => {
+    yauzl.open(zipPath, { lazyEntries: true }, (err, zipfile) => {
+      if (err) return reject(err);
+
+      zipfile.on('close', () => resolve());
+      zipfile.on('error', reject);
+
+      zipfile.on('entry', entry => {
+        if (/\/$/.test(entry.fileName)) {
+          // Directory entry
+          zipfile.readEntry();
+        } else {
+          // File entry
+          zipfile.openReadStream(entry, (err, readStream) => {
+            if (err) return reject(err);
+
+            const filePath = path.join(targetPath, entry.fileName);
+            const dirPath = path.dirname(filePath);
+
+            // Ensure directory exists
+            fse.mkdirSync(dirPath, { recursive: true });
+
+            const writeStream = fse.createWriteStream(filePath);
+            readStream.pipe(writeStream);
+
+            writeStream.on('close', () => {
+              zipfile.readEntry();
+            });
+
+            writeStream.on('error', reject);
+          });
+        }
+      });
+
+      zipfile.readEntry();
+    });
+  });
+};
 
 /**
  * Builds tests and creates test plan versions for a given commit.
@@ -33,45 +83,85 @@ const { getAppUrl } = require('./utils');
  * @returns {Promise<void>}
  */
 const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
-  const { gitCommitDate } = await readCommit(gitCloneDirectory, commit);
+  let zipCommitTmpDirectory;
+  let localBuiltTestsDirectory = builtTestsDirectory;
+  let localTestsDirectory = testsDirectory;
 
-  console.log('Running `npm install` ...\n');
-  const installOutput = spawn.sync('npm', ['install'], {
-    cwd: gitCloneDirectory
-  });
+  // Always get commit info from the real repo
+  const { gitSha, gitMessage, gitCommitDate } = await readCommit(
+    gitCloneDirectory,
+    commit
+  );
 
-  if (installOutput.error) {
-    console.info(`'npm install' failed with error ${installOutput.error}`);
-    process.exit(1);
-  }
-  console.log('`npm install` output', installOutput.stdout.toString());
-
-  console.log('Running `npm run build` ...\n');
-  const buildOutput = spawn.sync('npm', ['run', 'build'], {
-    cwd: gitCloneDirectory
-  });
-
-  if (buildOutput.error) {
-    console.info(`'npm run build' failed with error ${buildOutput.error}`);
-    process.exit(1);
-  }
-
-  console.log('`npm run build` output', buildOutput.stdout.toString());
-
-  importHarness();
-
-  const { support } = await updateJsons();
-
+  // Always fetch ATs from the database
   const ats = await At.findAll({
     order: [['id', 'ASC']]
   });
-  await updateAtsJson({ ats, supportAts: support.ats });
 
-  for (const directory of fse.readdirSync(builtTestsDirectory)) {
+  // If commit is pre-built, load content from local source
+  if (PRE_BUILT_ZIP_COMMITS.includes(commit)) {
+    // Unzip to a custom directory named after the commit
+    zipCommitTmpDirectory = getZipCommitTmpDirectory(commit);
+    if (!fse.existsSync(zipCommitTmpDirectory)) {
+      fse.mkdirSync(zipCommitTmpDirectory, { recursive: true });
+      try {
+        await extractZipFile(getZipCommitPath(commit), zipCommitTmpDirectory);
+      } catch (error) {
+        console.error(
+          `Failed to extract the zip directory for ${commit}:`,
+          error
+        );
+      }
+    }
+
+    // Set directories to extracted locations
+    localBuiltTestsDirectory = path.join(
+      zipCommitTmpDirectory,
+      'build',
+      'tests'
+    );
+    localTestsDirectory = path.join(zipCommitTmpDirectory, 'tests');
+
+    console.log(
+      `Extracted pre-built commit folders for ${commit}:\n${localBuiltTestsDirectory}\n${localTestsDirectory}`
+    );
+  } else {
+    console.log('Running `npm install` ...\n');
+    const installOutput = spawn.sync('npm', ['install'], {
+      cwd: gitCloneDirectory
+    });
+
+    if (installOutput.error) {
+      console.info(`'npm install' failed with error ${installOutput.error}`);
+      process.exit(1);
+    }
+    console.log('`npm install` output', installOutput.stdout.toString());
+
+    console.log('Running `npm run build` ...\n');
+    const buildOutput = spawn.sync('npm', ['run', 'build'], {
+      cwd: gitCloneDirectory
+    });
+
+    if (buildOutput.error) {
+      console.info(`'npm run build' failed with error ${buildOutput.error}`);
+      process.exit(1);
+    }
+
+    console.log('`npm run build` output', buildOutput.stdout.toString());
+
+    importHarness();
+
+    const { support } = await updateJsons();
+
+    await updateAtsJson({ ats, supportAts: support.ats });
+  }
+
+  for (const directory of fse.readdirSync(localBuiltTestsDirectory)) {
     if (directory === 'resources') continue;
 
-    const builtDirectoryPath = path.join(builtTestsDirectory, directory);
-    const sourceDirectoryPath = path.join(testsDirectory, directory);
+    const builtDirectoryPath = path.join(localBuiltTestsDirectory, directory);
+    if (!fse.statSync(builtDirectoryPath).isDirectory()) continue;
+    const sourceDirectoryPath = path.join(localTestsDirectory, directory);
 
     // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
     // This is the date of the last commit before the build folder removal.
@@ -94,6 +184,8 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
       directory,
       builtDirectoryPath,
       sourceDirectoryPath,
+      gitSha,
+      gitMessage,
       gitCommitDate,
       useBuildInAppAppUrlPath,
       ats,
@@ -103,11 +195,28 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
 
   // To ensure build folder is clean when multiple commits are being processed
   // to prevent `EPERM` errors
-  console.log('Running `npm run cleanup` ...\n');
-  const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
-    cwd: gitCloneDirectory
-  });
-  console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
+  if (!PRE_BUILT_ZIP_COMMITS.includes(commit)) {
+    console.log('Running `npm run cleanup` ...\n');
+    const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
+      cwd: gitCloneDirectory
+    });
+    console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
+  }
+
+  // Clean up the extracted zip commit directory after use
+  if (fse.existsSync(zipCommitTmpDirectory)) {
+    try {
+      fse.removeSync(zipCommitTmpDirectory);
+      console.log(
+        `Cleaned up extracted commit directory: ${zipCommitTmpDirectory}\n`
+      );
+    } catch (error) {
+      console.warn(
+        `Failed to clean up extracted commit directory: ${zipCommitTmpDirectory}:\n`,
+        error
+      );
+    }
+  }
 };
 
 /**
@@ -116,6 +225,9 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
  * @param {string} options.directory - The directory name.
  * @param {string} options.builtDirectoryPath - Path to the built directory.
  * @param {string} options.sourceDirectoryPath - Path to the source directory.
+ * @param {string} options.gitSha
+ * @param {string} options.gitMessage
+ * @param {Date} options.gitCommitDate
  * @param {boolean} options.useBuildInAppAppUrlPath - Whether to use build path in app URL.
  * @param {Array} options.ats - Array of AT objects.
  * @param {import('sequelize').Transaction} options.transaction - The database transaction.
@@ -125,6 +237,9 @@ const processTestPlanVersion = async ({
   directory,
   builtDirectoryPath,
   sourceDirectoryPath,
+  gitSha,
+  gitMessage,
+  gitCommitDate,
   useBuildInAppAppUrlPath,
   ats,
   transaction
@@ -146,14 +261,6 @@ const processTestPlanVersion = async ({
   );
   const currentTestPlanVersionId =
     currentTestPlanVersionIdResult[0].currval - 1;
-
-  // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
-  // actually last changed
-  const {
-    gitSha,
-    gitMessage,
-    gitCommitDate: updatedAt
-  } = readDirectoryGitInfo(sourceDirectoryPath);
 
   // Use existence of assertions.csv to determine if v2 format files exist
   const assertionsCsvPath = path.join(
@@ -195,12 +302,22 @@ const processTestPlanVersion = async ({
     isV2
   });
 
+  const resolvedDirectoryPath = useBuildInAppAppUrlPath
+    ? builtDirectoryPath
+    : sourceDirectoryPath;
+
+  if (!testPageUrl || !resolvedDirectoryPath) {
+    throw new Error(
+      `Missing testPageUrl or directoryPath for test plan version: directory=${directory}, commitSha=${gitSha}, testPageUrl=${testPageUrl}, directoryPath=${resolvedDirectoryPath}`
+    );
+  }
+
   const testPlanId = await getOrCreateTestPlan(directory, title, transaction);
 
-  await deprecateOldTestPlanVersions(directory, updatedAt, transaction);
+  await deprecateOldTestPlanVersions(directory, gitCommitDate, transaction);
 
   const versionString = await getVersionString({
-    updatedAt,
+    updatedAt: gitCommitDate,
     directory,
     transaction
   });
@@ -212,14 +329,12 @@ const processTestPlanVersion = async ({
       directory,
       testPageUrl: getAppUrl(testPageUrl, {
         gitSha,
-        directoryPath: useBuildInAppAppUrlPath
-          ? builtDirectoryPath
-          : sourceDirectoryPath
+        directoryPath: resolvedDirectoryPath
       }),
       gitSha,
       gitMessage,
       hashedTests,
-      updatedAt,
+      updatedAt: gitCommitDate,
       versionString,
       metadata: {
         designPatternUrl,

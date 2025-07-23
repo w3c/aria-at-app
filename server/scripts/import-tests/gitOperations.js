@@ -47,36 +47,19 @@ function cloneRepo(gitCloneDirectory) {
 
 /**
  * Checks out a specific commit and retrieves its date.
- * @param {string} gitCloneDirectory - The directory of the cloned repo.
+ * @param {string} directoryPath - The directory of the cloned repo.
  * @param {string|null} commit - The commit to checkout. If null, uses the default branch.
  * @returns {Promise<{gitCommitDate: Date}>} An object containing the commit date.
  */
-async function readCommit(gitCloneDirectory, commit) {
-  gitRun(`checkout ${commit ?? ariaAtDefaultBranch}`, gitCloneDirectory);
+async function readCommit(directoryPath, commit) {
+  gitRun(`checkout ${commit ?? ariaAtDefaultBranch}`, directoryPath);
+  const gitSha = gitRun('log --format=%H -n 1', directoryPath);
+  const gitMessage = gitRun('log --format=%s -n 1', directoryPath);
   const gitCommitDate = new Date(
-    gitRun(`log --format=%aI -n 1`, gitCloneDirectory)
-  );
-
-  return { gitCommitDate };
-}
-
-/**
- * Reads git information for a specific directory.
- * @param {string} directoryPath - The path to the directory to read git info from.
- * @returns {{gitSha: string, gitMessage: string, gitCommitDate: Date}} An object containing git information.
- */
-function readDirectoryGitInfo(directoryPath) {
-  const gitSha = gitRun(`log -1 --format=%H -- .`, directoryPath);
-  const gitMessage = gitRun(`log -1 --format=%s -- .`, directoryPath);
-  const gitCommitDate = new Date(
-    gitRun(`log -1 --format=%aI -- .`, directoryPath)
+    gitRun(`log --format=%aI -n 1`, directoryPath)
   );
 
   return { gitSha, gitMessage, gitCommitDate };
 }
 
-module.exports = {
-  cloneRepo,
-  readCommit,
-  readDirectoryGitInfo
-};
+module.exports = { cloneRepo, readCommit };
