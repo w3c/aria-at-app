@@ -122,12 +122,9 @@ const TestQueue = () => {
   }, [data]);
 
   const shouldShowReport = (testPlanReport, filter) => {
-    const hasBot = hasBotRun(testPlanReport);
     const isRerun = !!testPlanReport.historicalReport;
-
-    if (filter === FILTER_KEYS.MANUAL) return !hasBot || !isRerun;
-    if (filter === FILTER_KEYS.AUTOMATED) return hasBot && isRerun;
-    return true;
+    if (filter === FILTER_KEYS.ALL) return true;
+    return filter === FILTER_KEYS.AUTOMATED ? isRerun : !isRerun;
   };
 
   const filterOptions = useMemo(() => {
