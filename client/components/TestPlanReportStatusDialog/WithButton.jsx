@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import TestPlanReportStatusDialog from './index';
-import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
+
 import ReportStatusDot, { REPORT_STATUSES } from '../common/ReportStatusDot';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from './queries';
 import { useQuery } from '@apollo/client';
@@ -34,7 +34,7 @@ const TestPlanReportStatusDialogWithButton = ({
       if (status.isRequired && status.testPlanReport) {
         map.set(
           status.testPlanReport.id,
-          calculatePercentComplete(status.testPlanReport)
+          status.testPlanReport.percentComplete
         );
       }
     });

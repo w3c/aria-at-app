@@ -15,7 +15,6 @@ import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import TestPlanReportStatusDialogWithButton from '../TestPlanReportStatusDialog/WithButton';
 import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion, BrowserVersion } from '../common/AtBrowserVersion';
-import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
 import ProgressBar from '../common/ProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
@@ -128,7 +127,7 @@ const TestQueue = () => {
     processedData.testPlans.forEach(testPlan => {
       testPlan.testPlanVersions.forEach(testPlanVersion => {
         testPlanVersion.testPlanReports.forEach(testPlanReport => {
-          map.set(testPlanReport.id, calculatePercentComplete(testPlanReport));
+          map.set(testPlanReport.id, testPlanReport.percentComplete);
         });
       });
     });

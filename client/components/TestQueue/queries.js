@@ -11,9 +11,7 @@ import {
   TEST_PLAN_VERSION_FIELDS,
   TEST_RESULT_FIELDS,
   ISSUE_FIELDS,
-  USER_FIELDS,
-  SCENARIO_RESULT_FIELDS,
-  ASSERTION_RESULT_FIELDS
+  USER_FIELDS
 } from '@components/common/fragments';
 
 export const TEST_QUEUE_PAGE_QUERY = gql`
@@ -27,8 +25,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
   ${TEST_PLAN_RUN_FIELDS}
   ${TEST_PLAN_VERSION_FIELDS}
   ${TEST_RESULT_FIELDS}
-  ${SCENARIO_RESULT_FIELDS('all')}
-  ${ASSERTION_RESULT_FIELDS}
   ${USER_FIELDS}
   query TestQueuePage {
     me {
@@ -76,9 +72,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             testResultsLength
             testResults {
               ...TestResultFields
-              scenarioResults {
-                ...ScenarioResultFieldsAll
-              }
             }
           }
         }

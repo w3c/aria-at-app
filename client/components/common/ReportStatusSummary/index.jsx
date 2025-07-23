@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { dates } from 'shared';
-import { calculatePercentComplete } from '../../../utils/calculatePercentComplete';
+
 import {
   TestPlanVersionPropType,
   TestPlanRunPropType,
@@ -15,7 +15,7 @@ const ReportStatusSummary = ({
   fromTestQueue = false
 }) => {
   const percentComplete = useMemo(
-    () => (testPlanReport ? calculatePercentComplete(testPlanReport) : 0),
+    () => (testPlanReport ? testPlanReport.percentComplete : 0),
     [testPlanReport]
   );
   const renderCompleteReportStatus = testPlanReport => {
