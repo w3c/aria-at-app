@@ -17,7 +17,7 @@ const {
 } = require('../../models/services/TestPlanService');
 const { hashTests } = require('../../util/aria');
 const { dates } = require('shared');
-const { readCommit } = require('./gitOperations');
+const { readCommit, readDirectoryGitInfo } = require('./gitOperations');
 const { parseTests } = require('./testParser');
 const {
   gitCloneDirectory,
@@ -77,21 +77,21 @@ const extractZipFile = (zipPath, targetPath) => {
 
 /**
  * Builds tests and creates test plan versions for a given commit.
- * @param {string} commit - The git commit hash.
+ * @param {string|null} commit - The git commit hash.
  * @param {Object} options - Options object.
+ * @param {boolean} options.waitForCleanup - Wait for aria-at's cleanup command to run (may not be needed if removing the directory right after)
  * @param {import('sequelize').Transaction} options.transaction - The database transaction.
  * @returns {Promise<void>}
  */
-const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
+const buildTestsAndCreateTestPlanVersions = async (
+  commit,
+  { waitForCleanup, transaction }
+) => {
   let zipCommitTmpDirectory;
   let localBuiltTestsDirectory = builtTestsDirectory;
-  let localTestsDirectory = testsDirectory;
 
   // Always get commit info from the real repo
-  const { gitSha, gitMessage, gitCommitDate } = await readCommit(
-    gitCloneDirectory,
-    commit
-  );
+  const { gitCommitDate } = await readCommit(gitCloneDirectory, commit);
 
   // Always fetch ATs from the database
   const ats = await At.findAll({
@@ -120,10 +120,9 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
       'build',
       'tests'
     );
-    localTestsDirectory = path.join(zipCommitTmpDirectory, 'tests');
 
     console.log(
-      `Extracted pre-built commit folders for ${commit}:\n${localBuiltTestsDirectory}\n${localTestsDirectory}`
+      `Extracted pre-built commit folder for ${commit}:\n${localBuiltTestsDirectory}`
     );
   } else {
     console.log('Running `npm install` ...\n');
@@ -161,7 +160,7 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
 
     const builtDirectoryPath = path.join(localBuiltTestsDirectory, directory);
     if (!fse.statSync(builtDirectoryPath).isDirectory()) continue;
-    const sourceDirectoryPath = path.join(localTestsDirectory, directory);
+    const sourceDirectoryPath = path.join(testsDirectory, directory);
 
     // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
     // This is the date of the last commit before the build folder removal.
@@ -184,9 +183,6 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
       directory,
       builtDirectoryPath,
       sourceDirectoryPath,
-      gitSha,
-      gitMessage,
-      gitCommitDate,
       useBuildInAppAppUrlPath,
       ats,
       transaction
@@ -195,7 +191,7 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
 
   // To ensure build folder is clean when multiple commits are being processed
   // to prevent `EPERM` errors
-  if (!PRE_BUILT_ZIP_COMMITS.includes(commit)) {
+  if (!PRE_BUILT_ZIP_COMMITS.includes(commit) && waitForCleanup) {
     console.log('Running `npm run cleanup` ...\n');
     const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
       cwd: gitCloneDirectory
@@ -225,9 +221,6 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
  * @param {string} options.directory - The directory name.
  * @param {string} options.builtDirectoryPath - Path to the built directory.
  * @param {string} options.sourceDirectoryPath - Path to the source directory.
- * @param {string} options.gitSha
- * @param {string} options.gitMessage
- * @param {Date} options.gitCommitDate
  * @param {boolean} options.useBuildInAppAppUrlPath - Whether to use build path in app URL.
  * @param {Array} options.ats - Array of AT objects.
  * @param {import('sequelize').Transaction} options.transaction - The database transaction.
@@ -237,9 +230,6 @@ const processTestPlanVersion = async ({
   directory,
   builtDirectoryPath,
   sourceDirectoryPath,
-  gitSha,
-  gitMessage,
-  gitCommitDate,
   useBuildInAppAppUrlPath,
   ats,
   transaction
@@ -261,6 +251,14 @@ const processTestPlanVersion = async ({
   );
   const currentTestPlanVersionId =
     currentTestPlanVersionIdResult[0].currval - 1;
+
+  // Target the specific /tests/<pattern> directory to determine when a pattern's folder was
+  // actually last changed
+  const {
+    gitSha,
+    gitMessage,
+    gitCommitDate: updatedAt
+  } = readDirectoryGitInfo(sourceDirectoryPath);
 
   // Use existence of assertions.csv to determine if v2 format files exist
   const assertionsCsvPath = path.join(
@@ -314,10 +312,10 @@ const processTestPlanVersion = async ({
 
   const testPlanId = await getOrCreateTestPlan(directory, title, transaction);
 
-  await deprecateOldTestPlanVersions(directory, gitCommitDate, transaction);
+  await deprecateOldTestPlanVersions(directory, updatedAt, transaction);
 
   const versionString = await getVersionString({
-    updatedAt: gitCommitDate,
+    updatedAt,
     directory,
     transaction
   });
@@ -334,7 +332,7 @@ const processTestPlanVersion = async ({
       gitSha,
       gitMessage,
       hashedTests,
-      updatedAt: gitCommitDate,
+      updatedAt,
       versionString,
       metadata: {
         designPatternUrl,
