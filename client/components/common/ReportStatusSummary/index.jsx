@@ -14,10 +14,6 @@ const ReportStatusSummary = ({
   testPlanReport,
   fromTestQueue = false
 }) => {
-  const percentComplete = useMemo(
-    () => (testPlanReport ? testPlanReport.percentComplete : 0),
-    [testPlanReport]
-  );
   const renderCompleteReportStatus = testPlanReport => {
     const formattedDate = dates.convertDateToString(
       testPlanReport.markedFinalAt,
@@ -57,7 +53,7 @@ const ReportStatusSummary = ({
       case 1:
         return (
           <span>
-            {percentComplete}% complete by&nbsp;
+            {testPlanReport.percentComplete || 0}% complete by&nbsp;
             <a
               href={`https://github.com/${draftTestPlanRuns[0].tester.username}`}
             >
@@ -70,7 +66,7 @@ const ReportStatusSummary = ({
       default:
         return (
           <span>
-            {percentComplete}% complete by&nbsp;
+            {testPlanReport.percentComplete || 0}% complete by&nbsp;
             {draftTestPlanRuns.length} testers&nbsp;
             {getConflictsAnchor(conflictsCount)}
           </span>

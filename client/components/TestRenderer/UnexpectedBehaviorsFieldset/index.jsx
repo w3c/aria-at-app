@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import RequiredWarning from '../RequiredWarning';
@@ -9,11 +9,8 @@ const UnexpectedBehaviorsFieldset = ({
   unexpectedBehaviors,
   isSubmitted,
   readOnly = false,
-  forceYes,
-  hasIncompleteAssertions = false
+  forceYes
 }) => {
-  const fieldsetRef = useRef(null);
-
   const impactOptions = ['Moderate', 'Severe'];
   const handleUnexpectedBehaviorsExistRadioClick = e => {
     if (readOnly) e.preventDefault();
@@ -27,17 +24,9 @@ const UnexpectedBehaviorsFieldset = ({
   const hasError =
     isSubmitted && unexpectedBehaviors.description[1].highlightRequired;
   const errorId = `unexpected-error-${commandIndex}`;
-  const shouldFocus = hasError && !hasIncompleteAssertions;
-
-  useEffect(() => {
-    if (shouldFocus && !readOnly && fieldsetRef.current) {
-      fieldsetRef.current.focus();
-    }
-  }, [shouldFocus, readOnly]);
 
   return (
     <fieldset
-      ref={fieldsetRef}
       className={clsx(
         styles.testRendererFieldset,
         isSubmitted && hasError && styles.incompleteFieldset
@@ -45,7 +34,7 @@ const UnexpectedBehaviorsFieldset = ({
       id={`cmd-${commandIndex}-problems`}
       aria-invalid={hasError ? 'true' : undefined}
       aria-describedby={hasError ? errorId : undefined}
-      tabIndex={shouldFocus ? 0 : -1}
+      tabIndex={hasError ? 0 : -1}
     >
       <legend>{unexpectedBehaviors.description[0]}</legend>
       {hasError && <RequiredWarning id={errorId} />}
@@ -213,8 +202,7 @@ UnexpectedBehaviorsFieldset.propTypes = {
   unexpectedBehaviors: PropTypes.object.isRequired,
   isSubmitted: PropTypes.bool,
   readOnly: PropTypes.bool,
-  forceYes: PropTypes.bool.isRequired,
-  hasIncompleteAssertions: PropTypes.bool
+  forceYes: PropTypes.bool.isRequired
 };
 
 export default UnexpectedBehaviorsFieldset;

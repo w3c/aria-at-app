@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import supportJson from '../../../resources/support.json';
@@ -25,31 +25,6 @@ const AssertionsFieldset = ({
     assertion => assertion.passed === null
   );
   const errorId = `assertions-error-${commandIndex}`;
-  const firstIncompleteIndex = assertions.findIndex(
-    assertion => assertion.passed === null
-  );
-
-  useEffect(() => {
-    if (
-      isSubmitted &&
-      hasIncompleteAssertions &&
-      !readOnly &&
-      firstIncompleteIndex >= 0
-    ) {
-      const firstIncompleteFieldset = document.getElementById(
-        `assertion-fieldset-${commandIndex}-${firstIncompleteIndex}`
-      );
-      if (firstIncompleteFieldset) {
-        firstIncompleteFieldset.focus();
-      }
-    }
-  }, [
-    isSubmitted,
-    hasIncompleteAssertions,
-    readOnly,
-    firstIncompleteIndex,
-    commandIndex
-  ]);
 
   return (
     <fieldset className={styles.testRendererFieldset}>

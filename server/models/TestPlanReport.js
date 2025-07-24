@@ -42,8 +42,8 @@ module.exports = function (sequelize, DataTypes) {
       },
       percentComplete: {
         type: DataTypes.INTEGER,
-        allowNull: true,
-        defaultValue: null
+        allowNull: false,
+        defaultValue: 0
       }
     },
     {
