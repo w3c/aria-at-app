@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { dates } from 'shared';
 
@@ -90,6 +90,7 @@ ReportStatusSummary.propTypes = {
   testPlanVersion: TestPlanVersionPropType.isRequired,
   testPlanReport: PropTypes.shape({
     id: PropTypes.string.isRequired,
+    percentComplete: PropTypes.number,
     markedFinalAt: PropTypes.string,
     metrics: PropTypes.object,
     draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType).isRequired
