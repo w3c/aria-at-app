@@ -1,6 +1,5 @@
 const { calculatePercentComplete } = require('./calculatePercentComplete');
 const {
-  getTestPlanReportById,
   updateTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 
@@ -8,10 +7,16 @@ const updatePercentComplete = async ({ testPlanReportId, transaction }) => {
   if (!testPlanReportId) return;
 
   try {
-    const testPlanReport = await getTestPlanReportById({
+    const percentComplete = await calculatePercentComplete({
+      testPlanReportId,
+      transaction
+    });
+
+    await updateTestPlanReportById({
       id: testPlanReportId,
-      testPlanReportAttributes: ['id', 'percentComplete'],
-      testPlanRunAttributes: ['id', 'testResults'],
+      values: { percentComplete },
+      testPlanReportAttributes: ['id'],
+      testPlanRunAttributes: [],
       testPlanVersionAttributes: [],
       testPlanAttributes: [],
       atAttributes: [],
@@ -19,27 +24,6 @@ const updatePercentComplete = async ({ testPlanReportId, transaction }) => {
       userAttributes: [],
       transaction
     });
-
-    if (!testPlanReport) return;
-
-    const percentComplete = calculatePercentComplete({
-      draftTestPlanRuns: testPlanReport.testPlanRuns
-    });
-
-    if (testPlanReport.percentComplete !== percentComplete) {
-      await updateTestPlanReportById({
-        id: testPlanReportId,
-        values: { percentComplete },
-        testPlanReportAttributes: ['id'],
-        testPlanRunAttributes: [],
-        testPlanVersionAttributes: [],
-        testPlanAttributes: [],
-        atAttributes: [],
-        browserAttributes: [],
-        userAttributes: [],
-        transaction
-      });
-    }
   } catch (error) {
     console.error(
       `Error updating percentComplete for TestPlanReport ${testPlanReportId}:`,

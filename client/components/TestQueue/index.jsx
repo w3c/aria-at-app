@@ -122,18 +122,6 @@ const TestQueue = () => {
     return filter === FILTER_KEYS.AUTOMATED ? isRerun : !isRerun;
   };
 
-  const percentageMap = useMemo(() => {
-    const map = new Map();
-    processedData.testPlans.forEach(testPlan => {
-      testPlan.testPlanVersions.forEach(testPlanVersion => {
-        testPlanVersion.testPlanReports.forEach(testPlanReport => {
-          map.set(testPlanReport.id, testPlanReport.percentComplete);
-        });
-      });
-    });
-    return map;
-  }, [processedData]);
-
   const filterOptions = useMemo(() => {
     let allCount = 0;
     let manualCount = 0;
@@ -313,7 +301,7 @@ const TestQueue = () => {
   };
 
   const renderRow = ({ testPlan, testPlanVersion, testPlanReport }) => {
-    const percentComplete = percentageMap.get(testPlanReport.id);
+    const { percentComplete } = testPlanReport;
     const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
       ({ tester }) => tester.isBot
     );

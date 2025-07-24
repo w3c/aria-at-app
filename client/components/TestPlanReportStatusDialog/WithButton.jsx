@@ -2,7 +2,6 @@ import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import TestPlanReportStatusDialog from './index';
-
 import ReportStatusDot, { REPORT_STATUSES } from '../common/ReportStatusDot';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from './queries';
 import { useQuery } from '@apollo/client';
@@ -26,21 +25,6 @@ const TestPlanReportStatusDialogWithButton = ({
   const [showDialog, setShowDialog] = useState(false);
   const { testPlanReportStatuses } = testPlanVersion ?? {};
 
-  const percentageMap = useMemo(() => {
-    if (!testPlanReportStatuses) return new Map();
-
-    const map = new Map();
-    testPlanReportStatuses.forEach(status => {
-      if (status.isRequired && status.testPlanReport) {
-        map.set(
-          status.testPlanReport.id,
-          status.testPlanReport.percentComplete
-        );
-      }
-    });
-    return map;
-  }, [testPlanReportStatuses]);
-
   const buttonLabel = useMemo(() => {
     if (!testPlanReportStatuses) return;
 
@@ -52,7 +36,7 @@ const TestPlanReportStatusDialogWithButton = ({
       const { testPlanReport } = status;
 
       if (testPlanReport) {
-        const percentComplete = percentageMap.get(testPlanReport.id);
+        const { percentComplete } = testPlanReport;
 
         if (percentComplete === 100 && testPlanReport.markedFinalAt) {
           counts.completed += 1;
@@ -108,7 +92,7 @@ const TestPlanReportStatusDialogWithButton = ({
         </span>
       );
     }
-  }, [testPlanReportStatuses, percentageMap]);
+  }, [testPlanReportStatuses]);
 
   if (
     loading ||

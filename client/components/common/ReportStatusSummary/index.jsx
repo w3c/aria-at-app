@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { dates } from 'shared';
-
 import {
   TestPlanVersionPropType,
   TestPlanRunPropType,

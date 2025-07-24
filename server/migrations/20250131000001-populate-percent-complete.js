@@ -11,20 +11,10 @@ const populatePercentComplete = async (queryInterface, transaction) => {
   );
 
   for (const report of testPlanReports) {
-    const testPlanRuns = await queryInterface.sequelize.query(
-      `SELECT "testResults" FROM "TestPlanRun" WHERE "testPlanReportId" = :reportId`,
-      {
-        replacements: { reportId: report.id },
-        type: queryInterface.sequelize.QueryTypes.SELECT,
-        transaction
-      }
-    );
-
-    const draftTestPlanRuns = testPlanRuns.map(run => ({
-      testResults: run.testResults
-    }));
-
-    const percentComplete = calculatePercentComplete({ draftTestPlanRuns });
+    const percentComplete = await calculatePercentComplete({
+      testPlanReportId: report.id,
+      transaction
+    });
 
     await queryInterface.sequelize.query(
       `UPDATE "TestPlanReport" SET "percentComplete" = :percentComplete WHERE id = :reportId`,
