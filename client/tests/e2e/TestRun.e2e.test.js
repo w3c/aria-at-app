@@ -635,4 +635,63 @@ describe('Test Run when signed in as tester', () => {
       expect(activeElement.nodeName).toBe('fieldset');
     });
   });
+
+  it('focuses unexpected behavior details field when details are required but not provided', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      // Fill required fields to get past initial validation
+      await page.evaluate(() => {
+        const yesRadios = document.querySelectorAll(
+          'input[data-testid^="radio-yes-"]'
+        );
+        const noOutputCheckboxes = document.querySelectorAll(
+          'input[id^="no-output-checkbox"]'
+        );
+
+        yesRadios.forEach(radio => radio.click());
+        noOutputCheckboxes.forEach(checkbox => checkbox.click());
+      });
+
+      // First enable unexpected behaviors by clicking "Yes, negative side effects occurred"
+      await page.evaluate(() => {
+        const yesUndesiredRadios = document.querySelectorAll(
+          'input[id^="problem-"][id$="-false"]'
+        );
+        // Click the first "Yes" radio for negative side effects
+        if (yesUndesiredRadios.length > 0) {
+          yesUndesiredRadios[0].click();
+        }
+      });
+
+      // Select an unexpected behavior but don't fill details
+      await page.click('label ::-p-text(excessively verbose)');
+
+      // Submit the form
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
+
+      // Wait for the form to be re-rendered after submission
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      // Check that the details input field is focused
+      const activeElement = await page.evaluate(() => {
+        return {
+          className: document.activeElement.className,
+          nodeName: document.activeElement.nodeName.toLowerCase(),
+          type: document.activeElement.type
+        };
+      });
+
+      expect(activeElement.nodeName).toBe('input');
+      expect(activeElement.type).toBe('text');
+      expect(activeElement.className).toContain(
+        'undesirable-output-is-excessively-verbose'
+      );
+    });
+  });
 });

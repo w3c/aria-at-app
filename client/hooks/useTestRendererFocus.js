@@ -47,6 +47,23 @@ const useTestRendererFocus = (isSubmitted, pageContent) => {
           return true;
         }
       }
+
+      if (unexpectedBehaviors.failChoice?.options?.options) {
+        for (const option of unexpectedBehaviors.failChoice.options.options) {
+          if (option.more?.description?.[1]?.highlightRequired) {
+            const optionDescription = option.description
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, '-');
+            const detailsElement = document.querySelector(
+              `.undesirable-${optionDescription}-details`
+            );
+            if (detailsElement) {
+              detailsElement.focus();
+              return true;
+            }
+          }
+        }
+      }
     }
     return false;
   };
