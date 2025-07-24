@@ -21,6 +21,7 @@ import supportJson from '../../resources/support.json';
 import commandsJson from '../../resources/commands.json';
 import { AtPropType, TestResultPropType } from '../common/proptypes/index.js';
 import styles from './TestRenderer.module.css';
+import useTestRendererFocus from '../../hooks/useTestRendererFocus';
 
 const ErrorComponent = ({ hasErrors = false }) => {
   return (
@@ -67,6 +68,8 @@ const TestRenderer = ({
   const [testRendererState, setTestRendererState] = useState(null);
   const [submitResult, setSubmitResult] = useState(null);
   const [submitCalled, setSubmitCalled] = useState(false);
+
+  useTestRendererFocus(isSubmitted, pageContent);
 
   const setup = async () => {
     const testRunIO = new TestRunInputOutput();

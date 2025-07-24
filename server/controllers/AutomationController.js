@@ -38,6 +38,7 @@ const {
 } = require('../models/services/TestPlanVersionService');
 const { createUpdateEvent } = require('../models/services/UpdateEventService');
 const { outputsMatch } = require('../util/outputNormalization');
+const { updatePercentComplete } = require('../util/updatePercentComplete');
 const httpAgent = new http.Agent({ family: 4 });
 
 const axiosConfig = {
@@ -425,6 +426,11 @@ const updateJobResults = async (req, res) => {
         atVersionId: atVersion.id,
         browserVersionId: browserVersion.id,
         context
+      });
+
+      await updatePercentComplete({
+        testPlanReportId: testPlanRun.testPlanReportId,
+        transaction
       });
 
       await finalizeTestPlanReportIfAllTestsMatchHistoricalResults({
