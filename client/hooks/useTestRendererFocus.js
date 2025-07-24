@@ -38,7 +38,8 @@ const useTestRendererFocus = (isSubmitted, pageContent) => {
         }
       }
 
-      if (command.unexpectedBehaviors.description[1].highlightRequired) {
+      const unexpectedBehaviors = command.unexpectedBehaviors;
+      if (unexpectedBehaviors.description[1].highlightRequired) {
         const unexpectedFieldset = document.getElementById(
           `cmd-${commandIndex}-problems`
         );
