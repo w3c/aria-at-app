@@ -602,4 +602,37 @@ describe('Test Run when signed in as tester', () => {
       await popupPage.waitForSelector('button ::-p-text(Run Test Setup)');
     });
   });
+
+  it('focuses first assertion fieldset when only top output is filled', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      // Fill only the first speech output textarea
+      const firstOutputTextareaSelector = 'textarea#speechoutput-0';
+      await page.waitForSelector(firstOutputTextareaSelector);
+      await page.type(firstOutputTextareaSelector, 'Test output content');
+
+      // Submit without filling any assertion radio buttons
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
+
+      // Wait for the form to be re-rendered after submission
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      // Check that the first assertion fieldset is focused
+      const activeElement = await page.evaluate(() => {
+        return {
+          id: document.activeElement.id,
+          nodeName: document.activeElement.nodeName.toLowerCase()
+        };
+      });
+
+      expect(activeElement.id).toBe('assertion-fieldset-0-0');
+      expect(activeElement.nodeName).toBe('fieldset');
+    });
+  });
 });
