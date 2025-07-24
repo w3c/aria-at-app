@@ -239,6 +239,9 @@ const TestQueue = () => {
             </VersionString>
             &nbsp;
             <PhasePill fullWidth={false}>{testPlanVersion.phase}</PhasePill>
+            {activeFilter === FILTER_KEYS.AUTOMATED && (
+              <span className={styles.automatedTag}>(automated re-run)</span>
+            )}
           </>
         ))}
         onClick={testPlan.testPlanVersions.map(testPlanVersion => () => {

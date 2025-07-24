@@ -83,6 +83,11 @@ h1.test-queue-heading {
   }
 }
 
+.automated-tag {
+  font-weight: bold;
+  margin-left: var(--24px);
+}
+
 .test-plan-disclosure {
   h3 {
     font-size: 1rem;
