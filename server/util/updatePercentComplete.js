@@ -3,6 +3,9 @@ const {
   getTestPlanReportById,
   updateTestPlanReportById
 } = require('../models/services/TestPlanReportService');
+const runnableTestsResolver = require('../resolvers/TestPlanReport/runnableTestsResolver');
+const getGraphQLContext = require('../graphql-context');
+const populateData = require('../services/PopulatedData/populateData');
 
 const updatePercentComplete = async ({ testPlanReportId, transaction }) => {
   if (!testPlanReportId) return;
@@ -10,9 +13,9 @@ const updatePercentComplete = async ({ testPlanReportId, transaction }) => {
   try {
     const testPlanReport = await getTestPlanReportById({
       id: testPlanReportId,
-      testPlanReportAttributes: ['id', 'percentComplete'],
+      testPlanReportAttributes: ['id', 'percentComplete', 'atId'],
       testPlanRunAttributes: ['id', 'testResults'],
-      testPlanVersionAttributes: [],
+      testPlanVersionAttributes: ['id', 'tests'],
       testPlanAttributes: [],
       atAttributes: [],
       browserAttributes: [],
@@ -22,8 +25,23 @@ const updatePercentComplete = async ({ testPlanReportId, transaction }) => {
 
     if (!testPlanReport) return;
 
+    const context = getGraphQLContext({ req: { transaction } });
+
+    const { testPlanReport: populatedTestPlanReport } = await populateData(
+      { testPlanReportId },
+      { context }
+    );
+
+    const runnableTests = runnableTestsResolver(
+      populatedTestPlanReport,
+      null,
+      context
+    );
+
     const percentComplete = calculatePercentComplete({
-      draftTestPlanRuns: testPlanReport.testPlanRuns
+      draftTestPlanRuns: testPlanReport.testPlanRuns,
+      runnableTests,
+      atId: testPlanReport.atId
     });
 
     if (testPlanReport.percentComplete !== percentComplete) {
