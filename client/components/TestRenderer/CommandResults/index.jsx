@@ -112,6 +112,7 @@ const CommandResults = ({
         assertionsHeader={assertionsHeader}
         readOnly={isReadOnly}
         disabled={untestable.value}
+        isSubmitted={isSubmitted}
       />
       <UnexpectedBehaviorsFieldset
         commandIndex={commandIndex}
@@ -119,6 +120,9 @@ const CommandResults = ({
         isSubmitted={isSubmitted}
         readOnly={isReadOnly}
         forceYes={untestable.value}
+        hasIncompleteAssertions={assertions.some(
+          assertion => assertion.passed === null
+        )}
       />
       <a href={issueLink} target="_blank" rel="noreferrer">
         Raise an issue for {commandString}

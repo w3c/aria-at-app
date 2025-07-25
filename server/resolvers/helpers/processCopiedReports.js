@@ -22,6 +22,7 @@ const runnableTestsResolver = require('../TestPlanReport/runnableTestsResolver')
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const finalizedTestResultsResolver = require('../TestPlanReport/finalizedTestResultsResolver');
 const { getMetrics } = require('shared');
+const { updatePercentComplete } = require('../../util/updatePercentComplete');
 
 /**
  * Returns lists of known scenario and command ids for a test plan version's test
@@ -165,6 +166,11 @@ const updateMetricsAndMarkedFinalAtForTestPlanReport = async ({
   await updateTestPlanRunById({
     id: testPlanRun.id,
     values: { testResults },
+    transaction
+  });
+
+  await updatePercentComplete({
+    testPlanReportId: newTestPlanReport.id,
     transaction
   });
 
