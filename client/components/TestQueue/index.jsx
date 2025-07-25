@@ -15,6 +15,7 @@ import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import TestPlanReportStatusDialogWithButton from '../TestPlanReportStatusDialog/WithButton';
 import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion, BrowserVersion } from '../common/AtBrowserVersion';
+import { calculatePercentComplete } from '../../utils/calculatePercentComplete';
 import ProgressBar from '../common/ProgressBar';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
@@ -38,6 +39,10 @@ const TestQueue = () => {
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network'
   });
+
+  const hasBotRun = testPlanReport => {
+    return testPlanReport.draftTestPlanRuns?.some(({ tester }) => tester.isBot);
+  };
 
   const openDisclosuresRef = useRef({});
   const forceUpdate = useForceUpdate();
@@ -117,9 +122,12 @@ const TestQueue = () => {
   }, [data]);
 
   const shouldShowReport = (testPlanReport, filter) => {
+    const hasBot = hasBotRun(testPlanReport);
     const isRerun = !!testPlanReport.historicalReport;
-    if (filter === FILTER_KEYS.ALL) return true;
-    return filter === FILTER_KEYS.AUTOMATED ? isRerun : !isRerun;
+
+    if (filter === FILTER_KEYS.MANUAL) return !hasBot || !isRerun;
+    if (filter === FILTER_KEYS.AUTOMATED) return hasBot && isRerun;
+    return true;
   };
 
   const filterOptions = useMemo(() => {
@@ -227,9 +235,6 @@ const TestQueue = () => {
             </VersionString>
             &nbsp;
             <PhasePill fullWidth={false}>{testPlanVersion.phase}</PhasePill>
-            {activeFilter === FILTER_KEYS.AUTOMATED && (
-              <span className={styles.automatedTag}>(automated re-run)</span>
-            )}
           </>
         ))}
         onClick={testPlan.testPlanVersions.map(testPlanVersion => () => {
@@ -301,7 +306,7 @@ const TestQueue = () => {
   };
 
   const renderRow = ({ testPlan, testPlanVersion, testPlanReport }) => {
-    const { percentComplete } = testPlanReport;
+    const percentComplete = calculatePercentComplete(testPlanReport);
     const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
       ({ tester }) => tester.isBot
     );

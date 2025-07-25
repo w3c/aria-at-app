@@ -69,7 +69,7 @@ const simulateResultCompletion = async (
   const responses = [];
   scenarios.forEach(() => {
     assertions.forEach(() => {
-      responses.push('automatically seeded sample output');
+      responses.push('Local development simulated output');
     });
   });
 

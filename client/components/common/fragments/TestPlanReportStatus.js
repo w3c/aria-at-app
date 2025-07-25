@@ -52,7 +52,6 @@ const TEST_PLAN_REPORT_STATUS_FIELDS = (type = 'simple') => {
           testPlanReport {
             id
             metrics
-            percentComplete
             isFinal
             markedFinalAt
             issues {

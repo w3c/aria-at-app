@@ -6,7 +6,6 @@ const createTestResultSkeleton = require('../../resolvers/TestPlanRunOperations/
 const sortArrayLikeArray = require('../../util/sortArrayLikeArray');
 const { updateTestPlanRunById } = require('./TestPlanRunService');
 const { getFinalizedTestResults } = require('./TestResultReadService');
-const { updatePercentComplete } = require('../../util/updatePercentComplete');
 
 const findOrCreateTestResult = async ({
   testId,
@@ -78,10 +77,6 @@ const findOrCreateTestResult = async ({
       transaction
     });
     await fixTestPlanReportMetrics(testPlanReport);
-    await updatePercentComplete({
-      testPlanReportId: testPlanReport.id,
-      transaction
-    });
   } else {
     // atVersionId and browserVersionId update
     const testResultIndex = testPlanRun.testResults.findIndex(
@@ -98,10 +93,6 @@ const findOrCreateTestResult = async ({
       transaction
     });
     await fixTestPlanReportMetrics(testPlanReport);
-    await updatePercentComplete({
-      testPlanReportId: testPlanReport.id,
-      transaction
-    });
   }
 
   return populateData({ testResultId: newTestResult.id }, { context });

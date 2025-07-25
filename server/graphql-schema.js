@@ -1199,10 +1199,6 @@ const graphqlSchema = gql`
     """
     metrics: Any!
     """
-    The percentage of assertions that have been completed for this TestPlanReport.
-    """
-    percentComplete: Int
-    """
     The point at which an admin created the TestPlanReport.
     """
     createdAt: Timestamp!

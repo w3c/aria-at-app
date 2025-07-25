@@ -577,7 +577,6 @@ describe('graphql', () => {
               completedAt
             }
             isRerun
-            percentComplete
             metrics
             conflictsLength
             atVersions {

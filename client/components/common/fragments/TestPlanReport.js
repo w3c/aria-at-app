@@ -11,7 +11,6 @@ const TEST_PLAN_REPORT_FIELDS = gql`
     markedFinalAt
     conflictsLength
     runnableTestsLength
-    percentComplete
     historicalReport {
       id
       createdAt

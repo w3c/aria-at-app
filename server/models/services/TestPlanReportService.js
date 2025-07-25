@@ -293,8 +293,7 @@ const updateTestPlanReportById = async ({
     vendorReviewStatus,
     minimumAtVersionId,
     exactAtVersionId,
-    markedFinalAt,
-    percentComplete
+    markedFinalAt
   },
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -313,8 +312,7 @@ const updateTestPlanReportById = async ({
       vendorReviewStatus,
       minimumAtVersionId,
       exactAtVersionId,
-      markedFinalAt,
-      percentComplete
+      markedFinalAt
     },
     transaction
   });

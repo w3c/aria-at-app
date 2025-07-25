@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { dates } from 'shared';
+import { calculatePercentComplete } from '../../../utils/calculatePercentComplete';
 import {
   TestPlanVersionPropType,
   TestPlanRunPropType,
@@ -42,6 +43,7 @@ const ReportStatusSummary = ({
     const { metrics, draftTestPlanRuns } = testPlanReport;
 
     const conflictsCount = metrics.conflictsCount ?? 0;
+    const percentComplete = calculatePercentComplete(testPlanReport);
     switch (draftTestPlanRuns?.length) {
       case 0:
         return fromTestQueue ? (
@@ -52,7 +54,7 @@ const ReportStatusSummary = ({
       case 1:
         return (
           <span>
-            {testPlanReport.percentComplete || 0}% complete by&nbsp;
+            {percentComplete}% complete by&nbsp;
             <a
               href={`https://github.com/${draftTestPlanRuns[0].tester.username}`}
             >
@@ -65,7 +67,7 @@ const ReportStatusSummary = ({
       default:
         return (
           <span>
-            {testPlanReport.percentComplete || 0}% complete by&nbsp;
+            {percentComplete}% complete by&nbsp;
             {draftTestPlanRuns.length} testers&nbsp;
             {getConflictsAnchor(conflictsCount)}
           </span>
@@ -89,7 +91,6 @@ ReportStatusSummary.propTypes = {
   testPlanVersion: TestPlanVersionPropType.isRequired,
   testPlanReport: PropTypes.shape({
     id: PropTypes.string.isRequired,
-    percentComplete: PropTypes.number,
     markedFinalAt: PropTypes.string,
     metrics: PropTypes.object,
     draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType).isRequired
