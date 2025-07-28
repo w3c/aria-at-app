@@ -1,3 +1,6 @@
+// import to get the dialog to work?
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -104,6 +107,7 @@ const TestRun = () => {
   const [showReviewConflictsModal, setShowReviewConflictsModal] =
     useState(false);
   const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
+  const [showConfirmNextModal, setShowConfirmNextModal] = useState(false);
 
   // Modal State Values
   const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] = useState(true);
@@ -607,7 +611,11 @@ const TestRun = () => {
 
   const handleSaveClick = async () => performButtonAction('saveTest');
 
-  const handleNextTestClick = async () => performButtonAction('goToNextTest');
+  const handleNextTestClick = async () => {
+    // added for dialog
+    setShowConfirmNextModal(false);
+    await performButtonAction('goToNextTest');
+  };
 
   const handlePreviousTestClick = async () =>
     performButtonAction('goToPreviousTest');
@@ -925,7 +933,7 @@ const TestRun = () => {
     let forwardButtons = []; // These are buttons that navigate to next tests and continue
 
     const nextButton = (
-      <Button variant="secondary" onClick={handleNextTestClick}>
+      <Button variant="secondary" onClick={() => setShowConfirmNextModal(true)}>
         Next Test
       </Button>
     );
@@ -981,7 +989,7 @@ const TestRun = () => {
         </Button>
       );
       if (!isLastTest) forwardButtons = [nextButton];
-      primaryButtons = [previousButton, ...forwardButtons, saveResultsButton];
+      primaryButtons = [previousButton, saveResultsButton, ...forwardButtons];
     }
 
     const externalLogsUrl = testPlanRun?.collectionJob?.externalLogsUrl;
@@ -1335,6 +1343,29 @@ const TestRun = () => {
               testerName={tester.username}
               handleAction={handleAtAndBrowserDetailsModalAction}
               handleClose={handleAtAndBrowserDetailsModalCloseAction}
+            />
+          )}
+
+          {showConfirmNextModal && (
+            <BasicModal
+              show={true}
+              centered={true}
+              animation={false}
+              title="Proceed to Next Test?"
+              content="Are you sure you want to go to the next test? This action will NOT save the results of the current test before proceeding."
+              actions={[
+                {
+                  label: 'Yes',
+                  variant: 'primary',
+                  onClick: async () => {
+                    setShowConfirmNextModal(false); // Close the modal
+                    await handleNextTestClick(); // Actually go to the next test
+                  }
+                }
+              ]}
+              closeLabel="No"
+              handleClose={() => setShowConfirmNextModal(false)}
+              closeButton={false}
             />
           )}
         </Container>
