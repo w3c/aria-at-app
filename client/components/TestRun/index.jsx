@@ -560,12 +560,6 @@ const TestRun = () => {
         setCurrentTestIndex(index);
         break;
       }
-      /*case 'goToNextTest': {
-        // Save renderer's form state
-        await saveForm(false, true);
-        navigateTests(false, currentTest, tests, setCurrentTestIndex);
-        break;
-      }*/
       case 'goToPreviousTest': {
         // Save renderer's form state
         await saveForm(false, true);
@@ -611,7 +605,6 @@ const TestRun = () => {
 
   const handleNextTestClick = async () => {
     setShowConfirmNextModal(false);
-    //return performButtonAction('goToNextTest');
     navigateTests(false, currentTest, tests, setCurrentTestIndex);
   };
 

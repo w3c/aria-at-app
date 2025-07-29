@@ -363,7 +363,6 @@ describe('Test Run when signed in as tester', () => {
         await getGeneratedCheckedAssertionCount(page);
 
       // Navigate to test 3 with next button
-      // REPLACED CODE ABOVE: ROHIT
       await page.click(nextTestButtonSelector);
       await page.waitForSelector('button ::-p-text(Yes)');
       await page.click('button ::-p-text(Yes)');
@@ -409,7 +408,6 @@ describe('Test Run when signed in as tester', () => {
       );
 
       expect(test1CheckedCount).toBe(generatedCheckedTest1Count);
-      // COMMENTED DUE TO ADDED MODAL DIALOG: ROHIT
       expect(test2CheckedCount).toBe(generatedCheckedTest2Count * 2); // Both 'Yes' and 'No' are checked
       expect(test3CheckedCount).toBe(0);
     });
