@@ -359,9 +359,17 @@ describe('Test Run when signed in as tester', () => {
         await getGeneratedCheckedAssertionCount(page);
 
       // Navigate to test 3 with next button
+      /*await page.click(nextTestButtonSelector);
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 3:)');*/
+
+      // REPLACED CODE ABOVE: ROHIT
       await page.click(nextTestButtonSelector);
+      await page.waitForSelector('button ::-p-text(Yes)');
+      await page.click('button ::-p-text(Yes)');
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 3:)');
+
       await page.waitForSelector('button ::-p-text(Next Test)');
       const test3CheckedCount = await page.$$eval(
         radioSelector,
@@ -390,6 +398,7 @@ describe('Test Run when signed in as tester', () => {
       );
 
       expect(test1CheckedCount).toBe(generatedCheckedTest1Count);
+      // COMMENTED DUE TO ADDED MODAL DIALOG: ROHIT
       expect(test2CheckedCount).toBe(generatedCheckedTest2Count * 2); // Both 'Yes' and 'No' are checked
       expect(test3CheckedCount).toBe(0);
     });
