@@ -339,6 +339,11 @@ describe('Test Run when signed in as tester', () => {
 
       await page.waitForSelector('h1 ::-p-text(Test 1)');
       await page.waitForSelector('button ::-p-text(Next Test)');
+      // added for modal functionality
+      const yesButton1 = await page.$('button ::-p-text(Yes)');
+      if (yesButton1) {
+        await yesButton1.click();
+      }
 
       const radioSelector = 'input[type="radio"][id^="pass-"]';
       const test1NavSelector = 'nav#test-navigator-nav ol li:nth-child(1)';
@@ -359,10 +364,6 @@ describe('Test Run when signed in as tester', () => {
         await getGeneratedCheckedAssertionCount(page);
 
       // Navigate to test 3 with next button
-      /*await page.click(nextTestButtonSelector);
-      await page.waitForNetworkIdle();
-      await page.waitForSelector('h1 ::-p-text(Test 3:)');*/
-
       // REPLACED CODE ABOVE: ROHIT
       await page.click(nextTestButtonSelector);
       await page.waitForSelector('button ::-p-text(Yes)');
@@ -380,7 +381,13 @@ describe('Test Run when signed in as tester', () => {
       await page.click(previousTestButtonSelector);
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
+
       await page.waitForSelector('button ::-p-text(Next Test)');
+      const yesButton2 = await page.$('button ::-p-text(Yes)');
+      if (yesButton2) {
+        await yesButton2.click();
+      }
+
       const test2CheckedCount = await page.$$eval(
         radioSelector,
         els => els.filter(radio => radio.checked).length
@@ -391,6 +398,11 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 1:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
+      const yesButton3 = await page.$('button ::-p-text(Yes)');
+      if (yesButton3) {
+        await yesButton3.click();
+      }
+
       const test1CheckedCount = await page.$$eval(
         radioSelector,
         els =>

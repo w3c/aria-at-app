@@ -1,6 +1,3 @@
-// import to get the dialog to work?
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -612,9 +609,8 @@ const TestRun = () => {
   const handleSaveClick = async () => performButtonAction('saveTest');
 
   const handleNextTestClick = async () => {
-    // added for dialog
     setShowConfirmNextModal(false);
-    await performButtonAction('goToNextTest');
+    return performButtonAction('goToNextTest');
   };
 
   const handlePreviousTestClick = async () =>
@@ -1346,28 +1342,23 @@ const TestRun = () => {
             />
           )}
 
-          {showConfirmNextModal && (
-            <BasicModal
-              show={true}
-              centered={true}
-              animation={false}
-              title="Proceed to Next Test?"
-              content="Are you sure you want to go to the next test? This action will NOT save the results of the current test before proceeding."
-              actions={[
-                {
-                  label: 'Yes',
-                  variant: 'primary',
-                  onClick: async () => {
-                    setShowConfirmNextModal(false); // Close the modal
-                    await handleNextTestClick(); // Actually go to the next test
-                  }
-                }
-              ]}
-              closeLabel="No"
-              handleClose={() => setShowConfirmNextModal(false)}
-              closeButton={false}
-            />
-          )}
+          <BasicModal
+            show={showConfirmNextModal}
+            centered={true}
+            animation={false}
+            title="Proceed to Next Test?"
+            content="Are you sure you want to go to the next test? This action will NOT save the results of the current test before proceeding."
+            actions={[
+              {
+                label: 'Yes',
+                variant: 'primary',
+                onClick: () => handleNextTestClick()
+              }
+            ]}
+            closeLabel="No"
+            handleClose={() => setShowConfirmNextModal(false)}
+            closeButton={false}
+          />
         </Container>
       </CollectionJobContextProvider>
     )
