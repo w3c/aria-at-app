@@ -506,51 +506,52 @@ const TestRun = () => {
     return { ...testResult, scenarioResults };
   };
 
+  const saveForm = async (
+    withResult = false,
+    forceSave = false,
+    forceEdit = false
+  ) => {
+    if (updateMessageComponent) {
+      setUpdateMessageComponent(null);
+    }
+    try {
+      if (forceEdit) setIsTestEditClicked(true);
+      else setIsTestEditClicked(false);
+
+      if (!isSignedIn) return true;
+      if (!forceEdit && currentTest.testResult?.completedAt) return true;
+
+      setIsSavingForm(true);
+      const scenarioResults = remapScenarioResults(
+        testRunStateRef.current || recentTestRunStateRef.current,
+        currentTest.testResult?.scenarioResults,
+        false
+      );
+
+      await handleSaveOrSubmitTestResultAction(
+        {
+          atVersionId: currentTestAtVersionId,
+          browserVersionId: currentTestBrowserVersionId,
+          scenarioResults
+        },
+        forceSave ? false : !!testRunResultRef.current
+      );
+
+      if (withResult && !forceSave) {
+        setIsSavingForm(false);
+        return !!testRunResultRef.current;
+      }
+
+      setIsSavingForm(false);
+      return true;
+    } catch (e) {
+      console.error('save.error', e);
+      setIsSavingForm(false);
+    }
+  };
+
   const performButtonAction = async (action, index) => {
     // TODO: Revise function
-    const saveForm = async (
-      withResult = false,
-      forceSave = false,
-      forceEdit = false
-    ) => {
-      if (updateMessageComponent) {
-        setUpdateMessageComponent(null);
-      }
-      try {
-        if (forceEdit) setIsTestEditClicked(true);
-        else setIsTestEditClicked(false);
-
-        if (!isSignedIn) return true;
-        if (!forceEdit && currentTest.testResult?.completedAt) return true;
-
-        setIsSavingForm(true);
-        const scenarioResults = remapScenarioResults(
-          testRunStateRef.current || recentTestRunStateRef.current,
-          currentTest.testResult?.scenarioResults,
-          false
-        );
-
-        await handleSaveOrSubmitTestResultAction(
-          {
-            atVersionId: currentTestAtVersionId,
-            browserVersionId: currentTestBrowserVersionId,
-            scenarioResults
-          },
-          forceSave ? false : !!testRunResultRef.current
-        );
-
-        if (withResult && !forceSave) {
-          setIsSavingForm(false);
-          return !!testRunResultRef.current;
-        }
-
-        setIsSavingForm(false);
-        return true;
-      } catch (e) {
-        console.error('save.error', e);
-        setIsSavingForm(false);
-      }
-    };
 
     switch (action) {
       case 'goToTestAtIndex': {
@@ -559,12 +560,12 @@ const TestRun = () => {
         setCurrentTestIndex(index);
         break;
       }
-      case 'goToNextTest': {
+      /*case 'goToNextTest': {
         // Save renderer's form state
         await saveForm(false, true);
         navigateTests(false, currentTest, tests, setCurrentTestIndex);
         break;
-      }
+      }*/
       case 'goToPreviousTest': {
         // Save renderer's form state
         await saveForm(false, true);
@@ -610,7 +611,8 @@ const TestRun = () => {
 
   const handleNextTestClick = async () => {
     setShowConfirmNextModal(false);
-    return performButtonAction('goToNextTest');
+    //return performButtonAction('goToNextTest');
+    navigateTests(false, currentTest, tests, setCurrentTestIndex);
   };
 
   const handlePreviousTestClick = async () =>
@@ -929,7 +931,13 @@ const TestRun = () => {
     let forwardButtons = []; // These are buttons that navigate to next tests and continue
 
     const nextButton = (
-      <Button variant="secondary" onClick={() => setShowConfirmNextModal(true)}>
+      <Button
+        variant="secondary"
+        onClick={async () => {
+          await saveForm(false, true); // Save before modal
+          setShowConfirmNextModal(true); // Then show modal
+        }}
+      >
         Next Test
       </Button>
     );
