@@ -260,7 +260,6 @@ describe('Test Run when signed in as tester', () => {
 
       // Click each navigation item and confirm the h1 on page has changed
       for (let sequence = 1; sequence <= listItemsLength; sequence++) {
-        // const sequence = i + 1;
         const liSelector = `nav#test-navigator-nav ol li:nth-child(${sequence})`;
 
         // Select the next test to navigate to
