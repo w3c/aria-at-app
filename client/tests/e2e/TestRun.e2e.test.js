@@ -1,3 +1,5 @@
+// Enabling GitHub actions on fork
+
 import getPage from '../util/getPage';
 import { text } from './util';
 
