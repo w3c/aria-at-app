@@ -39,6 +39,11 @@ module.exports = function (sequelize, DataTypes) {
       historicalReportId: {
         type: DataTypes.INTEGER,
         allowNull: true
+      },
+      percentComplete: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0
       }
     },
     {

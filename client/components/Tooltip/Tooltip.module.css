@@ -1,8 +1,6 @@
 .aria-at-tooltip-content {
   padding: 1em;
-
-  max-width: 100vw;
-
+  max-width: 40em;
   background-color: rgba(255, 255, 255, 0.9);
   border-color: var(--border-gray);
   border-style: solid;

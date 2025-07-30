@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import RequiredWarning from '../RequiredWarning';
 import styles from '../TestRenderer.module.css';
 
 const UnexpectedBehaviorsFieldset = ({
@@ -20,31 +21,29 @@ const UnexpectedBehaviorsFieldset = ({
     }
   };
 
+  const hasError =
+    isSubmitted && unexpectedBehaviors.description[1].highlightRequired;
+  const errorId = `unexpected-error-${commandIndex}`;
+
   return (
     <fieldset
-      className={styles.testRendererFieldset}
+      className={clsx(
+        styles.testRendererFieldset,
+        isSubmitted && hasError && styles.incompleteFieldset
+      )}
       id={`cmd-${commandIndex}-problems`}
+      aria-invalid={hasError ? 'true' : undefined}
+      aria-describedby={hasError ? errorId : undefined}
+      tabIndex={hasError ? 0 : -1}
     >
       <legend>{unexpectedBehaviors.description[0]}</legend>
-      {isSubmitted && (
-        <span
-          className={clsx(
-            styles.testRendererFeedback,
-            unexpectedBehaviors.description[1].required && 'required',
-            unexpectedBehaviors.description[1].highlightRequired &&
-              'highlight-required'
-          )}
-        >
-          {unexpectedBehaviors.description[1].description}
-        </span>
-      )}
+      {hasError && <RequiredWarning id={errorId} />}
       <div>
         <input
           key={`Problem__${commandIndex}__true`}
           type="radio"
           id={`problem-${commandIndex}-true`}
           name={`problem-${commandIndex}`}
-          autoFocus={isSubmitted && unexpectedBehaviors.passChoice.focus}
           checked={unexpectedBehaviors.passChoice.checked}
           onChange={handleUnexpectedBehaviorsExistRadioClick}
           disabled={forceYes}
@@ -62,7 +61,6 @@ const UnexpectedBehaviorsFieldset = ({
           type="radio"
           id={`problem-${commandIndex}-false`}
           name={`problem-${commandIndex}`}
-          autoFocus={isSubmitted && unexpectedBehaviors.failChoice.focus}
           checked={unexpectedBehaviors.failChoice.checked}
           onChange={handleUnexpectedBehaviorsExistRadioClick}
         />
