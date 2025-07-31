@@ -7,7 +7,6 @@
 const fs = require('fs');
 const path = require('path');
 
-// Parse arguments
 let BUILD_DIR = 'build';
 let DRY_RUN = false;
 
@@ -21,6 +20,23 @@ process.argv.slice(2).forEach(arg => {
 
 if (!fs.existsSync(BUILD_DIR) || !fs.statSync(BUILD_DIR).isDirectory()) {
   console.error(`Error: Directory '${BUILD_DIR}' does not exist.`);
+  process.exit(1);
+}
+
+const absoluteBuildDir = path.resolve(BUILD_DIR);
+const buildDirName = path.basename(absoluteBuildDir);
+const parentDirName = path.basename(path.dirname(absoluteBuildDir));
+
+if (buildDirName !== 'build' || parentDirName !== 'aria-at') {
+  console.error(
+    "Error: Safety check failed. This script can only run on a 'build' folder inside an 'aria-at' directory."
+  );
+  console.error(`Absolute path: ${absoluteBuildDir}`);
+  console.error(`Build directory name: ${buildDirName}`);
+  console.error(`Parent directory name: ${parentDirName}`);
+  console.error(
+    "Expected: build directory named 'build' inside parent directory named 'aria-at'"
+  );
   process.exit(1);
 }
 
