@@ -153,6 +153,8 @@ const generateRandomizedTestPlanReport = () => {
         unexpectedBehaviors.push(unexpectedBehavior);
       }
 
+      // if there are any unexpected behaviors, the test should fail
+      if (unexpectedBehaviors.length > 0) isTestPassed = false;
       if (unexpectedBehaviors.some(({ impact }) => impact === 'SEVERE'))
         severeImpactFailedAssertionCount++;
       if (unexpectedBehaviors.some(({ impact }) => impact === 'MODERATE'))
