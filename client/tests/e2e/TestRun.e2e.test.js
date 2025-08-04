@@ -603,7 +603,7 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
-  it('focuses first assertion fieldset when only top output is filled', async () => {
+  it('focuses first assertion radio button when only top output is filled', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page);
 
@@ -623,16 +623,18 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('h1 ::-p-text(Test 1)');
       await page.waitForSelector('button ::-p-text(Submit Results)');
 
-      // Check that the first assertion fieldset is focused
+      // Check that the first assertion radio button is focused
       const activeElement = await page.evaluate(() => {
         return {
-          id: document.activeElement.id,
-          nodeName: document.activeElement.nodeName.toLowerCase()
+          dataTestId: document.activeElement.getAttribute('data-testid'),
+          nodeName: document.activeElement.nodeName.toLowerCase(),
+          type: document.activeElement.type
         };
       });
 
-      expect(activeElement.id).toBe('assertion-fieldset-0-0');
-      expect(activeElement.nodeName).toBe('fieldset');
+      expect(activeElement.dataTestId).toBe('radio-yes-0-0');
+      expect(activeElement.nodeName).toBe('input');
+      expect(activeElement.type).toBe('radio');
     });
   });
 
@@ -692,6 +694,49 @@ describe('Test Run when signed in as tester', () => {
       expect(activeElement.className).toContain(
         'undesirable-output-is-excessively-verbose'
       );
+    });
+  });
+
+  it('focuses first unexpected behaviors radio button when required but not provided', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      // Fill all required fields except unexpected behaviors
+      await page.evaluate(() => {
+        const yesRadios = document.querySelectorAll(
+          'input[data-testid^="radio-yes-"]'
+        );
+        const noOutputCheckboxes = document.querySelectorAll(
+          'input[id^="no-output-checkbox"]'
+        );
+
+        yesRadios.forEach(radio => radio.click());
+        noOutputCheckboxes.forEach(checkbox => checkbox.click());
+      });
+
+      // Submit without selecting unexpected behaviors option
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
+
+      // Wait for the form to be re-rendered after submission
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+
+      // Check that the first unexpected behaviors radio button is focused
+      const activeElement = await page.evaluate(() => {
+        return {
+          id: document.activeElement.id,
+          nodeName: document.activeElement.nodeName.toLowerCase(),
+          type: document.activeElement.type
+        };
+      });
+
+      expect(activeElement.id).toBe('problem-0-true');
+      expect(activeElement.nodeName).toBe('input');
+      expect(activeElement.type).toBe('radio');
     });
   });
 });

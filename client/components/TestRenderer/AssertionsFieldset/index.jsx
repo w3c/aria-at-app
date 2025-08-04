@@ -49,7 +49,6 @@ const AssertionsFieldset = ({
             disabled={disabled}
             aria-invalid={isSubmitted && isIncomplete ? 'true' : undefined}
             aria-describedby={isSubmitted && isIncomplete ? errorId : undefined}
-            tabIndex={isSubmitted && isIncomplete ? 0 : -1}
           >
             <legend>{description[0]}</legend>
             <label className={styles.assertionsLabel}>
@@ -60,6 +59,9 @@ const AssertionsFieldset = ({
                 checked={passed === true}
                 onChange={() => (!readOnly ? click(true) : false)}
                 data-testid={`radio-yes-${commandIndex}-${assertionIndex}`}
+                aria-describedby={
+                  isSubmitted && isIncomplete ? errorId : undefined
+                }
               />
               Yes
             </label>
@@ -71,6 +73,9 @@ const AssertionsFieldset = ({
                 checked={passed === false}
                 onChange={() => (!readOnly ? click(false) : false)}
                 data-testid={`radio-no-${commandIndex}-${assertionIndex}`}
+                aria-describedby={
+                  isSubmitted && isIncomplete ? errorId : undefined
+                }
               />
               No
             </label>
