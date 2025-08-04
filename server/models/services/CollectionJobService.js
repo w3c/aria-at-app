@@ -535,8 +535,8 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
  * Schedule a collection job with Response Scheduler
  * @param {object} input object for request to schedule job
  * @param {string} input.testPlanReportId id of test plan report to use for scheduling
- * @param {Array<string>} input.testIds optional: ids of tests to run
- * @param {object} input.atVersion AT version to use for the job
+ * @param {Array<string>} [input.testIds] optional: ids of tests to run
+ * @param {object} [input.atVersion] optional: AT version to use for the job
  * @param {object} options
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
@@ -557,6 +557,15 @@ const scheduleCollectionJob = async (
       404,
       `Test plan report with id ${testPlanReportId} not found`,
       true
+    );
+  }
+
+  if (!atVersion) {
+    atVersion = await getAtVersionWithRequirements(
+      report.at.id,
+      report.exactAtVersion,
+      report.minimumAtVersion,
+      transaction
     );
   }
 

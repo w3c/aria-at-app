@@ -228,7 +228,8 @@ const createTestPlanReport = async ({
     atId,
     exactAtVersionId,
     minimumAtVersionId,
-    browserId
+    browserId,
+    historicalReportId
   },
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -250,6 +251,7 @@ const createTestPlanReport = async ({
       browserId,
       exactAtVersionId,
       minimumAtVersionId,
+      historicalReportId,
       testPlanId: testPlanVersion.testPlanId
     },
     transaction
@@ -291,7 +293,8 @@ const updateTestPlanReportById = async ({
     vendorReviewStatus,
     minimumAtVersionId,
     exactAtVersionId,
-    markedFinalAt
+    markedFinalAt,
+    percentComplete
   },
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -310,7 +313,8 @@ const updateTestPlanReportById = async ({
       vendorReviewStatus,
       minimumAtVersionId,
       exactAtVersionId,
-      markedFinalAt
+      markedFinalAt,
+      percentComplete
     },
     transaction
   });
@@ -453,6 +457,7 @@ const cloneTestPlanReportWithNewAtVersion = async (
     exactAtVersionId: currentVersion.id,
     minimumAtVersionId: null,
     browserId: historicalReport.browserId,
+    historicalReportId: historicalReport.id,
     markedFinalAt: null
   };
   const newReport = await createTestPlanReport({

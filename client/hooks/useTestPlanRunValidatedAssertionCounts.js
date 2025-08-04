@@ -58,11 +58,15 @@ export const useTestPlanRunValidatedAssertionCounts = (
     return testResults.reduce((acc, test) => {
       return (
         acc +
-        (test.completedAt
-          ? test.scenarioResults.reduce((acc, scenario) => {
-              return acc + scenario.assertionResults.length;
-            }, 0)
-          : 0)
+        test.scenarioResults.reduce((acc, scenario) => {
+          return (
+            acc +
+            scenario.assertionResults.reduce(
+              (acc, assertion) => acc + (assertion.passed !== null ? 1 : 0),
+              0
+            )
+          );
+        }, 0)
       );
     }, 0);
   }, [testPlanRunAssertionsQueryResult]);

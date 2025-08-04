@@ -154,6 +154,7 @@ describe('graphql', () => {
       ['PopulatedData', 'atVersion'],
       ['PopulatedData', 'browserVersion'],
       ['TestPlanReport', 'issues'],
+      ['TestPlanReport', 'historicalReport'],
       ['TestPlanReport', 'vendorReviewStatus'],
       ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
       ['CollectionJob', 'testPlanRun'],
@@ -575,6 +576,8 @@ describe('graphql', () => {
               startedAt
               completedAt
             }
+            isRerun
+            percentComplete
             metrics
             conflictsLength
             atVersions {
