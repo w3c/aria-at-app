@@ -1,3 +1,17 @@
+## [1.18.0](https://github.com/w3c/aria-at-app/compare/v1.17.0...v1.18.0) (2025-08-04)
+
+
+### Features
+
+* Add support for VoiceOver on macOS 15 with VoiceOver Bot ([#1456](https://github.com/w3c/aria-at-app/issues/1456)) ([fc4b299](https://github.com/w3c/aria-at-app/commit/fc4b299c0518f141cbaa975244a278d90f6973c4)), closes [#1455](https://github.com/w3c/aria-at-app/issues/1455)
+* Initial bot support for JAWS ([#1452](https://github.com/w3c/aria-at-app/issues/1452)) ([074440a](https://github.com/w3c/aria-at-app/commit/074440a18a0dce0e36ddc33f27069ece291d9f5c))
+* Link rerun reports to updated historical report ([#1459](https://github.com/w3c/aria-at-app/issues/1459)) ([7a1eace](https://github.com/w3c/aria-at-app/commit/7a1eacea690f6c2c04add84f114ca3a9c0cf24c6))
+
+
+### Bug Fixes
+
+* focus incomplete radios instead of fieldsets ([#1479](https://github.com/w3c/aria-at-app/issues/1479)) ([55cb605](https://github.com/w3c/aria-at-app/commit/55cb60537dad812194037fac94384ca3d2957a80))
+
 ## [1.17.0](https://github.com/w3c/aria-at-app/compare/v1.16.0...v1.17.0) (2025-07-01)
 
 
