@@ -34,7 +34,6 @@ const UnexpectedBehaviorsFieldset = ({
       id={`cmd-${commandIndex}-problems`}
       aria-invalid={hasError ? 'true' : undefined}
       aria-describedby={hasError ? errorId : undefined}
-      tabIndex={hasError ? 0 : -1}
     >
       <legend>{unexpectedBehaviors.description[0]}</legend>
       {hasError && <RequiredWarning id={errorId} />}
@@ -47,6 +46,7 @@ const UnexpectedBehaviorsFieldset = ({
           checked={unexpectedBehaviors.passChoice.checked}
           onChange={handleUnexpectedBehaviorsExistRadioClick}
           disabled={forceYes}
+          aria-describedby={hasError ? errorId : undefined}
         />
         <label
           id={`problem-${commandIndex}-true-label`}
@@ -63,6 +63,7 @@ const UnexpectedBehaviorsFieldset = ({
           name={`problem-${commandIndex}`}
           checked={unexpectedBehaviors.failChoice.checked}
           onChange={handleUnexpectedBehaviorsExistRadioClick}
+          aria-describedby={hasError ? errorId : undefined}
         />
         <label
           id={`problem-${commandIndex}-false-label`}
