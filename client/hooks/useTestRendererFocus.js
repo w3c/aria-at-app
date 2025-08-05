@@ -29,11 +29,11 @@ const useTestRendererFocus = (isSubmitted, pageContent) => {
         assertion => assertion.passed === null
       );
       if (incompleteAssertionIndex >= 0) {
-        const assertionFieldset = document.getElementById(
-          `assertion-fieldset-${commandIndex}-${incompleteAssertionIndex}`
+        const firstRadioButton = document.querySelector(
+          `input[data-testid="radio-yes-${commandIndex}-${incompleteAssertionIndex}"]`
         );
-        if (assertionFieldset) {
-          assertionFieldset.focus();
+        if (firstRadioButton) {
+          firstRadioButton.focus();
           return true;
         }
       }
@@ -41,11 +41,11 @@ const useTestRendererFocus = (isSubmitted, pageContent) => {
       // Check if unexpected behaviors section needs focus
       const unexpectedBehaviors = command.unexpectedBehaviors;
       if (unexpectedBehaviors.description[1].highlightRequired) {
-        const unexpectedFieldset = document.getElementById(
-          `cmd-${commandIndex}-problems`
+        const firstUnexpectedRadio = document.getElementById(
+          `problem-${commandIndex}-true`
         );
-        if (unexpectedFieldset) {
-          unexpectedFieldset.focus();
+        if (firstUnexpectedRadio) {
+          firstUnexpectedRadio.focus();
           return true;
         }
       }
