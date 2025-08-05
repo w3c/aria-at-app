@@ -40,37 +40,7 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). The 
    yarn db-import-tests:dev;
    ```
 
-   **Note:** The `cleanup_build.js` script should be used during the preparation of test data for import if expected to be part of a repeated process. When new commits from the aria-at repository need to be added to the import process, the following workflow should be used:
-
-   1. Clone the [w3c/aria-at repository](https://github.com/w3c/aria-at)
-   2. Checkout the desired commit: `git checkout <commit-hash>`
-   3. Install dependencies: `npm install`
-   4. Build the tests: `npm run build`
-   5. Run the cleanup script on the build folder: `node /path/to/import-tests/zips/cleanup_build.js /path/to/aria-at-/build/`
-   6. Zip the cleaned build folder: `zip -r build_<commit-hash>.zip /path/to/aria-at/build/` (or a similar method)
-   7. Add the zip file to `server/scripts/import-tests/zips/`
-   8. Update scripts and workflows as needed to include the new commit during an import. The commit hashes are used in several places:
-      - `docs/database.md` (this file)
-      - `package.json` scripts
-      - `.github/workflows/runtest.yml` for CI/CD
-      - Any other deployment or automation scripts
-
-   The cleanup script removes unnecessary files from the build directory, keeping only the `.collected.json` files that are needed for the import process. This eliminates the need for the import-tests to install and build repeatedly to get the required files, which is only a small portion of what is built.
-
-   ```bash
-   # Clean up a specific build directory
-   node server/scripts/import-tests/zips/cleanup_build.js [build_folder]
-
-   # Preview what would be cleaned up without actually removing files
-   node server/scripts/import-tests/zips/cleanup_build.js [build_folder] --dry-run
-   ```
-
-   The cleanup script performs the following operations:
-
-   - Removes all files at the root of the aria-at/build directory
-   - Removes the `review/` folder if it exists
-   - Removes all files in `tests/` that are not `.collected.json` files
-   - Removes additional directories that don't contain any `.collected.json` files
+   **Note:** For detailed information about preparing new test data from the aria-at repository, including the cleanup script workflow, see the [Test Data Preparation section in local-development.md](local-development.md#test-data-preparation).
 
 All at once:
 
