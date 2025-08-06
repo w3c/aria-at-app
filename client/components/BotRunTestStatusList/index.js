@@ -79,39 +79,37 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
   }
 
   return (
-    <>
-      <div className={clsx(styles.botRunTestContainer, 'text-secondary')}>
-        Bot Status:
-        <ul>
-          {RUNNING > 0 && (
-            <li>
-              <ReportStatusDot status={REPORT_STATUSES.TESTS_RUNNING} />
-              {testCountString(RUNNING, 'Running')}
-            </li>
-          )}
-          {ERROR > 0 && (
-            <li>
-              <ReportStatusDot status={REPORT_STATUSES.TESTS_ERROR} />
-              {testCountString(ERROR, 'Error')}
-            </li>
-          )}
+    <div className={clsx(styles.botRunTestContainer, 'text-secondary')}>
+      <div>Bot Status:</div>
+      <ul>
+        {RUNNING > 0 && (
           <li>
-            <ReportStatusDot status={REPORT_STATUSES.TESTS_COMPLETE} />
-            {testCountString(COMPLETED, 'Completed')}
+            <ReportStatusDot status={REPORT_STATUSES.TESTS_RUNNING} />
+            {testCountString(RUNNING, 'Running')}
           </li>
+        )}
+        {ERROR > 0 && (
           <li>
-            <ReportStatusDot status={REPORT_STATUSES.TESTS_QUEUED} />
-            {testCountString(QUEUED, 'Queued')}
+            <ReportStatusDot status={REPORT_STATUSES.TESTS_ERROR} />
+            {testCountString(ERROR, 'Error')}
           </li>
-          {CANCELLED > 0 && (
-            <li>
-              <ReportStatusDot status={REPORT_STATUSES.TESTS_CANCELLED} />
-              {testCountString(CANCELLED, 'Cancelled')}
-            </li>
-          )}
-        </ul>
-      </div>
-    </>
+        )}
+        <li>
+          <ReportStatusDot status={REPORT_STATUSES.TESTS_COMPLETE} />
+          {testCountString(COMPLETED, 'Completed')}
+        </li>
+        <li>
+          <ReportStatusDot status={REPORT_STATUSES.TESTS_QUEUED} />
+          {testCountString(QUEUED, 'Queued')}
+        </li>
+        {CANCELLED > 0 && (
+          <li>
+            <ReportStatusDot status={REPORT_STATUSES.TESTS_CANCELLED} />
+            {testCountString(CANCELLED, 'Cancelled')}
+          </li>
+        )}
+      </ul>
+    </div>
   );
 };
 
