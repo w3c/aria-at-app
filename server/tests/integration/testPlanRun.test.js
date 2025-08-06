@@ -100,7 +100,7 @@ const prepopulateTestResult = async ({ transaction }) => {
                                 assertionResults {
                                     id
                                 }
-                                unexpectedBehaviors {
+                                negativeSideEffects {
                                     id
                                 }
                             }
@@ -219,7 +219,7 @@ describe('testPlanRun', () => {
                                                     passed: null
                                                 }
                                             ]
-                                            unexpectedBehaviors: []
+                                            negativeSideEffects: []
                                         }
                                     ]
                                 }
@@ -278,7 +278,7 @@ describe('testPlanRun', () => {
                                                     passed: null
                                                 }
                                             ]
-                                            unexpectedBehaviors: []
+                                            negativeSideEffects: []
                                         }
                                     ]
                                 }
@@ -331,7 +331,7 @@ describe('testPlanRun', () => {
                                                         passed: false
                                                     }
                                                 ]
-                                                unexpectedBehaviors: []
+                                                negativeSideEffects: []
                                             }
                                         ]
                                     }
@@ -385,7 +385,7 @@ describe('testPlanRun', () => {
                                                     passed: null # invalid
                                                 }
                                             ]
-                                            unexpectedBehaviors: []
+                                            negativeSideEffects: []
                                         }
                                     ]
                                 }

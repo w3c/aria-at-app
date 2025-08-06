@@ -193,7 +193,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
   };
 
   const renderNegativeSideEffectsSummary = () => {
-    if (testPlanReport.metrics.unexpectedBehaviorCount === 0) {
+    if (testPlanReport.metrics.negativeSideEffectCount === 0) {
       return null;
     }
 

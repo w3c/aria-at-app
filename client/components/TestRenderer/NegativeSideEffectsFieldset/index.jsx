@@ -4,25 +4,25 @@ import clsx from 'clsx';
 import RequiredWarning from '../RequiredWarning';
 import styles from '../TestRenderer.module.css';
 
-const UnexpectedBehaviorsFieldset = ({
+const NegativeSideEffectsFieldset = ({
   commandIndex,
-  unexpectedBehaviors,
+  negativeSideEffects,
   isSubmitted,
   readOnly = false,
   forceYes
 }) => {
   const impactOptions = ['Moderate', 'Severe'];
-  const handleUnexpectedBehaviorsExistRadioClick = e => {
+  const handleNegativeSideEffectsExistRadioClick = e => {
     if (readOnly) e.preventDefault();
     else {
       const elId = e.target.id;
-      if (elId.includes('-true')) unexpectedBehaviors.passChoice.click();
-      else if (elId.includes('-false')) unexpectedBehaviors.failChoice.click();
+      if (elId.includes('-true')) negativeSideEffects.passChoice.click();
+      else if (elId.includes('-false')) negativeSideEffects.failChoice.click();
     }
   };
 
   const hasError =
-    isSubmitted && unexpectedBehaviors.description[1].highlightRequired;
+    isSubmitted && negativeSideEffects.description[1].highlightRequired;
   const errorId = `unexpected-error-${commandIndex}`;
 
   return (
@@ -35,7 +35,7 @@ const UnexpectedBehaviorsFieldset = ({
       aria-invalid={hasError ? 'true' : undefined}
       aria-describedby={hasError ? errorId : undefined}
     >
-      <legend>{unexpectedBehaviors.description[0]}</legend>
+      <legend>{negativeSideEffects.description[0]}</legend>
       {hasError && <RequiredWarning id={errorId} />}
       <div>
         <input
@@ -43,8 +43,8 @@ const UnexpectedBehaviorsFieldset = ({
           type="radio"
           id={`problem-${commandIndex}-true`}
           name={`problem-${commandIndex}`}
-          checked={unexpectedBehaviors.passChoice.checked}
-          onChange={handleUnexpectedBehaviorsExistRadioClick}
+          checked={negativeSideEffects.passChoice.checked}
+          onChange={handleNegativeSideEffectsExistRadioClick}
           disabled={forceYes}
           aria-describedby={hasError ? errorId : undefined}
         />
@@ -52,7 +52,7 @@ const UnexpectedBehaviorsFieldset = ({
           id={`problem-${commandIndex}-true-label`}
           htmlFor={`problem-${commandIndex}-true`}
         >
-          {unexpectedBehaviors.passChoice.label}
+          {negativeSideEffects.passChoice.label}
         </label>
       </div>
       <div>
@@ -61,24 +61,24 @@ const UnexpectedBehaviorsFieldset = ({
           type="radio"
           id={`problem-${commandIndex}-false`}
           name={`problem-${commandIndex}`}
-          checked={unexpectedBehaviors.failChoice.checked}
-          onChange={handleUnexpectedBehaviorsExistRadioClick}
+          checked={negativeSideEffects.failChoice.checked}
+          onChange={handleNegativeSideEffectsExistRadioClick}
           aria-describedby={hasError ? errorId : undefined}
         />
         <label
           id={`problem-${commandIndex}-false-label`}
           htmlFor={`problem-${commandIndex}-false`}
         >
-          {unexpectedBehaviors.failChoice.label}
+          {negativeSideEffects.failChoice.label}
         </label>
       </div>
 
       <fieldset
         className={clsx(styles.testRendererFieldset, 'problem-select')}
-        hidden={!unexpectedBehaviors.failChoice.checked}
+        hidden={!negativeSideEffects.failChoice.checked}
       >
-        <legend>{unexpectedBehaviors.failChoice.options.header}</legend>
-        {unexpectedBehaviors.failChoice.options.options.map(
+        <legend>{negativeSideEffects.failChoice.options.header}</legend>
+        {negativeSideEffects.failChoice.options.options.map(
           (option, optionIndex) => {
             const {
               checked,
@@ -103,9 +103,9 @@ const UnexpectedBehaviorsFieldset = ({
                 )}
                 key={`AssertionOptionsKey_${optionIndex}`}
               >
-                {/* Undesirable behavior checkbox */}
+                {/* Negative side effect checkbox */}
                 <label
-                  className={styles.unexpectedBehaviorsLabel}
+                  className={styles.negativeSideEffectsLabel}
                   key={`${descriptionId}_${commandIndex}__checkbox`}
                 >
                   <input
@@ -126,7 +126,7 @@ const UnexpectedBehaviorsFieldset = ({
                 <label
                   key={`${descriptionId}_${commandIndex}__impact`}
                   className={clsx(
-                    styles.unexpectedBehaviorsLabel,
+                    styles.negativeSideEffectsLabel,
                     !checked && 'off-screen'
                   )}
                   aria-hidden={!checked}
@@ -158,7 +158,7 @@ const UnexpectedBehaviorsFieldset = ({
                     <label
                       key={`${descriptionId}_${commandIndex}__details`}
                       className={clsx(
-                        styles.unexpectedBehaviorsLabel,
+                        styles.negativeSideEffectsLabel,
                         !checked && 'off-screen'
                       )}
                       aria-hidden={!checked}
@@ -198,12 +198,12 @@ const UnexpectedBehaviorsFieldset = ({
   );
 };
 
-UnexpectedBehaviorsFieldset.propTypes = {
+NegativeSideEffectsFieldset.propTypes = {
   commandIndex: PropTypes.number.isRequired,
-  unexpectedBehaviors: PropTypes.object.isRequired,
+  negativeSideEffects: PropTypes.object.isRequired,
   isSubmitted: PropTypes.bool,
   readOnly: PropTypes.bool,
   forceYes: PropTypes.bool.isRequired
 };
 
-export default UnexpectedBehaviorsFieldset;
+export default NegativeSideEffectsFieldset;
