@@ -43,9 +43,7 @@ const CommandResults = ({
 
   const hasConflictingOutput = isRerunReport && hasUnresolvedAssertions;
 
-  const errorMessage = hasConflictingOutput
-    ? `This output differs from output reported for ${historicalAtName} ${historicalAtVersion}`
-    : null;
+  const errorMessage = hasConflictingOutput ? 'Conflicting Output' : null;
 
   const shouldShowHistoricalOutput =
     hasConflictingOutput && historicalOutput !== null;
