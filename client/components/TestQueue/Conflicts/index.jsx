@@ -230,7 +230,7 @@ const TestQueueConflicts = () => {
         <p>
           This page displays conflicts identified in the current test plan
           report. Conflicts occur when different testers report different
-          outcomes for the same test assertions or unexpected behaviors.
+          outcomes for the same test assertions or negative side effects.
         </p>
       </section>
 

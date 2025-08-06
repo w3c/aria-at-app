@@ -34,7 +34,7 @@ const ReviewConflicts = ({
   const renderConflict = conflict => {
     const assertion = conflict.source.assertion;
     if (assertion) return renderAssertionResultConflict(conflict);
-    return renderUnexpectedBehaviorConflict(conflict);
+    return renderNegativeSideEffectConflict(conflict);
   };
 
   const renderAssertionResultConflict = ({
@@ -66,21 +66,21 @@ const ReviewConflicts = ({
     );
   };
 
-  const renderUnexpectedBehaviorConflict = ({
+  const renderNegativeSideEffectConflict = ({
     source: { scenario },
     conflictingResults
   }) => {
     const results = conflictingResults.map(result => {
       const { testPlanRun, scenarioResult } = result;
       let resultFormatted;
-      if (scenarioResult.unexpectedBehaviors.length) {
-        resultFormatted = scenarioResult.unexpectedBehaviors
+      if (scenarioResult.negativeSideEffects.length) {
+        resultFormatted = scenarioResult.negativeSideEffects
           .map(({ text, impact, details }) => {
             return `"${text} (Details: ${details}, Impact: ${impact})"`;
           })
           .join(' and ');
       } else {
-        resultFormatted = 'no unexpected behavior';
+        resultFormatted = 'no negative side effect';
       }
       return (
         <li key={testPlanRun.id}>
@@ -93,7 +93,7 @@ const ReviewConflicts = ({
     return (
       <li key={scenario.id}>
         <h3>
-          Unexpected Behaviors for &quot;{commandString(scenario)}
+          Negative Side Effects for &quot;{commandString(scenario)}
           &quot; Command
         </h3>
         <ul>{results}</ul>

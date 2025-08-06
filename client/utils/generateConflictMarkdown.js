@@ -10,11 +10,11 @@ const generateConflictMarkdown = (testPlanReport, test) => {
   };
 
   const renderConflict = (conflict, index) => {
-    const hasUnexpectedBehaviors = conflict.conflictingResults.some(
-      result => result.scenarioResult.unexpectedBehaviors.length > 0
+    const hasNegativeSideEffects = conflict.conflictingResults.some(
+      result => result.scenarioResult.negativeSideEffects.length > 0
     );
-    if (hasUnexpectedBehaviors)
-      return renderUnexpectedBehaviorConflict(conflict, index);
+    if (hasNegativeSideEffects)
+      return renderNegativeSideEffectConflict(conflict, index);
     return renderAssertionResultConflict(conflict, index);
   };
 
@@ -50,7 +50,7 @@ ${
 ${results}`;
   };
 
-  const renderUnexpectedBehaviorConflict = ({ conflictingResults }, index) => {
+  const renderNegativeSideEffectConflict = ({ conflictingResults }, index) => {
     const scenario = conflictingResults[0].scenario;
     const command = commandString(scenario);
 
@@ -58,21 +58,21 @@ ${results}`;
       .map(result => {
         const { testPlanRun, scenarioResult } = result;
         let resultFormatted;
-        if (scenarioResult.unexpectedBehaviors.length) {
-          resultFormatted = scenarioResult.unexpectedBehaviors
+        if (scenarioResult.negativeSideEffects.length) {
+          resultFormatted = scenarioResult.negativeSideEffects
             .map(({ text, impact, details }) => {
               return `"${text}" (Details: ${details}, Impact: ${impact})`;
             })
             .join(' and ');
         } else {
-          resultFormatted = 'no unexpected behavior';
+          resultFormatted = 'no negative side effect';
         }
         return `* Tester ${testPlanRun.tester.username} recorded output "${scenarioResult.output}" and noted ${resultFormatted}.`;
       })
       .join('\n');
 
     return `
-${index + 1}. ### Unexpected Behaviors for "${command}" Command
+${index + 1}. ### Negative Side Effects for "${command}" Command
 
 ${results}`;
   };

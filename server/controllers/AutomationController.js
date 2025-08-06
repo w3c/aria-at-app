@@ -297,11 +297,11 @@ const updateOrCreateTestResultWithResponses = async ({
                   : 'AUTOMATED_OUTPUT_DIFFERS'
               })
             ),
-            unexpectedBehaviors: outputMatches
-              ? historicalTestResult.scenarioResults[i].unexpectedBehaviors
+            negativeSideEffects: outputMatches
+              ? historicalTestResult.scenarioResults[i].negativeSideEffects
               : null,
-            hasUnexpected: outputMatches
-              ? historicalTestResult.scenarioResults[i].hasUnexpected
+            hasNegativeSideEffect: outputMatches
+              ? historicalTestResult.scenarioResults[i].hasNegativeSideEffect
               : null
           };
         }

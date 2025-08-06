@@ -1,10 +1,10 @@
-const unexpectedBehaviorsJson = require('../../resources/unexpectedBehaviors.json');
+const negativeSideEffectsJson = require('../../resources/negativeSideEffects.json');
 const getTests = require('./TestsService');
 const deepCustomMerge = require('../../util/deepCustomMerge');
 
 /**
  * Returns an array of test results with nested test, atVersion, browserVersion,
- * scenario, assertion and unexpectedBehavior fields populated.
+ * scenario, assertion and negativeSideEffect fields populated.
  * @param {Object} testPlanRun
  * @param {Object} testPlanRun.testPlanReport
  * @param {Object[]} testPlanRun.testResults
@@ -23,7 +23,7 @@ const getTestResults = async ({ testPlanRun, context }) => {
   const browsers = await browserLoader.getAll({ transaction });
 
   // Populate nested test, atVersion, browserVersion, scenario, assertion and
-  // unexpectedBehavior fields
+  // negativeSideEffect fields
   return testPlanRun.testResults.map(testResult => {
     const test = tests.find(each => each.id === testResult.testId);
     return {
@@ -48,11 +48,11 @@ const getTestResults = async ({ testPlanRun, context }) => {
             )
           })
         ),
-        unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
-          unexpectedBehavior => ({
-            ...unexpectedBehavior,
-            text: unexpectedBehaviorsJson.find(
-              each => each.id === unexpectedBehavior.id
+        negativeSideEffects: scenarioResult.negativeSideEffects?.map(
+          negativeSideEffect => ({
+            ...negativeSideEffect,
+            text: negativeSideEffectsJson.find(
+              each => each.id === negativeSideEffect.id
             ).text
           })
         )
@@ -63,7 +63,7 @@ const getTestResults = async ({ testPlanRun, context }) => {
 
 /**
  * Returns an array of finalized test results with nested test, atVersion,
- * browserVersion, scenario, assertion and unexpectedBehavior fields populated.
+ * browserVersion, scenario, assertion and negativeSideEffect fields populated.
  * @param {Object} testPlanReport
  * @param {Object[]} testPlanReport.testPlanRuns
  * @param {Object} context - GraphQL context

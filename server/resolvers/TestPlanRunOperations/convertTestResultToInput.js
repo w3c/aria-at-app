@@ -15,8 +15,8 @@ const convertScenarioResultToInput = scenarioResult => {
     assertionResults: scenarioResult.assertionResults.map(
       convertAssertionResultToInput
     ),
-    unexpectedBehaviors: scenarioResult.unexpectedBehaviors?.map(
-      convertUnexpectedBehaviorToInput
+    negativeSideEffects: scenarioResult.negativeSideEffects?.map(
+      convertNegativeSideEffectToInput
     )
   };
 };
@@ -25,8 +25,8 @@ const convertAssertionResultToInput = assertionResult => {
   return { ...omit(assertionResult, ['assertion']) };
 };
 
-const convertUnexpectedBehaviorToInput = unexpectedBehavior => {
-  return { ...omit(unexpectedBehavior, ['text']) };
+const convertNegativeSideEffectToInput = negativeSideEffect => {
+  return { ...omit(negativeSideEffect, ['text']) };
 };
 
 module.exports = convertTestResultToInput;

@@ -62,7 +62,7 @@ const createTestResultSkeleton = ({
               assertionId: assertion.id,
               passed: null
             })),
-          unexpectedBehaviors: null
+          negativeSideEffects: null
         };
       })
   };
