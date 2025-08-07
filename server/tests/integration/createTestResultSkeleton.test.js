@@ -17,6 +17,7 @@ const findV2TestWithScenarioSpecificExclude = async () => {
       const scenarios = test.scenarios || [];
       for (const scenario of scenarios) {
         const scenarioCommandId = (scenario.commandIds || []).join(' ');
+        if (!scenarioCommandId.includes(' ')) continue; // require multi-command sequence
         const scenarioSettings = scenario.settings;
         const hasMatchingExclude = assertions.some(a =>
           (a.assertionExceptions || []).some(
