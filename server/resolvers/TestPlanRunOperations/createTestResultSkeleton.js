@@ -14,12 +14,16 @@ const {
  */
 const hasExceptionWithPriority = (assertion, scenario, priority) => {
   return assertion.assertionExceptions?.some(exception => {
-    const scenarioCommandId = scenario.commands.map(({ id }) => id).join(' ');
-    const scenarioAtOperatingMode = scenario.commands[0].atOperatingMode;
+    // Match exceptions using joined commandIds and scenario settings
+    const scenarioCommandId = (
+      scenario.commandIds || scenario.commands.map(({ id }) => id)
+    ).join(' ');
+    const scenarioSettings =
+      scenario.settings || scenario.commands?.[0]?.atOperatingMode;
 
     return (
       scenarioCommandId === exception.commandId &&
-      scenarioAtOperatingMode === exception.settings &&
+      scenarioSettings === exception.settings &&
       exception.priority === priority
     );
   });
@@ -52,18 +56,20 @@ const createTestResultSkeleton = ({
           scenarioId: scenario.id,
           output: null,
           untestable: false,
-          assertionResults: test.assertions
-            // Filter out assertionResults for the current scenario which were marked
-            // with a 0-priority exception
-            .filter(
+          assertionResults: (() => {
+            // Exclude assertions with base EXCLUDE priority and
+            // assertions excluded for this scenario via exception
+            const keptAssertions = test.assertions.filter(
               assertion =>
+                assertion.priority !== 'EXCLUDE' &&
                 !hasExceptionWithPriority(assertion, scenario, 'EXCLUDE')
-            )
-            .map(assertion => ({
+            );
+            return keptAssertions.map(assertion => ({
               id: createAssertionResultId(scenarioResultId, assertion.id),
               assertionId: assertion.id,
               passed: null
-            })),
+            }));
+          })(),
           unexpectedBehaviors: null
         };
       })
