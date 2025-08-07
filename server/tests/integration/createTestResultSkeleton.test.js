@@ -52,21 +52,6 @@ const findV2TestWithBaseExclude = async () => {
   return null;
 };
 
-const computeExpectedKeptCount = (test, scenario) => {
-  const scenarioCommandId = (scenario.commandIds || []).join(' ');
-  const scenarioSettings = scenario.settings;
-  return (test.assertions || []).filter(
-    a =>
-      a.priority !== 'EXCLUDE' &&
-      !(a.assertionExceptions || []).some(
-        e =>
-          e.priority === 'EXCLUDE' &&
-          e.commandId === scenarioCommandId &&
-          e.settings === scenarioSettings
-      )
-  ).length;
-};
-
 describe('createTestResultSkeleton', () => {
   afterAll(async () => {
     await db.sequelize.close();
@@ -341,12 +326,6 @@ describe('createTestResultSkeleton', () => {
               { transaction }
             );
             const { testResult } = fr.testPlanRun.findOrCreateTestResult;
-
-            const expectedByScenarioId = new Map(
-              (t.scenarios || [])
-                .filter(s => s.atId === atId)
-                .map(s => [s.id, computeExpectedKeptCount(t, s)])
-            );
 
             for (const sr of testResult.scenarioResults) {
               const dataQuery = await query(
