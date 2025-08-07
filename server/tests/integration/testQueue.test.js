@@ -445,8 +445,8 @@ describe('test queue', () => {
                         "passed": true,
                       },
                       "scenarioResult": {
-                        "output": "automatically seeded sample output",
                         "negativeSideEffects": [],
+                        "output": "automatically seeded sample output",
                       },
                       "testPlanRun": {
                         "id": "2",
@@ -460,8 +460,8 @@ describe('test queue', () => {
                         "passed": false,
                       },
                       "scenarioResult": {
-                        "output": "automatically seeded sample output",
                         "negativeSideEffects": [],
+                        "output": "automatically seeded sample output",
                       },
                       "testPlanRun": {
                         "id": "3",
@@ -493,8 +493,8 @@ describe('test queue', () => {
                     {
                       "assertionResult": null,
                       "scenarioResult": {
-                        "output": "automatically seeded sample output",
                         "negativeSideEffects": [],
+                        "output": "automatically seeded sample output",
                       },
                       "testPlanRun": {
                         "id": "2",
@@ -506,13 +506,13 @@ describe('test queue', () => {
                     {
                       "assertionResult": null,
                       "scenarioResult": {
-                        "output": "automatically seeded sample output",
                         "negativeSideEffects": [
                           {
                             "details": "Seeded other negative side effect",
                             "text": "Other",
                           },
                         ],
+                        "output": "automatically seeded sample output",
                       },
                       "testPlanRun": {
                         "id": "3",
@@ -542,8 +542,8 @@ describe('test queue', () => {
                     {
                       "assertionResult": null,
                       "scenarioResult": {
-                        "output": "automatically seeded sample output",
                         "negativeSideEffects": [],
+                        "output": "automatically seeded sample output",
                       },
                       "testPlanRun": {
                         "id": "2",
@@ -555,7 +555,6 @@ describe('test queue', () => {
                     {
                       "assertionResult": null,
                       "scenarioResult": {
-                        "output": "automatically seeded sample output",
                         "negativeSideEffects": [
                           {
                             "details": "N/A",
@@ -566,6 +565,7 @@ describe('test queue', () => {
                             "text": "Other",
                           },
                         ],
+                        "output": "automatically seeded sample output",
                       },
                       "testPlanRun": {
                         "id": "3",
