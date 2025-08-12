@@ -29,6 +29,18 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
           id
           output
           untestable
+          match {
+            type
+            source {
+              testPlanReportId
+              scenarioId
+              atVersionId
+              atVersionName
+              browserVersionId
+              browserVersionName
+              output
+            }
+          }
           scenario {
             id
             commands {

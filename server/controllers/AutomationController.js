@@ -184,36 +184,7 @@ const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
     });
   }
 
-  if (testPlanReport.historicalReportId) {
-    const historicalReport = await getTestPlanReportById({
-      id: testPlanReport.historicalReportId,
-      transaction: context.transaction
-    });
-
-    if (historicalReport && historicalReport.markedFinalAt) {
-      const finalHistoricalReport = await populateData(
-        { testPlanReportId: historicalReport.id },
-        { context }
-      );
-      if (finalHistoricalReport) {
-        const testPlanReport = finalHistoricalReport.testPlanReport;
-        if (!testPlanReport.testPlanRuns.length) {
-          return null;
-        }
-
-        const testPlanRun = getPrimaryTestPlanRun(testPlanReport);
-
-        const testResults = testPlanRun.testResults.filter(
-          testResult => !!testResult.completedAt
-        );
-
-        return getTestResults({
-          testPlanRun: { testPlanReport, testResults },
-          context
-        });
-      }
-    }
-  }
+  // historicalReportId removed; no single historical report fallback here
 
   return null;
 };
@@ -235,6 +206,10 @@ const updateOrCreateTestResultWithResponses = async ({
   browserVersionId,
   context
 }) => {
+  const {
+    computeMatchesForRerunReport,
+    MATCH_TYPE
+  } = require('../services/VerdictService/computeMatchesForRerunReport');
   const { testResult } = await findOrCreateTestResult({
     testId,
     testPlanRunId: testPlanRun.id,
@@ -264,22 +239,28 @@ const updateOrCreateTestResultWithResponses = async ({
     }
   }
 
-  const getAutomatedResultFromOutput = ({ baseTestResult, outputs }) => {
+  const getAutomatedResultFromOutput = async ({ baseTestResult, outputs }) => {
+    const currentOutputsByScenarioId = {};
+    baseTestResult.scenarioResults.forEach((sr, i) => {
+      currentOutputsByScenarioId[String(sr.scenarioId)] = outputs[i];
+    });
+    const matches = await computeMatchesForRerunReport({
+      rerunTestPlanReportId: testPlanRun.testPlanReportId,
+      context,
+      currentOutputsByScenarioId
+    });
     const resultWithVerdictsCopied = {
       ...baseTestResult,
       atVersionId,
       browserVersionId,
       scenarioResults: baseTestResult.scenarioResults.map(
         (scenarioResult, i) => {
-          // Check if output matches historical output
-          const historicalOutput =
-            historicalTestResult?.scenarioResults[i]?.output;
           const currentOutput = outputs[i];
-
-          const outputMatches =
-            historicalTestResult &&
-            historicalTestResult.scenarioResults[i] &&
-            outputsMatch(historicalOutput, currentOutput);
+          const m = matches.get(String(scenarioResult.scenarioId));
+          const isSameOrCross =
+            m &&
+            (m.type === MATCH_TYPE.SAME_SCENARIO ||
+              m.type === MATCH_TYPE.CROSS_SCENARIO);
 
           return {
             ...scenarioResult,
@@ -287,33 +268,44 @@ const updateOrCreateTestResultWithResponses = async ({
             assertionResults: scenarioResult.assertionResults.map(
               (assertionResult, j) => ({
                 ...assertionResult,
-                passed: outputMatches
-                  ? historicalTestResult.scenarioResults[i].assertionResults[j]
-                      .passed
-                  : null,
-                failedReason: outputMatches
-                  ? historicalTestResult.scenarioResults[i].assertionResults[j]
-                      .failedReason
-                  : 'AUTOMATED_OUTPUT_DIFFERS'
+                passed:
+                  isSameOrCross &&
+                  m.source?.assertionResultsById?.[
+                    String(assertionResult.assertionId)
+                  ]?.passed !== undefined
+                    ? m.source.assertionResultsById[
+                        String(assertionResult.assertionId)
+                      ].passed
+                    : null,
+                failedReason:
+                  isSameOrCross &&
+                  m.source?.assertionResultsById?.[
+                    String(assertionResult.assertionId)
+                  ]?.failedReason !== undefined
+                    ? m.source.assertionResultsById[
+                        String(assertionResult.assertionId)
+                      ].failedReason
+                    : 'AUTOMATED_OUTPUT_DIFFERS'
               })
             ),
-            unexpectedBehaviors: outputMatches
-              ? historicalTestResult.scenarioResults[i].unexpectedBehaviors
+            unexpectedBehaviors: isSameOrCross
+              ? m.source?.unexpectedBehaviors ?? null
               : null,
-            hasUnexpected: outputMatches
-              ? historicalTestResult.scenarioResults[i].hasUnexpected
-              : null
+            hasUnexpected: isSameOrCross
+              ? m.source?.hasUnexpected ?? null
+              : null,
+            match: m || { type: MATCH_TYPE.NONE, source: null }
           };
         }
       )
     };
 
     // Check if all outputs matched historical outputs (verdicts were copied)
-    const allOutputsMatched = baseTestResult.scenarioResults.every(
-      (scenarioResult, i) =>
-        historicalTestResult &&
-        historicalTestResult.scenarioResults[i] &&
-        outputsMatch(historicalTestResult.scenarioResults[i].output, outputs[i])
+    const allOutputsMatched = resultWithVerdictsCopied.scenarioResults.every(
+      sr =>
+        sr.match &&
+        sr.match.type !== MATCH_TYPE.NONE &&
+        sr.match.type !== MATCH_TYPE.INCOMPLETE
     );
 
     return {
@@ -322,7 +314,7 @@ const updateOrCreateTestResultWithResponses = async ({
     };
   };
 
-  const { result, shouldSubmit } = getAutomatedResultFromOutput({
+  const { result, shouldSubmit } = await getAutomatedResultFromOutput({
     baseTestResult: testResult,
     outputs: responses
   });
@@ -476,35 +468,32 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
     // Return early if not all tests have been updated
     if (testPlanRun.testResults.length !== totalTests) return;
 
-    const historicalResults = await getApprovedFinalizedTestResults(
-      testPlanRun,
-      context
-    );
-    if (!historicalResults) return;
+    const {
+      computeMatchesForRerunReport,
+      MATCH_TYPE
+    } = require('../services/VerdictService/computeMatchesForRerunReport');
+    const currentOutputsByScenarioId = {};
+    for (const tr of testPlanRun.testResults) {
+      for (const sr of tr.scenarioResults || []) {
+        currentOutputsByScenarioId[String(sr.scenarioId)] = sr.output;
+      }
+    }
+    const matches = await computeMatchesForRerunReport({
+      rerunTestPlanReportId: testPlanReport.id,
+      context,
+      currentOutputsByScenarioId
+    });
 
     let differentResponsesCount = 0;
     let allOutputsMatch = true;
-
-    // Validate each applicable test's results against historical results
-    for (const test of applicableTests) {
-      const currResult = testPlanRun.testResults.find(
-        tr => String(tr.testId) === String(test.id)
-      );
-
-      const histResult = historicalResults.find(
-        hr => String(hr.testId) === String(test.id)
-      );
-
-      if (!currResult?.scenarioResults || !histResult?.scenarioResults) {
-        allOutputsMatch = false;
-        continue;
-      }
-
-      for (let i = 0; i < currResult.scenarioResults.length; i++) {
-        const currOutput = currResult.scenarioResults[i]?.output;
-        const histOutput = histResult.scenarioResults[i]?.output;
-
-        if (!outputsMatch(currOutput, histOutput)) {
+    for (const tr of testPlanRun.testResults) {
+      for (const sr of tr.scenarioResults || []) {
+        const m = matches.get(String(sr.scenarioId));
+        if (
+          !m ||
+          m.type === MATCH_TYPE.NONE ||
+          m.type === MATCH_TYPE.INCOMPLETE
+        ) {
           differentResponsesCount++;
           allOutputsMatch = false;
         }
