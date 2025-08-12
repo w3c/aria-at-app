@@ -823,6 +823,29 @@ const graphqlSchema = gql`
     Submitted test results require this field to be filled in.
     """
     unexpectedBehaviors: [UnexpectedBehavior]
+    match: ScenarioResultMatch
+  }
+
+  enum MatchType {
+    SAME_SCENARIO
+    CROSS_SCENARIO
+    INCOMPLETE
+    NONE
+  }
+
+  type ScenarioResultMatchSource {
+    testPlanReportId: ID!
+    scenarioId: ID!
+    atVersionId: ID!
+    atVersionName: String!
+    browserVersionId: ID!
+    browserVersionName: String!
+    output: String!
+  }
+
+  type ScenarioResultMatch {
+    type: MatchType!
+    source: ScenarioResultMatchSource
   }
 
   """
