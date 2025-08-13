@@ -98,24 +98,30 @@ const TestPlans = ({ testPlanVersions, ats, me }) => {
       </>
     );
 
-    const approvedContent = testPlanVersion ? (
-      <>
-        <Link
-          to={`/candidate-test-plan/${testPlanVersion?.id}/${reports[0].at.id}`}
-          className={clsx(styles.statusText, styles.approved)}
-        >
-          <FontAwesomeIcon icon={faCheck} />
-          Approved
-        </Link>
-      </>
-    ) : (
-      <>
-        <span className={clsx(styles.statusText, styles.approved)}>
-          <FontAwesomeIcon icon={faCheck} />
-          Approved
-        </span>
-      </>
-    );
+    const canReview =
+      me.roles.includes('ADMIN') ||
+      (me.roles.includes('VENDOR') &&
+        me.company.ats.some(at => at.id === reports[0].at.id));
+
+    const approvedContent =
+      canReview && testPlanVersion ? (
+        <>
+          <Link
+            to={`/candidate-test-plan/${testPlanVersion?.id}/${reports[0].at.id}`}
+            className={clsx(styles.statusText, styles.approved)}
+          >
+            <FontAwesomeIcon icon={faCheck} />
+            Approved
+          </Link>
+        </>
+      ) : (
+        <>
+          <span className={clsx(styles.statusText, styles.approved)}>
+            <FontAwesomeIcon icon={faCheck} />
+            Approved
+          </span>
+        </>
+      );
 
     const inProgressContent = (
       <>
