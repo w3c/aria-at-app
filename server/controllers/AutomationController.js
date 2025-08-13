@@ -404,6 +404,11 @@ const updateJobResults = async (req, res) => {
         throw new Error(`Browser not found with name: ${browserName}`);
       }
 
+      if (atName == 'JAWS') {
+        // remove the reported 4th number in the version string.
+        atVersionName = atVersionName.split('.').slice(0, 3).join('.');
+      }
+
       const [atVersion, browserVersion] = await Promise.all([
         findOrCreateAtVersion({
           where: { atId: at.id, name: atVersionName },
