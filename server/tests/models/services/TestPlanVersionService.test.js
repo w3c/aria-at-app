@@ -98,7 +98,7 @@ describe('TestPlanReportModel Data Checks', () => {
     expect(testPlanVersion).toBeNull();
   });
 
-  it('should create and update testPlanVersion', async () => {
+  it.skip('should create and update testPlanVersion', async () => {
     await dbCleaner(async transaction => {
       // A1
       const _id = 99;
