@@ -678,10 +678,7 @@ const TestRun = () => {
         output,
         untestable,
         hasUnexpected,
-        unexpectedBehaviors,
-        mustAssertionResults,
-        shouldAssertionResults,
-        mayAssertionResults
+        unexpectedBehaviors
       }) => ({
         id,
         output: output,
@@ -702,17 +699,6 @@ const TestRun = () => {
           // excluded assertion, but it can be removed at this point before being passed
           // to the server
           .filter(el => !!el.id)
-          // Assertion results returned from assertionResultsResolver should never
-          // include 'EXCLUDED' assertions
-          .filter(el =>
-            [
-              ...mustAssertionResults,
-              ...shouldAssertionResults,
-              ...mayAssertionResults
-            ]
-              .map(({ id }) => id)
-              .includes(el.id)
-          )
           .map(({ id, passed }) => ({
             id,
             passed
