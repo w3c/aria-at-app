@@ -183,6 +183,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
   }
   if (atKey === 'jaws') {
     inputs.browser = browser;
+    inputs.jaws_version = atVersion?.name ?? 'latest';
   }
   const axiosConfig = {
     method: 'POST',
