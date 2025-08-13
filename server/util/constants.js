@@ -9,6 +9,8 @@ const AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS = {
   'VoiceOver for macOS': ['13.0', '14.0', '15.0'],
   // These are tracked with the https://github.com/bocoup/aria-at-automation-nvda-builds/releases
   NVDA: ['2024.4.1', '2024.1', '2023.3.3', '2023.3'],
+  // These are tracked and assigned URLs in
+  // https://github.com/bocoup/aria-at-gh-actions-helper/blob/main/JAWS/InstallJAWSUnattended.ps1
   JAWS: ['2025.2507.149']
 };
 
