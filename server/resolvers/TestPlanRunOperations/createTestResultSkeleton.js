@@ -13,20 +13,14 @@ const {
  * @param {string} priority
  */
 const hasExceptionWithPriority = (assertion, scenario, priority) => {
-  return assertion.assertionExceptions?.some(exception => {
-    // Match exceptions using joined commandIds and scenario settings
-    const scenarioCommandId = (
-      scenario.commandIds || scenario.commands.map(({ id }) => id)
-    ).join(' ');
-    const scenarioSettings =
-      scenario.settings || scenario.commands?.[0]?.atOperatingMode;
-
-    return (
-      scenarioCommandId === exception.commandId &&
-      scenarioSettings === exception.settings &&
-      exception.priority === priority
-    );
-  });
+  return assertion.assertionExceptions?.some(
+    exception =>
+      scenario.commands.find(
+        command =>
+          command.id === exception.commandId &&
+          command.atOperatingMode === exception.settings
+      ) && exception.priority === priority
+  );
 };
 
 const createTestResultSkeleton = ({
@@ -56,20 +50,18 @@ const createTestResultSkeleton = ({
           scenarioId: scenario.id,
           output: null,
           untestable: false,
-          assertionResults: (() => {
-            // Exclude assertions with base EXCLUDE priority and
-            // assertions excluded for this scenario via exception
-            const keptAssertions = test.assertions.filter(
+          assertionResults: test.assertions
+            // Filter out assertionResults for the current scenario which were marked
+            // with a 0-priority exception
+            .filter(
               assertion =>
-                assertion.priority !== 'EXCLUDE' &&
                 !hasExceptionWithPriority(assertion, scenario, 'EXCLUDE')
-            );
-            return keptAssertions.map(assertion => ({
+            )
+            .map(assertion => ({
               id: createAssertionResultId(scenarioResultId, assertion.id),
               assertionId: assertion.id,
               passed: null
-            }));
-          })(),
+            })),
           unexpectedBehaviors: null
         };
       })
