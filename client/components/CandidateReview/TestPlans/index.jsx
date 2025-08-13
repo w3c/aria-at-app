@@ -54,12 +54,18 @@ const TestPlans = ({ testPlanVersions, ats, me }) => {
 
   const getRowStatus = ({
     issues = [],
-    isInProgressStatusExists,
-    isApprovedStatusExists
+    reports = [],
+    testPlanVersion = null
   }) => {
+    const isInProgressStatusExists = reports.some(
+      report => report.vendorReviewStatus === 'IN_PROGRESS'
+    );
+    const isApprovedStatusExists = reports.some(
+      report => report.vendorReviewStatus === 'APPROVED'
+    );
+
     // TODO: Future discussion on whether to include the issues that aren't
     //  just general feedback
-    //
     // Don't present information on general feedback provided here as there
     // is no design spec or discussions around that
     const filteredIssues = issues.filter(issue => !!issue.testRowNumber);
@@ -92,7 +98,17 @@ const TestPlans = ({ testPlanVersions, ats, me }) => {
       </>
     );
 
-    const approvedContent = (
+    const approvedContent = testPlanVersion ? (
+      <>
+        <Link
+          to={`/candidate-test-plan/${testPlanVersion?.id}/${reports[0].at.id}`}
+          className={clsx(styles.statusText, styles.approved)}
+        >
+          <FontAwesomeIcon icon={faCheck} />
+          Approved
+        </Link>
+      </>
+    ) : (
       <>
         <span className={clsx(styles.statusText, styles.approved)}>
           <FontAwesomeIcon icon={faCheck} />
@@ -388,15 +404,7 @@ const TestPlans = ({ testPlanVersions, ats, me }) => {
                         >
                           {getRowStatus({
                             issues: allIssues,
-                            isInProgressStatusExists: testPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus ===
-                                'IN_PROGRESS'
-                            ),
-                            isApprovedStatusExists: testPlanReports.some(
-                              testPlanReport =>
-                                testPlanReport.vendorReviewStatus === 'APPROVED'
-                            )
+                            reports: testPlanReports
                           })}
                         </td>
                         <td
@@ -535,14 +543,8 @@ const TestPlans = ({ testPlanVersions, ats, me }) => {
                           {data.dataExists
                             ? getRowStatus({
                                 issues: data.issues,
-                                isInProgressStatusExists: data.reports.some(
-                                  report =>
-                                    report.vendorReviewStatus === 'IN_PROGRESS'
-                                ),
-                                isApprovedStatusExists: data.reports.some(
-                                  report =>
-                                    report.vendorReviewStatus === 'APPROVED'
-                                )
+                                reports: data.reports,
+                                testPlanVersion: testPlanVersion
                               })
                             : none}
                         </td>
