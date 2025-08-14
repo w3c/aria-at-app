@@ -109,7 +109,7 @@ const CommandResults = ({
         commandIndex={commandIndex}
         assertionsHeader={assertionsHeader}
         readOnly={isReadOnly}
-        disabled={untestable.value}
+        isUntestable={untestable.value}
         isSubmitted={isSubmitted}
       />
       <UnexpectedBehaviorsFieldset
