@@ -268,24 +268,31 @@ const updateOrCreateTestResultWithResponses = async ({
             assertionResults: scenarioResult.assertionResults.map(
               (assertionResult, j) => ({
                 ...assertionResult,
-                passed:
-                  isSameOrCross &&
-                  m.source?.assertionResultsById?.[
-                    String(assertionResult.assertionId)
-                  ]?.passed !== undefined
-                    ? m.source.assertionResultsById[
-                        String(assertionResult.assertionId)
-                      ].passed
-                    : null,
-                failedReason:
-                  isSameOrCross &&
-                  m.source?.assertionResultsById?.[
-                    String(assertionResult.assertionId)
-                  ]?.failedReason !== undefined
-                    ? m.source.assertionResultsById[
-                        String(assertionResult.assertionId)
-                      ].failedReason
-                    : 'AUTOMATED_OUTPUT_DIFFERS'
+                ...(() => {
+                  if (!isSameOrCross) {
+                    return {
+                      passed: null,
+                      failedReason: 'AUTOMATED_OUTPUT_DIFFERS'
+                    };
+                  }
+                  const copied =
+                    m.source?.assertionResultsById?.[
+                      String(assertionResult.assertionId)
+                    ];
+                  if (copied) {
+                    return {
+                      passed: copied.passed,
+                      failedReason:
+                        copied.failedReason === undefined
+                          ? null
+                          : copied.failedReason
+                    };
+                  }
+                  return {
+                    passed: null,
+                    failedReason: 'AUTOMATED_OUTPUT_DIFFERS'
+                  };
+                })()
               })
             ),
             unexpectedBehaviors: isSameOrCross

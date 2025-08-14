@@ -194,7 +194,10 @@ const computeMatchesForRerunReport = async ({
         atVersionName: chosen.atVersionName,
         browserVersionId: chosen.browserVersionId,
         browserVersionName: chosen.browserVersionName,
-        output: chosen.output
+        output: chosen.output,
+        assertionResultsById: chosen.assertionResultsById,
+        unexpectedBehaviors: chosen.unexpectedBehaviors || null,
+        hasUnexpected: chosen.hasUnexpected || null
       }
     });
   }

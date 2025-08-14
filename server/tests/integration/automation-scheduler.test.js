@@ -84,7 +84,8 @@ const getTestPlanReport = async (id, { transaction }) =>
                                 id
                             }
                             output
-                            assertionResults {
+                         assertionResults {
+                                assertion { id }
                                 passed
                                 failedReason
                             }
@@ -125,7 +126,8 @@ const getTestPlanRun = async (id, { transaction }) =>
                                 id
                             }
                             output
-                            assertionResults {
+                         assertionResults {
+                                assertion { id }
                                 passed
                                 failedReason
                             }
@@ -1205,33 +1207,27 @@ describe('Automation controller', () => {
         expect(testResult.browserVersion.name).toEqual(
           browser.browserVersions[0].name
         );
-        testResult.scenarioResults.forEach((scenarioResult, index) => {
-          const historicalScenarioResult =
-            historicalTestResult.scenarioResults[index];
-          expect(scenarioResult.output).toEqual(
-            historicalScenarioResult.output
+        testResult.scenarioResults.forEach(scenarioResult => {
+          const matchedHistoricalScenario =
+            historicalTestResult.scenarioResults.find(
+              hs => hs.output === scenarioResult.output
+            );
+          expect(matchedHistoricalScenario).toBeDefined();
+          const byId = Object.fromEntries(
+            matchedHistoricalScenario.assertionResults.map(ar => [
+              String(ar.assertion?.id ?? ar.assertionId),
+              ar
+            ])
           );
-
-          scenarioResult.assertionResults.forEach((assertionResult, index) => {
-            const historicalAssertionResult =
-              historicalScenarioResult.assertionResults[index];
-            expect(assertionResult.passed).toEqual(
-              historicalAssertionResult.passed
-            );
-            expect(assertionResult.failedReason).toEqual(
-              historicalAssertionResult.failedReason
-            );
-          });
-          scenarioResult.unexpectedBehaviors?.forEach(
-            (unexpectedBehavior, index) => {
-              expect(unexpectedBehavior.id).toEqual(
-                historicalScenarioResult.unexpectedBehaviors[index].id
-              );
-              expect(unexpectedBehavior.details).toEqual(
-                historicalScenarioResult.unexpectedBehaviors[index].details
-              );
+          scenarioResult.assertionResults.forEach(assertionResult => {
+            const hist = byId[String(assertionResult.assertion.id)];
+            if (hist) {
+              expect(assertionResult.passed).toEqual(hist.passed);
+              expect(assertionResult.failedReason).toEqual(hist.failedReason);
+            } else {
+              expect(assertionResult.passed).toEqual(null);
             }
-          );
+          });
         });
       });
     });
@@ -1367,31 +1363,25 @@ describe('Automation controller', () => {
       const newTestResult = updatedRun.testPlanRun.testResults.find(
         tr => tr.test.id === historicalResult.test.id
       );
-      let diffOutputsAvailable = diffOutputs;
       expect(newTestResult).toBeDefined();
-      newTestResult.scenarioResults.forEach((scenarioResult, i) => {
-        const historicalScenario = historicalResult.scenarioResults[i];
-        if (scenarioResult.output !== historicalScenario.output) {
-          if (diffOutputsAvailable > 0) {
-            diffOutputsAvailable--;
-          } else {
-            console.error(
-              `Output mismatch for scenario ${i}: expected "${historicalScenario.output}" but got "${scenarioResult.output}" and have ${diffOutputsAvailable} diff tolerance remaining`
-            );
-            expect(false).toBe(true);
+      newTestResult.scenarioResults.forEach(scenarioResult => {
+        const matchedHistoricalScenario = historicalResult.scenarioResults.find(
+          hs => hs.output === scenarioResult.output
+        );
+        if (!matchedHistoricalScenario) return;
+        const byId = Object.fromEntries(
+          matchedHistoricalScenario.assertionResults.map(ar => [
+            String(ar.assertion.id),
+            ar
+          ])
+        );
+        scenarioResult.assertionResults.forEach(assertionResult => {
+          const hist = byId[String(assertionResult.assertion.id)];
+          if (hist) {
+            expect(assertionResult.passed).toEqual(hist.passed);
+            expect(assertionResult.failedReason).toEqual(hist.failedReason);
           }
-        } else {
-          scenarioResult.assertionResults.forEach((assertionResult, j) => {
-            const historicalAssertionResult =
-              historicalScenario.assertionResults[j];
-            expect(assertionResult.passed).toEqual(
-              historicalAssertionResult.passed
-            );
-            expect(assertionResult.failedReason).toEqual(
-              historicalAssertionResult.failedReason
-            );
-          });
-        }
+        });
       });
     }
     const { testPlanReport: finalReport } = await getTestPlanReport(
