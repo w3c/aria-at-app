@@ -1,3 +1,18 @@
+### [1.18.1](https://github.com/w3c/aria-at-app/compare/v1.18.0...v1.18.1) (2025-08-14)
+
+
+### Bug Fixes
+
+* Fix for then-able commands ([#1491](https://github.com/w3c/aria-at-app/issues/1491)) ([308fcda](https://github.com/w3c/aria-at-app/commit/308fcdabfcdf366df17c931adc496a257a387dc3))
+* Handle excluded then-able commands in `createTestResultSkeleton` ([#1484](https://github.com/w3c/aria-at-app/issues/1484)) ([305cec5](https://github.com/w3c/aria-at-app/commit/305cec549d6363dfddbc65b8fc6aa3eae6c23e64))
+* Render untestable assertions as indeterminate ([#1493](https://github.com/w3c/aria-at-app/issues/1493)) ([e8a0c5d](https://github.com/w3c/aria-at-app/commit/e8a0c5defd4dc069bc3e616831aa2a0b19a26623))
+* Update JAWS supported versions ([#1492](https://github.com/w3c/aria-at-app/issues/1492)) ([6ddd0fd](https://github.com/w3c/aria-at-app/commit/6ddd0fde3cbddc8ac71fe468d1bbc90ccf13c5ad))
+
+
+### Reverts
+
+* Revert "fix: Handle excluded then-able commands in `createTestResultSkeleton` (#1484)" (#1490) ([6324ece](https://github.com/w3c/aria-at-app/commit/6324ece9dd88387c73cac7fd13d0ce3dd6d47f31)), closes [#1484](https://github.com/w3c/aria-at-app/issues/1484) [#1490](https://github.com/w3c/aria-at-app/issues/1490)
+
 ## [1.18.0](https://github.com/w3c/aria-at-app/compare/v1.17.0...v1.18.0) (2025-08-04)
 
 
