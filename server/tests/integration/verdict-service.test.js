@@ -5,13 +5,10 @@ const {
 } = require('../util/mock-automation-scheduler-server');
 const db = require('../../models/index');
 const { query, mutate } = require('../util/graphql-test-utilities');
-const dbCleaner = require('../util/db-cleaner');
 const {
   getCollectionJobById
 } = require('../../models/services/CollectionJobService');
 const markAsFinalResolver = require('../../resolvers/TestPlanReportOperations/markAsFinalResolver');
-const AtLoader = require('../../models/loaders/AtLoader');
-const BrowserLoader = require('../../models/loaders/BrowserLoader');
 const getGraphQLContext = require('../../graphql-context');
 const {
   computeMatchesForRerunReport,
@@ -89,7 +86,7 @@ const getJobSecret = async (jobId, { transaction }) => {
 
 describe('VerdictService computeMatchesForRerunReport', () => {
   it('returns SAME_SCENARIO for rerun outputs matching finalized same-scenario', async () => {
-    await dbCleaner(async transaction => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
       const context = getGraphQLContext({
         req: { session: { user: { roles: [{ name: 'ADMIN' }] } }, transaction }
       });
@@ -156,7 +153,7 @@ describe('VerdictService computeMatchesForRerunReport', () => {
   });
 
   it('returns NONE with fallback source when rerun outputs do not match any finalized outputs', async () => {
-    await dbCleaner(async transaction => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
       const context = getGraphQLContext({
         req: { session: { user: { roles: [{ name: 'ADMIN' }] } }, transaction }
       });
@@ -221,7 +218,7 @@ describe('VerdictService computeMatchesForRerunReport', () => {
   });
 
   it('returns CROSS_SCENARIO with INCOMPLETE when assertion sets differ across scenarios', async () => {
-    await dbCleaner(async transaction => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
       const context = getGraphQLContext({
         req: { session: { user: { roles: [{ name: 'ADMIN' }] } }, transaction }
       });

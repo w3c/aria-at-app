@@ -76,13 +76,6 @@ const buildCandidateEntries = async (candidateReports, context) => {
   return entries;
 };
 
-const chooseFallbackSource = (entries, scenarioId) => {
-  const filtered = entries
-    .filter(e => String(e.scenarioId) === String(scenarioId))
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  return filtered[0] || null;
-};
-
 const determineType = (isSameScenario, currentIds, sourceIds) => {
   const currentOnly = [...currentIds].filter(id => !sourceIds.has(id));
   const sourceOnly = [...sourceIds].filter(id => !currentIds.has(id));
