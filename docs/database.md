@@ -8,36 +8,39 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). The 
 
 0. Install PostgreSQL
 
-    - Mac
+   - Mac
 
-    ```
-    brew install postgresql@14
-    brew services start postgresql@14
-    ```
+   ```
+   brew install postgresql@14
+   brew services start postgresql@14
+   ```
 
 1. Initialize the database
-    - Mac
-    ```
-    createdb # run this if the PostgreSQL installation is freshly installed
-    yarn db-init:dev
-    ```
-    - Linux
-    ```
-    sudo -u postgres yarn db-init:dev
-    ```
+   - Mac
+   ```
+   createdb # run this if the PostgreSQL installation is freshly installed
+   yarn db-init:dev
+   ```
+   - Linux
+   ```
+   sudo -u postgres yarn db-init:dev
+   ```
 2. Run database migrations
-    ```
-    yarn sequelize db:migrate
-    ```
+   ```
+   yarn sequelize db:migrate
+   ```
 3. Import seed data
-    ```
-    yarn sequelize db:seed:all
-    ```
+   ```
+   yarn sequelize db:seed:all
+   ```
 4. Import the most recent tests and files from the [aria-at repository](https://github.com/w3c/aria-at):
-    ```
-    yarn db-import-tests:dev -c "5fe7afd82fe51c185b8661276105190a59d47322 1aa3b74d24d340362e9f511eae33788d55487d12 ab77d47ab19db71c635c9bb459ba5c34182e1400 d34eddbb8e751f07bd28d952de15fa7fe5f07353";
-    yarn db-import-tests:dev;
-    ```
+
+   ```
+   yarn db-import-tests:dev -c "5fe7afd82fe51c185b8661276105190a59d47322 1aa3b74d24d340362e9f511eae33788d55487d12 ab77d47ab19db71c635c9bb459ba5c34182e1400 d34eddbb8e751f07bd28d952de15fa7fe5f07353";
+   yarn db-import-tests:dev;
+   ```
+
+   **Note:** For detailed information about preparing new test data from the aria-at repository, including the cleanup script workflow, see the [Test Data Preparation section in local-development.md](local-development.md#test-data-preparation).
 
 All at once:
 
@@ -61,6 +64,12 @@ The sample data which is used in test environments can also be populated on deve
 yarn workspace server db-populate-sample-data:dev;
 ```
 
+The following runs all of the above, including the `db-populate-sample-data` script:
+
+```
+yarn db-init-import-populate:dev;
+```
+
 ### Cloning and using live environments database dumps locally
 
 The prerequisite for the following steps is SSH access to the `staging` or `production` server.
@@ -68,27 +77,27 @@ The prerequisite for the following steps is SSH access to the `staging` or `prod
 1. Follow the [manual backup instructions](../deploy/README.md#manual-db-backup) which will produce a local database dump of the `staging` or `production` database.
 2. Drop your **local** aria_at_report database using your preferred tool.
 3. Initialize the database in an empty state:
-    ```
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        createdb # run this if the PostgreSQL installation is freshly installed
-        yarn db-init:dev;
-    else
-        sudo -u postgres yarn db-init:dev;
-    fi;
-    ```
+   ```
+   if [[ "$OSTYPE" == "darwin"* ]]; then
+       createdb # run this if the PostgreSQL installation is freshly installed
+       yarn db-init:dev;
+   else
+       sudo -u postgres yarn db-init:dev;
+   fi;
+   ```
 4. Execute the database dump file:
-    ```
-    psql -d aria_at_report -f <environment>_dump_<timestamp>.sql
-    ```
+   ```
+   psql -d aria_at_report -f <environment>_dump_<timestamp>.sql
+   ```
 5. Run the migrations and seeders:
-    ```
-    yarn sequelize db:migrate;
-    yarn sequelize db:seed:all;
-    ```
+   ```
+   yarn sequelize db:migrate;
+   yarn sequelize db:seed:all;
+   ```
 6. Ensure you have the most recent tests and files from the [aria-at repository](https://github.com/w3c/aria-at):
-    ```
-    yarn db-import-tests:dev;
-    ```
+   ```
+   yarn db-import-tests:dev;
+   ```
 7. Run the application.
 
 ## Test Database
@@ -104,6 +113,12 @@ yarn workspace server db-import-tests:test;
 yarn workspace server db-populate-sample-data:test;
 ```
 
+The following runs all of the above, including the `db-populate-sample-data` script:
+
+```
+yarn db-init-import-populate:test;
+```
+
 ### Inspecting the database
 
 To connect to the Postgres table locally:
@@ -115,11 +130,11 @@ yarn run dotenv -e config/dev.env psql
 ## Application development: modifications to the schema
 
 1. Write a migration. Migrations files should be saved to `server/migrations/`. To make a migration file with the appropriate file name, run:
-    ```
-    yarn sequelize-cli migration:generate --name <name>
-    ```
+   ```
+   yarn sequelize-cli migration:generate --name <name>
+   ```
 2. Write a seed file to add data to a table if appropriate. Seed files should be saved to `server/seeder/`. To make a seeder file with the appropriate file name, run:
-    ```
-    yarn sequelize-cli seed:generate --name <name>
-    ```
+   ```
+   yarn sequelize-cli seed:generate --name <name>
+   ```
 3. Modify the appropriate models under `server/models/` so that the model accurate represents the database.
