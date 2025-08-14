@@ -10,7 +10,7 @@ const AssertionsFieldset = ({
   commandIndex,
   assertionsHeader,
   readOnly = false,
-  disabled,
+  isUntestable,
   isSubmitted = false
 }) => {
   // Handle case where build process didn't include assertionResponseQuestion
@@ -46,7 +46,7 @@ const AssertionsFieldset = ({
               isSubmitted && isIncomplete && styles.incompleteFieldset
             )}
             key={`AssertionKey_${commandIndex}_${assertionIndex}`}
-            disabled={disabled}
+            disabled={isUntestable}
             aria-invalid={isSubmitted && isIncomplete ? 'true' : undefined}
             aria-describedby={isSubmitted && isIncomplete ? errorId : undefined}
           >
@@ -56,7 +56,7 @@ const AssertionsFieldset = ({
                 type="radio"
                 id={`pass-${commandIndex}-${assertionIndex}-yes`}
                 name={`assertion-${commandIndex}-${assertionIndex}`}
-                checked={passed === true}
+                checked={!isUntestable && passed === true}
                 onChange={() => (!readOnly ? click(true) : false)}
                 data-testid={`radio-yes-${commandIndex}-${assertionIndex}`}
                 aria-describedby={
@@ -70,7 +70,7 @@ const AssertionsFieldset = ({
                 type="radio"
                 id={`pass-${commandIndex}-${assertionIndex}-no`}
                 name={`assertion-${commandIndex}-${assertionIndex}`}
-                checked={passed === false}
+                checked={!isUntestable && passed === false}
                 onChange={() => (!readOnly ? click(false) : false)}
                 data-testid={`radio-no-${commandIndex}-${assertionIndex}`}
                 aria-describedby={
@@ -91,7 +91,7 @@ AssertionsFieldset.propTypes = {
   commandIndex: PropTypes.number.isRequired,
   assertionsHeader: PropTypes.object.isRequired,
   readOnly: PropTypes.bool,
-  disabled: PropTypes.bool.isRequired,
+  isUntestable: PropTypes.bool.isRequired,
   isSubmitted: PropTypes.bool
 };
 
