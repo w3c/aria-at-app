@@ -26,9 +26,8 @@ const CommandResults = ({
   isReviewingBot,
   isReadOnly,
   isRerunReport = false,
-  historicalOutput = null,
-  historicalAtName = null,
-  historicalAtVersion = null
+  match = null,
+  historicalAtName = null
 }) => {
   const commandString = header.replace('After ', '');
   const issueLink = createIssueLink({
@@ -37,21 +36,14 @@ const CommandResults = ({
   });
   const tooltipID = useMemo(() => `untestable-tooltip-${++tooltipCount}`, []);
 
-  const hasUnresolvedAssertions = assertions.some(
-    assertion => assertion.passed === null
-  );
-
-  const hasConflictingOutput = isRerunReport && hasUnresolvedAssertions;
-
-  const errorMessage = hasConflictingOutput ? 'Conflicting Output' : null;
-
-  const shouldShowHistoricalOutput =
-    hasConflictingOutput && historicalOutput !== null;
+  const matchType = match?.type;
+  const isNoMatch = matchType === 'NONE';
+  const errorMessage = isRerunReport && isNoMatch ? 'Conflicting Output' : null;
 
   return (
     <>
       <h3>
-        {hasConflictingOutput && (
+        {errorMessage && (
           <FontAwesomeIcon
             icon={faExclamationTriangle}
             style={{ color: '#ce1b4c', marginRight: '8px' }}
@@ -68,9 +60,9 @@ const CommandResults = ({
         readOnly={isReviewingBot || isReadOnly}
         errorMessage={errorMessage}
         isRerunReport={isRerunReport}
-        historicalOutput={shouldShowHistoricalOutput ? historicalOutput : null}
+        match={match}
         historicalAtName={historicalAtName}
-        historicalAtVersion={historicalAtVersion}
+        commandString={commandString}
       />
 
       <Tooltip>
@@ -142,9 +134,8 @@ CommandResults.propTypes = {
   isReviewingBot: PropTypes.bool.isRequired,
   isReadOnly: PropTypes.bool.isRequired,
   isRerunReport: PropTypes.bool,
-  historicalOutput: PropTypes.string,
-  historicalAtName: PropTypes.string,
-  historicalAtVersion: PropTypes.string
+  match: PropTypes.object,
+  historicalAtName: PropTypes.string
 };
 
 export default CommandResults;

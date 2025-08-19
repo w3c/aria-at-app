@@ -1221,12 +1221,10 @@ describe('Automation controller', () => {
           );
           scenarioResult.assertionResults.forEach(assertionResult => {
             const hist = byId[String(assertionResult.assertion.id)];
-            if (hist) {
-              expect(assertionResult.passed).toEqual(hist.passed);
-              expect(assertionResult.failedReason).toEqual(hist.failedReason);
-            } else {
-              expect(assertionResult.passed).toEqual(null);
-            }
+            expect(assertionResult.passed).toEqual(hist ? hist.passed : null);
+            expect(assertionResult.failedReason).toEqual(
+              hist ? hist.failedReason : null
+            );
           });
         });
       });

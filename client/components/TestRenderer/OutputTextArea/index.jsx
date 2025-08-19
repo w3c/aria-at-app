@@ -13,9 +13,9 @@ const OutputTextArea = ({
   readOnly = false,
   errorMessage = null,
   isRerunReport = false,
-  historicalOutput = null,
+  match = null,
   historicalAtName = null,
-  historicalAtVersion = null
+  commandString = null
 }) => {
   const [noOutput, setNoOutput] = useState(atOutput.value === NO_OUTPUT_STRING);
 
@@ -44,12 +44,13 @@ const OutputTextArea = ({
 
   return (
     <div className={styles.outputTextContainer}>
-      {isRerunReport && historicalOutput && (
+      {isRerunReport && match?.type === 'NONE' && match?.source?.output && (
         <div className={styles.historicalOutput}>
           <p>
-            Output recorded for {historicalAtName} {historicalAtVersion}:
+            Output recorded for{' '}
+            {`${historicalAtName} ${match?.source?.atVersionName}`}:
           </p>
-          <blockquote>{historicalOutput}</blockquote>
+          <blockquote>{match.source.output}</blockquote>
         </div>
       )}
       <label htmlFor={`speechoutput-${commandIndex}`}>
@@ -90,6 +91,29 @@ const OutputTextArea = ({
         aria-describedby={errorId}
         className={errorMessage ? styles.errorState : ''}
       />
+      {!errorMessage && isRerunReport && match?.type && match?.type !== 'NONE' && (
+        <div className={styles.matchInfo}>
+          Matches output for &apos;{commandString}&apos; from{' '}
+          {`${historicalAtName} ${match?.source?.atVersionName}`}
+          {match?.source?.testPlanReportId && (
+            <>
+              in{' '}
+              <a
+                href={
+                  match?.source?.testResultId &&
+                  match?.source?.testPlanVersionId &&
+                  match?.source?.testPlanReportId
+                    ? `/report/${match.source.testPlanVersionId}/targets/${match.source.testPlanReportId}#result-${match.source.testResultId}`
+                    : null
+                }
+              >
+                Report {match.source.testPlanReportId}
+              </a>
+            </>
+          )}
+          .
+        </div>
+      )}
       {errorMessage && (
         <div id={errorId} className={styles.errorMessage} role="alert">
           {errorMessage}
@@ -106,9 +130,9 @@ OutputTextArea.propTypes = {
   isSubmitted: PropTypes.bool.isRequired,
   errorMessage: PropTypes.string,
   isRerunReport: PropTypes.bool,
-  historicalOutput: PropTypes.string,
+  match: PropTypes.object,
   historicalAtName: PropTypes.string,
-  historicalAtVersion: PropTypes.string
+  commandString: PropTypes.string
 };
 
 export default OutputTextArea;

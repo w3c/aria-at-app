@@ -37,7 +37,6 @@ const {
   getTestPlanVersionById
 } = require('../models/services/TestPlanVersionService');
 const { createUpdateEvent } = require('../models/services/UpdateEventService');
-const { outputsMatch } = require('../util/outputNormalization');
 const { updatePercentComplete } = require('../util/updatePercentComplete');
 const httpAgent = new http.Agent({ family: 4 });
 
@@ -255,7 +254,6 @@ const updateOrCreateTestResultWithResponses = async ({
       browserVersionId,
       scenarioResults: baseTestResult.scenarioResults.map(
         (scenarioResult, i) => {
-          const currentOutput = outputs[i];
           const m = matches.get(String(scenarioResult.scenarioId));
           const isSameOrCross =
             m &&
@@ -266,7 +264,7 @@ const updateOrCreateTestResultWithResponses = async ({
             ...scenarioResult,
             output: outputs[i],
             assertionResults: scenarioResult.assertionResults.map(
-              (assertionResult, j) => ({
+              assertionResult => ({
                 ...assertionResult,
                 ...(() => {
                   if (!isSameOrCross) {

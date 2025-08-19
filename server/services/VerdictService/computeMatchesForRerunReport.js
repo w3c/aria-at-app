@@ -49,7 +49,9 @@ const buildCandidateEntries = async (candidateReports, context) => {
         entries.push({
           testPlanReportId: report.id,
           createdAt: report.createdAt,
+          testPlanVersionId: report.testPlanVersionId,
           testId: tr.testId,
+          testResultId: tr.id,
           scenarioId: sr.scenario.id,
           output: sr.output,
           assertionIds: new Set(
@@ -181,7 +183,28 @@ const computeMatchesForRerunReport = async ({
     }
 
     if (!chosen) {
-      result.set(String(scenarioId), { type: MATCH_TYPE.NONE, source: null });
+      // Provide fallback source: most recent finalized same-scenario entry
+      const sameScenarioEntries = (byScenarioId.get(String(scenarioId)) || [])
+        .slice()
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const fallback = sameScenarioEntries[0] || null;
+      const source = fallback
+        ? {
+            testPlanReportId: fallback.testPlanReportId,
+            testPlanVersionId: fallback.testPlanVersionId,
+            testResultId: fallback.testResultId,
+            scenarioId: fallback.scenarioId,
+            atVersionId: fallback.atVersionId,
+            atVersionName: fallback.atVersionName,
+            browserVersionId: fallback.browserVersionId,
+            browserVersionName: fallback.browserVersionName,
+            output: fallback.output,
+            assertionResultsById: fallback.assertionResultsById,
+            unexpectedBehaviors: fallback.unexpectedBehaviors || null,
+            hasUnexpected: fallback.hasUnexpected || null
+          }
+        : null;
+      result.set(String(scenarioId), { type: MATCH_TYPE.NONE, source });
       continue;
     }
 
@@ -189,6 +212,8 @@ const computeMatchesForRerunReport = async ({
       type,
       source: {
         testPlanReportId: chosen.testPlanReportId,
+        testPlanVersionId: chosen.testPlanVersionId,
+        testResultId: chosen.testResultId,
         scenarioId: chosen.scenarioId,
         atVersionId: chosen.atVersionId,
         atVersionName: chosen.atVersionName,

@@ -33,6 +33,8 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
             type
             source {
               testPlanReportId
+              testPlanVersionId
+              testResultId
               scenarioId
               atVersionId
               atVersionName

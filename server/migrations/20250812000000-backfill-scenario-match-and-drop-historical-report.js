@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
       const [rerunReports] = await queryInterface.sequelize.query(

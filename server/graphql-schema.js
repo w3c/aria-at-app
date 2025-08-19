@@ -834,7 +834,9 @@ const graphqlSchema = gql`
   }
 
   type ScenarioResultMatchSource {
+    testPlanVersionId: ID!
     testPlanReportId: ID!
+    testResultId: ID!
     scenarioId: ID!
     atVersionId: ID!
     atVersionName: String!

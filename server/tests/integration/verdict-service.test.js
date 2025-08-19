@@ -39,14 +39,6 @@ const getTestPlanReport = async (id, { transaction }) =>
     { transaction }
   );
 
-const getTestPlanRun = async (id, { transaction }) =>
-  await query(
-    `
-      query { testPlanRun(id: "${id}") { id testPlanReport { id } testResults { id test { id rowNumber } atVersion { id name } browserVersion { id name } scenarioResults { id scenario { id } output assertionResults { assertion { id } passed } } } } }
-    `,
-    { transaction }
-  );
-
 const scheduleCollectionJobsFromPreviousVersion = async (
   atVersionId,
   { transaction }
