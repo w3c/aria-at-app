@@ -12,7 +12,7 @@ const countTests = ({
   const countScenarioResult = scenarioResult => {
     return scenarioResult?.assertionResults?.every(
       assertionResult => assertionResult.passed
-    ) && scenarioResult.unexpectedBehaviors.length === 0
+    ) && scenarioResult.negativeSideEffects.length === 0
       ? 1
       : 0;
   };
@@ -113,13 +113,13 @@ const countAssertions = ({
   });
 };
 
-const countUnexpectedBehaviors = ({
+const countNegativeSideEffects = ({
   testPlanReport, // Choose one to provide
   testResult, // Choose one to provide
   scenarioResult // Choose one to provide
 }) => {
   const countScenarioResult = scenarioResult => {
-    return scenarioResult?.unexpectedBehaviors?.length || 0;
+    return scenarioResult?.negativeSideEffects?.length || 0;
   };
   return countAvailableData(countScenarioResult, {
     testPlanReport,
@@ -128,7 +128,7 @@ const countUnexpectedBehaviors = ({
   });
 };
 
-const countUnexpectedBehaviorsImpact = (
+const countNegativeSideEffectsImpact = (
   {
     testPlanReport, // Choose one to provide
     testResult, // Choose one to provide
@@ -137,7 +137,7 @@ const countUnexpectedBehaviorsImpact = (
   impact
 ) => {
   const countScenarioResult = scenarioResult => {
-    return scenarioResult?.unexpectedBehaviors?.some(e => e.impact === impact)
+    return scenarioResult?.negativeSideEffects?.some(e => e.impact === impact)
       ? 1
       : 0;
   };
@@ -202,11 +202,11 @@ const getMetrics = ({
   // * Severe negative side effects do not occur
   // * Moderate negative side effects do not occur
   // TODO: Include this from the db assertions now that this has been agreed upon
-  const severeImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
+  const severeImpactFailedAssertionCount = countNegativeSideEffectsImpact(
     { ...result },
     'SEVERE'
   );
-  const moderateImpactFailedAssertionCount = countUnexpectedBehaviorsImpact(
+  const moderateImpactFailedAssertionCount = countNegativeSideEffectsImpact(
     { ...result },
     'MODERATE'
   );
@@ -261,12 +261,12 @@ const getMetrics = ({
       ? false
       : `${mayAssertionsPassedCount} of ${mayAssertionsCount} supported`;
 
-  const unexpectedBehaviorCount = countUnexpectedBehaviors({ ...result });
-  const unexpectedBehaviorsFormatted =
-    unexpectedBehaviorCount === 0 ? false : `${unexpectedBehaviorCount} found`;
+  const negativeSideEffectCount = countNegativeSideEffects({ ...result });
+  const negativeSideEffectsFormatted =
+    negativeSideEffectCount === 0 ? false : `${negativeSideEffectCount} found`;
 
   let supportLevel;
-  if (unexpectedBehaviorCount > 0 || mustAssertionsFailedCount > 0) {
+  if (negativeSideEffectCount > 0 || mustAssertionsFailedCount > 0) {
     supportLevel = 'FAILING';
   } else if (shouldAssertionsFailedCount > 0) {
     supportLevel = 'ALL_REQUIRED';
@@ -314,7 +314,7 @@ const getMetrics = ({
     testsPassedCount,
     testsCount,
     testsFailedCount,
-    unexpectedBehaviorCount,
+    negativeSideEffectCount,
     severeImpactPassedAssertionCount,
     severeImpactFailedAssertionCount,
     moderateImpactPassedAssertionCount,
@@ -323,7 +323,7 @@ const getMetrics = ({
     mustFormatted,
     shouldFormatted,
     mayFormatted,
-    unexpectedBehaviorsFormatted,
+    negativeSideEffectsFormatted,
     supportLevel,
     supportPercent
   };

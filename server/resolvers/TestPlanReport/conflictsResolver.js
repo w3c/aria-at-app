@@ -65,12 +65,12 @@ const conflictsResolver = async (testPlanReport, _, context) => {
       const scenarioResultComparisons = testResults.map(testResult => {
         // Note that output is not considered
         let picked = pick(testResult.scenarioResults[i], [
-          'unexpectedBehaviors'
+          'negativeSideEffects'
         ]);
 
-        // Ignore unexpectedBehavior details text during comparison of conflicts
-        picked.unexpectedBehaviors = picked.unexpectedBehaviors.map(
-          unexpectedBehavior => omit(unexpectedBehavior, ['details'])
+        // Ignore negativeSideEffect details text during comparison of conflicts
+        picked.negativeSideEffects = picked.negativeSideEffects.map(
+          negativeSideEffect => omit(negativeSideEffect, ['details'])
         );
 
         return picked;

@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import AssertionsFieldset from '../AssertionsFieldset';
 import OutputTextArea from '../OutputTextArea';
-import UnexpectedBehaviorsFieldset from '../UnexpectedBehaviorsFieldset';
+import NegativeSideEffectsFieldset from '../NegativeSideEffectsFieldset';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../Tooltip';
 import styles from '../TestRenderer.module.css';
 
@@ -18,7 +18,7 @@ const CommandResults = ({
   atOutput,
   untestable,
   assertions,
-  unexpectedBehaviors,
+  negativeSideEffects,
   assertionsHeader,
   commonIssueContent,
   commandIndex,
@@ -112,9 +112,9 @@ const CommandResults = ({
         isUntestable={untestable.value}
         isSubmitted={isSubmitted}
       />
-      <UnexpectedBehaviorsFieldset
+      <NegativeSideEffectsFieldset
         commandIndex={commandIndex}
-        unexpectedBehaviors={unexpectedBehaviors}
+        negativeSideEffects={negativeSideEffects}
         isSubmitted={isSubmitted}
         readOnly={isReadOnly}
         forceYes={untestable.value}
@@ -134,7 +134,7 @@ CommandResults.propTypes = {
   atOutput: AtOutputPropType.isRequired,
   untestable: UntestablePropType.isRequired,
   assertions: PropTypes.array.isRequired,
-  unexpectedBehaviors: PropTypes.object.isRequired,
+  negativeSideEffects: PropTypes.object.isRequired,
   assertionsHeader: PropTypes.object.isRequired,
   commonIssueContent: PropTypes.object.isRequired,
   commandIndex: PropTypes.number.isRequired,

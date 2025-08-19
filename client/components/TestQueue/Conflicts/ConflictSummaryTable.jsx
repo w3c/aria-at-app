@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import clsx from 'clsx';
 import AssertionConflictsTable from './AssertionConflictsTable';
-import UnexpectedBehaviorsConflictsTable from './UnexpectedBehaviorsConflictsTable';
+import NegativeSideEffectsConflictsTable from './NegativeSideEffectsConflictsTable';
 import styles from './Conflicts.module.css';
 import commonStyles from '../../common/styles.module.css';
 
@@ -29,10 +29,10 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
     [conflictingResults]
   );
 
-  const hasUnexpectedBehaviorConflicts = useMemo(
+  const hasNegativeSideEffectConflicts = useMemo(
     () =>
       conflictingResults.some(
-        result => result.scenarioResult.unexpectedBehaviors.length > 0
+        result => result.scenarioResult.negativeSideEffects.length > 0
       ),
     [conflictingResults]
   );
@@ -81,8 +81,8 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
           testers={testers}
         />
       )}
-      {hasUnexpectedBehaviorConflicts && (
-        <UnexpectedBehaviorsConflictsTable
+      {hasNegativeSideEffectConflicts && (
+        <NegativeSideEffectsConflictsTable
           conflictingResults={conflictingResults}
           testers={testers}
         />

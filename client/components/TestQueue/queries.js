@@ -144,8 +144,8 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
           }
           scenarioResult {
             output
-            hasUnexpected
-            unexpectedBehaviors {
+            hasNegativeSideEffect
+            negativeSideEffects {
               text
               details
               impact

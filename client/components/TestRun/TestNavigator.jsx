@@ -41,7 +41,7 @@ const TestNavigator = ({
       isVendor &&
       (testPlanReport.metrics.mustAssertionsFailedCount > 0 ||
         testPlanReport.metrics.shouldAssertionsFailedCount > 0 ||
-        testPlanReport.metrics.unexpectedBehaviorCount > 0)
+        testPlanReport.metrics.negativeSideEffectCount > 0)
     );
   }, [isVendor, testPlanReport]);
 
