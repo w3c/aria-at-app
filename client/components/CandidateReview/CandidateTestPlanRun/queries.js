@@ -19,10 +19,23 @@ export const ADD_VIEWER_MUTATION = gql`
   }
 `;
 
-export const PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION = gql`
-  mutation UpdateVendorReviewStatusReport($testReportId: ID!) {
+export const PROMOTE_VENDOR_REVIEW_STATUS_MUTATION = gql`
+  mutation PromoteVendorReviewStatus($testReportId: ID!) {
     testPlanReport(id: $testReportId) {
       promoteVendorReviewStatus {
+        testPlanReport {
+          id
+          vendorReviewStatus
+        }
+      }
+    }
+  }
+`;
+
+export const REMOVE_VENDOR_REVIEW_APPROVAL_STATUS_MUTATION = gql`
+  mutation RemoveVendorReviewApprovalStatus($testReportId: ID!) {
+    testPlanReport(id: $testReportId) {
+      removeVendorReviewApprovalStatus {
         testPlanReport {
           id
           vendorReviewStatus
