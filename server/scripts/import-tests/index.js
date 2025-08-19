@@ -48,10 +48,18 @@ const importTestPlanVersions = async transaction => {
     : [];
 
   if (commits.length) {
-    for (const commit of commits) {
-      await buildTestsAndCreateTestPlanVersions(commit, { transaction });
+    for (const [cIndex, commit] of commits.entries()) {
+      await buildTestsAndCreateTestPlanVersions(commit, {
+        // ignore the cleanup if on last commit in series; folder will be removed
+        waitForCleanup: cIndex !== commits.length - 1,
+        transaction
+      });
     }
-  } else await buildTestsAndCreateTestPlanVersions(null, { transaction });
+  } else
+    await buildTestsAndCreateTestPlanVersions(null, {
+      waitForCleanup: false,
+      transaction
+    });
 };
 
 sequelize

@@ -13,14 +13,16 @@ const {
  * @param {string} priority
  */
 const hasExceptionWithPriority = (assertion, scenario, priority) => {
-  return assertion.assertionExceptions?.some(
-    exception =>
-      scenario.commands.find(
-        command =>
-          command.id === exception.commandId &&
-          command.atOperatingMode === exception.settings
-      ) && exception.priority === priority
-  );
+  return assertion.assertionExceptions?.some(exception => {
+    const scenarioCommandId = scenario.commands.map(({ id }) => id).join(' ');
+    const scenarioAtOperatingMode = scenario.commands[0].atOperatingMode;
+
+    return (
+      scenarioCommandId === exception.commandId &&
+      scenarioAtOperatingMode === exception.settings &&
+      exception.priority === priority
+    );
+  });
 };
 
 const createTestResultSkeleton = ({
