@@ -1,6 +1,7 @@
 const { AuthenticationError, UserInputError } = require('apollo-server-errors');
 const {
-  createTestPlanReport
+  createTestPlanReport,
+  getTestPlanReportByQuery
 } = require('../models/services/TestPlanReportService');
 const populateData = require('../services/PopulatedData/populateData');
 const processCopiedReports = require('./helpers/processCopiedReports');
@@ -22,6 +23,10 @@ const createTestPlanReportResolver = async (_, { input }, context) => {
   const { copyResultsFromTestPlanVersionId, ...values } = input;
 
   let testPlanReport;
+  const existingTestPlanReport = await getTestPlanReportByQuery({
+    where: values,
+    transaction
+  });
 
   if (copyResultsFromTestPlanVersionId) {
     const { updatedTestPlanReports } = await processCopiedReports({
@@ -38,13 +43,17 @@ const createTestPlanReportResolver = async (_, { input }, context) => {
       // Expecting only to get back the single requested combination
       testPlanReport = updatedTestPlanReports[0];
     } else {
-      testPlanReport = await createTestPlanReport({
-        values,
-        transaction
-      });
+      if (existingTestPlanReport) testPlanReport = existingTestPlanReport;
+      else {
+        testPlanReport = await createTestPlanReport({
+          values,
+          transaction
+        });
+      }
     }
   } else {
-    testPlanReport = await createTestPlanReport({ values, transaction });
+    if (existingTestPlanReport) testPlanReport = existingTestPlanReport;
+    else testPlanReport = await createTestPlanReport({ values, transaction });
   }
 
   const locationOfData = { testPlanReportId: testPlanReport.id };
