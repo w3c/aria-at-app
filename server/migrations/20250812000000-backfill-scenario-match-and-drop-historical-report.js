@@ -11,7 +11,8 @@ module.exports = {
 
       const getGraphQLContext = require('../graphql-context');
       const {
-        computeMatchesForRerunReport
+        computeMatchesForRerunReport,
+        MATCH_TYPE
       } = require('../services/VerdictService/computeMatchesForRerunReport');
       const {
         getTestPlanReportById
@@ -40,10 +41,76 @@ module.exports = {
         for (const run of testPlanReport.testPlanRuns || []) {
           const newResults = (run.testResults || []).map(tr => ({
             ...tr,
-            scenarioResults: (tr.scenarioResults || []).map(sr => ({
-              ...sr,
-              match: matches.get(String(sr.scenarioId)) || null
-            }))
+            scenarioResults: (tr.scenarioResults || []).map(sr => {
+              const m = matches.get(String(sr.scenarioId));
+              const isSameOrCross =
+                m &&
+                (m.type === MATCH_TYPE.SAME_SCENARIO ||
+                  m.type === MATCH_TYPE.CROSS_SCENARIO);
+
+              const existingAssertionResults = sr.assertionResults || [];
+              const sourceAssertionMap = m?.source?.assertionResultsById || {};
+
+              let newAssertionResults;
+              if (isSameOrCross) {
+                if (existingAssertionResults.length > 0) {
+                  newAssertionResults = existingAssertionResults.map(
+                    assertionResult => {
+                      const copied =
+                        sourceAssertionMap[String(assertionResult.assertionId)];
+                      if (copied) {
+                        return {
+                          ...assertionResult,
+                          passed: copied.passed,
+                          failedReason:
+                            copied.failedReason === undefined
+                              ? null
+                              : copied.failedReason
+                        };
+                      }
+                      return {
+                        ...assertionResult,
+                        passed: null,
+                        failedReason: 'AUTOMATED_OUTPUT_DIFFERS'
+                      };
+                    }
+                  );
+                } else {
+                  // No existing assertions; build from source assertions
+                  newAssertionResults = Object.entries(sourceAssertionMap).map(
+                    ([assertionId, copied]) => ({
+                      assertionId: Number(assertionId),
+                      passed: copied.passed,
+                      failedReason:
+                        copied.failedReason === undefined
+                          ? null
+                          : copied.failedReason
+                    })
+                  );
+                }
+              } else {
+                // Not a match; set to null verdicts if any exist
+                newAssertionResults = existingAssertionResults.map(
+                  assertionResult => ({
+                    ...assertionResult,
+                    passed: null,
+                    failedReason: 'AUTOMATED_OUTPUT_DIFFERS'
+                  })
+                );
+              }
+
+              return {
+                ...sr,
+                assertionResults: newAssertionResults,
+                unexpectedBehaviors: isSameOrCross
+                  ? m?.source?.unexpectedBehaviors ?? null
+                  : null,
+                hasUnexpected: isSameOrCross
+                  ? m?.source?.hasUnexpected ?? null
+                  : null,
+                match: m || { type: MATCH_TYPE.NONE, source: null }
+              };
+            })
           }));
 
           await queryInterface.sequelize.query(
@@ -52,6 +119,23 @@ module.exports = {
               replacements: { json: JSON.stringify(newResults), id: run.id },
               transaction
             }
+          );
+        }
+
+        // If every scenario matched (SAME or CROSS), auto-finalize the report
+        let allOutputsMatch = true;
+        for (const [, m] of matches.entries()) {
+          if (
+            !m ||
+            m.type === MATCH_TYPE.NONE ||
+            m.type === MATCH_TYPE.INCOMPLETE
+          )
+            allOutputsMatch = false;
+        }
+        if (allOutputsMatch) {
+          await queryInterface.sequelize.query(
+            `UPDATE "TestPlanReport" SET "markedFinalAt" = NOW() WHERE id = :id AND "markedFinalAt" IS NULL`,
+            { replacements: { id: row.id }, transaction }
           );
         }
       }
