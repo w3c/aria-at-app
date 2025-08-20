@@ -183,8 +183,6 @@ const getApprovedFinalizedTestResults = async (testPlanRun, context) => {
     });
   }
 
-  // historicalReportId removed; no single historical report fallback here
-
   return null;
 };
 

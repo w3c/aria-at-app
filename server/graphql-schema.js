@@ -1251,10 +1251,6 @@ const graphqlSchema = gql`
     """
     recommendedAtVersion: AtVersion
     """
-    The historical report that this report is based on (for rerun reports).
-    """
-    historicalReport: TestPlanReport
-    """
     Whether this report is a rerun of a previous report.
     """
     isRerun: Boolean!
@@ -1303,7 +1299,6 @@ const graphqlSchema = gql`
     minimumAtVersionId: ID
     browserId: ID!
     copyResultsFromTestPlanVersionId: ID
-    historicalReportId: ID
   }
 
   """

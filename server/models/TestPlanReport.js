@@ -98,8 +98,6 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'testPlanReportId',
       sourceKey: 'id'
     });
-
-    // historicalReportId removed; historicalReport association removed
   };
 
   return Model;
