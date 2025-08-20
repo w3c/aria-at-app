@@ -165,6 +165,64 @@ module.exports = {
         },
         { transaction }
       );
+
+      // A best effort is made to put a historicalReportId on every rerun report.
+      const {
+        getTestPlanReportById
+      } = require('../models/services/TestPlanReportService');
+
+      const hasMatchInRuns = report =>
+        Array.isArray(report.testPlanRuns) &&
+        report.testPlanRuns.some(
+          run =>
+            Array.isArray(run.testResults) &&
+            run.testResults.some(
+              tr =>
+                Array.isArray(tr.scenarioResults) &&
+                tr.scenarioResults.some(sr => sr?.match && sr.match?.type)
+            )
+        );
+
+      const [allReports] = await queryInterface.sequelize.query(
+        `SELECT id FROM "TestPlanReport"`,
+        { transaction }
+      );
+
+      for (const row of allReports) {
+        const report = await getTestPlanReportById({ id: row.id, transaction });
+        if (!report) continue;
+        if (!hasMatchInRuns(report)) continue;
+
+        // Find the most recent finalized report for same TPV + AT + Browser
+        const [candidates] = await queryInterface.sequelize.query(
+          `SELECT id FROM "TestPlanReport"
+           WHERE "testPlanVersionId" = :tpv
+             AND "atId" = :atId
+             AND "browserId" = :browserId
+             AND "markedFinalAt" IS NOT NULL
+             AND id <> :id
+           ORDER BY "markedFinalAt" DESC
+           LIMIT 1`,
+          {
+            replacements: {
+              tpv: report.testPlanVersionId,
+              atId: report.atId,
+              browserId: report.browserId,
+              id: report.id
+            },
+            transaction
+          }
+        );
+
+        const historicalReport =
+          candidates && candidates[0] ? candidates[0].id : null;
+        if (historicalReport) {
+          await queryInterface.sequelize.query(
+            `UPDATE "TestPlanReport" SET "historicalReportId" = :historicalReport WHERE id = :id`,
+            { replacements: { historicalReport, id: report.id }, transaction }
+          );
+        }
+      }
       await transaction.commit();
     } catch (err) {
       await transaction.rollback();
