@@ -110,12 +110,9 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
   ${AT_VERSION_FIELDS}
   ${BROWSER_FIELDS}
   ${BROWSER_VERSION_FIELDS}
-  ${SCENARIO_RESULT_FIELDS('all')}
-  ${TEST_FIELDS()}
   ${TEST_FIELDS('all')}
   ${TEST_PLAN_REPORT_CONFLICT_FIELDS}
   ${TEST_PLAN_VERSION_FIELDS}
-  ${TEST_RESULT_FIELDS}
   query TestPlanRunAnonPage($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       id
