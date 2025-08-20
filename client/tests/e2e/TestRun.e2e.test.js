@@ -1,3 +1,5 @@
+// Enabling GitHub actions on fork
+
 import getPage from '../util/getPage';
 import { text } from './util';
 
@@ -260,7 +262,6 @@ describe('Test Run when signed in as tester', () => {
 
       // Click each navigation item and confirm the h1 on page has changed
       for (let sequence = 1; sequence <= listItemsLength; sequence++) {
-        // const sequence = i + 1;
         const liSelector = `nav#test-navigator-nav ol li:nth-child(${sequence})`;
 
         // Select the next test to navigate to
@@ -360,8 +361,11 @@ describe('Test Run when signed in as tester', () => {
 
       // Navigate to test 3 with next button
       await page.click(nextTestButtonSelector);
+      await page.waitForSelector('button ::-p-text(Yes)');
+      await page.click('button ::-p-text(Yes)');
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 3:)');
+
       await page.waitForSelector('button ::-p-text(Next Test)');
       const test3CheckedCount = await page.$$eval(
         radioSelector,
@@ -372,7 +376,9 @@ describe('Test Run when signed in as tester', () => {
       await page.click(previousTestButtonSelector);
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
+
       await page.waitForSelector('button ::-p-text(Next Test)');
+
       const test2CheckedCount = await page.$$eval(
         radioSelector,
         els => els.filter(radio => radio.checked).length
@@ -383,6 +389,7 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 1:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
+
       const test1CheckedCount = await page.$$eval(
         radioSelector,
         els =>
