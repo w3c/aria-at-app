@@ -7,7 +7,7 @@ const REMOVE_JAWS_SEPARATOR_TOKENS = true;
 const normalizeScreenreaderOutput = output => {
   if (!output || output === NO_OUTPUT_STRING) return output;
 
-  let normalized = output.replace(/\s+/g, ' ').trim();
+  let normalized = output;
 
   if (REMOVE_JAWS_SEPARATOR_TOKENS) {
     // eslint-disable-next-line no-control-regex
@@ -21,6 +21,8 @@ const normalizeScreenreaderOutput = output => {
   if (NORMALIZE_PUNCTUATION) {
     normalized = normalized.replace(/\s*-\s*/g, '-').trim();
   }
+
+  normalized = normalized.replace(/\s+/g, ' ').trim();
 
   return normalized;
 };

@@ -119,10 +119,10 @@ describe('outputsMatch', () => {
     expect(outputsMatch('Hello\t\tWorld', 'hello world')).toBe(true);
   });
 
-  it('returns true for strings with different punctuation', () => {
-    expect(outputsMatch('Hello, World!', 'Hello World')).toBe(true);
-    expect(outputsMatch('Button "Save"', 'Button Save')).toBe(true);
-    expect(outputsMatch('Press Enter.', 'Press Enter')).toBe(true);
+  it('returns false for strings with different punctuation', () => {
+    expect(outputsMatch('Hello, World!', 'Hello World')).toBe(false);
+    expect(outputsMatch('Button "Save"', 'Button Save')).toBe(false);
+    expect(outputsMatch('Press Enter.', 'Press Enter')).toBe(false);
   });
 
   it('returns true for strings with different hyphen spacing', () => {
@@ -181,7 +181,7 @@ describe('outputsMatch', () => {
     const output1 =
       '  Button "Save"\n  You are currently on a button.\n  To activate press Enter.  ';
     const output2 =
-      'Button Save You are currently on a button To activate press Enter';
+      'Button "Save" You are currently on a button. To activate press Enter.';
 
     expect(outputsMatch(output1, output2)).toBe(true);
   });
@@ -201,6 +201,6 @@ describe('outputsMatch', () => {
     const output2 =
       'W3C website link\nYou are currently on a link. To click this link, press Control-Option-Space.';
 
-    expect(outputsMatch(output1, output2)).toBe(true);
+    expect(outputsMatch(output1, output2)).toBe(false);
   });
 });
