@@ -97,7 +97,7 @@ const OutputTextArea = ({
           {`${historicalAtName} ${match?.source?.atVersionName}`}
           {match?.source?.testPlanReportId && (
             <>
-              in{' '}
+              {' in '}
               <a
                 href={
                   match?.source?.testResultId &&
