@@ -1,6 +1,7 @@
 const { NO_OUTPUT_STRING } = require('./constants');
 
-const NORMALIZE_PUNCTUATION_CAPITALIZATION = true;
+const NORMALIZE_PUNCTUATION = true;
+const NORMALIZE_CAPITALIZATION = true;
 const REMOVE_JAWS_SEPARATOR_TOKENS = true;
 
 const normalizeScreenreaderOutput = output => {
@@ -13,13 +14,12 @@ const normalizeScreenreaderOutput = output => {
     normalized = normalized.replace(/[\u001d\u001e]/g, ' ');
   }
 
-  if (NORMALIZE_PUNCTUATION_CAPITALIZATION) {
-    normalized = normalized
-      .replace(/\s*-\s*/g, '-')
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .replace(/\b[A-Z](?=[a-z])/g, match => match.toLowerCase());
+  if (NORMALIZE_CAPITALIZATION) {
+    normalized = normalized.toLowerCase();
+  }
+
+  if (NORMALIZE_PUNCTUATION) {
+    normalized = normalized.replace(/\s*-\s*/g, '-').trim();
   }
 
   return normalized;

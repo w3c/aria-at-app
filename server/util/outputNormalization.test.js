@@ -39,18 +39,16 @@ describe('normalizeScreenreaderOutput', () => {
     );
   });
 
-  it('normalizes capitalization for first letters only', () => {
-    expect(normalizeScreenreaderOutput('Hello World')).toBe('hello world');
-    expect(normalizeScreenreaderOutput('HELLO WORLD')).toBe('HELLO WORLD');
-    expect(normalizeScreenreaderOutput('HeLLo WoRLd')).toBe('heLLo woRLd');
+  it('normalizes capitalization to lowercase', () => {
+    expect(normalizeScreenreaderOutput('HeLLo WoRLd')).toBe('hello world');
   });
 
-  it('removes punctuation except hyphens', () => {
-    expect(normalizeScreenreaderOutput('Hello, World!')).toBe('hello world');
+  it('preserves punctuation', () => {
+    expect(normalizeScreenreaderOutput('Hello, World!')).toBe('hello, world!');
     expect(normalizeScreenreaderOutput('Button "Click Me"')).toBe(
-      'button click me'
+      'button "click me"'
     );
-    expect(normalizeScreenreaderOutput('Press Enter.')).toBe('press enter');
+    expect(normalizeScreenreaderOutput('Press Enter.')).toBe('press enter.');
   });
 
   it('normalizes spaces around hyphens', () => {
@@ -77,7 +75,7 @@ describe('normalizeScreenreaderOutput', () => {
   it('handles complex screenreader output', () => {
     const input =
       '  \n\tButton   "Click  Me"\n  You are currently on a button.\n\n  ';
-    const expected = 'button click me you are currently on a button';
+    const expected = 'button "click me" you are currently on a button.';
     expect(normalizeScreenreaderOutput(input)).toBe(expected);
   });
 
@@ -97,15 +95,6 @@ describe('normalizeScreenreaderOutput', () => {
     const input =
       'Start\u00A0\u2000\u2001\u2002\u2003\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000End';
     expect(normalizeScreenreaderOutput(input)).toBe('start end');
-  });
-
-  it('preserves all-caps words', () => {
-    expect(normalizeScreenreaderOutput('Press CTRL key')).toBe(
-      'press CTRL key'
-    );
-    expect(normalizeScreenreaderOutput('Navigate to ARIA landmark')).toBe(
-      'navigate to ARIA landmark'
-    );
   });
 
   it('handles hyphenated keyboard shortcuts', () => {
