@@ -1459,9 +1459,7 @@ describe('Automation controller', () => {
         (run.testResults || []).forEach(tr => {
           (tr.scenarioResults || []).forEach(sr => {
             expect(sr.match).toBeDefined();
-            expect(['SAME_SCENARIO', 'CROSS_SCENARIO']).toContain(
-              sr.match.type
-            );
+            expect(sr.match.type).toBe('SAME_SCENARIO');
             expect(sr.match.source).toBeDefined();
             // Matched outputs should be equal
             expect(sr.match.source.output).toBe(sr.output);
@@ -1503,9 +1501,7 @@ describe('Automation controller', () => {
               expect(typeof sr.match.source.output).toBe('string');
             } else {
               sawMatch = true;
-              expect(['SAME_SCENARIO', 'CROSS_SCENARIO']).toContain(
-                sr.match.type
-              );
+              expect(sr.match.type).toBe('SAME_SCENARIO');
             }
           });
         });

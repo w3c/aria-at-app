@@ -170,16 +170,29 @@ const computeMatchesForRerunReport = async ({
     )
       .slice()
       .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    for (const cand of pool) {
-      if (!outputsMatch(cand.output, currOutput)) continue;
-      const isSameScenario = String(cand.scenarioId) === String(scenarioId);
-      type = determineType(
-        isSameScenario,
-        curr.assertionIds,
-        cand.assertionIds
+
+    // Prefer SAME_SCENARIO matches first
+    const sameScenarioCandidate = pool.find(
+      cand =>
+        String(cand.scenarioId) === String(scenarioId) &&
+        outputsMatch(cand.output, currOutput)
+    );
+    if (sameScenarioCandidate) {
+      chosen = sameScenarioCandidate;
+      type = determineType(true, curr.assertionIds, chosen.assertionIds);
+    }
+
+    // If no SAME_SCENARIO, then consider CROSS_SCENARIO
+    if (!chosen) {
+      const crossScenarioCandidate = pool.find(
+        cand =>
+          String(cand.scenarioId) !== String(scenarioId) &&
+          outputsMatch(cand.output, currOutput)
       );
-      chosen = cand;
-      break;
+      if (crossScenarioCandidate) {
+        chosen = crossScenarioCandidate;
+        type = determineType(false, curr.assertionIds, chosen.assertionIds);
+      }
     }
 
     if (!chosen) {
