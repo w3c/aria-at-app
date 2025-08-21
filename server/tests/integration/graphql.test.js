@@ -145,7 +145,9 @@ describe('graphql', () => {
       'Vendor',
       'scheduleCollectionJob',
       'CollectionJobTestStatus',
-      'ReviewerStatus'
+      'ReviewerStatus',
+      'ScenarioResultMatchSource',
+      'ScenarioResultMatch'
     ];
     const excludedTypeNameAndField = [
       // Items formatted like this:
@@ -167,7 +169,8 @@ describe('graphql', () => {
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
       ['Mutation', 'restartCollectionJob'],
-      ['CollectionJobOperations', 'retryCanceledCollections']
+      ['CollectionJobOperations', 'retryCanceledCollections'],
+      ['ScenarioResult', 'match']
     ];
     ({
       typeAwareQuery,

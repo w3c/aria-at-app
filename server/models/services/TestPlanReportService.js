@@ -228,8 +228,7 @@ const createTestPlanReport = async ({
     atId,
     exactAtVersionId,
     minimumAtVersionId,
-    browserId,
-    historicalReportId
+    browserId
   },
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -251,7 +250,6 @@ const createTestPlanReport = async ({
       browserId,
       exactAtVersionId,
       minimumAtVersionId,
-      historicalReportId,
       testPlanId: testPlanVersion.testPlanId
     },
     transaction
