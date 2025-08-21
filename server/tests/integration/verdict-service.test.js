@@ -39,8 +39,10 @@ const getReportWithRunsAndMatches = async (id, { transaction }) =>
                         id
                         testResults {
                             id
+                            test { id rowNumber }
                             scenarioResults {
                                 id
+                                scenario { id }
                                 output
                                 match {
                                     type
@@ -445,6 +447,124 @@ describe('Verdict service', () => {
       });
       expect(sawNone).toBe(true);
       expect(sawMatch).toBe(true);
+    });
+  });
+
+  it('annotates CROSS_SCENARIO for a specific scenario when outputs are swapped between two scenarios', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      // Use historical finalized report id 25; seeded via run 26 with distinct per-scenario outputs
+      const { testPlanReport: historicalReport } = await getTestPlanReport(
+        '25',
+        {
+          transaction
+        }
+      );
+
+      // Choose a historical test with at least 2 scenarios, different outputs, and identical assertion id sets
+      const targetHistorical = (
+        historicalReport.finalizedTestResults || []
+      ).find(tr => {
+        if (!tr.scenarioResults || tr.scenarioResults.length < 2) return false;
+        const [sr0, sr1] = tr.scenarioResults;
+        if (sr0.output === sr1.output) return false;
+        const setFrom = srs =>
+          new Set(
+            (srs.assertionResults || []).map(a => String(a.assertion.id))
+          );
+        const s0 = setFrom(sr0);
+        const s1 = setFrom(sr1);
+        if (s0.size !== s1.size) return false;
+        for (const id of s0) if (!s1.has(id)) return false;
+        return true;
+      });
+
+      expect(targetHistorical).toBeDefined();
+      const [hSr0, hSr1] = targetHistorical.scenarioResults;
+      const sId0 = hSr0.scenario.id;
+      const sId1 = hSr1.scenario.id;
+      const out1 = hSr1.output;
+
+      const currentAtVersion = await getAtVersionByQuery({
+        where: { atId: 3, name: '14.0' },
+        transaction
+      });
+
+      const createResponse =
+        await createCollectionJobsFromPreviousVersionMutation(
+          currentAtVersion.id,
+          { transaction }
+        );
+      const result = createResponse.createCollectionJobsFromPreviousAtVersion;
+      const { collectionJob: newJob } = await getTestCollectionJob(
+        result.collectionJobs[0].id,
+        { transaction }
+      );
+
+      const secret = await getJobSecret(newJob.id, { transaction });
+      let updateResponse = await sessionAgent
+        .post(`/api/jobs/${newJob.id}`)
+        .send({ status: 'RUNNING' })
+        .set('x-automation-secret', secret)
+        .set('x-transaction-id', transaction.id);
+      expect(updateResponse.statusCode).toBe(200);
+
+      // Post responses; for the chosen test, swap the first two scenario outputs to induce CROSS_SCENARIO
+      for (const historicalResult of historicalReport.finalizedTestResults) {
+        const testRowNumber = historicalResult.test.rowNumber;
+        const responses = historicalResult.scenarioResults.map(sr => sr.output);
+        if (
+          historicalResult.test.id === targetHistorical.test.id &&
+          responses.length >= 2
+        ) {
+          if (responses[0] !== responses[1]) {
+            const tmp = responses[0];
+            responses[0] = responses[1];
+            responses[1] = tmp;
+          }
+        }
+        const updateRes = await sessionAgent
+          .post(`/api/jobs/${newJob.id}/test/${testRowNumber}`)
+          .send({
+            responses,
+            capabilities: {
+              atName: historicalReport.at.name,
+              atVersion: newJob.testPlanRun.testPlanReport.exactAtVersion.name,
+              browserName: historicalReport.browser.name,
+              browserVersion: historicalResult.browserVersion.name
+            }
+          })
+          .set('x-automation-secret', secret)
+          .set('x-transaction-id', transaction.id);
+        expect(updateRes.statusCode).toBe(200);
+      }
+
+      const { testPlanReport: updated } = await getReportWithRunsAndMatches(
+        newJob.testPlanRun.testPlanReport.id,
+        { transaction }
+      );
+
+      expect(updated.isRerun).toBe(true);
+      const updatedTestResult = (updated.draftTestPlanRuns || [])
+        .flatMap(run => run.testResults || [])
+        .find(tr => tr.test && tr.test.id === targetHistorical.test.id);
+      expect(updatedTestResult).toBeDefined();
+
+      const updatedSr0 = (updatedTestResult.scenarioResults || []).find(
+        sr => sr.scenario && sr.scenario.id === sId0
+      );
+      const updatedSr1 = (updatedTestResult.scenarioResults || []).find(
+        sr => sr.scenario && sr.scenario.id === sId1
+      );
+      expect(updatedSr0).toBeDefined();
+      expect(updatedSr1).toBeDefined();
+
+      // After swap: scenario sId0 now has output out1 and should be CROSS_SCENARIO sourcing scenario sId1
+      expect(updatedSr0.output).toBe(out1);
+      expect(updatedSr0.match).toBeDefined();
+      expect(updatedSr0.match.type).toBe('CROSS_SCENARIO');
+      expect(updatedSr0.match.source).toBeDefined();
+      expect(updatedSr0.match.source.scenarioId).toBe(sId1);
+      expect(updatedSr0.match.source.output).toBe(out1);
     });
   });
 });

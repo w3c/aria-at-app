@@ -212,7 +212,8 @@ const populateTestDatabase = async transaction => {
   });
 
   await populateFakeTestResults(26, ['completeAndPassing'], {
-    transaction
+    transaction,
+    varyOutputsPerScenario: true
   });
 
   await populateFakeTestResults(27, ['completeAndPassing'], {
