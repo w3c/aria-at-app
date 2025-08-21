@@ -144,6 +144,39 @@ const getTestPlanRun = async (id, { transaction }) =>
     { transaction }
   );
 
+const getReportWithRunsAndMatches = async (id, { transaction }) =>
+  await query(
+    `
+            query {
+                testPlanReport(id: "${id}") {
+                    id
+                    isRerun
+                    draftTestPlanRuns {
+                        id
+                        testResults {
+                            id
+                            scenarioResults {
+                                id
+                                output
+                                match {
+                                    type
+                                    source {
+                                        testPlanReportId
+                                        scenarioId
+                                        atVersionName
+                                        browserVersionName
+                                        output
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        `,
+    { transaction }
+  );
+
 const getTestCollectionJob = async (jobId, { transaction }) =>
   await query(
     `
@@ -1221,10 +1254,8 @@ describe('Automation controller', () => {
           );
           scenarioResult.assertionResults.forEach(assertionResult => {
             const hist = byId[String(assertionResult.assertion.id)];
-            expect(assertionResult.passed).toEqual(hist ? hist.passed : null);
-            expect(assertionResult.failedReason).toEqual(
-              hist ? hist.failedReason : null
-            );
+            expect(assertionResult.passed).toEqual(hist?.passed);
+            expect(assertionResult.failedReason).toEqual(hist?.failedReason);
           });
         });
       });
@@ -1409,6 +1440,78 @@ describe('Automation controller', () => {
 
       // Since there is one test with a different output, the report should not be auto-finalized
       expect(finalReport.markedFinalAt).toBeNull();
+    });
+  });
+
+  it('annotates scenario results with SAME_SCENARIO/CROSS_SCENARIO match metadata when outputs match', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      const finalReport = await commonVerdictCopyingSetup({ transaction });
+
+      const { testPlanReport } = await getReportWithRunsAndMatches(
+        finalReport.id,
+        { transaction }
+      );
+
+      expect(testPlanReport.isRerun).toBe(true);
+      const runs = testPlanReport.draftTestPlanRuns || [];
+      expect(runs.length).toBeGreaterThan(0);
+      runs.forEach(run => {
+        (run.testResults || []).forEach(tr => {
+          (tr.scenarioResults || []).forEach(sr => {
+            expect(sr.match).toBeDefined();
+            expect(['SAME_SCENARIO', 'CROSS_SCENARIO']).toContain(
+              sr.match.type
+            );
+            expect(sr.match.source).toBeDefined();
+            // Matched outputs should be equal
+            expect(sr.match.source.output).toBe(sr.output);
+            // Basic source sanity
+            expect(typeof sr.match.source.atVersionName).toBe('string');
+            expect(typeof sr.match.source.browserVersionName).toBe('string');
+          });
+        });
+      });
+    });
+  });
+
+  it('sets match type NONE with a fallback source when outputs differ', async () => {
+    await apiServer.sessionAgentDbCleaner(async transaction => {
+      const finalReport = await commonVerdictCopyingSetup({
+        transaction,
+        diffOutputs: 1
+      });
+
+      const { testPlanReport } = await getReportWithRunsAndMatches(
+        finalReport.id,
+        { transaction }
+      );
+
+      expect(testPlanReport.isRerun).toBe(true);
+      const runs = testPlanReport.draftTestPlanRuns || [];
+      expect(runs.length).toBeGreaterThan(0);
+
+      let sawNone = false;
+      let sawMatch = false;
+      runs.forEach(run => {
+        (run.testResults || []).forEach(tr => {
+          (tr.scenarioResults || []).forEach(sr => {
+            if (sr.match.type === 'NONE') {
+              sawNone = true;
+              // Fallback source should be provided when NONE
+              expect(sr.match.source).not.toBeNull();
+              expect(sr.match.source.testPlanReportId).toBe('29');
+              expect(typeof sr.match.source.output).toBe('string');
+            } else {
+              sawMatch = true;
+              expect(['SAME_SCENARIO', 'CROSS_SCENARIO']).toContain(
+                sr.match.type
+              );
+            }
+          });
+        });
+      });
+      expect(sawNone).toBe(true);
+      expect(sawMatch).toBe(true);
     });
   });
 });
