@@ -774,6 +774,14 @@ describe('graphql', () => {
                 }
               }
             }
+            removeVendorApprovalStatus: testPlanReport(id: 6) {
+              __typename
+              removeVendorReviewApprovalStatus {
+                testPlanReport {
+                  id
+                }
+              }
+            }
             markReportAsFinal: testPlanReport(id: 8) {
               __typename
               markAsFinal {
