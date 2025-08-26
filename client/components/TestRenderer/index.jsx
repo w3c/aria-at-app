@@ -812,66 +812,68 @@ const TestRenderer = ({
               {pageContent.instructions.openTestPage.button}
             </button>
 
-            <div className={styles.androidDeviceSection}>
-              <div className={styles.androidDeviceHeader}>
-                <h3>Android Device Testing</h3>
-              </div>
-
-              <div className={styles.androidDeviceNote}>
-                Before continuing, please ensure that you are running the{' '}
-                <code>start</code> script provided to you, and make sure your
-                device is unlocked. For additional details on prerequisites and
-                testing instructions, please review{' '}
-                <a
-                  href="https://github.com/w3c/aria-at-app/wiki/Android-Results-Capture-Prototype-Workflow#how-to-test-the-prototype"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  the instructions on how to test this android workflow
-                  prototype
-                </a>
-                .
-              </div>
-
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => detectTunnelUrl(true)}
-              >
-                Auto-Detect Proxy
-              </button>
-
-              {proxyUrlMessage && (
-                <div
-                  className={`${styles.proxyMessage} ${styles[proxyUrlMessageType]}`}
-                >
-                  {proxyUrlMessage}
+            {at?.key === 'talkback_android' && (
+              <div className={styles.androidDeviceSection}>
+                <div className={styles.androidDeviceHeader}>
+                  <h3>Android Device Testing</h3>
                 </div>
-              )}
 
-              <button
-                type="button"
-                className="btn btn-success"
-                style={{ width: '100%' }}
-                disabled={
-                  !pageContent.instructions.openTestPage.enabled ||
-                  proxyUrlMessageType !== 'success' ||
-                  isOpeningAndroid
-                }
-                onClick={async () => {
-                  await runAndroidScripts();
-                }}
-              >
-                Open Test Page on Android Device
-              </button>
+                <div className={styles.androidDeviceNote}>
+                  Before continuing, please ensure that you are running the{' '}
+                  <code>start</code> script provided to you, and make sure your
+                  device is unlocked. For additional details on prerequisites
+                  and testing instructions, please review{' '}
+                  <a
+                    href="https://github.com/w3c/aria-at-app/wiki/Android-Results-Capture-Prototype-Workflow#how-to-test-the-prototype"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    the instructions on how to test this android workflow
+                    prototype
+                  </a>
+                  .
+                </div>
 
-              {proxyUrlMessageType === 'error' && (
-                <p className={styles.androidDeviceNote}>
-                  Note: The &ldquo;Open Test Page on Android Device&rdquo;
-                  button will be enabled once a local proxy is detected.
-                </p>
-              )}
-            </div>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => detectTunnelUrl(true)}
+                >
+                  Auto-Detect Proxy
+                </button>
+
+                {proxyUrlMessage && (
+                  <div
+                    className={`${styles.proxyMessage} ${styles[proxyUrlMessageType]}`}
+                  >
+                    {proxyUrlMessage}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  style={{ width: '100%' }}
+                  disabled={
+                    !pageContent.instructions.openTestPage.enabled ||
+                    proxyUrlMessageType !== 'success' ||
+                    isOpeningAndroid
+                  }
+                  onClick={async () => {
+                    await runAndroidScripts();
+                  }}
+                >
+                  Open Test Page on Android Device
+                </button>
+
+                {proxyUrlMessageType === 'error' && (
+                  <p className={styles.androidDeviceNote}>
+                    Note: The &ldquo;Open Test Page on Android Device&rdquo;
+                    button will be enabled once a local proxy is detected.
+                  </p>
+                )}
+              </div>
+            )}
 
             {(capturedUtterances.length > 0 ||
               currentUtteranceCollection.length > 0) && (
