@@ -52,3 +52,16 @@
         validate: 'visudo -cf %s'
       become: yes
   when: deployment_mode != 'development'
+
+# On sandbox, users have their own accounts (but can be elevated to root).
+# When code sync happens, files end up owned by the deploying user, but the
+# application runs as aria-bot user and needs consistent ownership regardless
+# of who deployed. This task ensures proper ownership by the `application_user`.
+- name: Fix file ownership for sandbox environment
+  file:
+    path: '{{source_dir}}'
+    owner: '{{application_user}}'
+    group: '{{application_user}}'
+    recurse: yes
+  become: yes
+  when: deployment_mode == 'sandbox'
