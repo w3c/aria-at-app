@@ -12,23 +12,6 @@ const TEST_PLAN_REPORT_FIELDS = gql`
     conflictsLength
     runnableTestsLength
     percentComplete
-    historicalReport {
-      id
-      createdAt
-      markedFinalAt
-      at {
-        id
-        name
-      }
-      exactAtVersion {
-        id
-        name
-      }
-      minimumAtVersion {
-        id
-        name
-      }
-    }
   }
 `;
 
