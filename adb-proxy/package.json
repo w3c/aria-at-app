@@ -1,10 +1,35 @@
 {
+  "name": "adb-proxy",
+  "version": "0.0.1",
+  "description": "Portable ADB proxy for TalkBack utterance capture",
+  "main": "adb-proxy.js",
   "scripts": {
-    "start": "node adb-proxy.js"
+    "start": "node adb-proxy.js",
+    "start:ngrok": "TUNNEL_TYPE=ngrok node adb-proxy.js",
+    "start:localtunnel": "TUNNEL_TYPE=localtunnel node adb-proxy.js",
+    "build-windows": "pkg adb-proxy.js --targets node18-win-x64 --out-path dist/windows && node build-platforms.js windows",
+    "build-linux": "pkg adb-proxy.js --targets node18-linux-x64 --out-path dist/linux && node build-platforms.js linux",
+    "build-macos": "pkg adb-proxy.js --targets node18-macos-x64 --out-path dist/macos && node build-platforms.js macos",
+    "build-all": "yarn run build-windows && yarn run build-linux && yarn run build-macos",
+    "build-windows:ngrok": "pkg adb-proxy.js --targets node18-win-x64 --out-path dist/windows && INCLUDE_NGROK=true node build-platforms.js windows",
+    "build-linux:ngrok": "pkg adb-proxy.js --targets node18-linux-x64 --out-path dist/linux && INCLUDE_NGROK=true node build-platforms.js linux",
+    "build-macos:ngrok": "pkg adb-proxy.js --targets node18-macos-x64 --out-path dist/macos && INCLUDE_NGROK=true node build-platforms.js macos",
+    "build-all:ngrok": "yarn run build-windows:ngrok && yarn run build-linux:ngrok && yarn run build-macos:ngrok",
+    "zip-all": "node create-zips.js all",
+    "build-and-zip": "yarn build-all && yarn zip-all"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "localtunnel": "^2.0.2"
+  },
+  "devDependencies": {
+    "@yao-pkg/pkg": "^6.5.1"
+  },
+  "pkg": {
+    "assets": [
+      "capture-utterances.js"
+    ]
   }
 }

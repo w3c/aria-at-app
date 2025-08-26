@@ -184,7 +184,108 @@ label {
   }
 }
 
-.captureOutput {
+.capture-output {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: var(--bg-lighter-gray);
+  border-radius: 4px;
+  border: 1px solid var(--border-gray);
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--darkest-gray);
+  }
+}
+
+.utterance-collection {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 4px;
+  border: 1px solid var(--border-gray);
+  position: relative;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    color: var(--darkest-gray);
+  }
+
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--dark-gray);
+    max-height: 12.5rem;
+    overflow-y: auto;
+    background-color: var(--bg-lighter-gray);
+    padding: 0.5rem;
+    border-radius: 2px;
+    border: 1px solid var(--border-gray);
+  }
+}
+
+.copy-button {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  margin: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  color: var(--dark-gray);
+  transition: background-color 0.2s ease;
+
+  svg {
+    margin-right: 0 !important;
+  }
+
+  &:hover {
+    background-color: var(--border-gray);
+  }
+
+  &:active {
+    background-color: var(--bg-light-gray);
+  }
+
+  &:focus {
+    outline: solid;
+    border: 1px solid var(--darkest-gray);
+    border-radius: 4px;
+  }
+}
+
+.proxy-message {
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+  font-size: 0.875rem;
+
+  &.success {
+    color: var(--success-green);
+    background-color: var(--success-green-bg);
+    border: 1px solid var(--success-green-border-color);
+  }
+
+  &.error {
+    color: var(--error-red);
+    background-color: var(--error-red-bg);
+    border: 1px solid var(--error-red-border-color);
+  }
+}
+
+.android-device-section {
   margin-top: 1rem;
   padding: 1rem;
   background-color: var(--bg-lighter-gray);
@@ -192,19 +293,22 @@ label {
   border: 1px solid var(--border-gray);
 }
 
-.captureOutput h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1rem;
-  color: var(--darkest-gray);
+.android-device-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--darkest-gray);
+  }
 }
 
-.captureOutput pre {
-  margin: 0;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  font-family: monospace;
-  font-size: 0.75rem;
+.android-device-note {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
   color: var(--dark-gray);
-  max-height: 18.75rem;
-  overflow-y: auto;
+  font-style: italic;
 }
