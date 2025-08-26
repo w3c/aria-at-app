@@ -97,13 +97,17 @@
   --candidate-in-progress: #2560ab;
   --candidate-approved: #309d08;
 
-  --success-green: #155724;
-  --success-green-bg: #d4edda;
-  --success-green-border-color: #c3e6cb;
+  --success-green: var(--success-status-color);
+  --success-green-bg: color-mix(in srgb, var(--success-green) 15%, white);
+  --success-green-border-color: color-mix(
+    in srgb,
+    var(--success-green) 50%,
+    white
+  );
 
-  --error-red: #721c24;
-  --error-red-bg: #f8d7da;
-  --error-red-border-color: #f5c6cb;
+  --error-red: var(--danger-status-color);
+  --error-red-bg: color-mix(in srgb, var(--error-red) 15%, white);
+  --error-red-border-color: color-mix(in srgb, var(--error-red) 50%, white);
 
   /* Shadows */
   --button-shadow: rgba(103, 171, 197, 0.5);
