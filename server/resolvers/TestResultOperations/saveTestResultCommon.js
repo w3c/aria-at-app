@@ -14,6 +14,7 @@ const { getMetrics } = require('shared');
 const {
   updateTestPlanReportById
 } = require('../../models/services/TestPlanReportService');
+const { updatePercentComplete } = require('../../util/updatePercentComplete');
 
 const saveTestResultCommon = async ({
   testResultId,
@@ -76,6 +77,11 @@ const saveTestResultCommon = async ({
   await updateTestPlanRunById({
     id: testPlanRun.id,
     values: { testResults: newTestResults },
+    transaction
+  });
+
+  await updatePercentComplete({
+    testPlanReportId: testPlanReport.id,
     transaction
   });
 

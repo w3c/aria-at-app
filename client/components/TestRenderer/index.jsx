@@ -30,6 +30,7 @@ import commandsJson from '../../resources/commands.json';
 import { AtPropType, TestResultPropType } from '../common/proptypes/index.js';
 import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import styles from './TestRenderer.module.css';
+import useTestRendererFocus from '../../hooks/useTestRendererFocus';
 
 const ErrorComponent = ({ hasErrors = false }) => {
   return (
@@ -61,7 +62,11 @@ const TestRenderer = ({
   isReadOnly = false,
   isEdit = false,
   setIsRendererReady = false,
-  commonIssueContent
+  commonIssueContent,
+  isRerunReport = false,
+  historicalTestResult = null,
+  historicalAtName = null,
+  historicalAtVersion = null
 }) => {
   const { scenarioResults, test = {}, completedAt } = testResult;
   const { renderableContent } = test;
@@ -72,6 +77,8 @@ const TestRenderer = ({
   const [testRendererState, setTestRendererState] = useState(null);
   const [submitResult, setSubmitResult] = useState(null);
   const [submitCalled, setSubmitCalled] = useState(false);
+
+  useTestRendererFocus(isSubmitted, pageContent);
 
   // WebSocket for Android utterance capture related state and refs;
   const announce = useAriaLiveRegion();
@@ -939,6 +946,13 @@ const TestRenderer = ({
               {pageContent.results.header.description}
             </p>
             {pageContent.results.commands.map((value, commandIndex) => {
+              // Get historical output for this command from historicalTestResult
+              const historicalOutput =
+                (isRerunReport &&
+                  historicalTestResult?.scenarioResults?.[commandIndex]
+                    ?.output) ||
+                null;
+
               return (
                 <CommandResults
                   key={commandIndex}
@@ -953,6 +967,10 @@ const TestRenderer = ({
                   isSubmitted={isSubmitted}
                   isReviewingBot={isReviewingBot}
                   isReadOnly={isReadOnly}
+                  isRerunReport={isRerunReport}
+                  historicalOutput={historicalOutput}
+                  historicalAtName={historicalAtName}
+                  historicalAtVersion={historicalAtVersion}
                 />
               );
             })}
@@ -994,7 +1012,11 @@ TestRenderer.propTypes = {
   isEdit: PropTypes.bool,
   isReviewingBot: PropTypes.bool,
   setIsRendererReady: PropTypes.func,
-  commonIssueContent: PropTypes.object
+  commonIssueContent: PropTypes.object,
+  isRerunReport: PropTypes.bool,
+  historicalTestResult: PropTypes.object,
+  historicalAtName: PropTypes.string,
+  historicalAtVersion: PropTypes.string
 };
 
 export default TestRenderer;

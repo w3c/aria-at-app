@@ -15,62 +15,105 @@ const {
   createTestPlan
 } = require('../../models/services/TestPlanService');
 const { hashTests } = require('../../util/aria');
+const extractZipFile = require('../../util/extractZipFile');
 const { dates } = require('shared');
 const { readCommit, readDirectoryGitInfo } = require('./gitOperations');
 const { parseTests } = require('./testParser');
 const {
   gitCloneDirectory,
   builtTestsDirectory,
-  testsDirectory
+  testsDirectory,
+  getZipCommitPath,
+  getZipCommitTmpDirectory,
+  PRE_BUILT_ZIP_COMMITS
 } = require('./settings');
 const { getAppUrl } = require('./utils');
 
 /**
  * Builds tests and creates test plan versions for a given commit.
- * @param {string} commit - The git commit hash.
+ * @param {string|null} commit - The git commit hash.
  * @param {Object} options - Options object.
+ * @param {boolean} options.waitForCleanup - Wait for aria-at's cleanup command to run (may not be needed if removing the directory right after)
  * @param {import('sequelize').Transaction} options.transaction - The database transaction.
  * @returns {Promise<void>}
  */
-const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
+const buildTestsAndCreateTestPlanVersions = async (
+  commit,
+  { waitForCleanup, transaction }
+) => {
+  let zipCommitTmpDirectory;
+  let localBuiltTestsDirectory = builtTestsDirectory;
+
+  // Always get commit info from the real repo
   const { gitCommitDate } = await readCommit(gitCloneDirectory, commit);
 
-  console.log('Running `npm install` ...\n');
-  const installOutput = spawn.sync('npm', ['install'], {
-    cwd: gitCloneDirectory
-  });
-
-  if (installOutput.error) {
-    console.info(`'npm install' failed with error ${installOutput.error}`);
-    process.exit(1);
-  }
-  console.log('`npm install` output', installOutput.stdout.toString());
-
-  console.log('Running `npm run build` ...\n');
-  const buildOutput = spawn.sync('npm', ['run', 'build'], {
-    cwd: gitCloneDirectory
-  });
-
-  if (buildOutput.error) {
-    console.info(`'npm run build' failed with error ${buildOutput.error}`);
-    process.exit(1);
-  }
-
-  console.log('`npm run build` output', buildOutput.stdout.toString());
-
-  importHarness();
-
-  const { support } = await updateJsons();
-
+  // Always fetch ATs from the database
   const ats = await At.findAll({
     order: [['id', 'ASC']]
   });
-  await updateAtsJson({ ats, supportAts: support.ats });
 
-  for (const directory of fse.readdirSync(builtTestsDirectory)) {
+  // If commit is pre-built, load content from local source
+  if (PRE_BUILT_ZIP_COMMITS.includes(commit)) {
+    // Unzip to a custom directory named after the commit
+    zipCommitTmpDirectory = getZipCommitTmpDirectory(commit);
+    if (!fse.existsSync(zipCommitTmpDirectory)) {
+      fse.mkdirSync(zipCommitTmpDirectory, { recursive: true });
+      try {
+        await extractZipFile(getZipCommitPath(commit), zipCommitTmpDirectory);
+      } catch (error) {
+        console.error(
+          `Failed to extract the zip directory for ${commit}:`,
+          error
+        );
+      }
+    }
+
+    // Set directories to extracted locations
+    localBuiltTestsDirectory = path.join(
+      zipCommitTmpDirectory,
+      'build',
+      'tests'
+    );
+
+    console.log(
+      `Extracted pre-built commit folder for ${commit}:\n${localBuiltTestsDirectory}`
+    );
+  } else {
+    console.log('Running `npm install` ...\n');
+    const installOutput = spawn.sync('npm', ['install'], {
+      cwd: gitCloneDirectory
+    });
+
+    if (installOutput.error) {
+      console.info(`'npm install' failed with error ${installOutput.error}`);
+      process.exit(1);
+    }
+    console.log('`npm install` output', installOutput.stdout.toString());
+
+    console.log('Running `npm run build` ...\n');
+    const buildOutput = spawn.sync('npm', ['run', 'build'], {
+      cwd: gitCloneDirectory
+    });
+
+    if (buildOutput.error) {
+      console.info(`'npm run build' failed with error ${buildOutput.error}`);
+      process.exit(1);
+    }
+
+    console.log('`npm run build` output', buildOutput.stdout.toString());
+
+    importHarness();
+
+    const { support } = await updateJsons();
+
+    await updateAtsJson({ ats, supportAts: support.ats });
+  }
+
+  for (const directory of fse.readdirSync(localBuiltTestsDirectory)) {
     if (directory === 'resources') continue;
 
-    const builtDirectoryPath = path.join(builtTestsDirectory, directory);
+    const builtDirectoryPath = path.join(localBuiltTestsDirectory, directory);
+    if (!fse.statSync(builtDirectoryPath).isDirectory()) continue;
     const sourceDirectoryPath = path.join(testsDirectory, directory);
 
     // https://github.com/w3c/aria-at/commit/9d73d6bb274b3fe75b9a8825e020c0546a33a162
@@ -94,7 +137,6 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
       directory,
       builtDirectoryPath,
       sourceDirectoryPath,
-      gitCommitDate,
       useBuildInAppAppUrlPath,
       ats,
       transaction
@@ -103,11 +145,28 @@ const buildTestsAndCreateTestPlanVersions = async (commit, { transaction }) => {
 
   // To ensure build folder is clean when multiple commits are being processed
   // to prevent `EPERM` errors
-  console.log('Running `npm run cleanup` ...\n');
-  const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
-    cwd: gitCloneDirectory
-  });
-  console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
+  if (!PRE_BUILT_ZIP_COMMITS.includes(commit) && waitForCleanup) {
+    console.log('Running `npm run cleanup` ...\n');
+    const cleanupOutput = spawn.sync('npm', ['run', 'cleanup'], {
+      cwd: gitCloneDirectory
+    });
+    console.log('`npm run cleanup` output', cleanupOutput.stdout.toString());
+  }
+
+  // Clean up the extracted zip commit directory after use
+  if (fse.existsSync(zipCommitTmpDirectory)) {
+    try {
+      fse.removeSync(zipCommitTmpDirectory);
+      console.log(
+        `Cleaned up extracted commit directory: ${zipCommitTmpDirectory}\n`
+      );
+    } catch (error) {
+      console.warn(
+        `Failed to clean up extracted commit directory: ${zipCommitTmpDirectory}:\n`,
+        error
+      );
+    }
+  }
 };
 
 /**
@@ -195,6 +254,16 @@ const processTestPlanVersion = async ({
     isV2
   });
 
+  const resolvedDirectoryPath = useBuildInAppAppUrlPath
+    ? builtDirectoryPath
+    : sourceDirectoryPath;
+
+  if (!testPageUrl || !resolvedDirectoryPath) {
+    throw new Error(
+      `Missing testPageUrl or directoryPath for test plan version: directory=${directory}, commitSha=${gitSha}, testPageUrl=${testPageUrl}, directoryPath=${resolvedDirectoryPath}`
+    );
+  }
+
   const testPlanId = await getOrCreateTestPlan(directory, title, transaction);
 
   await deprecateOldTestPlanVersions(directory, updatedAt, transaction);
@@ -212,9 +281,7 @@ const processTestPlanVersion = async ({
       directory,
       testPageUrl: getAppUrl(testPageUrl, {
         gitSha,
-        directoryPath: useBuildInAppAppUrlPath
-          ? builtDirectoryPath
-          : sourceDirectoryPath
+        directoryPath: resolvedDirectoryPath
       }),
       gitSha,
       gitMessage,

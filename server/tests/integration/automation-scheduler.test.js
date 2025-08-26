@@ -674,8 +674,10 @@ describe('Automation controller', () => {
         testResult.scenarioResults.forEach(scenarioResult => {
           expect(scenarioResult.output).toEqual(automatedTestResponse);
           scenarioResult.assertionResults.forEach(assertionResult => {
-            expect(assertionResult.passed).toEqual(false);
-            expect(assertionResult.failedReason).toEqual('AUTOMATED_OUTPUT');
+            expect(assertionResult.passed).toEqual(null);
+            expect(assertionResult.failedReason).toEqual(
+              'AUTOMATED_OUTPUT_DIFFERS'
+            );
           });
           scenarioResult.unexpectedBehaviors?.forEach(unexpectedBehavior => {
             expect(unexpectedBehavior.id).toEqual('OTHER');
@@ -765,8 +767,10 @@ describe('Automation controller', () => {
         testResult.scenarioResults.forEach(scenarioResult => {
           expect(scenarioResult.output).toEqual(automatedTestResponse);
           scenarioResult.assertionResults.forEach(assertionResult => {
-            expect(assertionResult.passed).toEqual(false);
-            expect(assertionResult.failedReason).toEqual('AUTOMATED_OUTPUT');
+            expect(assertionResult.passed).toEqual(null);
+            expect(assertionResult.failedReason).toEqual(
+              'AUTOMATED_OUTPUT_DIFFERS'
+            );
           });
           scenarioResult.unexpectedBehaviors?.forEach(unexpectedBehavior => {
             expect(unexpectedBehavior.id).toEqual('OTHER');

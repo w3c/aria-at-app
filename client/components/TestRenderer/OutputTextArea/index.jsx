@@ -10,7 +10,12 @@ const OutputTextArea = ({
   commandIndex,
   atOutput,
   isSubmitted,
-  readOnly = false
+  readOnly = false,
+  errorMessage = null,
+  isRerunReport = false,
+  historicalOutput = null,
+  historicalAtName = null,
+  historicalAtVersion = null
 }) => {
   const [noOutput, setNoOutput] = useState(atOutput.value === NO_OUTPUT_STRING);
 
@@ -35,8 +40,18 @@ const OutputTextArea = ({
   const isNoOutputCheckboxDisabled =
     (atOutput.value && atOutput.value !== NO_OUTPUT_STRING) || readOnly;
 
+  const errorId = errorMessage ? `output-error-${commandIndex}` : null;
+
   return (
     <div className={styles.outputTextContainer}>
+      {isRerunReport && historicalOutput && (
+        <div className={styles.historicalOutput}>
+          <p>
+            Output recorded for {historicalAtName} {historicalAtVersion}:
+          </p>
+          <blockquote>{historicalOutput}</blockquote>
+        </div>
+      )}
       <label htmlFor={`speechoutput-${commandIndex}`}>
         {atOutput.description[0]}
         {isSubmitted && (
@@ -72,7 +87,14 @@ const OutputTextArea = ({
         onChange={e => atOutput.change(e.target.value)}
         disabled={noOutput}
         readOnly={readOnly}
+        aria-describedby={errorId}
+        className={errorMessage ? styles.errorState : ''}
       />
+      {errorMessage && (
+        <div id={errorId} className={styles.errorMessage} role="alert">
+          {errorMessage}
+        </div>
+      )}
     </div>
   );
 };
@@ -81,7 +103,12 @@ OutputTextArea.propTypes = {
   commandIndex: PropTypes.number.isRequired,
   atOutput: AtOutputPropType.isRequired,
   readOnly: PropTypes.bool,
-  isSubmitted: PropTypes.bool.isRequired
+  isSubmitted: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string,
+  isRerunReport: PropTypes.bool,
+  historicalOutput: PropTypes.string,
+  historicalAtName: PropTypes.string,
+  historicalAtVersion: PropTypes.string
 };
 
 export default OutputTextArea;

@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { dates } from 'shared';
-import { calculatePercentComplete } from '../../../utils/calculatePercentComplete';
 import {
   TestPlanVersionPropType,
   TestPlanRunPropType,
@@ -43,18 +42,17 @@ const ReportStatusSummary = ({
     const { metrics, draftTestPlanRuns } = testPlanReport;
 
     const conflictsCount = metrics.conflictsCount ?? 0;
-    const percentComplete = calculatePercentComplete(testPlanReport);
     switch (draftTestPlanRuns?.length) {
       case 0:
         return fromTestQueue ? (
-          <span>No testers assigned</span>
+          <div>No testers assigned</div>
         ) : (
-          <span>In test queue with no testers assigned</span>
+          <div>In test queue with no testers assigned</div>
         );
       case 1:
         return (
-          <span>
-            {percentComplete}% complete by&nbsp;
+          <div>
+            {testPlanReport.percentComplete || 0}% complete by&nbsp;
             <a
               href={`https://github.com/${draftTestPlanRuns[0].tester.username}`}
             >
@@ -62,15 +60,15 @@ const ReportStatusSummary = ({
             </a>
             &nbsp;
             {getConflictsAnchor(conflictsCount)}
-          </span>
+          </div>
         );
       default:
         return (
-          <span>
-            {percentComplete}% complete by&nbsp;
+          <div>
+            {testPlanReport.percentComplete || 0}% complete by&nbsp;
             {draftTestPlanRuns.length} testers&nbsp;
             {getConflictsAnchor(conflictsCount)}
-          </span>
+          </div>
         );
     }
   };
@@ -84,13 +82,14 @@ const ReportStatusSummary = ({
     }
   }
 
-  return <span className={styles.incompleteStatusReport}>Missing</span>;
+  return <div className={styles.incompleteStatusReport}>Missing</div>;
 };
 
 ReportStatusSummary.propTypes = {
   testPlanVersion: TestPlanVersionPropType.isRequired,
   testPlanReport: PropTypes.shape({
     id: PropTypes.string.isRequired,
+    percentComplete: PropTypes.number,
     markedFinalAt: PropTypes.string,
     metrics: PropTypes.object,
     draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType).isRequired

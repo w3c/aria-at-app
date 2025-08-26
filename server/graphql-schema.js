@@ -860,6 +860,7 @@ const graphqlSchema = gql`
     INCORRECT_OUTPUT
     NO_OUTPUT
     AUTOMATED_OUTPUT
+    AUTOMATED_OUTPUT_DIFFERS
   }
 
   """
@@ -1198,6 +1199,10 @@ const graphqlSchema = gql`
     """
     metrics: Any!
     """
+    The percentage of assertions that have been completed for this TestPlanReport.
+    """
+    percentComplete: Int
+    """
     The point at which an admin created the TestPlanReport.
     """
     createdAt: Timestamp!
@@ -1220,6 +1225,14 @@ const graphqlSchema = gql`
     TestPlanVersion.earliestAtVersion as a default.
     """
     recommendedAtVersion: AtVersion
+    """
+    The historical report that this report is based on (for rerun reports).
+    """
+    historicalReport: TestPlanReport
+    """
+    Whether this report is a rerun of a previous report.
+    """
+    isRerun: Boolean!
   }
 
   """
@@ -1265,6 +1278,7 @@ const graphqlSchema = gql`
     minimumAtVersionId: ID
     browserId: ID!
     copyResultsFromTestPlanVersionId: ID
+    historicalReportId: ID
   }
 
   """
