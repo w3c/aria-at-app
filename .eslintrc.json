@@ -32,7 +32,7 @@
     "no-console": [
       "error",
       {
-        "allow": ["warn", "error"]
+        "allow": ["warn", "error", "info"]
       }
     ],
     "no-use-before-define": ["off"],

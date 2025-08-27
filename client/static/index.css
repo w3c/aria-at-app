@@ -97,6 +97,18 @@
   --candidate-in-progress: #2560ab;
   --candidate-approved: #309d08;
 
+  --success-green: var(--success-status-color);
+  --success-green-bg: color-mix(in srgb, var(--success-green) 15%, white);
+  --success-green-border-color: color-mix(
+    in srgb,
+    var(--success-green) 50%,
+    white
+  );
+
+  --error-red: var(--danger-status-color);
+  --error-red-bg: color-mix(in srgb, var(--error-red) 15%, white);
+  --error-red-border-color: color-mix(in srgb, var(--error-red) 50%, white);
+
   /* Shadows */
   --button-shadow: rgba(103, 171, 197, 0.5);
   --box-shadow-gray: rgba(0, 0, 0, 0.05);

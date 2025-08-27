@@ -9,12 +9,15 @@ const testRoutes = require('./routes/tests');
 const transactionRoutes = require('./routes/transactions');
 const automationSchedulerRoutes = require('./routes/automation');
 const databaseRoutes = require('./routes/database');
+const scriptRoutes = require('./routes/scripts');
 const path = require('path');
 const apolloServer = require('./graphql-server');
 const {
   setupMockAutomationSchedulerServer
 } = require('./tests/util/mock-automation-scheduler-server');
 const transactionMiddleware = require('./middleware/transactionMiddleware');
+const { setupWebSocketServer } = require('./websocket');
+
 const app = express();
 
 // test session
@@ -26,6 +29,7 @@ app.use('/test', testRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/jobs', automationSchedulerRoutes);
 app.use('/database', databaseRoutes);
+app.use('/scripts', scriptRoutes);
 
 apolloServer.start().then(() => {
   apolloServer.applyMiddleware({ app });
@@ -33,6 +37,16 @@ apolloServer.start().then(() => {
 
 const listener = express();
 listener.use('/api', app).use('/embed', embedApp);
+
+// Create HTTP server and attach WebSocket server
+const server = require('http').createServer(listener);
+const wss = setupWebSocketServer(server);
+
+// Log when WebSocket server is ready
+wss.on('listening', () => {
+  // eslint-disable-next-line no-console
+  console.info('WebSocket server is listening');
+});
 
 const baseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;
@@ -69,4 +83,4 @@ listener.use((error, req, res, next) => {
   next(error);
 });
 
-module.exports = { app, listener };
+module.exports = { app, listener, server };
