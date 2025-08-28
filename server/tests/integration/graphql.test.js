@@ -576,6 +576,7 @@ describe('graphql', () => {
               startedAt
               completedAt
             }
+            onHold
             isRerun
             percentComplete
             metrics
@@ -753,6 +754,12 @@ describe('graphql', () => {
               updateRecommendedPhaseTargetDate(
                 recommendedPhaseTargetDate: "2023-12-25"
               ) {
+                locationOfData
+              }
+            }
+            setOnHold: testPlanReport(id: 1) {
+              __typename
+              setOnHold(onHold: true) {
                 locationOfData
               }
             }

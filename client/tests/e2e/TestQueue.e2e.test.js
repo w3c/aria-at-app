@@ -384,6 +384,81 @@ describe('Test Queue admin traits when reports exist', () => {
       ).toBe(true);
     });
   });
+
+  it('allows admin to toggle On hold and shows pill in Status', async () => {
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      const sectionButtonSelector = 'button#disclosure-btn-modal-dialog-0';
+      const tableSelector =
+        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+
+      await page.waitForSelector(sectionButtonSelector);
+      await page.click(sectionButtonSelector);
+      await page.waitForSelector(tableSelector);
+
+      // Work with first row in the table body
+      const selectors = await page.$eval(tableSelector, el => {
+        const firstRow = el.querySelector('tbody tr');
+        const cells = firstRow.querySelectorAll('td');
+        return {
+          statusCellText: cells[3].innerText,
+          actionsCellSelector: 'tbody tr td:nth-child(5)'
+        };
+      });
+
+      // Ensure not on hold initially
+      expect(selectors.statusCellText.includes('On hold')).toBe(false);
+
+      // Click the toggle to put on hold
+      await page.$eval(
+        `${tableSelector} ${selectors.actionsCellSelector}`,
+        el => {
+          const btn = Array.from(el.querySelectorAll('button')).find(b =>
+            /Put on hold/i.test(b.innerText)
+          );
+          if (btn) btn.click();
+        }
+      );
+
+      await page.waitForNetworkIdle();
+
+      // Verify pill and button label
+      const [statusTextAfter, toggleLabelAfter] = await page.$eval(
+        tableSelector,
+        el => {
+          const firstRow = el.querySelector('tbody tr');
+          const cells = firstRow.querySelectorAll('td');
+          const statusText = cells[3].innerText;
+          const actionsCell = cells[4];
+          const btn = Array.from(actionsCell.querySelectorAll('button')).find(
+            b => /Ready for testing|Put on hold/i.test(b.innerText)
+          );
+          return [statusText, btn ? btn.innerText : ''];
+        }
+      );
+
+      expect(statusTextAfter.includes('On hold')).toBe(true);
+      expect(/Ready for testing/i.test(toggleLabelAfter)).toBe(true);
+
+      // Toggle back to ready
+      await page.$eval(tableSelector, el => {
+        const firstRow = el.querySelector('tbody tr');
+        const actionsCell = firstRow.querySelectorAll('td')[4];
+        const btn = Array.from(actionsCell.querySelectorAll('button')).find(b =>
+          /Ready for testing/i.test(b.innerText)
+        );
+        if (btn) btn.click();
+      });
+      await page.waitForNetworkIdle();
+
+      const statusTextFinal = await page.$eval(tableSelector, el => {
+        const firstRow = el.querySelector('tbody tr');
+        const cells = firstRow.querySelectorAll('td');
+        return cells[3].innerText;
+      });
+
+      expect(statusTextFinal.includes('On hold')).toBe(false);
+    });
+  });
 });
 
 describe('Test Queue tester traits when reports exist', () => {

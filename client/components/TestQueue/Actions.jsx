@@ -14,7 +14,8 @@ import {
 import {
   MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION,
   REMOVE_TEST_PLAN_REPORT_MUTATION,
-  TEST_QUEUE_PAGE_QUERY
+  TEST_QUEUE_PAGE_QUERY,
+  SET_ON_HOLD_MUTATION
 } from './queries';
 import useForceUpdate from '../../hooks/useForceUpdate';
 import BasicThemedModal from '../common/BasicThemedModal';
@@ -281,6 +282,31 @@ const Actions = ({
           >
             <FontAwesomeIcon icon={faSquareCheck} />
             Mark as Final
+          </Button>
+        )}
+        {isAdmin && (
+          <Button
+            variant="secondary"
+            onClick={async () => {
+              await triggerLoad(
+                async () => {
+                  await client.mutate({
+                    mutation: SET_ON_HOLD_MUTATION,
+                    variables: {
+                      testPlanReportId: testPlanReport.id,
+                      onHold: !testPlanReport.onHold
+                    },
+                    refetchQueries: [TEST_QUEUE_PAGE_QUERY],
+                    awaitRefetchQueries: true
+                  });
+                },
+                testPlanReport.onHold
+                  ? 'Marking Ready for testing...'
+                  : 'Putting on hold...'
+              );
+            }}
+          >
+            {testPlanReport.onHold ? 'Ready for testing' : 'Put on hold'}
           </Button>
         )}
         {isAdmin && (

@@ -9,6 +9,7 @@ const TEST_PLAN_REPORT_FIELDS = gql`
     isRerun
     createdAt
     markedFinalAt
+    onHold
     conflictsLength
     runnableTestsLength
     percentComplete

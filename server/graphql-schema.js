@@ -1233,6 +1233,10 @@ const graphqlSchema = gql`
     Whether this report is a rerun of a previous report.
     """
     isRerun: Boolean!
+    """
+    Whether this report is currently on hold and should not be worked on.
+    """
+    onHold: Boolean!
   }
 
   """
@@ -1567,6 +1571,10 @@ const graphqlSchema = gql`
     this can only be done if the associated TestPlanVersion is not RECOMMENDED.
     """
     removeVendorReviewApprovalStatus: PopulatedData
+    """
+    Toggle the on-hold status for a TestPlanReport. Only available to admins.
+    """
+    setOnHold(onHold: Boolean!): PopulatedData!
     """
     Permanently deletes the TestPlanReport and all associated TestPlanRuns.
     Only available to admins.
