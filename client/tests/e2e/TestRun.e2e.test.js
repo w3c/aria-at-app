@@ -692,7 +692,7 @@ describe('Test Run when signed in as tester', () => {
       expect(activeElement.nodeName).toBe('input');
       expect(activeElement.type).toBe('text');
       expect(activeElement.className).toContain(
-        'undesirable-output-is-excessively-verbose'
+        'unexpected-behavior-output-is-excessively-verbose'
       );
     });
   });

@@ -111,7 +111,7 @@ const NegativeSideEffectsFieldset = ({
                   <input
                     type="checkbox"
                     value={description}
-                    className={`undesirable-${commandIndex}`}
+                    className={`unexpected-behavior-${commandIndex}`}
                     autoFocus={isSubmitted && focus}
                     checked={checked}
                     onChange={e => {
@@ -166,7 +166,7 @@ const NegativeSideEffectsFieldset = ({
                       Details:
                       <input
                         type="text"
-                        className={`undesirable-${descriptionId.toLowerCase()}-details`}
+                        className={`unexpected-behavior-${descriptionId.toLowerCase()}-details`}
                         autoFocus={isSubmitted && more.focusDetails}
                         value={more.value}
                         onChange={e => more.change(e.target.value)}
