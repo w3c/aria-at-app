@@ -88,7 +88,7 @@ const getTestPlanReport = async (id, { transaction }) =>
                                 passed
                                 failedReason
                             }
-                            unexpectedBehaviors {
+                            negativeSideEffects {
                                 id
                                 details
                             }
@@ -129,7 +129,7 @@ const getTestPlanRun = async (id, { transaction }) =>
                                 passed
                                 failedReason
                             }
-                            unexpectedBehaviors {
+                            negativeSideEffects {
                                 id
                                 details
                             }
@@ -679,9 +679,9 @@ describe('Automation controller', () => {
               'AUTOMATED_OUTPUT_DIFFERS'
             );
           });
-          scenarioResult.unexpectedBehaviors?.forEach(unexpectedBehavior => {
-            expect(unexpectedBehavior.id).toEqual('OTHER');
-            expect(unexpectedBehavior.details).toEqual(null);
+          scenarioResult.negativeSideEffects?.forEach(negativeSideEffect => {
+            expect(negativeSideEffect.id).toEqual('OTHER');
+            expect(negativeSideEffect.details).toEqual(null);
           });
         });
       });
@@ -772,9 +772,9 @@ describe('Automation controller', () => {
               'AUTOMATED_OUTPUT_DIFFERS'
             );
           });
-          scenarioResult.unexpectedBehaviors?.forEach(unexpectedBehavior => {
-            expect(unexpectedBehavior.id).toEqual('OTHER');
-            expect(unexpectedBehavior.details).toEqual(null);
+          scenarioResult.negativeSideEffects?.forEach(negativeSideEffect => {
+            expect(negativeSideEffect.id).toEqual('OTHER');
+            expect(negativeSideEffect.details).toEqual(null);
           });
         });
       });
@@ -1222,13 +1222,13 @@ describe('Automation controller', () => {
               historicalAssertionResult.failedReason
             );
           });
-          scenarioResult.unexpectedBehaviors?.forEach(
-            (unexpectedBehavior, index) => {
-              expect(unexpectedBehavior.id).toEqual(
-                historicalScenarioResult.unexpectedBehaviors[index].id
+          scenarioResult.negativeSideEffects?.forEach(
+            (negativeSideEffect, index) => {
+              expect(negativeSideEffect.id).toEqual(
+                historicalScenarioResult.negativeSideEffects[index].id
               );
-              expect(unexpectedBehavior.details).toEqual(
-                historicalScenarioResult.unexpectedBehaviors[index].details
+              expect(negativeSideEffect.details).toEqual(
+                historicalScenarioResult.negativeSideEffects[index].details
               );
             }
           );

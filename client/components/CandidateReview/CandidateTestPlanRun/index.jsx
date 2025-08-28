@@ -170,7 +170,7 @@ const CandidateTestPlanRun = () => {
   }, [testPlanReport]);
 
   const shouldShowNegativeSideEffectsSummary = useMemo(() => {
-    return testPlanReport?.metrics.unexpectedBehaviorCount > 0;
+    return testPlanReport?.metrics.negativeSideEffectCount > 0;
   }, [testPlanReport]);
 
   const shouldShowUntestableAssertionsSummary = useMemo(() => {

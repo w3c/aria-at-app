@@ -33,9 +33,9 @@ export const useNegativeSideEffects = testPlanReport => {
             }_${scenarioResult.scenario.commands.map(cmd => cmd.id).join('_')}`
           };
 
-          return scenarioResult.unexpectedBehaviors.map(unexpectedBehavior => ({
+          return scenarioResult.negativeSideEffects.map(negativeSideEffect => ({
             ...commonResult,
-            ...unexpectedBehavior
+            ...negativeSideEffect
           }));
         });
       }

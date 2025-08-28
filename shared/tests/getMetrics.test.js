@@ -33,7 +33,7 @@ function generateTestPlanReport(reportSpec) {
             mustAssertionResults: must.map(boolToAssertion),
             shouldAssertionResults: should.map(boolToAssertion),
             mayAssertionResults: may.map(boolToAssertion),
-            unexpectedBehaviors: unexpected.map(impact => ({
+            negativeSideEffects: unexpected.map(impact => ({
               id: id(),
               impact
             }))
@@ -64,7 +64,7 @@ const generateRandomizedTestPlanReport = () => {
   let mayAssertionsPassedCount = 0;
   let mayAssertionsFailedCount = 0;
   let commandsCount = 0;
-  let unexpectedBehaviorCount = 0;
+  let negativeSideEffectCount = 0;
   let severeImpactFailedAssertionCount = 0;
   let moderateImpactFailedAssertionCount = 0;
 
@@ -87,7 +87,7 @@ const generateRandomizedTestPlanReport = () => {
       let mustAssertionResults = [];
       let shouldAssertionResults = [];
       let mayAssertionResults = [];
-      let unexpectedBehaviors = [];
+      let negativeSideEffects = [];
 
       const commandsLength = generateRandomNumber(6);
       for (let commandId = 1; commandId <= commandsLength; commandId++) {
@@ -138,26 +138,26 @@ const generateRandomizedTestPlanReport = () => {
         mayAssertionResults.push(assertion);
       }
 
-      const unexpectedBehaviorsLength = generateRandomNumber(2, 0);
-      unexpectedBehaviorCount += unexpectedBehaviorsLength;
+      const negativeSideEffectsLength = generateRandomNumber(2, 0);
+      negativeSideEffectCount += negativeSideEffectsLength;
       for (
-        let unexpectedBehaviorIndex = 0;
-        unexpectedBehaviorIndex < unexpectedBehaviorsLength;
-        unexpectedBehaviorIndex++
+        let negativeSideEffectIndex = 0;
+        negativeSideEffectIndex < negativeSideEffectsLength;
+        negativeSideEffectIndex++
       ) {
         // otherwise, do moderate
         const doSevere = Math.random() < 0.5;
         const impact = doSevere ? 'SEVERE' : 'MODERATE';
 
-        const unexpectedBehavior = { impact };
-        unexpectedBehaviors.push(unexpectedBehavior);
+        const negativeSideEffect = { impact };
+        negativeSideEffects.push(negativeSideEffect);
       }
 
-      // if there are any unexpected behaviors, the test should fail
-      if (unexpectedBehaviors.length > 0) isTestPassed = false;
-      if (unexpectedBehaviors.some(({ impact }) => impact === 'SEVERE'))
+      // if there are any negative side effects, the test should fail
+      if (negativeSideEffects.length > 0) isTestPassed = false;
+      if (negativeSideEffects.some(({ impact }) => impact === 'SEVERE'))
         severeImpactFailedAssertionCount++;
-      if (unexpectedBehaviors.some(({ impact }) => impact === 'MODERATE'))
+      if (negativeSideEffects.some(({ impact }) => impact === 'MODERATE'))
         moderateImpactFailedAssertionCount++;
 
       const assertionResults = [
@@ -173,7 +173,7 @@ const generateRandomizedTestPlanReport = () => {
         mustAssertionResults,
         shouldAssertionResults,
         mayAssertionResults,
-        unexpectedBehaviors
+        negativeSideEffects
       };
       scenarioResults.push(scenarioResult);
     }
@@ -202,7 +202,7 @@ const generateRandomizedTestPlanReport = () => {
     mayAssertionsCount,
     mayAssertionsPassedCount,
     mayAssertionsFailedCount,
-    unexpectedBehaviorCount,
+    negativeSideEffectCount,
     severeImpactFailedAssertionCount,
     moderateImpactFailedAssertionCount
   };
@@ -224,7 +224,7 @@ describe('getMetrics', () => {
       mayAssertionsCount,
       mayAssertionsPassedCount,
       mayAssertionsFailedCount,
-      unexpectedBehaviorCount,
+      negativeSideEffectCount,
       severeImpactFailedAssertionCount,
       moderateImpactFailedAssertionCount
     } = generateRandomizedTestPlanReport();
@@ -246,7 +246,7 @@ describe('getMetrics', () => {
     shouldAssertionsFailedCount += moderateImpactFailedAssertionCount;
 
     const supportLevel =
-      unexpectedBehaviorCount > 0 || mustAssertionsFailedCount > 0
+      negativeSideEffectCount > 0 || mustAssertionsFailedCount > 0
         ? 'FAILING'
         : shouldAssertionsFailedCount > 0
         ? 'ALL_REQUIRED'
@@ -284,7 +284,7 @@ describe('getMetrics', () => {
         testsPassedCount,
         testsCount,
         testsFailedCount,
-        unexpectedBehaviorCount,
+        negativeSideEffectCount,
         severeImpactPassedAssertionCount,
         severeImpactFailedAssertionCount,
         moderateImpactPassedAssertionCount,
@@ -299,10 +299,10 @@ describe('getMetrics', () => {
           mayAssertionsCount === 0
             ? false
             : `${mayAssertionsPassedCount} of ${mayAssertionsCount} supported`,
-        unexpectedBehaviorsFormatted:
-          unexpectedBehaviorCount === 0
+        negativeSideEffectsFormatted:
+          negativeSideEffectCount === 0
             ? false
-            : `${unexpectedBehaviorCount} found`,
+            : `${negativeSideEffectCount} found`,
         supportLevel,
         supportPercent
       })
@@ -331,7 +331,7 @@ describe('getMetrics', () => {
         assertionsPassedCount: 63,
         assertionsUntestableCount: 0,
         shouldAssertionsCount: 36,
-        unexpectedBehaviorCount: 7,
+        negativeSideEffectCount: 7,
         mayAssertionsFailedCount: 6,
         mayAssertionsPassedCount: 2,
         mayAssertionsUntestableCount: 0,
@@ -341,7 +341,7 @@ describe('getMetrics', () => {
         shouldAssertionsFailedCount: 16,
         shouldAssertionsPassedCount: 20,
         shouldAssertionsUntestableCount: 0,
-        unexpectedBehaviorsFormatted: '7 found',
+        negativeSideEffectsFormatted: '7 found',
         severeImpactFailedAssertionCount: 7,
         severeImpactPassedAssertionCount: 13,
         moderateImpactFailedAssertionCount: 0,
@@ -375,7 +375,7 @@ describe('getMetrics', () => {
       testsPassedCount: 1,
       testsCount: 1,
       testsFailedCount: 0,
-      unexpectedBehaviorCount: 0,
+      negativeSideEffectCount: 0,
       severeImpactPassedAssertionCount: 1,
       severeImpactFailedAssertionCount: 0,
       moderateImpactPassedAssertionCount: 1,
@@ -384,13 +384,13 @@ describe('getMetrics', () => {
       mustFormatted: '2 of 2 passed',
       shouldFormatted: '1 of 1 passed',
       mayFormatted: '1 of 1 supported',
-      unexpectedBehaviorsFormatted: false,
+      negativeSideEffectsFormatted: false,
       supportLevel: 'FULL',
       supportPercent: 100
     });
   });
 
-  it('returns expected metrics object for failing testPlanReport without unexpected behaviors', () => {
+  it('returns expected metrics object for failing testPlanReport without negative side effects', () => {
     const testPlanReport = generateTestPlanReport([
       [{ must: [true], should: [true], may: [true], unexpected: [] }],
       [{ must: [true, false], should: [true], may: [true], unexpected: [] }],
@@ -415,7 +415,7 @@ describe('getMetrics', () => {
       testsPassedCount: 1,
       testsCount: 3,
       testsFailedCount: 2,
-      unexpectedBehaviorCount: 0,
+      negativeSideEffectCount: 0,
       severeImpactPassedAssertionCount: 3,
       severeImpactFailedAssertionCount: 0,
       moderateImpactPassedAssertionCount: 3,
@@ -424,13 +424,13 @@ describe('getMetrics', () => {
       mustFormatted: '5 of 7 passed',
       shouldFormatted: '6 of 7 passed',
       mayFormatted: '2 of 3 supported',
-      unexpectedBehaviorsFormatted: false,
+      negativeSideEffectsFormatted: false,
       supportLevel: 'FAILING',
       supportPercent: 78
     });
   });
 
-  it('returns expected metrics object for failing testPlanReport with 1 unexpected behavior', () => {
+  it('returns expected metrics object for failing testPlanReport with 1 negative side effect', () => {
     const testPlanReport = generateTestPlanReport([
       [{ must: [true], should: [true], may: [true], unexpected: ['SEVERE'] }],
       [{ must: [true, false], should: [true], may: [true], unexpected: [] }],
@@ -455,7 +455,7 @@ describe('getMetrics', () => {
       testsPassedCount: 0,
       testsCount: 3,
       testsFailedCount: 3,
-      unexpectedBehaviorCount: 1,
+      negativeSideEffectCount: 1,
       severeImpactPassedAssertionCount: 2,
       severeImpactFailedAssertionCount: 1,
       moderateImpactPassedAssertionCount: 3,
@@ -464,13 +464,13 @@ describe('getMetrics', () => {
       mustFormatted: '4 of 7 passed',
       shouldFormatted: '6 of 7 passed',
       mayFormatted: '2 of 3 supported',
-      unexpectedBehaviorsFormatted: '1 found',
+      negativeSideEffectsFormatted: '1 found',
       supportLevel: 'FAILING',
       supportPercent: 71
     });
   });
 
-  it('returns expected metrics object for failing testPlanReport with 2 unexpected behaviors', () => {
+  it('returns expected metrics object for failing testPlanReport with 2 negative side effects', () => {
     const testPlanReport = generateTestPlanReport([
       [{ must: [true], should: [true], may: [true], unexpected: ['SEVERE'] }],
       [{ must: [true, false], should: [true], may: [true], unexpected: [] }],
@@ -502,7 +502,7 @@ describe('getMetrics', () => {
       testsPassedCount: 0,
       testsCount: 3,
       testsFailedCount: 3,
-      unexpectedBehaviorCount: 2,
+      negativeSideEffectCount: 2,
       severeImpactPassedAssertionCount: 2,
       severeImpactFailedAssertionCount: 1,
       moderateImpactPassedAssertionCount: 2,
@@ -511,7 +511,7 @@ describe('getMetrics', () => {
       mustFormatted: '4 of 7 passed',
       shouldFormatted: '5 of 7 passed',
       mayFormatted: '2 of 3 supported',
-      unexpectedBehaviorsFormatted: '2 found',
+      negativeSideEffectsFormatted: '2 found',
       supportLevel: 'FAILING',
       supportPercent: 64
     });
@@ -550,7 +550,7 @@ describe('getMetrics', () => {
       testsPassedCount: 0,
       testsCount: 3,
       testsFailedCount: 3,
-      unexpectedBehaviorCount: 1,
+      negativeSideEffectCount: 1,
       severeImpactPassedAssertionCount: 2,
       severeImpactFailedAssertionCount: 1,
       moderateImpactPassedAssertionCount: 3,
@@ -559,7 +559,7 @@ describe('getMetrics', () => {
       mustFormatted: '3 of 7 passed',
       shouldFormatted: '5 of 7 passed',
       mayFormatted: '1 of 3 supported',
-      unexpectedBehaviorsFormatted: '1 found',
+      negativeSideEffectsFormatted: '1 found',
       supportLevel: 'FAILING',
       supportPercent: 57
     });

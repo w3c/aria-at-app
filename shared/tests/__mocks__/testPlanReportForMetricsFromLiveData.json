@@ -233,7 +233,7 @@
               }
             }
           ],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         },
         {
           "id": "ZDI2YeyIxMyI6IllXUTVPZXlJeE1pSTZOemMyZlFHUTBZaiJ9zExYz",
@@ -385,7 +385,7 @@
               }
             }
           ],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         },
         {
           "id": "ZTYzZeyIxMyI6IllXUTVPZXlJeE1pSTZOemMyZlFHUTBZaiJ9DE0M2",
@@ -537,7 +537,7 @@
               }
             }
           ],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         }
       ],
       "atVersion": {
@@ -718,7 +718,7 @@
               }
             }
           ],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         },
         {
           "id": "NjVjMeyIxMyI6Ik9UWmtNZXlJeE1pSTZOemMyZlFqZ3pORyJ9Tc1OG",
@@ -870,7 +870,7 @@
               }
             }
           ],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         },
         {
           "id": "OGJiZeyIxMyI6Ik9UWmtNZXlJeE1pSTZOemMyZlFqZ3pORyJ9mRiNj",
@@ -1022,7 +1022,7 @@
               }
             }
           ],
-          "unexpectedBehaviors": [
+          "negativeSideEffects": [
             {
               "id": "UNEXPECTED_CURSOR_POSITION",
               "text": "Reading cursor position changed in an unexpected manner",
@@ -1195,7 +1195,7 @@
               }
             }
           ],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         },
         {
           "id": "NzMwYeyIxMyI6Ik1EZ3lNZXlJeE1pSTZOemMyZlFETmtNaiJ9WYyNj",
@@ -1337,7 +1337,7 @@
               }
             }
           ],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         }
       ],
       "atVersion": {
@@ -1401,7 +1401,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         },
         {
           "id": "MDk2NeyIxMyI6Ik1UazBaZXlJeE1pSTZOemMyZlFUQXlaaiJ9zY4MT",
@@ -1441,7 +1441,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         },
         {
           "id": "ZDA5MeyIxMyI6Ik1UazBaZXlJeE1pSTZOemMyZlFUQXlaaiJ9mIyMW",
@@ -1486,7 +1486,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": [
+          "negativeSideEffects": [
             {
               "id": "OTHER",
               "text": "Other",
@@ -1538,7 +1538,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": [
+          "negativeSideEffects": [
             {
               "id": "OTHER",
               "text": "Other",
@@ -1609,7 +1609,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         },
         {
           "id": "YjEwNeyIxMyI6IllUWTVPZXlJeE1pSTZOemMyZlFUQXdZeiJ9zdiND",
@@ -1649,7 +1649,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         },
         {
           "id": "ZGM4YeyIxMyI6IllUWTVPZXlJeE1pSTZOemMyZlFUQXdZeiJ9WIzYW",
@@ -1694,7 +1694,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": [
+          "negativeSideEffects": [
             {
               "id": "OTHER",
               "text": "Other",
@@ -1746,7 +1746,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": [
+          "negativeSideEffects": [
             {
               "id": "OTHER",
               "text": "Other",
@@ -1817,7 +1817,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         }
       ],
       "atVersion": {
@@ -1881,7 +1881,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": []
+          "negativeSideEffects": []
         }
       ],
       "atVersion": {
@@ -1945,7 +1945,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": [
+          "negativeSideEffects": [
             {
               "id": "UNEXPECTED_CURSOR_POSITION",
               "text": "Reading cursor position changed in an unexpected manner",
@@ -2016,7 +2016,7 @@
           ],
           "shouldAssertionResults": [],
           "mayAssertionResults": [],
-          "unexpectedBehaviors": [
+          "negativeSideEffects": [
             {
               "id": "EXCESSIVELY_VERBOSE",
               "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",

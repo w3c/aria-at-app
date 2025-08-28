@@ -184,7 +184,7 @@ div.problem-option-container {
 label {
   display: inline-block;
 
-  &.unexpected-behaviors-label {
+  &.negative-side-effects-label {
     width: 100%;
     margin-bottom: var(--4px);
 

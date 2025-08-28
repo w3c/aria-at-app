@@ -407,7 +407,7 @@ describe('test queue', () => {
                 }
                 scenarioResult {
                   output
-                  unexpectedBehaviors {
+                  negativeSideEffects {
                     text
                     details
                   }
@@ -445,8 +445,8 @@ describe('test queue', () => {
                         "passed": true,
                       },
                       "scenarioResult": {
+                        "negativeSideEffects": [],
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
                         "id": "2",
@@ -460,8 +460,8 @@ describe('test queue', () => {
                         "passed": false,
                       },
                       "scenarioResult": {
+                        "negativeSideEffects": [],
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
                         "id": "3",
@@ -493,8 +493,8 @@ describe('test queue', () => {
                     {
                       "assertionResult": null,
                       "scenarioResult": {
+                        "negativeSideEffects": [],
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
                         "id": "2",
@@ -506,13 +506,13 @@ describe('test queue', () => {
                     {
                       "assertionResult": null,
                       "scenarioResult": {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [
+                        "negativeSideEffects": [
                           {
-                            "details": "Seeded other unexpected behavior",
+                            "details": "Seeded other negative side effect",
                             "text": "Other",
                           },
                         ],
+                        "output": "automatically seeded sample output",
                       },
                       "testPlanRun": {
                         "id": "3",
@@ -542,8 +542,8 @@ describe('test queue', () => {
                     {
                       "assertionResult": null,
                       "scenarioResult": {
+                        "negativeSideEffects": [],
                         "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [],
                       },
                       "testPlanRun": {
                         "id": "2",
@@ -555,17 +555,17 @@ describe('test queue', () => {
                     {
                       "assertionResult": null,
                       "scenarioResult": {
-                        "output": "automatically seeded sample output",
-                        "unexpectedBehaviors": [
+                        "negativeSideEffects": [
                           {
                             "details": "N/A",
                             "text": "Output is excessively verbose, e.g., includes redundant and/or irrelevant speech",
                           },
                           {
-                            "details": "Seeded other unexpected behavior",
+                            "details": "Seeded other negative side effect",
                             "text": "Other",
                           },
                         ],
+                        "output": "automatically seeded sample output",
                       },
                       "testPlanRun": {
                         "id": "3",
