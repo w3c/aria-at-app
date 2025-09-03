@@ -55,9 +55,8 @@ const importTestPlanVersions = async transaction => {
       String(process.env.ARIA_AT_PINNED_SHA).trim();
     let pinnedFromFile = null;
     const versionPath = path.resolve(
-      process.cwd(),
-      'config',
-      'aria-at.version'
+      __dirname,
+      '../../../config/aria-at.version'
     );
     if (fseLocal.existsSync(versionPath)) {
       pinnedFromFile = String(fseLocal.readFileSync(versionPath)).trim();
