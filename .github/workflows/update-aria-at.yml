@@ -54,25 +54,42 @@ jobs:
           yarn sequelize:test db:migrate
           yarn sequelize:test db:seed:all
 
-      - name: Determine latest upstream SHA
+      - name: Check for latest upstream SHA
         id: latest
         run: |
           set -e
+          echo "Checking for latest ARIA-AT upstream SHA..."
           LATEST=$(git ls-remote https://github.com/w3c/aria-at HEAD | cut -f1)
           PINNED=$(cat config/aria-at.version || true)
           echo "latest=$LATEST" >> $GITHUB_OUTPUT
           echo "pinned=$PINNED" >> $GITHUB_OUTPUT
-          if [ -z "$LATEST" ]; then echo "Failed to resolve latest SHA"; exit 1; fi
-          if [ "$LATEST" = "$PINNED" ]; then echo "Already up to date"; exit 0; fi
 
-      - name: Import latest upstream commit
+          if [ -z "$LATEST" ]; then
+            echo "❌ Failed to resolve latest upstream SHA"
+            exit 1
+          fi
+
+          echo "📋 Current pinned SHA: ${PINNED:-none}"
+          echo "🔄 Latest upstream SHA: $LATEST"
+
+          if [ "$LATEST" = "$PINNED" ]; then
+            echo "✅ Already up to date with latest upstream SHA"
+            exit 0
+          else
+            echo "📦 Found newer upstream SHA, will test and update"
+          fi
+
+      - name: Import and test latest upstream SHA
         if: steps.latest.outputs.latest != steps.latest.outputs.pinned
-        env:
-          ARIA_AT_PINNED_SHA: ${{ steps.latest.outputs.latest }}
         run: |
+          echo "🔧 Importing historical commits for testing..."
           yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
-          # Import pinned current commit as well (no args defaults to pinned)
-          yarn workspace server db-import-tests:test
+
+          echo "📦 Importing latest upstream commit: ${{ steps.latest.outputs.latest }}"
+          echo "Setting ARIA_AT_PINNED_SHA to: ${{ steps.latest.outputs.latest }}"
+          ARIA_AT_PINNED_SHA="${{ steps.latest.outputs.latest }}" bash -c 'echo "ARIA_AT_PINNED_SHA is set to: $ARIA_AT_PINNED_SHA" && yarn workspace server db-import-tests:test'
+
+          echo "📊 Populating sample data..."
           yarn workspace server db-populate-sample-data:test
 
       - name: Run tests (excluding snapshots)
@@ -88,10 +105,12 @@ jobs:
           yarn workspace client jest --testPathIgnorePatterns=snapshots
           yarn workspace server jest
 
-      - name: Update pin and snapshots
+      - name: Update pinned SHA and snapshots (tests passed)
         if: steps.latest.outputs.latest != steps.latest.outputs.pinned
         run: |
+          echo "✅ All tests passed! Updating pinned SHA to latest upstream..."
           echo "${{ steps.latest.outputs.latest }}" > config/aria-at.version
+          echo "📸 Updating snapshots..."
           yarn update-snapshots
 
       - name: Stage allowed files only
@@ -118,13 +137,15 @@ jobs:
             esac
           done
 
-      - name: Commit and push to development
+      - name: Commit updated ARIA-AT pin and snapshots
         if: steps.latest.outputs.latest != steps.latest.outputs.pinned
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
+          echo "📝 Committing updated ARIA-AT pin and snapshots..."
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore: bump ARIA-AT pin to ${{ steps.latest.outputs.latest }}"
+          echo "🚀 Pushing to development branch..."
           git push origin HEAD:development
