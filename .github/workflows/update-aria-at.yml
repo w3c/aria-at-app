@@ -17,46 +17,38 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - name: Checkout repository
+      - name: Checkout the repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: development
-
       - name: Install NodeJS 20
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
-      - name: Remove pre-bundled postgres
+      - run: yarn --version
+      - name: Remove pre-bundled versions of postgres to avoid version clashes
         run: |
           sudo DEBIAN_FRONTEND=noninteractive apt-get purge -y postgresql\*
           sudo apt-get autoremove -y
           sudo rm -rf /var/lib/postgresql/
           sudo rm -rf /etc/postgresql/
-
       - name: Install PostgreSQL 12
         run: |
           wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
           sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           sudo apt-get -y update
-          sudo apt-get -y install postgresql-12 postgresql-client-12
-
-      - name: Configure database
+          sudo apt-get -y install postgresql-12
+          sudo apt-get -y install postgresql-client-12
+      - name: before_install
         run: |
           sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf
           sudo pg_ctlcluster 12 main restart
-
-      - name: Install deps
+      - name: before_script
         run: |
           yarn --frozen-lockfile
           npx patch-package
-
-      - name: Prepare test database
-        run: |
           source config/test.env
           sudo -u postgres createdb ${PGDATABASE}
+          echo Created ${PGDATABASE}
           sudo -u postgres psql -c "CREATE ROLE ${PGUSER} WITH LOGIN PASSWORD '${PGPASSWORD}'"
           sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${PGDATABASE} to ${PGUSER};"
           yarn sequelize:test db:migrate
@@ -73,18 +65,15 @@ jobs:
           if [ -z "$LATEST" ]; then echo "Failed to resolve latest SHA"; exit 1; fi
           if [ "$LATEST" = "$PINNED" ]; then echo "Already up to date"; exit 0; fi
 
-      - name: Import historical commits
-        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
-        run: |
-          source config/test.env
-          yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
-
       - name: Import latest upstream commit
         if: steps.latest.outputs.latest != steps.latest.outputs.pinned
         env:
           ARIA_AT_PINNED_SHA: ${{ steps.latest.outputs.latest }}
         run: |
+          yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
+          # Import pinned current commit as well (no args defaults to pinned)
           yarn workspace server db-import-tests:test
+          yarn workspace server db-populate-sample-data:test
 
       - name: Run tests (excluding snapshots)
         if: steps.latest.outputs.latest != steps.latest.outputs.pinned
