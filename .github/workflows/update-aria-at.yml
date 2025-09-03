@@ -86,7 +86,7 @@ jobs:
         run: |
           yarn workspace server db-import-tests:test
 
-      - name: Run tests
+      - name: Run tests (excluding snapshots)
         if: steps.latest.outputs.latest != steps.latest.outputs.pinned
         run: |
           yarn workspace shared prettier
@@ -96,7 +96,7 @@ jobs:
           yarn workspace client lint
           yarn workspace server lint
           yarn workspace shared jest
-          yarn workspace client jest
+          yarn workspace client jest --testPathIgnorePatterns=snapshots
           yarn workspace server jest
 
       - name: Update pin and snapshots
