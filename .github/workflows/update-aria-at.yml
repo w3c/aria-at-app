@@ -86,8 +86,7 @@ jobs:
           yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
 
           echo "📦 Importing latest upstream commit: ${{ steps.latest.outputs.latest }}"
-          echo "Setting ARIA_AT_PINNED_SHA to: ${{ steps.latest.outputs.latest }}"
-          ARIA_AT_PINNED_SHA="${{ steps.latest.outputs.latest }}" bash -c 'echo "ARIA_AT_PINNED_SHA is set to: $ARIA_AT_PINNED_SHA" && yarn workspace server db-import-tests:test'
+          yarn workspace server db-import-tests:test -c "${{ steps.latest.outputs.latest }}"
 
           echo "📊 Populating sample data..."
           yarn workspace server db-populate-sample-data:test
