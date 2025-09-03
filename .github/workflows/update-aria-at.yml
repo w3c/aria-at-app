@@ -1,0 +1,141 @@
+name: Update pinned ARIA-AT data
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: update-aria-at
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: Test latest upstream and update pin if clean
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: development
+
+      - name: Install NodeJS 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Remove pre-bundled postgres
+        run: |
+          sudo DEBIAN_FRONTEND=noninteractive apt-get purge -y postgresql\*
+          sudo apt-get autoremove -y
+          sudo rm -rf /var/lib/postgresql/
+          sudo rm -rf /etc/postgresql/
+
+      - name: Install PostgreSQL 12
+        run: |
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          sudo apt-get -y update
+          sudo apt-get -y install postgresql-12 postgresql-client-12
+
+      - name: Configure database
+        run: |
+          sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf
+          sudo pg_ctlcluster 12 main restart
+
+      - name: Install deps
+        run: |
+          yarn --frozen-lockfile
+          npx patch-package
+
+      - name: Prepare test database
+        run: |
+          source config/test.env
+          sudo -u postgres createdb ${PGDATABASE}
+          sudo -u postgres psql -c "CREATE ROLE ${PGUSER} WITH LOGIN PASSWORD '${PGPASSWORD}'"
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${PGDATABASE} to ${PGUSER};"
+          yarn sequelize:test db:migrate
+          yarn sequelize:test db:seed:all
+
+      - name: Determine latest upstream SHA
+        id: latest
+        run: |
+          set -e
+          LATEST=$(git ls-remote https://github.com/w3c/aria-at HEAD | cut -f1)
+          PINNED=$(cat config/aria-at.version || true)
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+          echo "pinned=$PINNED" >> $GITHUB_OUTPUT
+          if [ -z "$LATEST" ]; then echo "Failed to resolve latest SHA"; exit 1; fi
+          if [ "$LATEST" = "$PINNED" ]; then echo "Already up to date"; exit 0; fi
+
+      - name: Import historical commits
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          source config/test.env
+          yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
+
+      - name: Import latest upstream commit
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        env:
+          ARIA_AT_PINNED_SHA: ${{ steps.latest.outputs.latest }}
+        run: |
+          yarn workspace server db-import-tests:test
+
+      - name: Run tests
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          yarn workspace shared prettier
+          yarn workspace client prettier
+          yarn workspace server prettier
+          yarn workspace shared lint
+          yarn workspace client lint
+          yarn workspace server lint
+          yarn workspace shared jest
+          yarn workspace client jest
+          yarn workspace server jest
+
+      - name: Update pin and snapshots
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          echo "${{ steps.latest.outputs.latest }}" > config/aria-at.version
+          yarn update-snapshots
+
+      - name: Stage allowed files only
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          set -e
+          git reset
+          git add config/aria-at.version || true
+          git add client/tests/e2e/snapshots || true
+          echo "Staged files:" 
+          git diff --cached --name-only
+
+      - name: Validate staged files scope
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          set -e
+          CHANGED=$(git diff --cached --name-only)
+          if [ -z "$CHANGED" ]; then echo "No changes to commit"; exit 0; fi
+          echo "$CHANGED" | awk '{print}' | while read -r f; do
+            case "$f" in
+              config/aria-at.version) ;;
+              client/tests/e2e/snapshots/*|client/tests/e2e/snapshots/*/*) ;;
+              *) echo "Disallowed staged change: $f"; exit 1 ;;
+            esac
+          done
+
+      - name: Commit and push to development
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: bump ARIA-AT pin to ${{ steps.latest.outputs.latest }}"
+          git push origin HEAD:development

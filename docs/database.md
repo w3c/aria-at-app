@@ -33,7 +33,7 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). The 
    ```
    yarn sequelize db:seed:all
    ```
-4. Import the most recent tests and files from the [aria-at repository](https://github.com/w3c/aria-at):
+4. Import the pinned tests and files from the [aria-at repository](https://github.com/w3c/aria-at):
 
    ```
    yarn db-import-tests:dev -c "5fe7afd82fe51c185b8661276105190a59d47322 1aa3b74d24d340362e9f511eae33788d55487d12 ab77d47ab19db71c635c9bb459ba5c34182e1400 d34eddbb8e751f07bd28d952de15fa7fe5f07353";
