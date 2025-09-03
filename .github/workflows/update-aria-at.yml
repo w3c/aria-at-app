@@ -82,6 +82,8 @@ jobs:
       - name: Import and test latest upstream SHA
         if: steps.latest.outputs.latest != steps.latest.outputs.pinned
         run: |
+          # Ensure IMPORT_ARIA_AT_TESTS_COMMIT_* env vars are available in this step
+          source config/test.env
           echo "🔧 Importing historical commits for testing..."
           yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
 
