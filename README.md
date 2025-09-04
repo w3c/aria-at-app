@@ -34,17 +34,3 @@ All contributors to this project are expected to adhere to the Code of Conduct, 
 All documents in this Repository are licensed by contributors
 under the
 [W3C Document License](https://www.w3.org/Consortium/Legal/copyright-documents).
-
-## Pinned ARIA-AT version
-
-The app imports test plans from the `w3c/aria-at` repository using a pinned commit.
-
-- The pinned SHA lives at `config/aria-at.version`.
-- Local imports without `-c` will read this file (or `ARIA_AT_PINNED_SHA`).
-- CI imports historical commits for coverage and then the pinned commit.
-
-A scheduled workflow (`.github/workflows/update-aria-at.yml`) runs daily to:
-
-- Resolve the latest upstream SHA.
-- Import and run tests against it.
-- If tests pass, update `config/aria-at.version`, refresh client snapshots, and push directly to `development` with only those changes.

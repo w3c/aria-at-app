@@ -65,18 +65,18 @@ jobs:
           echo "pinned=$PINNED" >> $GITHUB_OUTPUT
 
           if [ -z "$LATEST" ]; then
-            echo "❌ Failed to resolve latest upstream SHA"
+            echo "Failed to resolve latest upstream SHA"
             exit 1
           fi
 
-          echo "📋 Current pinned SHA: ${PINNED:-none}"
-          echo "🔄 Latest upstream SHA: $LATEST"
+          echo "Current pinned SHA: ${PINNED:-none}"
+          echo "Latest upstream SHA: $LATEST"
 
           if [ "$LATEST" = "$PINNED" ]; then
-            echo "✅ Already up to date with latest upstream SHA"
+            echo "Already up to date with latest upstream SHA"
             exit 0
           else
-            echo "📦 Found newer upstream SHA, will test and update"
+            echo "Found newer upstream SHA, will test and update"
           fi
 
       - name: Import and test latest upstream SHA
@@ -84,13 +84,13 @@ jobs:
         run: |
           # Ensure IMPORT_ARIA_AT_TESTS_COMMIT_* env vars are available in this step
           source config/test.env
-          echo "🔧 Importing historical commits for testing..."
+          echo "Importing historical commits for testing..."
           yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
 
-          echo "📦 Importing latest upstream commit: ${{ steps.latest.outputs.latest }}"
+          echo "Importing latest upstream commit: ${{ steps.latest.outputs.latest }}"
           yarn workspace server db-import-tests:test -c "${{ steps.latest.outputs.latest }}"
 
-          echo "📊 Populating sample data..."
+          echo "Populating sample data..."
           yarn workspace server db-populate-sample-data:test
 
       - name: Run tests (excluding snapshots)
@@ -109,9 +109,9 @@ jobs:
       - name: Update pinned SHA and snapshots (tests passed)
         if: steps.latest.outputs.latest != steps.latest.outputs.pinned
         run: |
-          echo "✅ All tests passed! Updating pinned SHA to latest upstream..."
+          echo "All tests passed! Updating pinned SHA to latest upstream..."
           echo "${{ steps.latest.outputs.latest }}" > config/aria-at.version
-          echo "📸 Updating snapshots..."
+          echo "Updating snapshots..."
           yarn update-snapshots
 
       - name: Stage allowed files only
@@ -144,9 +144,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          echo "📝 Committing updated ARIA-AT pin and snapshots..."
+          echo "Committing updated ARIA-AT pin and snapshots..."
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore: bump ARIA-AT pin to ${{ steps.latest.outputs.latest }}"
-          echo "🚀 Pushing to development branch..."
+          echo "Pushing to development branch..."
           git push origin HEAD:development
