@@ -25,6 +25,7 @@ span.cell-row {
   }
 }
 
+a.status-text,
 span.status-text {
   height: var(--24px);
   font-size: var(--14px);
@@ -33,6 +34,7 @@ span.status-text {
   overflow: hidden;
   white-space: nowrap;
 
+  a.status-text,
   span.dot {
     display: inline-block;
     height: var(--10px);

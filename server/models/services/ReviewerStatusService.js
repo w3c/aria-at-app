@@ -236,6 +236,55 @@ const updateReviewerStatusByIds = async ({
 /**
  * @param testPlanReportId
  * @param userId
+ * @param vendorId
+ * @param viewedTests
+ * @param reviewStatus
+ * @param approvedAt
+ * @param reviewerStatusAttributes
+ * @param testPlanReportAttributes
+ * @param testPlanVersionAttributes
+ * @param userAttributes
+ * @param vendorAttributes
+ * @param transaction
+ * @returns {Promise<Model>}
+ */
+const updateReviewerStatusesByTestPlanReportId = async ({
+  testPlanReportId,
+  values: { vendorId, viewedTests, reviewStatus, approvedAt },
+  reviewerStatusAttributes = REVIEWER_STATUS_ATTRIBUTES,
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  vendorAttributes = VENDOR_ATTRIBUTES,
+  transaction
+}) => {
+  await ModelService.update(ReviewerStatus, {
+    where: {
+      testPlanReportId
+    },
+    values: {
+      vendorId,
+      reviewStatus,
+      approvedAt,
+      viewedTests
+    },
+    transaction
+  });
+
+  return getReviewerStatuses({
+    where: { testPlanReportId },
+    reviewerStatusAttributes,
+    testPlanReportAttributes,
+    testPlanVersionAttributes,
+    userAttributes,
+    vendorAttributes,
+    transaction
+  });
+};
+
+/**
+ * @param testPlanReportId
+ * @param userId
  * @param testId
  * @param vendorId
  * @param reviewerStatusAttributes
@@ -272,17 +321,16 @@ const createOrUpdateReviewerStatus = async ({
     ? [...new Set([...existing.viewedTests, testId])]
     : [testId];
 
-  await ReviewerStatus.upsert(
-    {
-      testPlanReportId,
-      testPlanVersionId: testPlanReport.testPlanVersionId,
-      userId,
-      vendorId,
-      reviewStatus: vendorId ? 'IN_PROGRESS' : null,
-      viewedTests
-    },
-    { transaction }
-  );
+  let upsertValues = {
+    testPlanReportId,
+    testPlanVersionId: testPlanReport.testPlanVersionId,
+    userId,
+    vendorId,
+    viewedTests
+  };
+  if (!existing) upsertValues.reviewStatus = vendorId ? 'IN_PROGRESS' : null;
+
+  await ReviewerStatus.upsert(upsertValues, { transaction });
 
   return getReviewerStatusById({
     testPlanReportId,
@@ -302,5 +350,6 @@ module.exports = {
   getReviewerStatuses,
   createReviewerStatus,
   updateReviewerStatusByIds,
+  updateReviewerStatusesByTestPlanReportId,
   createOrUpdateReviewerStatus
 };
