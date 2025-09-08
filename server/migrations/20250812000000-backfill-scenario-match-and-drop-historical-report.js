@@ -220,60 +220,52 @@ module.exports = {
         { transaction }
       );
 
-      // A best effort is made to put a historicalReportId on every rerun report.
-      const {
-        getTestPlanReportById
-      } = require('../models/services/TestPlanReportService');
-
-      const hasMatchInRuns = report =>
-        Array.isArray(report.testPlanRuns) &&
-        report.testPlanRuns.some(
-          run =>
-            Array.isArray(run.testResults) &&
-            run.testResults.some(
-              tr =>
-                Array.isArray(tr.scenarioResults) &&
-                tr.scenarioResults.some(sr => sr?.match && sr.match?.type)
-            )
-        );
-
       const [allReports] = await queryInterface.sequelize.query(
         `SELECT id FROM "TestPlanReport"`,
         { transaction }
       );
 
       for (const row of allReports) {
-        const report = await getTestPlanReportById({ id: row.id, transaction });
-        if (!report) continue;
-        if (!hasMatchInRuns(report)) continue;
-
-        // Find the most recent finalized report for same TPV + AT + Browser
-        const [candidates] = await queryInterface.sequelize.query(
-          `SELECT id FROM "TestPlanReport"
-           WHERE "testPlanVersionId" = :tpv
-             AND "atId" = :atId
-             AND "browserId" = :browserId
-             AND "markedFinalAt" IS NOT NULL
-             AND id <> :id
-           ORDER BY "markedFinalAt" DESC
-           LIMIT 1`,
-          {
-            replacements: {
-              tpv: report.testPlanVersionId,
-              atId: report.atId,
-              browserId: report.browserId,
-              id: report.id
-            },
-            transaction
-          }
+        // Read runs and pick primary, else one with completed results, else first by id
+        const [runs] = await queryInterface.sequelize.query(
+          `SELECT id, "testResults", "isPrimary" FROM "TestPlanRun" WHERE "testPlanReportId" = :id ORDER BY id ASC`,
+          { replacements: { id: row.id }, transaction }
         );
+        const primaryRun = runs.find(r => r && r.isPrimary);
+        const runsWithCompleted = runs.filter(r => {
+          const trs = Array.isArray(r?.testResults) ? r.testResults : [];
+          return trs.some(tr => tr && tr.completedAt);
+        });
+        const orderedRuns = [];
+        if (primaryRun) orderedRuns.push(primaryRun);
+        for (const r of runsWithCompleted)
+          if (!orderedRuns.includes(r)) orderedRuns.push(r);
+        for (const r of runs) if (!orderedRuns.includes(r)) orderedRuns.push(r);
 
-        const historicalReport =
-          candidates && candidates[0] ? candidates[0].id : null;
-        if (historicalReport) {
+        let historicalId = null;
+        for (const r of orderedRuns) {
+          const testResults = Array.isArray(r?.testResults)
+            ? r.testResults
+            : [];
+          const firstTest = testResults[0] || null;
+          const firstScenario =
+            firstTest && Array.isArray(firstTest.scenarioResults)
+              ? firstTest.scenarioResults[0]
+              : null;
+          const candidate = firstScenario?.match?.source?.testPlanReportId;
+          if (candidate) {
+            historicalId = candidate;
+            break;
+          }
+        }
+
+        if (historicalId) {
           await queryInterface.sequelize.query(
             `UPDATE "TestPlanReport" SET "historicalReportId" = :historicalReport WHERE id = :id`,
-            { replacements: { historicalReport, id: report.id }, transaction }
+            {
+              replacements: { historicalReport: historicalId, id: row.id },
+              transaction
+            }
           );
         }
       }
