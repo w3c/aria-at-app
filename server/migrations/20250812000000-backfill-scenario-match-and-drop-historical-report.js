@@ -4,111 +4,182 @@ module.exports = {
   async up(queryInterface) {
     const transaction = await queryInterface.sequelize.transaction();
     try {
+      const { outputsMatch } = require('../util/outputNormalization');
+      const MATCH_TYPE = {
+        SAME_SCENARIO: 'SAME_SCENARIO',
+        NONE: 'NONE'
+      };
+
+      // Consider all rerun reports (those with a historicalReportId)
       const [rerunReports] = await queryInterface.sequelize.query(
-        `SELECT id FROM "TestPlanReport" WHERE "historicalReportId" IS NOT NULL AND "markedFinalAt" IS NULL`,
+        `SELECT id, "historicalReportId" FROM "TestPlanReport" WHERE "historicalReportId" IS NOT NULL`,
         { transaction }
       );
 
-      const getGraphQLContext = require('../graphql-context');
-      const {
-        computeMatchesForRerunReport,
-        MATCH_TYPE
-      } = require('../services/VerdictService/computeMatchesForRerunReport');
-      const {
-        getTestPlanReportById
-      } = require('../models/services/TestPlanReportService');
-
       for (const row of rerunReports) {
-        const context = getGraphQLContext({ req: { transaction } });
-        const testPlanReport = await getTestPlanReportById({
-          id: row.id,
-          transaction
-        });
-        const currentOutputsByScenarioId = {};
-        for (const run of testPlanReport.testPlanRuns || []) {
-          for (const tr of run.testResults || []) {
-            for (const sr of tr.scenarioResults || []) {
-              currentOutputsByScenarioId[String(sr.scenarioId)] = sr.output;
+        const historicalReportId = row.historicalReportId;
+        if (!historicalReportId) continue;
+
+        // Build a map of historical scenario results by scenarioId from the chosen primary run
+        const [historicalRuns] = await queryInterface.sequelize.query(
+          `SELECT id, "testResults", "isPrimary" FROM "TestPlanRun" WHERE "testPlanReportId" = :id ORDER BY id ASC`,
+          { replacements: { id: historicalReportId }, transaction }
+        );
+        const pickHistoricalRun = () => {
+          const primary = historicalRuns.find(r => r && r.isPrimary);
+          if (primary) return primary;
+          const withCompleted = historicalRuns.find(r => {
+            const trs = Array.isArray(r?.testResults) ? r.testResults : [];
+            return trs.some(tr => tr && tr.completedAt);
+          });
+          if (withCompleted) return withCompleted;
+          return historicalRuns[0] || null;
+        };
+        const chosenHistoricalRun = pickHistoricalRun();
+
+        // Fetch minimal metadata for the historical report for source fields
+        const [historicalReportRows] = await queryInterface.sequelize.query(
+          `SELECT id, "testPlanVersionId" FROM "TestPlanReport" WHERE id = :id`,
+          { replacements: { id: historicalReportId }, transaction }
+        );
+        const historicalMeta =
+          historicalReportRows && historicalReportRows[0]
+            ? historicalReportRows[0]
+            : { id: historicalReportId, testPlanVersionId: null };
+
+        const historicalByScenarioId = new Map();
+        if (chosenHistoricalRun) {
+          const testResults = Array.isArray(chosenHistoricalRun.testResults)
+            ? chosenHistoricalRun.testResults
+            : [];
+          const finalizedTestResults = testResults.filter(
+            tr => tr && tr.completedAt
+          );
+
+          // Prefetch version names for ids present in finalized results
+          const atVersionIds = Array.from(
+            new Set(
+              finalizedTestResults
+                .map(tr => tr?.atVersionId)
+                .filter(id => id != null)
+            )
+          );
+          const browserVersionIds = Array.from(
+            new Set(
+              finalizedTestResults
+                .map(tr => tr?.browserVersionId)
+                .filter(id => id != null)
+            )
+          );
+          const atVersionIdToName = new Map();
+          const browserVersionIdToName = new Map();
+          if (atVersionIds.length > 0) {
+            const [rows] = await queryInterface.sequelize.query(
+              `SELECT id, name FROM "AtVersion" WHERE id IN (:ids)`,
+              { replacements: { ids: atVersionIds }, transaction }
+            );
+            for (const r of rows) atVersionIdToName.set(r.id, r.name);
+          }
+          if (browserVersionIds.length > 0) {
+            const [rows] = await queryInterface.sequelize.query(
+              `SELECT id, name FROM "BrowserVersion" WHERE id IN (:ids)`,
+              { replacements: { ids: browserVersionIds }, transaction }
+            );
+            for (const r of rows) browserVersionIdToName.set(r.id, r.name);
+          }
+
+          for (const tr of finalizedTestResults) {
+            const scenarioResults = Array.isArray(tr.scenarioResults)
+              ? tr.scenarioResults
+              : [];
+            for (const sr of scenarioResults) {
+              if (!sr || sr.scenarioId == null) continue;
+              const assertionResultsById = Object.fromEntries(
+                (Array.isArray(sr.assertionResults)
+                  ? sr.assertionResults
+                  : []
+                ).map(a => [
+                  String(a?.assertionId ?? a?.assertion?.id),
+                  { passed: a?.passed, failedReason: a?.failedReason }
+                ])
+              );
+              const atVersionId = tr?.atVersionId ?? null;
+              const browserVersionId = tr?.browserVersionId ?? null;
+              const atVersionName =
+                (atVersionId != null && atVersionIdToName.get(atVersionId)) ||
+                '';
+              const browserVersionName =
+                (browserVersionId != null &&
+                  browserVersionIdToName.get(browserVersionId)) ||
+                '';
+              const testResultId = tr?.id ?? null;
+              const testPlanVersionId = historicalMeta.testPlanVersionId;
+              const output = sr.output;
+
+              // Only create a source when all non-nullable fields are present
+              const hasAllRequired =
+                testPlanVersionId != null &&
+                historicalMeta.id != null &&
+                testResultId != null &&
+                sr.scenarioId != null &&
+                atVersionId != null &&
+                browserVersionId != null &&
+                typeof atVersionName === 'string' &&
+                typeof browserVersionName === 'string' &&
+                typeof output === 'string';
+
+              if (!hasAllRequired) {
+                continue;
+              }
+
+              historicalByScenarioId.set(String(sr.scenarioId), {
+                testPlanReportId: historicalMeta.id,
+                testPlanVersionId,
+                testResultId,
+                scenarioId: sr.scenarioId,
+                atVersionId,
+                atVersionName,
+                browserVersionId,
+                browserVersionName,
+                output,
+                assertionResultsById,
+                unexpectedBehaviors: sr.unexpectedBehaviors || null,
+                hasUnexpected: sr.hasUnexpected || null
+              });
             }
           }
         }
-        const matches = await computeMatchesForRerunReport({
-          rerunTestPlanReportId: row.id,
-          context,
-          currentOutputsByScenarioId
-        });
 
-        for (const run of testPlanReport.testPlanRuns || []) {
-          const newResults = (run.testResults || []).map(tr => ({
+        // Read rerun runs and set SAME_SCENARIO / NONE matches based on output equality (normalized)
+        const [rerunRuns] = await queryInterface.sequelize.query(
+          `SELECT id, "testResults", "isPrimary" FROM "TestPlanRun" WHERE "testPlanReportId" = :id ORDER BY id ASC`,
+          { replacements: { id: row.id }, transaction }
+        );
+
+        for (const run of rerunRuns) {
+          const newResults = (
+            Array.isArray(run.testResults) ? run.testResults : []
+          ).map(tr => ({
             ...tr,
-            scenarioResults: (tr.scenarioResults || []).map(sr => {
-              const m = matches.get(String(sr.scenarioId));
-              const isSameOrCross =
-                m &&
-                (m.type === MATCH_TYPE.SAME_SCENARIO ||
-                  m.type === MATCH_TYPE.CROSS_SCENARIO);
-
-              const existingAssertionResults = sr.assertionResults || [];
-              const sourceAssertionMap = m?.source?.assertionResultsById || {};
-
-              let newAssertionResults;
-              if (isSameOrCross) {
-                if (existingAssertionResults.length > 0) {
-                  newAssertionResults = existingAssertionResults.map(
-                    assertionResult => {
-                      const copied =
-                        sourceAssertionMap[String(assertionResult.assertionId)];
-                      if (copied) {
-                        return {
-                          ...assertionResult,
-                          passed: copied.passed,
-                          failedReason:
-                            copied.failedReason === undefined
-                              ? null
-                              : copied.failedReason
-                        };
-                      }
-                      return {
-                        ...assertionResult,
-                        passed: null,
-                        failedReason: 'AUTOMATED_OUTPUT_DIFFERS'
-                      };
-                    }
-                  );
-                } else {
-                  // No existing assertions; build from source assertions
-                  newAssertionResults = Object.entries(sourceAssertionMap).map(
-                    ([assertionId, copied]) => ({
-                      assertionId: Number(assertionId),
-                      passed: copied.passed,
-                      failedReason:
-                        copied.failedReason === undefined
-                          ? null
-                          : copied.failedReason
-                    })
-                  );
-                }
-              } else {
-                // Not a match; set to null verdicts if any exist
-                newAssertionResults = existingAssertionResults.map(
-                  assertionResult => ({
-                    ...assertionResult,
-                    passed: null,
-                    failedReason: 'AUTOMATED_OUTPUT_DIFFERS'
-                  })
-                );
-              }
-
+            scenarioResults: (Array.isArray(tr.scenarioResults)
+              ? tr.scenarioResults
+              : []
+            ).map(sr => {
+              const hist =
+                historicalByScenarioId.get(String(sr.scenarioId)) || null;
+              const hasAssertions =
+                Array.isArray(sr.assertionResults) &&
+                sr.assertionResults.length > 0;
+              const isSame =
+                hasAssertions && hist && outputsMatch(hist?.output, sr?.output);
+              const match = {
+                type: isSame ? MATCH_TYPE.SAME_SCENARIO : MATCH_TYPE.NONE,
+                source: hist ? { ...hist } : null
+              };
+              // Only set the match; do not copy or modify assertion results
               return {
                 ...sr,
-                assertionResults: newAssertionResults,
-                unexpectedBehaviors: isSameOrCross
-                  ? m?.source?.unexpectedBehaviors ?? null
-                  : null,
-                hasUnexpected: isSameOrCross
-                  ? m?.source?.hasUnexpected ?? null
-                  : null,
-                match: m || { type: MATCH_TYPE.NONE, source: null }
+                match
               };
             })
           }));
@@ -119,23 +190,6 @@ module.exports = {
               replacements: { json: JSON.stringify(newResults), id: run.id },
               transaction
             }
-          );
-        }
-
-        // If every scenario matched (SAME or CROSS), auto-finalize the report
-        let allOutputsMatch = true;
-        for (const [, m] of matches.entries()) {
-          if (
-            !m ||
-            m.type === MATCH_TYPE.NONE ||
-            m.type === MATCH_TYPE.INCOMPLETE
-          )
-            allOutputsMatch = false;
-        }
-        if (allOutputsMatch) {
-          await queryInterface.sequelize.query(
-            `UPDATE "TestPlanReport" SET "markedFinalAt" = NOW() WHERE id = :id AND "markedFinalAt" IS NULL`,
-            { replacements: { id: row.id }, transaction }
           );
         }
       }
