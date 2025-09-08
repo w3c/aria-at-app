@@ -6,6 +6,35 @@ import { NO_OUTPUT_STRING } from './constants';
 import { AtOutputPropType } from '../../common/proptypes';
 import styles from '../TestRenderer.module.css';
 
+const buildHistoricalReportLink = source => {
+  return source?.testResultId &&
+    source?.testPlanVersionId &&
+    source?.testPlanReportId ? (
+    <>
+      {' in '}
+      <a
+        href={`/report/${source.testPlanVersionId}/targets/${source.testPlanReportId}#result-${source.testResultId}`}
+      >
+        Report {source.testPlanReportId}
+      </a>
+    </>
+  ) : null;
+};
+
+const renderMatchInfo = (match, historicalAtName, commandString) => {
+  const prefixText =
+    match?.type === 'INCOMPLETE'
+      ? 'Partial cross-scenario match'
+      : 'Matches output';
+  return (
+    <div className={styles.matchInfo}>
+      {prefixText} for &apos;{commandString}&apos; from{' '}
+      {`${historicalAtName} ${match?.source?.atVersionName}`}
+      {buildHistoricalReportLink(match?.source)}.
+    </div>
+  );
+};
+
 const OutputTextArea = ({
   commandIndex,
   atOutput,
@@ -98,29 +127,8 @@ const OutputTextArea = ({
         isRerunReport &&
         match &&
         match?.type &&
-        match?.type !== 'NONE' && (
-          <div className={styles.matchInfo}>
-            Matches output for &apos;{commandString}&apos; from{' '}
-            {`${historicalAtName} ${match?.source?.atVersionName}`}
-            {match?.source?.testPlanReportId && (
-              <>
-                {' in '}
-                <a
-                  href={
-                    match?.source?.testResultId &&
-                    match?.source?.testPlanVersionId &&
-                    match?.source?.testPlanReportId
-                      ? `/report/${match.source.testPlanVersionId}/targets/${match.source.testPlanReportId}#result-${match.source.testResultId}`
-                      : null
-                  }
-                >
-                  Report {match.source.testPlanReportId}
-                </a>
-              </>
-            )}
-            .
-          </div>
-        )}
+        match?.type !== 'NONE' &&
+        renderMatchInfo(match, historicalAtName, commandString)}
       {errorMessage && (
         <div id={errorId} className={styles.errorMessage} role="alert">
           {errorMessage}
