@@ -44,15 +44,18 @@ const OutputTextArea = ({
 
   return (
     <div className={styles.outputTextContainer}>
-      {isRerunReport && match?.type === 'NONE' && match?.source?.output && (
-        <div className={styles.historicalOutput}>
-          <p>
-            Output recorded for{' '}
-            {`${historicalAtName} ${match?.source?.atVersionName}`}:
-          </p>
-          <blockquote>{match.source.output}</blockquote>
-        </div>
-      )}
+      {isRerunReport &&
+        match &&
+        match?.type === 'NONE' &&
+        match?.source?.output && (
+          <div className={styles.historicalOutput}>
+            <p>
+              Output recorded for{' '}
+              {`${historicalAtName} ${match?.source?.atVersionName}`}:
+            </p>
+            <blockquote>{match.source.output}</blockquote>
+          </div>
+        )}
       <label htmlFor={`speechoutput-${commandIndex}`}>
         {atOutput.description[0]}
         {isSubmitted && (
@@ -91,29 +94,33 @@ const OutputTextArea = ({
         aria-describedby={errorId}
         className={errorMessage ? styles.errorState : ''}
       />
-      {!errorMessage && isRerunReport && match?.type && match?.type !== 'NONE' && (
-        <div className={styles.matchInfo}>
-          Matches output for &apos;{commandString}&apos; from{' '}
-          {`${historicalAtName} ${match?.source?.atVersionName}`}
-          {match?.source?.testPlanReportId && (
-            <>
-              {' in '}
-              <a
-                href={
-                  match?.source?.testResultId &&
-                  match?.source?.testPlanVersionId &&
-                  match?.source?.testPlanReportId
-                    ? `/report/${match.source.testPlanVersionId}/targets/${match.source.testPlanReportId}#result-${match.source.testResultId}`
-                    : null
-                }
-              >
-                Report {match.source.testPlanReportId}
-              </a>
-            </>
-          )}
-          .
-        </div>
-      )}
+      {!errorMessage &&
+        isRerunReport &&
+        match &&
+        match?.type &&
+        match?.type !== 'NONE' && (
+          <div className={styles.matchInfo}>
+            Matches output for &apos;{commandString}&apos; from{' '}
+            {`${historicalAtName} ${match?.source?.atVersionName}`}
+            {match?.source?.testPlanReportId && (
+              <>
+                {' in '}
+                <a
+                  href={
+                    match?.source?.testResultId &&
+                    match?.source?.testPlanVersionId &&
+                    match?.source?.testPlanReportId
+                      ? `/report/${match.source.testPlanVersionId}/targets/${match.source.testPlanReportId}#result-${match.source.testResultId}`
+                      : null
+                  }
+                >
+                  Report {match.source.testPlanReportId}
+                </a>
+              </>
+            )}
+            .
+          </div>
+        )}
       {errorMessage && (
         <div id={errorId} className={styles.errorMessage} role="alert">
           {errorMessage}

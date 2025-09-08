@@ -113,6 +113,10 @@ const computeMatchesForRerunReport = async ({
     transaction
   });
   candidateReports = candidateReports.filter(r => !!r.markedFinalAt);
+  // If there are no finalized candidate reports, indicate that no comparison is available
+  if (candidateReports.length === 0) {
+    return null;
+  }
   // No broader fallbacks; strictly same testPlanVersion + at + browser
   if (typeof candidatesLimit === 'number') {
     candidateReports = candidateReports.slice(0, candidatesLimit);

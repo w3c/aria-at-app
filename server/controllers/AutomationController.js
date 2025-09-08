@@ -252,7 +252,9 @@ const updateOrCreateTestResultWithResponses = async ({
       browserVersionId,
       scenarioResults: baseTestResult.scenarioResults.map(
         (scenarioResult, i) => {
-          const m = matches.get(String(scenarioResult.scenarioId));
+          const m = matches
+            ? matches.get(String(scenarioResult.scenarioId))
+            : null;
           const isSameOrCross =
             m &&
             (m.type === MATCH_TYPE.SAME_SCENARIO ||
@@ -297,19 +299,21 @@ const updateOrCreateTestResultWithResponses = async ({
             hasUnexpected: isSameOrCross
               ? m.source?.hasUnexpected ?? null
               : null,
-            match: m || { type: MATCH_TYPE.NONE, source: null }
+            match: m
           };
         }
       )
     };
 
     // Check if all outputs matched historical outputs (verdicts were copied)
-    const allOutputsMatched = resultWithVerdictsCopied.scenarioResults.every(
-      sr =>
-        sr.match &&
-        sr.match.type !== MATCH_TYPE.NONE &&
-        sr.match.type !== MATCH_TYPE.INCOMPLETE
-    );
+    const allOutputsMatched =
+      matches !== null &&
+      resultWithVerdictsCopied.scenarioResults.every(
+        sr =>
+          sr.match &&
+          sr.match.type !== MATCH_TYPE.NONE &&
+          sr.match.type !== MATCH_TYPE.INCOMPLETE
+      );
 
     return {
       result: resultWithVerdictsCopied,
@@ -495,6 +499,10 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
 
     let differentResponsesCount = 0;
     let allOutputsMatch = true;
+    if (matches === null) {
+      // No finalized candidates exist, skip comparison and completion event logic
+      return;
+    }
     for (const tr of testPlanRun.testResults) {
       for (const sr of tr.scenarioResults || []) {
         const m = matches.get(String(sr.scenarioId));

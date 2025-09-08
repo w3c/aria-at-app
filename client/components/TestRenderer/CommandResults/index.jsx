@@ -37,8 +37,9 @@ const CommandResults = ({
   const tooltipID = useMemo(() => `untestable-tooltip-${++tooltipCount}`, []);
 
   const matchType = match?.type;
-  const isNoMatch = matchType === 'NONE';
-  const errorMessage = isRerunReport && isNoMatch ? 'Conflicting Output' : null;
+  const hasComparableMatch = isRerunReport && !!match && !!matchType;
+  const isNoMatch = hasComparableMatch && matchType === 'NONE';
+  const errorMessage = isNoMatch ? 'Conflicting Output' : null;
 
   return (
     <>
