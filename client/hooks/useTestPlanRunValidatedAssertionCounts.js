@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery } from '@apollo/client';
-import { TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY } from '../components/TestQueueCompletionStatusListItem/queries';
+import { TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY } from '../components/TestQueueRunCompletionStatus/queries';
 
 export const useTestPlanRunValidatedAssertionCounts = (
   testPlanRun,
