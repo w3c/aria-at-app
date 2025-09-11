@@ -1563,6 +1563,11 @@ const graphqlSchema = gql`
     """
     promoteVendorReviewStatus: PopulatedData
     """
+    Remove the APPROVED vendor review and unset the approvedAt date. Note that
+    this can only be done if the associated TestPlanVersion is not RECOMMENDED.
+    """
+    removeVendorReviewApprovalStatus: PopulatedData
+    """
     Permanently deletes the TestPlanReport and all associated TestPlanRuns.
     Only available to admins.
     """

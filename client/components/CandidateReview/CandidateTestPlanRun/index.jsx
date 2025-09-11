@@ -9,7 +9,8 @@ import { navigateTests } from '../../../utils/navigateTests';
 import {
   ADD_VIEWER_MUTATION,
   CANDIDATE_REPORTS_QUERY,
-  PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION,
+  PROMOTE_VENDOR_REVIEW_STATUS_MUTATION,
+  REMOVE_VENDOR_REVIEW_APPROVAL_STATUS_MUTATION,
   REVIEWER_STATUS_QUERY
 } from './queries';
 import { Badge, Container, Row, Col, Button } from 'react-bootstrap';
@@ -26,6 +27,7 @@ import createIssueLink, {
   AtBugTrackerMap,
   getIssueSearchLink
 } from '../../../utils/createIssueLink';
+import BasicModal from '../../common/BasicModal';
 import RunHistory from '../../common/RunHistory';
 import { useUrlTestIndex } from '../../../hooks/useUrlTestIndex';
 import { evaluateAuth } from '../../../utils/evaluateAuth';
@@ -76,6 +78,8 @@ const CandidateTestPlanRun = () => {
   const [isLastTest, setIsLastTest] = useState(false);
   const [feedbackModalShowing, setFeedbackModalShowing] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState(null);
+  const [showRemoveApprovalStatusModal, setShowRemoveApprovalStatusModal] =
+    useState(false);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showBrowserBools, setShowBrowserBools] = useState([]);
   const [showRunHistory, setShowRunHistory] = useState(false);
@@ -92,7 +96,32 @@ const CandidateTestPlanRun = () => {
   });
   const [addViewer] = useMutation(ADD_VIEWER_MUTATION);
   const [promoteVendorReviewStatus] = useMutation(
-    PROMOTE_VENDOR_REVIEW_STATUS_REPORT_MUTATION
+    PROMOTE_VENDOR_REVIEW_STATUS_MUTATION,
+    {
+      refetchQueries: [
+        {
+          query: CANDIDATE_REPORTS_QUERY,
+          variables: testPlanVersionIds.length
+            ? { testPlanVersionIds, atId }
+            : { testPlanVersionId, atId }
+        }
+      ],
+      awaitRefetchQueries: true
+    }
+  );
+  const [removeVendorReviewApprovalStatus] = useMutation(
+    REMOVE_VENDOR_REVIEW_APPROVAL_STATUS_MUTATION,
+    {
+      refetchQueries: [
+        {
+          query: CANDIDATE_REPORTS_QUERY,
+          variables: testPlanVersionIds.length
+            ? { testPlanVersionIds, atId }
+            : { testPlanVersionId, atId }
+        }
+      ],
+      awaitRefetchQueries: true
+    }
   );
 
   const testPlanReports = [];
@@ -261,6 +290,38 @@ const CandidateTestPlanRun = () => {
       );
     }
     setFeedbackModalShowing(false);
+  };
+
+  const setVendorReviewStatusToInProgress = async () => {
+    const results = await Promise.all(
+      testPlanReports?.map(report =>
+        removeVendorReviewApprovalStatus({
+          variables: { testReportId: report.id }
+        })
+      )
+    );
+    const isApproved = results.every(
+      result =>
+        result.data.testPlanReport.removeVendorReviewApprovalStatus
+          .testPlanReport.vendorReviewStatus === 'IN_PROGRESS'
+    );
+    setReviewStatus(
+      isApproved ? 'IN_PROGRESS' : testPlanReport.vendorReviewStatus
+    );
+  };
+
+  const submitApprovalRemoval = async () => {
+    await setVendorReviewStatusToInProgress();
+    setConfirmationModal(
+      <NotApprovedModal
+        handleAction={async () => {
+          setConfirmationModal(null);
+          navigate('/candidate-review');
+        }}
+        githubUrl={generalFeedbackUrl}
+      />
+    );
+    setShowRemoveApprovalStatusModal(false);
   };
 
   useEffect(() => {
@@ -785,7 +846,7 @@ const CandidateTestPlanRun = () => {
                           onClick={() => {
                             setFeedbackModalShowing(true);
                           }}
-                          disabled={!isLastTest}
+                          disabled={!isLastTest || reviewStatus === 'APPROVED'}
                         >
                           Finish
                         </Button>
@@ -806,6 +867,16 @@ const CandidateTestPlanRun = () => {
                       className={testRunStyles.optionsWrapper}
                       aria-labelledby="test-options-heading"
                     >
+                      {reviewStatus === 'APPROVED' && (
+                        <li>
+                          <OptionButton
+                            text="Remove Approval Status"
+                            onClick={() =>
+                              setShowRemoveApprovalStatusModal(true)
+                            }
+                          />
+                        </li>
+                      )}
                       <li>
                         <OptionButton
                           text="Request Changes"
@@ -864,6 +935,52 @@ const CandidateTestPlanRun = () => {
           handleHide={() => setFeedbackModalShowing(false)}
         />
       )}
+      {showRemoveApprovalStatusModal &&
+        (testPlanVersion.phase === 'CANDIDATE' ||
+          testPlanVersion.phase === 'RECOMMENDED') && (
+          <BasicModal
+            show={showRemoveApprovalStatusModal}
+            centered={true}
+            animation={false}
+            closeButton={false}
+            title="Remove Approval Status"
+            content={
+              testPlanVersion.phase === 'CANDIDATE' ? (
+                <>
+                  Are you sure you want to remove the approval status for&nbsp;
+                  <b>
+                    {testPlanVersion.title ||
+                      testPlanVersion.testPlan?.directory ||
+                      ''}
+                    &nbsp;{testPlanVersion.versionString}
+                  </b>
+                  ?
+                  <br />
+                  <br />
+                  <b>Note:</b> This will not prevent you from submitting future
+                  approvals.
+                </>
+              ) : (
+                <>
+                  <b>Unable to continue</b>.
+                  <br />
+                  This action is only permitted if the version has not yet been
+                  promoted to RECOMMENDED.
+                </>
+              )
+            }
+            actions={
+              testPlanVersion.phase === 'CANDIDATE'
+                ? [
+                    {
+                      onClick: submitApprovalRemoval
+                    }
+                  ]
+                : []
+            }
+            handleClose={() => setShowRemoveApprovalStatusModal(false)}
+          />
+        )}
       {!!confirmationModal && confirmationModal}
     </Container>
   );
