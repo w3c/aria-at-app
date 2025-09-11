@@ -26,25 +26,8 @@ export const useTestPlanRunValidatedAssertionCounts = (
   }, [testPlanRunAssertionsQueryResult]);
 
   const totalPossibleAssertions = useMemo(() => {
-    if (testPlanRunAssertionsQueryResult) {
-      let count = 0;
-      if (!testPlanRunAssertionsQueryResult?.testPlanRun) {
-        return 0;
-      }
-      const {
-        testPlanRun: { testResults }
-      } = testPlanRunAssertionsQueryResult;
-      for (let i = 0; i < testResults.length; i++) {
-        const scenarios = testResults[i].scenarioResults;
-        for (let j = 0; j < scenarios.length; j++) {
-          const assertions = scenarios[j].assertionResults;
-          count += assertions.length;
-        }
-      }
-      return count;
-    } else {
-      return 0;
-    }
+    const tpr = testPlanRunAssertionsQueryResult?.testPlanRun?.testPlanReport;
+    return tpr?.totalPossibleAssertions || 0;
   }, [testPlanRunAssertionsQueryResult]);
 
   const totalValidatedAssertions = useMemo(() => {

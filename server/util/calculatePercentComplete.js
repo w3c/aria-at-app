@@ -9,16 +9,10 @@ const hasExceptionWithPriority = (assertion, scenario, priority) => {
   );
 };
 
-const calculatePercentComplete = ({
-  draftTestPlanRuns,
-  runnableTests,
-  atId
-}) => {
+const computeTotalPossibleAssertionsBase = (runnableTests, atId) => {
   if (!runnableTests || !runnableTests.length) return 0;
 
   let totalAssertionsPossible = 0;
-  let totalValidatedAssertions = 0;
-
   runnableTests.forEach(test => {
     if (!test.scenarios || !test.assertions) return;
 
@@ -34,7 +28,23 @@ const calculatePercentComplete = ({
     });
   });
 
-  totalAssertionsPossible *= draftTestPlanRuns.length;
+  return totalAssertionsPossible;
+};
+
+const calculatePercentComplete = ({
+  draftTestPlanRuns,
+  runnableTests,
+  atId
+}) => {
+  if (!runnableTests || !runnableTests.length) return 0;
+
+  const baseAssertionsPossible = computeTotalPossibleAssertionsBase(
+    runnableTests,
+    atId
+  );
+  let totalAssertionsPossible =
+    baseAssertionsPossible * draftTestPlanRuns.length;
+  let totalValidatedAssertions = 0;
 
   if (draftTestPlanRuns && draftTestPlanRuns.length) {
     draftTestPlanRuns.forEach(draftTestPlanRun => {
@@ -63,4 +73,7 @@ const calculatePercentComplete = ({
   return Math.floor(percentage);
 };
 
-module.exports = { calculatePercentComplete };
+module.exports = {
+  calculatePercentComplete,
+  computeTotalPossibleAssertionsBase
+};

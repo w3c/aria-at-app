@@ -1233,6 +1233,11 @@ const graphqlSchema = gql`
     Whether this report is a rerun of a previous report.
     """
     isRerun: Boolean!
+    """
+    The total number of possible assertion verdicts for this TestPlanReport.
+    This is computed from runnable tests for the AT, accounting for EXCLUDE exceptions.
+    """
+    totalPossibleAssertions: Int!
   }
 
   """

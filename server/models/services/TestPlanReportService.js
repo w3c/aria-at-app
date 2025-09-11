@@ -468,6 +468,23 @@ const cloneTestPlanReportWithNewAtVersion = async (
   return newReport;
 };
 
+// Compute total possible assertions for a TestPlanReport using shared percent-complete base
+const {
+  computeTotalPossibleAssertionsBase
+} = require('../../util/calculatePercentComplete');
+const getTests = require('./TestsService');
+const computeTotalPossibleAssertionsForReport = testPlanReport => {
+  const atId = testPlanReport.atId || testPlanReport.at?.id;
+  if (!atId) return 0;
+  // Build fully-populated tests (adds scenario.at, commands, etc.)
+  const tests = getTests(testPlanReport) || [];
+  // Limit to runnable tests for this report's AT
+  const runnableTests = tests.filter(
+    test => Array.isArray(test.atIds) && test.atIds.includes(atId)
+  );
+  return computeTotalPossibleAssertionsBase(runnableTests, atId);
+};
+
 module.exports = {
   // Basic CRUD
   getTestPlanReportById,
@@ -477,5 +494,6 @@ module.exports = {
   removeTestPlanReportById,
   getOrCreateTestPlanReport,
   // Utils
-  cloneTestPlanReportWithNewAtVersion
+  cloneTestPlanReportWithNewAtVersion,
+  computeTotalPossibleAssertionsForReport
 };
