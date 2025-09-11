@@ -13,7 +13,7 @@ const NegativeSideEffectsSummaryTable = ({
   const negativeSideEffects = useNegativeSideEffects(testPlanReport);
   const { metrics } = testPlanReport;
 
-  if (metrics.unexpectedBehaviorCount.length === 0) return null;
+  if (metrics.negativeSideEffectCount.length === 0) return null;
 
   return (
     <>
