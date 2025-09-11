@@ -65,7 +65,7 @@ const useTestRendererFocus = (isSubmitted, pageContent) => {
               // Forward slash is not allowed in a query selector
               .replace(/\//g, '\\/');
             const detailsElement = document.querySelector(
-              `.unexpected-behavior-${optionDescription}-details`
+              `.negative-side-effect-${optionDescription}-details`
             );
             if (detailsElement) {
               detailsElement.focus();
