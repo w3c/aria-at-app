@@ -114,7 +114,7 @@ const getTestPlanReport = async (id, { transaction }) =>
                                   passed
                                   failedReason
                               }
-                              unexpectedBehaviors {
+                              negativeSideEffects {
                                   id
                                   details
                               }
@@ -156,7 +156,7 @@ const getTestPlanRun = async (id, { transaction }) =>
                                   passed
                                   failedReason
                               }
-                              unexpectedBehaviors {
+                              negativeSideEffects {
                                   id
                                   details
                               }

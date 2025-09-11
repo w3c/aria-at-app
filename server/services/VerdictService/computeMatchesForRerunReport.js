@@ -65,8 +65,8 @@ const buildCandidateEntries = async (candidateReports, context) => {
               { passed: a.passed, failedReason: a.failedReason }
             ])
           ),
-          unexpectedBehaviors: sr.unexpectedBehaviors || null,
-          hasUnexpected: sr.hasUnexpected || null,
+          negativeSideEffects: sr.negativeSideEffects || null,
+          hasNegativeSideEffect: sr.hasNegativeSideEffect || null,
           atVersionId: tr.atVersion?.id ?? null,
           atVersionName: tr.atVersion?.name ?? null,
           browserVersionId: tr.browserVersion?.id ?? null,
@@ -217,8 +217,8 @@ const computeMatchesForRerunReport = async ({
             browserVersionName: fallback.browserVersionName,
             output: fallback.output,
             assertionResultsById: fallback.assertionResultsById,
-            unexpectedBehaviors: fallback.unexpectedBehaviors || null,
-            hasUnexpected: fallback.hasUnexpected || null
+            negativeSideEffects: fallback.negativeSideEffects || null,
+            hasNegativeSideEffect: fallback.hasNegativeSideEffect || null
           }
         : null;
       result.set(String(scenarioId), { type: MATCH_TYPE.NONE, source });
@@ -238,8 +238,8 @@ const computeMatchesForRerunReport = async ({
         browserVersionName: chosen.browserVersionName,
         output: chosen.output,
         assertionResultsById: chosen.assertionResultsById,
-        unexpectedBehaviors: chosen.unexpectedBehaviors || null,
-        hasUnexpected: chosen.hasUnexpected || null
+        negativeSideEffects: chosen.negativeSideEffects || null,
+        hasNegativeSideEffect: chosen.hasNegativeSideEffect || null
       }
     });
   }

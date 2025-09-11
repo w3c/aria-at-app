@@ -143,8 +143,8 @@ module.exports = {
                 browserVersionName,
                 output,
                 assertionResultsById,
-                unexpectedBehaviors: sr.unexpectedBehaviors || null,
-                hasUnexpected: sr.hasUnexpected || null
+                negativeSideEffects: sr.negativeSideEffects || null,
+                hasNegativeSideEffect: sr.hasNegativeSideEffect || null
               });
             }
           }
