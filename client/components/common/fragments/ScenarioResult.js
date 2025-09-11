@@ -63,8 +63,8 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
           mayAssertionResults: assertionResults(priority: MAY) {
             ...AssertionResultFields
           }
-          hasUnexpected
-          unexpectedBehaviors {
+          hasNegativeSideEffect
+          negativeSideEffects {
             id
             text
             impact

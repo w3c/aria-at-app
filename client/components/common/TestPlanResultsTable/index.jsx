@@ -90,9 +90,9 @@ const TestPlanResultsTable = ({
           moderateImpactPassedAssertionCount
         } = metrics;
 
-        const hasNoSevereUnexpectedBehavior =
+        const hasNoSevereNegativeSideEffect =
           severeImpactPassedAssertionCount > 0;
-        const hasNoModerateUnexpectedBehavior =
+        const hasNoModerateNegativeSideEffect =
           moderateImpactPassedAssertionCount > 0;
 
         // Rows are sorted by priority descending, then result (failures then passes), then
@@ -134,12 +134,12 @@ const TestPlanResultsTable = ({
           // * Other behaviors that create moderate negative impact
           // TODO: Include this from the db assertions now that this has been agreed upon
           {
-            id: `UnexpectedBehavior_MUST_${nextId()}`,
+            id: `NegativeSideEffect_MUST_${nextId()}`,
             assertion: {
               text: NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
             },
             describesSideEffects: true,
-            passed: hasNoSevereUnexpectedBehavior,
+            passed: hasNoSevereNegativeSideEffect,
             priorityString: 'MUST'
           },
           ...shouldAssertionResults.map(e => ({
@@ -148,12 +148,12 @@ const TestPlanResultsTable = ({
           })),
           // TODO: Include this in the assertions now that it has been agreed upon
           {
-            id: `UnexpectedBehavior_SHOULD_${nextId()}`,
+            id: `NegativeSideEffect_SHOULD_${nextId()}`,
             assertion: {
               text: NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
             },
             describesSideEffects: true,
-            passed: hasNoModerateUnexpectedBehavior,
+            passed: hasNoModerateNegativeSideEffect,
             priorityString: 'SHOULD'
           },
           ...mayAssertionResults.map(e => ({
@@ -195,7 +195,7 @@ const TestPlanResultsTable = ({
                 )}
               </tbody>
             </Table>
-            {scenarioResult.unexpectedBehaviors.length ? (
+            {scenarioResult.negativeSideEffects.length ? (
               <>
                 <NegativeSideEffectsHeading>
                   Negative side effects of {commandsString}
@@ -204,7 +204,7 @@ const TestPlanResultsTable = ({
                   bordered
                   responsive
                   aria-label={`Negative side effects of ${commandsString}`}
-                  className={`test-plan-unexpected-behaviors-table ${tableClassName}`}
+                  className={`test-plan-negative-side-effects-table ${tableClassName}`}
                 >
                   <thead>
                     <tr>
@@ -214,7 +214,7 @@ const TestPlanResultsTable = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {scenarioResult.unexpectedBehaviors.map(
+                    {scenarioResult.negativeSideEffects.map(
                       ({ id, text, details, impact }) => (
                         <tr key={id}>
                           <td>{text}</td>

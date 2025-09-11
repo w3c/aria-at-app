@@ -124,7 +124,7 @@ const TestRenderer = ({
       return state;
     }
 
-    const UnexpectedBehaviorsMap = {
+    const NegativeSideEffectsMap = {
       EXCESSIVELY_VERBOSE: 0,
       UNEXPECTED_CURSOR_POSITION: 1,
       SLUGGISH: 2,
@@ -139,11 +139,11 @@ const TestRenderer = ({
         untestable,
         untestableHighlightRequired,
         assertionResults,
-        hasUnexpected,
-        unexpectedBehaviors,
+        hasNegativeSideEffect,
+        negativeSideEffects,
         match,
         highlightRequired = false, // atOutput
-        unexpectedBehaviorHighlightRequired = false
+        negativeSideEffectHighlightRequired = false
       } = scenarioResults[i];
 
       if (output) commands[i].atOutput.value = output;
@@ -167,22 +167,23 @@ const TestRenderer = ({
           highlightRequired;
       }
 
-      // Historically, the value of `hasUnexpected` was not persisted in the
+      // Historically, the value of `hasNegativeSideEffect` was not persisted in the
       // database and instead inferred from the presence of elements in the
-      // `unexpectedBehaviors` array. Preserve the legacy behavior for test
-      // plan runs which do not specify a value for `hasUnexpected`.
-      if (hasUnexpected) {
-        commands[i].unexpected.hasUnexpected = hasUnexpected;
-      } else if (unexpectedBehaviors) {
-        commands[i].unexpected.hasUnexpected = unexpectedBehaviors.length
-          ? 'hasUnexpected'
-          : 'doesNotHaveUnexpected';
+      // `negativeSideEffects` array. Preserve the legacy behavior for test
+      // plan runs which do not specify a value for `hasNegativeSideEffect`.
+      if (hasNegativeSideEffect) {
+        commands[i].unexpected.hasNegativeSideEffect = hasNegativeSideEffect;
+      } else if (negativeSideEffects) {
+        commands[i].unexpected.hasNegativeSideEffect =
+          negativeSideEffects.length
+            ? 'hasNegativeSideEffect'
+            : 'doesNotHaveNegativeSideEffect';
       } else {
-        commands[i].unexpected.hasUnexpected = 'notSet';
+        commands[i].unexpected.hasNegativeSideEffect = 'notSet';
       }
 
-      if (unexpectedBehaviors) {
-        for (let k = 0; k < unexpectedBehaviors.length; k++) {
+      if (negativeSideEffects) {
+        for (let k = 0; k < negativeSideEffects.length; k++) {
           /**
            * 0 = EXCESSIVELY_VERBOSE
            * 1 = UNEXPECTED_CURSOR_POSITION
@@ -193,10 +194,10 @@ const TestRenderer = ({
            */
 
           const { id, details, impact, highlightRequired } =
-            unexpectedBehaviors[k];
+            negativeSideEffects[k];
 
-          // Capture positional index of unexpected behavior based on id
-          const index = UnexpectedBehaviorsMap[id];
+          // Capture positional index of negative side effect based on id
+          const index = NegativeSideEffectsMap[id];
 
           commands[i].unexpected.behaviors[index].checked = true;
           commands[i].unexpected.behaviors[index].more.value = details;
@@ -207,7 +208,7 @@ const TestRenderer = ({
       }
 
       commands[i].unexpected.highlightRequired =
-        unexpectedBehaviorHighlightRequired;
+        negativeSideEffectHighlightRequired;
       // Attach the match metadata onto the command for downstream components
       commands[i].match = match || null;
     }
@@ -309,11 +310,11 @@ const TestRenderer = ({
           item.untestable.description[1].highlightRequired;
         if (untestableError) return true;
 
-        const unexpectedBehaviorError =
-          item.unexpectedBehaviors.description[1].highlightRequired;
-        if (unexpectedBehaviorError) return true;
+        const negativeSideEffectError =
+          item.negativeSideEffects.description[1].highlightRequired;
+        if (negativeSideEffectError) return true;
 
-        const { failChoice } = item.unexpectedBehaviors;
+        const { failChoice } = item.negativeSideEffects;
         const failChoiceOptionsMoreError = failChoice.options.options.some(
           item => {
             if (item.more) return item.more.description[1].highlightRequired;
@@ -458,7 +459,7 @@ const TestRenderer = ({
                   atOutput={value.atOutput}
                   untestable={value.untestable}
                   assertions={value.assertions}
-                  unexpectedBehaviors={value.unexpectedBehaviors}
+                  negativeSideEffects={value.negativeSideEffects}
                   assertionsHeader={value.assertionsHeader}
                   commonIssueContent={commonIssueContent}
                   commandIndex={commandIndex}

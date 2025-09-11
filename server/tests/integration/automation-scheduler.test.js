@@ -89,7 +89,7 @@ const getTestPlanReport = async (id, { transaction }) =>
                                 passed
                                 failedReason
                             }
-                            unexpectedBehaviors {
+                            negativeSideEffects {
                                 id
                                 details
                             }
@@ -131,7 +131,7 @@ const getTestPlanRun = async (id, { transaction }) =>
                                 passed
                                 failedReason
                             }
-                            unexpectedBehaviors {
+                            negativeSideEffects {
                                 id
                                 details
                             }
@@ -681,9 +681,9 @@ describe('Automation controller', () => {
               'AUTOMATED_OUTPUT_DIFFERS'
             );
           });
-          scenarioResult.unexpectedBehaviors?.forEach(unexpectedBehavior => {
-            expect(unexpectedBehavior.id).toEqual('OTHER');
-            expect(unexpectedBehavior.details).toEqual(null);
+          scenarioResult.negativeSideEffects?.forEach(negativeSideEffect => {
+            expect(negativeSideEffect.id).toEqual('OTHER');
+            expect(negativeSideEffect.details).toEqual(null);
           });
         });
       });
@@ -774,9 +774,9 @@ describe('Automation controller', () => {
               'AUTOMATED_OUTPUT_DIFFERS'
             );
           });
-          scenarioResult.unexpectedBehaviors?.forEach(unexpectedBehavior => {
-            expect(unexpectedBehavior.id).toEqual('OTHER');
-            expect(unexpectedBehavior.details).toEqual(null);
+          scenarioResult.negativeSideEffects?.forEach(negativeSideEffect => {
+            expect(negativeSideEffect.id).toEqual('OTHER');
+            expect(negativeSideEffect.details).toEqual(null);
           });
         });
       });
