@@ -2,11 +2,10 @@ const {
   getTestPlanReportById
 } = require('../models/services/TestPlanReportService');
 
-const testPlanReportResolver = async (_, { id }, context) => {
+const testPlanReportResolver = (_, { id }, context) => {
   const { transaction } = context;
 
-  const report = await getTestPlanReportById({ id, transaction });
-  return report;
+  return getTestPlanReportById({ id, transaction });
 };
 
 module.exports = testPlanReportResolver;

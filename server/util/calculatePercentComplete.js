@@ -1,36 +1,16 @@
-const hasExceptionWithPriority = (assertion, scenario, priority) => {
-  return assertion.assertionExceptions?.some(
-    exception =>
-      scenario.commands.find(
-        command =>
-          command.id === exception.commandId &&
-          command.atOperatingMode === exception.settings
-      ) && exception.priority === priority
-  );
-};
+const {
+  computeTotalPossibleAssertions
+} = require('./computeTotalPossibleAssertions');
 
-const computeTotalPossibleAssertionsBase = (runnableTests, atId) => {
-  if (!runnableTests || !runnableTests.length) return 0;
-
-  let totalAssertionsPossible = 0;
-  runnableTests.forEach(test => {
-    if (!test.scenarios || !test.assertions) return;
-
-    const scenariosForAt = test.scenarios.filter(
-      scenario => scenario.at.id === atId
-    );
-
-    scenariosForAt.forEach(scenario => {
-      const filteredAssertions = test.assertions.filter(
-        assertion => !hasExceptionWithPriority(assertion, scenario, 'EXCLUDE')
-      );
-      totalAssertionsPossible += filteredAssertions.length;
-    });
-  });
-
-  return totalAssertionsPossible;
-};
-
+/**
+ * Calculate the percent complete for a given set of tests and an AT ID.
+ * Uses the assertions complete / total possible assertions formula.
+ *
+ * @param {TestPlanRun[]} draftTestPlanRuns Draft test plan runs to calculate percent complete
+ * @param {Test[]} runnableTests Tests to calculate percent complete for
+ * @param {string} atId AT ID to calculate percent complete
+ * @returns {number} Percent complete
+ */
 const calculatePercentComplete = ({
   draftTestPlanRuns,
   runnableTests,
@@ -38,7 +18,7 @@ const calculatePercentComplete = ({
 }) => {
   if (!runnableTests || !runnableTests.length) return 0;
 
-  const baseAssertionsPossible = computeTotalPossibleAssertionsBase(
+  const baseAssertionsPossible = computeTotalPossibleAssertions(
     runnableTests,
     atId
   );
@@ -74,6 +54,5 @@ const calculatePercentComplete = ({
 };
 
 module.exports = {
-  calculatePercentComplete,
-  computeTotalPossibleAssertionsBase
+  calculatePercentComplete
 };
