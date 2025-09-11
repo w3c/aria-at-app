@@ -41,7 +41,7 @@ const TestNavigator = ({
       isVendor &&
       (testPlanReport.metrics.mustAssertionsFailedCount > 0 ||
         testPlanReport.metrics.shouldAssertionsFailedCount > 0 ||
-        testPlanReport.metrics.unexpectedBehaviorCount > 0)
+        testPlanReport.metrics.negativeSideEffectCount > 0)
     );
   }, [isVendor, testPlanReport]);
 
@@ -139,7 +139,7 @@ const TestNavigator = ({
                     ? styles.complete
                     : styles.inProgress;
                   resultStatus = test.testResult.completedAt
-                    ? 'Complete Test'
+                    ? 'Completed Test'
                     : 'In Progress';
                 } else if (
                   !isSignedIn &&
@@ -172,12 +172,16 @@ const TestNavigator = ({
                   href={`#${index + 1}`}
                   className={styles.testName}
                   aria-current={test.index === currentTestIndex}
+                  aria-label={`Test ${index + 1}. ${
+                    test.title
+                  }. ${resultStatus}`}
                 >
                   {test.title}
                 </a>
                 <span
                   className={styles.progressIndicator}
                   title={`${resultStatus}`}
+                  aria-hidden="true"
                 />
               </li>
             );

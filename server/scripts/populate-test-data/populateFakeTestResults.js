@@ -18,13 +18,13 @@ const FAKE_RESULT_CONFLICTS_OPTIONS = {
  * @param {string['completeAndPassing' |
  * 'completeAndFailingDueToIncorrectAssertions' |
  * 'completeAndFailingDueToNoOutputAssertions' |
- * 'completeAndFailingDueToUnexpectedBehaviors' |
+ * 'completeAndFailingDueToNegativeSideEffects' |
  * 'completeAndFailingDueToMultiple' |
  * 'incompleteAndEmpty' |
  * 'incompleteAndPassing' |
  * 'incompleteAndFailingDueToIncorrectAssertions' |
  * 'incompleteAndFailingDueToNoOutputAssertions' |
- * 'incompleteAndFailingDueToUnexpectedBehaviors' |
+ * 'incompleteAndFailingDueToNegativeSideEffects' |
  * 'incompleteAndFailingDueToMultiple']} fakeTestResultTypes
  * @param {import('sequelize').Transaction} transaction
  * @param {number} numFakeTestResultConflicts
@@ -111,12 +111,12 @@ const populateFakeTestResults = async (
           atVersionId
         });
         break;
-      case 'completeAndFailingDueToUnexpectedBehaviors':
+      case 'completeAndFailingDueToNegativeSideEffects':
         await getFake({
           testPlanReport,
           testPlanRunId,
           index,
-          fakeTestResultType: 'failingDueToUnexpectedBehaviors',
+          fakeTestResultType: 'failingDueToNegativeSideEffects',
           submit: true,
           numFakeTestResultConflicts,
           transaction,
@@ -181,12 +181,12 @@ const populateFakeTestResults = async (
           atVersionId
         });
         break;
-      case 'incompleteAndFailingDueToUnexpectedBehaviors':
+      case 'incompleteAndFailingDueToNegativeSideEffects':
         await getFake({
           testPlanReport,
           testPlanRunId,
           index,
-          fakeTestResultType: 'failingDueToUnexpectedBehaviors',
+          fakeTestResultType: 'failingDueToNegativeSideEffects',
           submit: false,
           numFakeTestResultConflicts,
           transaction,
@@ -301,14 +301,14 @@ const getFake = async ({
     scenarioResults: baseTestResult.scenarioResults.map(scenarioResult => ({
       ...scenarioResult,
       output: 'automatically seeded sample output',
-      hasUnexpected: 'doesNotHaveUnexpected',
+      hasNegativeSideEffect: 'doesNotHaveNegativeSideEffect',
       assertionResults: scenarioResult.assertionResults.map(
         assertionResult => ({
           ...assertionResult,
           passed: true
         })
       ),
-      unexpectedBehaviors: []
+      negativeSideEffects: []
     }))
   });
 
@@ -324,22 +324,22 @@ const getFake = async ({
         scenarioResult.assertionResults[0].passed = false;
         scenarioResult.assertionResults[0].failedReason = 'NO_OUTPUT';
         break;
-      case 'failingDueToUnexpectedBehaviors':
-        scenarioResult.unexpectedBehaviors.push({
+      case 'failingDueToNegativeSideEffects':
+        scenarioResult.negativeSideEffects.push({
           id: 'OTHER',
           impact: 'MODERATE',
-          details: 'Seeded other unexpected behavior'
+          details: 'Seeded other negative side effect'
         });
         break;
       case 'failingDueToMultiple':
         scenarioResult.assertionResults[0].passed = false;
         scenarioResult.assertionResults[0].failedReason = 'INCORRECT_OUTPUT';
-        scenarioResult.unexpectedBehaviors.push(
+        scenarioResult.negativeSideEffects.push(
           { id: 'EXCESSIVELY_VERBOSE', impact: 'MODERATE', details: 'N/A' },
           {
             id: 'OTHER',
             impact: 'SEVERE',
-            details: 'Seeded other unexpected behavior'
+            details: 'Seeded other negative side effect'
           }
         );
         break;

@@ -38,9 +38,9 @@ const useTestRendererFocus = (isSubmitted, pageContent) => {
         }
       }
 
-      // Check if unexpected behaviors section needs focus
-      const unexpectedBehaviors = command.unexpectedBehaviors;
-      if (unexpectedBehaviors.description[1].highlightRequired) {
+      // Check if negative side effects section needs focus
+      const negativeSideEffects = command.negativeSideEffects;
+      if (negativeSideEffects.description[1].highlightRequired) {
         const firstUnexpectedRadio = document.getElementById(
           `problem-${commandIndex}-true`
         );
@@ -50,9 +50,9 @@ const useTestRendererFocus = (isSubmitted, pageContent) => {
         }
       }
 
-      // Check if unexpected behaviors details sections need focus
-      if (unexpectedBehaviors.failChoice?.options?.options) {
-        for (const option of unexpectedBehaviors.failChoice.options.options) {
+      // Check if negative side effects details sections need focus
+      if (negativeSideEffects.failChoice?.options?.options) {
+        for (const option of negativeSideEffects.failChoice.options.options) {
           if (option.more?.description?.[1]?.highlightRequired) {
             const optionDescription = option.description
               .toLowerCase()
@@ -65,7 +65,7 @@ const useTestRendererFocus = (isSubmitted, pageContent) => {
               // Forward slash is not allowed in a query selector
               .replace(/\//g, '\\/');
             const detailsElement = document.querySelector(
-              `.undesirable-${optionDescription}-details`
+              `.negative-side-effect-${optionDescription}-details`
             );
             if (detailsElement) {
               detailsElement.focus();

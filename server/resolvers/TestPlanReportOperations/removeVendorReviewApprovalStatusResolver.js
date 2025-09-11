@@ -2,10 +2,10 @@ const { AuthenticationError } = require('apollo-server-errors');
 const populateData = require('../../services/PopulatedData/populateData');
 const checkUserRole = require('../helpers/checkUserRole');
 const {
-  updateReviewerStatusByIds
+  updateReviewerStatusesByTestPlanReportId
 } = require('../../models/services/ReviewerStatusService');
 
-const promoteVendorReviewStatusResolver = async (
+const removeVendorReviewApprovalStatusResolver = async (
   { parentContext: { id: testPlanReportId } },
   _,
   context
@@ -18,20 +18,15 @@ const promoteVendorReviewStatusResolver = async (
     throw new AuthenticationError();
   }
 
-  // This being null means approval is from admin
-  const vendorId = user.vendorId || user.company?.id;
-
-  await updateReviewerStatusByIds({
+  await updateReviewerStatusesByTestPlanReportId({
     testPlanReportId,
-    userId: user.id,
     values: {
-      vendorId,
-      reviewStatus: 'APPROVED',
-      approvedAt: new Date()
+      reviewStatus: 'IN_PROGRESS',
+      approvedAt: null
     },
     transaction
   });
   return populateData({ testPlanReportId }, { context });
 };
 
-module.exports = promoteVendorReviewStatusResolver;
+module.exports = removeVendorReviewApprovalStatusResolver;
