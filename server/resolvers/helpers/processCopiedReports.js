@@ -426,7 +426,7 @@ const processCopiedReports = async ({
             oldTestResult.scenarioResults[index];
         });
 
-        // Preserve output and unexpectedBehaviors for each scenario if matching old result
+        // Preserve output and negativeSideEffects for each scenario if matching old result
         for (let [
           scenarioIndex,
           eachScenarioResult
@@ -443,8 +443,8 @@ const processCopiedReports = async ({
 
           eachScenarioResult.output = oldScenarioResult.output;
           eachScenarioResult.untestable = oldScenarioResult.untestable;
-          eachScenarioResult.unexpectedBehaviors =
-            oldScenarioResult.unexpectedBehaviors;
+          eachScenarioResult.negativeSideEffects =
+            oldScenarioResult.negativeSideEffects;
 
           const assertionResultsByAssertionIds = {};
           knownAssertionIdsForOldTest.forEach((id, index) => {

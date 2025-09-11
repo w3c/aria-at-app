@@ -4,19 +4,19 @@ import { Table } from 'react-bootstrap';
 import { UserPropType } from '../../common/proptypes';
 import styles from './Conflicts.module.css';
 
-const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
+const NegativeSideEffectsConflictsTable = ({ conflictingResults, testers }) => {
   const commandString = scenario => {
-    return `Unexpected Behaviors for 'After ${scenario.commands
+    return `Negative Side Effects for 'After ${scenario.commands
       .map(command => command.text)
       .join(' then ')}'`;
   };
 
-  const allUnexpectedBehaviors = useMemo(
+  const allNegativeSideEffects = useMemo(
     () =>
       Array.from(
         new Set(
           conflictingResults.flatMap(result =>
-            result.scenarioResult.unexpectedBehaviors.map(ub => ub.text)
+            result.scenarioResult.negativeSideEffects.map(ub => ub.text)
           )
         )
       ),
@@ -32,19 +32,19 @@ const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
       <Table className={styles.conflicts} bordered responsive>
         <thead>
           <tr>
-            <th>Unexpected Behavior</th>
+            <th>Negative Side Effect</th>
             {testers.map(tester => (
               <th key={tester.username}>{tester.username}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {allUnexpectedBehaviors.map((behaviorText, index) => (
+          {allNegativeSideEffects.map((behaviorText, index) => (
             <tr key={index}>
               <td>{behaviorText}</td>
               {conflictingResults.map((result, i) => {
                 const matchingBehavior =
-                  result.scenarioResult.unexpectedBehaviors.find(
+                  result.scenarioResult.negativeSideEffects.find(
                     ub => ub.text === behaviorText
                   );
                 return (
@@ -69,9 +69,9 @@ const UnexpectedBehaviorsConflictsTable = ({ conflictingResults, testers }) => {
   );
 };
 
-UnexpectedBehaviorsConflictsTable.propTypes = {
+NegativeSideEffectsConflictsTable.propTypes = {
   conflictingResults: PropTypes.arrayOf(PropTypes.object).isRequired,
   testers: PropTypes.arrayOf(UserPropType).isRequired
 };
 
-export default UnexpectedBehaviorsConflictsTable;
+export default NegativeSideEffectsConflictsTable;
