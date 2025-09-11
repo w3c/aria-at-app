@@ -1,3 +1,17 @@
+## [1.19.0](https://github.com/w3c/aria-at-app/compare/v1.18.1...v1.19.0) (2025-09-11)
+
+
+### Features
+
+* Allow approval removals for reports while still in Candidate Status ([#1488](https://github.com/w3c/aria-at-app/issues/1488)) ([713709a](https://github.com/w3c/aria-at-app/commit/713709af84203fb3976b99e7725eb0ef8f11288f)), closes [#1411](https://github.com/w3c/aria-at-app/issues/1411)
+
+
+### Bug Fixes
+
+* Missing test status in test navigator ([#1495](https://github.com/w3c/aria-at-app/issues/1495)) ([423b39a](https://github.com/w3c/aria-at-app/commit/423b39a9c44d30ff18eeae8e5af283fe5377fe65))
+* updates punctuation and capitalization normalization rules ([#1501](https://github.com/w3c/aria-at-app/issues/1501)) ([e78bd6c](https://github.com/w3c/aria-at-app/commit/e78bd6cc1a21baac303c9ed4c300284f6ba240e3))
+* use divs instead of spans for status list ([#1483](https://github.com/w3c/aria-at-app/issues/1483)) ([4981929](https://github.com/w3c/aria-at-app/commit/4981929755d738fe816a840d085391a22e544070))
+
 ### [1.18.1](https://github.com/w3c/aria-at-app/compare/v1.18.0...v1.18.1) (2025-08-14)
 
 
