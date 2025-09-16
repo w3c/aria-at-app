@@ -60,15 +60,21 @@ module.exports = {
           const atVersionIds = Array.from(
             new Set(
               finalizedTestResults
-                .map(tr => tr?.atVersionId)
-                .filter(id => id != null)
+                .map(tr =>
+                  tr?.atVersionId != null ? Number(tr.atVersionId) : null
+                )
+                .filter(id => id != null && Number.isFinite(id))
             )
           );
           const browserVersionIds = Array.from(
             new Set(
               finalizedTestResults
-                .map(tr => tr?.browserVersionId)
-                .filter(id => id != null)
+                .map(tr =>
+                  tr?.browserVersionId != null
+                    ? Number(tr.browserVersionId)
+                    : null
+                )
+                .filter(id => id != null && Number.isFinite(id))
             )
           );
           const atVersionIdToName = new Map();
@@ -103,8 +109,12 @@ module.exports = {
                   { passed: a?.passed, failedReason: a?.failedReason }
                 ])
               );
-              const atVersionId = tr?.atVersionId ?? null;
-              const browserVersionId = tr?.browserVersionId ?? null;
+              const atVersionId =
+                tr?.atVersionId != null ? Number(tr.atVersionId) : null;
+              const browserVersionId =
+                tr?.browserVersionId != null
+                  ? Number(tr.browserVersionId)
+                  : null;
               const atVersionName =
                 (atVersionId != null && atVersionIdToName.get(atVersionId)) ||
                 '';
