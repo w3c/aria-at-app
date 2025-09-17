@@ -72,7 +72,8 @@ const StartBotRunButton = ({ testPlanReport, onChange }) => {
         actions={[
           {
             label: 'Start',
-            onClick: onConfirm
+            onClick: onConfirm,
+            testId: 'confirm-start-bot-run'
           }
         ]}
       />

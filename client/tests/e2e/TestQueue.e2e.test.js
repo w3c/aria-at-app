@@ -635,4 +635,102 @@ describe('Test Queue tester traits when reports exist', () => {
       expect(postAssignValidTable).toBe(true);
     });
   });
+
+  it('starts a bot run and reassigns self after completion', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      const modalDialogSectionButtonSelector =
+        'button#disclosure-btn-modal-dialog-0';
+      const modalDialogTableSelector =
+        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+
+      await page.waitForSelector(modalDialogSectionButtonSelector);
+      await page.click(modalDialogSectionButtonSelector);
+      await page.waitForSelector(modalDialogTableSelector);
+
+      // Start NVDA bot run and confirm (use DOM click to avoid overlay issues)
+      await page.$eval(modalDialogTableSelector, el => {
+        const btn = Array.from(el.querySelectorAll('button')).find(b =>
+          b.innerText.includes('Start NVDA Bot Run')
+        );
+        if (btn) btn.click();
+      });
+      await page.waitForSelector('.modal-title ::-p-text(Start NVDA Bot Run)');
+      await page.waitForSelector('button[data-testid="confirm-start-bot-run"]');
+      await page.click('button[data-testid="confirm-start-bot-run"]');
+      await page.waitForNetworkIdle();
+      // Open Manage dialog and stop running to quickly mark job finished (CANCELLED counts as finished)
+      await page.$eval(modalDialogTableSelector, el => {
+        const btn = Array.from(el.querySelectorAll('button')).find(b =>
+          b.innerText.includes('Manage NVDA Bot Run')
+        );
+        if (btn) btn.click();
+      });
+      await page.waitForSelector('.modal-title ::-p-text(Manage NVDA Bot Run)');
+      await page.waitForSelector('button ::-p-text(Stop Running)');
+      await page.click('button ::-p-text(Stop Running)');
+      await page.waitForNetworkIdle();
+
+      // Re-open Manage dialog and assign self (enabled after job is finished)
+      await page.$eval(modalDialogTableSelector, el => {
+        const btn = Array.from(el.querySelectorAll('button')).find(b =>
+          b.innerText.includes('Manage NVDA Bot Run')
+        );
+        if (btn) btn.click();
+      });
+      await page.waitForSelector('.modal-dialog.manage-bot-run-dialog');
+      await page.waitForSelector(
+        '.modal-dialog.manage-bot-run-dialog button[data-testid="assign-self-bot-run"]',
+        { visible: true }
+      );
+      await page.waitForFunction(() => {
+        const btn = document.querySelector(
+          '.modal-dialog.manage-bot-run-dialog button[data-testid="assign-self-bot-run"]'
+        );
+        return !!btn && !btn.disabled;
+      });
+      // Was having issues with the button not being clickable, so using DOM click
+      await page.$eval(
+        '.modal-dialog.manage-bot-run-dialog button[data-testid="assign-self-bot-run"]',
+        el => {
+          el.scrollIntoView({ block: 'center', inline: 'center' });
+          el.click();
+        }
+      );
+      await page.waitForSelector('::-p-text(Unassign Yourself)');
+      await page.waitForSelector('a[role="button"] ::-p-text(Start Testing)');
+
+      // Validate that self-assignment is reflected in the table and Start Testing is enabled as a link
+      const postAssignChecks = await page.$eval(
+        modalDialogTableSelector,
+        el => {
+          const sanitizedText = text =>
+            text.replaceAll(String.fromCharCode(160), ' ').trim();
+
+          const cells = Array.from(el.querySelectorAll('td'));
+          const testersColumn = cells[2];
+          const actionsColumn = cells[4];
+
+          const testersText = sanitizedText(testersColumn.innerText);
+          const hasUnassignYourself = testersText.includes('Unassign Yourself');
+
+          const startTestingLink =
+            actionsColumn.querySelector('a[role="button"]');
+          const startTestingText = sanitizedText(
+            startTestingLink ? startTestingLink.innerText : ''
+          );
+
+          return {
+            hasUnassignYourself,
+            hasStartTestingLink: !!startTestingLink,
+            startTestingText
+          };
+        }
+      );
+      expect(postAssignChecks.hasUnassignYourself).toBe(true);
+      expect(postAssignChecks.hasStartTestingLink).toBe(true);
+      expect(postAssignChecks.startTestingText.includes('Start Testing')).toBe(
+        true
+      );
+    });
+  });
 });

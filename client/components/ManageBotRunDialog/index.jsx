@@ -152,7 +152,9 @@ const ManageBotRunDialog = ({
 
     if (isTester) {
       const AssignSelfButton = props => (
-        <Button {...props}>Assign Yourself</Button>
+        <Button {...props} data-testid="assign-self-bot-run">
+          Assign Yourself
+        </Button>
       );
       return [
         {
