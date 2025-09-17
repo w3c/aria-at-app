@@ -29,6 +29,20 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
           id
           output
           untestable
+          match {
+            type
+            source {
+              testPlanReportId
+              testPlanVersionId
+              testResultId
+              scenarioId
+              atVersionId
+              atVersionName
+              browserVersionId
+              browserVersionName
+              output
+            }
+          }
           scenario {
             id
             commands {
@@ -49,8 +63,8 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
           mayAssertionResults: assertionResults(priority: MAY) {
             ...AssertionResultFields
           }
-          hasUnexpected
-          unexpectedBehaviors {
+          hasNegativeSideEffect
+          negativeSideEffects {
             id
             text
             impact

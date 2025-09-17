@@ -99,7 +99,7 @@ export const ScenarioResultPropType = PropTypes.shape({
   mustAssertionResults: PropTypes.arrayOf(AssertionResultPropType),
   shouldAssertionResults: PropTypes.arrayOf(AssertionResultPropType),
   mayAssertionResults: PropTypes.arrayOf(AssertionResultPropType),
-  unexpectedBehaviors: PropTypes.arrayOf(
+  negativeSideEffects: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       text: PropTypes.string.isRequired,
@@ -193,7 +193,7 @@ export const TestPlanReportConflictPropType = PropTypes.shape({
       }).isRequired,
       scenarioResult: PropTypes.shape({
         output: PropTypes.string,
-        unexpectedBehaviors: PropTypes.arrayOf(
+        negativeSideEffects: PropTypes.arrayOf(
           PropTypes.shape({
             id: PropTypes.string.isRequired,
             text: PropTypes.string.isRequired,
@@ -225,7 +225,7 @@ export const TestPlanReportMetricsPropType = PropTypes.shape({
   testsPassedCount: PropTypes.number,
   testsCount: PropTypes.number,
   testsFailedCount: PropTypes.number,
-  unexpectedBehaviorCount: PropTypes.number,
+  negativeSideEffectCount: PropTypes.number,
   severeImpactPassedAssertionCount: PropTypes.number,
   severeImpactFailedAssertionCount: PropTypes.number,
   moderateImpactPassedAssertionCount: PropTypes.number,
@@ -234,7 +234,7 @@ export const TestPlanReportMetricsPropType = PropTypes.shape({
   mustFormatted: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   shouldFormatted: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
   mayFormatted: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
-  unexpectedBehaviorsFormatted: PropTypes.oneOfType([
+  negativeSideEffectsFormatted: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.string
   ]),

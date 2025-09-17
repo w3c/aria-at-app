@@ -145,7 +145,9 @@ describe('graphql', () => {
       'Vendor',
       'scheduleCollectionJob',
       'CollectionJobTestStatus',
-      'ReviewerStatus'
+      'ReviewerStatus',
+      'ScenarioResultMatchSource',
+      'ScenarioResultMatch'
     ];
     const excludedTypeNameAndField = [
       // Items formatted like this:
@@ -167,7 +169,8 @@ describe('graphql', () => {
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
       ['Mutation', 'restartCollectionJob'],
-      ['CollectionJobOperations', 'retryCanceledCollections']
+      ['CollectionJobOperations', 'retryCanceledCollections'],
+      ['ScenarioResult', 'match']
     ];
     ({
       typeAwareQuery,
@@ -534,7 +537,7 @@ describe('graphql', () => {
                     id
                   }
                   output
-                  hasUnexpected
+                  hasNegativeSideEffect
                   untestable
                   assertionResults {
                     __typename
@@ -544,7 +547,7 @@ describe('graphql', () => {
                     }
                     passed
                   }
-                  unexpectedBehaviors {
+                  negativeSideEffects {
                     __typename
                     id
                     text
@@ -1050,13 +1053,13 @@ const getMutationInputs = async () => {
         scenarioResults {
           id
           output
-          hasUnexpected
+          hasNegativeSideEffect
           untestable
           assertionResults {
             id
             passed
           }
-          unexpectedBehaviors {
+          negativeSideEffects {
             id
             details
           }
@@ -1106,7 +1109,7 @@ const getMutationInputs = async () => {
       scenarioResult => ({
         ...scenarioResult,
         output: 'sample output',
-        hasUnexpected: 'doesNotHaveUnexpected',
+        hasNegativeSideEffect: 'doesNotHaveNegativeSideEffect',
         untestable: false,
         assertionResults: scenarioResult.assertionResults.map(
           assertionResult => ({
@@ -1114,7 +1117,7 @@ const getMutationInputs = async () => {
             passed: true
           })
         ),
-        unexpectedBehaviors: []
+        negativeSideEffects: []
       })
     )
   };
