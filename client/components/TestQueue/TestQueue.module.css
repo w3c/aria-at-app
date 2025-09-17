@@ -116,6 +116,7 @@ h1.test-queue-heading {
 /* AssignTesters */
 .assign-testers-container {
   display: flex;
+  position: relative;
 
   .dropdown-button-label {
     margin-right: var(--8px);
@@ -125,6 +126,8 @@ h1.test-queue-heading {
     width: 15rem;
     max-height: 8rem;
     overflow-y: scroll;
+    position: absolute;
+    z-index: 1000;
   }
 
   [role='menuitem']:active {
@@ -159,6 +162,19 @@ h1.test-queue-heading {
     color: var(--dark-gray-text);
     font-style: normal;
     display: inline-block;
+  }
+}
+
+.tester-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  .assign-testers-dropdown-button {
+    margin: 0;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
   }
 }
 

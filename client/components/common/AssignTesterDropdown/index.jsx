@@ -22,6 +22,8 @@ const AssignTesterDropdown = ({
   possibleTesters,
   onChange,
   label,
+  srLabel = 'Assign Testers',
+  faAssignIcon = faUser,
   disabled = false,
   dropdownAssignTesterButtonRef,
   setAlertMessage = () => {}
@@ -97,8 +99,8 @@ const AssignTesterDropdown = ({
           <span className={testQueueStyles.dropdownButtonLabel}>{label}</span>
         ) : (
           <>
-            <span className="sr-only">Assign Testers</span>
-            <FontAwesomeIcon icon={faUser} />
+            <span className="sr-only">{srLabel}</span>
+            <FontAwesomeIcon icon={faAssignIcon} />
           </>
         )}
       </>
@@ -218,6 +220,8 @@ AssignTesterDropdown.propTypes = {
   onChange: PropTypes.func.isRequired,
   testPlanRun: TestPlanRunPropType,
   label: PropTypes.string,
+  srLabel: PropTypes.string,
+  faAssignIcon: PropTypes.any,
   draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType),
   setAlertMessage: PropTypes.func,
   dropdownAssignTesterButtonRef: PropTypes.object,

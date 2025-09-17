@@ -277,6 +277,13 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
                   testPlanReport={testPlanReport}
                   testPlanRun={testPlanRun}
                   tester={tester}
+                  isAdmin={isAdmin}
+                  reassignTesters={testers.filter(t => !t.isBot)}
+                  onReassign={async () => {
+                    await client.refetchQueries({
+                      include: ['TestQueuePage', 'TestPlanReportStatusDialog']
+                    });
+                  }}
                 />
                 {index ===
                 testPlanReport.draftTestPlanRuns.length - 1 ? null : (
