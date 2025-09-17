@@ -42,14 +42,25 @@ const TestQueueRunCompletionStatus = ({
     testPlanReport.runnableTestsLength
   ]);
 
-  // Calculate completed responses (tests with completedAt aka submitted tests)
-  const completedResponses =
-    testPlanRun?.testResults?.reduce(
-      (acc, test) => acc + (test.completedAt ? 1 : 0),
-      0
-    ) || 0;
+  const getNumCompletedOutputs = result => {
+    return result.reduce((acc, scenario) => {
+      return (
+        acc +
+        (typeof scenario.output === 'string' && scenario.output !== '' ? 1 : 0)
+      );
+    }, 0);
+  };
 
-  const totalResponses = testPlanReport.runnableTestsLength;
+  // Calculate completed responses (number of commands with outputs)
+  const completedResponses = testPlanRun?.testResults?.reduce(
+    (acc, result) => acc + getNumCompletedOutputs(result),
+    0
+  );
+
+  const totalResponses = testPlanReport.runnableTestsLength.reduce(
+    (acc, test) => acc + test.scenarioResults.length,
+    0
+  );
 
   let info;
   let completionStatus;
