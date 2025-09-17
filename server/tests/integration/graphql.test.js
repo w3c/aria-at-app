@@ -579,6 +579,7 @@ describe('graphql', () => {
               startedAt
               completedAt
             }
+            totalPossibleAssertions
             isRerun
             percentComplete
             metrics

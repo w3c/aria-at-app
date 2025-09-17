@@ -4,7 +4,7 @@ import { useApolloClient } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faRobot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Button, Dropdown } from 'react-bootstrap';
-import CompletionStatusListItem from '../TestQueueCompletionStatusListItem';
+import TestQueueRunCompletionStatus from '../TestQueueRunCompletionStatus';
 import useConfirmationModal from '../../hooks/useConfirmationModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
@@ -272,7 +272,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
             const rowId = `plan-${testPlanReport.id}-assignee-${tester.id}-run-${testPlanRun.id}`;
             return (
               <React.Fragment key={rowId}>
-                <CompletionStatusListItem
+                <TestQueueRunCompletionStatus
                   rowId={rowId}
                   testPlanReport={testPlanReport}
                   testPlanRun={testPlanRun}

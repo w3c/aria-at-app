@@ -152,10 +152,11 @@ h1.test-queue-heading {
 
 /* CompletionStatusItem */
 .completion-status-list-item {
+  font-size: var(--14px);
+  font-weight: normal;
+  padding-right: 0.5rem;
   a,
   span {
-    font-weight: normal;
-    padding-right: 0.5rem;
   }
 
   em {

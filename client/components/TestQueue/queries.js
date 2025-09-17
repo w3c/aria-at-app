@@ -52,6 +52,14 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         ...TestPlanVersionFields
         testPlanReports(isFinal: false) {
           ...TestPlanReportFields
+          runnableTests {
+            scenarios {
+              id
+              at {
+                id
+              }
+            }
+          }
           at {
             ...AtFields
             atVersions {
@@ -72,6 +80,9 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             testResultsLength
             testResults {
               ...TestResultFields
+              scenarioResults {
+                output
+              }
             }
           }
         }
