@@ -10,6 +10,10 @@ const {
   TEST_PLAN_ATTRIBUTES,
   AT_VERSION_ATTRIBUTES
 } = require('./helpers');
+const {
+  computeTotalPossibleAssertions
+} = require('../../util/computeTotalPossibleAssertions');
+const getTests = require('./TestsService');
 const { TestPlanReport, TestPlanVersion } = require('../');
 
 // custom column additions to Models being queried
@@ -466,6 +470,24 @@ const cloneTestPlanReportWithNewAtVersion = async (
   return newReport;
 };
 
+/**
+ * Compute the total possible assertions for a TestPlanReport.
+ *
+ * @param {TestPlanReport} testPlanReport TestPlanReport to compute total possible assertions for
+ * @returns {number} Total possible assertions
+ */
+const computeTotalPossibleAssertionsForReport = testPlanReport => {
+  const atId = testPlanReport.atId || testPlanReport.at?.id;
+  if (!atId) return 0;
+  // Build fully-populated tests
+  const tests = getTests(testPlanReport) || [];
+  // Limit to runnable tests for this report's AT
+  const runnableTests = tests.filter(
+    test => Array.isArray(test.atIds) && test.atIds.includes(atId)
+  );
+  return computeTotalPossibleAssertions(runnableTests, atId);
+};
+
 module.exports = {
   // Basic CRUD
   getTestPlanReportById,
@@ -475,5 +497,6 @@ module.exports = {
   removeTestPlanReportById,
   getOrCreateTestPlanReport,
   // Utils
-  cloneTestPlanReportWithNewAtVersion
+  cloneTestPlanReportWithNewAtVersion,
+  computeTotalPossibleAssertionsForReport
 };
