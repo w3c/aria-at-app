@@ -42,14 +42,13 @@ const TestQueueRunCompletionStatus = ({
     testPlanReport.runnableTestsLength
   ]);
 
-  const getNumCompletedOutputs = result => {
-    return result.reduce((acc, scenario) => {
+  const getNumCompletedOutputs = result =>
+    result.scenarioResults.reduce((acc, scenario) => {
       return (
         acc +
         (typeof scenario.output === 'string' && scenario.output !== '' ? 1 : 0)
       );
     }, 0);
-  };
 
   // Calculate completed responses (number of commands with outputs)
   const completedResponses = testPlanRun?.testResults?.reduce(
@@ -57,8 +56,16 @@ const TestQueueRunCompletionStatus = ({
     0
   );
 
-  const totalResponses = testPlanReport.runnableTestsLength.reduce(
-    (acc, test) => acc + test.scenarioResults.length,
+  // Scenarios, even on a runnable test, may have different ATs than the report
+  const getNumScenariosTest = test =>
+    test.scenarios.reduce(
+      (acc, scenario) =>
+        acc + (scenario.at.id === testPlanReport.at.id ? 1 : 0),
+      0
+    );
+
+  const totalResponses = testPlanReport.runnableTests.reduce(
+    (acc, test) => acc + getNumScenariosTest(test),
     0
   );
 
