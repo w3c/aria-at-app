@@ -42,15 +42,19 @@ const TestQueueRunCompletionStatus = ({
     testPlanReport.runnableTestsLength
   ]);
 
-  const getNumCompletedOutputs = result =>
-    result.scenarioResults.reduce((acc, scenario) => {
-      return (
-        acc +
-        (typeof scenario.output === 'string' && scenario.output !== '' ? 1 : 0)
-      );
-    }, 0);
+  const isScenarioResultCompleted = scenarioResult =>
+    scenarioResult.negativeSideEffects !== null &&
+    scenarioResult.assertionResults.every(
+      assertionResult => assertionResult.passed !== null
+    );
 
-  // Calculate completed responses (number of commands with outputs)
+  const getNumCompletedOutputs = result => {
+    return result.scenarioResults.reduce((acc, scenario) => {
+      return acc + (isScenarioResultCompleted(scenario) ? 1 : 0);
+    }, 0);
+  };
+
+  // Calculate completed responses (number of commands with outputs && complete verdicts)
   const completedResponses = testPlanRun?.testResults?.reduce(
     (acc, result) => acc + getNumCompletedOutputs(result),
     0

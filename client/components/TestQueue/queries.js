@@ -82,6 +82,12 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
               ...TestResultFields
               scenarioResults {
                 output
+                assertionResults {
+                  passed
+                }
+                negativeSideEffects {
+                  id
+                }
               }
             }
           }
