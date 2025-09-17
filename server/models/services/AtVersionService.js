@@ -116,6 +116,27 @@ const getAtVersionWithRequirements = async (
 };
 
 /**
+ * Gets the latest automation-supported AT version for a given AT.
+ * @param {number} atId - ID of the AT
+ * @param {*} transaction - Sequelize transaction
+ * @returns {Promise<object>} The latest automation-supported AT version
+ */
+const getLatestAutomationSupportedAtVersion = async (atId, transaction) => {
+  const versions = await getAtVersions({
+    where: { atId },
+    pagination: { order: [['releasedAt', 'ASC']] },
+    transaction
+  });
+  const atName = versions[0]?.at?.name;
+  const supportedNames = AT_VERSIONS_SUPPORTED_BY_COLLECTION_JOBS[atName] || [];
+  const supported = versions.filter(v => supportedNames.includes(v.name));
+  if (!supported.length) {
+    throw new Error(`No automation-supported versions found for AT ${atId}`);
+  }
+  return supported[supported.length - 1];
+};
+
+/**
  * You can pass any of the attribute arrays as '[]' to exclude that related association
  * @param {number} options.id - unique id of the AtVersion model being queried
  * @param {object} options
@@ -608,6 +629,7 @@ const getHistoricalReportsForVerdictCopying = async ({
 module.exports = {
   getAtVersions,
   getAtVersionWithRequirements,
+  getLatestAutomationSupportedAtVersion,
   getAtVersionById,
   getAtVersionByQuery,
   createAtVersion,
