@@ -229,7 +229,7 @@ const TestRun = () => {
     // Capture the AT & Browser Versions
     const defaultAtVersionId = testPlanReport.at.atVersions[0].id;
     const defaultBrowserVersionId =
-      testPlanReport.browser.browserVersions[0].id;
+      testPlanReport.browser.browserVersions[0]?.id;
 
     const currentTestAtVersionId =
       currentTest.testResult?.atVersion?.id || defaultAtVersionId;
@@ -254,7 +254,7 @@ const TestRun = () => {
     // Only show major version of browser
     currentBrowserVersion = {
       id: currentAtVersion.id,
-      name: currentBrowserVersion.name.split('.')[0]
+      name: currentBrowserVersion.name?.split('.')[0]
     };
 
     // Auto batch the states
