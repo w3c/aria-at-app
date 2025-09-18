@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { Container } from 'react-bootstrap';
+import KeyMetricsBanner from '../KeyMetricsBanner';
 import clsx from 'clsx';
 import iconJoinCommunity from '../../assets/join-community.jpg';
 import iconWriteTests from '../../assets/write-tests.jpg';
@@ -20,6 +21,7 @@ const Home = () => {
       <Helmet>
         <title>Home | ARIA-AT</title>
       </Helmet>
+      <KeyMetricsBanner />
       <section className={styles.heroSection}>
         <h1>Enabling Interoperability for Assistive Technology Users</h1>
         <div className={styles.heroCopyAndVideo}>
