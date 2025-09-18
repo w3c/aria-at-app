@@ -77,7 +77,12 @@ const TestQueueRunCompletionStatus = ({
   let completionStatus;
 
   if (isBot) {
-    info = <FontAwesomeIcon icon={faRobot} aria-label={username} />;
+    info = (
+      <span>
+        <FontAwesomeIcon icon={faRobot} />
+        <span className="sr-only">{username}</span>
+      </span>
+    );
   } else {
     info = (
       <a
