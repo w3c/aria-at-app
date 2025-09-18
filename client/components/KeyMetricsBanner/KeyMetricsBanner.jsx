@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Alert } from 'react-bootstrap';
 
 const KeyMetricsBanner = () => {
-  const [showBanner, setShowBanner] = useState(true);
+  //   const [showBanner, setShowBanner] = useState(true);
 
   return (
     <Alert
       variant="primary"
-      show={showBanner}
-      onClose={() => setShowBanner(false)}
-      dismissible
+      //   show={showBanner}
+      //   onClose={() => setShowBanner(false)}
+      //   dismissible
     >
       As of <strong>Sep 4, 2025</strong>, <strong>20,455</strong> interop
       verdicts for <strong>799</strong> AT commands enabled by{' '}
