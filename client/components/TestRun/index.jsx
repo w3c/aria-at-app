@@ -1,3 +1,6 @@
+// Enabling GitHub actions on fork
+// Triggering GitHub Actions
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -104,6 +107,7 @@ const TestRun = () => {
   const [showReviewConflictsModal, setShowReviewConflictsModal] =
     useState(false);
   const [showGetInvolvedModal, setShowGetInvolvedModal] = useState(false);
+  const [showConfirmNextModal, setShowConfirmNextModal] = useState(false);
 
   // Modal State Values
   const [isShowingAtBrowserModal, setIsShowingAtBrowserModal] = useState(true);
@@ -506,63 +510,58 @@ const TestRun = () => {
     return { ...testResult, scenarioResults };
   };
 
+  const saveForm = async (
+    withResult = false,
+    forceSave = false,
+    forceEdit = false
+  ) => {
+    if (updateMessageComponent) {
+      setUpdateMessageComponent(null);
+    }
+    try {
+      if (forceEdit) setIsTestEditClicked(true);
+      else setIsTestEditClicked(false);
+
+      if (!isSignedIn) return true;
+      if (!forceEdit && currentTest.testResult?.completedAt) return true;
+
+      setIsSavingForm(true);
+      const scenarioResults = remapScenarioResults(
+        testRunStateRef.current || recentTestRunStateRef.current,
+        currentTest.testResult?.scenarioResults,
+        false
+      );
+
+      await handleSaveOrSubmitTestResultAction(
+        {
+          atVersionId: currentTestAtVersionId,
+          browserVersionId: currentTestBrowserVersionId,
+          scenarioResults
+        },
+        forceSave ? false : !!testRunResultRef.current
+      );
+
+      if (withResult && !forceSave) {
+        setIsSavingForm(false);
+        return !!testRunResultRef.current;
+      }
+
+      setIsSavingForm(false);
+      return true;
+    } catch (e) {
+      console.error('save.error', e);
+      setIsSavingForm(false);
+    }
+  };
+
   const performButtonAction = async (action, index) => {
     // TODO: Revise function
-    const saveForm = async (
-      withResult = false,
-      forceSave = false,
-      forceEdit = false
-    ) => {
-      if (updateMessageComponent) {
-        setUpdateMessageComponent(null);
-      }
-      try {
-        if (forceEdit) setIsTestEditClicked(true);
-        else setIsTestEditClicked(false);
-
-        if (!isSignedIn) return true;
-        if (!forceEdit && currentTest.testResult?.completedAt) return true;
-
-        setIsSavingForm(true);
-        const scenarioResults = remapScenarioResults(
-          testRunStateRef.current || recentTestRunStateRef.current,
-          currentTest.testResult?.scenarioResults,
-          false
-        );
-
-        await handleSaveOrSubmitTestResultAction(
-          {
-            atVersionId: currentTestAtVersionId,
-            browserVersionId: currentTestBrowserVersionId,
-            scenarioResults
-          },
-          forceSave ? false : !!testRunResultRef.current
-        );
-
-        if (withResult && !forceSave) {
-          setIsSavingForm(false);
-          return !!testRunResultRef.current;
-        }
-
-        setIsSavingForm(false);
-        return true;
-      } catch (e) {
-        console.error('save.error', e);
-        setIsSavingForm(false);
-      }
-    };
 
     switch (action) {
       case 'goToTestAtIndex': {
         // Save renderer's form state
         await saveForm(false, true);
         setCurrentTestIndex(index);
-        break;
-      }
-      case 'goToNextTest': {
-        // Save renderer's form state
-        await saveForm(false, true);
-        navigateTests(false, currentTest, tests, setCurrentTestIndex);
         break;
       }
       case 'goToPreviousTest': {
@@ -608,7 +607,10 @@ const TestRun = () => {
 
   const handleSaveClick = async () => performButtonAction('saveTest');
 
-  const handleNextTestClick = async () => performButtonAction('goToNextTest');
+  const handleNextTestClick = async () => {
+    setShowConfirmNextModal(false);
+    navigateTests(false, currentTest, tests, setCurrentTestIndex);
+  };
 
   const handlePreviousTestClick = async () =>
     performButtonAction('goToPreviousTest');
@@ -926,7 +928,13 @@ const TestRun = () => {
     let forwardButtons = []; // These are buttons that navigate to next tests and continue
 
     const nextButton = (
-      <Button variant="secondary" onClick={handleNextTestClick}>
+      <Button
+        variant="secondary"
+        onClick={async () => {
+          await saveForm(false, true); // Save before modal
+          setShowConfirmNextModal(true); // Then show modal
+        }}
+      >
         Next Test
       </Button>
     );
@@ -982,7 +990,7 @@ const TestRun = () => {
         </Button>
       );
       if (!isLastTest) forwardButtons = [nextButton];
-      primaryButtons = [previousButton, ...forwardButtons, saveResultsButton];
+      primaryButtons = [previousButton, saveResultsButton, ...forwardButtons];
     }
 
     const externalLogsUrl = testPlanRun?.collectionJob?.externalLogsUrl;
@@ -1324,6 +1332,24 @@ const TestRun = () => {
               handleClose={handleAtAndBrowserDetailsModalCloseAction}
             />
           )}
+
+          <BasicModal
+            show={showConfirmNextModal}
+            centered={true}
+            animation={false}
+            title="Proceed to Next Test?"
+            content="Are you sure you want to go to the next test? This action will NOT save the results of the current test before proceeding."
+            actions={[
+              {
+                label: 'Yes',
+                variant: 'primary',
+                onClick: () => handleNextTestClick()
+              }
+            ]}
+            closeLabel="No"
+            handleClose={() => setShowConfirmNextModal(false)}
+            closeButton={false}
+          />
         </Container>
       </CollectionJobContextProvider>
     )
