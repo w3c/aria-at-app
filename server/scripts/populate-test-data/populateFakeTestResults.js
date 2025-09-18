@@ -36,7 +36,8 @@ const populateFakeTestResults = async (
   {
     transaction,
     atVersionId = null,
-    numFakeTestResultConflicts = FAKE_RESULT_CONFLICTS_OPTIONS.SINGLE
+    numFakeTestResultConflicts = FAKE_RESULT_CONFLICTS_OPTIONS.SINGLE,
+    varyOutputsPerScenario = false
   }
 ) => {
   const {
@@ -84,7 +85,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'passing',
           submit: true,
           transaction,
-          atVersionId
+          atVersionId,
+          varyOutputsPerScenario
         });
         break;
       case 'completeAndFailingDueToIncorrectAssertions':
@@ -154,7 +156,8 @@ const populateFakeTestResults = async (
           fakeTestResultType: 'passing',
           submit: false,
           transaction,
-          atVersionId
+          atVersionId,
+          varyOutputsPerScenario
         });
         break;
       case 'incompleteAndFailingDueToIncorrectAssertions':
@@ -226,7 +229,8 @@ const populateFakeTestResults = async (
         index: i,
         fakeTestResultType: 'passing',
         submit: true,
-        transaction
+        transaction,
+        varyOutputsPerScenario
       });
     }
   }
@@ -240,7 +244,8 @@ const getFake = async ({
   submit,
   numFakeTestResultConflicts,
   transaction,
-  atVersionId = null
+  atVersionId = null,
+  varyOutputsPerScenario = false
 }) => {
   const testId = testPlanReport.runnableTests[index].id;
 
@@ -298,18 +303,22 @@ const getFake = async ({
     ...baseTestResult,
     atVersionId: atVersionId,
     browserVersionId: browserVersion.id,
-    scenarioResults: baseTestResult.scenarioResults.map(scenarioResult => ({
-      ...scenarioResult,
-      output: 'automatically seeded sample output',
-      hasNegativeSideEffect: 'doesNotHaveNegativeSideEffect',
-      assertionResults: scenarioResult.assertionResults.map(
-        assertionResult => ({
-          ...assertionResult,
-          passed: true
-        })
-      ),
-      negativeSideEffects: []
-    }))
+    scenarioResults: baseTestResult.scenarioResults.map(
+      (scenarioResult, idx) => ({
+        ...scenarioResult,
+        output: varyOutputsPerScenario
+          ? `seeded output ${idx + 1}`
+          : 'automatically seeded sample output',
+        hasNegativeSideEffect: 'doesNotHaveNegativeSideEffect',
+        assertionResults: scenarioResult.assertionResults.map(
+          assertionResult => ({
+            ...assertionResult,
+            passed: true
+          })
+        ),
+        negativeSideEffects: []
+      })
+    )
   });
 
   const testResult = getPassing();
