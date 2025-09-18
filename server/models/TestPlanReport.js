@@ -36,10 +36,6 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: null,
         allowNull: true
       },
-      historicalReportId: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-      },
       percentComplete: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -101,11 +97,6 @@ module.exports = function (sequelize, DataTypes) {
       ...Model.TEST_PLAN_RUN_ASSOCIATION,
       foreignKey: 'testPlanReportId',
       sourceKey: 'id'
-    });
-
-    Model.belongsTo(models.TestPlanReport, {
-      as: 'historicalReport',
-      foreignKey: 'historicalReportId'
     });
   };
 

@@ -54,10 +54,7 @@ const TestRenderer = ({
   isEdit = false,
   setIsRendererReady = false,
   commonIssueContent,
-  isRerunReport = false,
-  historicalTestResult = null,
-  historicalAtName = null,
-  historicalAtVersion = null
+  isRerunReport = false
 }) => {
   const { scenarioResults, test = {}, completedAt } = testResult;
   const { renderableContent } = test;
@@ -144,6 +141,7 @@ const TestRenderer = ({
         assertionResults,
         hasNegativeSideEffect,
         negativeSideEffects,
+        match,
         highlightRequired = false, // atOutput
         negativeSideEffectHighlightRequired = false
       } = scenarioResults[i];
@@ -211,6 +209,8 @@ const TestRenderer = ({
 
       commands[i].unexpected.highlightRequired =
         negativeSideEffectHighlightRequired;
+      // Attach the match metadata onto the command for downstream components
+      commands[i].match = match || null;
     }
 
     return { ...state, commands, currentUserAction: 'validateResults' };
@@ -449,13 +449,9 @@ const TestRenderer = ({
               {pageContent.results.header.description}
             </p>
             {pageContent.results.commands.map((value, commandIndex) => {
-              // Get historical output for this command from historicalTestResult
-              const historicalOutput =
-                (isRerunReport &&
-                  historicalTestResult?.scenarioResults?.[commandIndex]
-                    ?.output) ||
-                null;
-
+              const scenarioMatch =
+                testResult?.scenarioResults?.[commandIndex]?.match || null;
+              const matchAtName = at?.name || null;
               return (
                 <CommandResults
                   key={commandIndex}
@@ -471,9 +467,8 @@ const TestRenderer = ({
                   isReviewingBot={isReviewingBot}
                   isReadOnly={isReadOnly}
                   isRerunReport={isRerunReport}
-                  historicalOutput={historicalOutput}
-                  historicalAtName={historicalAtName}
-                  historicalAtVersion={historicalAtVersion}
+                  match={scenarioMatch}
+                  historicalAtName={matchAtName}
                 />
               );
             })}

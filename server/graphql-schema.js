@@ -823,6 +823,31 @@ const graphqlSchema = gql`
     Submitted test results require this field to be filled in.
     """
     negativeSideEffects: [NegativeSideEffect]
+    match: ScenarioResultMatch
+  }
+
+  enum MatchType {
+    SAME_SCENARIO
+    CROSS_SCENARIO
+    INCOMPLETE
+    NONE
+  }
+
+  type ScenarioResultMatchSource {
+    testPlanVersionId: ID!
+    testPlanReportId: ID!
+    testResultId: ID!
+    scenarioId: ID!
+    atVersionId: ID!
+    atVersionName: String!
+    browserVersionId: ID!
+    browserVersionName: String!
+    output: String!
+  }
+
+  type ScenarioResultMatch {
+    type: MatchType!
+    source: ScenarioResultMatchSource
   }
 
   """
@@ -1226,13 +1251,14 @@ const graphqlSchema = gql`
     """
     recommendedAtVersion: AtVersion
     """
-    The historical report that this report is based on (for rerun reports).
-    """
-    historicalReport: TestPlanReport
-    """
     Whether this report is a rerun of a previous report.
     """
     isRerun: Boolean!
+    """
+    The total number of possible assertion verdicts for this TestPlanReport.
+    This is computed from runnable tests for the AT, accounting for EXCLUDE exceptions.
+    """
+    totalPossibleAssertions: Int!
   }
 
   """
@@ -1278,7 +1304,6 @@ const graphqlSchema = gql`
     minimumAtVersionId: ID
     browserId: ID!
     copyResultsFromTestPlanVersionId: ID
-    historicalReportId: ID
   }
 
   """
