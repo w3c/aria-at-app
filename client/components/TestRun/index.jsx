@@ -161,6 +161,28 @@ const TestRun = () => {
     }
   }
 
+  // Enforce read-only for testers when on hold
+  const isOnHold = !!testPlanReport?.onHold;
+  if (isOnHold && !isAdmin) {
+    isReadOnly = true;
+  }
+
+  // Show on-hold modal for testers
+  useEffect(() => {
+    if (isOnHold && !isAdmin) {
+      setThemedModalTitle('On hold');
+      setThemedModalContent(
+        <>
+          <p>
+            This test has been marked on hold. Please contact the admin before
+            continuing your work.
+          </p>
+        </>
+      );
+      setShowThemedModal(true);
+    }
+  }, [isOnHold, isAdmin]);
+
   // Define createTestResultForRenderer as a memoized function
   const createTestResultForRenderer = useCallback(
     async (testId, atVersionId, browserVersionId) => {
@@ -272,7 +294,7 @@ const TestRun = () => {
     setCurrentBrowserVersion(currentBrowserVersion);
     // Testers do not need to change AT/Browser versions
     // while assigning verdicts for previously automated tests
-    if (!isSignedIn || tester?.isBot) {
+    if (!isSignedIn || tester?.isBot || isReadOnly) {
       setIsShowingAtBrowserModal(false);
     }
     setPageReady(true);
@@ -360,6 +382,7 @@ const TestRun = () => {
   ) {
     adminReviewerOriginalTestRef.current = currentTest;
   }
+
   adminReviewerCheckedRef.current = true;
 
   let issueLink, commonIssueContent;
@@ -517,6 +540,8 @@ const TestRun = () => {
         setUpdateMessageComponent(null);
       }
       try {
+        // Do not attempt to save while read-only or without a test result
+        if (isReadOnly) return true;
         if (forceEdit) setIsTestEditClicked(true);
         else setIsTestEditClicked(false);
 
@@ -1023,14 +1048,14 @@ const TestRun = () => {
                   <FontAwesomeIcon icon={faRedo} color="var(--bg-dark-gray)" />
                 }
                 onClick={handleStartOverButtonClick}
-                disabled={!isSignedIn}
+                disabled={!isSignedIn || isReadOnly}
               />
             </li>
           )}
 
           <li>
             <OptionButton
-              text={!isSignedIn ? 'Close' : 'Save and Close'}
+              text={!isSignedIn || isReadOnly ? 'Close' : 'Save and Close'}
               onClick={handleCloseRunClick}
             />
           </li>

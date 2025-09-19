@@ -152,6 +152,7 @@ export const TestPlanReportPropType = PropTypes.shape({
   id: PropTypes.string.isRequired,
   metrics: PropTypes.object,
   isFinal: PropTypes.bool,
+  onHold: PropTypes.bool,
   createdAt: PropTypes.string,
   markedFinalAt: PropTypes.string,
   conflictsLength: PropTypes.number,

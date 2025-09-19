@@ -56,6 +56,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
       }
       testPlanReport {
         id
+        onHold
         isRerun
         conflicts {
           ...TestPlanReportConflictFields
@@ -116,6 +117,7 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
   query TestPlanRunAnonPage($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       id
+      onHold
       isRerun
       conflicts {
         ...TestPlanReportConflictFields
