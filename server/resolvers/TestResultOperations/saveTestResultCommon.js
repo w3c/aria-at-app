@@ -50,7 +50,7 @@ const saveTestResultCommon = async ({
     ],
     {
       pickKeys: ['id', 'testId', 'scenarioId', 'assertionId'],
-      excludeKeys: ['unexpectedBehaviors']
+      excludeKeys: ['negativeSideEffects']
     }
   );
   if (isCorrupted) {
@@ -140,17 +140,17 @@ const assertTestResultIsValid = (newTestResult, assertions = []) => {
     }
   };
 
-  const checkUnexpectedBehavior = unexpectedBehavior => {
-    const { impact, details } = unexpectedBehavior;
+  const checkNegativeSideEffect = negativeSideEffect => {
+    const { impact, details } = negativeSideEffect;
     if (!impact || !details) failed = true;
   };
 
   const checkScenarioResult = scenarioResult => {
-    if (!scenarioResult.output || !scenarioResult.unexpectedBehaviors) {
+    if (!scenarioResult.output || !scenarioResult.negativeSideEffects) {
       failed = true;
     }
     scenarioResult.assertionResults.forEach(checkAssertionResult);
-    scenarioResult.unexpectedBehaviors?.forEach(checkUnexpectedBehavior);
+    scenarioResult.negativeSideEffects?.forEach(checkNegativeSideEffect);
   };
 
   newTestResult.scenarioResults.forEach(checkScenarioResult);

@@ -37,20 +37,20 @@ const graphqlSchema = gql`
     VENDOR
   }
 
-  enum HasUnexpected {
+  enum HasNegativeSideEffect {
     """
     The author of the Test Plan Run has not specified whether or not they
-    observed unexpected behaviors.
+    observed negative side effects.
     """
     notSet
     """
-    The author of the Test Plan Run observed unexpected behaviors.
+    The author of the Test Plan Run observed negative side effects.
     """
-    hasUnexpected
+    hasNegativeSideEffect
     """
-    The author of the Test Plan Run did not observe unexpected behaviors.
+    The author of the Test Plan Run did not observe negative side effects.
     """
-    doesNotHaveUnexpected
+    doesNotHaveNegativeSideEffect
   }
 
   type User {
@@ -811,18 +811,43 @@ const graphqlSchema = gql`
     """
     assertionResults(priority: AssertionPriority): [AssertionResult]!
     """
-    Whether or not the Tester observed unexpected behaviors. This is generally
-    reinforced by the value of "unexpectedBehaviors", but it is tracked as a
+    Whether or not the Tester observed negative side effects. This is generally
+    reinforced by the value of "negativeSideEffects", but it is tracked as a
     distinct value in order to preserve the state of incomplete test results.
     Submitted test results require this field to be filled in.
     """
-    hasUnexpected: HasUnexpected
+    hasNegativeSideEffect: HasNegativeSideEffect
     """
     Failure states like "AT became excessively sluggish" which would count
     as a failure for any scenario, even when the assertions otherwise pass.
     Submitted test results require this field to be filled in.
     """
-    unexpectedBehaviors: [UnexpectedBehavior]
+    negativeSideEffects: [NegativeSideEffect]
+    match: ScenarioResultMatch
+  }
+
+  enum MatchType {
+    SAME_SCENARIO
+    CROSS_SCENARIO
+    INCOMPLETE
+    NONE
+  }
+
+  type ScenarioResultMatchSource {
+    testPlanVersionId: ID!
+    testPlanReportId: ID!
+    testResultId: ID!
+    scenarioId: ID!
+    atVersionId: ID!
+    atVersionName: String!
+    browserVersionId: ID!
+    browserVersionName: String!
+    output: String!
+  }
+
+  type ScenarioResultMatch {
+    type: MatchType!
+    source: ScenarioResultMatchSource
   }
 
   """
@@ -848,11 +873,11 @@ const graphqlSchema = gql`
     """
     See ScenarioResult type for more information.
     """
-    hasUnexpected: String
+    hasNegativeSideEffect: String
     """
     See ScenarioResult type for more information.
     """
-    unexpectedBehaviors: [UnexpectedBehaviorInput]
+    negativeSideEffects: [NegativeSideEffectInput]
   }
 
   # NOTE: This has been deprecated
@@ -906,7 +931,7 @@ const graphqlSchema = gql`
     failedReason: AssertionFailedReason
   }
 
-  enum UnexpectedBehaviorId {
+  enum NegativeSideEffectId {
     EXCESSIVELY_VERBOSE
     UNEXPECTED_CURSOR_POSITION
     SLUGGISH
@@ -915,7 +940,7 @@ const graphqlSchema = gql`
     OTHER
   }
 
-  enum UnexpectedBehaviorImpact {
+  enum NegativeSideEffectImpact {
     MODERATE
     SEVERE
   }
@@ -924,12 +949,12 @@ const graphqlSchema = gql`
   A failure state such as "AT became excessively sluggish" which, if it
   occurs, should count as a scenario failure.
   """
-  type UnexpectedBehavior {
+  type NegativeSideEffect {
     """
     Human-readable ID, e.g. "excessively_sluggish" which is similar to the
     text.
     """
-    id: UnexpectedBehaviorId!
+    id: NegativeSideEffectId!
     """
     Human-readable sentence describing the failure.
     """
@@ -941,25 +966,25 @@ const graphqlSchema = gql`
     """
     The user must indicate the severity of the behavior.
     """
-    impact: UnexpectedBehaviorImpact!
+    impact: NegativeSideEffectImpact!
   }
 
   """
-  Minimal plain representation of an UnexpectedBehavior.
+  Minimal plain representation of an NegativeSideEffect.
   """
-  input UnexpectedBehaviorInput {
+  input NegativeSideEffectInput {
     """
-    See UnexpectedBehavior for more information.
+    See NegativeSideEffect for more information.
     """
-    id: UnexpectedBehaviorId!
+    id: NegativeSideEffectId!
     """
-    See UnexpectedBehavior for more information.
+    See NegativeSideEffect for more information.
     """
     details: String!
     """
-    See UnexpectedBehavior for more information.
+    See NegativeSideEffect for more information.
     """
-    impact: UnexpectedBehaviorImpact!
+    impact: NegativeSideEffectImpact!
   }
 
   """
@@ -1159,7 +1184,7 @@ const graphqlSchema = gql`
     runnableTestsLength: Int!
     """
     A list of conflicts between runs, which may occur at the level of the
-    Scenario if the output or unexpected behaviors do not match, or even at
+    Scenario if the output or negative side effects do not match, or even at
     the level of an Assertion, if the result of an assertion does not match.
 
     These conflicts must be resolved before the TestPlanVersion phase can change from
@@ -1226,10 +1251,6 @@ const graphqlSchema = gql`
     """
     recommendedAtVersion: AtVersion
     """
-    The historical report that this report is based on (for rerun reports).
-    """
-    historicalReport: TestPlanReport
-    """
     Whether this report is a rerun of a previous report.
     """
     isRerun: Boolean!
@@ -1237,6 +1258,11 @@ const graphqlSchema = gql`
     Whether this report is currently on hold and should not be worked on.
     """
     onHold: Boolean!
+    """
+    The total number of possible assertion verdicts for this TestPlanReport.
+    This is computed from runnable tests for the AT, accounting for EXCLUDE exceptions.
+    """
+    totalPossibleAssertions: Int!
   }
 
   """
@@ -1282,7 +1308,6 @@ const graphqlSchema = gql`
     minimumAtVersionId: ID
     browserId: ID!
     copyResultsFromTestPlanVersionId: ID
-    historicalReportId: ID
   }
 
   """

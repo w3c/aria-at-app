@@ -118,7 +118,7 @@ const TestQueue = () => {
   }, [data]);
 
   const shouldShowReport = (testPlanReport, filter) => {
-    const isRerun = !!testPlanReport.historicalReport;
+    const isRerun = !!testPlanReport.isRerun;
     if (filter === FILTER_KEYS.ALL) return true;
     return filter === FILTER_KEYS.AUTOMATED ? isRerun : !isRerun;
   };

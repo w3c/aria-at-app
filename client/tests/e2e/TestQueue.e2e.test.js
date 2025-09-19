@@ -137,11 +137,12 @@ describe('Test Queue admin traits when reports exist', () => {
         // Testers Column
         const testersColumn = cells[2];
         const testersColumnText = sanitizedText(testersColumn.innerText);
+        const progressPattern = /\d+\/\d+ responses, \d+\/\d+ verdicts/;
         const testersColumnCondition =
           testersColumnText.includes('Assign Testers') && // sr-only label applied to the assign testers dropdown component
           testersColumnText.includes('Assign Yourself') &&
           testersColumnText.includes('esmeralda-baggins') &&
-          testersColumnText.includes('tests complete');
+          progressPattern.test(testersColumnText);
 
         // Status Column
         const statusColumn = cells[3];
@@ -565,11 +566,12 @@ describe('Test Queue tester traits when reports exist', () => {
         // Testers Column
         const testersColumn = cells[2];
         const testersColumnText = sanitizedText(testersColumn.innerText);
+        const progressPattern = /\d+\/\d+ responses, \d+\/\d+ verdicts/;
         const testersColumnCondition =
           !testersColumnText.includes('Assign Testers') && // doesn't show unless admin
           testersColumnText.includes('Assign Yourself') &&
           testersColumnText.includes('esmeralda-baggins') &&
-          testersColumnText.includes('tests complete');
+          progressPattern.test(testersColumnText);
 
         // Status Column
         const statusColumn = cells[3];

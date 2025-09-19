@@ -52,6 +52,14 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         ...TestPlanVersionFields
         testPlanReports(isFinal: false) {
           ...TestPlanReportFields
+          runnableTests {
+            scenarios {
+              id
+              at {
+                id
+              }
+            }
+          }
           at {
             ...AtFields
             atVersions {
@@ -72,6 +80,15 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             testResultsLength
             testResults {
               ...TestResultFields
+              scenarioResults {
+                output
+                assertionResults {
+                  passed
+                }
+                negativeSideEffects {
+                  id
+                }
+              }
             }
           }
         }
@@ -144,8 +161,8 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
           }
           scenarioResult {
             output
-            hasUnexpected
-            unexpectedBehaviors {
+            hasNegativeSideEffect
+            negativeSideEffects {
               text
               details
               impact

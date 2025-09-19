@@ -42,22 +42,22 @@ export const useFailingAssertions = testPlanReport => {
                 ...processPriorityAssertionResults('SHOULD')
               ];
 
-          const unexpectedResults = scenarioResult.unexpectedBehaviors.map(
-            unexpectedBehavior => ({
+          const unexpectedResults = scenarioResult.negativeSideEffects.map(
+            negativeSideEffect => ({
               ...commonResult,
               assertionText:
-                unexpectedBehavior.impact.toLowerCase() === 'moderate'
+                negativeSideEffect.impact.toLowerCase() === 'moderate'
                   ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
-                  : unexpectedBehavior.impact.toLowerCase() === 'severe'
+                  : negativeSideEffect.impact.toLowerCase() === 'severe'
                   ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
                   : 'N/A',
               priority:
-                unexpectedBehavior.impact.toLowerCase() === 'moderate'
+                negativeSideEffect.impact.toLowerCase() === 'moderate'
                   ? 'SHOULD'
-                  : unexpectedBehavior.impact.toLowerCase() === 'severe'
+                  : negativeSideEffect.impact.toLowerCase() === 'severe'
                   ? 'MUST'
                   : 'N/A',
-              output: unexpectedBehavior.text
+              output: negativeSideEffect.text
             })
           );
           return [...assertionResults, ...unexpectedResults];

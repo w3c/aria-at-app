@@ -426,7 +426,7 @@ const TestRun = () => {
       );
     }
 
-    const UnexpectedBehaviorsArray = [
+    const NegativeSideEffectsArray = [
       'EXCESSIVELY_VERBOSE',
       'UNEXPECTED_CURSOR_POSITION',
       'SLUGGISH',
@@ -438,7 +438,7 @@ const TestRun = () => {
     for (let i = 0; i < commands.length; i++) {
       let scenarioResult = { ...scenarioResults[i] };
       let assertionResults = [];
-      let unexpectedBehaviors = null;
+      let negativeSideEffects = null;
 
       // collect variables
       const { atOutput, untestable, assertions, unexpected } = commands[i];
@@ -459,10 +459,11 @@ const TestRun = () => {
         );
       }
 
-      // process unexpected behaviors
-      const { hasUnexpected, behaviors, highlightRequired } = unexpected;
-      if (hasUnexpected === 'hasUnexpected') {
-        unexpectedBehaviors = [];
+      // process negative side effects
+      const { hasNegativeSideEffect, behaviors, highlightRequired } =
+        unexpected;
+      if (hasNegativeSideEffect === 'hasNegativeSideEffect') {
+        negativeSideEffects = [];
         /**
          * 0 = EXCESSIVELY_VERBOSE
          * 1 = UNEXPECTED_CURSOR_POSITION
@@ -474,8 +475,8 @@ const TestRun = () => {
         for (let i = 0; i < behaviors.length; i++) {
           const behavior = behaviors[i];
           if (behavior.checked) {
-            unexpectedBehaviors.push({
-              id: UnexpectedBehaviorsArray[i],
+            negativeSideEffects.push({
+              id: NegativeSideEffectsArray[i],
               text: behavior.description,
               details: behavior.more.value,
               impact: behavior.impact.toUpperCase(),
@@ -485,8 +486,8 @@ const TestRun = () => {
             });
           }
         }
-      } else if (hasUnexpected === 'doesNotHaveUnexpected')
-        unexpectedBehaviors = [];
+      } else if (hasNegativeSideEffect === 'doesNotHaveNegativeSideEffect')
+        negativeSideEffects = [];
 
       // re-assign scenario result due to read only values
       scenarioResult.output = atOutput.value ? atOutput.value : null;
@@ -499,12 +500,12 @@ const TestRun = () => {
           untestable.highlightRequired;
 
       scenarioResult.assertionResults = [...assertionResults];
-      scenarioResult.hasUnexpected = hasUnexpected;
-      scenarioResult.unexpectedBehaviors = unexpectedBehaviors
-        ? [...unexpectedBehaviors]
+      scenarioResult.hasNegativeSideEffect = hasNegativeSideEffect;
+      scenarioResult.negativeSideEffects = negativeSideEffects
+        ? [...negativeSideEffects]
         : null;
       if (captureHighlightRequired)
-        scenarioResult.unexpectedBehaviorHighlightRequired = highlightRequired;
+        scenarioResult.negativeSideEffectHighlightRequired = highlightRequired;
 
       newScenarioResults.push(scenarioResult);
     }
@@ -685,14 +686,14 @@ const TestRun = () => {
      * ....},
      * ....other assertionResults,
      * ..],
-     * ..hasUnexpected,
-     * ..unexpectedBehaviors: [
+     * ..hasNegativeSideEffect,
+     * ..negativeSideEffects: [
      * ....{
      * ......id
      * ......impact
      * ......details
      * ....},
-     * ....other unexpectedBehaviors,
+     * ....other negativeSideEffects,
      * ..]
      * }
      * */
@@ -702,14 +703,14 @@ const TestRun = () => {
         id,
         output,
         untestable,
-        hasUnexpected,
-        unexpectedBehaviors
+        hasNegativeSideEffect,
+        negativeSideEffects
       }) => ({
         id,
         output: output,
         untestable: untestable,
-        hasUnexpected,
-        unexpectedBehaviors: unexpectedBehaviors?.map(
+        hasNegativeSideEffect,
+        negativeSideEffects: negativeSideEffects?.map(
           ({ id, impact, details }) => ({
             id,
             impact,
@@ -1108,25 +1109,11 @@ const TestRun = () => {
                   isEdit={isTestEditClicked}
                   setIsRendererReady={setIsRendererReady}
                   commonIssueContent={commonIssueContent}
-                  isRerunReport={testPlanReport.isRerun}
-                  historicalTestResult={
-                    testPlanReport.isRerun && testPlanReport.historicalReport
-                      ? testPlanReport.historicalReport.finalizedTestResults?.find(
-                          result => result.test.id === currentTest.id
-                        )
-                      : null
-                  }
-                  historicalAtName={
-                    testPlanReport.isRerun && testPlanReport.historicalReport
-                      ? testPlanReport.historicalReport.at.name
-                      : null
-                  }
-                  historicalAtVersion={
-                    testPlanReport.isRerun && testPlanReport.historicalReport
-                      ? testPlanReport.historicalReport.finalizedTestResults?.find(
-                          result => result.test.id === currentTest.id
-                        )?.atVersion?.name
-                      : null
+                  // Derive isRerun by presence of any ScenarioResult.match from current test
+                  isRerunReport={
+                    !!currentTest.testResult?.scenarioResults?.some(
+                      sr => sr?.match && sr.match?.type
+                    )
                   }
                 />
               </Row>
