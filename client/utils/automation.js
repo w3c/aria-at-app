@@ -37,22 +37,27 @@ export const isSupportedByResponseCollector = ctx => {
     return false;
   }
 
-  // If there are version requirements, check if they are supported by automation
-  if (ctx.minimumAtVersion || ctx.exactAtVersion) {
-    return atVersionRequirementsSupportedByAutomation(ctx);
-  }
+  // Ignore report version requirements for automation eligibility; always allow if AT+browser supported
+  // This codeblock is left in for reference since this design is still in motion
+  // Please remove after automation at version selection stabilizes
+  // if (ctx.minimumAtVersion || ctx.exactAtVersion) {
+  //   return atVersionRequirementsSupportedByAutomation(ctx);
+  // }
+
   return true;
 };
 
 /**
  * Checks if the version requirements are supported by automation
+ * This is no longer used in the codebase but is kept in case a future
+ * design decision requires it.
  * @param {object} ctx
  * @param {object} ctx.at
  * @param {object} ctx.minimumAtVersion
  * @param {object} ctx.exactAtVersion
  * @returns {boolean}
  */
-const atVersionRequirementsSupportedByAutomation = ({
+export const atVersionRequirementsSupportedByAutomation = ({
   at,
   minimumAtVersion,
   exactAtVersion

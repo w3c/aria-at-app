@@ -11,7 +11,8 @@ const ManageBotRunDialogWithButton = ({
   testPlanReportId,
   runnableTestsLength,
   testers,
-  onChange
+  onChange,
+  me
 }) => {
   const [showDialog, setShowDialog] = useState(false);
 
@@ -32,6 +33,7 @@ const ManageBotRunDialogWithButton = ({
           show={showDialog}
           setShow={setShowDialog}
           testers={testers}
+          me={me}
           testPlanReportId={testPlanReportId}
           runnableTestsLength={runnableTestsLength}
           onChange={async () => {
@@ -49,7 +51,8 @@ ManageBotRunDialogWithButton.propTypes = {
   testPlanReportId: PropTypes.string.isRequired,
   runnableTestsLength: PropTypes.number.isRequired,
   testers: PropTypes.arrayOf(UserPropType).isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  me: UserPropType
 };
 
 export default ManageBotRunDialogWithButton;
