@@ -20,7 +20,7 @@ if (args.help) {
   console.log(`
 Default use:
   No arguments:
-    Fetch most recent aria-at tests to update database. By default, the latest commit on the default branch.
+    Import aria-at tests pinned by ARIA_AT_PINNED_SHA or config/aria-at.version
   Arguments:
     -h, --help
        Show this message.
@@ -40,12 +40,37 @@ const importTestPlanVersions = async transaction => {
 
   // Get list of commits when multiple passed in as
   // `<import_cmd> -c "commit1 commit2 commitN ..."`
-  const commits = args.commit
-    ? args.commit
-        .trim()
-        .split(' ')
-        .filter(el => !!el)
-    : [];
+  let commits = [];
+  if (args.commit) {
+    commits = args.commit
+      .trim()
+      .split(' ')
+      .filter(el => !!el);
+  } else {
+    // Default to pinned commit if provided, otherwise fail fast
+    const fseLocal = require('fs-extra');
+    const path = require('path');
+    const pinnedFromEnv =
+      process.env.ARIA_AT_PINNED_SHA &&
+      String(process.env.ARIA_AT_PINNED_SHA).trim();
+    let pinnedFromFile = null;
+    const versionPath = path.resolve(
+      __dirname,
+      '../../../config/aria-at.version'
+    );
+    if (fseLocal.existsSync(versionPath)) {
+      pinnedFromFile = String(fseLocal.readFileSync(versionPath)).trim();
+    }
+
+    const pinned = pinnedFromEnv || pinnedFromFile;
+    if (!pinned) {
+      console.error(
+        'No commit specified and no pinned SHA found. Provide -c <sha>, set ARIA_AT_PINNED_SHA, or add config/aria-at.version.'
+      );
+      process.exit(1);
+    }
+    commits = [pinned];
+  }
 
   if (commits.length) {
     for (const [cIndex, commit] of commits.entries()) {

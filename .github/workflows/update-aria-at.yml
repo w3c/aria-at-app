@@ -1,0 +1,152 @@
+name: Update pinned ARIA-AT data
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: update-aria-at
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    name: Test latest upstream and update pin if clean
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+      - name: Install NodeJS 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: yarn --version
+      - name: Remove pre-bundled versions of postgres to avoid version clashes
+        run: |
+          sudo DEBIAN_FRONTEND=noninteractive apt-get purge -y postgresql\*
+          sudo apt-get autoremove -y
+          sudo rm -rf /var/lib/postgresql/
+          sudo rm -rf /etc/postgresql/
+      - name: Install PostgreSQL 12
+        run: |
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          sudo apt-get -y update
+          sudo apt-get -y install postgresql-12
+          sudo apt-get -y install postgresql-client-12
+      - name: before_install
+        run: |
+          sudo sed -i 's/port = 5433/port = 5432/' /etc/postgresql/12/main/postgresql.conf
+          sudo pg_ctlcluster 12 main restart
+      - name: before_script
+        run: |
+          yarn --frozen-lockfile
+          npx patch-package
+          source config/test.env
+          sudo -u postgres createdb ${PGDATABASE}
+          echo Created ${PGDATABASE}
+          sudo -u postgres psql -c "CREATE ROLE ${PGUSER} WITH LOGIN PASSWORD '${PGPASSWORD}'"
+          sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE ${PGDATABASE} to ${PGUSER};"
+          yarn sequelize:test db:migrate
+          yarn sequelize:test db:seed:all
+
+      - name: Check for latest upstream SHA
+        id: latest
+        run: |
+          set -e
+          echo "Checking for latest ARIA-AT upstream SHA..."
+          LATEST=$(git ls-remote https://github.com/w3c/aria-at HEAD | cut -f1)
+          PINNED=$(cat config/aria-at.version || true)
+          echo "latest=$LATEST" >> $GITHUB_OUTPUT
+          echo "pinned=$PINNED" >> $GITHUB_OUTPUT
+
+          if [ -z "$LATEST" ]; then
+            echo "Failed to resolve latest upstream SHA"
+            exit 1
+          fi
+
+          echo "Current pinned SHA: ${PINNED:-none}"
+          echo "Latest upstream SHA: $LATEST"
+
+          if [ "$LATEST" = "$PINNED" ]; then
+            echo "Already up to date with latest upstream SHA"
+            exit 0
+          else
+            echo "Found newer upstream SHA, will test and update"
+          fi
+
+      - name: Import and test latest upstream SHA
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          # Ensure IMPORT_ARIA_AT_TESTS_COMMIT_* env vars are available in this step
+          source config/test.env
+          echo "Importing historical commits for testing..."
+          yarn workspace server db-import-tests:test -c "${IMPORT_ARIA_AT_TESTS_COMMIT_1} ${IMPORT_ARIA_AT_TESTS_COMMIT_2} ${IMPORT_ARIA_AT_TESTS_COMMIT_3} ${IMPORT_ARIA_AT_TESTS_COMMIT_4}"
+
+          echo "Importing latest upstream commit: ${{ steps.latest.outputs.latest }}"
+          yarn workspace server db-import-tests:test -c "${{ steps.latest.outputs.latest }}"
+
+          echo "Populating sample data..."
+          yarn workspace server db-populate-sample-data:test
+
+      - name: Run tests (excluding snapshots)
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          yarn workspace shared prettier
+          yarn workspace client prettier
+          yarn workspace server prettier
+          yarn workspace shared lint
+          yarn workspace client lint
+          yarn workspace server lint
+          yarn workspace shared jest
+          yarn workspace client jest --testPathIgnorePatterns=snapshots
+          yarn workspace server jest
+
+      - name: Update pinned SHA and snapshots (tests passed)
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          echo "All tests passed! Updating pinned SHA to latest upstream..."
+          echo "${{ steps.latest.outputs.latest }}" > config/aria-at.version
+          echo "Updating snapshots..."
+          yarn update-snapshots
+
+      - name: Stage allowed files only
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          set -e
+          git reset
+          git add config/aria-at.version || true
+          git add client/tests/e2e/snapshots || true
+          echo "Staged files:" 
+          git diff --cached --name-only
+
+      - name: Validate staged files scope
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        run: |
+          set -e
+          CHANGED=$(git diff --cached --name-only)
+          if [ -z "$CHANGED" ]; then echo "No changes to commit"; exit 0; fi
+          echo "$CHANGED" | awk '{print}' | while read -r f; do
+            case "$f" in
+              config/aria-at.version) ;;
+              client/tests/e2e/snapshots/*|client/tests/e2e/snapshots/*/*) ;;
+              *) echo "Disallowed staged change: $f"; exit 1 ;;
+            esac
+          done
+
+      - name: Commit updated ARIA-AT pin and snapshots
+        if: steps.latest.outputs.latest != steps.latest.outputs.pinned
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          echo "Committing updated ARIA-AT pin and snapshots..."
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: bump ARIA-AT pin to ${{ steps.latest.outputs.latest }}"
+          echo "Pushing to development branch..."
+          git push origin HEAD:development
