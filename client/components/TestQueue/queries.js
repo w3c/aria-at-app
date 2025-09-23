@@ -237,3 +237,16 @@ export const REMOVE_TEST_PLAN_REPORT_MUTATION = gql`
     }
   }
 `;
+
+export const SET_ON_HOLD_MUTATION = gql`
+  mutation SetOnHold($testPlanReportId: ID!, $onHold: Boolean!) {
+    testPlanReport(id: $testPlanReportId) {
+      setOnHold(onHold: $onHold) {
+        testPlanReport {
+          id
+          onHold
+        }
+      }
+    }
+  }
+`;

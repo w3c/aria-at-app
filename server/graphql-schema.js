@@ -1255,6 +1255,10 @@ const graphqlSchema = gql`
     """
     isRerun: Boolean!
     """
+    Whether this report is currently on hold and should not be worked on.
+    """
+    onHold: Boolean!
+    """
     The total number of possible assertion verdicts for this TestPlanReport.
     This is computed from runnable tests for the AT, accounting for EXCLUDE exceptions.
     """
@@ -1592,6 +1596,10 @@ const graphqlSchema = gql`
     this can only be done if the associated TestPlanVersion is not RECOMMENDED.
     """
     removeVendorReviewApprovalStatus: PopulatedData
+    """
+    Toggle the on-hold status for a TestPlanReport. Only available to admins.
+    """
+    setOnHold(onHold: Boolean!): PopulatedData!
     """
     Permanently deletes the TestPlanReport and all associated TestPlanRuns.
     Only available to admins.
