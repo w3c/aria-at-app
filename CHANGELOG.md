@@ -1,3 +1,15 @@
+## [1.21.0](https://github.com/w3c/aria-at-app/compare/v1.20.0...v1.21.0) (2025-09-23)
+
+
+### Features
+
+* allow admins to put report on hold ([#1507](https://github.com/w3c/aria-at-app/issues/1507)) ([dfe293a](https://github.com/w3c/aria-at-app/commit/dfe293a8bc489b6ac5f8959b91db0020dcd88a6c))
+
+
+### Bug Fixes
+
+* different calculation for rerun jobs ([#1543](https://github.com/w3c/aria-at-app/issues/1543)) ([97ee62c](https://github.com/w3c/aria-at-app/commit/97ee62c6a89d7b5f8092bf7bee410c24fe841f20))
+
 ## [1.20.0](https://github.com/w3c/aria-at-app/compare/v1.19.0...v1.20.0) (2025-09-18)
 
 
