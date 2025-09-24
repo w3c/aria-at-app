@@ -82,6 +82,12 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
               ...TestResultFields
               scenarioResults {
                 output
+                assertionResults {
+                  passed
+                }
+                negativeSideEffects {
+                  id
+                }
               }
             }
           }
@@ -228,6 +234,19 @@ export const REMOVE_TEST_PLAN_REPORT_MUTATION = gql`
   mutation RemoveTestPlanReport($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       deleteTestPlanReport
+    }
+  }
+`;
+
+export const SET_ON_HOLD_MUTATION = gql`
+  mutation SetOnHold($testPlanReportId: ID!, $onHold: Boolean!) {
+    testPlanReport(id: $testPlanReportId) {
+      setOnHold(onHold: $onHold) {
+        testPlanReport {
+          id
+          onHold
+        }
+      }
     }
   }
 `;

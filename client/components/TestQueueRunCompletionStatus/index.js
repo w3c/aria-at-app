@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRobot } from '@fortawesome/free-solid-svg-icons';
@@ -42,18 +42,39 @@ const TestQueueRunCompletionStatus = ({
     testPlanReport.runnableTestsLength
   ]);
 
-  const getNumCompletedOutputs = result =>
-    result.scenarioResults.reduce((acc, scenario) => {
+  const isScenarioResultCompleted = scenarioResult =>
+    typeof scenarioResult.output === 'string' && scenarioResult.output !== '';
+
+  const isScenarioResultCompletedRerun = scenarioResult =>
+    isScenarioResultCompleted(scenarioResult) &&
+    scenarioResult.negativeSideEffects !== null &&
+    scenarioResult.assertionResults.every(
+      assertionResult => assertionResult.passed !== null
+    );
+
+  const getNumCompletedOutputs = result => {
+    const isRerun = !!testPlanReport.isRerun;
+    return result.scenarioResults.reduce((acc, scenario) => {
       return (
         acc +
-        (typeof scenario.output === 'string' && scenario.output !== '' ? 1 : 0)
+        (isRerun
+          ? isScenarioResultCompletedRerun(scenario)
+          : isScenarioResultCompleted(scenario)
+          ? 1
+          : 0)
       );
     }, 0);
+  };
 
-  // Calculate completed responses (number of commands with outputs)
-  const completedResponses = testPlanRun?.testResults?.reduce(
-    (acc, result) => acc + getNumCompletedOutputs(result),
-    0
+  // Calculate completed responses
+  // Different calculation used for reruns
+  const completedResponses = useMemo(
+    () =>
+      testPlanRun?.testResults?.reduce(
+        (acc, result) => acc + getNumCompletedOutputs(result),
+        0
+      ),
+    [testPlanRun?.testResults]
   );
 
   // Scenarios, even on a runnable test, may have different ATs than the report
@@ -64,16 +85,25 @@ const TestQueueRunCompletionStatus = ({
       0
     );
 
-  const totalResponses = testPlanReport.runnableTests.reduce(
-    (acc, test) => acc + getNumScenariosTest(test),
-    0
+  const totalResponses = useMemo(
+    () =>
+      testPlanReport.runnableTests.reduce(
+        (acc, test) => acc + getNumScenariosTest(test),
+        0
+      ),
+    [testPlanReport.runnableTests]
   );
 
   let info;
   let completionStatus;
 
   if (isBot) {
-    info = <FontAwesomeIcon icon={faRobot} aria-label={username} />;
+    info = (
+      <span>
+        <FontAwesomeIcon icon={faRobot} />
+        <span className="sr-only">{username}</span>
+      </span>
+    );
   } else {
     info = (
       <a

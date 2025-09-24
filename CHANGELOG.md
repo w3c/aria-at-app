@@ -1,3 +1,26 @@
+## [1.21.0](https://github.com/w3c/aria-at-app/compare/v1.20.0...v1.21.0) (2025-09-23)
+
+### Features
+
+- allow admins to put report on hold ([#1507](https://github.com/w3c/aria-at-app/issues/1507)) ([dfe293a](https://github.com/w3c/aria-at-app/commit/dfe293a8bc489b6ac5f8959b91db0020dcd88a6c))
+
+### Bug Fixes
+
+- different calculation for rerun jobs ([#1543](https://github.com/w3c/aria-at-app/issues/1543)) ([97ee62c](https://github.com/w3c/aria-at-app/commit/97ee62c6a89d7b5f8092bf7bee410c24fe841f20))
+
+## [1.20.0](https://github.com/w3c/aria-at-app/compare/v1.19.0...v1.20.0) (2025-09-18)
+
+### Features
+
+- abbreviated and unified test run completion status ([#1517](https://github.com/w3c/aria-at-app/issues/1517)) ([6726df1](https://github.com/w3c/aria-at-app/commit/6726df1b3644e0dceb2ce3bfd19b2c6907c153a0))
+- Expanded matching ([#1502](https://github.com/w3c/aria-at-app/issues/1502)) ([fb70193](https://github.com/w3c/aria-at-app/commit/fb70193949e5ae579abd496e6716d93ed81bf14d))
+- only count responses recorded if job also has verdicts ([#1536](https://github.com/w3c/aria-at-app/issues/1536)) ([2d3d59b](https://github.com/w3c/aria-at-app/commit/2d3d59b15af8c8ba0063d973353f9c6e315007d5))
+
+### Bug Fixes
+
+- Address accessibility issues in Test Queue's "Testers" list ([#1541](https://github.com/w3c/aria-at-app/issues/1541)) ([7dce063](https://github.com/w3c/aria-at-app/commit/7dce063296a23c37ff8b61cab0ccf1141989ea6e))
+- Coerce browserVersionId and atVersionId to numbers ([#1527](https://github.com/w3c/aria-at-app/issues/1527)) ([2f87b7b](https://github.com/w3c/aria-at-app/commit/2f87b7b9d0f1d96e62374384e6a644e01c2e06d9))
+
 ## [1.19.0](https://github.com/w3c/aria-at-app/compare/v1.18.1...v1.19.0) (2025-09-11)
 
 ### Features

@@ -267,34 +267,32 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
         {testPlanReport.draftTestPlanRuns
           .slice()
           .sort((a, b) => a.tester.username.localeCompare(b.tester.username))
-          .map((testPlanRun, index) => {
+          .map(testPlanRun => {
             const tester = testPlanRun.tester;
             const rowId = `plan-${testPlanReport.id}-assignee-${tester.id}-run-${testPlanRun.id}`;
             return (
               <React.Fragment key={rowId}>
-                <TestQueueRunCompletionStatus
-                  rowId={rowId}
-                  testPlanReport={testPlanReport}
-                  testPlanRun={testPlanRun}
-                  tester={tester}
-                  isAdmin={isAdmin}
-                  reassignTesters={testers.filter(
-                    t =>
-                      !t.isBot &&
-                      !testPlanReport.draftTestPlanRuns.some(
-                        testPlanRun => testPlanRun.tester.id === t.id
-                      )
-                  )}
-                  onReassign={async () => {
-                    await client.refetchQueries({
-                      include: ['TestQueuePage', 'TestPlanReportStatusDialog']
-                    });
-                  }}
-                />
-                {index ===
-                testPlanReport.draftTestPlanRuns.length - 1 ? null : (
-                  <br />
-                )}
+                <li>
+                  <TestQueueRunCompletionStatus
+                    rowId={rowId}
+                    testPlanReport={testPlanReport}
+                    testPlanRun={testPlanRun}
+                    tester={tester}
+                    isAdmin={isAdmin}
+                    reassignTesters={testers.filter(
+                      t =>
+                        !t.isBot &&
+                        !testPlanReport.draftTestPlanRuns.some(
+                          testPlanRun => testPlanRun.tester.id === t.id
+                        )
+                    )}
+                    onReassign={async () => {
+                      await client.refetchQueries({
+                        include: ['TestQueuePage', 'TestPlanReportStatusDialog']
+                      });
+                    }}
+                  />
+                </li>
               </React.Fragment>
             );
           })}
