@@ -1,6 +1,7 @@
 const {
   At,
   AtVersion,
+  Audit,
   Browser,
   BrowserVersion,
   CollectionJob,
@@ -32,6 +33,7 @@ module.exports = {
   getSequelizeModelAttributes,
   AT_ATTRIBUTES: getSequelizeModelAttributes(At),
   AT_VERSION_ATTRIBUTES: getSequelizeModelAttributes(AtVersion),
+  AUDIT_ATTRIBUTES: getSequelizeModelAttributes(Audit),
   BROWSER_ATTRIBUTES: getSequelizeModelAttributes(Browser),
   BROWSER_VERSION_ATTRIBUTES: getSequelizeModelAttributes(BrowserVersion),
   COLLECTION_JOB_ATTRIBUTES: getSequelizeModelAttributes(CollectionJob),

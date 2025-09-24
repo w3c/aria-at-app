@@ -946,6 +946,40 @@ const graphqlSchema = gql`
   }
 
   """
+  An audit record tracking events in the system for compliance and debugging purposes.
+  """
+  type AuditRecord {
+    """
+    Postgres-provided numeric ID.
+    """
+    id: ID!
+    """
+    The type of event that was audited (e.g., 'TESTER_ASSIGNMENT', 'TESTER_REASSIGNMENT', etc.).
+    """
+    eventType: String!
+    """
+    Human-readable description of the event.
+    """
+    description: String!
+    """
+    The user who performed the action.
+    """
+    performedBy: User!
+    """
+    The primary entity ID involved in the event (e.g., testPlanReportId).
+    """
+    entityId: Int
+    """
+    Additional metadata about the event, including specific details like tester IDs, test plan run IDs, etc.
+    """
+    metadata: Any
+    """
+    When the event occurred.
+    """
+    createdAt: Timestamp!
+  }
+
+  """
   A failure state such as "AT became excessively sluggish" which, if it
   occurs, should count as a scenario failure.
   """
@@ -1263,6 +1297,10 @@ const graphqlSchema = gql`
     This is computed from runnable tests for the AT, accounting for EXCLUDE exceptions.
     """
     totalPossibleAssertions: Int!
+    """
+    Audit records for this test plan report, tracking tester assignments and other events.
+    """
+    auditRecords: [AuditRecord]!
   }
 
   """
@@ -1503,6 +1541,10 @@ const graphqlSchema = gql`
     Get a particular update event by ID
     """
     updateEvent(id: ID!): UpdateEvent
+    """
+    Get audit records
+    """
+    auditRecords(eventType: String): [AuditRecord]!
   }
 
   # Mutation-specific types below

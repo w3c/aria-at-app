@@ -16,6 +16,7 @@ const exactAtVersion = require('./exactAtVersionResolver');
 const minimumAtVersion = require('./minimumAtVersionResolver');
 const vendorReviewStatus = require('./vendorReviewStatusResolver');
 const totalPossibleAssertions = require('./totalPossibleAssertionsResolver');
+const auditRecords = require('../AuditOperations/auditRecordsForTestPlanReportResolver');
 
 module.exports = {
   runnableTests,
@@ -35,5 +36,6 @@ module.exports = {
   isFinal,
   isRerun,
   vendorReviewStatus,
-  totalPossibleAssertions
+  totalPossibleAssertions,
+  auditRecords
 };

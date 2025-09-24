@@ -1,7 +1,12 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-  removeTestPlanRunByQuery
+  removeTestPlanRunByQuery,
+  getTestPlanRuns
 } = require('../../models/services/TestPlanRunService');
+const {
+  createSimpleAuditRecord
+} = require('../../models/services/AuditService');
+const { AUDIT_EVENT_TYPES } = require('../../util/auditEventTypes');
 const populateData = require('../../services/PopulatedData/populateData');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const {
@@ -23,9 +28,26 @@ const deleteTestPlanRunResolver = async (
   ) {
     throw new AuthenticationError();
   }
+  const testPlanRuns = await getTestPlanRuns({
+    where: { testPlanReportId, testerUserId },
+    transaction
+  });
+  const testPlanRunId = testPlanRuns.length > 0 ? testPlanRuns[0].id : null;
 
   await removeTestPlanRunByQuery({
     where: { testPlanReportId, testerUserId },
+    transaction
+  });
+
+  await createSimpleAuditRecord({
+    eventType: AUDIT_EVENT_TYPES.TESTER_REMOVAL,
+    performedByUserId: user.id,
+    entityId: testPlanReportId,
+    metadata: {
+      testerUserId,
+      testPlanReportId,
+      testPlanRunId
+    },
     transaction
   });
 

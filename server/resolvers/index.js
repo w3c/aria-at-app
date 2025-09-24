@@ -55,6 +55,7 @@ const AtVersion = require('./AtVersion');
 const createCollectionJobsFromPreviousAtVersion = require('./createCollectionJobsFromPreviousAtVersionResolver');
 const rerunnableReports = require('./rerunnableReportsResolver');
 const { updateEvents, updateEvent } = require('./UpdateEvent');
+const auditRecords = require('./AuditOperations/auditRecordsResolver');
 
 const resolvers = {
   Query: {
@@ -82,7 +83,8 @@ const resolvers = {
     vendorByName,
     rerunnableReports,
     updateEvents,
-    updateEvent
+    updateEvent,
+    auditRecords
   },
   Mutation: {
     at: mutateAt,
