@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 import {
   AT_FIELDS,
   AT_VERSION_FIELDS,
+  AUDIT_RECORD_FIELDS,
   BROWSER_FIELDS,
   BROWSER_VERSION_FIELDS,
   COLLECTION_JOB_FIELDS,
@@ -17,6 +18,7 @@ import {
 export const TEST_RUN_PAGE_QUERY = gql`
   ${AT_FIELDS}
   ${AT_VERSION_FIELDS}
+  ${AUDIT_RECORD_FIELDS}
   ${BROWSER_FIELDS}
   ${BROWSER_VERSION_FIELDS}
   ${COLLECTION_JOB_FIELDS}
@@ -60,6 +62,9 @@ export const TEST_RUN_PAGE_QUERY = gql`
         isRerun
         conflicts {
           ...TestPlanReportConflictFields
+        }
+        auditRecords {
+          ...AuditRecordFields
         }
         at {
           ...AtFields
@@ -148,6 +153,7 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
 export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
   ${AT_FIELDS}
   ${AT_VERSION_FIELDS}
+  ${AUDIT_RECORD_FIELDS}
   ${BROWSER_FIELDS}
   ${BROWSER_VERSION_FIELDS}
   ${COLLECTION_JOB_FIELDS}
@@ -202,6 +208,9 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
             conflicts {
               ...TestPlanReportConflictFields
             }
+            auditRecords {
+              ...AuditRecordFields
+            }
             at {
               ...AtFields
               atVersions {
@@ -236,6 +245,7 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
 export const SAVE_TEST_RESULT_MUTATION = gql`
   ${AT_FIELDS}
   ${AT_VERSION_FIELDS}
+  ${AUDIT_RECORD_FIELDS}
   ${BROWSER_FIELDS}
   ${BROWSER_VERSION_FIELDS}
   ${COLLECTION_JOB_FIELDS}
@@ -293,6 +303,9 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
             conflicts {
               ...TestPlanReportConflictFields
             }
+            auditRecords {
+              ...AuditRecordFields
+            }
             at {
               ...AtFields
               atVersions {
@@ -327,6 +340,7 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
 export const SUBMIT_TEST_RESULT_MUTATION = gql`
   ${AT_FIELDS}
   ${AT_VERSION_FIELDS}
+  ${AUDIT_RECORD_FIELDS}
   ${BROWSER_FIELDS}
   ${BROWSER_VERSION_FIELDS}
   ${COLLECTION_JOB_FIELDS}
@@ -383,6 +397,9 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
             isRerun
             conflicts {
               ...TestPlanReportConflictFields
+            }
+            auditRecords {
+              ...AuditRecordFields
             }
             at {
               ...AtFields

@@ -1,6 +1,7 @@
 import AT_FIELDS from './At';
 import AT_VERSION_FIELDS from './AtVersion';
 import ASSERTION_RESULT_FIELDS from './AssertionResult';
+import AUDIT_RECORD_FIELDS from './AuditRecord';
 import BROWSER_FIELDS from './Browser';
 import BROWSER_VERSION_FIELDS from './BrowserVersion';
 import COLLECTION_JOB_FIELDS from './CollectionJob';
@@ -21,6 +22,7 @@ export {
   AT_FIELDS,
   AT_VERSION_FIELDS,
   ASSERTION_RESULT_FIELDS,
+  AUDIT_RECORD_FIELDS,
   BROWSER_FIELDS,
   BROWSER_VERSION_FIELDS,
   COLLECTION_JOB_FIELDS,

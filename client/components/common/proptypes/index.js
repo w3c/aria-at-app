@@ -370,3 +370,17 @@ export const UntestablePropType = PropTypes.shape({
   value: PropTypes.bool.isRequired,
   focus: PropTypes.bool.isRequired
 });
+
+export const AuditPropType = PropTypes.shape({
+  __typename: PropTypes.string,
+  id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  eventType: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  createdAt: PropTypes.string.isRequired,
+  performedBy: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    username: PropTypes.string.isRequired
+  }).isRequired,
+  entityId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  metadata: PropTypes.object
+});

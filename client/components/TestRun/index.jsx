@@ -19,6 +19,7 @@ import StatusBar from './StatusBar';
 import TestRenderer from '../TestRenderer';
 import OptionButton from './OptionButton';
 import Heading from './Heading';
+import TesterAssignmentLog from './TesterAssignmentLog';
 import PageStatus from '../common/PageStatus';
 import BasicModal from '../common/BasicModal';
 import BasicThemedModal from '../common/BasicThemedModal';
@@ -1077,6 +1078,15 @@ const TestRun = () => {
           key={nextId()}
           hasConflicts={currentTest.hasConflicts}
           handleReviewConflictsButtonClick={handleReviewConflictsButtonClick}
+        />
+        <TesterAssignmentLog
+          auditRecords={testPlanReport?.auditRecords.filter(
+            record =>
+              (record.eventType === 'TESTER_ASSIGNMENT' ||
+                record.eventType === 'TESTER_REASSIGNMENT') &&
+              !!record.metadata?.testPlanRunId &&
+              record.metadata?.testPlanRunId == testPlanRunId
+          )}
         />
         {pageReady && (
           <Row>

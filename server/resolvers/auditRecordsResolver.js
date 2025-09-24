@@ -1,5 +1,5 @@
 const { AuthenticationError } = require('apollo-server');
-const { getAuditRecords } = require('../../models/services/AuditService');
+const { getAuditRecords } = require('../models/services/AuditService');
 
 const auditRecordsResolver = async (_, { eventType }, context) => {
   const { user, transaction } = context;
