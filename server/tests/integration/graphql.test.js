@@ -196,6 +196,14 @@ describe('graphql', () => {
       gql`
         query {
           __typename
+          keyMetrics {
+            __typename
+            date
+            verdictsCount
+            commandsCount
+            contributorsCount
+            verdictsLast90Count
+          }
           browsers {
             __typename
             id
