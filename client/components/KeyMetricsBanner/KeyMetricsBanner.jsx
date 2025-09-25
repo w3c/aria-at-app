@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Alert } from 'react-bootstrap';
 import { KEY_METRICS_QUERY } from './queries';
 import { useQuery } from '@apollo/client';
