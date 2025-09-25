@@ -44,6 +44,7 @@ const getGraphQLContext = require('../../graphql-context');
 const { getBotUserByAtId } = require('./UserService');
 const {
   getAtVersionWithRequirements,
+  getLatestAutomationSupportedAtVersion,
   getRerunnableTestPlanReportsForVersion
 } = require('./AtVersionService');
 const { createUpdateEvent } = require('./UpdateEventService');
@@ -502,10 +503,8 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
     transaction
   });
 
-  const atVersion = await getAtVersionWithRequirements(
+  const atVersion = await getLatestAutomationSupportedAtVersion(
     testPlanReport.at.id,
-    testPlanReport.exactAtVersion,
-    testPlanReport.minimumAtVersion,
     transaction
   );
 
@@ -561,10 +560,8 @@ const scheduleCollectionJob = async (
   }
 
   if (!atVersion) {
-    atVersion = await getAtVersionWithRequirements(
+    atVersion = await getLatestAutomationSupportedAtVersion(
       report.at.id,
-      report.exactAtVersion,
-      report.minimumAtVersion,
       transaction
     );
   }
@@ -698,10 +695,8 @@ const restartCollectionJob = async ({ id }, { transaction }) => {
     transaction
   });
 
-  const atVersion = await getAtVersionWithRequirements(
+  const atVersion = await getLatestAutomationSupportedAtVersion(
     testPlanReport.at.id,
-    testPlanReport.exactAtVersion,
-    testPlanReport.minimumAtVersion,
     transaction
   );
 
