@@ -426,7 +426,7 @@ const getTestResultsUsingAtVersion = async (atVersionId, { transaction }) => {
   return results;
 };
 
-const getKeyMetrics = async ({ transaction }) => {
+const getKeyMetrics = async () => {
   const [[result]] = await sequelize.query(`
 SELECT 
     (EXTRACT(EPOCH from NOW()) * 1000)::bigint as date,
