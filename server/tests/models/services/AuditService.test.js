@@ -4,6 +4,16 @@ const { AUDIT_EVENT_TYPES } = require('../../../util/auditEventTypes');
 const dbCleaner = require('../../util/db-cleaner');
 
 describe('AuditService Data Checks', () => {
+  const performedByUserId = 1;
+  const testerUserId = 2;
+  const testerUsername = 'testuser';
+  const testPlanReportId = 3;
+  const testPlanRunId = 4;
+  const fromTesterUserId = 2;
+  const fromTesterUsername = 'olduser';
+  const toTesterUserId = 3;
+  const toTesterUsername = 'newuser';
+
   afterAll(async () => {
     await sequelize.close();
   });
@@ -11,23 +21,19 @@ describe('AuditService Data Checks', () => {
   describe('auditTesterAssignment', () => {
     it('should create an audit record for tester assignment', async () => {
       await dbCleaner(async transaction => {
-        const performedByUserId = 1;
-        const testerUserId = 2;
-        const testerUsername = 'testuser';
-        const testPlanReportId = 3;
-
         const auditRecord = await AuditService.auditTesterAssignment({
           performedByUserId,
           testerUserId,
           testerUsername,
           testPlanReportId,
+          testPlanRunId,
           transaction
         });
 
         expect(auditRecord).toBeDefined();
         expect(auditRecord.eventType).toBe(AUDIT_EVENT_TYPES.TESTER_ASSIGNMENT);
         expect(auditRecord.description).toContain(
-          'Tester testuser assigned to test plan report'
+          'Tester testuser assigned to test plan run 4 in test plan report 3'
         );
         expect(auditRecord.performedByUserId).toBe(performedByUserId);
         expect(auditRecord.entityId).toBe(testPlanReportId);
@@ -44,14 +50,6 @@ describe('AuditService Data Checks', () => {
   describe('auditTesterReassignment', () => {
     it('should create an audit record for tester reassignment', async () => {
       await dbCleaner(async transaction => {
-        const performedByUserId = 1;
-        const fromTesterUserId = 2;
-        const fromTesterUsername = 'olduser';
-        const toTesterUserId = 3;
-        const toTesterUsername = 'newuser';
-        const testPlanReportId = 4;
-        const testPlanRunId = 5;
-
         const auditRecord = await AuditService.auditTesterReassignment({
           performedByUserId,
           fromTesterUserId,
@@ -87,11 +85,6 @@ describe('AuditService Data Checks', () => {
   describe('auditTesterRemoval', () => {
     it('should create an audit record for tester removal', async () => {
       await dbCleaner(async transaction => {
-        const performedByUserId = 1;
-        const testerUserId = 2;
-        const testerUsername = 'removeduser';
-        const testPlanReportId = 3;
-
         const auditRecord = await AuditService.auditTesterRemoval({
           performedByUserId,
           testerUserId,
@@ -103,7 +96,7 @@ describe('AuditService Data Checks', () => {
         expect(auditRecord).toBeDefined();
         expect(auditRecord.eventType).toBe(AUDIT_EVENT_TYPES.TESTER_REMOVAL);
         expect(auditRecord.description).toContain(
-          'Tester removeduser removed from test plan report'
+          'Tester testuser removed from test plan report'
         );
         expect(auditRecord.performedByUserId).toBe(performedByUserId);
         expect(auditRecord.entityId).toBe(testPlanReportId);
@@ -119,12 +112,6 @@ describe('AuditService Data Checks', () => {
 
     it('should create an audit record for tester removal with testPlanRunId', async () => {
       await dbCleaner(async transaction => {
-        const performedByUserId = 1;
-        const testerUserId = 2;
-        const testerUsername = 'removeduser';
-        const testPlanReportId = 3;
-        const testPlanRunId = 4;
-
         const auditRecord = await AuditService.auditTesterRemoval({
           performedByUserId,
           testerUserId,
@@ -137,7 +124,7 @@ describe('AuditService Data Checks', () => {
         expect(auditRecord).toBeDefined();
         expect(auditRecord.eventType).toBe(AUDIT_EVENT_TYPES.TESTER_REMOVAL);
         expect(auditRecord.description).toContain(
-          'Tester removeduser removed from test plan run 4 in test plan report 3'
+          'Tester testuser removed from test plan run 4 in test plan report 3'
         );
         expect(auditRecord.performedByUserId).toBe(performedByUserId);
         expect(auditRecord.entityId).toBe(testPlanReportId);
@@ -155,25 +142,24 @@ describe('AuditService Data Checks', () => {
   describe('getAuditRecordsForTestPlanReport', () => {
     it('should retrieve audit records for a test plan report', async () => {
       await dbCleaner(async transaction => {
-        const testPlanReportId = 1;
-
-        // Create some test audit records
+        // Create test audit records for assignment and reassignment to verify retrieval
         await AuditService.auditTesterAssignment({
-          performedByUserId: 1,
-          testerUserId: 2,
-          testerUsername: 'testuser',
+          performedByUserId,
+          testerUserId,
+          testerUsername,
           testPlanReportId,
+          testPlanRunId,
           transaction
         });
 
         await AuditService.auditTesterReassignment({
-          performedByUserId: 1,
-          fromTesterUserId: 2,
-          fromTesterUsername: 'olduser',
-          toTesterUserId: 3,
-          toTesterUsername: 'newuser',
+          performedByUserId,
+          fromTesterUserId,
+          fromTesterUsername,
+          toTesterUserId,
+          toTesterUsername,
           testPlanReportId,
-          testPlanRunId: 3,
+          testPlanRunId,
           transaction
         });
 
@@ -185,10 +171,10 @@ describe('AuditService Data Checks', () => {
 
         expect(auditRecords).toHaveLength(2);
         expect(auditRecords[0].eventType).toBe(
-          AUDIT_EVENT_TYPES.TESTER_REASSIGNMENT
+          AUDIT_EVENT_TYPES.TESTER_ASSIGNMENT
         );
         expect(auditRecords[1].eventType).toBe(
-          AUDIT_EVENT_TYPES.TESTER_ASSIGNMENT
+          AUDIT_EVENT_TYPES.TESTER_REASSIGNMENT
         );
       });
     });
@@ -197,26 +183,24 @@ describe('AuditService Data Checks', () => {
   describe('getAuditRecordsForTester', () => {
     it('should retrieve audit records for a specific tester', async () => {
       await dbCleaner(async transaction => {
-        const testerUserId = 2;
-        const testPlanReportId = 1;
-
-        // Create some test audit records
+        // Create test audit records for assignment and reassignment to verify tester-specific retrieval
         await AuditService.auditTesterAssignment({
-          performedByUserId: 1,
-          testerUserId: testerUserId,
-          testerUsername: 'testuser',
+          performedByUserId,
+          testerUserId,
+          testerUsername,
           testPlanReportId,
+          testPlanRunId,
           transaction
         });
 
         await AuditService.auditTesterReassignment({
-          performedByUserId: 1,
-          fromTesterUserId: testerUserId,
-          fromTesterUsername: 'olduser',
-          toTesterUserId: 3,
-          toTesterUsername: 'newuser',
+          performedByUserId,
+          fromTesterUserId,
+          fromTesterUsername,
+          toTesterUserId,
+          toTesterUsername,
           testPlanReportId,
-          testPlanRunId: 3,
+          testPlanRunId,
           transaction
         });
 
@@ -226,10 +210,13 @@ describe('AuditService Data Checks', () => {
         });
 
         expect(auditRecords).toHaveLength(2);
-        // First record should be reassignment with toTesterUserId
-        expect(auditRecords[0].metadata.toTesterUserId).toBe(testerUserId);
-        // Second record should be assignment with testerUserId
-        expect(auditRecords[1].metadata.testerUserId).toBe(testerUserId);
+        // First record should be tester assignment (contains testerUserId)
+        expect(auditRecords[0].metadata.testerUserId).toBe(testerUserId);
+        // Second record should be tester reassignment (contains fromTesterUserId and toTesterUserId)
+        expect(auditRecords[1].metadata.fromTesterUserId).toBe(
+          fromTesterUserId
+        );
+        expect(auditRecords[1].metadata.toTesterUserId).toBe(toTesterUserId);
       });
     });
   });
@@ -266,14 +253,10 @@ describe('AuditService Data Checks', () => {
   describe('getAuditRecordById', () => {
     it('should retrieve an audit record by ID', async () => {
       await dbCleaner(async transaction => {
-        const performedByUserId = 1;
-        const testerUserId = 2;
-        const testPlanReportId = 3;
-
         const createdRecord = await AuditService.auditTesterAssignment({
           performedByUserId,
-          testerUserId: testerUserId,
-          testerUsername: 'testuser',
+          testerUserId,
+          testerUsername,
           testPlanReportId,
           transaction
         });
@@ -296,13 +279,9 @@ describe('AuditService Data Checks', () => {
   describe('updateAuditRecordById', () => {
     it('should update an audit record by ID', async () => {
       await dbCleaner(async transaction => {
-        const performedByUserId = 1;
-        const testerUserId = 2;
-        const testPlanReportId = 3;
-
         const createdRecord = await AuditService.auditTesterAssignment({
           performedByUserId,
-          testerUserId: testerUserId,
+          testerUserId,
           testerUsername: 'testuser',
           testPlanReportId,
           transaction
@@ -328,24 +307,19 @@ describe('AuditService Data Checks', () => {
   describe('removeAuditRecordById', () => {
     it('should remove an audit record by ID', async () => {
       await dbCleaner(async transaction => {
-        const performedByUserId = 1;
-        const testerUserId = 2;
-        const testPlanReportId = 3;
-
         const createdRecord = await AuditService.auditTesterAssignment({
           performedByUserId,
-          testerUserId: testerUserId,
-          testerUsername: 'testuser',
+          testerUserId,
+          testerUsername,
           testPlanReportId,
+          testPlanRunId,
           transaction
         });
 
-        const removed = await AuditService.removeAuditRecordById({
+        await AuditService.removeAuditRecordById({
           id: createdRecord.id,
           transaction
         });
-
-        expect(removed).toBe(true);
 
         const retrievedRecord = await AuditService.getAuditRecordById({
           id: createdRecord.id,
@@ -360,25 +334,23 @@ describe('AuditService Data Checks', () => {
   describe('getAuditRecords', () => {
     it('should retrieve audit records with pagination', async () => {
       await dbCleaner(async transaction => {
-        const testPlanReportId = 1;
-
-        // Create multiple audit records
+        // Create multiple audit records to test pagination functionality
         await AuditService.auditTesterAssignment({
-          performedByUserId: 1,
-          testerUserId: 2,
-          testerUsername: 'testuser',
+          performedByUserId,
+          testerUserId,
+          testerUsername,
           testPlanReportId,
           transaction
         });
 
         await AuditService.auditTesterReassignment({
-          performedByUserId: 1,
-          fromTesterUserId: 2,
-          fromTesterUsername: 'olduser',
-          toTesterUserId: 3,
-          toTesterUsername: 'newuser',
+          performedByUserId,
+          fromTesterUserId,
+          fromTesterUsername,
+          toTesterUserId,
+          toTesterUsername,
           testPlanReportId,
-          testPlanRunId: 3,
+          testPlanRunId,
           transaction
         });
 

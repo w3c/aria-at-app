@@ -223,6 +223,20 @@ describe('graphql', () => {
               name
             }
           }
+          auditRecords {
+            __typename
+            id
+            eventType
+            description
+            performedBy {
+              __typename
+              id
+              username
+            }
+            entityId
+            metadata
+            createdAt
+          }
           ats {
             __typename
             id
