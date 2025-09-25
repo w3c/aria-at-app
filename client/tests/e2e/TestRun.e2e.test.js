@@ -395,7 +395,7 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
-  it('persists the presence of unexpected behaviors', async () => {
+  it('persists the presence of negative side effects', async () => {
     const countChecked = page => {
       return page.evaluate(() => {
         return Array.from(document.querySelectorAll('input[id^=problem-]')).map(
@@ -504,9 +504,9 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('button ::-p-text(Submit Results)');
 
       await page.click('label ::-p-text(excessively verbose)');
-      await page.select('.unexpected-behaviors-label select', 'SEVERE');
+      await page.select('.negative-side-effects-label select', 'SEVERE');
       await page.type(
-        '.unexpected-behaviors-label input[type=text]',
+        '.negative-side-effects-label input[type=text]',
         'anything'
       );
 
@@ -603,6 +603,92 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
+  it('enforces read-only and shows on-hold modal when report is On hold', async () => {
+    // Ensure the report is On hold as admin first, then switch to tester in same page
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      const sectionButtonSelector = 'button#disclosure-btn-modal-dialog-0';
+      const tableSelector =
+        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+
+      await page.waitForSelector(sectionButtonSelector);
+      await page.click(sectionButtonSelector);
+      await page.waitForSelector(tableSelector);
+
+      // Toggle to On hold if not already
+      const toggleWasClicked = await page.$eval(tableSelector, el => {
+        const firstRow = el.querySelector('tbody tr');
+        const actionsCell = firstRow.querySelectorAll('td')[4];
+        const btn = Array.from(actionsCell.querySelectorAll('button')).find(b =>
+          /Put on hold|Ready for testing/i.test(b.innerText)
+        );
+        if (!btn) return false;
+        const isOnHold = /Ready for testing/i.test(btn.innerText);
+        if (!isOnHold) {
+          btn.click();
+          return true;
+        }
+        return false;
+      });
+      if (toggleWasClicked) await page.waitForNetworkIdle();
+
+      // Verify status shows On hold
+      const statusText = await page.$eval(tableSelector, el => {
+        const firstRow = el.querySelector('tbody tr');
+        const statusCell = firstRow.querySelectorAll('td')[3];
+        return statusCell.innerText;
+      });
+      expect(statusText.includes('On hold')).toBe(true);
+
+      // Sign in as tester within same session/transaction
+      await page.evaluate('signMeInAsTester("joe-the-tester")');
+      await page.waitForSelector('::-p-text(Signed in)');
+
+      // Expand and assign self
+      await page.waitForSelector(sectionButtonSelector);
+      await page.click(sectionButtonSelector);
+      await page.waitForSelector(tableSelector);
+      await page.$eval(tableSelector, el => {
+        // First button is Assign Yourself
+        el.querySelector('button').click();
+      });
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('::-p-text(Unassign Yourself)');
+
+      // Start testing
+      await page.waitForSelector('a[role="button"] ::-p-text(Start Testing)');
+      await page.click('a[role="button"] ::-p-text(Start Testing)');
+      await page.waitForNavigation({
+        waitUntil: ['domcontentloaded', 'networkidle0']
+      });
+
+      // Wait for Test Run to render
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+
+      // On hold modal should be visible
+      await page.waitForSelector('::-p-text(On hold)');
+
+      // Submit button should be disabled
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+      const submitDisabled = await page.$eval(
+        'button[class="btn btn-primary"] ::-p-text(Submit Results)',
+        el => el.closest('button').disabled
+      );
+      expect(submitDisabled).toBe(true);
+
+      // Start Over should be disabled
+      const startOverDisabled = await page.$eval(
+        'button ::-p-text(Start Over)',
+        el => el.closest('button').disabled
+      );
+      expect(startOverDisabled).toBe(true);
+
+      // Close label should be present (not Save and Close)
+      await page.waitForSelector('button ::-p-text(Close)');
+      const hasSaveAndClose = await page.$('button ::-p-text(Save and Close)');
+      expect(hasSaveAndClose).toBeNull();
+    });
+  });
+
   it('focuses first assertion radio button when only top output is filled', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page);
@@ -638,7 +724,7 @@ describe('Test Run when signed in as tester', () => {
     });
   });
 
-  it('focuses unexpected behavior details field when details are required but not provided', async () => {
+  it('focuses negative side effect details field when details are required but not provided', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page);
 
@@ -658,7 +744,7 @@ describe('Test Run when signed in as tester', () => {
         noOutputCheckboxes.forEach(checkbox => checkbox.click());
       });
 
-      // First enable unexpected behaviors by clicking "Yes, negative side effects occurred"
+      // First enable negative side effects by clicking "Yes, negative side effects occurred"
       await page.evaluate(() => {
         const yesUndesiredRadios = document.querySelectorAll(
           'input[id^="problem-"][id$="-false"]'
@@ -669,7 +755,7 @@ describe('Test Run when signed in as tester', () => {
         }
       });
 
-      // Select an unexpected behavior but don't fill details
+      // Select an negative side effect but don't fill details
       await page.click('label ::-p-text(excessively verbose)');
 
       // Submit the form
@@ -692,19 +778,19 @@ describe('Test Run when signed in as tester', () => {
       expect(activeElement.nodeName).toBe('input');
       expect(activeElement.type).toBe('text');
       expect(activeElement.className).toContain(
-        'undesirable-output-is-excessively-verbose'
+        'negative-side-effect-output-is-excessively-verbose'
       );
     });
   });
 
-  it('focuses first unexpected behaviors radio button when required but not provided', async () => {
+  it('focuses first negative side effects radio button when required but not provided', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       await assignSelfAndNavigateToRun(page);
 
       await page.waitForSelector('h1 ::-p-text(Test 1)');
       await page.waitForSelector('button ::-p-text(Submit Results)');
 
-      // Fill all required fields except unexpected behaviors
+      // Fill all required fields except negative side effects
       await page.evaluate(() => {
         const yesRadios = document.querySelectorAll(
           'input[data-testid^="radio-yes-"]'
@@ -717,7 +803,7 @@ describe('Test Run when signed in as tester', () => {
         noOutputCheckboxes.forEach(checkbox => checkbox.click());
       });
 
-      // Submit without selecting unexpected behaviors option
+      // Submit without selecting negative side effects option
       await page.click(submitResultsButtonSelector);
       await page.waitForNetworkIdle();
 
@@ -725,7 +811,7 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('h1 ::-p-text(Test 1)');
       await page.waitForSelector('button ::-p-text(Submit Results)');
 
-      // Check that the first unexpected behaviors radio button is focused
+      // Check that the first negative side effects radio button is focused
       const activeElement = await page.evaluate(() => {
         return {
           id: document.activeElement.id,

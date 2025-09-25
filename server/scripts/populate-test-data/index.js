@@ -22,7 +22,7 @@ const populateTestDatabase = async transaction => {
       'completeAndFailingDueToIncorrectAssertions',
       'completeAndFailingDueToNoOutputAssertions'
     ],
-    ['completeAndPassing', 'completeAndFailingDueToUnexpectedBehaviors'],
+    ['completeAndPassing', 'completeAndFailingDueToNegativeSideEffects'],
     [
       'completeAndFailingDueToNoOutputAssertions',
       'completeAndFailingDueToMultiple'
@@ -39,7 +39,7 @@ const populateTestDatabase = async transaction => {
       null,
       'completeAndFailingDueToIncorrectAssertions',
       'completeAndFailingDueToNoOutputAssertions',
-      'completeAndFailingDueToUnexpectedBehaviors'
+      'completeAndFailingDueToNegativeSideEffects'
     ],
     {
       transaction,
@@ -57,7 +57,7 @@ const populateTestDatabase = async transaction => {
       conflicts[1][0],
       conflicts[2][0],
       conflicts[3][0],
-      'incompleteAndFailingDueToUnexpectedBehaviors'
+      'incompleteAndFailingDueToNegativeSideEffects'
     ],
     { transaction }
   );
@@ -72,7 +72,7 @@ const populateTestDatabase = async transaction => {
       conflicts[1][1],
       conflicts[2][1],
       conflicts[3][1],
-      'incompleteAndFailingDueToUnexpectedBehaviors'
+      'incompleteAndFailingDueToNegativeSideEffects'
     ],
     { transaction }
   );
@@ -84,7 +84,7 @@ const populateTestDatabase = async transaction => {
       'completeAndPassing',
       'completeAndFailingDueToIncorrectAssertions',
       'completeAndFailingDueToNoOutputAssertions',
-      'completeAndFailingDueToUnexpectedBehaviors'
+      'completeAndFailingDueToNegativeSideEffects'
     ],
     { transaction }
   );
@@ -98,7 +98,7 @@ const populateTestDatabase = async transaction => {
       'completeAndPassing',
       'completeAndFailingDueToNoOutputAssertions',
       'completeAndPassing',
-      'completeAndFailingDueToUnexpectedBehaviors'
+      'completeAndFailingDueToNegativeSideEffects'
     ],
     { transaction }
   );
@@ -111,7 +111,7 @@ const populateTestDatabase = async transaction => {
       'completeAndFailingDueToIncorrectAssertions',
       'completeAndPassing',
       'completeAndFailingDueToIncorrectAssertions',
-      'completeAndFailingDueToUnexpectedBehaviors'
+      'completeAndFailingDueToNegativeSideEffects'
     ],
     { transaction }
   );
@@ -173,7 +173,7 @@ const populateTestDatabase = async transaction => {
     [
       'completeAndPassing',
       'completeAndPassing',
-      'completeAndFailingDueToUnexpectedBehaviors'
+      'completeAndFailingDueToNegativeSideEffects'
     ],
     { transaction }
   );
@@ -187,7 +187,7 @@ const populateTestDatabase = async transaction => {
       'incompleteAndFailingDueToNoOutputAssertions',
       'incompleteAndEmpty',
       'completeAndPassing',
-      'completeAndFailingDueToUnexpectedBehaviors'
+      'completeAndFailingDueToNegativeSideEffects'
     ],
     {
       transaction,
@@ -212,7 +212,8 @@ const populateTestDatabase = async transaction => {
   });
 
   await populateFakeTestResults(26, ['completeAndPassing'], {
-    transaction
+    transaction,
+    varyOutputsPerScenario: true
   });
 
   await populateFakeTestResults(27, ['completeAndPassing'], {
@@ -226,7 +227,8 @@ const populateTestDatabase = async transaction => {
 
   await populateFakeTestResults(30, ['completeAndPassing'], {
     transaction,
-    atVersionId: 5
+    atVersionId: 5,
+    varyOutputsPerScenario: true
   });
 
   console.info(

@@ -23,6 +23,7 @@ import ReportRerun from '../ReportRerun';
 import Tabs from '../common/Tabs';
 import FilterButtons from '../common/FilterButtons';
 import styles from './TestQueue.module.css';
+import pillStyles from '../common/VersionString/VersionString.module.css';
 import commonStyles from '../common/styles.module.css';
 
 const FILTER_KEYS = {
@@ -117,7 +118,7 @@ const TestQueue = () => {
   }, [data]);
 
   const shouldShowReport = (testPlanReport, filter) => {
-    const isRerun = !!testPlanReport.historicalReport;
+    const isRerun = !!testPlanReport.isRerun;
     if (filter === FILTER_KEYS.ALL) return true;
     return filter === FILTER_KEYS.AUTOMATED ? isRerun : !isRerun;
   };
@@ -333,6 +334,13 @@ const TestQueue = () => {
               testPlanReport={testPlanReport}
               fromTestQueue
             />
+            {testPlanReport.onHold ? (
+              <span
+                className={`${pillStyles.styledPill} ${pillStyles.autoWidth}`}
+              >
+                On hold
+              </span>
+            ) : null}
             {hasBotRun ? (
               <BotRunTestStatusList testPlanReportId={testPlanReport.id} />
             ) : null}

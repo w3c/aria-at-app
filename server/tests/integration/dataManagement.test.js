@@ -1146,7 +1146,7 @@ describe('data management', () => {
                             passed: false
                           })
                         ),
-                        unexpectedBehaviors: []
+                        negativeSideEffects: []
                       };
                     } else return scenarioResult;
                   }

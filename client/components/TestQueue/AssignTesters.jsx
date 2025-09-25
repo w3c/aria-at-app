@@ -4,7 +4,7 @@ import { useApolloClient } from '@apollo/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faRobot, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Button, Dropdown } from 'react-bootstrap';
-import CompletionStatusListItem from '../TestQueueCompletionStatusListItem';
+import TestQueueRunCompletionStatus from '../TestQueueRunCompletionStatus';
 import useConfirmationModal from '../../hooks/useConfirmationModal';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
@@ -267,21 +267,19 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
         {testPlanReport.draftTestPlanRuns
           .slice()
           .sort((a, b) => a.tester.username.localeCompare(b.tester.username))
-          .map((testPlanRun, index) => {
+          .map(testPlanRun => {
             const tester = testPlanRun.tester;
             const rowId = `plan-${testPlanReport.id}-assignee-${tester.id}-run-${testPlanRun.id}`;
             return (
               <React.Fragment key={rowId}>
-                <CompletionStatusListItem
-                  rowId={rowId}
-                  testPlanReport={testPlanReport}
-                  testPlanRun={testPlanRun}
-                  tester={tester}
-                />
-                {index ===
-                testPlanReport.draftTestPlanRuns.length - 1 ? null : (
-                  <br />
-                )}
+                <li>
+                  <TestQueueRunCompletionStatus
+                    rowId={rowId}
+                    testPlanReport={testPlanReport}
+                    testPlanRun={testPlanRun}
+                    tester={tester}
+                  />
+                </li>
               </React.Fragment>
             );
           })}
