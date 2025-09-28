@@ -159,6 +159,7 @@ describe('graphql', () => {
       ['TestPlanReport', 'issues'],
       ['TestPlanReport', 'historicalReport'],
       ['TestPlanReport', 'vendorReviewStatus'],
+      ['TestPlanReport', 'auditRecords'],
       ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
       ['CollectionJob', 'testPlanRun'],
       ['CollectionJob', 'externalLogsUrl'],
@@ -166,6 +167,7 @@ describe('graphql', () => {
       ['User', 'company'],
       ['Query', 'reviewerStatus'],
       ['Query', 'reviewerStatuses'],
+      ['Query', 'auditRecords'],
       // These interact with Response Scheduler API
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
@@ -223,20 +225,6 @@ describe('graphql', () => {
               id
               name
             }
-          }
-          auditRecords {
-            __typename
-            id
-            eventType
-            description
-            performedBy {
-              __typename
-              id
-              username
-            }
-            entityId
-            metadata
-            createdAt
           }
           ats {
             __typename
