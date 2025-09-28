@@ -147,7 +147,8 @@ describe('graphql', () => {
       'CollectionJobTestStatus',
       'ReviewerStatus',
       'ScenarioResultMatchSource',
-      'ScenarioResultMatch'
+      'ScenarioResultMatch',
+      'AuditRecord'
     ];
     const excludedTypeNameAndField = [
       // Items formatted like this:

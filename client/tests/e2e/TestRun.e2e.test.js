@@ -109,9 +109,10 @@ describe('Test Run when not signed in', () => {
   });
 });
 
-describe('Test Run when signed in as tester', () => {
+describe('Test Run when signed in', () => {
   const submitResultsButtonSelector =
     'button[class="btn btn-primary"] ::-p-text(Submit Results)';
+
   const assignSelfAndNavigateToRun = async (
     page,
     {
@@ -130,14 +131,128 @@ describe('Test Run when signed in as tester', () => {
     await page.waitForSelector(testPlanTableSelector);
 
     await page.$eval(testPlanTableSelector, el => {
-      // First button found on table would be 'Assign Yourself'
-      el.querySelector('button').click();
+      // Find the 'Assign Yourself' button
+      const buttons = el.querySelectorAll('button');
+      const assignYourselfButton = Array.from(buttons).find(button =>
+        button.textContent.includes('Assign Yourself')
+      );
+      assignYourselfButton.click();
     });
 
     await page.waitForNetworkIdle();
     await page.waitForSelector('::-p-text(Unassign Yourself)');
     await page.waitForSelector(startTestingButtonSelector);
     await page.click(startTestingButtonSelector);
+
+    // Wait for navigation to Test Run page to complete
+    await page.waitForNavigation({
+      waitUntil: ['domcontentloaded', 'networkidle0']
+    });
+
+    const atBrowserModalHeadingSelector =
+      'h1 ::-p-text(Assistive Technology and Browser Details)';
+    const atBrowserModalAtVersionSelectSelector =
+      'select[data-testid="at-browser-modal-select"]';
+    const atBrowserModalBrowserVersionInputSelector =
+      'input[data-testid="at-browser-modal-input"][class="form-control"]';
+    const atBrowserModalSaveButtonSelector =
+      'button ::-p-text(Save and Continue)';
+
+    await page.waitForSelector(atBrowserModalHeadingSelector);
+    await page.select(atBrowserModalAtVersionSelectSelector, '2');
+    await page.$eval(
+      atBrowserModalBrowserVersionInputSelector,
+      input => (input.value = '')
+    );
+    await page.type(
+      atBrowserModalBrowserVersionInputSelector,
+      '1.TestBrowserVersion'
+    );
+    await page.click(atBrowserModalSaveButtonSelector);
+    await page.waitForNetworkIdle();
+  };
+
+  const reassignToDifferentTesterAndNavigateToRun = async (
+    page,
+    {
+      testPlanSectionButtonSelector = 'button#disclosure-btn-modal-dialog-0',
+      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]'
+    } = {}
+  ) => {
+    // Expand Modal Dialog's V24.06.07 section
+    await page.waitForSelector(testPlanSectionButtonSelector);
+    await page.click(testPlanSectionButtonSelector);
+
+    // Wait for the table to render
+    await page.waitForSelector(testPlanTableSelector);
+
+    // Find the reassignment dropdown button
+    await page.evaluate(() => {
+      const modalDialogTableSelector =
+        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+      const modalDialogTable = document.querySelector(modalDialogTableSelector);
+
+      // Find the testers column (3rd column, index 2)
+      const cells = Array.from(modalDialogTable.querySelectorAll('td'));
+      const testersColumn = cells[2];
+
+      // Look for the reassignment dropdown button
+      const dropdownButtons = testersColumn.querySelectorAll(
+        'div.dropdown button'
+      );
+      const reassignDropdownButton = Array.from(dropdownButtons).find(button =>
+        button.querySelector('svg[data-icon="people-arrows"]')
+      );
+      reassignDropdownButton.click();
+    });
+
+    // Wait for the dropdown menu to appear
+    const assignTestersMenuSelector = 'div [role="menu"]';
+    await page.waitForSelector(assignTestersMenuSelector);
+
+    // Find and click the target tester in the dropdown
+    await page.evaluate(() => {
+      const assignTestersMenuSelector = 'div [role="menu"]';
+      const assignTestersMenu = document.querySelector(
+        assignTestersMenuSelector
+      );
+      const assignTesterOptions = Array.from(
+        assignTestersMenu.querySelectorAll('[role="menuitemcheckbox"]')
+      );
+      const targetTesterOption = assignTesterOptions.find(option =>
+        option.innerText.includes('joe-the-tester')
+      );
+      targetTesterOption.click();
+    });
+
+    // Wait for the reassignment to complete and find the 'Open run as...' dropdown button
+    await page.waitForNetworkIdle();
+    const openRunAsDropdownButton = await page.evaluateHandle(() => {
+      const modalDialogTableSelector =
+        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+      const modalDialogTable = document.querySelector(modalDialogTableSelector);
+
+      // Find the 'Open run as...' button from the Actions Column
+      const cells = Array.from(modalDialogTable.querySelectorAll('td'));
+      const actionsColumn = cells[4];
+      return actionsColumn.querySelector('div.dropdown button');
+    });
+    await openRunAsDropdownButton.click();
+
+    // Wait for the dropdown menu to appear and click the tester's name
+    const openRunAsMenuSelector = 'div.dropdown-menu';
+    await page.waitForSelector(openRunAsMenuSelector);
+
+    await page.evaluate(() => {
+      const openRunAsMenu = document.querySelector('div.dropdown-menu');
+      const testerOptions = Array.from(
+        openRunAsMenu.querySelectorAll('a.dropdown-item')
+      );
+      const targetTesterOption = testerOptions.find(option =>
+        option.innerText.includes('joe-the-tester')
+      );
+      targetTesterOption.click();
+    });
 
     // Wait for navigation to Test Run page to complete
     await page.waitForNavigation({
@@ -823,6 +938,32 @@ describe('Test Run when signed in as tester', () => {
       expect(activeElement.id).toBe('problem-0-true');
       expect(activeElement.nodeName).toBe('input');
       expect(activeElement.type).toBe('radio');
+    });
+  });
+
+  it('as admin, reassigns run to different tester then verifies tester assignment history is viewable', async () => {
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      await page.waitForSelector('h1 ::-p-text(Test Queue)');
+
+      // Reassign to a different tester (joe-the-tester) and navigate to that run
+      await reassignToDifferentTesterAndNavigateToRun(page);
+
+      // Wait for run page to load
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('::-p-text(Tester Assignment History)');
+
+      const assignmentHistoryText = await page.evaluate(() => {
+        const assignmentHistoryText = document.querySelector(
+          '[class*="assignment-container"]'
+        );
+        return assignmentHistoryText?.innerText;
+      });
+
+      // Verify the history contains reassignment information
+      expect(assignmentHistoryText).toContain('Tester Assignment History');
+      expect(assignmentHistoryText).toContain('This run was reassigned from');
+      expect(assignmentHistoryText).toContain("to 'joe-the-tester'");
+      expect(assignmentHistoryText).toContain('Performed by: joe-the-admin');
     });
   });
 });
