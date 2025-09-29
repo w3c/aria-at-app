@@ -1079,15 +1079,18 @@ const TestRun = () => {
           hasConflicts={currentTest.hasConflicts}
           handleReviewConflictsButtonClick={handleReviewConflictsButtonClick}
         />
-        <TesterAssignmentLog
-          auditRecords={testPlanReport?.auditRecords.filter(
-            record =>
-              (record.eventType === 'TESTER_ASSIGNMENT' ||
-                record.eventType === 'TESTER_REASSIGNMENT') &&
-              !!record.metadata?.testPlanRunId &&
-              record.metadata?.testPlanRunId == testPlanRunId
+        {testPlanReport?.auditRecords &&
+          testPlanReport.auditRecords.length > 0 && (
+            <TesterAssignmentLog
+              auditRecords={testPlanReport.auditRecords.filter(
+                record =>
+                  (record.eventType === 'TESTER_ASSIGNMENT' ||
+                    record.eventType === 'TESTER_REASSIGNMENT') &&
+                  !!record.metadata?.testPlanRunId &&
+                  record.metadata?.testPlanRunId == testPlanRunId
+              )}
+            />
           )}
-        />
         {pageReady && (
           <Row>
             <Col className="p-0" md={9}>
