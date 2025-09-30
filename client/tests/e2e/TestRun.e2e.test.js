@@ -165,7 +165,7 @@ describe('Test Run when signed in as admin', () => {
 
     // Wait for the reassignment to complete and find the 'Open run as...' dropdown button
     await page.waitForNetworkIdle();
-    const openRunAsDropdownButton = await page.evaluateHandle(() => {
+    await page.evaluate(() => {
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
       const modalDialogTable = document.querySelector(modalDialogTableSelector);
@@ -173,9 +173,11 @@ describe('Test Run when signed in as admin', () => {
       // Find the 'Open run as...' button from the Actions Column
       const cells = Array.from(modalDialogTable.querySelectorAll('td'));
       const actionsColumn = cells[4];
-      return actionsColumn.querySelector('div.dropdown button');
+      const openRunAsDropdownButton = actionsColumn.querySelector(
+        'div.dropdown button'
+      );
+      openRunAsDropdownButton.click();
     });
-    await openRunAsDropdownButton.click();
 
     // Wait for the dropdown menu to appear and click the tester's name
     const openRunAsMenuSelector = 'div.dropdown-menu';
