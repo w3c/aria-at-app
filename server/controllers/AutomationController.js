@@ -503,6 +503,10 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
       // No finalized candidates exist, skip comparison and completion event logic
       return;
     }
+
+    // Return early if it's not a rerun report
+    if (!testPlanRun.isRerun) return;
+
     for (const tr of testPlanRun.testResults) {
       for (const sr of tr.scenarioResults || []) {
         const m = matches.get(String(sr.scenarioId));
