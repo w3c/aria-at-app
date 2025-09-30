@@ -53,7 +53,7 @@ const TestQueueRunCompletionStatus = ({
     );
 
   const getNumCompletedOutputs = result => {
-    const isRerun = !!testPlanReport.isRerun;
+    const isRerun = !!testPlanRun.isRerun;
     return result.scenarioResults.reduce((acc, scenario) => {
       return (
         acc +

@@ -117,10 +117,11 @@ const TestQueue = () => {
     return { testPlans, testers };
   }, [data]);
 
-  const shouldShowReport = (testPlanReport, filter) => {
-    const isRerun = !!testPlanReport.isRerun;
+  const reportHasRunsMatchingFilter = (testPlanReport, filter) => {
     if (filter === FILTER_KEYS.ALL) return true;
-    return filter === FILTER_KEYS.AUTOMATED ? isRerun : !isRerun;
+    const anyRerun = testPlanReport.draftTestPlanRuns?.some(r => !!r.isRerun);
+    const anyManual = testPlanReport.draftTestPlanRuns?.some(r => !r.isRerun);
+    return filter === FILTER_KEYS.AUTOMATED ? anyRerun : anyManual;
   };
 
   const filterOptions = useMemo(() => {
@@ -132,10 +133,12 @@ const TestQueue = () => {
       testPlan.testPlanVersions.forEach(testPlanVersion => {
         testPlanVersion.testPlanReports.forEach(testPlanReport => {
           allCount++;
-          if (shouldShowReport(testPlanReport, FILTER_KEYS.MANUAL)) {
+          if (reportHasRunsMatchingFilter(testPlanReport, FILTER_KEYS.MANUAL)) {
             manualCount++;
           }
-          if (shouldShowReport(testPlanReport, FILTER_KEYS.AUTOMATED)) {
+          if (
+            reportHasRunsMatchingFilter(testPlanReport, FILTER_KEYS.AUTOMATED)
+          ) {
             automatedCount++;
           }
         });
@@ -159,7 +162,8 @@ const TestQueue = () => {
         const filteredVersions = testPlan.testPlanVersions
           .map(testPlanVersion => {
             const filteredReports = testPlanVersion.testPlanReports.filter(
-              testPlanReport => shouldShowReport(testPlanReport, activeFilter)
+              testPlanReport =>
+                reportHasRunsMatchingFilter(testPlanReport, activeFilter)
             );
 
             return {
