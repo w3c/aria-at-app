@@ -153,8 +153,8 @@ const InstructionsRenderer = ({
       {renderableContent.commands.map(
         ({ id, settings, assertionExceptions = [] }, i) => {
           const settingsScreenText = isV2
-            ? renderableContent.target.at.raw.settings[settings]?.screenText ??
-              ''
+            ? (renderableContent.target.at.raw.settings[settings]?.screenText ??
+              '')
             : null;
 
           let mustCount = 0;

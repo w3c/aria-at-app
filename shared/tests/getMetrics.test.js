@@ -249,8 +249,8 @@ describe('getMetrics', () => {
       negativeSideEffectCount > 0 || mustAssertionsFailedCount > 0
         ? 'FAILING'
         : shouldAssertionsFailedCount > 0
-        ? 'ALL_REQUIRED'
-        : 'FULL';
+          ? 'ALL_REQUIRED'
+          : 'FULL';
 
     const percentage = calculatePercentage(
       mustAssertionsPassedCount + shouldAssertionsPassedCount,

@@ -292,9 +292,8 @@ describe('Test Queue admin traits when reports exist', () => {
       await page.click('button[data-testid="add-run-later"]');
       await page.waitForNetworkIdle();
 
-      const voRowAfterAddToQueue = await getVoRowFromTestPlanReportStatusDialog(
-        page
-      );
+      const voRowAfterAddToQueue =
+        await getVoRowFromTestPlanReportStatusDialog(page);
 
       // Get values from cells in required VO row
       const [minimumAtVersionCellText, reportStatusCellText] =
@@ -364,9 +363,8 @@ describe('Test Queue admin traits when reports exist', () => {
       await page.click('button[data-testid="add-run-later"]');
       await page.waitForNetworkIdle();
 
-      const voRowAfterAddToQueue = await getVoRowFromTestPlanReportStatusDialog(
-        page
-      );
+      const voRowAfterAddToQueue =
+        await getVoRowFromTestPlanReportStatusDialog(page);
 
       // Get values from cells in required VO row
       const [minimumAtVersionCellText, reportStatusCellText] =

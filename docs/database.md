@@ -7,7 +7,6 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). The 
 ## Setting up a local database for development
 
 0. Install PostgreSQL
-
    - Mac
 
    ```
@@ -17,14 +16,18 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). The 
 
 1. Initialize the database
    - Mac
+
    ```
    createdb # run this if the PostgreSQL installation is freshly installed
    yarn db-init:dev
    ```
+
    - Linux
+
    ```
    sudo -u postgres yarn db-init:dev
    ```
+
 2. Run database migrations
    ```
    yarn sequelize db:migrate

@@ -60,8 +60,8 @@ const TestQueueRunCompletionStatus = ({
         (isRerun
           ? isScenarioResultCompletedRerun(scenario)
           : isScenarioResultCompleted(scenario)
-          ? 1
-          : 0)
+            ? 1
+            : 0)
       );
     }, 0);
   };

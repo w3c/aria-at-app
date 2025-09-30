@@ -116,7 +116,12 @@ details summary::-webkit-details-marker {
   border-bottom-left-radius: 3px;
   border-bottom-right-radius: 3px;
   padding: 1em 0.5em 0.5em 1em;
-  font-family: Noto Sans, Trebuchet MS, Helvetica Neue, Arial, sans-serif;
+  font-family:
+    Noto Sans,
+    Trebuchet MS,
+    Helvetica Neue,
+    Arial,
+    sans-serif;
   font-size: 1rem;
   color: #60470c;
   background-color: #fdefce;

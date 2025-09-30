@@ -13,7 +13,8 @@
     }
 
     ~ span {
-      box-shadow: 0 0 0 var(--2px) var(--white),
+      box-shadow:
+        0 0 0 var(--2px) var(--white),
         0 0 0 var(--4px) var(--navigator-green);
     }
   }
@@ -144,7 +145,8 @@ button.test-navigator-toggle {
     }
 
     a[aria-current='true'] + .progress-indicator {
-      box-shadow: 0 0 0 var(--2px) var(--white),
+      box-shadow:
+        0 0 0 var(--2px) var(--white),
         0 0 0 var(--4px) var(--navigator-warning);
     }
   }
@@ -198,7 +200,8 @@ button.test-navigator-toggle {
     }
 
     a[aria-current='true'] + .progress-indicator {
-      box-shadow: 0 0 0 var(--2px) var(--white),
+      box-shadow:
+        0 0 0 var(--2px) var(--white),
         0 0 0 var(--4px) var(--bg-dark-gray);
     }
   }

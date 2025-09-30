@@ -49,14 +49,14 @@ export const useFailingAssertions = testPlanReport => {
                 negativeSideEffect.impact.toLowerCase() === 'moderate'
                   ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
                   : negativeSideEffect.impact.toLowerCase() === 'severe'
-                  ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
-                  : 'N/A',
+                    ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
+                    : 'N/A',
               priority:
                 negativeSideEffect.impact.toLowerCase() === 'moderate'
                   ? 'SHOULD'
                   : negativeSideEffect.impact.toLowerCase() === 'severe'
-                  ? 'MUST'
-                  : 'N/A',
+                    ? 'MUST'
+                    : 'N/A',
               output: negativeSideEffect.text
             })
           );
