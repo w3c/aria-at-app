@@ -60,6 +60,6 @@
     "prettier": "^3.6.2"
   },
   "lint-staged": {
-    "*": "yarn lint:fix"
+    "**/*.{js,jsx,css,json,md,yml}": "yarn lint:fix"
   }
 }
