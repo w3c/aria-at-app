@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useApolloClient } from '@apollo/client';
 import { Button } from 'react-bootstrap';
@@ -16,6 +16,10 @@ const StartBotRunButton = ({ testPlanReport, onChange }) => {
   const { triggerLoad } = useTriggerLoad();
   const { showConfirmationModal, hideConfirmationModal } =
     useConfirmationModal();
+  // Synchronize the state of the action with the modal UI
+  const [isActionPending, setIsActionPending] = useState(false);
+  // Ref guard to prevent concurrent actions
+  const isConfirmingRef = useRef(false);
 
   const atLatestAutomationSupportedVersion = useMemo(() => {
     const versions = testPlanReport?.at?.atVersions || [];
@@ -46,22 +50,32 @@ const StartBotRunButton = ({ testPlanReport, onChange }) => {
     );
 
     const onConfirm = async () => {
-      await triggerLoad(async () => {
-        await client.mutate({
-          mutation: SCHEDULE_COLLECTION_JOB_MUTATION,
-          variables: { testPlanReportId: testPlanReport.id },
-          refetchQueries: [
-            TEST_QUEUE_PAGE_QUERY,
-            TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
-          ],
-          awaitRefetchQueries: true
-        });
-      }, 'Scheduling Collection Job');
-      hideConfirmationModal();
-      if (onChange) await onChange();
+      if (isConfirmingRef.current || isActionPending) return;
+      isConfirmingRef.current = true;
+      setIsActionPending(true);
+      // Immediately reflect disabled/label in the modal UI
+      showConfirmationModal(renderModal());
+      try {
+        await triggerLoad(async () => {
+          await client.mutate({
+            mutation: SCHEDULE_COLLECTION_JOB_MUTATION,
+            variables: { testPlanReportId: testPlanReport.id },
+            refetchQueries: [
+              TEST_QUEUE_PAGE_QUERY,
+              TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
+            ],
+            awaitRefetchQueries: true
+          });
+        }, 'Scheduling Collection Job');
+        hideConfirmationModal();
+        if (onChange) await onChange();
+      } finally {
+        setIsActionPending(false);
+        isConfirmingRef.current = false;
+      }
     };
 
-    showConfirmationModal(
+    const renderModal = () => (
       <BasicModal
         show
         title={title}
@@ -71,13 +85,19 @@ const StartBotRunButton = ({ testPlanReport, onChange }) => {
         useOnHide={true}
         actions={[
           {
-            label: 'Start',
+            label:
+              isConfirmingRef.current || isActionPending
+                ? 'Starting...'
+                : 'Start',
             onClick: onConfirm,
-            testId: 'confirm-start-bot-run'
+            testId: 'confirm-start-bot-run',
+            disabled: isConfirmingRef.current || isActionPending
           }
         ]}
       />
     );
+
+    showConfirmationModal(renderModal());
   };
 
   return (

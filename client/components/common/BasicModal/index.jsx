@@ -55,6 +55,7 @@ const BasicModal = ({
           onClick={action.onClick}
           className={action.className ?? ''}
           data-testid={action.testId ?? ''}
+          disabled={action.disabled ?? false}
         >
           {action.label ?? 'Continue'}
         </Button>
