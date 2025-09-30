@@ -119,8 +119,13 @@ const TestQueue = () => {
 
   const reportHasRunsMatchingFilter = (testPlanReport, filter) => {
     if (filter === FILTER_KEYS.ALL) return true;
-    const anyRerun = testPlanReport.draftTestPlanRuns?.some(r => !!r.isRerun);
-    const anyManual = testPlanReport.draftTestPlanRuns?.some(r => !r.isRerun);
+    const runs = testPlanReport.draftTestPlanRuns || [];
+    if (runs.length === 0) {
+      // Reports with no runs should appear under Manual
+      return filter === FILTER_KEYS.MANUAL;
+    }
+    const anyRerun = runs.some(r => !!r.isRerun);
+    const anyManual = runs.some(r => !r.isRerun);
     return filter === FILTER_KEYS.AUTOMATED ? anyRerun : anyManual;
   };
 
