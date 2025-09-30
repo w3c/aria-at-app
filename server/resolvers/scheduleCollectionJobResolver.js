@@ -5,7 +5,7 @@ const {
 
 const scheduleCollectionJobResolver = async (
   _,
-  { testPlanReportId },
+  { testPlanReportId, isRerun = false },
   context
 ) => {
   const { user, transaction } = context;
@@ -16,7 +16,7 @@ const scheduleCollectionJobResolver = async (
     throw new AuthenticationError();
   }
 
-  return scheduleCollectionJob({ testPlanReportId }, { transaction });
+  return scheduleCollectionJob({ testPlanReportId, isRerun }, { transaction });
 };
 
 module.exports = scheduleCollectionJobResolver;
