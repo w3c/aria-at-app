@@ -158,7 +158,7 @@ describe('Test Run when signed in as admin', () => {
         assignTestersMenu.querySelectorAll('[role="menuitemcheckbox"]')
       );
       const targetTesterOption = assignTesterOptions.find(option =>
-        option.innerText.includes('joe-the-tester')
+        option.innerText.includes('foo-bar')
       );
       targetTesterOption.click();
     });
@@ -189,7 +189,7 @@ describe('Test Run when signed in as admin', () => {
         openRunAsMenu.querySelectorAll('a.dropdown-item')
       );
       const targetTesterOption = testerOptions.find(option =>
-        option.innerText.includes('joe-the-tester')
+        option.innerText.includes('foo-bar')
       );
       targetTesterOption.click();
     });
@@ -226,7 +226,7 @@ describe('Test Run when signed in as admin', () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       await page.waitForSelector('h1 ::-p-text(Test Queue)');
 
-      // Reassign to a different tester (joe-the-tester) and navigate to that run
+      // Reassign to a different tester (foo-bar) and navigate to that run
       await reassignToDifferentTesterAndNavigateToRun(page);
 
       // Wait for run page to load
@@ -243,7 +243,7 @@ describe('Test Run when signed in as admin', () => {
       // Verify the history contains reassignment information
       expect(assignmentHistoryText).toContain('Tester Assignment History');
       expect(assignmentHistoryText).toContain('This run was reassigned from');
-      expect(assignmentHistoryText).toContain("to 'joe-the-tester'");
+      expect(assignmentHistoryText).toContain("to 'foo-bar'");
       expect(assignmentHistoryText).toContain('Performed by: joe-the-admin');
     });
   });
