@@ -521,8 +521,8 @@ describe('Test Run when signed in as tester', () => {
           );
         };
         return [text(document.querySelector('main h2'))].concat(
-          Array.from(document.querySelectorAll('main h3, main tbody')).map(
-            el => (el.tagName === 'H3' ? text(el) : readTable(el))
+          Array.from(document.querySelectorAll('main h3, main tbody')).map(el =>
+            el.tagName === 'H3' ? text(el) : readTable(el)
           )
         );
       });

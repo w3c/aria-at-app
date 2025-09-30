@@ -71,8 +71,8 @@ const SortableIssuesTable = ({ issues, issueLink }) => {
         ? -1
         : 1
       : aValue > bValue
-        ? -1
-        : 1;
+      ? -1
+      : 1;
   };
 
   const sortedAndFilteredIssues = useMemo(() => {

@@ -136,24 +136,27 @@ export const useDataManagementTableFiltering = (
   }
 
   if (testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length) {
-    filterLabels[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT] =
-      `In Draft Review (${
-        testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length
-      })`;
+    filterLabels[
+      DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.DRAFT
+    ] = `In Draft Review (${
+      testPlansByPhase[TEST_PLAN_VERSION_PHASES.DRAFT].length
+    })`;
   }
 
   if (testPlansByPhase[TEST_PLAN_VERSION_PHASES.CANDIDATE].length > 0) {
-    filterLabels[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE] =
-      `In Candidate Review (${
-        testPlansByPhase[TEST_PLAN_VERSION_PHASES.CANDIDATE].length
-      })`;
+    filterLabels[
+      DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.CANDIDATE
+    ] = `In Candidate Review (${
+      testPlansByPhase[TEST_PLAN_VERSION_PHASES.CANDIDATE].length
+    })`;
   }
 
   if (testPlansByPhase[TEST_PLAN_VERSION_PHASES.RECOMMENDED].length > 0) {
-    filterLabels[DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED] =
-      `Recommended Plans (${
-        testPlansByPhase[TEST_PLAN_VERSION_PHASES.RECOMMENDED].length
-      })`;
+    filterLabels[
+      DATA_MANAGEMENT_TABLE_FILTER_OPTIONS.RECOMMENDED
+    ] = `Recommended Plans (${
+      testPlansByPhase[TEST_PLAN_VERSION_PHASES.RECOMMENDED].length
+    })`;
   }
 
   return { filteredTestPlans, filterLabels };

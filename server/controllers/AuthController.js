@@ -43,8 +43,9 @@ const oauthRedirectFromGithubController = async (req, res) => {
   const githubAccessToken = await GithubService.getGithubAccessToken(code);
   if (!githubAccessToken) return loginFailedDueToGitHub();
 
-  const githubUsername =
-    await GithubService.getGithubUsername(githubAccessToken);
+  const githubUsername = await GithubService.getGithubUsername(
+    githubAccessToken
+  );
 
   if (!githubUsername) return loginFailedDueToGitHub();
 

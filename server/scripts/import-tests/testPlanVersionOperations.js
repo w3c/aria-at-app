@@ -459,7 +459,7 @@ async function updateAtsJson({ ats, supportAts }) {
 
   await fse.writeFile(
     path.resolve(__dirname, '../../resources/ats.json'),
-    JSON.stringify(atsResult, null, 4)
+    JSON.stringify(atsResult, null, 2)
   );
 }
 

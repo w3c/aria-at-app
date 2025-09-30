@@ -400,8 +400,8 @@ const TestQueue = () => {
           {isAdmin
             ? 'Manage the test plans, assign yourself a test plan or start executing one that is already assigned to you.'
             : isSignedIn
-              ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
-              : 'Select a test plan to view. Your results will not be saved.'}
+            ? 'Assign yourself a test plan or start executing one that is already assigned to you.'
+            : 'Select a test plan to view. Your results will not be saved.'}
         </p>
       )}
 

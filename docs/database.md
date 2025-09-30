@@ -7,6 +7,7 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). The 
 ## Setting up a local database for development
 
 0. Install PostgreSQL
+
    - Mac
 
    ```
@@ -15,6 +16,7 @@ The database migrations are managed by [Sequelize](https://sequelize.org/). The 
    ```
 
 1. Initialize the database
+
    - Mac
 
    ```

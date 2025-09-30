@@ -53,6 +53,7 @@ To deploy this project to server:
 
 1. Merge from development to the releases branch as detailed in [docs/release.md](../docs/release.md).
 1. Obtain an authorized key and add it to your keychain. This is needed for deploys to staging and production.
+
    - The shared key is named `aria-at-bocoup`.
    - Place it in the `~/.ssh` directory.
    - For security, set permissions on the key file, as required by the OS: `chmod 600 ~/.ssh/aria-at-bocoup`.
@@ -71,11 +72,13 @@ To deploy this project to server:
      - Note: The RSA key fingerprint for `fenrir.w3.internal` is `SHA256:cF6u/K00P2ELEVbIazVVqqMz5q+Sbh4+Jog/VmXZomg`.
 
 1. Bocoup maintains its own instance of the app on its internal infrastructure for quick and easy testing. Note that you must be a Bocouper to deploy to this environment. Follow the steps below to verify you are able to connect.
+
    - Run `ssh aria-at-app-sandbox.bocoup.com` to confirm you can connect.
    - Confirm that `sudo su` successfully switches you to the root user. You will need to enter the sudo password you set during your Bocoup onboarding. This password will be required when deploying to the sandbox.
 
 1. Obtain a copy of the `ansible-vault-password.txt` file in LastPass and place it in the directory which contains this document.
 1. Install [Ansible](https://www.ansible.com/) version 2.16. Instructions for macOS are as follows:
+
    - Install Ansible at the specific 2.16 version: `python3 -m pip install --user ansible-core==2.16.14`
    - Add the following line to your `~/.zshrc` file, changing the path below to match where Python installs Ansible for you:
      ```
@@ -86,6 +89,7 @@ To deploy this project to server:
    - Run `ansible --version` to verify your ansible is on version 2.16.
 
 1. Execute the following command from the deploy directory:
+
    - Sandbox:
 
    ```

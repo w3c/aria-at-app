@@ -294,10 +294,10 @@ const updateOrCreateTestResultWithResponses = async ({
               })
             ),
             negativeSideEffects: isSameOrCross
-              ? (m.source?.negativeSideEffects ?? null)
+              ? m.source?.negativeSideEffects ?? null
               : null,
             hasNegativeSideEffect: isSameOrCross
-              ? (m.source?.hasNegativeSideEffect ?? null)
+              ? m.source?.hasNegativeSideEffect ?? null
               : null,
             match: m
           };
