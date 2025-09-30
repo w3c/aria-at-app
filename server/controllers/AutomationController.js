@@ -465,6 +465,9 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
     const { testPlanRun } = updatedJob;
     const { testPlanReport } = testPlanRun;
 
+    // Return early if it's not a rerun report
+    if (!testPlanRun.isRerun) return;
+
     const testPlanVersion = await getTestPlanVersionById({
       id: testPlanReport.testPlanVersionId,
       transaction
@@ -503,9 +506,6 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
       // No finalized candidates exist, skip comparison and completion event logic
       return;
     }
-
-    // Return early if it's not a rerun report
-    if (!testPlanRun.isRerun) return;
 
     for (const tr of testPlanRun.testResults) {
       for (const sr of tr.scenarioResults || []) {
