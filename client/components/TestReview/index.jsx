@@ -108,6 +108,36 @@ const TestReview = () => {
     })
   );
 
+  let supportingDocumentationLinks =
+    testPlanVersionTests[0].renderableContents[0].renderableContent.info.references.filter(
+      ({ refId }) => {
+        if (
+          refId === 'example' ||
+          refId === 'designPattern' ||
+          refId === 'developmentDocumentation'
+        ) {
+          return true;
+        }
+      }
+    );
+
+  // Include the APG Pattern link
+  if (
+    !supportingDocumentationLinks.find(
+      supportingDocumentationLink =>
+        supportingDocumentationLink.refId === 'designPattern'
+    )
+  ) {
+    supportingDocumentationLinks.unshift({
+      refId: 'designPattern',
+      value: testPlanVersion.metadata.designPatternUrl,
+      // TODO: Ensure the linkText gets included in the testPlanVersion.metadata
+      linkText: `APG Pattern: ${testPlanVersion.title}`
+        .replace('Example', '')
+        .trim()
+    });
+  }
+
   return (
     <Container id="main" as="main" tabIndex="-1">
       <Helmet>
@@ -192,21 +222,13 @@ const TestReview = () => {
         </li>
       </ul>
 
-      <h2>Supporting Documentation</h2>
-      <ul>
-        {testPlanVersionTests[0].renderableContents[0].renderableContent.info.references.map(
-          reference => {
-            if (isV2) {
-              let refValue = '';
-              let refLinkText = '';
-              if (
-                reference.refId === 'example' ||
-                reference.refId === 'designPattern' ||
-                reference.refId === 'developmentDocumentation'
-              ) {
-                refValue = reference.value;
-                refLinkText = reference.linkText;
-              }
+      {supportingDocumentationLinks.length ? (
+        <>
+          <h2>Supporting Documentation</h2>
+          <ul>
+            {supportingDocumentationLinks.map(reference => {
+              const refValue = reference.value;
+              const refLinkText = reference.linkText || reference.refId;
               return refValue ? (
                 <li key={refValue}>
                   <a href={refValue} rel="noreferrer" target="_blank">
@@ -214,18 +236,10 @@ const TestReview = () => {
                   </a>
                 </li>
               ) : null;
-            } else {
-              return (
-                <li key={reference.value}>
-                  <a href={reference.value} rel="noreferrer" target="_blank">
-                    {reference.refId}
-                  </a>
-                </li>
-              );
-            }
-          }
-        )}
-      </ul>
+            })}
+          </ul>
+        </>
+      ) : null}
       <SortableIssuesTable
         issues={issues}
         issueLink={createIssueLink({
@@ -249,44 +263,54 @@ const TestReview = () => {
       </div>
       {filteredTests.map((test, index) => {
         const isFirst = index === 0;
-        const hasAriaReference =
-          test.renderableContents[0].renderableContent.info.references.some(
-            reference => reference.type === 'aria'
-          );
+        const filteredAts =
+          activeFilter === 'All ATs'
+            ? test.ats
+            : test.ats.filter(at => at.name === activeFilter);
 
-        let filteredAts;
-        if (activeFilter === 'All ATs') {
-          filteredAts = test.ats;
-        } else {
-          filteredAts = test.ats.filter(at => at.name === activeFilter);
-        }
+        // [0] is fine because aria-at builds the references across all ATs
+        let ariaFeatures =
+          test.renderableContents[0].renderableContent.info.references.filter(
+            ({ refId }) => {
+              if (
+                !(
+                  refId === 'example' ||
+                  refId === 'designPattern' ||
+                  refId === 'developmentDocumentation'
+                )
+              ) {
+                return true;
+              }
+            }
+          );
+        ariaFeatures = ariaFeatures.map(ariaFeature => {
+          if (!ariaFeature.linkText) {
+            return {
+              ...ariaFeature,
+              linkText: `ARIA feature: ${ariaFeature.refId}`
+            };
+          }
+        });
 
         return (
           <Fragment key={test.id}>
             {isFirst ? null : <hr />}
             <h3>{`Test ${index + 1}: ${test.title}`}</h3>
-            {/* A defined 'aria' type is only available in v2 */}
-            {isV2 && hasAriaReference ? (
+            {ariaFeatures.length ? (
               <>
                 <p>{supportJson.testPlanStrings.ariaSpecsPreface}</p>
                 <ul>
-                  {test.renderableContents[0].renderableContent.info.references.map(
-                    reference => {
-                      let refValue = '';
-                      let refLinkText = '';
-                      if (reference.type === 'aria') {
-                        refValue = reference.value;
-                        refLinkText = reference.linkText;
-                      }
-                      return refValue ? (
-                        <li key={refValue}>
-                          <a href={refValue} rel="noreferrer" target="_blank">
-                            {refLinkText}
-                          </a>
-                        </li>
-                      ) : null;
-                    }
-                  )}
+                  {ariaFeatures.map(reference => {
+                    const refValue = reference.value;
+                    const refLinkText = reference.linkText || reference.refId;
+                    return refValue ? (
+                      <li key={refValue}>
+                        <a href={refValue} rel="noreferrer" target="_blank">
+                          {refLinkText}
+                        </a>
+                      </li>
+                    ) : null;
+                  })}
                 </ul>
               </>
             ) : null}
