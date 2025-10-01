@@ -49,7 +49,7 @@ test('correctly displays statuses for single COMPLETED test run', async () => {
   const { getByText } = screen;
 
   await waitFor(() => {
-    expect(getByText('3 Tests Completed')).toBeInTheDocument();
+    expect(getByText('3 Tests Executed')).toBeInTheDocument();
     expect(getByText('0 Tests Queued')).toBeInTheDocument();
   });
 });
@@ -85,7 +85,7 @@ test('correctly ignores test results from a human-submitted test plan run', asyn
   );
 
   await waitFor(async () => {
-    expect(getByText('2 Tests Completed')).toBeInTheDocument();
+    expect(getByText('2 Tests Executed')).toBeInTheDocument();
     expect(getByText('0 Tests Queued')).toBeInTheDocument();
   });
 });
@@ -131,7 +131,7 @@ test('correctly ignores test results from a human-submitted test plan run with a
   );
 
   await waitFor(async () => {
-    expect(getByText('3 Tests Completed')).toBeInTheDocument();
+    expect(getByText('3 Tests Executed')).toBeInTheDocument();
     expect(getByText('0 Tests Queued')).toBeInTheDocument();
   });
 });
@@ -162,7 +162,7 @@ test('correctly displays statuses for CANCELLED test run', async () => {
   );
 
   await waitFor(() => {
-    expect(getByText('2 Tests Completed')).toBeInTheDocument();
+    expect(getByText('2 Tests Executed')).toBeInTheDocument();
     expect(getByText('0 Tests Queued')).toBeInTheDocument();
     expect(getByText('1 Test Cancelled')).toBeInTheDocument();
   });
@@ -211,7 +211,7 @@ test('correctly displays statuses for multiple RUNNING and QUEUED test runs', as
     // Imperfect but prevents needing to detect loading removal
     await setTimeout(() => {
       expect(getByText('1 Test Running')).toBeInTheDocument();
-      expect(getByText('2 Tests Completed')).toBeInTheDocument();
+      expect(getByText('2 Tests Executed')).toBeInTheDocument();
       expect(getByText('1 Test Queued')).toBeInTheDocument();
       expect(getByText('2 Tests Cancelled')).toBeInTheDocument();
     }, 500);
