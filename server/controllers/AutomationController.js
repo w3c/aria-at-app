@@ -507,9 +507,6 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
       return;
     }
 
-    // Return early if it's not a rerun report
-    if (!testPlanRun.isRerun) return;
-
     for (const tr of testPlanRun.testResults) {
       for (const sr of tr.scenarioResults || []) {
         const m = matches.get(String(sr.scenarioId));
