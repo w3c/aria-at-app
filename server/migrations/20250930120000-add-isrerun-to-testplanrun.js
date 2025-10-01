@@ -11,20 +11,6 @@ module.exports = {
         defaultValue: false
       });
     }
-
-    // Backfill: mark runs as rerun if any scenarioResult has a non-null match.type
-    await queryInterface.sequelize.query(
-      `
-        UPDATE "TestPlanRun" tpr
-        SET "isRerun" = TRUE
-        WHERE EXISTS (
-          SELECT 1
-          FROM jsonb_array_elements(COALESCE(tpr."testResults", '[]'::jsonb)) AS tr
-          CROSS JOIN jsonb_array_elements(COALESCE(tr->'scenarioResults', '[]'::jsonb)) AS sr
-          WHERE (sr->'match'->>'type') IS NOT NULL AND (sr->'match'->>'type') <> ''
-        );
-      `
-    );
   },
 
   async down(queryInterface) {
