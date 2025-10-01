@@ -53,11 +53,44 @@ export const useTestPlanRunValidatedAssertionCounts = (
       );
     }, 0);
   }, [testPlanRunAssertionsQueryResult]);
+
+  const completedResponses = useMemo(() => {
+    if (!testPlanRunAssertionsQueryResult?.testPlanRun) return 0;
+
+    const { testPlanRun: tpr } = testPlanRunAssertionsQueryResult;
+    const isRerun = !!tpr.isRerun;
+
+    const isScenarioResultCompleted = scenarioResult =>
+      typeof scenarioResult.output === 'string' && scenarioResult.output !== '';
+
+    const isScenarioResultCompletedRerun = scenarioResult =>
+      isScenarioResultCompleted(scenarioResult) &&
+      scenarioResult.negativeSideEffects !== null &&
+      scenarioResult.assertionResults.every(
+        assertionResult => assertionResult.passed !== null
+      );
+
+    const getNumCompletedOutputs = result => {
+      return result.scenarioResults.reduce((acc, scenario) => {
+        if (isRerun) {
+          return acc + (isScenarioResultCompletedRerun(scenario) ? 1 : 0);
+        }
+        return acc + (isScenarioResultCompleted(scenario) ? 1 : 0);
+      }, 0);
+    };
+
+    return tpr.testResults.reduce(
+      (acc, result) => acc + getNumCompletedOutputs(result),
+      0
+    );
+  }, [testPlanRunAssertionsQueryResult]);
+
   if (pollInterval) {
     return {
       testResultsLength,
       totalPossibleAssertions,
       totalValidatedAssertions,
+      completedResponses,
       refetch,
       stopPolling,
       startPolling
@@ -67,6 +100,7 @@ export const useTestPlanRunValidatedAssertionCounts = (
       testResultsLength,
       totalPossibleAssertions,
       totalValidatedAssertions,
+      completedResponses,
       refetch
     };
   }
