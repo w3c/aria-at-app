@@ -204,11 +204,13 @@ const collectionJobTestStatusAssociation =
  * @param {number} options.values.testerUserId - ID of the Tester to which the CollectionJob should be assigned
  * @param {object} options.values.testPlanReportId - ID of the TestPlan with which the CollectionJob should be associated
  * @param {object} [options.values.testPlanRun] - TestPlan with wich the CollectionJob should be associated (if not provided, a new TestPlan will be created)
+ * @param {boolean} [options.values.isRerun] - Whether the associated TestPlanRun is a rerun
  * @param {string[]} options.collectionJobAttributes - CollectionJob attributes to be returned in the result
  * @param {string[]} options.collectionJobTestStatusAttributes - CollectionJobTestStatus attributes to be returned in the result
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
- * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlan attributes to be returned in the result
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
  * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
  * @param {string[]} options.userAttributes - User attributes to be returned in the result
@@ -220,7 +222,8 @@ const createCollectionJob = async ({
     status = COLLECTION_JOB_STATUS.QUEUED,
     testerUserId,
     testPlanRun,
-    testPlanReportId
+    testPlanReportId,
+    isRerun = false
   },
   collectionJobAttributes = COLLECTION_JOB_ATTRIBUTES,
   collectionJobTestStatusAttributes = COLLECTION_JOB_TEST_STATUS_ATTRIBUTES,
@@ -238,7 +241,8 @@ const createCollectionJob = async ({
       values: {
         testerUserId,
         testPlanReportId: testPlanReportId,
-        isAutomated: true
+        isAutomated: true,
+        isRerun
       },
       transaction
     });
@@ -291,6 +295,7 @@ const createCollectionJob = async ({
  * @param {string[]} options.collectionJobAttributes - CollectionJob attributes to be returned in the result
  * @param {string[]} options.collectionJobTestStatusAttributes - CollectionJobTestStatus attributes to be returned in the result
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
@@ -434,6 +439,7 @@ const triggerWorkflow = async (job, testIds, atVersion, { transaction }) => {
  * @param {string[]} options.collectionJobAttributes  - CollectionJob attributes to be returned in the result
  * @param {string[]} options.collectionJobTestStatusAttributes  - CollectionJobTestStatus attributes to be returned in the result
  * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
  * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} options.testPlanAttributes - TestPlanVersion attributes to be returned in the result
  * @param {string[]} options.atAttributes - AT attributes to be returned in the result
@@ -536,12 +542,13 @@ const retryCanceledCollections = async ({ collectionJob }, { transaction }) => {
  * @param {string} input.testPlanReportId id of test plan report to use for scheduling
  * @param {Array<string>} [input.testIds] optional: ids of tests to run
  * @param {object} [input.atVersion] optional: AT version to use for the job
+ * @param {boolean} [input.isRerun] optional: mark associated TestPlanRun as rerun
  * @param {object} options
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}
  */
 const scheduleCollectionJob = async (
-  { testPlanReportId, testIds = null, atVersion },
+  { testPlanReportId, testIds = null, atVersion, isRerun = false },
   { transaction }
 ) => {
   const context = getGraphQLContext({ req: { transaction } });
@@ -600,7 +607,8 @@ const scheduleCollectionJob = async (
     values: {
       status: COLLECTION_JOB_STATUS.QUEUED,
       testerUserId,
-      testPlanReportId
+      testPlanReportId,
+      isRerun
     },
     transaction
   });
@@ -808,7 +816,7 @@ const createCollectionJobsFromPreviousAtVersion = async ({
           if (!atVersion) return;
 
           const job = await scheduleCollectionJob(
-            { testPlanReportId: newReport.id, atVersion },
+            { testPlanReportId: newReport.id, atVersion, isRerun: true },
             { transaction }
           );
 
