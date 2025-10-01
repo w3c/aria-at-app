@@ -203,6 +203,8 @@ describe('graphql', () => {
             commandsCount
             contributorsCount
             verdictsLast90Count
+            testsCount
+            suitesCount
           }
           browsers {
             __typename

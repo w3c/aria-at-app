@@ -11,7 +11,8 @@ const KeyMetricsBanner = () => {
     verdictsCount,
     commandsCount,
     contributorsCount,
-    verdictsLast90Count
+    verdictsLast90Count,
+    testsCount
   } = keyMetricsQuery?.keyMetrics ?? {};
   return (
     <Alert
@@ -25,8 +26,9 @@ const KeyMetricsBanner = () => {
         <>
           As of <strong>{new Date(date).toDateString().substring(4)}</strong>,{' '}
           <strong>{verdictsCount.toLocaleString()}</strong> interop verdicts for{' '}
-          <strong>{commandsCount.toLocaleString()}</strong> AT commands enabled
-          by <strong>{contributorsCount.toLocaleString()}</strong> contributors,{' '}
+          <strong>{commandsCount.toLocaleString()}</strong> AT commands in{' '}
+          <strong>{testsCount.toLocaleString()}</strong> enabled by{' '}
+          <strong>{contributorsCount.toLocaleString()}</strong> contributors,{' '}
           <strong>{verdictsLast90Count.toLocaleString()}</strong> verdicts in
           the last 90 days.
         </>

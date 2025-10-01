@@ -12,7 +12,9 @@ const keyMetricsResolver = async (_, __, context) => {
       verdictsCount: 12345,
       commandsCount: 1234,
       contributorsCount: 12,
-      verdictsLast90Count: 123
+      verdictsLast90Count: 123,
+      testsCount: 1024,
+      suitesCount: 30
     };
   }
   if (cacheTime < Date.now() - cacheExpire) {

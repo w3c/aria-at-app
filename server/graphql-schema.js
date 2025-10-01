@@ -1818,6 +1818,8 @@ const graphqlSchema = gql`
     commandsCount: Int!
     contributorsCount: Int!
     verdictsLast90Count: Int!
+    testsCount: Int!
+    suitesCount: Int!
   }
 `;
 

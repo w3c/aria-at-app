@@ -8,6 +8,7 @@ export const KEY_METRICS_QUERY = gql`
       commandsCount
       contributorsCount
       verdictsLast90Count
+      testsCount
     }
   }
 `;
