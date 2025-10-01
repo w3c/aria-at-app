@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import AssertionsFieldset from '../AssertionsFieldset';
 import OutputTextArea from '../OutputTextArea';
-import UnexpectedBehaviorsFieldset from '../UnexpectedBehaviorsFieldset';
+import NegativeSideEffectsFieldset from '../NegativeSideEffectsFieldset';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../../Tooltip';
 import styles from '../TestRenderer.module.css';
 
@@ -18,7 +18,7 @@ const CommandResults = ({
   atOutput,
   untestable,
   assertions,
-  unexpectedBehaviors,
+  negativeSideEffects,
   assertionsHeader,
   commonIssueContent,
   commandIndex,
@@ -26,9 +26,8 @@ const CommandResults = ({
   isReviewingBot,
   isReadOnly,
   isRerunReport = false,
-  historicalOutput = null,
-  historicalAtName = null,
-  historicalAtVersion = null
+  match = null,
+  historicalAtName = null
 }) => {
   const commandString = header.replace('After ', '');
   const issueLink = createIssueLink({
@@ -37,21 +36,15 @@ const CommandResults = ({
   });
   const tooltipID = useMemo(() => `untestable-tooltip-${++tooltipCount}`, []);
 
-  const hasUnresolvedAssertions = assertions.some(
-    assertion => assertion.passed === null
-  );
-
-  const hasConflictingOutput = isRerunReport && hasUnresolvedAssertions;
-
-  const errorMessage = hasConflictingOutput ? 'Conflicting Output' : null;
-
-  const shouldShowHistoricalOutput =
-    hasConflictingOutput && historicalOutput !== null;
+  const matchType = match?.type;
+  const hasComparableMatch = isRerunReport && !!match && !!matchType;
+  const isNoMatch = hasComparableMatch && matchType === 'NONE';
+  const errorMessage = isNoMatch ? 'Conflicting Output' : null;
 
   return (
     <>
       <h3>
-        {hasConflictingOutput && (
+        {errorMessage && (
           <FontAwesomeIcon
             icon={faExclamationTriangle}
             style={{ color: '#ce1b4c', marginRight: '8px' }}
@@ -68,9 +61,9 @@ const CommandResults = ({
         readOnly={isReviewingBot || isReadOnly}
         errorMessage={errorMessage}
         isRerunReport={isRerunReport}
-        historicalOutput={shouldShowHistoricalOutput ? historicalOutput : null}
+        match={match}
         historicalAtName={historicalAtName}
-        historicalAtVersion={historicalAtVersion}
+        commandString={commandString}
       />
 
       <Tooltip>
@@ -112,9 +105,9 @@ const CommandResults = ({
         isUntestable={untestable.value}
         isSubmitted={isSubmitted}
       />
-      <UnexpectedBehaviorsFieldset
+      <NegativeSideEffectsFieldset
         commandIndex={commandIndex}
-        unexpectedBehaviors={unexpectedBehaviors}
+        negativeSideEffects={negativeSideEffects}
         isSubmitted={isSubmitted}
         readOnly={isReadOnly}
         forceYes={untestable.value}
@@ -134,7 +127,7 @@ CommandResults.propTypes = {
   atOutput: AtOutputPropType.isRequired,
   untestable: UntestablePropType.isRequired,
   assertions: PropTypes.array.isRequired,
-  unexpectedBehaviors: PropTypes.object.isRequired,
+  negativeSideEffects: PropTypes.object.isRequired,
   assertionsHeader: PropTypes.object.isRequired,
   commonIssueContent: PropTypes.object.isRequired,
   commandIndex: PropTypes.number.isRequired,
@@ -142,9 +135,8 @@ CommandResults.propTypes = {
   isReviewingBot: PropTypes.bool.isRequired,
   isReadOnly: PropTypes.bool.isRequired,
   isRerunReport: PropTypes.bool,
-  historicalOutput: PropTypes.string,
-  historicalAtName: PropTypes.string,
-  historicalAtVersion: PropTypes.string
+  match: PropTypes.object,
+  historicalAtName: PropTypes.string
 };
 
 export default CommandResults;

@@ -13,9 +13,8 @@ import PhasePill from '../common/PhasePill';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import TestPlanReportStatusDialogWithButton from '../TestPlanReportStatusDialog/WithButton';
-import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion, BrowserVersion } from '../common/AtBrowserVersion';
-import ProgressBar from '../common/ProgressBar';
+import RowStatus from './RowStatus';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
@@ -23,6 +22,7 @@ import ReportRerun from '../ReportRerun';
 import Tabs from '../common/Tabs';
 import FilterButtons from '../common/FilterButtons';
 import styles from './TestQueue.module.css';
+import pillStyles from '../common/VersionString/VersionString.module.css';
 import commonStyles from '../common/styles.module.css';
 
 const FILTER_KEYS = {
@@ -116,10 +116,16 @@ const TestQueue = () => {
     return { testPlans, testers };
   }, [data]);
 
-  const shouldShowReport = (testPlanReport, filter) => {
-    const isRerun = !!testPlanReport.historicalReport;
+  const reportHasRunsMatchingFilter = (testPlanReport, filter) => {
     if (filter === FILTER_KEYS.ALL) return true;
-    return filter === FILTER_KEYS.AUTOMATED ? isRerun : !isRerun;
+    const runs = testPlanReport.draftTestPlanRuns || [];
+    if (runs.length === 0) {
+      // Reports with no runs should appear under Manual
+      return filter === FILTER_KEYS.MANUAL;
+    }
+    const anyRerun = runs.some(r => !!r.isRerun);
+    const anyManual = runs.some(r => !r.isRerun);
+    return filter === FILTER_KEYS.AUTOMATED ? anyRerun : anyManual;
   };
 
   const filterOptions = useMemo(() => {
@@ -131,10 +137,12 @@ const TestQueue = () => {
       testPlan.testPlanVersions.forEach(testPlanVersion => {
         testPlanVersion.testPlanReports.forEach(testPlanReport => {
           allCount++;
-          if (shouldShowReport(testPlanReport, FILTER_KEYS.MANUAL)) {
+          if (reportHasRunsMatchingFilter(testPlanReport, FILTER_KEYS.MANUAL)) {
             manualCount++;
           }
-          if (shouldShowReport(testPlanReport, FILTER_KEYS.AUTOMATED)) {
+          if (
+            reportHasRunsMatchingFilter(testPlanReport, FILTER_KEYS.AUTOMATED)
+          ) {
             automatedCount++;
           }
         });
@@ -158,7 +166,8 @@ const TestQueue = () => {
         const filteredVersions = testPlan.testPlanVersions
           .map(testPlanVersion => {
             const filteredReports = testPlanVersion.testPlanReports.filter(
-              testPlanReport => shouldShowReport(testPlanReport, activeFilter)
+              testPlanReport =>
+                reportHasRunsMatchingFilter(testPlanReport, activeFilter)
             );
 
             return {
@@ -301,9 +310,12 @@ const TestQueue = () => {
   };
 
   const renderRow = ({ testPlan, testPlanVersion, testPlanReport }) => {
-    const { percentComplete } = testPlanReport;
     const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
       ({ tester }) => tester.isBot
+    );
+
+    const shouldPollPercent = testPlanReport.draftTestPlanRuns?.some(
+      run => run.collectionJob
     );
 
     return (
@@ -327,12 +339,18 @@ const TestQueue = () => {
         </td>
         <td>
           <div className={styles.statusContainer}>
-            {<ProgressBar progress={percentComplete} decorative />}
-            <ReportStatusSummary
+            <RowStatus
               testPlanVersion={testPlanVersion}
               testPlanReport={testPlanReport}
-              fromTestQueue
+              shouldPoll={!!shouldPollPercent}
             />
+            {testPlanReport.onHold ? (
+              <span
+                className={`${pillStyles.styledPill} ${pillStyles.autoWidth}`}
+              >
+                On hold
+              </span>
+            ) : null}
             {hasBotRun ? (
               <BotRunTestStatusList testPlanReportId={testPlanReport.id} />
             ) : null}

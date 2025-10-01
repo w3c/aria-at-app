@@ -145,7 +145,9 @@ describe('graphql', () => {
       'Vendor',
       'scheduleCollectionJob',
       'CollectionJobTestStatus',
-      'ReviewerStatus'
+      'ReviewerStatus',
+      'ScenarioResultMatchSource',
+      'ScenarioResultMatch'
     ];
     const excludedTypeNameAndField = [
       // Items formatted like this:
@@ -167,7 +169,8 @@ describe('graphql', () => {
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
       ['Mutation', 'restartCollectionJob'],
-      ['CollectionJobOperations', 'retryCanceledCollections']
+      ['CollectionJobOperations', 'retryCanceledCollections'],
+      ['ScenarioResult', 'match']
     ];
     ({
       typeAwareQuery,
@@ -534,7 +537,7 @@ describe('graphql', () => {
                     id
                   }
                   output
-                  hasUnexpected
+                  hasNegativeSideEffect
                   untestable
                   assertionResults {
                     __typename
@@ -544,7 +547,7 @@ describe('graphql', () => {
                     }
                     passed
                   }
-                  unexpectedBehaviors {
+                  negativeSideEffects {
                     __typename
                     id
                     text
@@ -576,6 +579,8 @@ describe('graphql', () => {
               startedAt
               completedAt
             }
+            onHold
+            totalPossibleAssertions
             isRerun
             percentComplete
             metrics
@@ -618,6 +623,7 @@ describe('graphql', () => {
             __typename
             id
             initiatedByAutomation
+            isRerun
             collectionJob { id }
             testPlanReport {
               id
@@ -753,6 +759,12 @@ describe('graphql', () => {
               updateRecommendedPhaseTargetDate(
                 recommendedPhaseTargetDate: "2023-12-25"
               ) {
+                locationOfData
+              }
+            }
+            setOnHold: testPlanReport(id: 1) {
+              __typename
+              setOnHold(onHold: true) {
                 locationOfData
               }
             }
@@ -1049,13 +1061,13 @@ const getMutationInputs = async () => {
         scenarioResults {
           id
           output
-          hasUnexpected
+          hasNegativeSideEffect
           untestable
           assertionResults {
             id
             passed
           }
-          unexpectedBehaviors {
+          negativeSideEffects {
             id
             details
           }
@@ -1105,7 +1117,7 @@ const getMutationInputs = async () => {
       scenarioResult => ({
         ...scenarioResult,
         output: 'sample output',
-        hasUnexpected: 'doesNotHaveUnexpected',
+        hasNegativeSideEffect: 'doesNotHaveNegativeSideEffect',
         untestable: false,
         assertionResults: scenarioResult.assertionResults.map(
           assertionResult => ({
@@ -1113,7 +1125,7 @@ const getMutationInputs = async () => {
             passed: true
           })
         ),
-        unexpectedBehaviors: []
+        negativeSideEffects: []
       })
     )
   };

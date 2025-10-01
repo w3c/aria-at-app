@@ -14,13 +14,15 @@ import {
 import {
   MARK_TEST_PLAN_REPORT_AS_FINAL_MUTATION,
   REMOVE_TEST_PLAN_REPORT_MUTATION,
-  TEST_QUEUE_PAGE_QUERY
+  TEST_QUEUE_PAGE_QUERY,
+  SET_ON_HOLD_MUTATION
 } from './queries';
 import useForceUpdate from '../../hooks/useForceUpdate';
 import BasicThemedModal from '../common/BasicThemedModal';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
 import ManageBotRunDialogWithButton from '@components/ManageBotRunDialog/WithButton';
+import StartBotRunButton from '@components/ManageBotRunDialog/StartBotRunButton';
 import {
   TestPlanPropType,
   TestPlanReportPropType,
@@ -264,12 +266,19 @@ const Actions = ({
             ))}
           </Dropdown.Menu>
         </Dropdown>
-        {isAdmin && assignedBotRun && (
+        {(isAdmin || isTester) && assignedBotRun && (
           <ManageBotRunDialogWithButton
             testPlanRun={assignedBotRun}
             testPlanReportId={testPlanReport.id}
             runnableTestsLength={testPlanReport.runnableTestsLength}
             testers={testers}
+            me={me}
+            onChange={triggerUpdate}
+          />
+        )}
+        {(isAdmin || isTester) && !assignedBotRun && (
+          <StartBotRunButton
+            testPlanReport={testPlanReport}
             onChange={triggerUpdate}
           />
         )}
@@ -281,6 +290,31 @@ const Actions = ({
           >
             <FontAwesomeIcon icon={faSquareCheck} />
             Mark as Final
+          </Button>
+        )}
+        {isAdmin && (
+          <Button
+            variant="secondary"
+            onClick={async () => {
+              await triggerLoad(
+                async () => {
+                  await client.mutate({
+                    mutation: SET_ON_HOLD_MUTATION,
+                    variables: {
+                      testPlanReportId: testPlanReport.id,
+                      onHold: !testPlanReport.onHold
+                    },
+                    refetchQueries: [TEST_QUEUE_PAGE_QUERY],
+                    awaitRefetchQueries: true
+                  });
+                },
+                testPlanReport.onHold
+                  ? 'Marking Ready for testing...'
+                  : 'Putting on hold...'
+              );
+            }}
+          >
+            {testPlanReport.onHold ? 'Ready for testing' : 'Put on hold'}
           </Button>
         )}
         {isAdmin && (

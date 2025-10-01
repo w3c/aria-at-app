@@ -18,12 +18,16 @@ import ViewLogsButton from './ViewLogsButton';
 import { TestPlanRunPropType, UserPropType } from '../common/proptypes';
 import { COLLECTION_JOB_STATUS } from '../../utils/collectionJobStatus';
 import styles from './ManageBotRunDialog.module.css';
+import { evaluateAuth } from '../../utils/evaluateAuth';
+import { ASSIGN_TESTER_MUTATION } from '../common/AssignTesterDropdown/queries';
+import { Button } from 'react-bootstrap';
 
 const ManageBotRunDialog = ({
   testPlanReportId,
   runnableTestsLength,
   testPlanRun,
   testers,
+  me,
   show,
   setShow,
   onChange
@@ -69,6 +73,10 @@ const ManageBotRunDialog = ({
     [testers, testPlanReportAssignedTestersQuery]
   );
 
+  const { isAdmin, isTester } = evaluateAuth(me);
+
+  const [assignTester] = useMutation(ASSIGN_TESTER_MUTATION);
+
   const isBotRunFinished = useMemo(() => {
     const status = collectionJobQuery?.collectionJobByTestPlanRunId?.status;
     if (!status) return false;
@@ -83,18 +91,7 @@ const ManageBotRunDialog = ({
   }, [collectionJobQuery]);
 
   const actions = useMemo(() => {
-    return [
-      {
-        component: AssignTesterDropdown,
-        props: {
-          testPlanReportId: testPlanReportId,
-          testPlanRun: testPlanRun,
-          possibleTesters: possibleReassignees,
-          label: 'Assign To ...',
-          disabled: !isBotRunFinished,
-          onChange
-        }
-      },
+    const baseActions = [
       {
         component: ViewLogsButton,
         props: {
@@ -135,12 +132,62 @@ const ManageBotRunDialog = ({
         }
       }
     ];
+
+    if (isAdmin) {
+      return [
+        {
+          component: AssignTesterDropdown,
+          props: {
+            testPlanReportId: testPlanReportId,
+            testPlanRun: testPlanRun,
+            possibleTesters: possibleReassignees,
+            label: 'Assign To ...',
+            disabled: !isBotRunFinished,
+            onChange
+          }
+        },
+        ...baseActions
+      ];
+    }
+
+    if (isTester) {
+      const AssignSelfButton = props => (
+        <Button {...props} data-testid="assign-self-bot-run">
+          Assign Yourself
+        </Button>
+      );
+      return [
+        {
+          component: AssignSelfButton,
+          props: {
+            variant: 'primary',
+            disabled: !isBotRunFinished,
+            onClick: async () => {
+              await assignTester({
+                variables: {
+                  testReportId: testPlanReportId,
+                  testerId: me.id,
+                  testPlanRunId: testPlanRun.id
+                }
+              });
+              await onChange();
+            }
+          }
+        },
+        ...baseActions
+      ];
+    }
+
+    return baseActions;
   }, [
     testPlanReportId,
     testPlanRun,
     possibleReassignees,
     onChange,
-    collectionJobQuery
+    collectionJobQuery,
+    isAdmin,
+    isTester,
+    isBotRunFinished
   ]);
 
   const deleteConfirmationContent = (
@@ -204,6 +251,7 @@ ManageBotRunDialog.propTypes = {
   show: PropTypes.bool.isRequired,
   setShow: PropTypes.func.isRequired,
   testers: PropTypes.arrayOf(UserPropType).isRequired,
+  me: UserPropType,
   testPlanReportId: PropTypes.string.isRequired,
   runnableTestsLength: PropTypes.number.isRequired,
   onChange: PropTypes.func.isRequired

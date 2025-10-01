@@ -10,6 +10,10 @@ const {
   TEST_PLAN_ATTRIBUTES,
   AT_VERSION_ATTRIBUTES
 } = require('./helpers');
+const {
+  computeTotalPossibleAssertions
+} = require('../../util/computeTotalPossibleAssertions');
+const getTests = require('./TestsService');
 const { TestPlanReport, TestPlanVersion } = require('../');
 
 // custom column additions to Models being queried
@@ -210,6 +214,65 @@ const getTestPlanReports = async ({
 };
 
 /**
+ * Returns TestPlanReports if the provided `where` values matches a found row in TestPlanReport.
+ * @param {object} options
+ * @param {*} options.where - These values will be used to find a matching record, or they will be used to create one
+ * @param {string[]} options.testPlanReportAttributes - TestPlanReport attributes to be returned in the result
+ * @param {string[]} options.testPlanRunAttributes - TestPlanRun attributes to be returned in the result
+ * @param {string[]} options.testPlanVersionAttributes - TestPlanVersion attributes to be returned in the result
+ * @param {string[]} options.testPlanAttributes - TestPlan attributes to be returned in the result
+ * @param {string[]} options.atAttributes - At attributes to be returned in the result
+ * @param {string[]} options.browserAttributes - Browser attributes to be returned in the result
+ * @param {string[]} options.userAttributes - User attributes to be returned in the result
+ * @param {object} options.pagination - pagination options for query
+ * @param {number} options.pagination.page - page to be queried in the pagination result (affected by {@param pagination.enablePagination})
+ * @param {number} options.pagination.limit - amount of results to be returned per page (affected by {@param pagination.enablePagination})
+ * @param {string[][]} options.pagination.order- expects a Sequelize structured input dataset for sorting the Sequelize Model results (NOT affected by {@param pagination.enablePagination}). See {@link https://sequelize.org/v5/manual/querying.html#ordering} and {@example [ [ 'username', 'DESC' ], [..., ...], ... ]}
+ * @param {boolean} options.pagination.enablePagination - use to enable pagination for a query result as well useful values. Data for all items matching query if not enabled
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<[*, [*]]>}
+ */
+const getTestPlanReportByQuery = async ({
+  where: {
+    testPlanVersionId,
+    atId,
+    minimumAtVersionId,
+    browserId,
+    exactAtVersionId,
+    historicalReportId
+  },
+  testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
+  testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
+  testPlanVersionAttributes = TEST_PLAN_VERSION_ATTRIBUTES,
+  testPlanAttributes = TEST_PLAN_ATTRIBUTES,
+  atAttributes = AT_ATTRIBUTES,
+  browserAttributes = BROWSER_ATTRIBUTES,
+  userAttributes = USER_ATTRIBUTES,
+  pagination = {},
+  transaction
+}) => {
+  return ModelService.getByQuery(TestPlanReport, {
+    where: {
+      testPlanVersionId,
+      atId,
+      ...(minimumAtVersionId ? { minimumAtVersionId } : {}),
+      ...(exactAtVersionId ? { exactAtVersionId } : {}),
+      browserId,
+      ...(historicalReportId ? { historicalReportId } : {})
+    },
+    attributes: testPlanReportAttributes,
+    include: [
+      testPlanRunAssociation(testPlanRunAttributes, userAttributes),
+      testPlanVersionAssociation(testPlanVersionAttributes, testPlanAttributes),
+      atAssociation(atAttributes),
+      browserAssociation(browserAttributes)
+    ],
+    pagination,
+    transaction
+  });
+};
+
+/**
  * @param {object} options
  * @param {object} values - values to be used to create the TestPlanReport
  * @param {string[]} testPlanReportAttributes - TestPlanReport attributes to be returned in the result
@@ -228,8 +291,7 @@ const createTestPlanReport = async ({
     atId,
     exactAtVersionId,
     minimumAtVersionId,
-    browserId,
-    historicalReportId
+    browserId
   },
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -251,7 +313,6 @@ const createTestPlanReport = async ({
       browserId,
       exactAtVersionId,
       minimumAtVersionId,
-      historicalReportId,
       testPlanId: testPlanVersion.testPlanId
     },
     transaction
@@ -294,7 +355,8 @@ const updateTestPlanReportById = async ({
     minimumAtVersionId,
     exactAtVersionId,
     markedFinalAt,
-    percentComplete
+    percentComplete,
+    onHold
   },
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -314,7 +376,8 @@ const updateTestPlanReportById = async ({
       minimumAtVersionId,
       exactAtVersionId,
       markedFinalAt,
-      percentComplete
+      percentComplete,
+      onHold
     },
     transaction
   });
@@ -468,14 +531,34 @@ const cloneTestPlanReportWithNewAtVersion = async (
   return newReport;
 };
 
+/**
+ * Compute the total possible assertions for a TestPlanReport.
+ *
+ * @param {TestPlanReport} testPlanReport TestPlanReport to compute total possible assertions for
+ * @returns {number} Total possible assertions
+ */
+const computeTotalPossibleAssertionsForReport = testPlanReport => {
+  const atId = testPlanReport.atId || testPlanReport.at?.id;
+  if (!atId) return 0;
+  // Build fully-populated tests
+  const tests = getTests(testPlanReport) || [];
+  // Limit to runnable tests for this report's AT
+  const runnableTests = tests.filter(
+    test => Array.isArray(test.atIds) && test.atIds.includes(atId)
+  );
+  return computeTotalPossibleAssertions(runnableTests, atId);
+};
+
 module.exports = {
   // Basic CRUD
   getTestPlanReportById,
   getTestPlanReports,
+  getTestPlanReportByQuery,
   createTestPlanReport,
   updateTestPlanReportById,
   removeTestPlanReportById,
   getOrCreateTestPlanReport,
   // Utils
-  cloneTestPlanReportWithNewAtVersion
+  cloneTestPlanReportWithNewAtVersion,
+  computeTotalPossibleAssertionsForReport
 };

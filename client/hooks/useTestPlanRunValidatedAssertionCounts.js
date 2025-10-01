@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery } from '@apollo/client';
-import { TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY } from '../components/TestQueueCompletionStatusListItem/queries';
+import { TEST_PLAN_RUN_ASSERTION_RESULTS_QUERY } from '../components/TestQueueRunCompletionStatus/queries';
 
 export const useTestPlanRunValidatedAssertionCounts = (
   testPlanRun,
@@ -26,25 +26,8 @@ export const useTestPlanRunValidatedAssertionCounts = (
   }, [testPlanRunAssertionsQueryResult]);
 
   const totalPossibleAssertions = useMemo(() => {
-    if (testPlanRunAssertionsQueryResult) {
-      let count = 0;
-      if (!testPlanRunAssertionsQueryResult?.testPlanRun) {
-        return 0;
-      }
-      const {
-        testPlanRun: { testResults }
-      } = testPlanRunAssertionsQueryResult;
-      for (let i = 0; i < testResults.length; i++) {
-        const scenarios = testResults[i].scenarioResults;
-        for (let j = 0; j < scenarios.length; j++) {
-          const assertions = scenarios[j].assertionResults;
-          count += assertions.length;
-        }
-      }
-      return count;
-    } else {
-      return 0;
-    }
+    const tpr = testPlanRunAssertionsQueryResult?.testPlanRun?.testPlanReport;
+    return tpr?.totalPossibleAssertions || 0;
   }, [testPlanRunAssertionsQueryResult]);
 
   const totalValidatedAssertions = useMemo(() => {
@@ -70,11 +53,44 @@ export const useTestPlanRunValidatedAssertionCounts = (
       );
     }, 0);
   }, [testPlanRunAssertionsQueryResult]);
+
+  const completedResponses = useMemo(() => {
+    if (!testPlanRunAssertionsQueryResult?.testPlanRun) return 0;
+
+    const { testPlanRun: tpr } = testPlanRunAssertionsQueryResult;
+    const isRerun = !!tpr.isRerun;
+
+    const isScenarioResultCompleted = scenarioResult =>
+      typeof scenarioResult.output === 'string' && scenarioResult.output !== '';
+
+    const isScenarioResultCompletedRerun = scenarioResult =>
+      isScenarioResultCompleted(scenarioResult) &&
+      scenarioResult.negativeSideEffects !== null &&
+      scenarioResult.assertionResults.every(
+        assertionResult => assertionResult.passed !== null
+      );
+
+    const getNumCompletedOutputs = result => {
+      return result.scenarioResults.reduce((acc, scenario) => {
+        if (isRerun) {
+          return acc + (isScenarioResultCompletedRerun(scenario) ? 1 : 0);
+        }
+        return acc + (isScenarioResultCompleted(scenario) ? 1 : 0);
+      }, 0);
+    };
+
+    return tpr.testResults.reduce(
+      (acc, result) => acc + getNumCompletedOutputs(result),
+      0
+    );
+  }, [testPlanRunAssertionsQueryResult]);
+
   if (pollInterval) {
     return {
       testResultsLength,
       totalPossibleAssertions,
       totalValidatedAssertions,
+      completedResponses,
       refetch,
       stopPolling,
       startPolling
@@ -84,6 +100,7 @@ export const useTestPlanRunValidatedAssertionCounts = (
       testResultsLength,
       totalPossibleAssertions,
       totalValidatedAssertions,
+      completedResponses,
       refetch
     };
   }

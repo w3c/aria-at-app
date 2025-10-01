@@ -142,17 +142,22 @@ h1.test-queue-heading {
   padding-top: 0.5rem;
   text-align: center;
 
-  li:not(:last-of-type) {
-    padding-bottom: 0.25rem;
+  li {
+    margin-bottom: 1rem;
+  }
+
+  li:last-of-type {
+    margin-bottom: 0;
   }
 }
 
 /* CompletionStatusItem */
 .completion-status-list-item {
+  font-size: var(--14px);
+  font-weight: normal;
+  padding-right: 0.5rem;
   a,
   span {
-    font-weight: normal;
-    padding-right: 0.5rem;
   }
 
   em {

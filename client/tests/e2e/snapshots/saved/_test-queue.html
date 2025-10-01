@@ -501,7 +501,11 @@
                             <td>
                               <div class="status-container">
                                 <div class="progress">
-                                  <div class="front"></div>
+                                  <div
+                                    class="front"
+                                    style="
+                                      clip-path: inset(0px 0px 0px 0%);
+                                    "></div>
                                   <div class="back"></div>
                                 </div>
                                 <div>No testers assigned</div>
@@ -536,7 +540,21 @@
                                     >Open run as...
                                   </button>
                                 </div>
-                                <button
+                                <button type="button" class="btn btn-secondary">
+                                  <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
+                                    data-icon="file-import"
+                                    class="svg-inline--fa fa-file-import"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                      fill="currentColor"
+                                      d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                                  >Start VoiceOver Bot Run</button
+                                ><button
                                   type="button"
                                   disabled=""
                                   class="btn btn-secondary">
@@ -553,6 +571,10 @@
                                       fill="currentColor"
                                       d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                                   >Mark as Final</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  Put on hold</button
                                 ><button
                                   type="button"
                                   class="btn btn-secondary">
@@ -708,20 +730,29 @@
                                 </button>
                               </div>
                               <ul class="assign-testers-list">
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/esmeralda-baggins"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >esmeralda-baggins</a
-                                  ><em>0 of 9 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-27-assignee-1-run-28"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/esmeralda-baggins"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >esmeralda-baggins</a
+                                    >
+                                    0/20 responses, 0/66 verdicts
+                                  </div>
                                 </li>
                               </ul>
                             </td>
                             <td>
                               <div class="status-container">
                                 <div class="progress">
-                                  <div class="front"></div>
+                                  <div
+                                    class="front"
+                                    style="
+                                      clip-path: inset(0px 0px 0px 0%);
+                                    "></div>
                                   <div class="back"></div>
                                 </div>
                                 <div>
@@ -760,7 +791,21 @@
                                     >Open run as...
                                   </button>
                                 </div>
-                                <button
+                                <button type="button" class="btn btn-secondary">
+                                  <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
+                                    data-icon="file-import"
+                                    class="svg-inline--fa fa-file-import"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                      fill="currentColor"
+                                      d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                                  >Start VoiceOver Bot Run</button
+                                ><button
                                   type="button"
                                   disabled=""
                                   class="btn btn-secondary">
@@ -777,6 +822,10 @@
                                       fill="currentColor"
                                       d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                                   >Mark as Final</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  Put on hold</button
                                 ><button
                                   type="button"
                                   class="btn btn-secondary">
@@ -928,13 +977,18 @@
                                 </button>
                               </div>
                               <ul class="assign-testers-list">
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/esmeralda-baggins"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >esmeralda-baggins</a
-                                  ><em>12 of 12 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-19-assignee-1-run-19"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/esmeralda-baggins"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >esmeralda-baggins</a
+                                    >
+                                    28/28 responses, 86/86 verdicts
+                                  </div>
                                 </li>
                               </ul>
                             </td>
@@ -989,6 +1043,22 @@
                                     aria-hidden="true"
                                     focusable="false"
                                     data-prefix="fas"
+                                    data-icon="file-import"
+                                    class="svg-inline--fa fa-file-import"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                      fill="currentColor"
+                                      d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                                  >Start NVDA Bot Run</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
                                     data-icon="square-check"
                                     class="svg-inline--fa fa-square-check"
                                     role="img"
@@ -998,6 +1068,10 @@
                                       fill="currentColor"
                                       d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                                   >Mark as Final</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  Put on hold</button
                                 ><button
                                   type="button"
                                   class="btn btn-secondary">
@@ -1146,13 +1220,18 @@
                                 </button>
                               </div>
                               <ul class="assign-testers-list">
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/esmeralda-baggins"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >esmeralda-baggins</a
-                                  ><em>18 of 18 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-8-assignee-1-run-8"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/esmeralda-baggins"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >esmeralda-baggins</a
+                                    >
+                                    26/26 responses, 91/91 verdicts
+                                  </div>
                                 </li>
                               </ul>
                             </td>
@@ -1207,6 +1286,22 @@
                                     aria-hidden="true"
                                     focusable="false"
                                     data-prefix="fas"
+                                    data-icon="file-import"
+                                    class="svg-inline--fa fa-file-import"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                      fill="currentColor"
+                                      d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                                  >Start JAWS Bot Run</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
                                     data-icon="square-check"
                                     class="svg-inline--fa fa-square-check"
                                     role="img"
@@ -1216,6 +1311,10 @@
                                       fill="currentColor"
                                       d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                                   >Mark as Final</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  Put on hold</button
                                 ><button
                                   type="button"
                                   class="btn btn-secondary">
@@ -1275,13 +1374,18 @@
                                 </button>
                               </div>
                               <ul class="assign-testers-list">
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/esmeralda-baggins"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >esmeralda-baggins</a
-                                  ><em>18 of 18 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-9-assignee-1-run-9"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/esmeralda-baggins"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >esmeralda-baggins</a
+                                    >
+                                    26/26 responses, 91/91 verdicts
+                                  </div>
                                 </li>
                               </ul>
                             </td>
@@ -1336,6 +1440,22 @@
                                     aria-hidden="true"
                                     focusable="false"
                                     data-prefix="fas"
+                                    data-icon="file-import"
+                                    class="svg-inline--fa fa-file-import"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                      fill="currentColor"
+                                      d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                                  >Start NVDA Bot Run</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
                                     data-icon="square-check"
                                     class="svg-inline--fa fa-square-check"
                                     role="img"
@@ -1345,6 +1465,10 @@
                                       fill="currentColor"
                                       d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                                   >Mark as Final</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  Put on hold</button
                                 ><button
                                   type="button"
                                   class="btn btn-secondary">
@@ -1406,13 +1530,18 @@
                                 </button>
                               </div>
                               <ul class="assign-testers-list">
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/esmeralda-baggins"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >esmeralda-baggins</a
-                                  ><em>11 of 11 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-11-assignee-1-run-11"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/esmeralda-baggins"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >esmeralda-baggins</a
+                                    >
+                                    20/20 responses, 70/70 verdicts
+                                  </div>
                                 </li>
                               </ul>
                             </td>
@@ -1467,6 +1596,22 @@
                                     aria-hidden="true"
                                     focusable="false"
                                     data-prefix="fas"
+                                    data-icon="file-import"
+                                    class="svg-inline--fa fa-file-import"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                      fill="currentColor"
+                                      d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                                  >Start VoiceOver Bot Run</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
                                     data-icon="square-check"
                                     class="svg-inline--fa fa-square-check"
                                     role="img"
@@ -1476,6 +1621,10 @@
                                       fill="currentColor"
                                       d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                                   >Mark as Final</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  Put on hold</button
                                 ><button
                                   type="button"
                                   class="btn btn-secondary">
@@ -1537,13 +1686,18 @@
                                 </button>
                               </div>
                               <ul class="assign-testers-list">
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/esmeralda-baggins"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >esmeralda-baggins</a
-                                  ><em>11 of 11 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-10-assignee-1-run-10"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/esmeralda-baggins"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >esmeralda-baggins</a
+                                    >
+                                    20/20 responses, 70/70 verdicts
+                                  </div>
                                 </li>
                               </ul>
                             </td>
@@ -1598,6 +1752,22 @@
                                     aria-hidden="true"
                                     focusable="false"
                                     data-prefix="fas"
+                                    data-icon="file-import"
+                                    class="svg-inline--fa fa-file-import"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                      fill="currentColor"
+                                      d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                                  >Start VoiceOver Bot Run</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
                                     data-icon="square-check"
                                     class="svg-inline--fa fa-square-check"
                                     role="img"
@@ -1607,6 +1777,10 @@
                                       fill="currentColor"
                                       d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                                   >Mark as Final</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  Put on hold</button
                                 ><button
                                   type="button"
                                   class="btn btn-secondary">
@@ -1760,22 +1934,31 @@
                                 </button>
                               </div>
                               <ul class="assign-testers-list">
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/esmeralda-baggins"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >esmeralda-baggins</a
-                                  ><em>18 of 21 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-2-assignee-1-run-2"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/esmeralda-baggins"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >esmeralda-baggins</a
+                                    >
+                                    29/34 responses, 145/165 verdicts
+                                  </div>
                                 </li>
-                                <br />
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/tom-proudfeet"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >tom-proudfeet</a
-                                  ><em>18 of 21 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-2-assignee-2-run-3"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/tom-proudfeet"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >tom-proudfeet</a
+                                    >
+                                    29/34 responses, 145/165 verdicts
+                                  </div>
                                 </li>
                               </ul>
                             </td>
@@ -1826,7 +2009,21 @@
                                     >Open run as...
                                   </button>
                                 </div>
-                                <button
+                                <button type="button" class="btn btn-secondary">
+                                  <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
+                                    data-icon="file-import"
+                                    class="svg-inline--fa fa-file-import"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                      fill="currentColor"
+                                      d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                                  >Start NVDA Bot Run</button
+                                ><button
                                   type="button"
                                   disabled=""
                                   class="btn btn-secondary">
@@ -1843,6 +2040,10 @@
                                       fill="currentColor"
                                       d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                                   >Mark as Final</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  Put on hold</button
                                 ><button
                                   type="button"
                                   class="btn btn-secondary">
@@ -1994,22 +2195,31 @@
                                 </button>
                               </div>
                               <ul class="assign-testers-list">
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/esmeralda-baggins"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >esmeralda-baggins</a
-                                  ><em>12 of 16 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-1-assignee-1-run-1"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/esmeralda-baggins"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >esmeralda-baggins</a
+                                    >
+                                    31/36 responses, 77/92 verdicts
+                                  </div>
                                 </li>
-                                <br />
-                                <li class="completion-status-list-item">
-                                  <a
-                                    href="https://github.com/tom-proudfeet"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    >tom-proudfeet</a
-                                  ><em>13 of 16 tests complete</em>
+                                <li>
+                                  <div
+                                    id="TestQueueRunCompletionStatus_plan-1-assignee-2-run-21"
+                                    class="completion-status-list-item">
+                                    <a
+                                      href="https://github.com/tom-proudfeet"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      >tom-proudfeet</a
+                                    >
+                                    35/36 responses, 89/92 verdicts
+                                  </div>
                                 </li>
                               </ul>
                             </td>
@@ -2060,7 +2270,21 @@
                                     >Open run as...
                                   </button>
                                 </div>
-                                <button
+                                <button type="button" class="btn btn-secondary">
+                                  <svg
+                                    aria-hidden="true"
+                                    focusable="false"
+                                    data-prefix="fas"
+                                    data-icon="file-import"
+                                    class="svg-inline--fa fa-file-import"
+                                    role="img"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 512 512">
+                                    <path
+                                      fill="currentColor"
+                                      d="M128 64c0-35.3 28.7-64 64-64H352V128c0 17.7 14.3 32 32 32H512V448c0 35.3-28.7 64-64 64H192c-35.3 0-64-28.7-64-64V336H302.1l-39 39c-9.4 9.4-9.4 24.6 0 33.9s24.6 9.4 33.9 0l80-80c9.4-9.4 9.4-24.6 0-33.9l-80-80c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l39 39H128V64zm0 224v48H24c-13.3 0-24-10.7-24-24s10.7-24 24-24H128zM512 128H384V0L512 128z"></path></svg
+                                  >Start JAWS Bot Run</button
+                                ><button
                                   type="button"
                                   disabled=""
                                   class="btn btn-secondary">
@@ -2077,6 +2301,10 @@
                                       fill="currentColor"
                                       d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"></path></svg
                                   >Mark as Final</button
+                                ><button
+                                  type="button"
+                                  class="btn btn-secondary">
+                                  Put on hold</button
                                 ><button
                                   type="button"
                                   class="btn btn-secondary">

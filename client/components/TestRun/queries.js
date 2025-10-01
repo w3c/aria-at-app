@@ -56,6 +56,7 @@ export const TEST_RUN_PAGE_QUERY = gql`
       }
       testPlanReport {
         id
+        onHold
         isRerun
         conflicts {
           ...TestPlanReportConflictFields
@@ -85,36 +86,6 @@ export const TEST_RUN_PAGE_QUERY = gql`
           ...TestFieldsAll
           renderableContent
         }
-        historicalReport {
-          id
-          at {
-            ...AtFields
-          }
-          browser {
-            ...BrowserFields
-          }
-          exactAtVersion {
-            ...AtVersionFields
-          }
-          minimumAtVersion {
-            ...AtVersionFields
-          }
-          finalizedTestResults {
-            ...TestResultFields
-            test {
-              ...TestFieldsSimple
-            }
-            scenarioResults {
-              ...ScenarioResultFieldsAll
-            }
-            atVersion {
-              ...AtVersionFields
-            }
-            browserVersion {
-              ...BrowserVersionFields
-            }
-          }
-        }
       }
     }
     me {
@@ -140,15 +111,13 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
   ${AT_VERSION_FIELDS}
   ${BROWSER_FIELDS}
   ${BROWSER_VERSION_FIELDS}
-  ${SCENARIO_RESULT_FIELDS('all')}
-  ${TEST_FIELDS()}
   ${TEST_FIELDS('all')}
   ${TEST_PLAN_REPORT_CONFLICT_FIELDS}
   ${TEST_PLAN_VERSION_FIELDS}
-  ${TEST_RESULT_FIELDS}
   query TestPlanRunAnonPage($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       id
+      onHold
       isRerun
       conflicts {
         ...TestPlanReportConflictFields
@@ -171,36 +140,6 @@ export const TEST_RUN_PAGE_ANON_QUERY = gql`
       runnableTests {
         ...TestFieldsAll
         renderableContent
-      }
-      historicalReport {
-        id
-        at {
-          ...AtFields
-        }
-        browser {
-          ...BrowserFields
-        }
-        exactAtVersion {
-          ...AtVersionFields
-        }
-        minimumAtVersion {
-          ...AtVersionFields
-        }
-        finalizedTestResults {
-          ...TestResultFields
-          test {
-            ...TestFieldsSimple
-          }
-          scenarioResults {
-            ...ScenarioResultFieldsAll
-          }
-          atVersion {
-            ...AtVersionFields
-          }
-          browserVersion {
-            ...BrowserVersionFields
-          }
-        }
       }
     }
   }
@@ -286,36 +225,6 @@ export const FIND_OR_CREATE_TEST_RESULT_MUTATION = gql`
             }
             runnableTests {
               ...TestFieldsAll
-            }
-            historicalReport {
-              id
-              at {
-                ...AtFields
-              }
-              browser {
-                ...BrowserFields
-              }
-              exactAtVersion {
-                ...AtVersionFields
-              }
-              minimumAtVersion {
-                ...AtVersionFields
-              }
-              finalizedTestResults {
-                ...TestResultFields
-                test {
-                  ...TestFieldsSimple
-                }
-                scenarioResults {
-                  ...ScenarioResultFieldsAll
-                }
-                atVersion {
-                  ...AtVersionFields
-                }
-                browserVersion {
-                  ...BrowserVersionFields
-                }
-              }
             }
           }
         }
@@ -408,36 +317,6 @@ export const SAVE_TEST_RESULT_MUTATION = gql`
             runnableTests {
               ...TestFieldsAll
             }
-            historicalReport {
-              id
-              at {
-                ...AtFields
-              }
-              browser {
-                ...BrowserFields
-              }
-              exactAtVersion {
-                ...AtVersionFields
-              }
-              minimumAtVersion {
-                ...AtVersionFields
-              }
-              finalizedTestResults {
-                ...TestResultFields
-                test {
-                  ...TestFieldsSimple
-                }
-                scenarioResults {
-                  ...ScenarioResultFieldsAll
-                }
-                atVersion {
-                  ...AtVersionFields
-                }
-                browserVersion {
-                  ...BrowserVersionFields
-                }
-              }
-            }
           }
         }
       }
@@ -528,36 +407,6 @@ export const SUBMIT_TEST_RESULT_MUTATION = gql`
             }
             runnableTests {
               ...TestFieldsAll
-            }
-            historicalReport {
-              id
-              at {
-                ...AtFields
-              }
-              browser {
-                ...BrowserFields
-              }
-              exactAtVersion {
-                ...AtVersionFields
-              }
-              minimumAtVersion {
-                ...AtVersionFields
-              }
-              finalizedTestResults {
-                ...TestResultFields
-                test {
-                  ...TestFieldsSimple
-                }
-                scenarioResults {
-                  ...ScenarioResultFieldsAll
-                }
-                atVersion {
-                  ...AtVersionFields
-                }
-                browserVersion {
-                  ...BrowserVersionFields
-                }
-              }
             }
           }
         }

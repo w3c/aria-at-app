@@ -5,16 +5,18 @@ const {
 
 const scheduleCollectionJobResolver = async (
   _,
-  { testPlanReportId },
+  { testPlanReportId, isRerun = false },
   context
 ) => {
   const { user, transaction } = context;
 
-  if (!user?.roles.find(role => role.name === 'ADMIN')) {
+  if (
+    !user?.roles.find(role => role.name === 'ADMIN' || role.name === 'TESTER')
+  ) {
     throw new AuthenticationError();
   }
 
-  return scheduleCollectionJob({ testPlanReportId }, { transaction });
+  return scheduleCollectionJob({ testPlanReportId, isRerun }, { transaction });
 };
 
 module.exports = scheduleCollectionJobResolver;

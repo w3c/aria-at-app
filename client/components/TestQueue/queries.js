@@ -52,6 +52,14 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         ...TestPlanVersionFields
         testPlanReports(isFinal: false) {
           ...TestPlanReportFields
+          runnableTests {
+            scenarios {
+              id
+              at {
+                id
+              }
+            }
+          }
           at {
             ...AtFields
             atVersions {
@@ -70,8 +78,20 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
           draftTestPlanRuns {
             ...TestPlanRunFields
             testResultsLength
+            collectionJob {
+              status
+            }
             testResults {
               ...TestResultFields
+              scenarioResults {
+                output
+                assertionResults {
+                  passed
+                }
+                negativeSideEffects {
+                  id
+                }
+              }
             }
           }
         }
@@ -144,8 +164,8 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
           }
           scenarioResult {
             output
-            hasUnexpected
-            unexpectedBehaviors {
+            hasNegativeSideEffect
+            negativeSideEffects {
               text
               details
               impact
@@ -217,6 +237,19 @@ export const REMOVE_TEST_PLAN_REPORT_MUTATION = gql`
   mutation RemoveTestPlanReport($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       deleteTestPlanReport
+    }
+  }
+`;
+
+export const SET_ON_HOLD_MUTATION = gql`
+  mutation SetOnHold($testPlanReportId: ID!, $onHold: Boolean!) {
+    testPlanReport(id: $testPlanReportId) {
+      setOnHold(onHold: $onHold) {
+        testPlanReport {
+          id
+          onHold
+        }
+      }
     }
   }
 `;
