@@ -26,8 +26,8 @@ const KeyMetricsBanner = () => {
         <>
           As of <strong>{new Date(date).toDateString().substring(4)}</strong>,{' '}
           <strong>{verdictsCount.toLocaleString()}</strong> interop verdicts for{' '}
-          <strong>{commandsCount.toLocaleString()}</strong> AT commands in{' '}
-          <strong>{testsCount.toLocaleString()}</strong> enabled by{' '}
+          <strong>{commandsCount.toLocaleString()}</strong> AT commands across{' '}
+          <strong>{testsCount.toLocaleString()}</strong> tests enabled by{' '}
           <strong>{contributorsCount.toLocaleString()}</strong> contributors,{' '}
           <strong>{verdictsLast90Count.toLocaleString()}</strong> verdicts in
           the last 90 days.
