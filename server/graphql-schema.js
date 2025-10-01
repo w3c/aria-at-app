@@ -1019,6 +1019,10 @@ const graphqlSchema = gql`
     """
     initiatedByAutomation: Boolean!
     """
+    Whether this run was explicitly started by the rerun UI
+    """
+    isRerun: Boolean!
+    """
     The CollectionJob related to this testPlanRun
     """
     collectionJob: CollectionJob
@@ -1772,6 +1776,7 @@ const graphqlSchema = gql`
       The CollectionJob to schedule.
       """
       testPlanReportId: ID!
+      isRerun: Boolean
     ): CollectionJob!
     """
     Update a CollectionJob
