@@ -96,7 +96,7 @@ const BotRunTestStatusList = ({ testPlanReportId }) => {
         )}
         <li>
           <ReportStatusDot status={REPORT_STATUSES.TESTS_COMPLETE} />
-          {testCountString(COMPLETED, 'Completed')}
+          {testCountString(COMPLETED, 'Executed')}
         </li>
         <li>
           <ReportStatusDot status={REPORT_STATUSES.TESTS_QUEUED} />

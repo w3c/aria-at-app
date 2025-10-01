@@ -13,9 +13,8 @@ import PhasePill from '../common/PhasePill';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import TestPlanReportStatusDialogWithButton from '../TestPlanReportStatusDialog/WithButton';
-import ReportStatusSummary from '../common/ReportStatusSummary';
 import { AtVersion, BrowserVersion } from '../common/AtBrowserVersion';
-import ProgressBar from '../common/ProgressBar';
+import RowStatus from './RowStatus';
 import AssignTesters from './AssignTesters';
 import Actions from './Actions';
 import BotRunTestStatusList from '../BotRunTestStatusList';
@@ -311,9 +310,12 @@ const TestQueue = () => {
   };
 
   const renderRow = ({ testPlan, testPlanVersion, testPlanReport }) => {
-    const { percentComplete } = testPlanReport;
     const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
       ({ tester }) => tester.isBot
+    );
+
+    const shouldPollPercent = testPlanReport.draftTestPlanRuns?.some(
+      run => run.collectionJob
     );
 
     return (
@@ -337,11 +339,10 @@ const TestQueue = () => {
         </td>
         <td>
           <div className={styles.statusContainer}>
-            {<ProgressBar progress={percentComplete} decorative />}
-            <ReportStatusSummary
+            <RowStatus
               testPlanVersion={testPlanVersion}
               testPlanReport={testPlanReport}
-              fromTestQueue
+              shouldPoll={!!shouldPollPercent}
             />
             {testPlanReport.onHold ? (
               <span
