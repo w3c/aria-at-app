@@ -153,7 +153,7 @@ const TestQueue = () => {
       [FILTER_KEYS.ALL]: `All test runs (${allCount})`,
       [FILTER_KEYS.MANUAL]: `Manual test runs (${manualCount})`,
       ...(automatedCount > 0 && {
-        [FILTER_KEYS.AUTOMATED]: `Automated updates with run failures (${automatedCount})`
+        [FILTER_KEYS.AUTOMATED]: `Automated updates (${automatedCount})`
       })
     };
   }, [processedData.testPlans]);
