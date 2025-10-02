@@ -1,3 +1,13 @@
+### [1.21.1](https://github.com/w3c/aria-at-app/compare/v1.21.0...v1.21.1) (2025-10-02)
+
+
+### Bug Fixes
+
+* `isRerun` exclusively assigned by UI, stored on `TestPlanRun` ([#1550](https://github.com/w3c/aria-at-app/issues/1550)) ([194355e](https://github.com/w3c/aria-at-app/commit/194355e1f5e4368c76c25dadefaefddf225418b6))
+* expanded status polling ([#1553](https://github.com/w3c/aria-at-app/issues/1553)) ([461c986](https://github.com/w3c/aria-at-app/commit/461c986af10bbf334b9bacf492979dd355b4baf5))
+* no autofinalize manual test plan runs ([#1551](https://github.com/w3c/aria-at-app/issues/1551)) ([009a70a](https://github.com/w3c/aria-at-app/commit/009a70a881b13d31a2503584a9b186f076aa3098))
+* prevent rapid clicks on Start Bot Run modal ([#1549](https://github.com/w3c/aria-at-app/issues/1549)) ([7e2a6c0](https://github.com/w3c/aria-at-app/commit/7e2a6c0f7e549f5e868c43b32b73eca635be2213))
+
 ## [1.21.0](https://github.com/w3c/aria-at-app/compare/v1.20.0...v1.21.0) (2025-09-23)
 
 
