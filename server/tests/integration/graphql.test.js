@@ -623,6 +623,7 @@ describe('graphql', () => {
             __typename
             id
             initiatedByAutomation
+            isRerun
             collectionJob { id }
             testPlanReport {
               id

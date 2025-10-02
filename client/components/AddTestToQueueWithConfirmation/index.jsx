@@ -132,16 +132,18 @@ function AddTestToQueueWithConfirmation({
     <>
       Choose how the report for {at?.name} and {browser?.name} will be
       generated. Add it to the queue so it can be assigned to a tester at a
-      later time or start running automated response collection with{' '}
+      later time or start running automated response collection with&nbsp;
       {getBotUsernameFromAtBrowser(at, browser)}.
     </>
   ) : (
     <>
-      Successfully added <b>{testPlanVersion?.title}</b> for{' '}
+      Successfully added&nbsp;
+      <b>{`${testPlanVersion?.title} ${testPlanVersion?.versionString}`}</b>
+      &nbsp;for&nbsp;
       <b>
         {at?.name} and {browser?.name}
-      </b>{' '}
-      to the Test Queue.
+      </b>
+      &nbsp;to the Test Queue.
     </>
   );
 

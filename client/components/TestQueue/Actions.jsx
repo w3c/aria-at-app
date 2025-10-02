@@ -22,6 +22,7 @@ import BasicThemedModal from '../common/BasicThemedModal';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
 import ManageBotRunDialogWithButton from '@components/ManageBotRunDialog/WithButton';
+import StartBotRunButton from '@components/ManageBotRunDialog/StartBotRunButton';
 import {
   TestPlanPropType,
   TestPlanReportPropType,
@@ -265,12 +266,19 @@ const Actions = ({
             ))}
           </Dropdown.Menu>
         </Dropdown>
-        {isAdmin && assignedBotRun && (
+        {(isAdmin || isTester) && assignedBotRun && (
           <ManageBotRunDialogWithButton
             testPlanRun={assignedBotRun}
             testPlanReportId={testPlanReport.id}
             runnableTestsLength={testPlanReport.runnableTestsLength}
             testers={testers}
+            me={me}
+            onChange={triggerUpdate}
+          />
+        )}
+        {(isAdmin || isTester) && !assignedBotRun && (
+          <StartBotRunButton
+            testPlanReport={testPlanReport}
             onChange={triggerUpdate}
           />
         )}
