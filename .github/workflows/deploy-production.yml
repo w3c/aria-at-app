@@ -16,7 +16,7 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
           known_hosts: ${{ secrets.DEPLOY_KNOWN_HOSTS_PRODUCTION }}
           config: ${{ secrets.DEPLOY_SSH_CONFIG }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
