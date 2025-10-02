@@ -153,8 +153,14 @@ const InstructionsRenderer = ({
       {renderableContent.commands.map(
         ({ id, settings, assertionExceptions = [] }, i) => {
           const settingsScreenText = isV2
-            ? renderableContent.target.at.raw.settings[settings]?.screenText ??
-              ''
+            ? settings
+                .split(' ')
+                .map(
+                  setting =>
+                    renderableContent.target.at.raw.settings[setting]
+                      ?.screenText
+                )
+                .join(' and ')
             : null;
 
           let mustCount = 0;
