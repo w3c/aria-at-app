@@ -6,7 +6,7 @@
    - Version 14 or greater
    - It is recommended to install node with [`nvm`](https://github.com/nvm-sh/nvm)
 2. Yarn
-   - Yarn is resposible for installing dependencies, similar to npm. This project is utilizing yarn workspaces to organize the code into a monorepo structure.
+   - Yarn is responsible for installing dependencies, similar to npm. This project is utilizing yarn workspaces to organize the code into a monorepo structure.
    - For macOS, use: `brew install yarn`
    - For linux, See [yarn documentation](https://classic.yarnpkg.com/en/docs/install/#debian-stable)
 
@@ -17,11 +17,25 @@
    yarn install
    ```
 2. Set up local database using the instructions provided in [database.md](database.md).
-   - Note: You must run `yarn db-import-tests:dev` after setting up your database to import the latest test harness into
+   - Note: You must run `yarn db-import-tests:dev` after setting up your database to import the pinned test harness into
      your project.
 3. Run the server
-   ` yarn dev `
+   `yarn dev`
    Now you can navigate your browser to: [http://localhost:3000/](http://localhost:3000/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
+
+## Pinned ARIA-AT version
+
+The app imports test plans from the `w3c/aria-at` repository using a pinned commit.
+
+- The pinned SHA lives at `config/aria-at.version`.
+- Local imports without `-c` will read this file (or `ARIA_AT_PINNED_SHA`).
+- CI imports historical commits for coverage and then the pinned commit.
+
+A scheduled workflow (`.github/workflows/update-aria-at.yml`) runs daily to:
+
+- Resolve the latest upstream SHA.
+- Import and run tests against it.
+- If tests pass, update `config/aria-at.version`, refresh client snapshots, and push directly to `development` with only those changes.
 
 ### Signing in as a tester, admin, or vendor
 
