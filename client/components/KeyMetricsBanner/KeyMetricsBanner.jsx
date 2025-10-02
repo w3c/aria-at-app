@@ -19,8 +19,6 @@ const KeyMetricsBanner = () => {
       className={styles.keyMetrics}
       variant="primary"
       show={keyMetricsQuery}
-      //   onClose={() => setShowBanner(false)}
-      //   dismissible
     >
       {keyMetricsQuery && (
         <>
