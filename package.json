@@ -13,9 +13,9 @@
     "dev-debug": "npm-run-all --parallel dev:client dev-debug:server",
     "dev-debug:server": "yarn workspace server run dev-debug",
     "jest": "yarn workspaces run jest",
-    "prettier": "yarn workspaces run prettier",
-    "lint": "yarn workspaces run lint",
-    "test": "set -e; yarn prettier; yarn lint; yarn jest",
+    "lint": "eslint . && prettier --ignore-unknown --check \"**/*.{js,jsx,css,json,md,yml}\"",
+    "lint:fix": "eslint --fix . && prettier --ignore-unknown --write \"**/*.{js,jsx,css,json,md,yml}\"",
+    "test": "set -e; yarn lint; yarn jest",
     "db-init:dev": "bash db/scripts/db_init.sh config/dev.env",
     "db-init:test": "bash db/scripts/db_init.sh config/test.env",
     "db-import-tests:dev": "yarn workspace server db-import-tests:dev",
@@ -27,7 +27,6 @@
     "db-populate:test": "yarn workspace server db-populate-sample-data:test",
     "db-init-import-populate:test": "yarn db-init-import:test && yarn db-populate:test",
     "db-init-import-populate:all": "yarn db-init-import-populate:dev && yarn db-init-import-populate:test",
-    "storybook": "yarn workspaces run storybook",
     "sequelize": "dotenv -e config/dev.env npx sequelize-cli",
     "sequelize:test": "dotenv -e config/test.env npx sequelize-cli",
     "postinstall": "patch-package",
@@ -53,23 +52,18 @@
     "postinstall-postinstall": "^2.1.0"
   },
   "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jest": "^29.0.1",
+    "eslint-plugin-json": "^3.1.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
     "husky": "^9.1.7",
-    "lint-staged": "^15.3.0",
-    "npm-run-all": "^4.1.5"
+    "lint-staged": "^16.2.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.8"
   },
   "lint-staged": {
-    "*": "prettier --ignore-unknown --write",
-    "client/*": [
-      "yarn workspace client prettier",
-      "yarn workspace client lint"
-    ],
-    "server/*": [
-      "yarn workspace server prettier",
-      "yarn workspace server lint"
-    ],
-    "shared/*": [
-      "yarn workspace shared prettier",
-      "yarn workspace shared lint"
-    ]
+    "**/*.{js,jsx,css,json,md,yml}": "yarn lint:fix"
   }
 }

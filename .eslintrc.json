@@ -2,7 +2,8 @@
   "ignorePatterns": [
     "client/dist/*",
     "client/dist/bundle.js",
-    "client/tests/e2e/snapshots/saved"
+    "client/tests/e2e/snapshots/saved",
+    "CHANGELOG.md"
   ],
   "env": {
     "browser": true,
