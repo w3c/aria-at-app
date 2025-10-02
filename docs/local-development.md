@@ -20,7 +20,7 @@
    - Note: You must run `yarn db-import-tests:dev` after setting up your database to import the latest test harness into
      your project.
 3. Run the server
-   ` yarn dev `
+   `yarn dev`
    Now you can navigate your browser to: [http://localhost:3000/](http://localhost:3000/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
 
 ### Signing in as a tester, admin, or vendor

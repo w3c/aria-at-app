@@ -28,6 +28,11 @@ const testPlanRunLiterals = [
   'testResultsLength'
 ];
 
+// TODO: Make this dynamic
+// 1: JAWS
+// 2: NVDA
+// 3: VoiceOver for macOS
+// 4: TalkBack for Android
 const testPlanVersionLiterals = [
   sequelize.literal(`(
         WITH testPlanVersionResult AS ( SELECT jsonb_array_elements("tests") AS results )
@@ -40,7 +45,10 @@ const testPlanVersionLiterals = [
                 WHERE testPlanVersionResult.results @> '{"atIds": [2]}' ),
             ( SELECT COUNT(*)
                 FROM testPlanVersionResult
-                WHERE testPlanVersionResult.results @> '{"atIds": [3]}' )
+                WHERE testPlanVersionResult.results @> '{"atIds": [3]}' ),
+            ( SELECT COUNT(*)
+                FROM testPlanVersionResult
+                WHERE testPlanVersionResult.results @> '{"atIds": [4]}' )
         )
         FROM testPlanVersionResult
         LIMIT 1 )`),
