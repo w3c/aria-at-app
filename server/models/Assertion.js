@@ -77,10 +77,21 @@ module.exports = function (sequelize, DataTypes) {
     as: 'testPlanVersion'
   };
 
+  Model.AT_BUGS_ASSOCIATION = {
+    through: 'AssertionAtBug',
+    as: 'atBugs'
+  };
+
   Model.associate = function (models) {
     Model.belongsTo(models.TestPlanVersion, {
       ...Model.TEST_PLAN_VERSION_ASSOCIATION,
       targetKey: 'id'
+    });
+
+    Model.belongsToMany(models.AtBug, {
+      ...Model.AT_BUGS_ASSOCIATION,
+      foreignKey: 'assertionId',
+      otherKey: 'atBugId'
     });
   };
 

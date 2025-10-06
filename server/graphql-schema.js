@@ -716,6 +716,89 @@ const graphqlSchema = gql`
     https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#assertionphrase
     """
     phrase: String
+    """
+    AT bugs that are linked to this assertion.
+    """
+    atBugs: [AtBug]!
+  }
+
+  """
+  Represents a bug in an assistive technology that may be associated with
+  failing assertions and derivatively a test plan report.
+  """
+  type AtBug {
+    """
+    Unique identifier for the bug.
+    """
+    id: ID!
+    """
+    The bug title or link text (e.g., "Region boundaries are not rendered by default").
+    """
+    title: String!
+    """
+    The bug identifier as a string (e.g., "123", "820"). Usually the GH issue number.
+    """
+    bugId: String!
+    """
+    Full URL to the bug tracker issue.
+    """
+    url: String!
+    """
+    The assistive technology this bug is associated with.
+    """
+    at: At!
+    """
+    All assertions linked to this bug.
+    """
+    assertions: [Assertion]!
+    """
+    The time this bug record was created.
+    """
+    createdAt: Timestamp!
+    """
+    The time this bug record was last updated.
+    """
+    updatedAt: Timestamp!
+  }
+
+  """
+  Input for creating a new AT bug.
+  """
+  input AtBugInput {
+    """
+    The bug title or link text.
+    """
+    title: String!
+    """
+    The bug identifier as a string.
+    """
+    bugId: String!
+    """
+    Full URL to the bug tracker issue.
+    """
+    url: String!
+    """
+    The ID of the assistive technology this bug is associated with.
+    """
+    atId: ID!
+  }
+
+  """
+  Input for updating an existing AT bug.
+  """
+  input AtBugUpdateInput {
+    """
+    The bug title or link text.
+    """
+    title: String
+    """
+    The bug identifier as a string.
+    """
+    bugId: String
+    """
+    Full URL to the bug tracker issue.
+    """
+    url: String
   }
 
   """
@@ -1411,6 +1494,14 @@ const graphqlSchema = gql`
     """
     browsers: [Browser]!
     """
+    Get a specific AT bug by ID.
+    """
+    atBug(id: ID!): AtBug
+    """
+    Get all AT bugs, optionally filtered by AT ID.
+    """
+    atBugs(atId: ID): [AtBug]!
+    """
     Get all TestPlans.
     """
     testPlans(testPlanVersionPhases: [TestPlanVersionPhase]): [TestPlan]!
@@ -1814,6 +1905,26 @@ const graphqlSchema = gql`
     createCollectionJobsFromPreviousAtVersion(
       atVersionId: ID!
     ): CreateCollectionJobsFromPreviousVersionResponse!
+    """
+    Create a new AT bug.
+    """
+    createAtBug(input: AtBugInput!): AtBug!
+    """
+    Update an existing AT bug.
+    """
+    updateAtBug(id: ID!, input: AtBugUpdateInput!): AtBug!
+    """
+    Delete an AT bug.
+    """
+    deleteAtBug(id: ID!): Boolean!
+    """
+    Link one or more AT bugs to an assertion.
+    """
+    linkAtBugsToAssertion(assertionId: ID!, atBugIds: [ID]!): Assertion!
+    """
+    Unlink one or more AT bugs from an assertion.
+    """
+    unlinkAtBugsFromAssertion(assertionId: ID!, atBugIds: [ID]!): Assertion!
   }
 
   type CreateCollectionJobsFromPreviousVersionResponse {

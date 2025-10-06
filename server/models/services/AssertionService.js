@@ -1,5 +1,5 @@
 const ModelService = require('./ModelService');
-const { Assertion } = require('../');
+const { Assertion, AssertionAtBug } = require('../');
 
 // Default attributes to select for Assertion queries
 const ASSERTION_ATTRIBUTES = [
@@ -143,6 +143,103 @@ const deleteAssertionById = async ({ id, transaction }) =>
     transaction
   });
 
+/**
+ * Links multiple AtBugs to an Assertion
+ * @param {object} options
+ * @param {number} options.assertionId - The assertion ID
+ * @param {number[]} options.atBugIds - Array of AtBug IDs to link
+ * @param {import('sequelize').Transaction} options.transaction - Sequelize transaction
+ * @returns {Promise<*>} Updated Assertion with atBugs
+ */
+const linkAtBugsToAssertion = async ({
+  assertionId,
+  atBugIds,
+  transaction
+}) => {
+  const assertion = await Assertion.findByPk(assertionId, { transaction });
+  if (!assertion) {
+    throw new Error(`Assertion with id ${assertionId} not found`);
+  }
+
+  // Add the bugs (Sequelize will handle duplicates with the unique constraint)
+  await assertion.addAtBugs(atBugIds, { transaction });
+
+  // Return the assertion with its bugs
+  return await Assertion.findByPk(assertionId, {
+    include: [{ association: 'atBugs' }],
+    transaction
+  });
+};
+
+/**
+ * Unlinks specific AtBugs from an Assertion
+ * @param {object} options
+ * @param {number} options.assertionId - The assertion ID
+ * @param {number[]} options.atBugIds - Array of AtBug IDs to unlink
+ * @param {import('sequelize').Transaction} options.transaction - Sequelize transaction
+ * @returns {Promise<*>} Updated Assertion with atBugs
+ */
+const unlinkAtBugsFromAssertion = async ({
+  assertionId,
+  atBugIds,
+  transaction
+}) => {
+  const assertion = await Assertion.findByPk(assertionId, { transaction });
+  if (!assertion) {
+    throw new Error(`Assertion with id ${assertionId} not found`);
+  }
+
+  // Remove the specified bugs
+  await assertion.removeAtBugs(atBugIds, { transaction });
+
+  // Return the assertion with its bugs
+  return await Assertion.findByPk(assertionId, {
+    include: [{ association: 'atBugs' }],
+    transaction
+  });
+};
+
+/**
+ * Unlinks all AtBugs from an Assertion
+ * @param {object} options
+ * @param {number} options.assertionId - The assertion ID
+ * @param {import('sequelize').Transaction} options.transaction - Sequelize transaction
+ * @returns {Promise<*>} Updated Assertion with atBugs
+ */
+const unlinkAllAtBugsFromAssertion = async ({ assertionId, transaction }) => {
+  await AssertionAtBug.destroy({
+    where: { assertionId },
+    transaction
+  });
+
+  return await Assertion.findByPk(assertionId, {
+    include: [{ association: 'atBugs' }],
+    transaction
+  });
+};
+
+/**
+ * Gets all Assertions linked to a specific AtBug
+ * @param {object} options
+ * @param {number} options.atBugId - The AtBug ID
+ * @param {import('sequelize').Transaction} options.transaction - Sequelize transaction
+ * @returns {Promise<*[]>} Assertions
+ */
+const getAssertionsByAtBugId = async ({ atBugId, transaction }) => {
+  const links = await AssertionAtBug.findAll({
+    where: { atBugId },
+    transaction
+  });
+
+  const assertionIds = links.map(link => link.assertionId);
+
+  return await ModelService.get(Assertion, {
+    where: { id: assertionIds },
+    attributes: ASSERTION_ATTRIBUTES,
+    transaction
+  });
+};
+
 module.exports = {
   getAssertionById,
   getAssertions,
@@ -152,5 +249,9 @@ module.exports = {
   createAssertion,
   bulkCreateAssertions,
   updateAssertionById,
-  deleteAssertionById
+  deleteAssertionById,
+  linkAtBugsToAssertion,
+  unlinkAtBugsFromAssertion,
+  unlinkAllAtBugsFromAssertion,
+  getAssertionsByAtBugId
 };
