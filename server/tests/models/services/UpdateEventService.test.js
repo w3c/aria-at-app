@@ -15,7 +15,7 @@ describe('Common event related operations', () => {
         type: 'GENERAL'
       };
 
-      const result = await EventService.createUpdateEvent({
+      const result = await EventService.createEvent({
         values: eventData,
         transaction
       });
@@ -34,7 +34,7 @@ describe('Common event related operations', () => {
         type: 'COLLECTION_JOB'
       };
 
-      const result = await EventService.createUpdateEvent({
+      const result = await EventService.createEvent({
         values: eventData,
         updateEventAttributes: ['id', 'description', 'type'],
         transaction
@@ -53,12 +53,12 @@ describe('Common event related operations', () => {
         type: 'GENERAL'
       };
 
-      const created = await EventService.createUpdateEvent({
+      const created = await EventService.createEvent({
         values: eventData,
         transaction
       });
 
-      const result = await EventService.getUpdateEventById({
+      const result = await EventService.getEventById({
         id: created.id,
         transaction
       });
@@ -71,7 +71,7 @@ describe('Common event related operations', () => {
 
   it('should return null for non-existent id', async () => {
     await dbCleaner(async transaction => {
-      const result = await EventService.getUpdateEventById({
+      const result = await EventService.getEventById({
         id: 999999,
         transaction
       });
@@ -89,14 +89,14 @@ describe('Common event related operations', () => {
 
       const createdEvents = await Promise.all(
         events.map(event =>
-          EventService.createUpdateEvent({
+          EventService.createEvent({
             values: event,
             transaction
           })
         )
       );
 
-      const results = await EventService.getUpdateEvents({
+      const results = await EventService.getEvents({
         where: {
           id: createdEvents.map(event => event.id)
         },
@@ -129,7 +129,7 @@ describe('Common event related operations', () => {
         )
       );
 
-      const results = await EventService.getUpdateEvents({
+      const results = await EventService.getEvents({
         where: { type: 'GENERAL' },
         transaction
       });
@@ -146,12 +146,12 @@ describe('Common event related operations', () => {
         type: 'GENERAL'
       };
 
-      const created = await EventService.createUpdateEvent({
+      const created = await EventService.createEvent({
         values: eventData,
         transaction
       });
 
-      const updated = await EventService.updateUpdateEventById({
+      const updated = await EventService.updateEventById({
         id: created.id,
         values: {
           description: 'Updated description'
@@ -172,17 +172,17 @@ describe('Common event related operations', () => {
         type: 'GENERAL'
       };
 
-      const created = await EventService.createUpdateEvent({
+      const created = await EventService.createEvent({
         values: eventData,
         transaction
       });
 
-      await EventService.removeUpdateEventById({
+      await EventService.removeEventById({
         id: created.id,
         transaction
       });
 
-      const result = await EventService.getUpdateEventById({
+      const result = await EventService.getEventById({
         id: created.id,
         transaction
       });
