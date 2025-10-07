@@ -946,40 +946,6 @@ const graphqlSchema = gql`
   }
 
   """
-  An audit record tracking events in the system for compliance and debugging purposes.
-  """
-  type AuditRecord {
-    """
-    Postgres-provided numeric ID.
-    """
-    id: ID!
-    """
-    The type of event that was audited (e.g., 'TESTER_ASSIGNMENT', 'TESTER_REASSIGNMENT', etc.).
-    """
-    eventType: String!
-    """
-    Human-readable description of the event.
-    """
-    description: String!
-    """
-    The user who performed the action.
-    """
-    performedBy: User!
-    """
-    The primary entity ID involved in the event (e.g., testPlanReportId).
-    """
-    entityId: Int
-    """
-    Additional metadata about the event, including specific details like tester IDs, test plan run IDs, etc.
-    """
-    metadata: Any
-    """
-    When the event occurred.
-    """
-    createdAt: Timestamp!
-  }
-
-  """
   A failure state such as "AT became excessively sluggish" which, if it
   occurs, should count as a scenario failure.
   """
@@ -1302,9 +1268,9 @@ const graphqlSchema = gql`
     """
     totalPossibleAssertions: Int!
     """
-    Audit records for this test plan report, tracking tester assignments and other events.
+    Events for this test plan report, tracking tester assignments and other events.
     """
-    auditRecords: [AuditRecord]!
+    events: [UpdateEvent]!
   }
 
   """
@@ -1417,18 +1383,40 @@ const graphqlSchema = gql`
     previousVersionGroups: [PreviousVersionGroup!]!
   }
 
-  enum UpdateEventType {
-    COLLECTION_JOB
-    GENERAL
-    TEST_PLAN_RUN
-    TEST_PLAN_REPORT
-  }
-
+  """
+  Records tracking events in the system.
+  """
   type UpdateEvent {
+    """
+    Postgres-provided numeric ID.
+    """
     id: ID!
-    timestamp: String!
+    """
+    The type of event that was logged (e.g., 'TESTER_ASSIGNMENT', 'TESTER_REASSIGNMENT', etc.).
+    """
+    type: String!
+    """
+    Human-readable description of the event.
+    """
     description: String!
-    type: UpdateEventType!
+    """
+    The user who performed the action.
+    """
+    performedBy: User
+    """
+    The primary entity ID involved in the event (e.g., testPlanReportId).
+    The metadata field should state what entity this id is for.
+    """
+    entityId: Int
+    """
+    Additional metadata about the event, including specific details like
+    tester IDs, test plan run IDs, entity IDs, etc.
+    """
+    metadata: Any
+    """
+    When the event occurred.
+    """
+    timestamp: Timestamp!
   }
 
   type Query {
@@ -1540,7 +1528,7 @@ const graphqlSchema = gql`
     """
     Get update events
     """
-    updateEvents(type: UpdateEventType): [UpdateEvent!]!
+    updateEvents(type: String): [UpdateEvent!]!
     """
     Get a particular update event by ID
     """
@@ -1549,10 +1537,6 @@ const graphqlSchema = gql`
     Get key metrics
     """
     keyMetrics: KeyMetrics!
-    """
-    Get audit records
-    """
-    auditRecords(eventType: String): [AuditRecord]!
   }
 
   # Mutation-specific types below

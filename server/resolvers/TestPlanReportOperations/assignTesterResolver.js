@@ -3,10 +3,8 @@ const {
   createTestPlanRun,
   updateTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
-const {
-  createSimpleAuditRecord
-} = require('../../models/services/AuditService');
-const { AUDIT_EVENT_TYPES } = require('../../util/auditEventTypes');
+const { createSimpleEvent } = require('../../models/services/EventService');
+const { EVENT_TYPES } = require('../../util/eventTypes');
 const populateData = require('../../services/PopulatedData/populateData');
 
 const assignTesterResolver = async (
@@ -40,9 +38,9 @@ const assignTesterResolver = async (
       transaction
     });
 
-    // Create audit record for reassignment
-    await createSimpleAuditRecord({
-      eventType: AUDIT_EVENT_TYPES.TESTER_REASSIGNMENT,
+    // Create event log about reassignment
+    await createSimpleEvent({
+      type: EVENT_TYPES.TESTER_REASSIGNMENT,
       performedByUserId: user.id,
       entityId: testPlanReportId,
       metadata: {
@@ -60,9 +58,9 @@ const assignTesterResolver = async (
     });
     testPlanRunId = id;
 
-    // Create audit record for new assignment
-    await createSimpleAuditRecord({
-      eventType: AUDIT_EVENT_TYPES.TESTER_ASSIGNMENT,
+    // Create event log about new assignment
+    await createSimpleEvent({
+      type: EVENT_TYPES.TESTER_ASSIGNMENT,
       performedByUserId: user.id,
       entityId: testPlanReportId,
       metadata: {

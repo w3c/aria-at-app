@@ -2,28 +2,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHistory, faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
-import { AuditPropType } from '../common/proptypes';
+import { EventPropType } from '../common/proptypes';
 import { dates } from '@shared';
 import styles from './TesterAssignmentLog.module.css';
 
-const TesterAssignmentLog = ({ auditRecords = [] }) => {
+const TesterAssignmentLog = ({ events = [] }) => {
   if (
-    !auditRecords.length ||
-    (auditRecords.length === 1 &&
-      auditRecords[0].eventType === 'TESTER_ASSIGNMENT')
+    !events.length ||
+    (events.length === 1 && events[0].type === 'TESTER_ASSIGNMENT')
   ) {
     return null;
   }
 
   const getAssignmentMessage = record => {
-    const { eventType, metadata } = record;
+    const { type, metadata } = record;
 
     const date = dates.convertDateToString(
-      record.createdAt,
+      record.timestamp,
       'MMM DD, YYYY hh:mm A'
     );
 
-    switch (eventType) {
+    switch (type) {
       case 'TESTER_ASSIGNMENT': {
         const tester =
           metadata.testerUsername || `User ${metadata.testerUserId}`;
@@ -49,7 +48,7 @@ const TesterAssignmentLog = ({ auditRecords = [] }) => {
       </div>
       <div>
         <div>
-          {auditRecords.map(record => (
+          {events.map(record => (
             <div key={record.id} className={styles.assignmentRow}>
               <FontAwesomeIcon icon={faPeopleArrows} />
               <div className={styles.assignmentRowContent}>
@@ -69,7 +68,7 @@ const TesterAssignmentLog = ({ auditRecords = [] }) => {
 };
 
 TesterAssignmentLog.propTypes = {
-  auditRecords: PropTypes.arrayOf(AuditPropType).isRequired
+  events: PropTypes.arrayOf(EventPropType).isRequired
 };
 
 export default TesterAssignmentLog;

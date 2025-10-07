@@ -1,9 +1,11 @@
 /**
- * This file centralizes all audit event types used throughout.
+ * This file centralizes all event types used throughout.
  * Add new event types here to make them available everywhere.
  */
 
-const AUDIT_EVENT_TYPES = {
+const EVENT_TYPES = {
+  GENERAL: 'GENERAL',
+
   // Tester-related events
   TESTER_ASSIGNMENT: 'TESTER_ASSIGNMENT',
   TESTER_REASSIGNMENT: 'TESTER_REASSIGNMENT',
@@ -13,6 +15,11 @@ const AUDIT_EVENT_TYPES = {
   TEST_PLAN_REPORT_CREATION: 'TEST_PLAN_REPORT_CREATION',
   TEST_PLAN_REPORT_UPDATE: 'TEST_PLAN_REPORT_UPDATE',
   TEST_PLAN_REPORT_FINALIZATION: 'TEST_PLAN_REPORT_FINALIZATION',
+
+  // Test plan run events
+  TEST_PLAN_RUN_CREATION: 'TEST_PLAN_RUN_CREATION',
+  TEST_PLAN_RUN_UPDATE: 'TEST_PLAN_RUN_UPDATE',
+  TEST_PLAN_RUN_DELETION: 'TEST_PLAN_RUN_DELETION',
 
   // Test result events
   TEST_RESULT_SUBMISSION: 'TEST_RESULT_SUBMISSION',
@@ -24,6 +31,7 @@ const AUDIT_EVENT_TYPES = {
   COLLECTION_JOB_START: 'COLLECTION_JOB_START',
   COLLECTION_JOB_COMPLETION: 'COLLECTION_JOB_COMPLETION',
   COLLECTION_JOB_FAILURE: 'COLLECTION_JOB_FAILURE',
+  COLLECTION_TEST_PLAN_REPORT: 'COLLECTION_TEST_PLAN_REPORT',
 
   // User and permission events
   USER_LOGIN: 'USER_LOGIN',
@@ -34,7 +42,7 @@ const AUDIT_EVENT_TYPES = {
  * Get all available audit event types as an array
  * @returns {string[]} Array of all event type strings
  */
-const getAllEventTypes = () => Object.values(AUDIT_EVENT_TYPES);
+const getAllEventTypes = () => Object.values(EVENT_TYPES);
 
 /**
  * Check if an event type is valid
@@ -42,7 +50,7 @@ const getAllEventTypes = () => Object.values(AUDIT_EVENT_TYPES);
  * @returns {boolean} True if the event type is valid
  */
 const isValidEventType = eventType =>
-  Object.values(AUDIT_EVENT_TYPES).includes(eventType);
+  Object.values(EVENT_TYPES).includes(eventType);
 
 /**
  * Get event types by category
@@ -50,7 +58,7 @@ const isValidEventType = eventType =>
  * @returns {string[]} Array of event types matching the category
  */
 const getEventTypesByCategory = category => {
-  return Object.values(AUDIT_EVENT_TYPES).filter(eventType =>
+  return Object.values(EVENT_TYPES).filter(eventType =>
     eventType.startsWith(category)
   );
 };
@@ -67,6 +75,12 @@ const getTesterEventTypes = () => getEventTypesByCategory('TESTER');
  */
 const getTestPlanReportEventTypes = () =>
   getEventTypesByCategory('TEST_PLAN_REPORT');
+
+/**
+ * Get test plan run-related event types
+ * @returns {string[]} Array of test plan run event types
+ */
+const getTestPlanRunEventTypes = () => getEventTypesByCategory('TEST_PLAN_RUN');
 
 /**
  * Get test result-related event types
@@ -87,12 +101,13 @@ const getCollectionEventTypes = () => getEventTypesByCategory('COLLECTION');
 const getUserEventTypes = () => getEventTypesByCategory('USER');
 
 module.exports = {
-  AUDIT_EVENT_TYPES,
+  EVENT_TYPES,
   getAllEventTypes,
   isValidEventType,
   getEventTypesByCategory,
   getTesterEventTypes,
   getTestPlanReportEventTypes,
+  getTestPlanRunEventTypes,
   getTestResultEventTypes,
   getCollectionEventTypes,
   getUserEventTypes

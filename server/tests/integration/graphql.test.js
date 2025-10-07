@@ -147,8 +147,7 @@ describe('graphql', () => {
       'CollectionJobTestStatus',
       'ReviewerStatus',
       'ScenarioResultMatchSource',
-      'ScenarioResultMatch',
-      'AuditRecord'
+      'ScenarioResultMatch'
     ];
     const excludedTypeNameAndField = [
       // Items formatted like this:
@@ -159,7 +158,7 @@ describe('graphql', () => {
       ['TestPlanReport', 'issues'],
       ['TestPlanReport', 'historicalReport'],
       ['TestPlanReport', 'vendorReviewStatus'],
-      ['TestPlanReport', 'auditRecords'],
+      ['TestPlanReport', 'events'],
       ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
       ['CollectionJob', 'testPlanRun'],
       ['CollectionJob', 'externalLogsUrl'],
@@ -167,7 +166,6 @@ describe('graphql', () => {
       ['User', 'company'],
       ['Query', 'reviewerStatus'],
       ['Query', 'reviewerStatuses'],
-      ['Query', 'auditRecords'],
       // These interact with Response Scheduler API
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],

@@ -1,12 +1,12 @@
 import { gql } from '@apollo/client';
 
-const AUDIT_RECORD_FIELDS = gql`
-  fragment AuditRecordFields on AuditRecord {
+const EVENT_FIELDS = gql`
+  fragment EventFields on UpdateEvent {
     __typename
     id
-    eventType
+    type
     description
-    createdAt
+    timestamp
     performedBy {
       id
       username
@@ -16,4 +16,4 @@ const AUDIT_RECORD_FIELDS = gql`
   }
 `;
 
-export default AUDIT_RECORD_FIELDS;
+export default EVENT_FIELDS;

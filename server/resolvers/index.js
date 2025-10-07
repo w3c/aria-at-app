@@ -1,6 +1,5 @@
 const me = require('./meResolver');
 const users = require('./usersResolver');
-const auditRecords = require('./auditRecordsResolver');
 const ats = require('./atsResolver');
 const browsers = require('./browsersResolver');
 const testPlans = require('./testPlansResolver');
@@ -85,8 +84,7 @@ const resolvers = {
     vendorByName,
     rerunnableReports,
     updateEvents,
-    updateEvent,
-    auditRecords
+    updateEvent
   },
   Mutation: {
     at: mutateAt,

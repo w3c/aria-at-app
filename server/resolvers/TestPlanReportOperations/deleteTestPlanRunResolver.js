@@ -3,10 +3,8 @@ const {
   removeTestPlanRunByQuery,
   getTestPlanRuns
 } = require('../../models/services/TestPlanRunService');
-const {
-  createSimpleAuditRecord
-} = require('../../models/services/AuditService');
-const { AUDIT_EVENT_TYPES } = require('../../util/auditEventTypes');
+const { createSimpleEvent } = require('../../models/services/EventService');
+const { EVENT_TYPES } = require('../../util/eventTypes');
 const populateData = require('../../services/PopulatedData/populateData');
 const conflictsResolver = require('../TestPlanReport/conflictsResolver');
 const {
@@ -39,8 +37,8 @@ const deleteTestPlanRunResolver = async (
     transaction
   });
 
-  await createSimpleAuditRecord({
-    eventType: AUDIT_EVENT_TYPES.TESTER_REMOVAL,
+  await createSimpleEvent({
+    type: EVENT_TYPES.TESTER_REMOVAL,
     performedByUserId: user.id,
     entityId: testPlanReportId,
     metadata: {
