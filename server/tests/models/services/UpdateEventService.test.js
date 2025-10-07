@@ -41,7 +41,14 @@ describe('Common event related operations', () => {
       });
 
       const resultKeys = Object.keys(result).filter(key => key !== 'timestamp');
-      expect(resultKeys).toEqual(['id', 'description', 'type']);
+      expect(resultKeys).toEqual([
+        'id',
+        'description',
+        'type',
+        'performedByUserId',
+        'entityId',
+        'metadata'
+      ]);
       expect(result.description).toBe(eventData.description);
     });
   });
@@ -117,12 +124,12 @@ describe('Common event related operations', () => {
     await dbCleaner(async transaction => {
       const events = [
         { description: 'Event 1', type: 'GENERAL' },
-        { description: 'Event 2', type: 'TEST_PLAN_RUN' }
+        { description: 'Event 2', type: 'TEST_PLAN_RUN_CREATION' }
       ];
 
       await Promise.all(
         events.map(event =>
-          EventService.createUpdateEvent({
+          EventService.createEvent({
             values: event,
             transaction
           })
@@ -215,16 +222,16 @@ describe('User related event operations', () => {
       });
 
       expect(event).toBeDefined();
-      expect(event.eventType).toBe(EVENT_TYPES.TESTER_ASSIGNMENT);
+      expect(event.type).toBe(EVENT_TYPES.TESTER_ASSIGNMENT);
       expect(event.description).toContain(
         'Tester testuser assigned to test plan run 4 in test plan report 3'
       );
       expect(event.performedByUserId).toBe(performedByUserId);
       expect(event.entityId).toBe(testPlanReportId);
-      expect(event.metadata.eventType).toBe(EVENT_TYPES.TESTER_ASSIGNMENT);
+      expect(event.metadata.type).toBe(EVENT_TYPES.TESTER_ASSIGNMENT);
       expect(event.metadata.testerUserId).toBe(testerUserId);
       expect(event.metadata.testPlanReportId).toBe(testPlanReportId);
-      expect(event.createdAt).toBeDefined();
+      expect(event.timestamp).toBeDefined();
     });
   });
 
@@ -242,18 +249,18 @@ describe('User related event operations', () => {
       });
 
       expect(event).toBeDefined();
-      expect(event.eventType).toBe(EVENT_TYPES.TESTER_REASSIGNMENT);
+      expect(event.type).toBe(EVENT_TYPES.TESTER_REASSIGNMENT);
       expect(event.description).toContain(
         'Tester reassigned from olduser to newuser'
       );
       expect(event.performedByUserId).toBe(performedByUserId);
       expect(event.entityId).toBe(testPlanReportId);
-      expect(event.metadata.eventType).toBe(EVENT_TYPES.TESTER_REASSIGNMENT);
+      expect(event.metadata.type).toBe(EVENT_TYPES.TESTER_REASSIGNMENT);
       expect(event.metadata.fromTesterUserId).toBe(fromTesterUserId);
       expect(event.metadata.toTesterUserId).toBe(toTesterUserId);
       expect(event.metadata.testPlanReportId).toBe(testPlanReportId);
       expect(event.metadata.testPlanRunId).toBe(testPlanRunId);
-      expect(event.createdAt).toBeDefined();
+      expect(event.timestamp).toBeDefined();
     });
   });
 
@@ -268,17 +275,17 @@ describe('User related event operations', () => {
       });
 
       expect(event).toBeDefined();
-      expect(event.eventType).toBe(EVENT_TYPES.TESTER_REMOVAL);
+      expect(event.type).toBe(EVENT_TYPES.TESTER_REMOVAL);
       expect(event.description).toContain(
         'Tester testuser removed from test plan report'
       );
       expect(event.performedByUserId).toBe(performedByUserId);
       expect(event.entityId).toBe(testPlanReportId);
-      expect(event.metadata.eventType).toBe(EVENT_TYPES.TESTER_REMOVAL);
+      expect(event.metadata.type).toBe(EVENT_TYPES.TESTER_REMOVAL);
       expect(event.metadata.testerUserId).toBe(testerUserId);
       expect(event.metadata.testPlanReportId).toBe(testPlanReportId);
       expect(event.metadata.testPlanRunId).toBeNull();
-      expect(event.createdAt).toBeDefined();
+      expect(event.timestamp).toBeDefined();
     });
   });
 
@@ -294,17 +301,17 @@ describe('User related event operations', () => {
       });
 
       expect(event).toBeDefined();
-      expect(event.eventType).toBe(EVENT_TYPES.TESTER_REMOVAL);
+      expect(event.type).toBe(EVENT_TYPES.TESTER_REMOVAL);
       expect(event.description).toContain(
         'Tester testuser removed from test plan run 4 in test plan report 3'
       );
       expect(event.performedByUserId).toBe(performedByUserId);
       expect(event.entityId).toBe(testPlanReportId);
-      expect(event.metadata.eventType).toBe(EVENT_TYPES.TESTER_REMOVAL);
+      expect(event.metadata.type).toBe(EVENT_TYPES.TESTER_REMOVAL);
       expect(event.metadata.testerUserId).toBe(testerUserId);
       expect(event.metadata.testPlanReportId).toBe(testPlanReportId);
       expect(event.metadata.testPlanRunId).toBe(testPlanRunId);
-      expect(event.createdAt).toBeDefined();
+      expect(event.timestamp).toBeDefined();
     });
   });
 
@@ -337,8 +344,8 @@ describe('User related event operations', () => {
       });
 
       expect(events).toHaveLength(2);
-      expect(events[0].eventType).toBe(EVENT_TYPES.TESTER_ASSIGNMENT);
-      expect(events[1].eventType).toBe(EVENT_TYPES.TESTER_REASSIGNMENT);
+      expect(events[0].type).toBe(EVENT_TYPES.TESTER_ASSIGNMENT);
+      expect(events[1].type).toBe(EVENT_TYPES.TESTER_REASSIGNMENT);
     });
   });
 
@@ -381,7 +388,7 @@ describe('User related event operations', () => {
 
   it('should create a custom event', async () => {
     await dbCleaner(async transaction => {
-      const eventType = EVENT_TYPES.TESTER_ASSIGNMENT;
+      const type = EVENT_TYPES.TESTER_ASSIGNMENT;
       const description = 'Custom test event';
       const performedByUserId = 1;
       const entityId = 123;
@@ -389,7 +396,7 @@ describe('User related event operations', () => {
 
       const event = await EventService.createEvent({
         values: {
-          eventType,
+          type,
           description,
           performedByUserId,
           entityId,
@@ -399,12 +406,12 @@ describe('User related event operations', () => {
       });
 
       expect(event).toBeDefined();
-      expect(event.eventType).toBe(eventType);
+      expect(event.type).toBe(type);
       expect(event.description).toBe(description);
       expect(event.performedByUserId).toBe(performedByUserId);
       expect(event.entityId).toBe(entityId);
       expect(event.metadata.customField).toBe('test');
-      expect(event.createdAt).toBeDefined();
+      expect(event.timestamp).toBeDefined();
     });
   });
 });

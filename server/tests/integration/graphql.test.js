@@ -171,7 +171,10 @@ describe('graphql', () => {
       ['Mutation', 'scheduleCollectionJob'],
       ['Mutation', 'restartCollectionJob'],
       ['CollectionJobOperations', 'retryCanceledCollections'],
-      ['ScenarioResult', 'match']
+      ['ScenarioResult', 'match'],
+      ['UpdateEvent', 'performedBy'],
+      ['UpdateEvent', 'entityId'],
+      ['UpdateEvent', 'metadata']
     ];
     ({
       typeAwareQuery,
@@ -310,12 +313,6 @@ describe('graphql', () => {
             description
             timestamp
             type
-            performedBy {
-              id
-              username
-            }
-            entityId
-            metadata
           }
           updateEvents {
             __typename
@@ -323,12 +320,6 @@ describe('graphql', () => {
             description
             timestamp
             type
-            performedBy {
-              id
-              username
-            }
-            entityId
-            metadata
           }
           vendors {
             id
