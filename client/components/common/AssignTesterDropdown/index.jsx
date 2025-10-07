@@ -189,12 +189,12 @@ const AssignTesterDropdown = ({
       <div className={testQueueStyles.assignTestersContainer}>
         <Dropdown
           focusFirstItemOnShow
-          aria-label="Assign testers menu"
+          aria-label={`${srLabel} menu`}
           onKeyDown={onKeyDown}
         >
           <Dropdown.Toggle
             ref={dropdownAssignTesterButtonRef}
-            aria-label="Assign testers"
+            aria-label={srLabel}
             variant="secondary"
             disabled={disabled}
             className={testQueueStyles.assignTestersDropdownButton}

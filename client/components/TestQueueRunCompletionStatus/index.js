@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRobot, faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
+import { faRobot } from '@fortawesome/free-solid-svg-icons';
 import { useTestPlanRunValidatedAssertionCounts } from '../../hooks/useTestPlanRunValidatedAssertionCounts';
-import AssignTesterDropdown from '../common/AssignTesterDropdown';
 import {
   TestPlanReportPropType,
   TestPlanRunPropType,
@@ -15,10 +14,7 @@ const TestQueueRunCompletionStatus = ({
   rowId,
   testPlanReport,
   testPlanRun,
-  tester,
-  isAdmin,
-  reassignTesters,
-  onReassign
+  tester
 }) => {
   const { username, isBot } = tester;
 
@@ -93,19 +89,7 @@ const TestQueueRunCompletionStatus = ({
       id={`TestQueueRunCompletionStatus_${rowId}`}
       className={testQueueStyles.completionStatusListItem}
     >
-      <div className={testQueueStyles.testerInfo}>
-        {info}
-        {isAdmin && !isBot && reassignTesters?.length > 0 && (
-          <AssignTesterDropdown
-            testPlanReportId={testPlanReport.id}
-            testPlanRun={testPlanRun}
-            possibleTesters={reassignTesters}
-            onChange={onReassign}
-            srLabel="Reassign Tester"
-            faAssignIcon={faPeopleArrows}
-          />
-        )}
-      </div>
+      {info}
       {completionStatus}
     </div>
   );
@@ -115,10 +99,7 @@ TestQueueRunCompletionStatus.propTypes = {
   rowId: PropTypes.string.isRequired,
   testPlanReport: TestPlanReportPropType.isRequired,
   testPlanRun: TestPlanRunPropType.isRequired,
-  tester: UserPropType.isRequired,
-  isAdmin: PropTypes.bool,
-  reassignTesters: PropTypes.arrayOf(UserPropType),
-  onReassign: PropTypes.func
+  tester: UserPropType.isRequired
 };
 
 export default TestQueueRunCompletionStatus;

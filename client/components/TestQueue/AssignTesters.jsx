@@ -278,19 +278,6 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
                     testPlanReport={testPlanReport}
                     testPlanRun={testPlanRun}
                     tester={tester}
-                    isAdmin={isAdmin}
-                    reassignTesters={testers.filter(
-                      t =>
-                        !t.isBot &&
-                        !testPlanReport.draftTestPlanRuns.some(
-                          testPlanRun => testPlanRun.tester.id === t.id
-                        )
-                    )}
-                    onReassign={async () => {
-                      await client.refetchQueries({
-                        include: ['TestQueuePage', 'TestPlanReportStatusDialog']
-                      });
-                    }}
                   />
                 </li>
               </React.Fragment>

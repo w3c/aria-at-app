@@ -1528,7 +1528,7 @@ const graphqlSchema = gql`
     """
     Get update events
     """
-    updateEvents(type: String): [UpdateEvent!]!
+    updateEvents(types: [String]): [UpdateEvent!]!
     """
     Get a particular update event by ID
     """

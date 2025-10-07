@@ -20,7 +20,7 @@ const performedByAssociation = userAttributes => ({
  * @param {object} options
  * @param {object} options.values - values of the UpdateEvent record to be created
  * @param {string} options.values.description - Description of the update event
- * @param {string} options.values.type - Type of the update event (COLLECTION_JOB, GENERAL, TEST_PLAN_RUN, TEST_PLAN_REPORT)
+ * @param {string} options.values.type - Type of the update event
  * @param {string[]} options.eventAttributes - UpdateEvent attributes to be returned in the result
  * @param {*} options.transaction - Sequelize transaction
  * @returns {Promise<*>}

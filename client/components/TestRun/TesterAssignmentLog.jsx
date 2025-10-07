@@ -14,12 +14,13 @@ const TesterAssignmentLog = ({ events = [] }) => {
     return null;
   }
 
-  const getAssignmentMessage = record => {
-    const { type, metadata } = record;
+  const getAssignmentMessage = event => {
+    const { type, metadata } = event;
 
-    const date = dates.convertDateToString(
-      record.timestamp,
-      'MMM DD, YYYY hh:mm A'
+    const date = dates.convertStringFormatToAnotherFormat(
+      event.timestamp,
+      'DD-MM-YYYY HH:mm',
+      'D MMM YYYY HH:mm'
     );
 
     switch (type) {

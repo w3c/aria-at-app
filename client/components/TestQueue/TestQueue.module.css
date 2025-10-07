@@ -170,19 +170,6 @@ h1.test-queue-heading {
   }
 }
 
-.tester-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-
-  .assign-testers-dropdown-button {
-    margin: 0;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-  }
-}
-
 /* Actions */
 .actions-container {
   display: flex;

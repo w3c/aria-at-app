@@ -31,7 +31,7 @@ describe('Common event related operations', () => {
     await dbCleaner(async transaction => {
       const eventData = {
         description: 'Test update event',
-        type: 'COLLECTION_JOB'
+        type: 'COLLECTION_JOB_CREATION'
       };
 
       const result = await EventService.createEvent({

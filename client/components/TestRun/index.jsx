@@ -43,6 +43,7 @@ import { Provider as CollectionJobContextProvider } from './CollectionJobContext
 import { useUrlTestIndex } from '../../hooks/useUrlTestIndex';
 import styles from './TestRun.module.css';
 import atBrowserDetailsModalStyles from '../common/AtAndBrowserDetailsModal/AtAndBrowserDetails.module.css';
+import AssignTesterDropdown from '@components/common/AssignTesterDropdown';
 
 const TestRun = () => {
   const params = useParams();
@@ -73,12 +74,13 @@ const TestRun = () => {
   // Versus viewing a page rendered by testPlanReportId: `/test-plan-report/:id`
   const isViewingRun = !!testPlanRunId;
 
-  const { loading, data, error } = useQuery(
+  const { loading, data, error, refetch } = useQuery(
     isViewingRun ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
     {
       fetchPolicy: 'cache-and-network',
       variables: { testPlanRunId, testPlanReportId },
-      pollInterval: 0
+      pollInterval: 0,
+      awaitRefetchQueries: true
     }
   );
 
@@ -1053,13 +1055,39 @@ const TestRun = () => {
               />
             </li>
           )}
-
           <li>
             <OptionButton
               text={!isSignedIn || isReadOnly ? 'Close' : 'Save and Close'}
               onClick={handleCloseRunClick}
             />
           </li>
+          {isAdmin &&
+            !openAsUser?.isBot &&
+            !!testPlanRun?.testPlanReport?.id && (
+              <li>
+                <AssignTesterDropdown
+                  testPlanReportId={testPlanRun?.testPlanReport?.id}
+                  label="Reassign to ..."
+                  srLabel="Reassign Testers"
+                  testPlanRun={testPlanRun}
+                  possibleTesters={users.filter(
+                    u =>
+                      !u.isBot &&
+                      u.id != testerId &&
+                      !testPlanReport.draftTestPlanRuns.some(
+                        testPlanRun => testPlanRun.tester.id == u.id
+                      )
+                  )}
+                  onChange={async () => {
+                    await refetch();
+                    const reassignTestersEl = document.querySelector(
+                      'button[aria-label="Reassign Testers"]'
+                    );
+                    if (reassignTestersEl) reassignTestersEl.focus();
+                  }}
+                />
+              </li>
+            )}
           <li className={styles.helpLink}>
             <a href="mailto:public-aria-at@w3.org">Email us if you need help</a>
           </li>

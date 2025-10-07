@@ -32,21 +32,21 @@ module.exports = {
     });
 
     await queryInterface.sequelize.query(
-      `UPDATE "UpdateEvent" SET "type" = 'COLLECTION_JOB_CREATED' WHERE "type" = 'COLLECTION_JOB'`
+      `UPDATE "UpdateEvent" SET "type" = 'COLLECTION_JOB_CREATION' WHERE "type" = 'COLLECTION_JOB'`
     );
 
     await queryInterface.sequelize.query(
-      `UPDATE "UpdateEvent" SET "type" = 'COLLECTION_TEST_PLAN_REPORT' WHERE "type" = 'TEST_PLAN_REPORT'`
+      `UPDATE "UpdateEvent" SET "type" = 'COLLECTION_JOB_TEST_PLAN_REPORT' WHERE "type" = 'TEST_PLAN_REPORT'`
     );
   },
 
   async down(queryInterface) {
     await queryInterface.sequelize.query(
-      `UPDATE "UpdateEvent" SET "type" = 'TEST_PLAN_REPORT' WHERE "type" = 'COLLECTION_TEST_PLAN_REPORT'`
+      `UPDATE "UpdateEvent" SET "type" = 'TEST_PLAN_REPORT' WHERE "type" = 'COLLECTION_JOB_TEST_PLAN_REPORT'`
     );
 
     await queryInterface.sequelize.query(
-      `UPDATE "UpdateEvent" SET "type" = 'COLLECTION_JOB' WHERE "type" = 'COLLECTION_JOB_CREATED'`
+      `UPDATE "UpdateEvent" SET "type" = 'COLLECTION_JOB' WHERE "type" = 'COLLECTION_JOB_CREATION'`
     );
 
     await queryInterface.removeColumn('UpdateEvent', 'metadata');

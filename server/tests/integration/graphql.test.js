@@ -310,6 +310,12 @@ describe('graphql', () => {
             description
             timestamp
             type
+            performedBy {
+              id
+              username
+            }
+            entityId
+            metadata
           }
           updateEvents {
             __typename
@@ -317,6 +323,12 @@ describe('graphql', () => {
             description
             timestamp
             type
+            performedBy {
+              id
+              username
+            }
+            entityId
+            metadata
           }
           vendors {
             id

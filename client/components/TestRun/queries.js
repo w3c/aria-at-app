@@ -91,6 +91,11 @@ export const TEST_RUN_PAGE_QUERY = gql`
           ...TestFieldsAll
           renderableContent
         }
+        draftTestPlanRuns {
+          tester {
+            id
+          }
+        }
       }
     }
     me {

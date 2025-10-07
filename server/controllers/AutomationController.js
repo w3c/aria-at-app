@@ -529,7 +529,7 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
       await createEvent({
         values: {
           description: `Test plan report for ${updatedReport.testPlanVersion.title} ${updatedReport.testPlanVersion.versionString} with ${updatedReport.at.name} ${updatedReport.exactAtVersion.name} and ${updatedReport.browser.name} had identical outputs to the previous finalized report, verdicts were copied, and the report was finalized`,
-          type: EVENT_TYPES.COLLECTION_TEST_PLAN_REPORT
+          type: EVENT_TYPES.COLLECTION_JOB_TEST_PLAN_REPORT
         },
         transaction
       });
@@ -550,7 +550,7 @@ const finalizeTestPlanReportIfAllTestsMatchHistoricalResults = async ({
           } is 100% complete with ${differentResponsesCount} different response${
             differentResponsesCount === 1 ? '' : 's'
           }`,
-          type: EVENT_TYPES.COLLECTION_TEST_PLAN_REPORT
+          type: EVENT_TYPES.COLLECTION_JOB_TEST_PLAN_REPORT
         },
         transaction
       });

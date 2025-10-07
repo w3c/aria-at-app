@@ -30,7 +30,7 @@ $$;
 CREATE OR REPLACE FUNCTION get_at_version_id(atId integer, p_name text) RETURNS integer
 LANGUAGE plpgsql
 AS $$
-DECLARE 
+DECLARE
   at_version_id integer;
 BEGIN
   SELECT id INTO at_version_id
@@ -192,7 +192,7 @@ INSERT INTO "CollectionJob" (id, status, "testPlanRunId") VALUES (1, 'QUEUED', 1
 -- Data for Name: UpdateEvent; Type: TABLE DATA; Schema: public; Owner: atr
 --
 
-INSERT INTO "UpdateEvent" (id, "description", "timestamp", "type") VALUES (1, 'Test plan report for Modal Dialog Example run with NVDA 2024.4.1 and Chrome had identical outputs to the historical report, verdicts were copied, and the report was finalized', '2024-09-20 13:57:00', 'TEST_PLAN_REPORT');
+INSERT INTO "UpdateEvent" (id, "description", "timestamp", "type") VALUES (1, 'Test plan report for Modal Dialog Example run with NVDA 2024.4.1 and Chrome had identical outputs to the historical report, verdicts were copied, and the report was finalized', '2024-09-20 13:57:00', 'COLLECTION_JOB_TEST_PLAN_REPORT');
 
 --
 -- Name: UpdateEvent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: atr
