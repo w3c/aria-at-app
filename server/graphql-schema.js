@@ -1053,6 +1053,10 @@ const graphqlSchema = gql`
     """
     initiatedByAutomation: Boolean!
     """
+    Whether this run was explicitly started by the rerun UI
+    """
+    isRerun: Boolean!
+    """
     The CollectionJob related to this testPlanRun
     """
     collectionJob: CollectionJob
@@ -1542,6 +1546,10 @@ const graphqlSchema = gql`
     """
     updateEvent(id: ID!): UpdateEvent
     """
+    Get key metrics
+    """
+    keyMetrics: KeyMetrics!
+    """
     Get audit records
     """
     auditRecords(eventType: String): [AuditRecord]!
@@ -1814,6 +1822,7 @@ const graphqlSchema = gql`
       The CollectionJob to schedule.
       """
       testPlanReportId: ID!
+      isRerun: Boolean
     ): CollectionJob!
     """
     Update a CollectionJob
@@ -1856,6 +1865,16 @@ const graphqlSchema = gql`
   type CreateCollectionJobsFromPreviousVersionResponse {
     collectionJobs: [CollectionJob!]!
     message: String!
+  }
+
+  type KeyMetrics {
+    date: Timestamp!
+    verdictsCount: Int!
+    commandsCount: Int!
+    contributorsCount: Int!
+    verdictsLast90Count: Int!
+    testsCount: Int!
+    suitesCount: Int!
   }
 `;
 

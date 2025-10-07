@@ -5,6 +5,7 @@ const TEST_PLAN_RUN_FIELDS = gql`
     __typename
     id
     initiatedByAutomation
+    isRerun
     tester {
       id
       username

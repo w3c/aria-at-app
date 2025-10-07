@@ -1,18 +1,18 @@
 [
-    {
-        "id": 1,
-        "username": "esmeralda-baggins",
-        "roles": [
-            {
-                "name": "ADMIN"
-            },
-            {
-                "name": "TESTER"
-            }
-        ]
-    },
-    {
-        "id": 2,
-        "username": "tom-proudfeet"
-    }
+  {
+    "id": 1,
+    "username": "esmeralda-baggins",
+    "roles": [
+      {
+        "name": "ADMIN"
+      },
+      {
+        "name": "TESTER"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "username": "tom-proudfeet"
+  }
 ]

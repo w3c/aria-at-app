@@ -199,6 +199,16 @@ describe('graphql', () => {
       gql`
         query {
           __typename
+          keyMetrics {
+            __typename
+            date
+            verdictsCount
+            commandsCount
+            contributorsCount
+            verdictsLast90Count
+            testsCount
+            suitesCount
+          }
           browsers {
             __typename
             id
@@ -626,6 +636,7 @@ describe('graphql', () => {
             __typename
             id
             initiatedByAutomation
+            isRerun
             collectionJob { id }
             testPlanReport {
               id

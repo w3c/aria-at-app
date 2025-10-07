@@ -332,6 +332,7 @@ export const ModalActionPropType = PropTypes.shape({
   className: PropTypes.string,
   testId: PropTypes.string,
   component: PropTypes.elementType,
+  disabled: PropTypes.bool,
   props: PropTypes.object
 });
 

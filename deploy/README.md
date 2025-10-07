@@ -59,11 +59,14 @@ To deploy this project to server:
    - For security, set permissions on the key file, as required by the OS: `chmod 600 ~/.ssh/aria-at-bocoup`.
    - Add it to your keychain with the following command: `ssh-add ~/.ssh/aria-at-bocoup`.
    - Add the following `Host` client configuration to `~/.ssh/config`:
+
      ```
      Host *.w3.internal
        ProxyJump bocoupinfra@ssh-aws.w3.org
      ```
+
      - Note: The RSA key fingerprint for `ssh-aws.w3.org` is `SHA256:Nlyly0XFZebw0/k8yCGUXA+Y03W7WB7CPnXiZZb7XE8`.
+
    - Run `ssh root@bestla.w3.internal` (aria-at-staging.w3.org's server) and `ssh root@fenrir.w3.internal` (aria-at.w3.org's server) to verify that you can connect to the servers.
      - Note: The RSA key fingerprint for `bestla.w3.internal` is `SHA256:F16aX2Wx4e39jbHhqEkeH8iRgY41C3WgxvAgvh7PQZ0`.
      - Note: The RSA key fingerprint for `fenrir.w3.internal` is `SHA256:cF6u/K00P2ELEVbIazVVqqMz5q+Sbh4+Jog/VmXZomg`.
@@ -86,15 +89,21 @@ To deploy this project to server:
    - Run `ansible --version` to verify your ansible is on version 2.16.
 
 1. Execute the following command from the deploy directory:
+
    - Sandbox:
+
    ```
    ansible-playbook provision.yml --inventory inventory/sandbox.yml
    ```
+
    - Staging:
+
    ```
    ansible-playbook provision.yml --inventory inventory/staging.yml
    ```
+
    - Production:
+
    ```
    ansible-playbook provision.yml --inventory inventory/production.yml
    ```

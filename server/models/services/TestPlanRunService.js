@@ -233,7 +233,8 @@ const createTestPlanRun = async ({
     testerUserId,
     testPlanReportId,
     testResults = [],
-    isAutomated = false
+    isAutomated = false,
+    isRerun = false
   },
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
   nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
@@ -270,7 +271,8 @@ const createTestPlanRun = async ({
       testerUserId,
       testPlanReportId,
       testResults,
-      initiatedByAutomation: isAutomated
+      initiatedByAutomation: isAutomated,
+      isRerun
     },
     transaction
   });
@@ -313,7 +315,7 @@ const createTestPlanRun = async ({
  */
 const updateTestPlanRunById = async ({
   id,
-  values: { testerUserId, testResults, isPrimary },
+  values: { testerUserId, testResults, isPrimary, isRerun },
   testPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
   nestedTestPlanRunAttributes = TEST_PLAN_RUN_ATTRIBUTES,
   testPlanReportAttributes = TEST_PLAN_REPORT_ATTRIBUTES,
@@ -326,7 +328,7 @@ const updateTestPlanRunById = async ({
 }) => {
   await ModelService.update(TestPlanRun, {
     where: { id },
-    values: { testResults, testerUserId, isPrimary },
+    values: { testResults, testerUserId, isPrimary, isRerun },
     transaction
   });
   return ModelService.getById(TestPlanRun, {
@@ -426,6 +428,45 @@ const getTestResultsUsingAtVersion = async (atVersionId, { transaction }) => {
   return results;
 };
 
+const getKeyMetrics = async () => {
+  const [[result]] = await sequelize.query(`
+WITH report1 AS (
+    SELECT 
+      COUNT(DISTINCT CONCAT(v."directory", test->>'title')) AS "testsCount",
+      COUNT(DISTINCT v."directory") AS "suitesCount"
+    FROM
+      "TestPlanVersion" v
+      CROSS JOIN LATERAL jsonb_array_elements(v."tests") AS test
+),
+report2 AS (
+  SELECT
+      COUNT(assertions->'passed')::int as "verdictsCount",
+      COUNT(DISTINCT scenarios->>'scenarioId')::int as "commandsCount",
+      COUNT(DISTINCT run."testerUserId")::int as "contributorsCount",
+      SUM(CASE WHEN (DATE(results->>'completedAt') >= CURRENT_DATE - INTERVAL '90 days') THEN 1 ELSE 0 END)::int as "verdictsLast90Count"
+  FROM 
+      "TestPlanRun" run
+      CROSS JOIN LATERAL jsonb_array_elements(run."testResults") AS results
+      CROSS JOIN LATERAL jsonb_array_elements(results->'scenarioResults') AS scenarios
+      CROSS JOIN LATERAL jsonb_array_elements(scenarios->'assertionResults') AS assertions
+      LEFT OUTER JOIN "User" u ON run."testerUserId" = u."id"
+  WHERE
+      assertions->'passed' IS NOT NULL
+      AND assertions->>'passed' <> ''
+      AND NOT u."isBot"
+)
+SELECT
+  (EXTRACT(EPOCH from NOW()) * 1000)::bigint as date,
+  report1.*, report2.*
+  FROM report1, report2
+
+;
+    `);
+  // convert the date to a real "number"
+  result.date = parseInt(result.date, 10);
+  return result;
+};
+
 module.exports = {
   // TestPlanRun
   getTestPlanRunById,
@@ -437,5 +478,6 @@ module.exports = {
   removeTestPlanRunResultsByQuery,
 
   // Custom functions
-  getTestResultsUsingAtVersion
+  getTestResultsUsingAtVersion,
+  getKeyMetrics
 };
