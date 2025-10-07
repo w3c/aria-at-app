@@ -18,6 +18,12 @@ const assertionsAssociation = assertionAttributes => ({
   attributes: assertionAttributes
 });
 
+// Association helper for At
+const atAssociation = atAttributes => ({
+  association: 'at',
+  attributes: atAttributes
+});
+
 /**
  * @param {object} options
  * @param {number} options.id - unique id of the AtBug being queried
@@ -32,7 +38,7 @@ const getAtBugById = async ({
   includeAssertions = false,
   transaction
 }) => {
-  const include = [];
+  const include = [atAssociation(['id', 'name'])];
   if (includeAssertions) {
     include.push(assertionsAssociation([]));
   }
@@ -58,7 +64,7 @@ const getAtBugs = async ({
   includeAssertions = false,
   transaction
 } = {}) => {
-  const include = [];
+  const include = [atAssociation(['id', 'name'])];
   if (includeAssertions) {
     include.push(assertionsAssociation([]));
   }

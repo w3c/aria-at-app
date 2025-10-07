@@ -1,5 +1,8 @@
 const { AuthenticationError } = require('apollo-server');
-const { createAtBug } = require('../models/services/AtBugService');
+const {
+  createAtBug,
+  getAtBugById
+} = require('../models/services/AtBugService');
 
 const createAtBugResolver = async (_, { input }, context) => {
   const { user, transaction } = context;
@@ -10,10 +13,9 @@ const createAtBugResolver = async (_, { input }, context) => {
     throw new AuthenticationError();
   }
 
-  return await createAtBug({
-    values: input,
-    transaction
-  });
+  const created = await createAtBug({ values: input, transaction });
+  // Re-fetch with associations so AtBug.at is present (non-nullable)
+  return await getAtBugById({ id: created.id, transaction });
 };
 
 module.exports = createAtBugResolver;
