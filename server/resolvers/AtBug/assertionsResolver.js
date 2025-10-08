@@ -11,4 +11,3 @@ const assertionsResolver = async ({ id }, _, context) => {
 };
 
 module.exports = assertionsResolver;
-

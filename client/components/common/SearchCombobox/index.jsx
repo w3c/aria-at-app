@@ -17,9 +17,6 @@ const SearchCombobox = ({
   loading,
   initialFocusRef,
   itemRenderer,
-  searchFields,
-  excludeIds = [],
-  maxResults = 20,
   ariaLabel = 'Available items',
   instructions = 'Use arrow keys to navigate results, Enter to select, Escape to close.'
 }) => {
@@ -247,12 +244,8 @@ SearchCombobox.propTypes = {
   loading: PropTypes.bool,
   initialFocusRef: PropTypes.object,
   itemRenderer: PropTypes.func,
-  searchFields: PropTypes.func,
-  excludeIds: PropTypes.arrayOf(PropTypes.string),
-  maxResults: PropTypes.number,
   ariaLabel: PropTypes.string,
   instructions: PropTypes.string
 };
 
 export default SearchCombobox;
-

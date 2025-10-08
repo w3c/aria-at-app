@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useLazyQuery } from '@apollo/client';
 import { useSearchableList } from './useSearchableList';
 import { AT_BUGS_QUERY } from '../components/FailingAssertionsSummary/queries';
@@ -47,4 +47,3 @@ export const useBugSearch = ({ atId, assertion }) => {
     handleFetchBugs
   };
 };
-

@@ -5,4 +5,3 @@ const Assertion = {
 };
 
 module.exports = Assertion;
-

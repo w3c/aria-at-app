@@ -41,4 +41,3 @@ export const useBugCreation = ({ atId, availableBugs }) => {
     checkDuplicateUrl
   };
 };
-

@@ -59,4 +59,3 @@ ConfirmationModal.propTypes = {
 };
 
 export default ConfirmationModal;
-

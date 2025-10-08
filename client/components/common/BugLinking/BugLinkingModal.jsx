@@ -9,7 +9,7 @@ import BugLinkingContent from './BugLinkingContent';
  * Shared bug linking modal component
  * Works with any bug linking context that provides the required interface
  */
-const BugLinkingModal = ({ show, onClose, useBugLinkingContext, title }) => {
+const BugLinkingModal = ({ show, useBugLinkingContext, title }) => {
   const {
     atName,
     showCancelConfirm,
@@ -62,7 +62,6 @@ const BugLinkingModal = ({ show, onClose, useBugLinkingContext, title }) => {
 
 BugLinkingModal.propTypes = {
   show: PropTypes.bool.isRequired,
-  onClose: PropTypes.func.isRequired,
   useBugLinkingContext: PropTypes.func.isRequired,
   title: PropTypes.string
 };
