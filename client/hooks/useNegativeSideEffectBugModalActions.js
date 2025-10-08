@@ -38,36 +38,42 @@ export const useNegativeSideEffectBugModalActions = ({
         );
       }
 
+      let updatedNegativeSideEffect = displayNegativeSideEffect;
+
       // Link new bugs to negative side effect
       for (const bug of pendingChanges.linkedBugs) {
-        await linkAtBugsToNegativeSideEffect({
+        const result = await linkAtBugsToNegativeSideEffect({
           variables: {
             negativeSideEffectId: negativeSideEffect.encodedId,
             atBugIds: [bug.id]
           }
         });
+        // Use the updated data from the mutation result
+        if (result.data?.linkAtBugsToNegativeSideEffect) {
+          updatedNegativeSideEffect = {
+            ...updatedNegativeSideEffect,
+            assertionAtBugs: result.data.linkAtBugsToNegativeSideEffect.atBugs
+          };
+        }
       }
 
       // Unlink bugs from negative side effect
       if (pendingChanges.unlinkedBugs.length > 0) {
-        await unlinkAtBugsFromNegativeSideEffect({
+        const result = await unlinkAtBugsFromNegativeSideEffect({
           variables: {
             negativeSideEffectId: negativeSideEffect.encodedId,
             atBugIds: pendingChanges.unlinkedBugs
           }
         });
+        // Use the updated data from the mutation result
+        if (result.data?.unlinkAtBugsFromNegativeSideEffect) {
+          updatedNegativeSideEffect = {
+            ...updatedNegativeSideEffect,
+            assertionAtBugs:
+              result.data.unlinkAtBugsFromNegativeSideEffect.atBugs
+          };
+        }
       }
-
-      // Create updated negative side effect with new bug links
-      const updatedNegativeSideEffect = {
-        ...displayNegativeSideEffect,
-        assertionAtBugs: [
-          ...displayNegativeSideEffect.assertionAtBugs.filter(
-            bug => !pendingChanges.unlinkedBugs.includes(bug.id)
-          ),
-          ...pendingChanges.linkedBugs
-        ]
-      };
 
       onLinked?.(updatedNegativeSideEffect);
       clearChanges();
@@ -87,7 +93,7 @@ export const useNegativeSideEffectBugModalActions = ({
 
   // Use the generic modal state hook
   const modalState = useModalState({
-    hasChanges,
+    hasChanges: () => hasChanges,
     onSave: handleSave,
     onClose
   });

@@ -16,8 +16,6 @@ const NegativeSideEffectBugLinkingContent = () => {
 
   const {
     atId,
-    searchText,
-    setSearchText,
     bugsLoading,
     availableBugs,
     filteredBugs,
@@ -100,8 +98,10 @@ const NegativeSideEffectBugLinkingContent = () => {
 
           {/* Bug Search */}
           <BugSearchCombobox
-            searchText={searchText}
-            onSearchChange={setSearchText}
+            searchText={useNegativeSideEffectBugLinkingContext().searchText}
+            onSearchChange={
+              useNegativeSideEffectBugLinkingContext().setSearchText
+            }
             filteredBugs={filteredBugs}
             onSelectBug={handleSelectBug}
             onFetchBugs={handleFetchBugs}

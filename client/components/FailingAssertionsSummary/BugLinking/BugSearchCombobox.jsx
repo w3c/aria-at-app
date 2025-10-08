@@ -19,7 +19,7 @@ const BugSearchCombobox = React.memo(
     const bugRenderer = (bug, styles) => (
       <>
         <strong>{bug.title}</strong>
-        {bug.bugId && <span className="text-muted"> (#{bug.bugId})</span>}
+        {bug.bugId && ` #${bug.bugId}`}
         {bug.url && (
           <div className={`small text-truncate ${styles.itemUrl}`}>
             {bug.url}

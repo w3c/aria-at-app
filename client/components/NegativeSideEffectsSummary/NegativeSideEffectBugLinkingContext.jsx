@@ -51,13 +51,16 @@ export const NegativeSideEffectBugLinkingProvider = ({
       availableBugs: bugSearch.availableBugs,
       filteredBugs: bugSearch.filteredBugs,
       searchError: bugSearch.searchError,
+      handleFetchBugs: bugSearch.handleFetchBugs,
+      linkedBugs: bugSearch.linkedBugs,
 
       // Bug linking state
       displayAssertion: pendingChanges.displayAssertion,
-      linkedBugs: pendingChanges.pendingChanges.linkedBugs,
-      unlinkedBugs: pendingChanges.pendingChanges.unlinkedBugs,
+      pendingChanges: pendingChanges.pendingChanges,
+      hasChanges: pendingChanges.hasChanges,
       addLinkedBug: pendingChanges.addLinkedBug,
       addUnlinkedBug: pendingChanges.addUnlinkedBug,
+      clearChanges: pendingChanges.clearChanges,
 
       // Modal state
       modalHasChanges: modalActions.hasChanges,
