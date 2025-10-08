@@ -10,7 +10,8 @@ const BugSearchCombobox = React.memo(
     onSelectBug,
     onFetchBugs,
     loading,
-    initialFocusRef
+    initialFocusRef,
+    atName = 'AT'
   }) => {
     const handleSelectBug = bug => {
       onSelectBug(bug.id);
@@ -31,7 +32,7 @@ const BugSearchCombobox = React.memo(
     return (
       <SearchCombobox
         id="bug-search-combobox"
-        label="AT Bug"
+        label={`${atName} Bug`}
         placeholder="Type to search by title, number, or URL"
         searchText={searchText}
         onSearchChange={onSearchChange}
@@ -41,7 +42,7 @@ const BugSearchCombobox = React.memo(
         loading={loading}
         initialFocusRef={initialFocusRef}
         itemRenderer={bugRenderer}
-        ariaLabel="Available AT bugs"
+        ariaLabel={`Available ${atName} bugs`}
       />
     );
   }
@@ -61,7 +62,8 @@ BugSearchCombobox.propTypes = {
   onSelectBug: PropTypes.func.isRequired,
   onFetchBugs: PropTypes.func.isRequired,
   loading: PropTypes.bool,
-  initialFocusRef: PropTypes.object
+  initialFocusRef: PropTypes.object,
+  atName: PropTypes.string
 };
 
 export default BugSearchCombobox;

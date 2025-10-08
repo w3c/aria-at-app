@@ -8,7 +8,7 @@ import { TestPlanReportPropType } from '../common/proptypes';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import NegativeSideEffectLinkAtBugModal from './NegativeSideEffectBugLinking';
-import ReportATBugModal from '../FailingAssertionsSummary/ReportATBugModal';
+import ReportAtBugModal from '../FailingAssertionsSummary/ReportAtBugModal';
 
 const NegativeSideEffectsSummaryTable = ({
   testPlanReport,
@@ -104,7 +104,7 @@ const NegativeSideEffectsSummaryTable = ({
                           setSelectedNegativeSideEffect(negativeSideEffect)
                         }
                       >
-                        Link AT Bug
+                        Link {atName} Bug
                       </button>
                     </div>
                   )}
@@ -117,7 +117,7 @@ const NegativeSideEffectsSummaryTable = ({
                           setReportNegativeSideEffect(negativeSideEffect)
                         }
                       >
-                        Report AT Bug
+                        Report {atName} Bug
                       </button>
                     </div>
                   )}
@@ -131,6 +131,7 @@ const NegativeSideEffectsSummaryTable = ({
         show={!!selectedNegativeSideEffect}
         onClose={() => setSelectedNegativeSideEffect(null)}
         atId={testPlanReport.at.id}
+        atName={atName}
         negativeSideEffect={selectedNegativeSideEffect}
         onLinked={updatedNegativeSideEffect => {
           setNegativeSideEffectUpdates(prev => ({
@@ -139,7 +140,7 @@ const NegativeSideEffectsSummaryTable = ({
           }));
         }}
       />
-      <ReportATBugModal
+      <ReportAtBugModal
         show={!!reportNegativeSideEffect}
         onClose={() => setReportNegativeSideEffect(null)}
         assertion={reportNegativeSideEffect}

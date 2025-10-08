@@ -122,15 +122,12 @@ const getNegativeSideEffectsByNegativeSideEffectId = async ({
  * @returns {Promise<*>} NegativeSideEffect
  */
 const getNegativeSideEffectByEncodedId = async ({ encodedId, transaction }) => {
-  console.log('DEBUG: getNegativeSideEffectByEncodedId called with:', { encodedId });
-  
   const result = await ModelService.getByQuery(NegativeSideEffect, {
     where: { encodedId },
     attributes: NEGATIVE_SIDE_EFFECT_ATTRIBUTES,
     transaction
   });
-  
-  console.log('DEBUG: getNegativeSideEffectByEncodedId result:', result);
+
   return result;
 };
 

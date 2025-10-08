@@ -17,8 +17,7 @@ export const useBugModalActions = ({
   pendingChanges,
   displayAssertion,
   onLinked,
-  onClose,
-  clearChanges
+  onClose
 }) => {
   const [linkAtBugs] = useMutation(LINK_AT_BUGS);
   const [unlinkAtBugs] = useMutation(UNLINK_AT_BUGS);

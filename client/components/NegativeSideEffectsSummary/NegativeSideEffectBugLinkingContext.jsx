@@ -2,7 +2,7 @@ import React, { createContext, useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useBugSearch } from '../../hooks/useBugSearch';
 import { useBugPendingChanges } from '../../hooks/useBugPendingChanges';
-import { useNegativeSideEffectBugModalActions } from '../../hooks/useNegativeSideEffectBugModalActions';
+import { useBugModalActions } from '../../hooks/useBugModalActions';
 
 const NegativeSideEffectBugLinkingContext = createContext();
 
@@ -13,6 +13,7 @@ const NegativeSideEffectBugLinkingContext = createContext();
 export const NegativeSideEffectBugLinkingProvider = ({
   children,
   atId,
+  atName,
   negativeSideEffect,
   onLinked,
   onClose
@@ -29,13 +30,16 @@ export const NegativeSideEffectBugLinkingProvider = ({
   });
 
   // Modal actions (save, cancel, confirmation)
-  const modalActions = useNegativeSideEffectBugModalActions({
-    negativeSideEffect,
+  const modalActions = useBugModalActions({
+    assertion: {
+      ...negativeSideEffect,
+      isNegativeSideEffect: true,
+      negativeSideEffectId: negativeSideEffect?.encodedId
+    },
     pendingChanges: pendingChanges.pendingChanges,
-    displayNegativeSideEffect: pendingChanges.displayAssertion,
+    displayAssertion: pendingChanges.displayAssertion,
     onLinked,
-    onClose,
-    clearChanges: pendingChanges.clearChanges
+    onClose
   });
 
   // Combine all context values
@@ -43,6 +47,7 @@ export const NegativeSideEffectBugLinkingProvider = ({
     () => ({
       // Configuration
       atId,
+      atName,
 
       // Bug search state
       searchText: bugSearch.searchText,
@@ -70,7 +75,7 @@ export const NegativeSideEffectBugLinkingProvider = ({
       handleConfirmCancel: modalActions.handleConfirmCancel,
       handleCancelCancel: modalActions.handleCancelCancel
     }),
-    [atId, bugSearch, pendingChanges, modalActions]
+    [atId, atName, bugSearch, pendingChanges, modalActions]
   );
 
   return (
@@ -83,6 +88,7 @@ export const NegativeSideEffectBugLinkingProvider = ({
 NegativeSideEffectBugLinkingProvider.propTypes = {
   children: PropTypes.node.isRequired,
   atId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  atName: PropTypes.string,
   negativeSideEffect: PropTypes.object,
   onLinked: PropTypes.func,
   onClose: PropTypes.func.isRequired

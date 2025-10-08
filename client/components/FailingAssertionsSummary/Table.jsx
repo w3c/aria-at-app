@@ -8,7 +8,7 @@ import { TestPlanReportPropType } from '../common/proptypes';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import LinkAtBugModal from './BugLinking';
-import ReportATBugModal from './ReportATBugModal';
+import ReportAtBugModal from './ReportAtBugModal';
 
 const FailingAssertionsSummaryTable = ({
   testPlanReport,
@@ -113,7 +113,7 @@ const FailingAssertionsSummaryTable = ({
                         className="btn btn-primary btn-sm"
                         onClick={() => setSelectedAssertion(assertion)}
                       >
-                        Link AT Bug
+                        Link {atName} Bug
                       </button>
                     </div>
                   )}
@@ -124,7 +124,7 @@ const FailingAssertionsSummaryTable = ({
                         className="btn btn-secondary btn-sm"
                         onClick={() => setReportAssertion(assertion)}
                       >
-                        Report AT Bug
+                        Report {atName} Bug
                       </button>
                     </div>
                   )}
@@ -138,6 +138,7 @@ const FailingAssertionsSummaryTable = ({
         show={!!selectedAssertion}
         onClose={() => setSelectedAssertion(null)}
         atId={testPlanReport.at.id}
+        atName={atName}
         assertion={selectedAssertion}
         onLinked={updatedAssertion => {
           setAssertionUpdates(prev => ({
@@ -146,7 +147,7 @@ const FailingAssertionsSummaryTable = ({
           }));
         }}
       />
-      <ReportATBugModal
+      <ReportAtBugModal
         show={!!reportAssertion}
         onClose={() => setReportAssertion(null)}
         assertion={reportAssertion}

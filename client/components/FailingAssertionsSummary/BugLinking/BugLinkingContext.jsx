@@ -13,6 +13,7 @@ const BugLinkingContext = createContext();
 export const BugLinkingProvider = ({
   children,
   atId,
+  atName,
   assertion,
   onLinked,
   onClose
@@ -32,8 +33,7 @@ export const BugLinkingProvider = ({
     pendingChanges: pendingChanges.pendingChanges,
     displayAssertion: pendingChanges.displayAssertion,
     onLinked,
-    onClose,
-    clearChanges: pendingChanges.clearChanges
+    onClose
   });
 
   // Combine all context values
@@ -41,6 +41,7 @@ export const BugLinkingProvider = ({
     () => ({
       // Configuration
       atId,
+      atName,
 
       // Bug search state
       searchText: bugSearch.searchText,
@@ -67,7 +68,7 @@ export const BugLinkingProvider = ({
       handleConfirmCancel: modalActions.handleConfirmCancel,
       handleCancelCancel: modalActions.handleCancelCancel
     }),
-    [atId, bugSearch, pendingChanges, modalActions]
+    [atId, atName, bugSearch, pendingChanges, modalActions]
   );
 
   return (
@@ -80,6 +81,7 @@ export const BugLinkingProvider = ({
 BugLinkingProvider.propTypes = {
   children: PropTypes.node.isRequired,
   atId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  atName: PropTypes.string,
   assertion: PropTypes.object,
   onLinked: PropTypes.func,
   onClose: PropTypes.func.isRequired

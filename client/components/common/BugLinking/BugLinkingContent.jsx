@@ -1,30 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNegativeSideEffectBugLinkingContext } from './NegativeSideEffectBugLinkingContext';
-import { useBugCreation } from '../../hooks/useBugCreation';
-import AssertionDetails from '../FailingAssertionsSummary/BugLinking/AssertionDetails';
-import LinkedBugsList from '../FailingAssertionsSummary/BugLinking/LinkedBugsList';
-import BugSearchCombobox from '../FailingAssertionsSummary/BugLinking/BugSearchCombobox';
-import CreateBugForm from '../FailingAssertionsSummary/BugLinking/CreateBugForm';
+import PropTypes from 'prop-types';
+import { useBugCreation } from '../../../hooks/useBugCreation';
+import AssertionDetails from '../../FailingAssertionsSummary/BugLinking/AssertionDetails';
+import LinkedBugsList from '../../FailingAssertionsSummary/BugLinking/LinkedBugsList';
+import BugSearchCombobox from '../../FailingAssertionsSummary/BugLinking/BugSearchCombobox';
+import CreateBugForm from '../../FailingAssertionsSummary/BugLinking/CreateBugForm';
 
 /**
- * Content component for negative side effect bug linking modal
- * Uses the existing bug linking context but handles negative side effect specific logic
+ * Shared content component for bug linking modal
+ * Handles mode switching between search and creation
+ * Works with any bug linking context that provides the required interface
  */
-const NegativeSideEffectBugLinkingContent = () => {
+const BugLinkingContent = ({ useBugLinkingContext }) => {
   const [mode, setMode] = useState('select'); // 'select' | 'create'
   const initialFocusRef = useRef();
 
   const {
     atId,
-    bugsLoading,
+    atName,
+    searchText,
+    setSearchText,
+    displayAssertion,
+    linkedBugs,
     availableBugs,
     filteredBugs,
+    bugsLoading,
     handleFetchBugs,
-    displayAssertion: displayNegativeSideEffect,
-    linkedBugs,
     addLinkedBug,
     addUnlinkedBug
-  } = useNegativeSideEffectBugLinkingContext();
+  } = useBugLinkingContext();
 
   const { creating, createError, handleCreateBug, checkDuplicateUrl } =
     useBugCreation({ atId, availableBugs });
@@ -66,9 +70,9 @@ const NegativeSideEffectBugLinkingContent = () => {
 
   return (
     <div>
-      {/* Negative Side Effect Details */}
+      {/* Assertion Details */}
       <div className="mb-3">
-        <AssertionDetails assertion={displayNegativeSideEffect} />
+        <AssertionDetails assertion={displayAssertion} />
       </div>
 
       {mode === 'select' ? (
@@ -85,6 +89,18 @@ const NegativeSideEffectBugLinkingContent = () => {
             </div>
           )}
 
+          {/* Bug Search */}
+          <BugSearchCombobox
+            searchText={searchText}
+            onSearchChange={setSearchText}
+            filteredBugs={filteredBugs}
+            onSelectBug={handleSelectBug}
+            onFetchBugs={handleFetchBugs}
+            loading={bugsLoading}
+            initialFocusRef={initialFocusRef}
+            atName={atName}
+          />
+
           {/* Add New Bug Button */}
           <div className="mb-3">
             <button
@@ -92,22 +108,9 @@ const NegativeSideEffectBugLinkingContent = () => {
               className="btn btn-outline-secondary btn-sm"
               onClick={() => setMode('create')}
             >
-              + Add a New AT Bug
+              + Add a New {atName} Bug
             </button>
           </div>
-
-          {/* Bug Search */}
-          <BugSearchCombobox
-            searchText={useNegativeSideEffectBugLinkingContext().searchText}
-            onSearchChange={
-              useNegativeSideEffectBugLinkingContext().setSearchText
-            }
-            filteredBugs={filteredBugs}
-            onSelectBug={handleSelectBug}
-            onFetchBugs={handleFetchBugs}
-            loading={bugsLoading}
-            initialFocusRef={initialFocusRef}
-          />
         </>
       ) : (
         <>
@@ -136,4 +139,8 @@ const NegativeSideEffectBugLinkingContent = () => {
   );
 };
 
-export default NegativeSideEffectBugLinkingContent;
+BugLinkingContent.propTypes = {
+  useBugLinkingContext: PropTypes.func.isRequired
+};
+
+export default BugLinkingContent;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import BasicModal from '../common/BasicModal';
 import AssertionDetails from './BugLinking/AssertionDetails';
@@ -10,35 +10,9 @@ const ReportATBugModal = ({
   testPlanReport,
   testPlanVersion
 }) => {
-  const [githubUrl, setGithubUrl] = useState('');
-  const [isValidGithubUrl, setIsValidGithubUrl] = useState(true);
-
-  const validateGithubUrl = url => {
-    const githubPattern = /^https:\/\/github\.com\/[^/]+\/[^/]+$/;
-    return githubPattern.test(url.trim());
-  };
-
-  const handleGithubUrlChange = e => {
-    const url = e.target.value;
-    setGithubUrl(url);
-    setIsValidGithubUrl(validateGithubUrl(url));
-  };
-
   const handleReportBug = () => {
-    if (!githubUrl || !isValidGithubUrl) {
-      return;
-    }
-
-    // Extract repository info from GitHub URL
-    const repoMatch = githubUrl.match(
-      /https:\/\/github\.com\/([^/]+)\/([^/]+)/
-    );
-    if (!repoMatch) {
-      return;
-    }
-
-    const [, owner, repo] = repoMatch;
-    const vendorIssuesUrl = `https://github.com/${owner}/${repo}`;
+    // Always use the aria-at repository under w3c organization
+    const vendorIssuesUrl = 'https://github.com/w3c/aria-at';
 
     const title = `ARIA-AT Test Failure: ${assertion.testTitle} (${testPlanVersion?.title})`;
 
@@ -80,6 +54,8 @@ const ReportATBugModal = ({
       `<!-- Describe what you expected to happen -->\n\n` +
       `## Actual Behavior\n\n` +
       `<!-- Describe what actually happened -->\n\n` +
+      `## External Link to AT Bug\n\n` +
+      `<!-- External link to a related bug being tracked by the At Vendor -->` +
       `## Additional Context\n\n` +
       `<!-- Add any other context about the problem here -->\n\n` +
       `---\n\n` +
@@ -98,36 +74,11 @@ const ReportATBugModal = ({
       <AssertionDetails assertion={assertion} />
 
       <div className="mb-3">
-        <h4>Report AT Bug</h4>
+        <h4>Report {testPlanReport.at.name} Bug</h4>
         <p>
-          This will create a GitHub issue in the vendor&apos;s repository with
-          context about this failing assertion from the ARIA-AT test suite.
+          This will create a GitHub issue in the ARIA-AT repository with context
+          about this failing assertion from the ARIA-AT test suite.
         </p>
-      </div>
-
-      <div className="mb-3">
-        <label htmlFor="github-url" className="form-label">
-          Vendor GitHub Repository <span className="text-danger">*</span>
-        </label>
-        <input
-          id="github-url"
-          type="url"
-          className={`form-control ${!isValidGithubUrl ? 'is-invalid' : ''}`}
-          value={githubUrl}
-          onChange={handleGithubUrlChange}
-          placeholder="https://github.com/vendor/repo"
-          aria-describedby="github-url-help"
-          required
-        />
-        <div id="github-url-help" className="form-text">
-          Enter the GitHub repository where the issue should be created (e.g.,
-          NVDA, JAWS, VoiceOver)
-        </div>
-        {!isValidGithubUrl && (
-          <div className="invalid-feedback">
-            Please enter a valid GitHub repository URL
-          </div>
-        )}
       </div>
     </div>
   );
@@ -137,7 +88,7 @@ const ReportATBugModal = ({
       show={show}
       centered
       size="lg"
-      title="Report AT Bug"
+      title={`Report ${testPlanReport.at.name} Bug`}
       content={modalContent}
       handleClose={onClose}
       useOnHide
@@ -145,8 +96,7 @@ const ReportATBugModal = ({
         {
           label: 'Create GitHub Issue',
           onClick: handleReportBug,
-          className: 'btn-primary',
-          disabled: !githubUrl || !isValidGithubUrl
+          className: 'btn-primary'
         }
       ]}
     />
