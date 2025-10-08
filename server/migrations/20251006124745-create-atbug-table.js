@@ -54,11 +54,16 @@ module.exports = {
         name: 'atbug_at_id_idx'
       });
 
-      // Add composite unique index on (atId, bugId) to prevent duplicate bug IDs per AT
-      await queryInterface.addIndex('AtBug', ['atId', 'bugId'], {
-        name: 'atbug_at_id_bug_id_unique_idx',
-        unique: true
-      });
+      // Add composite unique index on (atId, bugId, url, title) to prevent fully duplicate entries
+      // Note: bugId alone can be duplicated as it's just for display purposes
+      await queryInterface.addIndex(
+        'AtBug',
+        ['atId', 'bugId', 'url', 'title'],
+        {
+          name: 'atbug_at_id_bug_id_url_title_unique_idx',
+          unique: true
+        }
+      );
     }
   },
 

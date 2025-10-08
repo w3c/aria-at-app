@@ -15,6 +15,10 @@ const ASSERTION_RESULT_FIELDS = gql`
         title
         bugId
         url
+        at {
+          id
+          name
+        }
       }
     }
   }

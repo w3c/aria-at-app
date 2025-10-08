@@ -9,8 +9,7 @@ const CreateBugForm = ({
   onCancel,
   creating,
   error,
-  checkDuplicateUrl,
-  checkDuplicateBugId
+  checkDuplicateUrl
 }) => {
   const [formData, setFormData] = useState({
     title: '',
@@ -23,12 +22,7 @@ const CreateBugForm = ({
     [checkDuplicateUrl, formData.url]
   );
 
-  const duplicateBugId = useMemo(
-    () => checkDuplicateBugId?.(formData.bugId),
-    [checkDuplicateBugId, formData.bugId]
-  );
-
-  const hasDuplicate = duplicateUrl || duplicateBugId;
+  const hasDuplicate = !!duplicateUrl;
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -74,26 +68,11 @@ const CreateBugForm = ({
             id="new-bug-id"
             name="bugId"
             type="number"
-            inputMode="numeric"
-            pattern="[0-9]*"
-            className={`form-control${duplicateBugId ? ' is-invalid' : ''}`}
+            className="form-control"
             value={formData.bugId}
             onChange={handleChange}
             required
-            aria-invalid={!!duplicateBugId}
           />
-          {duplicateBugId && (
-            <div className="invalid-feedback">
-              Bug #{duplicateBugId.bugId} already exists:{' '}
-              <a
-                href={duplicateBugId.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {duplicateBugId.title}
-              </a>
-            </div>
-          )}
         </div>
 
         <div className="mb-2">
@@ -153,8 +132,7 @@ CreateBugForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
   creating: PropTypes.bool,
   error: PropTypes.object,
-  checkDuplicateUrl: PropTypes.func,
-  checkDuplicateBugId: PropTypes.func
+  checkDuplicateUrl: PropTypes.func
 };
 
 export default CreateBugForm;

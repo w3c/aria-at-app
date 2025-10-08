@@ -26,7 +26,12 @@ const atBugsResolver = async (parent, _, context) => {
   if (!numericId) return [];
 
   const assertion = await Assertion.findByPk(numericId, {
-    include: [{ association: 'atBugs' }],
+    include: [
+      {
+        association: 'atBugs',
+        include: [{ association: 'at' }]
+      }
+    ],
     transaction
   });
 

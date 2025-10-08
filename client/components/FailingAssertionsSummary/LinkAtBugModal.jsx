@@ -67,13 +67,8 @@ const LinkAtBugModal = ({ show, onClose, atId, assertion, onLinked }) => {
     onUpdate: handleBugUpdate
   });
 
-  const {
-    creating,
-    createError,
-    handleCreateBug,
-    checkDuplicateUrl,
-    checkDuplicateBugId
-  } = useBugCreation({ atId, availableBugs });
+  const { creating, createError, handleCreateBug, checkDuplicateUrl } =
+    useBugCreation({ atId, availableBugs });
 
   useEffect(() => {
     if (show && mode === 'select') {
@@ -156,7 +151,6 @@ const LinkAtBugModal = ({ show, onClose, atId, assertion, onLinked }) => {
           creating={creating}
           error={createError}
           checkDuplicateUrl={checkDuplicateUrl}
-          checkDuplicateBugId={checkDuplicateBugId}
         />
       )}
     </div>

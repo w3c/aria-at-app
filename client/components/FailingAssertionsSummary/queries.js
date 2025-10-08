@@ -39,6 +39,10 @@ export const LINK_AT_BUGS = gql`
         title
         bugId
         url
+        at {
+          id
+          name
+        }
       }
     }
   }
@@ -53,6 +57,10 @@ export const UNLINK_AT_BUGS = gql`
         title
         bugId
         url
+        at {
+          id
+          name
+        }
       }
     }
   }

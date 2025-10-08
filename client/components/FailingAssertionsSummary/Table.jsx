@@ -67,7 +67,7 @@ const FailingAssertionsSummaryTable = ({
             <th>Assertion Priority</th>
             <th>Assertion</th>
             <th>{atName} Response</th>
-            <th>AT Bugs</th>
+            <th>Bug Reports</th>
           </tr>
         </thead>
         <tbody>
@@ -83,19 +83,22 @@ const FailingAssertionsSummaryTable = ({
               <td>{assertion.assertionText}</td>
               <td>{assertion.output}</td>
               <td>
-                {assertion.assertionAtBugs && assertion.assertionAtBugs.length
-                  ? assertion.assertionAtBugs.map(bug => (
-                      <div key={bug.id}>
-                        <a
-                          href={bug.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {bug.title || `Issue ${bug.bugId}`}
-                        </a>
-                      </div>
-                    ))
-                  : null}
+                <ul className="mb-2">
+                  {assertion.assertionAtBugs && assertion.assertionAtBugs.length
+                    ? assertion.assertionAtBugs.map(bug => (
+                        <li key={bug.id}>
+                          <a
+                            href={bug.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {bug.at?.name && `${bug.at.name}#`}
+                            {bug.bugId}: {bug.title}
+                          </a>
+                        </li>
+                      ))
+                    : 'None'}
+                </ul>
                 {canEdit && (
                   <div>
                     <button

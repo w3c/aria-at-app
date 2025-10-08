@@ -18,15 +18,6 @@ export const useBugCreation = ({ atId, availableBugs }) => {
     [availableBugs]
   );
 
-  // Check if a bug with the given bugId already exists
-  const checkDuplicateBugId = useCallback(
-    bugId => {
-      if (!bugId) return null;
-      return availableBugs.find(bug => bug.bugId === String(bugId));
-    },
-    [availableBugs]
-  );
-
   const handleCreateBug = useCallback(
     async ({ title, bugId, url }) => {
       const res = await createAtBug({
@@ -44,7 +35,6 @@ export const useBugCreation = ({ atId, availableBugs }) => {
     creating,
     createError,
     handleCreateBug,
-    checkDuplicateUrl,
-    checkDuplicateBugId
+    checkDuplicateUrl
   };
 };
