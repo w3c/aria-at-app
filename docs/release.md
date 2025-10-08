@@ -10,6 +10,7 @@
 To facilitate CHANGELOG generation, automatic version bumps (using [SEMVER](https://semver.org) - X.Y.Z) and version tagging, commit messages MUST follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) practice, which is used in combination with the GitHub Workflow Action, [TriPSs/conventional-changelog-action](https://github.com/TriPSs/conventional-changelog-action).
 
 What this means is commits intended to automatically update the [CHANGELOG.md](https://github.com/w3c/aria-at-app/blob/development/CHANGELOG.md) and bump the version must be written in a specific format:
+
 ```
 <type>[optional scope]: <description>
 
@@ -21,6 +22,7 @@ What this means is commits intended to automatically update the [CHANGELOG.md](h
 Additional examples are available [here](https://www.conventionalcommits.org/en/v1.0.0/#examples).
 
 Generally, commits in the following format will be sufficient:
+
 - `fix: <description>` will increment **PATCH** in X.Y.**Z**
 - `feat: <description>` will increment **MINOR** in X.**Y**.Z
 - `BREAKING CHANGE: OR '!' after any type/scope, eg. feat!: <description>` will increment **MAJOR** in **X**.Y.Z

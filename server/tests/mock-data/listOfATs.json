@@ -1,12 +1,12 @@
 {
-    "atsDB": [
-        {
-            "id": 0,
-            "name": "NVDA"
-        },
-        {
-            "id": 1,
-            "name": "JAWS"
-        }
-    ]
+  "atsDB": [
+    {
+      "id": 0,
+      "name": "NVDA"
+    },
+    {
+      "id": 1,
+      "name": "JAWS"
+    }
+  ]
 }
