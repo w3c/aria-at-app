@@ -1151,7 +1151,7 @@ const TestRun = () => {
                 />
               </li>
             )}
-          {isAdmin && !!testPlanRunId && (
+          {!(!isSignedIn || isReadOnly) && !!testPlanRunId && (
             <li>
               <OptionButton
                 text="Delete Run"
