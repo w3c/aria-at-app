@@ -204,6 +204,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
         <NegativeSideEffectsSummaryTable
           testPlanReport={testPlanReport}
           atName={testPlanReport.at.name}
+          testPlanVersion={testPlanVersion}
           getLinkUrl={assertion =>
             `/report/${testPlanVersion.id}/targets/${testPlanReport.id}#result-${assertion.testResultId}`
           }

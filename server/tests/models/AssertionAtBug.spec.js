@@ -19,3 +19,4 @@ describe('AssertionAtBugModel', () => {
     ['assertionId', 'atBugId'].forEach(checkPropertyExists(modelInstance));
   });
 });
+

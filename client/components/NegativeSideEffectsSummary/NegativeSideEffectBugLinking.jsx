@@ -1,10 +1,13 @@
 import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import BasicModal from '../../common/BasicModal';
-import ConfirmationModal from '../../common/ConfirmationModal';
-import BugLinkingErrorBoundary from './BugLinkingErrorBoundary';
-import { BugLinkingProvider, useBugLinkingContext } from './BugLinkingContext';
-import BugLinkingContent from './BugLinkingContent';
+import BasicModal from '../common/BasicModal';
+import ConfirmationModal from '../common/ConfirmationModal';
+import BugLinkingErrorBoundary from '../FailingAssertionsSummary/BugLinking/BugLinkingErrorBoundary';
+import {
+  NegativeSideEffectBugLinkingProvider,
+  useNegativeSideEffectBugLinkingContext
+} from './NegativeSideEffectBugLinkingContext';
+import NegativeSideEffectBugLinkingContent from './NegativeSideEffectBugLinkingContent';
 
 /**
  * Inner component that uses the context
@@ -19,7 +22,7 @@ const LinkAtBugModalInner = ({ show, onClose }) => {
     handleCancel,
     handleConfirmCancel,
     handleCancelCancel
-  } = useBugLinkingContext();
+  } = useNegativeSideEffectBugLinkingContext();
 
   return (
     <>
@@ -27,10 +30,10 @@ const LinkAtBugModalInner = ({ show, onClose }) => {
         show={show}
         centered
         size="lg"
-        title="Link AT Bug to Failing Assertion"
+        title="Link AT Bug to Negative Side Effect"
         content={
           <BugLinkingErrorBoundary>
-            <BugLinkingContent />
+            <NegativeSideEffectBugLinkingContent />
           </BugLinkingErrorBoundary>
         }
         handleClose={handleCancel}
@@ -68,29 +71,34 @@ LinkAtBugModalInner.propTypes = {
 };
 
 /**
- * Main LinkAtBugModal component
+ * Main LinkAtBugModal component for negative side effects
  * Provides context and renders the modal
  */
-const LinkAtBugModal = ({ show, onClose, atId, assertion, onLinked }) => {
+const NegativeSideEffectLinkAtBugModal = ({
+  show,
+  onClose,
+  atId,
+  negativeSideEffect,
+  onLinked
+}) => {
   return (
-    <BugLinkingProvider
+    <NegativeSideEffectBugLinkingProvider
       atId={atId}
-      assertion={assertion}
+      negativeSideEffect={negativeSideEffect}
       onLinked={onLinked}
       onClose={onClose}
     >
       <LinkAtBugModalInner show={show} onClose={onClose} />
-    </BugLinkingProvider>
+    </NegativeSideEffectBugLinkingProvider>
   );
 };
 
-LinkAtBugModal.propTypes = {
+NegativeSideEffectLinkAtBugModal.propTypes = {
   show: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   atId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  assertion: PropTypes.object,
+  negativeSideEffect: PropTypes.object,
   onLinked: PropTypes.func
 };
 
-export default LinkAtBugModal;
-
+export default NegativeSideEffectLinkAtBugModal;

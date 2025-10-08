@@ -746,7 +746,7 @@ const graphqlSchema = gql`
     """
     The assistive technology this bug is associated with.
     """
-    at: At!
+    at: At
     """
     All assertions linked to this bug.
     """
@@ -757,6 +757,65 @@ const graphqlSchema = gql`
     createdAt: Timestamp!
     """
     The time this bug record was last updated.
+    """
+    updatedAt: Timestamp!
+  }
+
+  """
+  Represents a negative side effect record that occurred during testing and may be
+  associated with AtBugs for tracking purposes.
+  """
+  type NegativeSideEffectRecord {
+    """
+    Unique identifier for the negative side effect record.
+    """
+    id: ID!
+    """
+    The test plan run this negative side effect belongs to.
+    """
+    testPlanRunId: ID!
+    """
+    The test result ID from TestPlanRun.testResults JSONB.
+    """
+    testResultId: String!
+    """
+    The scenario result ID from TestPlanRun.testResults JSONB.
+    """
+    scenarioResultId: String!
+    """
+    The negative side effect ID from negativeSideEffects.json.
+    """
+    negativeSideEffectId: String!
+    """
+    The impact level (SEVERE, MODERATE, etc.).
+    """
+    impact: String!
+    """
+    Additional details provided by the tester.
+    """
+    details: String
+    """
+    Whether a highlight was required for this negative side effect.
+    """
+    highlightRequired: Boolean
+    """
+    The encoded negative side effect ID (for backward compatibility).
+    """
+    encodedId: String!
+    """
+    Human-readable sentence describing the failure (from negativeSideEffects.json).
+    """
+    text: String!
+    """
+    AT bugs linked to this negative side effect.
+    """
+    atBugs: [AtBug!]!
+    """
+    When this negative side effect was created.
+    """
+    createdAt: Timestamp!
+    """
+    When this negative side effect was last updated.
     """
     updatedAt: Timestamp!
   }
@@ -905,7 +964,7 @@ const graphqlSchema = gql`
     as a failure for any scenario, even when the assertions otherwise pass.
     Submitted test results require this field to be filled in.
     """
-    negativeSideEffects: [NegativeSideEffect]
+    negativeSideEffects: [NegativeSideEffectRecord]
     match: ScenarioResultMatch
   }
 
@@ -1925,6 +1984,20 @@ const graphqlSchema = gql`
     Unlink one or more AT bugs from an assertion.
     """
     unlinkAtBugsFromAssertion(assertionId: ID!, atBugIds: [ID]!): Assertion!
+    """
+    Link one or more AT bugs to a negative side effect.
+    """
+    linkAtBugsToNegativeSideEffect(
+      negativeSideEffectId: ID!
+      atBugIds: [ID]!
+    ): NegativeSideEffectRecord!
+    """
+    Unlink one or more AT bugs from a negative side effect.
+    """
+    unlinkAtBugsFromNegativeSideEffect(
+      negativeSideEffectId: ID!
+      atBugIds: [ID]!
+    ): NegativeSideEffectRecord!
   }
 
   type CreateCollectionJobsFromPreviousVersionResponse {

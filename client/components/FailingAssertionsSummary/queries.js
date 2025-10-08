@@ -65,3 +65,51 @@ export const UNLINK_AT_BUGS = gql`
     }
   }
 `;
+
+export const LINK_AT_BUGS_TO_NEGATIVE_SIDE_EFFECT = gql`
+  mutation LinkAtBugsToNegativeSideEffect(
+    $negativeSideEffectId: ID!
+    $atBugIds: [ID]!
+  ) {
+    linkAtBugsToNegativeSideEffect(
+      negativeSideEffectId: $negativeSideEffectId
+      atBugIds: $atBugIds
+    ) {
+      id
+      atBugs {
+        id
+        title
+        bugId
+        url
+        at {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+export const UNLINK_AT_BUGS_FROM_NEGATIVE_SIDE_EFFECT = gql`
+  mutation UnlinkAtBugsFromNegativeSideEffect(
+    $negativeSideEffectId: ID!
+    $atBugIds: [ID]!
+  ) {
+    unlinkAtBugsFromNegativeSideEffect(
+      negativeSideEffectId: $negativeSideEffectId
+      atBugIds: $atBugIds
+    ) {
+      id
+      atBugs {
+        id
+        title
+        bugId
+        url
+        at {
+          id
+          name
+        }
+      }
+    }
+  }
+`;

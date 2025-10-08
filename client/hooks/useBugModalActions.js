@@ -3,7 +3,9 @@ import { useMutation } from '@apollo/client';
 import { useModalState } from './useModalState';
 import {
   LINK_AT_BUGS,
-  UNLINK_AT_BUGS
+  UNLINK_AT_BUGS,
+  LINK_AT_BUGS_TO_NEGATIVE_SIDE_EFFECT,
+  UNLINK_AT_BUGS_FROM_NEGATIVE_SIDE_EFFECT
 } from '../components/FailingAssertionsSummary/queries';
 
 /**
@@ -20,6 +22,12 @@ export const useBugModalActions = ({
 }) => {
   const [linkAtBugs] = useMutation(LINK_AT_BUGS);
   const [unlinkAtBugs] = useMutation(UNLINK_AT_BUGS);
+  const [linkAtBugsToNegativeSideEffect] = useMutation(
+    LINK_AT_BUGS_TO_NEGATIVE_SIDE_EFFECT
+  );
+  const [unlinkAtBugsFromNegativeSideEffect] = useMutation(
+    UNLINK_AT_BUGS_FROM_NEGATIVE_SIDE_EFFECT
+  );
 
   const hasChanges =
     pendingChanges.linkedBugs.length > 0 ||
@@ -28,25 +36,59 @@ export const useBugModalActions = ({
   // Save changes
   const handleSave = useCallback(async () => {
     try {
-      if (!assertion?.assertionId) {
-        throw new Error('Assertion ID is missing from assertion object');
-      }
+      // Check if this is a negative side effect
+      if (assertion?.isNegativeSideEffect) {
+        if (!assertion?.negativeSideEffectId) {
+          throw new Error(
+            'Negative side effect ID is missing from assertion object'
+          );
+        }
 
-      // Link new bugs
-      for (const bug of pendingChanges.linkedBugs) {
-        await linkAtBugs({
-          variables: { assertionId: assertion.assertionId, atBugIds: [bug.id] }
-        });
-      }
+        // Link new bugs to negative side effect
 
-      // Unlink removed bugs
-      if (pendingChanges.unlinkedBugs.length > 0) {
-        await unlinkAtBugs({
-          variables: {
-            assertionId: assertion.assertionId,
-            atBugIds: pendingChanges.unlinkedBugs
-          }
-        });
+        for (const bug of pendingChanges.linkedBugs) {
+          await linkAtBugsToNegativeSideEffect({
+            variables: {
+              negativeSideEffectId: assertion.negativeSideEffectId,
+              atBugIds: [bug.id]
+            }
+          });
+        }
+
+        // Unlink removed bugs from negative side effect
+        if (pendingChanges.unlinkedBugs.length > 0) {
+          await unlinkAtBugsFromNegativeSideEffect({
+            variables: {
+              negativeSideEffectId: assertion.negativeSideEffectId,
+              atBugIds: pendingChanges.unlinkedBugs
+            }
+          });
+        }
+      } else {
+        // Regular assertion handling
+        if (!assertion?.assertionId) {
+          throw new Error('Assertion ID is missing from assertion object');
+        }
+
+        // Link new bugs
+        for (const bug of pendingChanges.linkedBugs) {
+          await linkAtBugs({
+            variables: {
+              assertionId: assertion.assertionId,
+              atBugIds: [bug.id]
+            }
+          });
+        }
+
+        // Unlink removed bugs
+        if (pendingChanges.unlinkedBugs.length > 0) {
+          await unlinkAtBugs({
+            variables: {
+              assertionId: assertion.assertionId,
+              atBugIds: pendingChanges.unlinkedBugs
+            }
+          });
+        }
       }
 
       // Notify parent of the update
@@ -60,6 +102,8 @@ export const useBugModalActions = ({
   }, [
     linkAtBugs,
     unlinkAtBugs,
+    linkAtBugsToNegativeSideEffect,
+    unlinkAtBugsFromNegativeSideEffect,
     assertion,
     pendingChanges,
     displayAssertion,

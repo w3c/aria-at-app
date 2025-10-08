@@ -19,3 +19,4 @@ const deleteAtBugResolver = async (_, { id }, context) => {
 };
 
 module.exports = deleteAtBugResolver;
+

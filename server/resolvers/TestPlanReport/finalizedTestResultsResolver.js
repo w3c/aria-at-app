@@ -1,28 +1,36 @@
 const testResultsResolver = require('../TestPlanRun/testResultsResolver');
+const { getTestPlanRuns } = require('../../models/services/TestPlanRunService');
 
 const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
-  if (!testPlanReport.testPlanRuns.length) {
+  const { transaction } = context;
+
+  // Fetch testPlanRuns for this report
+  const testPlanRuns = await getTestPlanRuns({
+    where: { testPlanReportId: testPlanReport.id },
+    transaction
+  });
+
+  if (!testPlanRuns.length) {
     return null;
   }
 
   // Return the primary test plan run, otherwise pick the first TestPlanRun found.
   const testPlanRun =
-    testPlanReport.testPlanRuns.find(({ isPrimary }) => isPrimary) ||
-    testPlanReport.testPlanRuns.find(testPlanRun =>
+    testPlanRuns.find(({ isPrimary }) => isPrimary) ||
+    testPlanRuns.find(testPlanRun =>
       testPlanRun.testResults?.some(testResult => !!testResult.completedAt)
     ) ||
-    testPlanReport.testPlanRuns[0];
+    testPlanRuns[0];
 
-  return testResultsResolver(
-    {
-      testPlanReport,
-      testResults: testPlanRun.testResults.filter(
-        testResult => !!testResult.completedAt
-      )
-    },
-    null,
-    context
-  );
+  const testPlanRunForResolver = {
+    ...testPlanRun.dataValues,
+    testPlanReport,
+    testResults: testPlanRun.testResults.filter(
+      testResult => !!testResult.completedAt
+    )
+  };
+
+  return testResultsResolver(testPlanRunForResolver, null, context);
 };
 
 module.exports = finalizedTestResultsResolver;

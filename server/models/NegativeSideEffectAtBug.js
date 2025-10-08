@@ -1,15 +1,15 @@
-const MODEL_NAME = 'AssertionAtBug';
+const MODEL_NAME = 'NegativeSideEffectAtBug';
 
 module.exports = function (sequelize, DataTypes) {
   return sequelize.define(
     MODEL_NAME,
     {
-      assertionId: {
+      negativeSideEffectId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         primaryKey: true,
         references: {
-          model: 'Assertion',
+          model: 'NegativeSideEffect',
           key: 'id'
         }
       },

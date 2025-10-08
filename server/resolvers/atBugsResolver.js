@@ -19,3 +19,4 @@ const atBugsResolver = async (_, { atId }, context) => {
 };
 
 module.exports = atBugsResolver;
+

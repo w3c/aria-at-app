@@ -1,6 +1,9 @@
 const negativeSideEffectsJson = require('../../resources/negativeSideEffects.json');
 const getTests = require('./TestsService');
 const deepCustomMerge = require('../../util/deepCustomMerge');
+const {
+  getNegativeSideEffectsByTestPlanRunId
+} = require('./NegativeSideEffectService');
 
 /**
  * Returns an array of test results with nested test, atVersion, browserVersion,
@@ -22,6 +25,43 @@ const getTestResults = async ({ testPlanRun, context }) => {
   const ats = await atLoader.getAll({ transaction });
   const browsers = await browserLoader.getAll({ transaction });
 
+  // Try to get negative side effects from the database first
+  let negativeSideEffectsFromDb = [];
+  try {
+    // Only attempt database lookup if testPlanRunId is valid
+    if (testPlanRun.id && typeof testPlanRun.id === 'number') {
+      negativeSideEffectsFromDb = await getNegativeSideEffectsByTestPlanRunId({
+        testPlanRunId: testPlanRun.id,
+        transaction
+      });
+    }
+  } catch (error) {
+    // Fall back to JSONB if database lookup fails
+    console.warn(
+      'Failed to fetch negative side effects from database, falling back to JSONB:',
+      error.message
+    );
+  }
+
+  // Create a map of negative side effects by scenario result ID for efficient lookup
+  const negativeSideEffectsByScenarioId = {};
+  negativeSideEffectsFromDb.forEach(nse => {
+    if (!negativeSideEffectsByScenarioId[nse.scenarioResultId]) {
+      negativeSideEffectsByScenarioId[nse.scenarioResultId] = [];
+    }
+    negativeSideEffectsByScenarioId[nse.scenarioResultId].push({
+      id: nse.negativeSideEffectId,
+      impact: nse.impact,
+      details: nse.details,
+      highlightRequired: nse.highlightRequired,
+      encodedId: nse.encodedId,
+      text: negativeSideEffectsJson.find(
+        each => each.id === nse.negativeSideEffectId
+      )?.text,
+      atBugs: nse.atBugs || []
+    });
+  });
+
   // Populate nested test, atVersion, browserVersion, scenario, assertion and
   // negativeSideEffect fields
   return testPlanRun.testResults.map(testResult => {
@@ -35,28 +75,39 @@ const getTestResults = async ({ testPlanRun, context }) => {
       browserVersion: browsers
         .find(browser => browser.id === testPlanReport.browser.id)
         .browserVersions.find(each => each.id == testResult.browserVersionId),
-      scenarioResults: testResult.scenarioResults.map(scenarioResult => ({
-        ...scenarioResult,
-        scenario: test.scenarios.find(
-          each => each.id === scenarioResult.scenarioId
-        ),
-        assertionResults: scenarioResult.assertionResults.map(
-          assertionResult => ({
-            ...assertionResult,
-            assertion: test.assertions.find(
-              each => each.id === assertionResult.assertionId
-            )
-          })
-        ),
-        negativeSideEffects: scenarioResult.negativeSideEffects?.map(
-          negativeSideEffect => ({
-            ...negativeSideEffect,
-            text: negativeSideEffectsJson.find(
-              each => each.id === negativeSideEffect.id
-            ).text
-          })
-        )
-      }))
+      scenarioResults: testResult.scenarioResults.map(scenarioResult => {
+        // Use database negative side effects if available, otherwise fall back to JSONB
+        const negativeSideEffects =
+          negativeSideEffectsByScenarioId[scenarioResult.id] ||
+          scenarioResult.negativeSideEffects?.map(negativeSideEffect => {
+            const encodedId = `${testPlanRun.id}-${testResult.id}-${scenarioResult.id}-${negativeSideEffect.id}`;
+            return {
+              ...negativeSideEffect,
+              encodedId,
+              text: negativeSideEffectsJson.find(
+                each => each.id === negativeSideEffect.id
+              )?.text,
+              atBugs: []
+            };
+          }) ||
+          [];
+
+        return {
+          ...scenarioResult,
+          scenario: test.scenarios.find(
+            each => each.id === scenarioResult.scenarioId
+          ),
+          assertionResults: scenarioResult.assertionResults.map(
+            assertionResult => ({
+              ...assertionResult,
+              assertion: test.assertions.find(
+                each => each.id === assertionResult.assertionId
+              )
+            })
+          ),
+          negativeSideEffects
+        };
+      })
     };
   });
 };
@@ -89,7 +140,11 @@ const getFinalizedTestResults = ({ testPlanReport, context }) => {
     );
   }
   return getTestResults({
-    testPlanRun: { testPlanReport, testResults: merged },
+    testPlanRun: {
+      testPlanReport,
+      testResults: merged,
+      id: testPlanReport.testPlanRuns[0]?.id // Use the first test plan run ID for encodedId generation
+    },
     context
   });
 };

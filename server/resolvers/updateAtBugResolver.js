@@ -25,3 +25,4 @@ const updateAtBugResolver = async (_, { id, input }, context) => {
 };
 
 module.exports = updateAtBugResolver;
+

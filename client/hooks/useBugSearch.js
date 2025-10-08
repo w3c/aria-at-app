@@ -47,3 +47,4 @@ export const useBugSearch = ({ atId, assertion }) => {
     handleFetchBugs
   };
 };
+

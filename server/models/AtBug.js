@@ -57,6 +57,11 @@ module.exports = function (sequelize, DataTypes) {
     as: 'assertions'
   };
 
+  Model.NEGATIVE_SIDE_EFFECTS_ASSOCIATION = {
+    through: 'NegativeSideEffectAtBug',
+    as: 'negativeSideEffects'
+  };
+
   Model.associate = function (models) {
     Model.belongsTo(models.At, {
       ...Model.AT_ASSOCIATION,
@@ -67,6 +72,13 @@ module.exports = function (sequelize, DataTypes) {
       ...Model.ASSERTIONS_ASSOCIATION,
       foreignKey: 'atBugId',
       otherKey: 'assertionId'
+    });
+
+    Model.belongsToMany(models.NegativeSideEffect, {
+      through: models.NegativeSideEffectAtBug,
+      foreignKey: 'atBugId',
+      otherKey: 'negativeSideEffectId',
+      as: 'negativeSideEffects'
     });
   };
 

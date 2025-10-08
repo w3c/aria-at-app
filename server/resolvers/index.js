@@ -62,6 +62,8 @@ const updateAtBug = require('./updateAtBugResolver');
 const deleteAtBug = require('./deleteAtBugResolver');
 const linkAtBugsToAssertion = require('./linkAtBugsToAssertionResolver');
 const unlinkAtBugsFromAssertion = require('./unlinkAtBugsFromAssertionResolver');
+const linkAtBugsToNegativeSideEffect = require('./linkAtBugsToNegativeSideEffectResolver');
+const unlinkAtBugsFromNegativeSideEffect = require('./unlinkAtBugsFromNegativeSideEffectResolver');
 const AtBug = require('./AtBug');
 const Assertion = require('./Assertion');
 
@@ -116,7 +118,9 @@ const resolvers = {
     updateAtBug,
     deleteAtBug,
     linkAtBugsToAssertion,
-    unlinkAtBugsFromAssertion
+    unlinkAtBugsFromAssertion,
+    linkAtBugsToNegativeSideEffect,
+    unlinkAtBugsFromNegativeSideEffect
   },
   AtOperations,
   AtVersionOperations,

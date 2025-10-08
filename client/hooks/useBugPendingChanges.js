@@ -40,3 +40,4 @@ export const useBugPendingChanges = ({ assertion }) => {
     clearChanges
   };
 };
+

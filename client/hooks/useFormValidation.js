@@ -84,3 +84,4 @@ export const useFormValidation = ({
     isValid: Object.keys(errors).length === 0 && !duplicateCheck
   };
 };
+

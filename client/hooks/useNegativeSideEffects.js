@@ -35,7 +35,9 @@ export const useNegativeSideEffects = testPlanReport => {
 
           return scenarioResult.negativeSideEffects.map(negativeSideEffect => ({
             ...commonResult,
-            ...negativeSideEffect
+            ...negativeSideEffect,
+            // Include any existing bug links from the negative side effect
+            assertionAtBugs: negativeSideEffect.atBugs || []
           }));
         });
       }
