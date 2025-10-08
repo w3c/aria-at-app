@@ -9,12 +9,13 @@ const OptionButton = ({
   disabled = false,
   onClick,
   children,
+  variant = 'secondary',
   ...restProps
 }) => {
   return (
     <Button
       className={styles.optionBtn}
-      variant="secondary"
+      variant={variant}
       onClick={onClick}
       disabled={disabled}
       aria-disabled={disabled}
@@ -31,7 +32,8 @@ OptionButton.propTypes = {
   icon: PropTypes.node,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
-  children: PropTypes.node
+  children: PropTypes.node,
+  variant: PropTypes.string
 };
 
 export default OptionButton;

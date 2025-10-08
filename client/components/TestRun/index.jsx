@@ -3,6 +3,8 @@ import { Helmet } from 'react-helmet';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import useRouterQuery from '../../hooks/useRouterQuery';
 import { useMutation, useQuery } from '@apollo/client';
+import useConfirmationModal from '../../hooks/useConfirmationModal';
+import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faPen,
@@ -36,6 +38,7 @@ import {
   TEST_RUN_PAGE_ANON_QUERY,
   TEST_RUN_PAGE_QUERY
 } from './queries';
+import { DELETE_TEST_PLAN_RUN } from '../TestQueue/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import ReviewConflicts from '../ReviewConflicts';
 import createIssueLink from '../../utils/createIssueLink';
@@ -52,6 +55,17 @@ const TestRun = () => {
 
   // Detect UA information
   const { uaBrowser, uaMajor } = useDetectUa();
+
+  // Confirmation modal and loading hooks
+  const { showConfirmationModal, hideConfirmationModal } =
+    useConfirmationModal();
+  const { triggerLoad, loadingMessage } = useTriggerLoad();
+
+  // Mutations
+  const [deleteTestPlanRun] = useMutation(DELETE_TEST_PLAN_RUN, {
+    refetchQueries: ['TestQueuePage', 'TestPlanReportStatusDialog'],
+    awaitRefetchQueries: true
+  });
 
   const titleRef = useRef();
   // To prevent default AT/Browser versions being set before initial
@@ -645,6 +659,55 @@ const TestRun = () => {
 
   const handleEditResultsClick = async () => performButtonAction('editTest');
 
+  const handleDeleteRunClick = () => {
+    const onConfirm = async () => {
+      try {
+        await triggerLoad(async () => {
+          await deleteTestPlanRun({
+            variables: {
+              testReportId: testPlanReport.id,
+              testerId: testPlanRun.tester.id
+            }
+          });
+        }, 'Deleting...');
+
+        hideConfirmationModal();
+        navigate('/test-queue');
+      } catch (error) {
+        console.error('handleDeleteRunClick.error', error);
+        hideConfirmationModal();
+
+        showConfirmationModal(
+          <BasicThemedModal
+            show
+            closeButton={false}
+            theme="danger"
+            title="Deletion Failed"
+            content={`Failed to delete ${testPlanRun.tester.username}'s run. Please try again or contact the application team if the problem persists.`}
+            closeLabel="Close"
+            handleClose={() => hideConfirmationModal()}
+          />
+        );
+      }
+    };
+
+    showConfirmationModal(
+      <BasicThemedModal
+        show
+        closeButton={false}
+        theme="danger"
+        title="Deleting Run"
+        content={
+          `Are you sure you want to permanently delete ` +
+          `${testPlanRun.tester.username}'s run? This cannot be undone.`
+        }
+        actionButtons={[{ text: 'Proceed', action: onConfirm }]}
+        closeLabel="Cancel"
+        handleClose={() => hideConfirmationModal()}
+      />
+    );
+  };
+
   const handleStartOverButtonClick = async () => setShowStartOverModal(true);
 
   const handleStartOverAction = async () => {
@@ -1067,7 +1130,7 @@ const TestRun = () => {
               <li>
                 <AssignTesterDropdown
                   testPlanReportId={testPlanRun?.testPlanReport?.id}
-                  label="Reassign to ..."
+                  label="Reassign to..."
                   srLabel="Reassign Testers"
                   testPlanRun={testPlanRun}
                   possibleTesters={users.filter(
@@ -1088,6 +1151,15 @@ const TestRun = () => {
                 />
               </li>
             )}
+          {isAdmin && !!testPlanRunId && (
+            <li>
+              <OptionButton
+                text="Delete Run"
+                variant="danger"
+                onClick={handleDeleteRunClick}
+              />
+            </li>
+          )}
           <li className={styles.helpLink}>
             <a href="mailto:public-aria-at@w3.org">Email us if you need help</a>
           </li>
@@ -1293,105 +1365,109 @@ const TestRun = () => {
   }
 
   return (
-    pageReady && (
-      <CollectionJobContextProvider testPlanRun={testPlanRun}>
-        <Container>
-          <Helmet>
-            <title>
-              {testCount
-                ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion?.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion?.name} ` +
-                  `| ARIA-AT`
-                : 'No tests for this AT and Browser | ARIA-AT'}
-            </title>
-          </Helmet>
-          {updateMessageComponent && (
-            <Alert
-              variant="success"
-              className={atBrowserDetailsModalStyles.atBrowserDetailsModalAlert}
-            >
-              {updateMessageComponent}
-            </Alert>
-          )}
-          <Row>
-            <TestNavigator
-              show={showTestNavigator}
-              tests={tests}
-              currentTestIndex={currentTestIndex}
-              toggleShowClick={toggleTestNavigator}
-              handleTestClick={handleTestClick}
-              testPlanRun={testPlanRun}
-              isReadOnly={isReadOnly}
-            />
-            <Col id="main" as="main" tabIndex="-1">
-              <Row>
-                <Col>{content}</Col>
-              </Row>
-            </Col>
-          </Row>
-          {showThemedModal && (
-            <BasicThemedModal
-              show={showThemedModal}
-              theme={'warning'}
-              title={themedModalTitle}
-              dialogClassName="modal-50w"
-              content={themedModalContent}
-              actionButtons={
-                themedModalOtherButton
-                  ? [
-                      themedModalOtherButton,
-                      {
-                        text: 'Continue without changes',
-                        action: onThemedModalClose
-                      }
-                    ]
-                  : [
-                      // only applies to Admin, Scenario 4
-                      {
-                        text: 'Continue',
-                        action: onThemedModalClose
-                      }
-                    ]
-              }
-              handleClose={onThemedModalClose}
-            />
-          )}
-          {isSignedIn && isShowingAtBrowserModal && !isReadOnly && (
-            <AtAndBrowserDetailsModal
-              show={isShowingAtBrowserModal}
-              firstLoad={!currentTest.testResult}
-              isAdmin={isAdminReviewer}
-              atName={testPlanReport.at.name}
-              atVersion={currentTest.testResult?.atVersion?.name}
-              atVersions={testPlanReport.at.atVersions
-                .filter(item => {
-                  // Only provide at version options that released
-                  // at the same time or later than the minimum
-                  // AT version
-                  let earliestReleasedAt = null;
-                  if (testPlanReport.minimumAtVersion) {
-                    earliestReleasedAt = new Date(
-                      testPlanReport.minimumAtVersion.releasedAt
-                    );
-                    return new Date(item.releasedAt) >= earliestReleasedAt;
-                  }
-                  return item;
-                })
-                .map(item => item.name)}
-              exactAtVersion={testPlanReport.exactAtVersion}
-              browserName={testPlanReport.browser.name}
-              browserVersion={currentTest.testResult?.browserVersion?.name}
-              browserVersions={testPlanReport.browser.browserVersions.map(
-                item => item.name
-              )}
-              patternName={testPlanVersion.title}
-              testerName={tester.username}
-              handleAction={handleAtAndBrowserDetailsModalAction}
-              handleClose={handleAtAndBrowserDetailsModalCloseAction}
-            />
-          )}
-        </Container>
-      </CollectionJobContextProvider>
-    )
+    <LoadingStatus message={loadingMessage}>
+      {pageReady && (
+        <CollectionJobContextProvider testPlanRun={testPlanRun}>
+          <Container>
+            <Helmet>
+              <title>
+                {testCount
+                  ? `${currentTest.title} for ${testPlanReport.at?.name} ${currentAtVersion?.name} and ${testPlanReport.browser?.name} ${currentBrowserVersion?.name} ` +
+                    `| ARIA-AT`
+                  : 'No tests for this AT and Browser | ARIA-AT'}
+              </title>
+            </Helmet>
+            {updateMessageComponent && (
+              <Alert
+                variant="success"
+                className={
+                  atBrowserDetailsModalStyles.atBrowserDetailsModalAlert
+                }
+              >
+                {updateMessageComponent}
+              </Alert>
+            )}
+            <Row>
+              <TestNavigator
+                show={showTestNavigator}
+                tests={tests}
+                currentTestIndex={currentTestIndex}
+                toggleShowClick={toggleTestNavigator}
+                handleTestClick={handleTestClick}
+                testPlanRun={testPlanRun}
+                isReadOnly={isReadOnly}
+              />
+              <Col id="main" as="main" tabIndex="-1">
+                <Row>
+                  <Col>{content}</Col>
+                </Row>
+              </Col>
+            </Row>
+            {showThemedModal && (
+              <BasicThemedModal
+                show={showThemedModal}
+                theme={'warning'}
+                title={themedModalTitle}
+                dialogClassName="modal-50w"
+                content={themedModalContent}
+                actionButtons={
+                  themedModalOtherButton
+                    ? [
+                        themedModalOtherButton,
+                        {
+                          text: 'Continue without changes',
+                          action: onThemedModalClose
+                        }
+                      ]
+                    : [
+                        // only applies to Admin, Scenario 4
+                        {
+                          text: 'Continue',
+                          action: onThemedModalClose
+                        }
+                      ]
+                }
+                handleClose={onThemedModalClose}
+              />
+            )}
+            {isSignedIn && isShowingAtBrowserModal && !isReadOnly && (
+              <AtAndBrowserDetailsModal
+                show={isShowingAtBrowserModal}
+                firstLoad={!currentTest.testResult}
+                isAdmin={isAdminReviewer}
+                atName={testPlanReport.at.name}
+                atVersion={currentTest.testResult?.atVersion?.name}
+                atVersions={testPlanReport.at.atVersions
+                  .filter(item => {
+                    // Only provide at version options that released
+                    // at the same time or later than the minimum
+                    // AT version
+                    let earliestReleasedAt = null;
+                    if (testPlanReport.minimumAtVersion) {
+                      earliestReleasedAt = new Date(
+                        testPlanReport.minimumAtVersion.releasedAt
+                      );
+                      return new Date(item.releasedAt) >= earliestReleasedAt;
+                    }
+                    return item;
+                  })
+                  .map(item => item.name)}
+                exactAtVersion={testPlanReport.exactAtVersion}
+                browserName={testPlanReport.browser.name}
+                browserVersion={currentTest.testResult?.browserVersion?.name}
+                browserVersions={testPlanReport.browser.browserVersions.map(
+                  item => item.name
+                )}
+                patternName={testPlanVersion.title}
+                testerName={tester.username}
+                handleAction={handleAtAndBrowserDetailsModalAction}
+                handleClose={handleAtAndBrowserDetailsModalCloseAction}
+              />
+            )}
+          </Container>
+        </CollectionJobContextProvider>
+      )}
+    </LoadingStatus>
   );
 };
 
