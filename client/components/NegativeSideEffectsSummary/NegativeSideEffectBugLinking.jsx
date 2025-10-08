@@ -2,16 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import BugLinkingModal from '../common/BugLinking/BugLinkingModal';
 import {
-  NegativeSideEffectBugLinkingProvider,
-  useNegativeSideEffectBugLinkingContext
-} from './NegativeSideEffectBugLinkingContext';
+  BugLinkingProvider,
+  useBugLinkingContext
+} from '../common/BugLinking/BugLinkingContext';
 
 /**
  * Inner component that uses the context
  * Separated to avoid using context in the same component that provides it
  */
 const LinkAtBugModalInner = ({ show, onClose }) => {
-  const context = useNegativeSideEffectBugLinkingContext();
+  const context = useBugLinkingContext();
 
   return (
     <BugLinkingModal
@@ -41,15 +41,15 @@ const NegativeSideEffectLinkAtBugModal = ({
   onLinked
 }) => {
   return (
-    <NegativeSideEffectBugLinkingProvider
+    <BugLinkingProvider
       atId={atId}
       atName={atName}
-      negativeSideEffect={negativeSideEffect}
+      assertion={{ ...negativeSideEffect, isNegativeSideEffect: true }}
       onLinked={onLinked}
       onClose={onClose}
     >
       <LinkAtBugModalInner show={show} onClose={onClose} />
-    </NegativeSideEffectBugLinkingProvider>
+    </BugLinkingProvider>
   );
 };
 

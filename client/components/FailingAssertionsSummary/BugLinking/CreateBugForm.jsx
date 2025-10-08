@@ -2,9 +2,6 @@ import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import FormField from '../../common/FormField';
 
-/**
- * Form for creating a new AT bug
- */
 const CreateBugForm = React.memo(
   ({ onCreateBug, onCancel, creating, error, checkDuplicateUrl }) => {
     const [formData, setFormData] = useState({

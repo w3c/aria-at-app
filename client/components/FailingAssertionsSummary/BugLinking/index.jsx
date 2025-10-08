@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import BugLinkingModal from '../../common/BugLinking/BugLinkingModal';
-import { BugLinkingProvider, useBugLinkingContext } from './BugLinkingContext';
+import {
+  BugLinkingProvider,
+  useBugLinkingContext
+} from '../../common/BugLinking/BugLinkingContext';
 
 /**
  * Inner component that uses the context

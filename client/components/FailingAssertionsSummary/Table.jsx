@@ -85,50 +85,59 @@ const FailingAssertionsSummaryTable = ({
               <td>{assertion.priority}</td>
               <td>{assertion.assertionText}</td>
               <td>{assertion.output}</td>
-              <td>
-                <ul className="mb-2">
-                  {assertion.assertionAtBugs && assertion.assertionAtBugs.length
-                    ? assertion.assertionAtBugs.map(bug => (
-                        <li key={bug.id}>
-                          <a
-                            href={bug.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {bug.at?.name && `${bug.at.name}#`}
-                            {bug.bugId}: {bug.title}
-                          </a>
-                        </li>
-                      ))
-                    : !canEdit
-                    ? 'None'
-                    : ''}
-                </ul>
-                <div>
-                  {canEdit && (
-                    <div className="mb-1">
-                      <button
-                        ref={linkBugButtonRef}
-                        type="button"
-                        className="btn btn-primary btn-sm"
-                        onClick={() => setSelectedAssertion(assertion)}
-                      >
-                        Link {atName} Bug
-                      </button>
-                    </div>
-                  )}
-                  {canEdit && (
+              <td
+                className={assertion.isNegativeSideEffect ? 'text-muted' : ''}
+              >
+                {assertion.isNegativeSideEffect ? (
+                  <span className="text-muted">N/A</span>
+                ) : (
+                  <>
+                    <ul className="mb-2">
+                      {assertion.assertionAtBugs &&
+                      assertion.assertionAtBugs.length
+                        ? assertion.assertionAtBugs.map(bug => (
+                            <li key={bug.id}>
+                              <a
+                                href={bug.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {bug.at?.name && `${bug.at.name}#`}
+                                {bug.bugId}: {bug.title}
+                              </a>
+                            </li>
+                          ))
+                        : !canEdit
+                        ? 'None'
+                        : ''}
+                    </ul>
                     <div>
-                      <button
-                        type="button"
-                        className="btn btn-secondary btn-sm"
-                        onClick={() => setReportAssertion(assertion)}
-                      >
-                        Report {atName} Bug
-                      </button>
+                      {canEdit && (
+                        <div className="mb-1">
+                          <button
+                            ref={linkBugButtonRef}
+                            type="button"
+                            className="btn btn-primary btn-sm"
+                            onClick={() => setSelectedAssertion(assertion)}
+                          >
+                            Link {atName} Bug
+                          </button>
+                        </div>
+                      )}
+                      {canEdit && (
+                        <div>
+                          <button
+                            type="button"
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => setReportAssertion(assertion)}
+                          >
+                            Report {atName} Bug
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </>
+                )}
               </td>
             </tr>
           ))}

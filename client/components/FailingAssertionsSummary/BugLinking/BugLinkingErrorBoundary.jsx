@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-/**
- * Error boundary for bug linking components
- * Catches JavaScript errors anywhere in the component tree and displays a fallback UI
- */
 class BugLinkingErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -17,7 +13,6 @@ class BugLinkingErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // Log error details for debugging
     console.error('BugLinking Error:', error, errorInfo);
   }
 

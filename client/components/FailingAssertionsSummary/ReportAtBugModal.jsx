@@ -11,7 +11,6 @@ const ReportATBugModal = ({
   testPlanVersion
 }) => {
   const handleReportBug = () => {
-    // Always use the aria-at repository under w3c organization
     const vendorIssuesUrl = 'https://github.com/w3c/aria-at';
 
     const title = `ARIA-AT Test Failure: ${assertion.testTitle} (${testPlanVersion?.title})`;

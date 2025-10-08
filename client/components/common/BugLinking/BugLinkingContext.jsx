@@ -7,8 +7,9 @@ import { useBugModalActions } from '../../../hooks/useBugModalActions';
 const BugLinkingContext = createContext();
 
 /**
- * Context provider for bug linking functionality
- * Centralizes all bug linking state and logic to eliminate prop drilling
+ * Shared context provider for bug linking functionality
+ * Centralizes all bug linking state and logic
+ * Works with both regular assertions and negative side effects
  */
 export const BugLinkingProvider = ({
   children,
@@ -18,25 +19,32 @@ export const BugLinkingProvider = ({
   onLinked,
   onClose
 }) => {
-  // Manage pending changes and display assertion
   const pendingChanges = useBugPendingChanges({ assertion });
 
-  // Search and filter bugs
   const bugSearch = useBugSearch({
     atId,
     assertion: pendingChanges.displayAssertion
   });
 
-  // Modal actions (save, cancel, confirmation)
+  // Transform assertion for modal actions if it's a negative side effect
+  const transformedAssertion = useMemo(() => {
+    if (assertion?.isNegativeSideEffect) {
+      return {
+        ...assertion,
+        negativeSideEffectId: assertion?.encodedId
+      };
+    }
+    return assertion;
+  }, [assertion]);
+
   const modalActions = useBugModalActions({
-    assertion,
+    assertion: transformedAssertion,
     pendingChanges: pendingChanges.pendingChanges,
     displayAssertion: pendingChanges.displayAssertion,
     onLinked,
     onClose
   });
 
-  // Combine all context values
   const contextValue = useMemo(
     () => ({
       // Configuration

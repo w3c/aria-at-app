@@ -2,9 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import LinkedItemsList from '../../common/LinkedItemsList';
 
-/**
- * Displays a list of linked AT bugs with the ability to unlink them
- */
 const LinkedBugsList = React.memo(({ linkedBugs, onUnlink, unlinking }) => {
   const bugRenderer = (bug, onRemove, removing, removeButtonClass) => (
     <span key={bug.id} className="badge bg-light text-dark me-2">
