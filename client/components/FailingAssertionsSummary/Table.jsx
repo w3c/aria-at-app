@@ -7,8 +7,8 @@ import { useFailingAssertions } from '../../hooks/useFailingAssertions';
 import { TestPlanReportPropType } from '../common/proptypes';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
-import LinkAtBugModal from './LinkAtBugModal';
-import ReportATBugModal from './ReportAtBugModal';
+import LinkAtBugModal from './BugLinking';
+import ReportATBugModal from './ReportATBugModal';
 
 const FailingAssertionsSummaryTable = ({
   testPlanReport,

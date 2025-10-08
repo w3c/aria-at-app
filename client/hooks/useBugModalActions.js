@@ -1,11 +1,16 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useMutation } from '@apollo/client';
-import { LINK_AT_BUGS, UNLINK_AT_BUGS } from './queries';
+import { useModalState } from './useModalState';
+import {
+  LINK_AT_BUGS,
+  UNLINK_AT_BUGS
+} from '../components/FailingAssertionsSummary/queries';
 
 /**
- * Hook for managing modal actions (save, cancel, confirmation)
+ * Hook for managing bug modal actions (save, cancel, confirmation)
+ * Uses the generic useModalState hook for modal state management
  */
-export const useModalActions = ({
+export const useBugModalActions = ({
   assertion,
   pendingChanges,
   displayAssertion,
@@ -13,7 +18,6 @@ export const useModalActions = ({
   onClose,
   clearChanges
 }) => {
-  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [linkAtBugs] = useMutation(LINK_AT_BUGS);
   const [unlinkAtBugs] = useMutation(UNLINK_AT_BUGS);
 
@@ -24,6 +28,10 @@ export const useModalActions = ({
   // Save changes
   const handleSave = useCallback(async () => {
     try {
+      if (!assertion?.assertionId) {
+        throw new Error('Assertion ID is missing from assertion object');
+      }
+
       // Link new bugs
       for (const bug of pendingChanges.linkedBugs) {
         await linkAtBugs({
@@ -45,10 +53,9 @@ export const useModalActions = ({
       if (onLinked) {
         onLinked(displayAssertion);
       }
-
-      onClose();
     } catch (error) {
       console.error('Error saving changes:', error);
+      throw error;
     }
   }, [
     linkAtBugs,
@@ -56,36 +63,25 @@ export const useModalActions = ({
     assertion,
     pendingChanges,
     displayAssertion,
-    onLinked,
-    onClose
+    onLinked
   ]);
 
-  // Cancel changes
-  const handleCancel = useCallback(() => {
-    if (hasChanges) {
-      setShowCancelConfirm(true);
-      return;
-    }
-    clearChanges();
-    onClose();
-  }, [hasChanges, clearChanges, onClose]);
-
-  // Confirm cancel
-  const handleConfirmCancel = useCallback(() => {
-    setShowCancelConfirm(false);
-    clearChanges();
-    onClose();
-  }, [clearChanges, onClose]);
-
-  // Cancel cancel confirmation
-  const handleCancelCancel = useCallback(() => {
-    setShowCancelConfirm(false);
-  }, []);
+  const {
+    showCancelConfirm,
+    handleSave: modalHandleSave,
+    handleCancel,
+    handleConfirmCancel,
+    handleCancelCancel
+  } = useModalState({
+    onClose,
+    onSave: handleSave,
+    hasChanges: () => hasChanges
+  });
 
   return {
     showCancelConfirm,
     hasChanges,
-    handleSave,
+    handleSave: modalHandleSave,
     handleCancel,
     handleConfirmCancel,
     handleCancelCancel

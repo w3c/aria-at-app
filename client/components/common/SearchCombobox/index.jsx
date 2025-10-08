@@ -1,14 +1,27 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import styles from './SearchCombobox.module.css';
 
-const BugSearchCombobox = ({
+/**
+ * Generic searchable combobox component
+ */
+const SearchCombobox = ({
+  id,
+  label,
+  placeholder,
   searchText,
   onSearchChange,
-  filteredBugs,
-  onSelectBug,
-  onFetchBugs,
+  items,
+  onSelectItem,
+  onFetchItems,
   loading,
-  initialFocusRef
+  initialFocusRef,
+  itemRenderer,
+  searchFields,
+  excludeIds = [],
+  maxResults = 20,
+  ariaLabel = 'Available items',
+  instructions = 'Use arrow keys to navigate results, Enter to select, Escape to close.'
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
@@ -40,13 +53,15 @@ const BugSearchCombobox = ({
     }
   }, [isOpen]);
 
-  // Reset active index when filtered bugs change
+  // Reset active index when items change
   useEffect(() => {
     setActiveIndex(-1);
-  }, [filteredBugs]);
+  }, [items]);
 
   const handleFocus = () => {
-    onFetchBugs();
+    if (onFetchItems) {
+      onFetchItems();
+    }
     setIsOpen(true);
   };
 
@@ -59,8 +74,8 @@ const BugSearchCombobox = ({
     setTimeout(() => setIsOpen(false), 200);
   };
 
-  const handleSelect = bugId => {
-    onSelectBug(bugId);
+  const handleSelect = item => {
+    onSelectItem(item);
     setIsOpen(false);
     onSearchChange('');
     setActiveIndex(-1);
@@ -80,7 +95,7 @@ const BugSearchCombobox = ({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setActiveIndex(prev => Math.min(prev + 1, filteredBugs.length - 1));
+        setActiveIndex(prev => Math.min(prev + 1, items.length - 1));
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -88,8 +103,8 @@ const BugSearchCombobox = ({
         break;
       case 'Enter':
         e.preventDefault();
-        if (activeIndex >= 0 && filteredBugs[activeIndex]) {
-          handleSelect(filteredBugs[activeIndex].id);
+        if (activeIndex >= 0 && items[activeIndex]) {
+          handleSelect(items[activeIndex]);
         }
         break;
       case 'Escape':
@@ -103,7 +118,7 @@ const BugSearchCombobox = ({
         break;
       case 'End':
         e.preventDefault();
-        setActiveIndex(filteredBugs.length - 1);
+        setActiveIndex(items.length - 1);
         break;
       default:
         break;
@@ -120,20 +135,21 @@ const BugSearchCombobox = ({
     }
   }, [activeIndex]);
 
-  const comboboxId = 'bug-search-combobox';
-  const listboxId = 'bug-search-listbox';
+  const listboxId = `${id}-listbox`;
   const activeDescendant =
-    activeIndex >= 0 ? `bug-option-${filteredBugs[activeIndex]?.id}` : '';
+    activeIndex >= 0 ? `${id}-option-${items[activeIndex]?.id}` : '';
 
   return (
     <div className="mb-1">
-      <label htmlFor={comboboxId} className="form-label">
-        AT Bug
-      </label>
+      {label && (
+        <label htmlFor={id} className="form-label">
+          {label}
+        </label>
+      )}
       <div className="position-relative">
         <input
           ref={inputRef}
-          id={comboboxId}
+          id={id}
           className="form-control"
           type="text"
           role="combobox"
@@ -148,11 +164,11 @@ const BugSearchCombobox = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          placeholder="Type to search by title, number, or URL"
-          aria-describedby="combobox-instructions"
+          placeholder={placeholder}
+          aria-describedby={`${id}-instructions`}
         />
-        <span id="combobox-instructions" className="visually-hidden">
-          Use arrow keys to navigate results, Enter to select, Escape to close.
+        <span id={`${id}-instructions`} className="visually-hidden">
+          {instructions}
         </span>
 
         {isOpen && (
@@ -160,33 +176,26 @@ const BugSearchCombobox = ({
             ref={listboxRef}
             id={listboxId}
             role="listbox"
-            aria-label="Available AT bugs"
-            className="list-group position-absolute w-100"
-            style={{
-              maxHeight: '240px',
-              overflowY: 'auto',
-              zIndex: 1050,
-              top: '100%',
-              marginTop: '2px'
-            }}
+            aria-label={ariaLabel}
+            className={`list-group position-absolute w-100 ${styles.listbox}`}
           >
             {loading && (
               <li className="list-group-item" role="status" aria-live="polite">
-                Loading bugs...
+                Loading...
               </li>
             )}
-            {!loading && filteredBugs.length === 0 && (
+            {!loading && items.length === 0 && (
               <li className="list-group-item text-muted" role="status">
-                No available bugs found.
+                No items found.
               </li>
             )}
             {!loading &&
-              filteredBugs.map((bug, idx) => {
+              items.map((item, idx) => {
                 const isActive = idx === activeIndex;
-                const optionId = `bug-option-${bug.id}`;
+                const optionId = `${id}-option-${item.id}`;
                 return (
                   <li
-                    key={bug.id}
+                    key={item.id}
                     id={optionId}
                     role="option"
                     aria-selected={isActive}
@@ -196,20 +205,25 @@ const BugSearchCombobox = ({
                     }`}
                     style={{ cursor: 'pointer' }}
                     onMouseDown={e => e.preventDefault()}
-                    onClick={() => handleSelect(bug.id)}
+                    onClick={() => handleSelect(item)}
                     onMouseEnter={() => setActiveIndex(idx)}
                   >
-                    <strong>{bug.title}</strong>
-                    {bug.bugId && (
-                      <span className="text-muted"> (#{bug.bugId})</span>
-                    )}
-                    {bug.url && (
-                      <div
-                        className="small text-truncate"
-                        style={{ maxWidth: '100%' }}
-                      >
-                        {bug.url}
-                      </div>
+                    {itemRenderer ? (
+                      itemRenderer(item, styles)
+                    ) : (
+                      <>
+                        <strong>{item.title || item.name}</strong>
+                        {item.id && (
+                          <span className="text-muted"> (#{item.id})</span>
+                        )}
+                        {item.url && (
+                          <div
+                            className={`small text-truncate ${styles.itemUrl}`}
+                          >
+                            {item.url}
+                          </div>
+                        )}
+                      </>
                     )}
                   </li>
                 );
@@ -221,21 +235,23 @@ const BugSearchCombobox = ({
   );
 };
 
-BugSearchCombobox.propTypes = {
+SearchCombobox.propTypes = {
+  id: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  placeholder: PropTypes.string,
   searchText: PropTypes.string.isRequired,
   onSearchChange: PropTypes.func.isRequired,
-  filteredBugs: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      title: PropTypes.string,
-      bugId: PropTypes.string,
-      url: PropTypes.string
-    })
-  ).isRequired,
-  onSelectBug: PropTypes.func.isRequired,
-  onFetchBugs: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onSelectItem: PropTypes.func.isRequired,
+  onFetchItems: PropTypes.func,
   loading: PropTypes.bool,
-  initialFocusRef: PropTypes.object
+  initialFocusRef: PropTypes.object,
+  itemRenderer: PropTypes.func,
+  searchFields: PropTypes.func,
+  excludeIds: PropTypes.arrayOf(PropTypes.string),
+  maxResults: PropTypes.number,
+  ariaLabel: PropTypes.string,
+  instructions: PropTypes.string
 };
 
-export default BugSearchCombobox;
+export default SearchCombobox;

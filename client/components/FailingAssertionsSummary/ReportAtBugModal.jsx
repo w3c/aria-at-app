@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import BasicModal from '../common/BasicModal';
-import AssertionDetails from './AssertionDetails';
+import AssertionDetails from './BugLinking/AssertionDetails';
 
 const ReportATBugModal = ({
   show,
@@ -14,7 +14,7 @@ const ReportATBugModal = ({
   const [isValidGithubUrl, setIsValidGithubUrl] = useState(true);
 
   const validateGithubUrl = url => {
-    const githubPattern = /^https:\/\/github\.com\/[^\/]+\/[^\/]+$/;
+    const githubPattern = /^https:\/\/github\.com\/[^/]+\/[^/]+$/;
     return githubPattern.test(url.trim());
   };
 

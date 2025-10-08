@@ -1,13 +1,13 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useLazyQuery } from '@apollo/client';
-import { AT_BUGS_QUERY } from './queries';
+import { useSearchableList } from './useSearchableList';
+import { AT_BUGS_QUERY } from '../components/FailingAssertionsSummary/queries';
 
 /**
  * Hook for searching and filtering available bugs
+ * Uses the generic useSearchableList hook for filtering logic
  */
 export const useBugSearch = ({ atId, assertion }) => {
-  const [searchText, setSearchText] = useState('');
-
   const [fetchBugs, { data: bugsData, loading: bugsLoading }] = useLazyQuery(
     AT_BUGS_QUERY,
     {
@@ -15,26 +15,23 @@ export const useBugSearch = ({ atId, assertion }) => {
     }
   );
 
+  const availableBugs = useMemo(() => bugsData?.atBugs || [], [bugsData]);
+
   const linkedBugIds = useMemo(
     () => (assertion?.assertionAtBugs || []).map(b => b.id),
     [assertion]
   );
 
-  const availableBugs = useMemo(() => bugsData?.atBugs || [], [bugsData]);
-
-  // Filter out already linked bugs and limit results
-  const filteredBugs = useMemo(() => {
-    const base = availableBugs.filter(b => !linkedBugIds.includes(b.id));
-    const q = (searchText || '').trim().toLowerCase();
-    if (!q) return base.slice(0, 20);
-    return base
-      .filter(b =>
-        [b.title, b.bugId, b.url]
-          .filter(Boolean)
-          .some(v => String(v).toLowerCase().includes(q))
-      )
-      .slice(0, 20);
-  }, [availableBugs, searchText, linkedBugIds]);
+  const {
+    searchText,
+    setSearchText,
+    filteredItems: filteredBugs
+  } = useSearchableList({
+    items: availableBugs,
+    searchFields: bug => [bug.title, bug.bugId, bug.url],
+    excludeIds: linkedBugIds,
+    maxResults: 20
+  });
 
   const handleFetchBugs = useCallback(() => {
     fetchBugs({ variables: { atId: Number(atId) } });

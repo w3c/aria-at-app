@@ -1,7 +1,10 @@
 import { useCallback } from 'react';
 import { useMutation } from '@apollo/client';
-import { CREATE_AT_BUG } from './queries';
+import { CREATE_AT_BUG } from '../components/FailingAssertionsSummary/queries';
 
+/**
+ * Hook for creating new AT bugs
+ */
 export const useBugCreation = ({ atId, availableBugs }) => {
   const [createAtBug, { loading: creating, error: createError }] =
     useMutation(CREATE_AT_BUG);
