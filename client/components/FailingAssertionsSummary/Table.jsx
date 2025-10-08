@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -8,12 +8,14 @@ import { TestPlanReportPropType } from '../common/proptypes';
 import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import LinkAtBugModal from './LinkAtBugModal';
+import ReportATBugModal from './ReportAtBugModal';
 
 const FailingAssertionsSummaryTable = ({
   testPlanReport,
   atName,
   getLinkUrl = assertion => `#result-${assertion.testId}`,
-  LinkComponent = Link
+  LinkComponent = Link,
+  testPlanVersion
 }) => {
   const failingAssertions = useFailingAssertions(testPlanReport);
   const { data: meData } = useQuery(ME_QUERY);
@@ -23,12 +25,13 @@ const FailingAssertionsSummaryTable = ({
   const canEdit = isAdmin || isVendor;
 
   const [selectedAssertion, setSelectedAssertion] = useState(null);
+  const [reportAssertion, setReportAssertion] = useState(null);
   const [assertionUpdates, setAssertionUpdates] = useState({});
   const linkBugButtonRef = useRef();
   const { metrics } = testPlanReport;
 
   // Merge server data with local updates
-  const displayAssertions = React.useMemo(() => {
+  const displayAssertions = useMemo(() => {
     return failingAssertions.map(assertion => {
       const update = assertionUpdates[assertion.assertionId];
       return update || assertion;
@@ -97,20 +100,35 @@ const FailingAssertionsSummaryTable = ({
                           </a>
                         </li>
                       ))
-                    : 'None'}
+                    : !canEdit
+                    ? 'None'
+                    : ''}
                 </ul>
-                {canEdit && (
-                  <div>
-                    <button
-                      ref={linkBugButtonRef}
-                      type="button"
-                      className="btn btn-secondary btn-sm"
-                      onClick={() => setSelectedAssertion(assertion)}
-                    >
-                      Link AT Bug
-                    </button>
-                  </div>
-                )}
+                <div>
+                  {canEdit && (
+                    <div className="mb-1">
+                      <button
+                        ref={linkBugButtonRef}
+                        type="button"
+                        className="btn btn-primary btn-sm"
+                        onClick={() => setSelectedAssertion(assertion)}
+                      >
+                        Link AT Bug
+                      </button>
+                    </div>
+                  )}
+                  {canEdit && (
+                    <div>
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => setReportAssertion(assertion)}
+                      >
+                        Report AT Bug
+                      </button>
+                    </div>
+                  )}
+                </div>
               </td>
             </tr>
           ))}
@@ -128,6 +146,13 @@ const FailingAssertionsSummaryTable = ({
           }));
         }}
       />
+      <ReportATBugModal
+        show={!!reportAssertion}
+        onClose={() => setReportAssertion(null)}
+        assertion={reportAssertion}
+        testPlanReport={testPlanReport}
+        testPlanVersion={testPlanVersion}
+      />
     </>
   );
 };
@@ -136,7 +161,8 @@ FailingAssertionsSummaryTable.propTypes = {
   testPlanReport: TestPlanReportPropType.isRequired,
   atName: PropTypes.string.isRequired,
   getLinkUrl: PropTypes.func,
-  LinkComponent: PropTypes.elementType
+  LinkComponent: PropTypes.elementType,
+  testPlanVersion: PropTypes.object.isRequired
 };
 
 export default FailingAssertionsSummaryTable;

@@ -43,7 +43,7 @@ const CreateBugForm = ({
   return (
     <form onSubmit={handleSubmit}>
       <fieldset>
-        <legend style={{ fontSize: 16 }}>Add New Bug Link</legend>
+        <legend className="sr-only">Add New Bug Link</legend>
 
         <div className="mb-2">
           <label className="form-label" htmlFor="new-bug-title">
