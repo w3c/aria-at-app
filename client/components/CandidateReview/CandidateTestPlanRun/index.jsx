@@ -655,6 +655,7 @@ const CandidateTestPlanRun = () => {
                 <FailingAssertionsSummaryTable
                   testPlanReport={testPlanReports[0]}
                   atName={at}
+                  testPlanVersion={testPlanVersion}
                   getLinkUrl={assertion => `#${assertion.testIndex + 1}`}
                 />
               </div>

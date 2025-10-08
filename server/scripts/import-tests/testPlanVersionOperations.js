@@ -355,9 +355,6 @@ async function createAssertionsForTestPlanVersion({
   }
 
   if (assertionsData.length > 0) {
-    console.log(
-      `Creating ${assertionsData.length} assertions for TestPlanVersion ${testPlanVersionId}`
-    );
     await bulkCreateAssertions({ assertionsData, transaction });
   }
 }
