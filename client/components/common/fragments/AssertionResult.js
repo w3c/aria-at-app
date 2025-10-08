@@ -10,6 +10,12 @@ const ASSERTION_RESULT_FIELDS = gql`
       text
       phrase
       priority
+      atBugs {
+        id
+        title
+        bugId
+        url
+      }
     }
   }
 `;

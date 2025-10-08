@@ -31,7 +31,11 @@ export const useFailingAssertions = testPlanReport => {
                 assertionText: getAssertionPhraseOrText(
                   assertionResult.assertion
                 ),
-                output: scenarioResult.output
+                output: scenarioResult.output,
+                assertionId: assertionResult.assertion.id,
+                assertionAtBugs: assertionResult.assertion.atBugs || [],
+                atVersionName: testResult?.atVersion?.name || null,
+                browserVersionName: testResult?.browserVersion?.name || null
               }));
           };
 

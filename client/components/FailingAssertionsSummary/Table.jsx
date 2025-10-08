@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import { useQuery } from '@apollo/client';
 import { useFailingAssertions } from '../../hooks/useFailingAssertions';
 import { TestPlanReportPropType } from '../common/proptypes';
+import { ME_QUERY } from '../App/queries';
+import { evaluateAuth } from '../../utils/evaluateAuth';
+import LinkAtBugModal from './LinkAtBugModal';
 
 const FailingAssertionsSummaryTable = ({
   testPlanReport,
@@ -12,7 +16,24 @@ const FailingAssertionsSummaryTable = ({
   LinkComponent = Link
 }) => {
   const failingAssertions = useFailingAssertions(testPlanReport);
+  const { data: meData } = useQuery(ME_QUERY);
+  const auth = evaluateAuth(meData?.me ? meData.me : {});
+  const { isAdmin, isVendor } = auth;
+
+  const canEdit = isAdmin || isVendor;
+
+  const [selectedAssertion, setSelectedAssertion] = useState(null);
+  const [assertionUpdates, setAssertionUpdates] = useState({});
+  const linkBugButtonRef = useRef();
   const { metrics } = testPlanReport;
+
+  // Merge server data with local updates
+  const displayAssertions = React.useMemo(() => {
+    return failingAssertions.map(assertion => {
+      const update = assertionUpdates[assertion.assertionId];
+      return update || assertion;
+    });
+  }, [failingAssertions, assertionUpdates]);
 
   if (failingAssertions.length === 0) return null;
 
@@ -46,10 +67,11 @@ const FailingAssertionsSummaryTable = ({
             <th>Assertion Priority</th>
             <th>Assertion</th>
             <th>{atName} Response</th>
+            <th>AT Bugs</th>
           </tr>
         </thead>
         <tbody>
-          {failingAssertions.map((assertion, index) => (
+          {displayAssertions.map((assertion, index) => (
             <tr key={`failing-assertion-${index}`}>
               <td>
                 <LinkComponent to={getLinkUrl(assertion)}>
@@ -60,10 +82,49 @@ const FailingAssertionsSummaryTable = ({
               <td>{assertion.priority}</td>
               <td>{assertion.assertionText}</td>
               <td>{assertion.output}</td>
+              <td>
+                {assertion.assertionAtBugs && assertion.assertionAtBugs.length
+                  ? assertion.assertionAtBugs.map(bug => (
+                      <div key={bug.id}>
+                        <a
+                          href={bug.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {bug.title || `Issue ${bug.bugId}`}
+                        </a>
+                      </div>
+                    ))
+                  : null}
+                {canEdit && (
+                  <div>
+                    <button
+                      ref={linkBugButtonRef}
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setSelectedAssertion(assertion)}
+                    >
+                      Link AT Bug
+                    </button>
+                  </div>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
       </Table>
+      <LinkAtBugModal
+        show={!!selectedAssertion}
+        onClose={() => setSelectedAssertion(null)}
+        atId={testPlanReport.at.id}
+        assertion={selectedAssertion}
+        onLinked={updatedAssertion => {
+          setAssertionUpdates(prev => ({
+            ...prev,
+            [updatedAssertion.assertionId]: updatedAssertion
+          }));
+        }}
+      />
     </>
   );
 };

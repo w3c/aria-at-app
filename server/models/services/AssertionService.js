@@ -161,12 +161,42 @@ const linkAtBugsToAssertion = async ({
     throw new Error(`Assertion with id ${assertionId} not found`);
   }
 
-  // Add the bugs (Sequelize will handle duplicates with the unique constraint)
-  await assertion.addAtBugs(atBugIds, { transaction });
+  // Normalize IDs and avoid duplicates by checking existing links first
+  const numericBugIds = Array.from(
+    new Set(
+      (atBugIds || []).map(id => Number(id)).filter(id => !Number.isNaN(id))
+    )
+  );
+  if (numericBugIds.length === 0) {
+    return await Assertion.findByPk(assertionId, {
+      include: [{ association: 'atBugs' }],
+      transaction
+    });
+  }
+
+  const existing = await assertion.getAtBugs({
+    attributes: ['id'],
+    joinTableAttributes: [],
+    transaction
+  });
+  const existingIds = new Set(existing.map(b => b.id));
+  const toAdd = numericBugIds.filter(id => !existingIds.has(id));
+  if (toAdd.length) {
+    try {
+      await assertion.addAtBugs(toAdd, { transaction });
+    } catch (e) {
+      // Ignore duplicate link errors that may occur under concurrent requests
+    }
+  }
 
   // Return the assertion with its bugs
   return await Assertion.findByPk(assertionId, {
-    include: [{ association: 'atBugs' }],
+    include: [
+      {
+        association: 'atBugs',
+        include: [{ association: 'at' }]
+      }
+    ],
     transaction
   });
 };
@@ -189,12 +219,23 @@ const unlinkAtBugsFromAssertion = async ({
     throw new Error(`Assertion with id ${assertionId} not found`);
   }
 
-  // Remove the specified bugs
-  await assertion.removeAtBugs(atBugIds, { transaction });
+  const numericBugIds = Array.from(
+    new Set(
+      (atBugIds || []).map(id => Number(id)).filter(id => !Number.isNaN(id))
+    )
+  );
+  if (numericBugIds.length) {
+    await assertion.removeAtBugs(numericBugIds, { transaction });
+  }
 
   // Return the assertion with its bugs
   return await Assertion.findByPk(assertionId, {
-    include: [{ association: 'atBugs' }],
+    include: [
+      {
+        association: 'atBugs',
+        include: [{ association: 'at' }]
+      }
+    ],
     transaction
   });
 };

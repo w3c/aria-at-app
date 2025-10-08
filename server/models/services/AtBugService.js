@@ -73,6 +73,9 @@ const getAtBugs = async ({
     where,
     attributes: AT_BUG_ATTRIBUTES,
     include,
+    pagination: {
+      order: [['updatedAt', 'DESC']]
+    },
     transaction
   });
 };
@@ -87,6 +90,10 @@ const getAtBugsByAtId = async ({ atId, transaction }) =>
   await ModelService.get(AtBug, {
     where: { atId },
     attributes: AT_BUG_ATTRIBUTES,
+    include: [atAssociation(['id', 'name'])],
+    pagination: {
+      order: [['updatedAt', 'DESC']]
+    },
     transaction
   });
 

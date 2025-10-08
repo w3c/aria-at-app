@@ -1,6 +1,7 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-  linkAtBugsToAssertion
+  linkAtBugsToAssertion,
+  getAssertionByEncodedId
 } = require('../models/services/AssertionService');
 
 const linkAtBugsToAssertionResolver = async (
@@ -16,11 +17,35 @@ const linkAtBugsToAssertionResolver = async (
     throw new AuthenticationError();
   }
 
-  return await linkAtBugsToAssertion({
-    assertionId,
-    atBugIds,
-    transaction
-  });
+  try {
+    // Convert GraphQL encoded assertionId to numeric DB id if needed
+    let numericAssertionId = assertionId;
+    if (typeof assertionId === 'string' && !/^\d+$/.test(assertionId)) {
+      const found = await getAssertionByEncodedId({
+        encodedId: assertionId,
+        transaction
+      });
+      numericAssertionId = found?.id;
+    }
+
+    if (!numericAssertionId) {
+      throw new Error('Invalid assertionId');
+    }
+
+    return await linkAtBugsToAssertion({
+      assertionId: numericAssertionId,
+      atBugIds,
+      transaction
+    });
+  } catch (e) {
+    console.error('linkAtBugsToAssertion error', {
+      assertionId,
+      atBugIds,
+      message: e.message,
+      code: e?.original?.code || e?.parent?.code || e.code
+    });
+    throw e;
+  }
 };
 
 module.exports = linkAtBugsToAssertionResolver;
