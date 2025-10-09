@@ -3,11 +3,25 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    // Add encodedId column to NegativeSideEffect table
+    // Add encodedId column to NegativeSideEffect table (nullable first)
     await queryInterface.addColumn('NegativeSideEffect', 'encodedId', {
       type: Sequelize.TEXT,
+      allowNull: true,
+      comment:
+        'The encoded negative side effect ID (for backward compatibility)'
+    });
+
+    // Populate encodedId for existing records
+    await queryInterface.sequelize.query(`
+      UPDATE "NegativeSideEffect" 
+      SET "encodedId" = "testPlanRunId" || '-' || "testResultId" || '-' || "scenarioResultId" || '-' || "negativeSideEffectId"
+      WHERE "encodedId" IS NULL
+    `);
+
+    // Make the column non-nullable
+    await queryInterface.changeColumn('NegativeSideEffect', 'encodedId', {
+      type: Sequelize.TEXT,
       allowNull: false,
-      unique: true,
       comment:
         'The encoded negative side effect ID (for backward compatibility)'
     });

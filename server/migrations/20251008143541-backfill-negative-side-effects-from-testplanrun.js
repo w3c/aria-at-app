@@ -46,7 +46,6 @@ module.exports = {
               impact: negativeSideEffect.impact,
               details: negativeSideEffect.details || null,
               highlightRequired: negativeSideEffect.highlightRequired || false,
-              encodedId: `${testPlanRun.id}-${testResult.id}-${scenarioResult.id}-${negativeSideEffect.id}`,
               createdAt: new Date(),
               updatedAt: new Date()
             };
