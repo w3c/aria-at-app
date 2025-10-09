@@ -1411,9 +1411,6 @@ const graphqlSchema = gql`
     totalPossibleAssertions: Int!
   }
 
-  """
-
-  """
   type ReviewerStatus {
     """
     The vendor representative who reviewed the test.

@@ -7,14 +7,9 @@ describe('NegativeSideEffectService Data Checks', () => {
     await sequelize.close();
   });
 
-  beforeEach(async () => {
-    await dbCleaner.clean(sequelize);
-  });
-
   describe('createNegativeSideEffect', () => {
     it('should create a negative side effect', async () => {
-      const transaction = await sequelize.transaction();
-      try {
+      await dbCleaner(async transaction => {
         // Create a test plan run first
         const testPlanRun = await sequelize.models.TestPlanRun.create(
           {
@@ -34,7 +29,8 @@ describe('NegativeSideEffectService Data Checks', () => {
           negativeSideEffectId: 'EXCESSIVELY_VERBOSE',
           impact: 'MODERATE',
           details: 'Test details',
-          highlightRequired: false
+          highlightRequired: false,
+          encodedId: `${testPlanRun.id}-test-result-123-scenario-result-456-EXCESSIVELY_VERBOSE`
         };
 
         const created =
@@ -52,16 +48,13 @@ describe('NegativeSideEffectService Data Checks', () => {
         expect(created.impact).toBe('MODERATE');
         expect(created.details).toBe('Test details');
         expect(created.highlightRequired).toBe(false);
-      } finally {
-        await transaction.rollback();
-      }
+      });
     });
   });
 
   describe('getNegativeSideEffectById', () => {
     it('should retrieve a negative side effect by ID', async () => {
-      const transaction = await sequelize.transaction();
-      try {
+      await dbCleaner(async transaction => {
         // Create a test plan run first
         const testPlanRun = await sequelize.models.TestPlanRun.create(
           {
@@ -81,7 +74,8 @@ describe('NegativeSideEffectService Data Checks', () => {
           negativeSideEffectId: 'EXCESSIVELY_VERBOSE',
           impact: 'MODERATE',
           details: 'Test details',
-          highlightRequired: false
+          highlightRequired: false,
+          encodedId: `${testPlanRun.id}-test-result-123-scenario-result-456-EXCESSIVELY_VERBOSE`
         };
 
         const created =
@@ -100,16 +94,13 @@ describe('NegativeSideEffectService Data Checks', () => {
         expect(retrieved.id).toBe(created.id);
         expect(retrieved.testPlanRunId).toBe(testPlanRun.id);
         expect(retrieved.negativeSideEffectId).toBe('EXCESSIVELY_VERBOSE');
-      } finally {
-        await transaction.rollback();
-      }
+      });
     });
   });
 
   describe('getNegativeSideEffectsByTestPlanRunId', () => {
     it('should retrieve negative side effects by test plan run ID', async () => {
-      const transaction = await sequelize.transaction();
-      try {
+      await dbCleaner(async transaction => {
         // Create a test plan run first
         const testPlanRun = await sequelize.models.TestPlanRun.create(
           {
@@ -130,7 +121,8 @@ describe('NegativeSideEffectService Data Checks', () => {
             negativeSideEffectId: 'EXCESSIVELY_VERBOSE',
             impact: 'MODERATE',
             details: 'Test details 1',
-            highlightRequired: false
+            highlightRequired: false,
+            encodedId: `${testPlanRun.id}-test-result-123-scenario-result-456-EXCESSIVELY_VERBOSE`
           },
           {
             testPlanRunId: testPlanRun.id,
@@ -139,7 +131,8 @@ describe('NegativeSideEffectService Data Checks', () => {
             negativeSideEffectId: 'SLUGGISH',
             impact: 'SEVERE',
             details: 'Test details 2',
-            highlightRequired: true
+            highlightRequired: true,
+            encodedId: `${testPlanRun.id}-test-result-789-scenario-result-012-SLUGGISH`
           }
         ];
 
@@ -159,16 +152,13 @@ describe('NegativeSideEffectService Data Checks', () => {
         expect(retrieved).toHaveLength(2);
         expect(retrieved[0].testPlanRunId).toBe(testPlanRun.id);
         expect(retrieved[1].testPlanRunId).toBe(testPlanRun.id);
-      } finally {
-        await transaction.rollback();
-      }
+      });
     });
   });
 
   describe('linkAtBugsToNegativeSideEffect', () => {
     it('should link AtBugs to a negative side effect', async () => {
-      const transaction = await sequelize.transaction();
-      try {
+      await dbCleaner(async transaction => {
         // Create a test plan run first
         const testPlanRun = await sequelize.models.TestPlanRun.create(
           {
@@ -181,14 +171,8 @@ describe('NegativeSideEffectService Data Checks', () => {
           { transaction }
         );
 
-        // Create an AT first
-        const at = await sequelize.models.At.create(
-          {
-            name: 'Test AT',
-            id: 1
-          },
-          { transaction }
-        );
+        // Use existing AT (JAWS with id 1)
+        const atId = 1;
 
         // Create an AtBug
         const atBug = await sequelize.models.AtBug.create(
@@ -196,7 +180,7 @@ describe('NegativeSideEffectService Data Checks', () => {
             title: 'Test Bug',
             bugId: '123',
             url: 'https://example.com/bug/123',
-            atId: at.id
+            atId: atId
           },
           { transaction }
         );
@@ -208,7 +192,8 @@ describe('NegativeSideEffectService Data Checks', () => {
           negativeSideEffectId: 'EXCESSIVELY_VERBOSE',
           impact: 'MODERATE',
           details: 'Test details',
-          highlightRequired: false
+          highlightRequired: false,
+          encodedId: `${testPlanRun.id}-test-result-123-scenario-result-456-EXCESSIVELY_VERBOSE`
         };
 
         const created =
@@ -236,16 +221,13 @@ describe('NegativeSideEffectService Data Checks', () => {
           });
 
         expect(unlinked.atBugs).toEqual([]);
-      } finally {
-        await transaction.rollback();
-      }
+      });
     });
   });
 
   describe('bulkCreateNegativeSideEffects', () => {
     it('should create multiple negative side effects efficiently', async () => {
-      const transaction = await sequelize.transaction();
-      try {
+      await dbCleaner(async transaction => {
         // Create a test plan run first
         const testPlanRun = await sequelize.models.TestPlanRun.create(
           {
@@ -265,7 +247,8 @@ describe('NegativeSideEffectService Data Checks', () => {
           negativeSideEffectId: 'EXCESSIVELY_VERBOSE',
           impact: 'MODERATE',
           details: `Test details ${i}`,
-          highlightRequired: false
+          highlightRequired: false,
+          encodedId: `${testPlanRun.id}-test-result-${i}-scenario-result-${i}-EXCESSIVELY_VERBOSE`
         }));
 
         const created =
@@ -277,9 +260,7 @@ describe('NegativeSideEffectService Data Checks', () => {
         expect(created).toHaveLength(10);
         expect(created[0].testPlanRunId).toBe(testPlanRun.id);
         expect(created[9].testPlanRunId).toBe(testPlanRun.id);
-      } finally {
-        await transaction.rollback();
-      }
+      });
     });
   });
 });

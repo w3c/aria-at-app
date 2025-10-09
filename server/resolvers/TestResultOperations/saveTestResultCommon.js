@@ -86,10 +86,22 @@ const createNegativeSideEffectsForTestResult = async ({
 
     // Bulk create negative side effects if any were found
     if (negativeSideEffectsData.length > 0) {
-      await bulkCreateNegativeSideEffects({
-        negativeSideEffectsData,
-        transaction
-      });
+      try {
+        await bulkCreateNegativeSideEffects({
+          negativeSideEffectsData,
+          transaction
+        });
+      } catch (error) {
+        // Handle unique constraint violations gracefully
+        if (error.name === 'SequelizeUniqueConstraintError') {
+          console.warn(
+            'Some negative side effects already exist, skipping duplicates:',
+            error.message
+          );
+        } else {
+          throw error;
+        }
+      }
     }
   } catch (error) {
     console.error('Error creating negative side effects:', error);
@@ -119,7 +131,16 @@ const saveTestResultCommon = async ({
   const oldTestResults = testPlanRun.testResults;
   const oldTestResult = convertTestResultToInput(testResultPopulated);
 
-  const newTestResult = deepCustomMerge(oldTestResult, input, {
+  // Normalize negativeSideEffects to handle type mismatches
+  const normalizedInput = {
+    ...input,
+    scenarioResults: input.scenarioResults?.map(scenarioResult => ({
+      ...scenarioResult,
+      negativeSideEffects: scenarioResult.negativeSideEffects || []
+    }))
+  };
+
+  const newTestResult = deepCustomMerge(oldTestResult, normalizedInput, {
     identifyArrayItem: item => item.id,
     removeArrayItems: true
   });
