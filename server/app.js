@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cacheMiddleware = require('apicache').middleware;
-const proxyMiddleware = require('rawgit/lib/middleware');
+const axios = require('axios');
 const { session } = require('./middleware/session');
 const embedApp = require('./apps/embed');
 const authRoutes = require('./routes/auth');
@@ -9,7 +9,6 @@ const testRoutes = require('./routes/tests');
 const transactionRoutes = require('./routes/transactions');
 const automationSchedulerRoutes = require('./routes/automation');
 const databaseRoutes = require('./routes/database');
-const path = require('path');
 const apolloServer = require('./graphql-server');
 const {
   setupMockAutomationSchedulerServer
@@ -34,17 +33,42 @@ apolloServer.start().then(() => {
 const listener = express();
 listener.use('/api', app).use('/embed', embedApp);
 
-const baseUrl = 'https://raw.githubusercontent.com';
+const proxyBaseUrl = 'https://raw.githubusercontent.com';
 const onlyStatus200 = (req, res) => res.statusCode === 200;
 
-listener.route('/aria-at/:branch*').get(
+listener.route('/aria-at/:path').get(
   cacheMiddleware('7 days', onlyStatus200),
   (req, res, next) => {
-    req.url = path.join('w3c', req.url);
+    // Extract branch and file path from the path parameter
+    const fullPath = req.params.path;
+    const pathParts = fullPath.split('/');
+    req.params.branch = pathParts[0];
+    req.params.filePath = '/' + pathParts.slice(1).join('/');
     next();
   },
-  proxyMiddleware.fileRedirect(baseUrl),
-  proxyMiddleware.proxyPath(baseUrl)
+  async (req, res, next) => {
+    try {
+      const branch = req.params.branch;
+      const filePath = req.params.filePath;
+      const githubUrl = `${proxyBaseUrl}/w3c/aria-at/${branch}${filePath}`;
+
+      const response = await axios.get(githubUrl, { timeout: 10000 });
+
+      // Set proper Content-Type based on file extension
+      if (filePath && filePath.includes('.html')) {
+        res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      } else if (filePath && filePath.includes('.css')) {
+        res.setHeader('Content-Type', 'text/css; charset=utf-8');
+      } else if (filePath && filePath.includes('.js')) {
+        res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+      } else {
+        res.set(response.headers);
+      }
+      res.send(response.data);
+    } catch (error) {
+      next(error);
+    }
+  }
 );
 
 // Conditionally initialize github workflow service, or mock automation scheduler
