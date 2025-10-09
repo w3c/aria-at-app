@@ -32,7 +32,10 @@ describe('NegativeSideEffectModel', () => {
 
   describe('associations', () => {
     // A1
-    const TEST_PLAN_RUN_ASSOCIATION = { foreignKey: 'testPlanRunId' };
+    const TEST_PLAN_RUN_ASSOCIATION = {
+      foreignKey: 'testPlanRunId',
+      as: 'testPlanRun'
+    };
     const AT_BUGS_ASSOCIATION = {
       through: 'NegativeSideEffectAtBug',
       as: 'atBugs'

@@ -89,7 +89,10 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Model.associate = function (models) {
-    Model.belongsTo(models.TestPlanRun, Model.TEST_PLAN_RUN_ASSOCIATION);
+    Model.belongsTo(models.TestPlanRun, {
+      ...Model.TEST_PLAN_RUN_ASSOCIATION,
+      targetKey: 'id'
+    });
     Model.belongsToMany(models.AtBug, {
       through: models.NegativeSideEffectAtBug,
       foreignKey: 'negativeSideEffectId',
