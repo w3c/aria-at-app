@@ -1507,6 +1507,10 @@ const graphqlSchema = gql`
     Get a particular update event by ID
     """
     updateEvent(id: ID!): UpdateEvent
+    """
+    Get key metrics
+    """
+    keyMetrics: KeyMetrics!
   }
 
   # Mutation-specific types below
@@ -1819,6 +1823,16 @@ const graphqlSchema = gql`
   type CreateCollectionJobsFromPreviousVersionResponse {
     collectionJobs: [CollectionJob!]!
     message: String!
+  }
+
+  type KeyMetrics {
+    date: Timestamp!
+    verdictsCount: Int!
+    commandsCount: Int!
+    contributorsCount: Int!
+    verdictsLast90Count: Int!
+    testsCount: Int!
+    suitesCount: Int!
   }
 `;
 

@@ -1,6 +1,6 @@
 {
-    "id": 1,
-    "username": "esmeralda-baggins",
-    "email": "esmeralda-baggins@example.com",
-    "roles": [{ "name": "ADMIN" }, { "name": "TESTER" }]
+  "id": 1,
+  "username": "esmeralda-baggins",
+  "email": "esmeralda-baggins@example.com",
+  "roles": [{ "name": "ADMIN" }, { "name": "TESTER" }]
 }
