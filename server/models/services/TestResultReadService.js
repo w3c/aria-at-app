@@ -79,18 +79,19 @@ const getTestResults = async ({ testPlanRun, context }) => {
         // Use database negative side effects if available, otherwise fall back to JSONB
         const negativeSideEffects =
           negativeSideEffectsByScenarioId[scenarioResult.id] ||
-          scenarioResult.negativeSideEffects?.map(negativeSideEffect => {
-            const encodedId = `${testPlanRun.id}-${testResult.id}-${scenarioResult.id}-${negativeSideEffect.id}`;
-            return {
-              ...negativeSideEffect,
-              encodedId,
-              text: negativeSideEffectsJson.find(
-                each => each.id === negativeSideEffect.id
-              )?.text,
-              atBugs: []
-            };
-          }) ||
-          [];
+          (scenarioResult.negativeSideEffects
+            ? scenarioResult.negativeSideEffects.map(negativeSideEffect => {
+                const encodedId = `${testPlanRun.id}-${testResult.id}-${scenarioResult.id}-${negativeSideEffect.id}`;
+                return {
+                  ...negativeSideEffect,
+                  encodedId,
+                  text: negativeSideEffectsJson.find(
+                    each => each.id === negativeSideEffect.id
+                  )?.text,
+                  atBugs: []
+                };
+              })
+            : scenarioResult.negativeSideEffects);
 
         return {
           ...scenarioResult,

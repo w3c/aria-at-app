@@ -33,12 +33,14 @@ export const useNegativeSideEffects = testPlanReport => {
             }_${scenarioResult.scenario.commands.map(cmd => cmd.id).join('_')}`
           };
 
-          return scenarioResult.negativeSideEffects.map(negativeSideEffect => ({
-            ...commonResult,
-            ...negativeSideEffect,
-            // Include any existing bug links from the negative side effect
-            assertionAtBugs: negativeSideEffect.atBugs || []
-          }));
+          return (scenarioResult.negativeSideEffects || []).map(
+            negativeSideEffect => ({
+              ...commonResult,
+              ...negativeSideEffect,
+              // Include any existing bug links from the negative side effect
+              assertionAtBugs: negativeSideEffect.atBugs || []
+            })
+          );
         });
       }
     );

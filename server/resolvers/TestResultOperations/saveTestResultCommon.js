@@ -131,12 +131,15 @@ const saveTestResultCommon = async ({
   const oldTestResults = testPlanRun.testResults;
   const oldTestResult = convertTestResultToInput(testResultPopulated);
 
-  // Normalize negativeSideEffects to handle type mismatches
+  // Normalize negativeSideEffects to handle type mismatches while preserving null state
   const normalizedInput = {
     ...input,
     scenarioResults: input.scenarioResults?.map(scenarioResult => ({
       ...scenarioResult,
-      negativeSideEffects: scenarioResult.negativeSideEffects || []
+      negativeSideEffects:
+        scenarioResult.negativeSideEffects === undefined
+          ? null
+          : scenarioResult.negativeSideEffects
     }))
   };
 

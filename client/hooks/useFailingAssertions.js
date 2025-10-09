@@ -46,33 +46,33 @@ export const useFailingAssertions = testPlanReport => {
                 ...processPriorityAssertionResults('SHOULD')
               ];
 
-          const unexpectedResults = scenarioResult.negativeSideEffects.map(
-            negativeSideEffect => {
-              return {
-                ...commonResult,
-                assertionText:
-                  negativeSideEffect.impact.toLowerCase() === 'moderate'
-                    ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
-                    : negativeSideEffect.impact.toLowerCase() === 'severe'
-                    ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
-                    : 'N/A',
-                priority:
-                  negativeSideEffect.impact.toLowerCase() === 'moderate'
-                    ? 'SHOULD'
-                    : negativeSideEffect.impact.toLowerCase() === 'severe'
-                    ? 'MUST'
-                    : 'N/A',
-                output: negativeSideEffect.text,
-                // Add fields to identify this as a negative side effect for bug linking
-                isNegativeSideEffect: true,
-                negativeSideEffectId: negativeSideEffect.encodedId,
-                negativeSideEffectImpact: negativeSideEffect.impact,
-                negativeSideEffectDetails: negativeSideEffect.details,
-                // Include any existing bug links from the negative side effect
-                assertionAtBugs: negativeSideEffect.atBugs || []
-              };
-            }
-          );
+          const unexpectedResults = (
+            scenarioResult.negativeSideEffects || []
+          ).map(negativeSideEffect => {
+            return {
+              ...commonResult,
+              assertionText:
+                negativeSideEffect.impact.toLowerCase() === 'moderate'
+                  ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.MODERATE
+                  : negativeSideEffect.impact.toLowerCase() === 'severe'
+                  ? NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES.SEVERE
+                  : 'N/A',
+              priority:
+                negativeSideEffect.impact.toLowerCase() === 'moderate'
+                  ? 'SHOULD'
+                  : negativeSideEffect.impact.toLowerCase() === 'severe'
+                  ? 'MUST'
+                  : 'N/A',
+              output: negativeSideEffect.text,
+              // Add fields to identify this as a negative side effect for bug linking
+              isNegativeSideEffect: true,
+              negativeSideEffectId: negativeSideEffect.encodedId,
+              negativeSideEffectImpact: negativeSideEffect.impact,
+              negativeSideEffectDetails: negativeSideEffect.details,
+              // Include any existing bug links from the negative side effect
+              assertionAtBugs: negativeSideEffect.atBugs || []
+            };
+          });
           return [...assertionResults, ...unexpectedResults];
         });
       }
