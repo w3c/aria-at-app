@@ -167,7 +167,9 @@ describe('graphql', () => {
       ['User', 'company'],
       ['Query', 'reviewerStatus'],
       ['Query', 'reviewerStatuses'],
+      // None in fresh DB
       ['Query', 'atBug'],
+      ['Query', 'atBugs'],
       // These interact with Response Scheduler API
       // which is mocked in other tests.
       ['Mutation', 'scheduleCollectionJob'],
