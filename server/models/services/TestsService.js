@@ -57,11 +57,32 @@ const getTests = parentRecord => {
         })
       };
     }),
-    assertions: test.assertions.map(assertion => ({
-      ...assertion,
-      text: isV2 ? assertion.assertionStatement : assertion.text,
-      phrase: isV2 ? assertion.assertionPhrase : null
-    }))
+    assertions: test.assertions.map(assertion => {
+      const renderableContentAssertion = test.renderableContent.assertions.find(
+        a => a.assertionId === assertion.rawAssertionId
+      );
+      if (!renderableContentAssertion)
+        throw new Error(
+          `unexpected.renderableContentAssertion.found: ${assertion.rawAssertionId}`
+        );
+
+      return {
+        ...assertion,
+        text: isV2 ? assertion.assertionStatement : assertion.text,
+        phrase: isV2 ? assertion.assertionPhrase : null,
+        references:
+          isV2 && renderableContentAssertion.refIds.trim() !== ''
+            ? renderableContentAssertion.refIds
+                .trim()
+                .split(' ')
+                .map(refId =>
+                  test.renderableContent.info.references.find(
+                    r => r.refId === refId
+                  )
+                )
+            : null
+      };
+    })
   }));
 };
 

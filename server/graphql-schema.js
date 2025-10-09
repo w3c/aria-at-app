@@ -690,6 +690,30 @@ const graphqlSchema = gql`
   }
 
   """
+  Sourced from tests/<pattern>/data/references.csv on the ARIA-AT repo
+  """
+  type Reference {
+    """
+    The reference ID, such as "button" or "aria-expanded".
+    """
+    refId: String!
+    """
+    The value of the reference. This could be link, an identifier such as an
+    email or just text.
+    """
+    value: String!
+    """
+    The type of the reference, such as "htmlAam", "aria", "metadata", etc.
+    """
+    type: String
+    """
+    The link text of the reference if value is, or will be transformed into a
+    link.
+    """
+    linkText: String
+  }
+
+  """
   For a given output, the assertion describes a check on that output which can
   pass or fail.
   """
@@ -716,6 +740,10 @@ const graphqlSchema = gql`
     https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#assertionphrase
     """
     phrase: String
+    """
+    Collection of ARIA and HTML features references related to the assertion.
+    """
+    references: [Reference]
   }
 
   """
@@ -1270,6 +1298,7 @@ const graphqlSchema = gql`
   }
 
   """
+
   """
   type ReviewerStatus {
     """

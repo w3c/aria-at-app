@@ -283,14 +283,10 @@ const TestReview = () => {
               }
             }
           );
-        ariaFeatures = ariaFeatures.map(ariaFeature => {
-          if (!ariaFeature.linkText) {
-            return {
-              ...ariaFeature,
-              linkText: `ARIA feature: ${ariaFeature.refId}`
-            };
-          }
-        });
+        ariaFeatures = ariaFeatures.map(ariaFeature => ({
+          ...ariaFeature,
+          linkText: ariaFeature.linkText || `ARIA feature: ${ariaFeature.refId}`
+        }));
 
         return (
           <Fragment key={test.id}>

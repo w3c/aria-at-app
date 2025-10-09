@@ -61,11 +61,13 @@ const countAssertions = ({
   const countScenarioResult = scenarioResult => {
     const isClient =
       `${priority.toLowerCase()}AssertionResults` in scenarioResult;
-    let all;
+
+    let assertionResults;
     if (isClient) {
-      all = scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] || [];
+      assertionResults =
+        scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] || [];
     } else {
-      all = scenarioResult.assertionResults.filter(a => {
+      assertionResults = scenarioResult.assertionResults.filter(a => {
         // Same as `server/resolvers/ScenarioResult/assertionResultsResolver.js`
         if (a.assertion?.assertionExceptions?.length) {
           const scenarioSettings = scenarioResult.scenario.settings;
@@ -94,17 +96,17 @@ const countAssertions = ({
     }
 
     if (status === 'untestable') {
-      return scenarioResult.untestable ? all.length : 0;
+      return scenarioResult.untestable ? assertionResults.length : 0;
     }
 
     if (status === 'passed') {
       // In an untestable scenario, no assertions are considered passing.
       return scenarioResult.untestable
         ? 0
-        : all.filter(each => each.passed).length;
+        : assertionResults.filter(each => each.passed).length;
     }
 
-    return all.length;
+    return assertionResults.length;
   };
   return countAvailableData(countScenarioResult, {
     testPlanReport,
@@ -163,6 +165,65 @@ const countCommands = ({
   });
 };
 
+const countFeatures = ({
+  testPlanReport, // Choose one to provide
+  testResult, // Choose one to provide
+  scenarioResult, // Choose one to provide
+  featureType, // 'aria' or 'htmlAam'
+  status // 'passed', 'failed', 'untestable'
+}) => {
+  const countScenarioResult = scenarioResult => {
+    const isClient =
+      'mustAssertionResults' in scenarioResult ||
+      'shouldAssertionResults' in scenarioResult;
+
+    const assertionResults = isClient
+      ? [
+          ...scenarioResult.mustAssertionResults,
+          ...scenarioResult.shouldAssertionResults
+        ]
+      : scenarioResult?.assertionResults;
+
+    if (!assertionResults) return 0;
+    return assertionResults.reduce((count, assertionResult) => {
+      if (!isClient) {
+        const priority = assertionResult.assertion?.priority;
+        if (priority !== 'MUST' && priority !== 'SHOULD') return count;
+      }
+
+      // If scenario is untestable, all assertions are untestable
+      if (scenarioResult.untestable) {
+        if (status === 'untestable' || status === undefined) {
+          const references = assertionResult.assertion?.references || [];
+          const featureReferences = references.filter(
+            ref => ref.type === featureType
+          );
+          // console.log('featureReferences 1', featureReferences)
+          return count + featureReferences.length;
+        }
+        return count;
+      }
+
+      // Handle testable scenarios
+      if (status === 'passed' && !assertionResult.passed) return count;
+      if (status === 'failed' && assertionResult.passed) return count;
+      if (status === 'untestable') return count;
+
+      const references = assertionResult.assertion?.references || [];
+      const featureReferences = references.filter(
+        ref => ref.type === featureType
+      );
+      return count + featureReferences.length;
+    }, 0);
+  };
+
+  return countAvailableData(countScenarioResult, {
+    testPlanReport,
+    testResult,
+    scenarioResult
+  });
+};
+
 const calculateAssertionPriorityCounts = (result, priority) => {
   const assertionsPassedCount = countAssertions({
     ...result,
@@ -197,6 +258,58 @@ const getMetrics = ({
   const result = { scenarioResult, testResult, testPlanReport };
 
   const commandsCount = countCommands({ ...result });
+
+  const ariaFeaturesCount = countFeatures({
+    ...result,
+    featureType: 'aria'
+  });
+  const ariaFeaturesPassedCount = countFeatures({
+    ...result,
+    featureType: 'aria',
+    status: 'passed'
+  });
+  const ariaFeaturesFailedCount = countFeatures({
+    ...result,
+    featureType: 'aria',
+    status: 'failed'
+  });
+  const ariaFeaturesUntestableCount = countFeatures({
+    ...result,
+    featureType: 'aria',
+    status: 'untestable'
+  });
+  const ariaFeaturesFormatted =
+    ariaFeaturesCount === 0
+      ? false
+      : `${Math.floor(
+          (ariaFeaturesPassedCount / ariaFeaturesCount) * 100
+        )}% of passing`;
+
+  const htmlFeaturesCount = countFeatures({
+    ...result,
+    featureType: 'htmlAam'
+  });
+  const htmlFeaturesPassedCount = countFeatures({
+    ...result,
+    featureType: 'htmlAam',
+    status: 'passed'
+  });
+  const htmlFeaturesFailedCount = countFeatures({
+    ...result,
+    featureType: 'htmlAam',
+    status: 'failed'
+  });
+  const htmlFeaturesUntestableCount = countFeatures({
+    ...result,
+    featureType: 'htmlAam',
+    status: 'untestable'
+  });
+  const htmlFeaturesFormatted =
+    htmlFeaturesCount === 0
+      ? false
+      : `${Math.floor(
+          (htmlFeaturesPassedCount / htmlFeaturesCount) * 100
+        )}% of passing`;
 
   // NOTE: Each command has 2 additional assertions:
   // * Severe negative side effects do not occur
@@ -320,10 +433,20 @@ const getMetrics = ({
     moderateImpactPassedAssertionCount,
     moderateImpactFailedAssertionCount,
     commandsCount,
+    ariaFeaturesPassedCount,
+    ariaFeaturesCount,
+    ariaFeaturesFailedCount,
+    ariaFeaturesUntestableCount,
+    htmlFeaturesPassedCount,
+    htmlFeaturesCount,
+    htmlFeaturesFailedCount,
+    htmlFeaturesUntestableCount,
     mustFormatted,
     shouldFormatted,
     mayFormatted,
     negativeSideEffectsFormatted,
+    ariaFeaturesFormatted,
+    htmlFeaturesFormatted,
     supportLevel,
     supportPercent
   };
