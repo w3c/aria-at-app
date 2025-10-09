@@ -110,7 +110,7 @@ describe('Test Run when not signed in', () => {
 });
 
 describe('Test Run when signed in as admin', () => {
-  const navigateToRunAndReassignToDifferentTester = async (
+  const navigateToRunAsTester = async (
     page,
     {
       testPlanSectionButtonSelector = 'button#disclosure-btn-modal-dialog-0',
@@ -179,54 +179,51 @@ describe('Test Run when signed in as admin', () => {
       '1.TestBrowserVersion'
     );
     await page.click(atBrowserModalSaveButtonSelector);
-    await page.waitForNetworkIdle();
-
-    // Find the reassign dropdown button in the Test Options section
-    await page.evaluate(() => {
-      const reassignDropdownButton = document.querySelector(
-        'button[aria-label="Reassign Testers"]'
-      );
-      if (reassignDropdownButton) {
-        reassignDropdownButton.click();
-      }
-    });
-
-    // Wait for the dropdown menu to appear
-    const assignTestersMenuSelector = 'div [role="menu"]';
-    await page.waitForSelector(assignTestersMenuSelector);
-
-    // Find and click the target tester in the dropdown
-    await page.evaluate(() => {
-      const assignTestersMenuSelector = 'div [role="menu"]';
-      const assignTestersMenu = document.querySelector(
-        assignTestersMenuSelector
-      );
-      const assignTesterOptions = Array.from(
-        assignTestersMenu.querySelectorAll('[role="menuitemcheckbox"]')
-      );
-      const targetTesterOption = assignTesterOptions.find(option =>
-        option.innerText.includes('foo-bar')
-      );
-      if (targetTesterOption) {
-        targetTesterOption.click();
-      }
-    });
-
-    // Wait for the reassignment to complete
-    await page.waitForNetworkIdle();
+    await page.waitForSelector(
+      '::-p-text(Your version of Chrome has been updated to 1.TestBrowserVersion)'
+    );
   };
 
   it('reassigns run to different tester then verifies tester assignment history is viewable', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
-      await page.waitForSelector('h1 ::-p-text(Test Queue)');
+      // Open run as tester, esmeralda-baggins
+      await navigateToRunAsTester(page);
 
-      // Reassign to a different tester (foo-bar) and navigate to that run
-      await navigateToRunAndReassignToDifferentTester(page);
-
-      // Wait for run page to load
+      // Wait for the page to be fully rendered with all data
       await page.waitForSelector('h1 ::-p-text(Test 1)');
-      await page.waitForSelector('::-p-text(Tester Assignment History)');
 
+      // Find the reassign dropdown button in the Test Options section
+      await page.evaluate(() => {
+        const reassignDropdownButton = document.querySelector(
+          'button[aria-label="Reassign Testers"]'
+        );
+        if (reassignDropdownButton) {
+          reassignDropdownButton.click();
+        }
+      });
+
+      // Wait for the dropdown menu to appear
+      const assignTestersMenuSelector = 'div [role="menu"]';
+      await page.waitForSelector(assignTestersMenuSelector);
+
+      // Find and click the target tester in the dropdown
+      await page.evaluate(() => {
+        const assignTestersMenuSelector = 'div [role="menu"]';
+        const assignTestersMenu = document.querySelector(
+          assignTestersMenuSelector
+        );
+        const assignTesterOptions = Array.from(
+          assignTestersMenu.querySelectorAll('[role="menuitemcheckbox"]')
+        );
+        const targetTesterOption = assignTesterOptions.find(option =>
+          option.innerText.includes('foo-bar')
+        );
+        if (targetTesterOption) {
+          targetTesterOption.click();
+        }
+      });
+
+      await page.waitForSelector('::-p-text(Tester Assignment History)');
       const assignmentHistoryText = await page.evaluate(() => {
         const assignmentHistoryText = document.querySelector(
           '[class*="assignment-container"]'
@@ -239,6 +236,40 @@ describe('Test Run when signed in as admin', () => {
       expect(assignmentHistoryText).toContain('This run was reassigned from');
       expect(assignmentHistoryText).toContain("to 'foo-bar'");
       expect(assignmentHistoryText).toContain('Performed by: joe-the-admin');
+    });
+  });
+
+  it('deletes a test run as admin from the test run page', async () => {
+    await getPage({ role: 'admin', url: '/test-queue' }, async page => {
+      // Open run as tester, esmeralda-baggins
+      await navigateToRunAsTester(page);
+
+      // Wait for the page to be fully rendered with all data
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+
+      // Find and click the Delete Run button
+      await page.waitForSelector('button ::-p-text(Delete Run)');
+      await page.click('button ::-p-text(Delete Run)');
+
+      // Wait for confirmation modal to appear
+      await page.waitForSelector('::-p-text(Deleting Run)');
+      await page.waitForSelector(
+        '::-p-text(Are you sure you want to permanently delete)'
+      );
+      await page.waitForSelector('::-p-text(This cannot be undone)');
+      await page.waitForSelector('button ::-p-text(Proceed)');
+      await page.waitForSelector('button ::-p-text(Cancel)');
+
+      // Proceed with deletion and complete navigation to the test queue
+      await page.click('button ::-p-text(Proceed)');
+      await page.waitForNavigation({
+        waitUntil: ['domcontentloaded', 'networkidle0']
+      });
+
+      // Verify we're back on the test queue page
+      await page.waitForSelector('h1 ::-p-text(Test Queue)');
+      const currentUrl = await page.url();
+      expect(currentUrl).toMatch(/\/test-queue$/);
     });
   });
 });
@@ -304,6 +335,59 @@ describe('Test Run when signed in as tester', () => {
     );
     await page.click(atBrowserModalSaveButtonSelector);
     await page.waitForNetworkIdle();
+  };
+
+  const navigateToRunAsAnotherTester = async (
+    page,
+    {
+      testPlanSectionButtonSelector = 'button#disclosure-btn-modal-dialog-0',
+      testPlanTableSelector = 'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]'
+    } = {}
+  ) => {
+    // Expand Modal Dialog's V24.06.07 section
+    await page.waitForSelector(testPlanSectionButtonSelector);
+    await page.click(testPlanSectionButtonSelector);
+
+    // Wait for the table to render
+    await page.waitForSelector(testPlanTableSelector);
+
+    // Find the 'View Results for...' dropdown button from the Actions Column
+    await page.evaluate(() => {
+      const modalDialogTableSelector =
+        'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
+      const modalDialogTable = document.querySelector(modalDialogTableSelector);
+
+      // Find the 'View Results for...' button from the Actions Column
+      const cells = Array.from(modalDialogTable.querySelectorAll('td'));
+      const actionsColumn = cells[4];
+      const viewResultsDropdownButton = actionsColumn.querySelector(
+        'div.dropdown button'
+      );
+      viewResultsDropdownButton.click();
+    });
+
+    // Wait for the dropdown menu to appear and click the tester's name
+    const viewResultsMenuSelector = 'div.dropdown-menu';
+    await page.waitForSelector(viewResultsMenuSelector);
+
+    await page.evaluate(() => {
+      const openRunAsMenu = document.querySelector('div.dropdown-menu');
+      const testerOptions = Array.from(
+        openRunAsMenu.querySelectorAll('a.dropdown-item')
+      );
+      const targetTesterOption = testerOptions.find(option =>
+        option.innerText.includes('esmeralda-baggins')
+      );
+      targetTesterOption.click();
+    });
+
+    // Wait for navigation to Test Run page to complete
+    await page.waitForNavigation({
+      waitUntil: ['domcontentloaded', 'networkidle0']
+    });
+    await page.waitForSelector(
+      '::-p-text(tests of esmeralda-baggins in read-only mode)'
+    );
   };
 
   const handlePageSubmit = async (page, { expectConflicts = true } = {}) => {
@@ -962,6 +1046,30 @@ describe('Test Run when signed in as tester', () => {
       expect(activeElement.id).toBe('problem-0-true');
       expect(activeElement.nodeName).toBe('input');
       expect(activeElement.type).toBe('radio');
+    });
+  });
+
+  it('shows delete run button for self', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      await assignSelfAndNavigateToRun(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+
+      const deleteRunButton = await page.$('button ::-p-text(Delete Run)');
+      expect(deleteRunButton).toBeDefined();
+    });
+  });
+
+  it('does not show delete run button when viewing other tester run', async () => {
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      // Open a run as another tester using the 'View Results for' button on the test queue page
+      await navigateToRunAsAnotherTester(page);
+
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('::-p-text(Test Options)');
+
+      const deleteRunButton = await page.$('button ::-p-text(Delete Run)');
+      expect(deleteRunButton).toBeNull();
     });
   });
 });
