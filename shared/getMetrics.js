@@ -198,7 +198,6 @@ const countFeatures = ({
           const featureReferences = references.filter(
             ref => ref.type === featureType
           );
-          // console.log('featureReferences 1', featureReferences)
           return count + featureReferences.length;
         }
         return count;
@@ -250,6 +249,38 @@ const calculateAssertionPriorityCounts = (result, priority) => {
   };
 };
 
+const calculateFeatureCounts = (result, featureType) => {
+  const count = countFeatures({ ...result, featureType });
+  const passedCount = countFeatures({
+    ...result,
+    featureType,
+    status: 'passed'
+  });
+  const failedCount = countFeatures({
+    ...result,
+    featureType,
+    status: 'failed'
+  });
+  const untestableCount = countFeatures({
+    ...result,
+    featureType,
+    status: 'untestable'
+  });
+
+  const formatted =
+    count === 0
+      ? false
+      : `${Math.floor((passedCount / count) * 100)}% of passing`;
+
+  return {
+    count,
+    passedCount,
+    failedCount,
+    untestableCount,
+    formatted
+  };
+};
+
 const getMetrics = ({
   scenarioResult, // Choose one to provide
   testResult, // Choose one to provide
@@ -258,58 +289,6 @@ const getMetrics = ({
   const result = { scenarioResult, testResult, testPlanReport };
 
   const commandsCount = countCommands({ ...result });
-
-  const ariaFeaturesCount = countFeatures({
-    ...result,
-    featureType: 'aria'
-  });
-  const ariaFeaturesPassedCount = countFeatures({
-    ...result,
-    featureType: 'aria',
-    status: 'passed'
-  });
-  const ariaFeaturesFailedCount = countFeatures({
-    ...result,
-    featureType: 'aria',
-    status: 'failed'
-  });
-  const ariaFeaturesUntestableCount = countFeatures({
-    ...result,
-    featureType: 'aria',
-    status: 'untestable'
-  });
-  const ariaFeaturesFormatted =
-    ariaFeaturesCount === 0
-      ? false
-      : `${Math.floor(
-          (ariaFeaturesPassedCount / ariaFeaturesCount) * 100
-        )}% of passing`;
-
-  const htmlFeaturesCount = countFeatures({
-    ...result,
-    featureType: 'htmlAam'
-  });
-  const htmlFeaturesPassedCount = countFeatures({
-    ...result,
-    featureType: 'htmlAam',
-    status: 'passed'
-  });
-  const htmlFeaturesFailedCount = countFeatures({
-    ...result,
-    featureType: 'htmlAam',
-    status: 'failed'
-  });
-  const htmlFeaturesUntestableCount = countFeatures({
-    ...result,
-    featureType: 'htmlAam',
-    status: 'untestable'
-  });
-  const htmlFeaturesFormatted =
-    htmlFeaturesCount === 0
-      ? false
-      : `${Math.floor(
-          (htmlFeaturesPassedCount / htmlFeaturesCount) * 100
-        )}% of passing`;
 
   // NOTE: Each command has 2 additional assertions:
   // * Severe negative side effects do not occur
@@ -377,6 +356,22 @@ const getMetrics = ({
   const negativeSideEffectCount = countNegativeSideEffects({ ...result });
   const negativeSideEffectsFormatted =
     negativeSideEffectCount === 0 ? false : `${negativeSideEffectCount} found`;
+
+  const {
+    count: ariaFeaturesCount,
+    passedCount: ariaFeaturesPassedCount,
+    failedCount: ariaFeaturesFailedCount,
+    untestableCount: ariaFeaturesUntestableCount,
+    formatted: ariaFeaturesFormatted
+  } = calculateFeatureCounts(result, 'aria');
+
+  const {
+    count: htmlFeaturesCount,
+    passedCount: htmlFeaturesPassedCount,
+    failedCount: htmlFeaturesFailedCount,
+    untestableCount: htmlFeaturesUntestableCount,
+    formatted: htmlFeaturesFormatted
+  } = calculateFeatureCounts(result, 'htmlAam');
 
   let supportLevel;
   if (negativeSideEffectCount > 0 || mustAssertionsFailedCount > 0) {

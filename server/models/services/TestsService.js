@@ -58,10 +58,12 @@ const getTests = parentRecord => {
       };
     }),
     assertions: test.assertions.map(assertion => {
-      const renderableContentAssertion = test.renderableContent.assertions.find(
-        a => a.assertionId === assertion.rawAssertionId
-      );
-      if (!renderableContentAssertion)
+      const renderableContentAssertion =
+        isV2 &&
+        test.renderableContent.assertions.find(
+          a => a.assertionId === assertion.rawAssertionId
+        );
+      if (isV2 && !renderableContentAssertion)
         throw new Error(
           `unexpected.renderableContentAssertion.found: ${assertion.rawAssertionId}`
         );
