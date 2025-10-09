@@ -51,7 +51,7 @@
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.37.7",
     "shared": "1.0.0",
-    "uuid": "^13.0.0"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.1",
