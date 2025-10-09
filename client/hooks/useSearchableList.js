@@ -2,12 +2,6 @@ import { useState, useMemo, useCallback } from 'react';
 
 /**
  * Generic hook for managing searchable lists with filtering
- * @param {Object} options - Configuration options
- * @param {Array} options.items - Array of items to search
- * @param {Function} options.searchFields - Function that returns fields to search in each item
- * @param {number} options.maxResults - Maximum number of results to return (default: 20)
- * @param {Array} options.excludeIds - Array of IDs to exclude from results
- * @returns {Object} Search state and handlers
  */
 export const useSearchableList = ({
   items = [],

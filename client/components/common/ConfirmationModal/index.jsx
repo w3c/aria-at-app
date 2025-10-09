@@ -2,9 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import BasicModal from '../BasicModal';
 
-/**
- * Generic confirmation modal component
- */
 const ConfirmationModal = ({
   show,
   title,

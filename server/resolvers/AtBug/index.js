@@ -11,7 +11,6 @@ const atResolver = async (parent, _, context) => {
     return null;
   }
 
-  // Load the AT from the database
   const { At } = require('../../models');
   return await At.findByPk(parent.atId, {
     attributes: ['id', 'name'],

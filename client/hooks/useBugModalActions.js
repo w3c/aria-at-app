@@ -8,10 +8,6 @@ import {
   UNLINK_AT_BUGS_FROM_NEGATIVE_SIDE_EFFECT
 } from '../components/FailingAssertionsSummary/queries';
 
-/**
- * Hook for managing bug modal actions (save, cancel, confirmation)
- * Uses the generic useModalState hook for modal state management
- */
 export const useBugModalActions = ({
   assertion,
   pendingChanges,
@@ -32,18 +28,14 @@ export const useBugModalActions = ({
     pendingChanges.linkedBugs.length > 0 ||
     pendingChanges.unlinkedBugs.length > 0;
 
-  // Save changes
   const handleSave = useCallback(async () => {
     try {
-      // Check if this is a negative side effect
       if (assertion?.isNegativeSideEffect) {
         if (!assertion?.negativeSideEffectId) {
           throw new Error(
             'Negative side effect ID is missing from assertion object'
           );
         }
-
-        // Link new bugs to negative side effect
 
         for (const bug of pendingChanges.linkedBugs) {
           await linkAtBugsToNegativeSideEffect({
@@ -54,7 +46,6 @@ export const useBugModalActions = ({
           });
         }
 
-        // Unlink removed bugs from negative side effect
         if (pendingChanges.unlinkedBugs.length > 0) {
           await unlinkAtBugsFromNegativeSideEffect({
             variables: {
@@ -64,12 +55,10 @@ export const useBugModalActions = ({
           });
         }
       } else {
-        // Regular assertion handling
         if (!assertion?.assertionId) {
           throw new Error('Assertion ID is missing from assertion object');
         }
 
-        // Link new bugs
         for (const bug of pendingChanges.linkedBugs) {
           await linkAtBugs({
             variables: {
@@ -79,7 +68,6 @@ export const useBugModalActions = ({
           });
         }
 
-        // Unlink removed bugs
         if (pendingChanges.unlinkedBugs.length > 0) {
           await unlinkAtBugs({
             variables: {

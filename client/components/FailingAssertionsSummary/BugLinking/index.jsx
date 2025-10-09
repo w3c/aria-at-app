@@ -28,10 +28,6 @@ LinkAtBugModalInner.propTypes = {
   onClose: PropTypes.func.isRequired
 };
 
-/**
- * Main LinkAtBugModal component
- * Provides context and renders the modal
- */
 const LinkAtBugModal = ({
   show,
   onClose,

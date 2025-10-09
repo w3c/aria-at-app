@@ -1,9 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-/**
- * Generic form field component with validation support
- */
 const FormField = ({
   id,
   name,

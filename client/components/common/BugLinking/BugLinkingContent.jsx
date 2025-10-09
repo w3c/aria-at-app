@@ -6,11 +6,6 @@ import LinkedBugsList from '../../FailingAssertionsSummary/BugLinking/LinkedBugs
 import BugSearchCombobox from '../../FailingAssertionsSummary/BugLinking/BugSearchCombobox';
 import CreateBugForm from '../../FailingAssertionsSummary/BugLinking/CreateBugForm';
 
-/**
- * Shared content component for bug linking modal
- * Handles mode switching between search and creation
- * Works with any bug linking context that provides the required interface
- */
 const BugLinkingContent = ({ useBugLinkingContext }) => {
   const [mode, setMode] = useState('select'); // 'select' | 'create'
   const initialFocusRef = useRef();
@@ -70,14 +65,12 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
 
   return (
     <div>
-      {/* Assertion Details */}
       <div className="mb-3">
         <AssertionDetails assertion={displayAssertion} />
       </div>
 
       {mode === 'select' ? (
         <>
-          {/* Linked Bugs */}
           {linkedBugs && linkedBugs.length > 0 && (
             <div className="mb-3">
               <h5>Linked Bugs</h5>
@@ -89,7 +82,6 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
             </div>
           )}
 
-          {/* Bug Search */}
           <BugSearchCombobox
             searchText={searchText}
             onSearchChange={setSearchText}
@@ -101,7 +93,6 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
             atName={atName}
           />
 
-          {/* Add New Bug Button */}
           <div className="mb-3">
             <button
               type="button"
@@ -114,7 +105,6 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
         </>
       ) : (
         <>
-          {/* Back Button */}
           <div className="mb-3">
             <button
               type="button"
@@ -125,7 +115,6 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
             </button>
           </div>
 
-          {/* Create Bug Form */}
           <CreateBugForm
             onCreateBug={handleCreate}
             onCancel={() => setMode('select')}

@@ -2,11 +2,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 
 /**
  * Generic hook for managing pending changes with preview functionality
- * @param {Object} options - Configuration options
- * @param {Object} options.originalItem - The original item to track changes for
- * @param {Function} options.getItemsField - Function to get the items field from the original item
- * @param {Function} options.createUpdatedItem - Function to create updated item with new items
- * @returns {Object} Pending changes state and handlers
  */
 export const usePendingChanges = ({
   originalItem,

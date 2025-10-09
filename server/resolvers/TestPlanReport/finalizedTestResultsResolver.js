@@ -4,7 +4,7 @@ const { getTestPlanRuns } = require('../../models/services/TestPlanRunService');
 const finalizedTestResultsResolver = async (testPlanReport, _, context) => {
   const { transaction } = context;
 
-  // Fetch testPlanRuns for this report
+  // Populate testPlanRuns for this report
   const testPlanRuns = await getTestPlanRuns({
     where: { testPlanReportId: testPlanReport.id },
     transaction

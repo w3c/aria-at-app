@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+// React Error Boundary requires class components
 class BugLinkingErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -27,7 +28,15 @@ class BugLinkingErrorBoundary extends Component {
           <h5>Something went wrong</h5>
           <p className="mb-3">
             There was an error while managing bug links. Please try again or
-            contact support if the problem persists.
+            file an issue on{' '}
+            <a
+              href="https://github.com/w3c/aria-at-app/issues"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
+            .
           </p>
           <button
             type="button"

@@ -2,11 +2,6 @@ import { useState, useCallback, useMemo } from 'react';
 
 /**
  * Generic hook for form validation
- * @param {Object} options - Configuration options
- * @param {Object} options.initialData - Initial form data
- * @param {Object} options.validators - Object with field validators
- * @param {Function} options.checkDuplicates - Function to check for duplicates
- * @returns {Object} Form state and validation handlers
  */
 export const useFormValidation = ({
   initialData = {},

@@ -3,10 +3,6 @@ import { useLazyQuery } from '@apollo/client';
 import { useSearchableList } from './useSearchableList';
 import { AT_BUGS_QUERY } from '../components/FailingAssertionsSummary/queries';
 
-/**
- * Hook for searching and filtering available bugs
- * Uses the generic useSearchableList hook for filtering logic
- */
 export const useBugSearch = ({ atId, assertion }) => {
   const [fetchBugs, { data: bugsData, loading: bugsLoading }] = useLazyQuery(
     AT_BUGS_QUERY,
