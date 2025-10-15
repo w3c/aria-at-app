@@ -1,4 +1,4 @@
-const convertAssertionPriority = require('./convertAssertionPriority');
+const checkAssertionResultExceptionMatch = require('./checkAssertionResultExceptionMatch');
 const { calculatePercentage, trimDecimals } = require('./calculations');
 
 const sum = arr => arr?.reduce((total, item) => total + item, 0) || 0;
@@ -67,32 +67,9 @@ const countAssertions = ({
       assertionResults =
         scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] || [];
     } else {
-      assertionResults = scenarioResult.assertionResults.filter(a => {
-        // Same as `server/resolvers/ScenarioResult/assertionResultsResolver.js`
-        if (a.assertion?.assertionExceptions?.length) {
-          const scenarioSettings = scenarioResult.scenario.settings;
-          const scenarioCommandId =
-            scenarioResult.scenario.commandIds.join(' ');
-
-          const foundException = a.assertion.assertionExceptions.find(
-            exception =>
-              exception.settings === scenarioSettings &&
-              exception.commandId === scenarioCommandId
-          );
-
-          if (foundException) {
-            return (
-              convertAssertionPriority(foundException.priority) ===
-              convertAssertionPriority(priority)
-            );
-          }
-        }
-
-        return (
-          convertAssertionPriority(a.assertion.priority) ===
-          convertAssertionPriority(priority)
-        );
-      });
+      assertionResults = scenarioResult.assertionResults.filter(a =>
+        checkAssertionResultExceptionMatch(a, scenarioResult, priority)
+      );
     }
 
     if (status === 'untestable') {
@@ -177,18 +154,41 @@ const countFeatures = ({
       'mustAssertionResults' in scenarioResult ||
       'shouldAssertionResults' in scenarioResult;
 
-    const assertionResults = isClient
-      ? [
-          ...scenarioResult.mustAssertionResults,
-          ...scenarioResult.shouldAssertionResults
-        ]
-      : scenarioResult?.assertionResults;
+    let assertionResults;
+    if (isClient) {
+      assertionResults = [
+        ...scenarioResult.mustAssertionResults,
+        ...scenarioResult.shouldAssertionResults
+      ];
+    } else {
+      assertionResults = [
+        ...scenarioResult.assertionResults.filter(a =>
+          checkAssertionResultExceptionMatch(a, scenarioResult, 'MUST')
+        ),
+        ...scenarioResult.assertionResults.filter(a =>
+          checkAssertionResultExceptionMatch(a, scenarioResult, 'SHOULD')
+        )
+      ];
+    }
 
     if (!assertionResults) return 0;
+
     return assertionResults.reduce((count, assertionResult) => {
       if (!isClient) {
-        const priority = assertionResult.assertion?.priority;
-        if (priority !== 'MUST' && priority !== 'SHOULD') return count;
+        if (
+          !checkAssertionResultExceptionMatch(
+            assertionResult,
+            scenarioResult,
+            'MUST'
+          ) &&
+          !checkAssertionResultExceptionMatch(
+            assertionResult,
+            scenarioResult,
+            'SHOULD'
+          )
+        ) {
+          return count;
+        }
       }
 
       // If scenario is untestable, all assertions are untestable
@@ -281,6 +281,116 @@ const calculateFeatureCounts = (result, featureType) => {
   };
 };
 
+const calculatePerFeatureCounts = (result, featureType) => {
+  const featureMap = new Map();
+
+  const processScenarioResult = scenarioResult => {
+    const isClient =
+      'mustAssertionResults' in scenarioResult ||
+      'shouldAssertionResults' in scenarioResult;
+
+    const assertionResults = isClient
+      ? [
+          ...scenarioResult.mustAssertionResults,
+          ...scenarioResult.shouldAssertionResults
+        ]
+      : [
+          ...scenarioResult.assertionResults.filter(a =>
+            checkAssertionResultExceptionMatch(a, scenarioResult, 'MUST')
+          ),
+          ...scenarioResult.assertionResults.filter(a =>
+            checkAssertionResultExceptionMatch(a, scenarioResult, 'SHOULD')
+          )
+        ];
+
+    if (!assertionResults) return;
+
+    assertionResults.forEach(assertionResult => {
+      if (!isClient) {
+        if (
+          !checkAssertionResultExceptionMatch(
+            assertionResult,
+            scenarioResult,
+            'MUST'
+          ) &&
+          !checkAssertionResultExceptionMatch(
+            assertionResult,
+            scenarioResult,
+            'SHOULD'
+          )
+        ) {
+          return;
+        }
+      }
+
+      const references = assertionResult.assertion?.references || [];
+      const featureReferences = references.filter(
+        ref => ref.type === featureType
+      );
+
+      featureReferences.forEach(featureRef => {
+        const featureKey = featureRef.refId || featureRef.value;
+
+        if (!featureMap.has(featureKey)) {
+          featureMap.set(featureKey, {
+            refId: featureRef.refId,
+            type: featureRef.type,
+            linkText: featureRef.linkText,
+            value: featureRef.value,
+            total: 0,
+            passed: 0,
+            failed: 0,
+            untestable: 0
+          });
+        }
+
+        const feature = featureMap.get(featureKey);
+        feature.total++;
+
+        // If scenario is untestable, all assertions are untestable
+        if (scenarioResult.untestable) {
+          feature.untestable++;
+        } else {
+          // Handle testable scenarios
+          if (assertionResult.passed) {
+            feature.passed++;
+          } else {
+            feature.failed++;
+          }
+        }
+      });
+    });
+  };
+
+  const processTestResult = testResult => {
+    testResult?.scenarioResults?.forEach(processScenarioResult);
+  };
+
+  const processTestPlanReport = testPlanReport => {
+    testPlanReport?.finalizedTestResults?.forEach(processTestResult);
+  };
+
+  if (result.testPlanReport) {
+    processTestPlanReport(result.testPlanReport);
+  } else if (result.testResult) {
+    processTestResult(result.testResult);
+  } else if (result.scenarioResult) {
+    processScenarioResult(result.scenarioResult);
+  }
+
+  return Array.from(featureMap.values()).map(feature => ({
+    ...feature,
+    passedPercentage:
+      feature.total === 0
+        ? 0
+        : Math.floor((feature.passed / feature.total) * 100),
+    formatted:
+      feature.total === 0
+        ? '0% of passing'
+        : `${Math.floor((feature.passed / feature.total) * 100)}% of passing`
+  }));
+};
+
 const getMetrics = ({
   scenarioResult, // Choose one to provide
   testResult, // Choose one to provide
@@ -364,7 +474,6 @@ const getMetrics = ({
     untestableCount: ariaFeaturesUntestableCount,
     formatted: ariaFeaturesFormatted
   } = calculateFeatureCounts(result, 'aria');
-
   const {
     count: htmlFeaturesCount,
     passedCount: htmlFeaturesPassedCount,
@@ -372,6 +481,8 @@ const getMetrics = ({
     untestableCount: htmlFeaturesUntestableCount,
     formatted: htmlFeaturesFormatted
   } = calculateFeatureCounts(result, 'htmlAam');
+  const ariaFeatures = calculatePerFeatureCounts(result, 'aria');
+  const htmlFeatures = calculatePerFeatureCounts(result, 'htmlAam');
 
   let supportLevel;
   if (negativeSideEffectCount > 0 || mustAssertionsFailedCount > 0) {
@@ -442,6 +553,8 @@ const getMetrics = ({
     negativeSideEffectsFormatted,
     ariaFeaturesFormatted,
     htmlFeaturesFormatted,
+    ariaFeatures,
+    htmlFeatures,
     supportLevel,
     supportPercent
   };

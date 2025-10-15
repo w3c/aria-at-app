@@ -1539,6 +1539,11 @@ const graphqlSchema = gql`
     Get key metrics
     """
     keyMetrics: KeyMetrics!
+    """
+    Get ARIA and HTML features metrics across finalized reports for test plan
+    versions in the candidate and recommended phases
+    """
+    ariaHtmlFeatures: ARIAHTMLFeatureMetrics!
   }
 
   # Mutation-specific types below
@@ -1861,6 +1866,36 @@ const graphqlSchema = gql`
     verdictsLast90Count: Int!
     testsCount: Int!
     suitesCount: Int!
+  }
+
+  type ARIAHTMLFeatureCount {
+    refId: String!
+    type: String!
+    linkText: String!
+    value: String!
+    total: Int!
+    passed: Int!
+    failed: Int!
+    untestable: Int!
+    passedPercentage: Int!
+    formatted: String!
+    atId: ID
+    browserId: ID
+  }
+
+  type ARIAHTMLFeatureMetrics {
+    ariaFeaturesPassedCount: Int!
+    ariaFeaturesCount: Int!
+    ariaFeaturesFailedCount: Int!
+    ariaFeaturesUntestableCount: Int!
+    htmlFeaturesPassedCount: Int!
+    htmlFeaturesCount: Int!
+    htmlFeaturesFailedCount: Int!
+    htmlFeaturesUntestableCount: Int!
+    ariaFeatures: [ARIAHTMLFeatureCount]!
+    htmlFeatures: [ARIAHTMLFeatureCount]!
+    ariaFeaturesByAtBrowser: [ARIAHTMLFeatureCount]!
+    htmlFeaturesByAtBrowser: [ARIAHTMLFeatureCount]!
   }
 `;
 
