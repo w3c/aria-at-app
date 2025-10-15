@@ -412,6 +412,7 @@ describe('graphql', () => {
             id
             tests {
               assertions {
+                __typename
                 references {
                   __typename
                   refId
