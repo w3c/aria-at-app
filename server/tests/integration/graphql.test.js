@@ -410,11 +410,8 @@ describe('graphql', () => {
           }
           latestTestPlanVersion {
             id
-            title
             tests {
-              id
               assertions {
-                __typename
                 references {
                   __typename
                   refId
