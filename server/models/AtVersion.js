@@ -28,7 +28,14 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: new Date()
       },
       supportedByAutomation: {
-        type: DataTypes.VIRTUAL
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
+      latestAutomationSupporting: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
       }
     },
     {
