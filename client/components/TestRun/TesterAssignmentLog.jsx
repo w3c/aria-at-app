@@ -37,7 +37,7 @@ const TesterAssignmentLog = ({ events = [] }) => {
         return `This run was reassigned from '${fromTester}' to '${toTester}' on ${date}`;
       }
       default:
-        return `This run was assigned done on ${date}`;
+        return `This run was assigned on ${date}`;
     }
   };
 
