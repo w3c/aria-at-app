@@ -36,7 +36,7 @@ const scheduleCollectionJob = require('./scheduleCollectionJobResolver');
 const restartCollectionJob = require('./restartCollectionJobResolver');
 const collectionJobByTestPlanRunId = require('./collectionJobByTestPlanRunIdResolver');
 const keyMetrics = require('./keyMetricsResolver');
-const ariaHtmlFeatures = require('./ariaHtmlFeaturesResolver');
+const ariaHtmlFeaturesMetrics = require('./ariaHtmlFeaturesMetricsResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
@@ -65,7 +65,7 @@ const resolvers = {
     ats,
     browsers,
     keyMetrics,
-    ariaHtmlFeatures,
+    ariaHtmlFeaturesMetrics,
     testPlan,
     testPlans,
     testPlanVersion,

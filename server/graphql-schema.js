@@ -1543,7 +1543,7 @@ const graphqlSchema = gql`
     Get ARIA and HTML features metrics across finalized reports for test plan
     versions in the candidate and recommended phases
     """
-    ariaHtmlFeatures: ARIAHTMLFeatureMetrics!
+    ariaHtmlFeaturesMetrics: ARIAHTMLFeatureMetrics!
   }
 
   # Mutation-specific types below

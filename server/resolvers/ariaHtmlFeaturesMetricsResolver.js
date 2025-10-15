@@ -199,8 +199,8 @@ const getAriaHtmlFeatures = async context => {
   return aggregatedMetrics;
 };
 
-const ariaHtmlFeaturesResolver = async (_, __, context) => {
+const ariaHtmlFeaturesMetricsResolver = async (_, __, context) => {
   return await getAriaHtmlFeatures(context);
 };
 
-module.exports = ariaHtmlFeaturesResolver;
+module.exports = ariaHtmlFeaturesMetricsResolver;
