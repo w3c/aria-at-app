@@ -241,8 +241,8 @@ describe('graphql', () => {
               untestable
               passedPercentage
               formatted
-              atId
-              browserId
+              atName
+              browserName
             }
             htmlFeatures {
               __typename
@@ -269,8 +269,8 @@ describe('graphql', () => {
               untestable
               passedPercentage
               formatted
-              atId
-              browserId
+              atName
+              browserName
             }
           }
           browsers {

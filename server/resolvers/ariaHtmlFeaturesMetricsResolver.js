@@ -110,8 +110,10 @@ const getAriaHtmlFeatures = async context => {
         }
       });
 
-      const atId = populatedTestPlanReport.atId;
-      const browserId = populatedTestPlanReport.browserId;
+      const atId = populatedTestPlanReport.at.id;
+      const browserId = populatedTestPlanReport.browser.id;
+      const atName = populatedTestPlanReport.at.name;
+      const browserName = populatedTestPlanReport.browser.name;
       const atBrowserKey = `${atId}-${browserId}`;
 
       const aggregateFeatures = (
@@ -162,8 +164,8 @@ const getAriaHtmlFeatures = async context => {
           } else {
             featuresAtBrowserMap.set(atBrowserFeatureKey, {
               ...feature,
-              atId,
-              browserId
+              atName,
+              browserName
             });
           }
         });

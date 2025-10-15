@@ -1879,8 +1879,8 @@ const graphqlSchema = gql`
     untestable: Int!
     passedPercentage: Int!
     formatted: String!
-    atId: ID
-    browserId: ID
+    atName: String
+    browserName: String
   }
 
   type ARIAHTMLFeatureMetrics {
