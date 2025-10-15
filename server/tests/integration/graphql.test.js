@@ -206,6 +206,73 @@ describe('graphql', () => {
             testsCount
             suitesCount
           }
+          ariaHtmlFeaturesMetrics {
+            __typename
+            ariaFeaturesPassedCount
+            ariaFeaturesCount
+            ariaFeaturesFailedCount
+            ariaFeaturesUntestableCount
+            htmlFeaturesPassedCount
+            htmlFeaturesCount
+            htmlFeaturesFailedCount
+            htmlFeaturesUntestableCount
+            ariaFeatures {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+            }
+            ariaFeaturesByAtBrowser {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+              atId
+              browserId
+            }
+            htmlFeatures {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+            }
+            htmlFeaturesByAtBrowser {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+              atId
+              browserId
+            }
+          }
           browsers {
             __typename
             id
@@ -343,6 +410,20 @@ describe('graphql', () => {
           }
           latestTestPlanVersion {
             id
+            title
+            tests {
+              id
+              assertions {
+                __typename
+                references {
+                  __typename
+                  refId
+                  type
+                  value
+                  linkText
+                }
+              }
+            }
           }
           testPlan(id: "checkbox") {
             __typename
