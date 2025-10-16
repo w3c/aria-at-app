@@ -20,13 +20,8 @@ export const useBugLinking = ({ atId, assertion, onLinked, onClose }) => {
   });
 
   return {
-    // Bug search state
     ...bugSearch,
-
-    // Pending changes state
     ...pendingChanges,
-
-    // Modal actions
     ...modalActions
   };
 };

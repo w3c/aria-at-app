@@ -3,6 +3,11 @@ import PropTypes from 'prop-types';
 import BasicModal from '../common/BasicModal';
 import AssertionDetails from './BugLinking/AssertionDetails';
 
+const VENDOR_ISSUES_URL =
+  process.env.ENVIRONMENT === 'production'
+    ? 'https://github.com/w3c/aria-at'
+    : 'https://github.com/bocoup/aria-at';
+
 const ReportATBugModal = ({
   show,
   onClose,
@@ -11,8 +16,6 @@ const ReportATBugModal = ({
   testPlanVersion
 }) => {
   const handleReportBug = () => {
-    const vendorIssuesUrl = 'https://github.com/w3c/aria-at';
-
     const title = `ARIA-AT Test Failure: ${assertion.testTitle} (${testPlanVersion?.title})`;
 
     const testRenderedUrl = `${window.location.origin}/tests/${testPlanVersion?.testPlan?.directory}`;
@@ -60,7 +63,7 @@ const ReportATBugModal = ({
       `---\n\n` +
       `*This issue was automatically generated from the ARIA-AT test suite.*`;
 
-    const issueUrl = `${vendorIssuesUrl}/issues/new?title=${encodeURI(
+    const issueUrl = `${VENDOR_ISSUES_URL}/issues/new?title=${encodeURI(
       title
     )}&body=${encodeURIComponent(body)}`;
 
