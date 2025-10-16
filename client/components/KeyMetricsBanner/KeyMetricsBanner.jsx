@@ -23,7 +23,7 @@ const KeyMetricsBanner = () => {
       {keyMetricsQuery && (
         <>
           <h2>Today's Testing Snapshot:</h2>{' '}
-          <p>
+          <p data-test-id="keyMetrics">
             As of <strong>{new Date(date).toDateString().substring(4)}</strong>,{' '}
             <strong>{verdictsCount.toLocaleString()}</strong> interop verdicts
             for <strong>{commandsCount.toLocaleString()}</strong> AT commands
