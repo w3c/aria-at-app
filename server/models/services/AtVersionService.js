@@ -186,13 +186,25 @@ const getAtVersionByQuery = async ({
  * @returns {Promise<*>}
  */
 const createAtVersion = async ({
-  values: { atId, name, releasedAt },
+  values: {
+    atId,
+    name,
+    releasedAt,
+    supportedByAutomation = false,
+    latestAutomationSupporting = false
+  },
   atVersionAttributes = AT_VERSION_ATTRIBUTES,
   atAttributes = AT_ATTRIBUTES,
   transaction
 }) => {
   await ModelService.create(AtVersion, {
-    values: { atId, name, releasedAt },
+    values: {
+      atId,
+      name,
+      releasedAt,
+      supportedByAutomation,
+      latestAutomationSupporting
+    },
     transaction
   });
   return ModelService.getByQuery(AtVersion, {
