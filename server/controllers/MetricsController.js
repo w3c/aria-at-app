@@ -77,14 +77,14 @@ const downloadARIAHtmlFeaturesCSV = async (req, res, next) => {
     const csv = csvLines.join('\n');
 
     const filterParts = [];
-    if (at) filterParts.push(at.replace(/[^a-zA-Z0-9]/g, ''));
-    if (browser) filterParts.push(browser.replace(/[^a-zA-Z0-9]/g, ''));
-    if (refId) filterParts.push(refId.replace(/[^a-zA-Z0-9]/g, ''));
+    if (at) filterParts.push(at.trim());
+    if (browser) filterParts.push(browser.trim());
+    if (refId) filterParts.push(`Support-for-${refId.trim()}`);
 
     const filterString = filterParts.join('+');
     const filename = filterString
-      ? `${filterString}-aria-html-features.csv`
-      : 'aria-html-features.csv';
+      ? `${filterString}-ARIA-AT.csv`
+      : 'ARIA-AT.csv';
 
     res.setHeader('Content-Disposition', `attachment;filename="${filename}"`);
     res.setHeader('Content-Type', 'text/csv;charset=utf-8');
