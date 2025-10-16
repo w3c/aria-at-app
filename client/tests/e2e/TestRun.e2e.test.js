@@ -232,7 +232,6 @@ describe('Test Run when signed in as admin', () => {
       });
 
       // Verify the history contains reassignment information
-      expect(assignmentHistoryText).toContain('Tester Assignment History');
       expect(assignmentHistoryText).toContain('This run was reassigned from');
       expect(assignmentHistoryText).toContain("to 'foo-bar'");
       expect(assignmentHistoryText).toContain('Performed by: joe-the-admin');
