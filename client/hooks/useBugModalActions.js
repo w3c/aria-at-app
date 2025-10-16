@@ -28,74 +28,96 @@ export const useBugModalActions = ({
     pendingChanges.linkedBugs.length > 0 ||
     pendingChanges.unlinkedBugs.length > 0;
 
-  const handleSave = useCallback(async () => {
-    try {
-      if (assertion?.isNegativeSideEffect) {
-        if (!assertion?.negativeSideEffectId) {
-          throw new Error(
-            'Negative side effect ID is missing from assertion object'
-          );
+  const handleSave = useCallback(
+    async (newlyCreatedBug = null) => {
+      try {
+        // Filter out added bugs that were also removed before saving
+        let bugsToLink = pendingChanges.linkedBugs.filter(
+          bug => !pendingChanges.unlinkedBugs.includes(bug.id)
+        );
+
+        // Add newly created bug if provided
+        if (newlyCreatedBug) {
+          bugsToLink = [...bugsToLink, newlyCreatedBug];
         }
 
-        for (const bug of pendingChanges.linkedBugs) {
-          await linkAtBugsToNegativeSideEffect({
-            variables: {
-              negativeSideEffectId: assertion.negativeSideEffectId,
-              atBugIds: [bug.id]
-            }
-          });
+        if (assertion?.isNegativeSideEffect) {
+          if (!assertion?.negativeSideEffectId) {
+            throw new Error(
+              'Negative side effect ID is missing from assertion object'
+            );
+          }
+
+          for (const bug of bugsToLink) {
+            await linkAtBugsToNegativeSideEffect({
+              variables: {
+                negativeSideEffectId: assertion.negativeSideEffectId,
+                atBugIds: [bug.id]
+              }
+            });
+          }
+
+          if (pendingChanges.unlinkedBugs.length > 0) {
+            await unlinkAtBugsFromNegativeSideEffect({
+              variables: {
+                negativeSideEffectId: assertion.negativeSideEffectId,
+                atBugIds: pendingChanges.unlinkedBugs
+              }
+            });
+          }
+        } else {
+          if (!assertion?.assertionId) {
+            throw new Error('Assertion ID is missing from assertion object');
+          }
+
+          for (const bug of bugsToLink) {
+            await linkAtBugs({
+              variables: {
+                assertionId: assertion.assertionId,
+                atBugIds: [bug.id]
+              }
+            });
+          }
+
+          if (pendingChanges.unlinkedBugs.length > 0) {
+            await unlinkAtBugs({
+              variables: {
+                assertionId: assertion.assertionId,
+                atBugIds: pendingChanges.unlinkedBugs
+              }
+            });
+          }
         }
 
-        if (pendingChanges.unlinkedBugs.length > 0) {
-          await unlinkAtBugsFromNegativeSideEffect({
-            variables: {
-              negativeSideEffectId: assertion.negativeSideEffectId,
-              atBugIds: pendingChanges.unlinkedBugs
-            }
-          });
+        // Notify parent of the update
+        if (onLinked) {
+          const updatedAssertion = newlyCreatedBug
+            ? {
+                ...displayAssertion,
+                assertionAtBugs: [
+                  ...(displayAssertion?.assertionAtBugs || []),
+                  newlyCreatedBug
+                ]
+              }
+            : displayAssertion;
+          onLinked(updatedAssertion);
         }
-      } else {
-        if (!assertion?.assertionId) {
-          throw new Error('Assertion ID is missing from assertion object');
-        }
-
-        for (const bug of pendingChanges.linkedBugs) {
-          await linkAtBugs({
-            variables: {
-              assertionId: assertion.assertionId,
-              atBugIds: [bug.id]
-            }
-          });
-        }
-
-        if (pendingChanges.unlinkedBugs.length > 0) {
-          await unlinkAtBugs({
-            variables: {
-              assertionId: assertion.assertionId,
-              atBugIds: pendingChanges.unlinkedBugs
-            }
-          });
-        }
+      } catch (error) {
+        console.error('Error saving changes:', error);
+        throw error;
       }
-
-      // Notify parent of the update
-      if (onLinked) {
-        onLinked(displayAssertion);
-      }
-    } catch (error) {
-      console.error('Error saving changes:', error);
-      throw error;
-    }
-  }, [
-    linkAtBugs,
-    unlinkAtBugs,
-    linkAtBugsToNegativeSideEffect,
-    unlinkAtBugsFromNegativeSideEffect,
-    assertion,
-    pendingChanges,
-    displayAssertion,
-    onLinked
-  ]);
+    },
+    [
+      linkAtBugs,
+      unlinkAtBugs,
+      linkAtBugsToNegativeSideEffect,
+      unlinkAtBugsFromNegativeSideEffect,
+      assertion,
+      pendingChanges,
+      displayAssertion,
+      onLinked
+    ]
+  );
 
   const {
     showCancelConfirm,

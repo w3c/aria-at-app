@@ -1,9 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 import FormField from '../../common/FormField';
 
-const CreateBugForm = React.memo(
-  ({ onCreateBug, onCancel, creating, error, checkDuplicateUrl }) => {
+const CreateBugForm = forwardRef(
+  (
+    { onCreateBug, onCancel, creating, error, checkDuplicateUrl, showButtons },
+    ref
+  ) => {
     const [formData, setFormData] = useState({
       title: '',
       bugId: '',
@@ -23,7 +26,6 @@ const CreateBugForm = React.memo(
 
       const created = await onCreateBug(formData);
       if (created) {
-        // Reset form (parent will handle mode switching)
         setFormData({ title: '', bugId: '', url: '' });
       }
     };
@@ -33,8 +35,11 @@ const CreateBugForm = React.memo(
       setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const buttonLabel = creating ? 'Saving…' : 'Save';
+    const buttonClass = 'btn btn-primary btn-sm';
+
     return (
-      <form onSubmit={handleSubmit}>
+      <form ref={ref} onSubmit={handleSubmit}>
         <fieldset>
           <legend className="sr-only">Add New Bug Link</legend>
 
@@ -73,20 +78,24 @@ const CreateBugForm = React.memo(
             }
           />
 
-          <button
-            type="submit"
-            className="btn btn-outline-secondary btn-sm"
-            disabled={creating || hasDuplicate}
-          >
-            {creating ? 'Adding…' : 'Add'}
-          </button>
-          <button
-            type="button"
-            className="btn btn-link btn-sm ms-2"
-            onClick={onCancel}
-          >
-            Back to list
-          </button>
+          {showButtons && (
+            <>
+              <button
+                type="submit"
+                className={buttonClass}
+                disabled={creating || hasDuplicate}
+              >
+                {buttonLabel}
+              </button>
+              <button
+                type="button"
+                className="btn btn-link btn-sm ms-2"
+                onClick={onCancel}
+              >
+                Back to list
+              </button>
+            </>
+          )}
           {error && (
             <div className="text-danger mt-2" role="alert">
               {error.message}
@@ -98,12 +107,15 @@ const CreateBugForm = React.memo(
   }
 );
 
+CreateBugForm.displayName = 'CreateBugForm';
+
 CreateBugForm.propTypes = {
   onCreateBug: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   creating: PropTypes.bool,
   error: PropTypes.object,
-  checkDuplicateUrl: PropTypes.func
+  checkDuplicateUrl: PropTypes.func,
+  showButtons: PropTypes.bool
 };
 
 export default CreateBugForm;

@@ -17,8 +17,23 @@ const BugLinkingModal = ({ show, useBugLinkingContext, title }) => {
     handleSave,
     handleCancel,
     handleConfirmCancel,
-    handleCancelCancel
+    handleCancelCancel,
+    formMode,
+    handleFormSubmit
   } = useBugLinkingContext();
+
+  const handleSaveClick = async () => {
+    if (formMode === 'create' && handleFormSubmit) {
+      const createdBug = await handleFormSubmit();
+      if (createdBug) {
+        await handleSave(createdBug);
+      }
+    } else {
+      await handleSave();
+    }
+  };
+
+  const isSaveDisabled = formMode === 'create' ? false : !modalHasChanges;
 
   return (
     <>
@@ -38,9 +53,9 @@ const BugLinkingModal = ({ show, useBugLinkingContext, title }) => {
         actions={[
           {
             label: 'Save',
-            onClick: handleSave,
+            onClick: handleSaveClick,
             className: 'btn-primary',
-            disabled: !modalHasChanges
+            disabled: isSaveDisabled
           }
         ]}
       />

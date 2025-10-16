@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useBugCreation } from '../../../hooks/useBugCreation';
 import AssertionDetails from '../../FailingAssertionsSummary/BugLinking/AssertionDetails';
@@ -7,8 +7,10 @@ import BugSearchCombobox from '../../FailingAssertionsSummary/BugLinking/BugSear
 import CreateBugForm from '../../FailingAssertionsSummary/BugLinking/CreateBugForm';
 
 const BugLinkingContent = ({ useBugLinkingContext }) => {
-  const [mode, setMode] = useState('select'); // 'select' | 'create'
+  const [mode, setMode] = useState('select');
   const initialFocusRef = useRef();
+  const createFormRef = useRef();
+  const handleFormSubmitRef = useRef();
 
   const {
     atId,
@@ -16,23 +18,23 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
     searchText,
     setSearchText,
     displayAssertion,
-    linkedBugs,
     availableBugs,
     filteredBugs,
     bugsLoading,
     handleFetchBugs,
     addLinkedBug,
-    addUnlinkedBug
+    addUnlinkedBug,
+    setFormRef,
+    setFormMode,
+    setHandleFormSubmit
   } = useBugLinkingContext();
 
   const { creating, createError, handleCreateBug, checkDuplicateUrl } =
     useBugCreation({ atId, availableBugs });
 
   useEffect(() => {
-    if (mode === 'select') {
-      handleFetchBugs();
-    }
-  }, [mode, handleFetchBugs]);
+    handleFetchBugs();
+  }, [handleFetchBugs]);
 
   useEffect(() => {
     if (mode === 'create' && initialFocusRef.current) {
@@ -40,28 +42,61 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
     }
   }, [mode]);
 
-  const handleSelectBug = async bugId => {
+  const handleSelectBug = bugId => {
     const bug = availableBugs.find(b => b.id === bugId);
     if (bug) {
       addLinkedBug(bug);
     }
   };
 
-  const handleUnlinkBug = async bugId => {
+  const handleUnlinkBug = bugId => {
     addUnlinkedBug(bugId);
   };
 
   const handleCreate = async formData => {
     const created = await handleCreateBug(formData);
     if (created) {
+      addLinkedBug(created);
       setMode('select');
-      handleFetchBugs();
-      setTimeout(() => {
-        initialFocusRef.current?.focus();
-      }, 0);
     }
     return created;
   };
+
+  const handleFormSubmit = useCallback(async () => {
+    if (mode === 'create' && createFormRef.current) {
+      const form = createFormRef.current;
+      if (form.checkValidity()) {
+        const formData = {
+          title: form.elements['title'].value,
+          bugId: form.elements['bugId'].value,
+          url: form.elements['url'].value
+        };
+        return await handleCreate(formData);
+      }
+      return false;
+    }
+    return true;
+  }, [mode, handleCreate]);
+
+  handleFormSubmitRef.current = handleFormSubmit;
+
+  const stableHandleFormSubmit = useCallback(async () => {
+    return handleFormSubmitRef.current?.();
+  }, []);
+
+  useEffect(() => {
+    setFormRef(createFormRef);
+    setFormMode(mode);
+    setHandleFormSubmit(() => stableHandleFormSubmit);
+  }, [
+    mode,
+    setFormRef,
+    setFormMode,
+    setHandleFormSubmit,
+    stableHandleFormSubmit
+  ]);
+
+  const linkedBugs = displayAssertion?.assertionAtBugs || [];
 
   return (
     <div>
@@ -71,7 +106,7 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
 
       {mode === 'select' ? (
         <>
-          {linkedBugs && linkedBugs.length > 0 && (
+          {linkedBugs.length > 0 && (
             <div className="mb-3">
               <h5>Linked Bugs</h5>
               <LinkedBugsList
@@ -105,22 +140,14 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
         </>
       ) : (
         <>
-          <div className="mb-3">
-            <button
-              type="button"
-              className="btn btn-link btn-sm"
-              onClick={() => setMode('select')}
-            >
-              ← Back to search
-            </button>
-          </div>
-
           <CreateBugForm
+            ref={createFormRef}
             onCreateBug={handleCreate}
             onCancel={() => setMode('select')}
             creating={creating}
             error={createError}
             checkDuplicateUrl={checkDuplicateUrl}
+            showButtons={false}
           />
         </>
       )}

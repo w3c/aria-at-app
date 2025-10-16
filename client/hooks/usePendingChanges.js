@@ -26,9 +26,12 @@ export const usePendingChanges = ({
     const removedIds = new Set(pendingChanges.removedItemIds);
 
     // Apply pending changes to show preview
+    // Filter out original items that were removed, and filter out added items that were also removed
     const updatedItems = originalItems
       .filter(item => !removedIds.has(item.id))
-      .concat(pendingChanges.addedItems);
+      .concat(
+        pendingChanges.addedItems.filter(item => !removedIds.has(item.id))
+      );
 
     return createUpdatedItem(originalItem, updatedItems);
   }, [originalItem, pendingChanges, getItemsField, createUpdatedItem]);

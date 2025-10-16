@@ -10,14 +10,17 @@ export const useModalState = ({
 }) => {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
-  const handleSave = useCallback(async () => {
-    try {
-      await onSave();
-      onClose();
-    } catch (error) {
-      console.error('Error saving changes:', error);
-    }
-  }, [onSave, onClose]);
+  const handleSave = useCallback(
+    async (...args) => {
+      try {
+        await onSave(...args);
+        onClose();
+      } catch (error) {
+        console.error('Error saving changes:', error);
+      }
+    },
+    [onSave, onClose]
+  );
 
   const handleCancel = useCallback(() => {
     if (hasChanges()) {

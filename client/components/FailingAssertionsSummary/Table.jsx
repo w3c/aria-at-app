@@ -9,6 +9,7 @@ import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import LinkAtBugModal from './BugLinking';
 import ReportAtBugModal from './ReportAtBugModal';
+import styles from './FailingAssertionsSummary.module.css';
 
 const FailingAssertionsSummaryTable = ({
   testPlanReport,
@@ -111,7 +112,7 @@ const FailingAssertionsSummaryTable = ({
                         ? 'None'
                         : ''}
                     </ul>
-                    <div>
+                    <div className={styles.bugReportsButtonContainer}>
                       {canEdit && (
                         <div className="mb-1">
                           <button

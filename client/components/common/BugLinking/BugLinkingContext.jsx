@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useBugSearch } from '../../../hooks/useBugSearch';
 import { useBugPendingChanges } from '../../../hooks/useBugPendingChanges';
@@ -19,6 +19,10 @@ export const BugLinkingProvider = ({
   onLinked,
   onClose
 }) => {
+  const [formRef, setFormRef] = useState(null);
+  const [formMode, setFormMode] = useState('select');
+  const [handleFormSubmit, setHandleFormSubmit] = useState(null);
+
   const pendingChanges = useBugPendingChanges({ assertion });
 
   const bugSearch = useBugSearch({
@@ -74,9 +78,26 @@ export const BugLinkingProvider = ({
       handleSave: modalActions.handleSave,
       handleCancel: modalActions.handleCancel,
       handleConfirmCancel: modalActions.handleConfirmCancel,
-      handleCancelCancel: modalActions.handleCancelCancel
+      handleCancelCancel: modalActions.handleCancelCancel,
+
+      // Form ref and mode
+      formRef,
+      setFormRef,
+      formMode,
+      setFormMode,
+      handleFormSubmit,
+      setHandleFormSubmit
     }),
-    [atId, atName, bugSearch, pendingChanges, modalActions]
+    [
+      atId,
+      atName,
+      bugSearch,
+      pendingChanges,
+      modalActions,
+      formRef,
+      formMode,
+      handleFormSubmit
+    ]
   );
 
   return (

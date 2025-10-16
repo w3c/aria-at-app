@@ -9,6 +9,7 @@ import { ME_QUERY } from '../App/queries';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import NegativeSideEffectLinkAtBugModal from './NegativeSideEffectBugLinking';
 import ReportAtBugModal from '../FailingAssertionsSummary/ReportAtBugModal';
+import styles from '../FailingAssertionsSummary/FailingAssertionsSummary.module.css';
 
 const NegativeSideEffectsSummaryTable = ({
   testPlanReport,
@@ -93,7 +94,7 @@ const NegativeSideEffectsSummaryTable = ({
                     ? 'None'
                     : ''}
                 </ul>
-                <div>
+                <div className={styles.bugReportsButtonContainer}>
                   {canEdit && (
                     <div className="mb-1">
                       <button
