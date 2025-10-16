@@ -11,12 +11,16 @@ const {
 
 const SNAPSHOTS_DIR = path.join(__dirname, 'saved');
 
-async function takeSnapshot(browser, role, route) {
+async function takeSnapshot(browser, role, route, waitForSelectors) {
   console.log(`Taking snapshot for ${route}`);
   try {
     let snapshot;
     await getPage({ role, url: route }, async page => {
       await page.waitForSelector('main');
+      if (waitForSelectors?.length) {
+        for (const selector of waitForSelectors)
+          await page.waitForSelector(selector);
+      }
 
       snapshot = await cleanAndNormalizeSnapshot(page);
     });
@@ -33,8 +37,13 @@ async function takeSnapshots() {
     const browser = await setup();
     global.browser = browser;
 
-    for (const route of snapshotRoutes) {
-      const snapshot = await takeSnapshot(browser, 'admin', route);
+    for (const { route, waitForSelectors } of snapshotRoutes) {
+      const snapshot = await takeSnapshot(
+        browser,
+        'admin',
+        route,
+        waitForSelectors
+      );
       if (!snapshot) {
         continue;
       }

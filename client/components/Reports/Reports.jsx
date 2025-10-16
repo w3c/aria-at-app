@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client';
 import SummarizeTestPlanReports from './SummarizeTestPlanReports';
 import PageStatus from '../common/PageStatus';
 import { REPORTS_PAGE_QUERY } from './queries';
+import KeyMetricsBanner from '../KeyMetricsBanner/KeyMetricsBanner';
 
 const Reports = () => {
   const { loading, data, error } = useQuery(REPORTS_PAGE_QUERY, {
@@ -32,11 +33,14 @@ const Reports = () => {
   if (!data) return null;
 
   return (
-    <SummarizeTestPlanReports
-      testPlanVersions={data.testPlanVersions.filter(
-        testPlanVersion => testPlanVersion.testPlanReports.length
-      )}
-    />
+    <>
+      <KeyMetricsBanner />
+      <SummarizeTestPlanReports
+        testPlanVersions={data.testPlanVersions.filter(
+          testPlanVersion => testPlanVersion.testPlanReports.length
+        )}
+      />
+    </>
   );
 };
 
