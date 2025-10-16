@@ -365,43 +365,47 @@ const AtAndBrowserDetailsModal = ({
                   </Alert>
                 )}
                 {/* Tester Scenario 3 */}
-                {!isFirstLoad && !isAdmin && forceBrowserVersionUpdateMessage && (
-                  <Alert
-                    variant="warning"
-                    className={styles.atBrowserDetailsModalAlert}
-                  >
-                    <FontAwesomeIcon icon={faExclamationTriangle} />
-                    <span>
-                      We have automatically detected you are using a different
-                      version of <b>{uaBrowser}</b> and we have updated it
-                      below. The previous version you were using was{' '}
-                      <b>{browserVersion}</b>.
-                      <br />
-                      <br />
-                      This change doesn&apos;t affect results that have already
-                      been submitted for this plan. However, results you submit
-                      during this session will be recorded with the versions
-                      specified in this form.
-                    </span>
-                  </Alert>
-                )}
-                {isFirstLoad && uaBrowser !== browserName && uaMajor !== '0' && (
-                  <Alert
-                    variant="warning"
-                    className={styles.atBrowserDetailsModalAlert}
-                  >
-                    <FontAwesomeIcon icon={faExclamationTriangle} />
-                    <span>
-                      We have automatically detected you are using{' '}
-                      <b>
-                        {uaBrowser} {uaMajor}
-                      </b>
-                      . This test plan requires <b>{browserName}</b>. If you are
-                      recording results on behalf of someone else, please
-                      provide the Browser version below.
-                    </span>
-                  </Alert>
-                )}
+                {!isFirstLoad &&
+                  !isAdmin &&
+                  forceBrowserVersionUpdateMessage && (
+                    <Alert
+                      variant="warning"
+                      className={styles.atBrowserDetailsModalAlert}
+                    >
+                      <FontAwesomeIcon icon={faExclamationTriangle} />
+                      <span>
+                        We have automatically detected you are using a different
+                        version of <b>{uaBrowser}</b> and we have updated it
+                        below. The previous version you were using was{' '}
+                        <b>{browserVersion}</b>.
+                        <br />
+                        <br />
+                        This change doesn&apos;t affect results that have
+                        already been submitted for this plan. However, results
+                        you submit during this session will be recorded with the
+                        versions specified in this form.
+                      </span>
+                    </Alert>
+                  )}
+                {isFirstLoad &&
+                  uaBrowser !== browserName &&
+                  uaMajor !== '0' && (
+                    <Alert
+                      variant="warning"
+                      className={styles.atBrowserDetailsModalAlert}
+                    >
+                      <FontAwesomeIcon icon={faExclamationTriangle} />
+                      <span>
+                        We have automatically detected you are using{' '}
+                        <b>
+                          {uaBrowser} {uaMajor}
+                        </b>
+                        . This test plan requires <b>{browserName}</b>. If you
+                        are recording results on behalf of someone else, please
+                        provide the Browser version below.
+                      </span>
+                    </Alert>
+                  )}
                 {/* Tester Scenario 4 */}
                 {!isAdmin &&
                   !isFirstLoad &&
