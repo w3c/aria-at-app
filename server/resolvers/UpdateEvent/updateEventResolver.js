@@ -1,9 +1,7 @@
-const {
-  getUpdateEventById
-} = require('../../models/services/UpdateEventService');
+const { getEventById } = require('../../models/services/EventService');
 
 const updateEventResolver = (_, { id }, { transaction }) => {
-  return getUpdateEventById({ id, transaction });
+  return getEventById({ id, transaction });
 };
 
 module.exports = updateEventResolver;

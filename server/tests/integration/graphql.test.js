@@ -160,6 +160,7 @@ describe('graphql', () => {
       ['TestPlanReport', 'issues'],
       ['TestPlanReport', 'historicalReport'],
       ['TestPlanReport', 'vendorReviewStatus'],
+      ['TestPlanReport', 'events'],
       ['Command', 'atOperatingMode'], // TODO: Include when v2 test format CI tests are done
       ['CollectionJob', 'testPlanRun'],
       ['CollectionJob', 'externalLogsUrl'],
@@ -181,7 +182,10 @@ describe('graphql', () => {
       ['ScenarioResult', 'match'],
       ['Assertion', 'phrase'],
       ['Assertion', 'atBugs'],
-      ['AtBug', 'assertions']
+      ['AtBug', 'assertions'],
+      ['UpdateEvent', 'performedBy'],
+      ['UpdateEvent', 'entityId'],
+      ['UpdateEvent', 'metadata']
     ];
     ({
       typeAwareQuery,

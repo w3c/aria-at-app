@@ -1,0 +1,43 @@
+.assignment-disclosure {
+  margin-bottom: var(--section-gap);
+}
+
+.assignment-container {
+  border: 1px solid var(--border-gray);
+  border-radius: var(--6px);
+  background-color: var(--white);
+  max-height: 16rem;
+  overflow: scroll;
+}
+
+.assignment-row {
+  display: flex;
+  padding: 0.75rem var(--section-gap);
+  color: var(--font-black);
+  background-color: var(--white);
+  border-bottom: 1px solid var(--bg-light-gray);
+
+  svg {
+    align-self: center;
+    margin-right: var(--section-gap) !important;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.assignment-row-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.assignment-row-message {
+  color: var(--font-black);
+  font-size: var(--14px);
+}
+
+.assignment-row-performed-by {
+  color: var(--dark-gray-text);
+  font-size: var(--12px);
+}

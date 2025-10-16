@@ -50,7 +50,7 @@ const mockProps = {
   onChange: jest.fn(),
   testPlanRun: null,
   draftTestPlanRuns: [],
-  label: 'Assign testers',
+  label: 'Assign Testers',
   setAlertMessage: jest.fn()
 };
 
@@ -214,7 +214,7 @@ describe('AssignTesterDropdown', () => {
         <AssignTesterDropdown {...mockProps} />
       </MockedProvider>
     );
-    expect(screen.getByLabelText('Assign testers')).toBeInTheDocument();
+    expect(screen.getByLabelText('Assign Testers')).toBeInTheDocument();
   });
 
   it('assigns tester correctly and calls assignTester mutation', async () => {

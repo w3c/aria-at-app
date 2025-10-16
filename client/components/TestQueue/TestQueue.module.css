@@ -116,6 +116,7 @@ h1.test-queue-heading {
 /* AssignTesters */
 .assign-testers-container {
   display: flex;
+  position: relative;
 
   .dropdown-button-label {
     margin-right: var(--8px);
@@ -125,6 +126,8 @@ h1.test-queue-heading {
     width: 15rem;
     max-height: 8rem;
     overflow-y: scroll;
+    position: absolute;
+    z-index: 1000;
   }
 
   [role='menuitem']:active {

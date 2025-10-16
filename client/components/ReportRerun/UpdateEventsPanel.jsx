@@ -65,10 +65,12 @@ UpdateEventsPanel.propTypes = {
       timestamp: PropTypes.string.isRequired,
       description: PropTypes.string.isRequired,
       type: PropTypes.oneOf([
-        'COLLECTION_JOB',
         'GENERAL',
-        'TEST_PLAN_RUN',
-        'TEST_PLAN_REPORT'
+        'COLLECTION_JOB_CREATION',
+        'COLLECTION_JOB_START',
+        'COLLECTION_JOB_COMPLETION',
+        'COLLECTION_JOB_FAILURE',
+        'COLLECTION_JOB_TEST_PLAN_REPORT'
       ]).isRequired
     })
   ),
