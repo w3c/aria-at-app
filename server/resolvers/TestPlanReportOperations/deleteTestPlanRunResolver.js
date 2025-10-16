@@ -1,7 +1,7 @@
 const { AuthenticationError } = require('apollo-server');
 const {
-  removeTestPlanRunByQuery,
-  getTestPlanRuns
+  getTestPlanRuns,
+  removeTestPlanRunById
 } = require('../../models/services/TestPlanRunService');
 const { createSimpleEvent } = require('../../models/services/EventService');
 const { EVENT_TYPES } = require('../../util/eventTypes');
@@ -32,10 +32,12 @@ const deleteTestPlanRunResolver = async (
   });
   const testPlanRunId = testPlanRuns.length > 0 ? testPlanRuns[0].id : null;
 
-  await removeTestPlanRunByQuery({
-    where: { testPlanReportId, testerUserId },
-    transaction
-  });
+  if (testPlanRunId) {
+    await removeTestPlanRunById({
+      id: testPlanRunId,
+      transaction
+    });
+  }
 
   await createSimpleEvent({
     type: EVENT_TYPES.TESTER_REMOVAL,
