@@ -81,6 +81,7 @@ const TestRun = () => {
   const adminReviewerCheckedRef = useRef(false);
   const adminReviewerOriginalTestRef = useRef();
   const editAtBrowserDetailsButtonRef = useRef();
+  const reassignTestersButtonRef = useRef();
 
   const { runId: testPlanRunId, testPlanReportId } = params;
 
@@ -1141,12 +1142,12 @@ const TestRun = () => {
                         testPlanRun => testPlanRun.tester.id == u.id
                       )
                   )}
+                  dropdownAssignTesterButtonRef={reassignTestersButtonRef}
                   onChange={async () => {
                     await refetch();
-                    const reassignTestersEl = document.querySelector(
-                      'button[aria-label="Reassign Testers"]'
-                    );
-                    if (reassignTestersEl) reassignTestersEl.focus();
+                    if (reassignTestersButtonRef.current) {
+                      reassignTestersButtonRef.current.focus();
+                    }
                   }}
                 />
               </li>
