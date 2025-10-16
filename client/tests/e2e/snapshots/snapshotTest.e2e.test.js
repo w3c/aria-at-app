@@ -10,10 +10,13 @@ import getPage from '../../util/getPage';
 const SNAPSHOTS_DIR = path.join(__dirname, 'saved');
 
 describe('Snapshot Comparison', () => {
-  snapshotRoutes.forEach(route => {
+  snapshotRoutes.forEach(({ route, waitForSelectors }) => {
     test(`should match snapshot for ${route}`, async () => {
       await getPage({ role: 'admin', url: route }, async page => {
         await page.waitForSelector('main');
+        if (waitForSelectors?.length)
+          for (const selector of waitForSelectors)
+            await page.waitForSelector(selector);
 
         const currentSnapshot = await cleanAndNormalizeSnapshot(page);
 
