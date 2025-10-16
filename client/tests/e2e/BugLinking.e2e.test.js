@@ -41,26 +41,10 @@ describe('AT Bug Linking - Basic Functionality', () => {
         await page.waitForSelector(urlInputSelector);
         await page.type(urlInputSelector, 'https://example.com/bug/12345');
 
-        const addButtonSelector = 'button[type="submit"]';
-        await page.waitForSelector(addButtonSelector);
-        await page.click(addButtonSelector);
-
-        // Wait for the form to be submitted and mode to switch back to select
-        await page.waitForSelector(
-          'input[placeholder="Type to search by title, number, or URL"]'
-        );
-
-        // Step 3: Link the AtBug
-        const searchInputSelector =
-          'input[placeholder="Type to search by title, number, or URL"]';
-        await page.type(searchInputSelector, 'Test Bug');
-
-        const firstOptionSelector = '[role="option"]:first-child';
-        await page.waitForSelector(firstOptionSelector);
-        await page.click(firstOptionSelector);
-
-        await page.waitForSelector('button ::-p-text(Save)');
-        await page.click('button ::-p-text(Save)');
+        // Step 3: Save to create and link the AtBug
+        const saveButtonSelector = 'button ::-p-text(Save)';
+        await page.waitForSelector(saveButtonSelector);
+        await page.click(saveButtonSelector);
 
         // Wait for modal to close automatically and verify bug is linked
         await page.waitForSelector('h1 ::-p-text(Modal Dialog Example)');
@@ -68,7 +52,7 @@ describe('AT Bug Linking - Basic Functionality', () => {
         // Verify bug is linked by checking for the bug link in the table
         await page.waitForSelector('a[href="https://example.com/bug/12345"]');
 
-        // Wait for the UI to settle after linking
+        // Wait for the UI to settle after creating and linking
         await page.waitForNetworkIdle();
 
         // Step 4: Reopen modal and unlink the AtBug
