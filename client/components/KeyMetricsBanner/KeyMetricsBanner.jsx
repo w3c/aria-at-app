@@ -18,7 +18,7 @@ const KeyMetricsBanner = () => {
     <Alert
       className={styles.keyMetrics}
       variant="primary"
-      show={keyMetricsQuery}
+      show={Boolean(keyMetricsQuery)}
     >
       {keyMetricsQuery && (
         <>
