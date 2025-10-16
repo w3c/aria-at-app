@@ -1270,8 +1270,7 @@ const graphqlSchema = gql`
   }
 
   """
-
-  """
+  Records information about the review of a TestPlanReport by a vendor representative.
   type ReviewerStatus {
     """
     The vendor representative who reviewed the test.
