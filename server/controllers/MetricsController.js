@@ -9,6 +9,8 @@ const escape = value => {
 
 const downloadARIAHtmlFeaturesCSV = async (req, res, next) => {
   try {
+    const { at, browser, refId } = req.query;
+
     const context = getGraphQLContext({ req });
     const metrics = await ariaHtmlFeaturesMetricsResolver(null, null, context);
 
@@ -29,7 +31,18 @@ const downloadARIAHtmlFeaturesCSV = async (req, res, next) => {
         ...metrics.ariaFeaturesByAtBrowser,
         ...metrics.htmlFeaturesByAtBrowser
       ] || [];
-    rows.sort((a, b) => {
+    const filteredRows = rows.filter(row => {
+      const matchesAt = !at || row.atName === at;
+      const matchesBrowser = !browser || row.browserName === browser;
+      const matchesRefId = !refId || row.refId === refId;
+      return matchesAt && matchesBrowser && matchesRefId;
+    });
+    if (filteredRows.length === 0) {
+      return res.status(404).json({
+        error: 'No data found for the specified filter'
+      });
+    }
+    filteredRows.sort((a, b) => {
       const aRef = a.refId ?? '';
       const bRef = b.refId ?? '';
       if (String(aRef) !== String(bRef))
@@ -45,7 +58,7 @@ const downloadARIAHtmlFeaturesCSV = async (req, res, next) => {
     });
     const csvLines = [headers.join(',')];
 
-    for (const row of rows) {
+    for (const row of filteredRows) {
       csvLines.push(
         [
           escape(row.refId),
@@ -63,10 +76,17 @@ const downloadARIAHtmlFeaturesCSV = async (req, res, next) => {
     }
     const csv = csvLines.join('\n');
 
-    res.setHeader(
-      'Content-Disposition',
-      'attachment;filename="aria-html-features.csv"'
-    );
+    const filterParts = [];
+    if (at) filterParts.push(at.replace(/[^a-zA-Z0-9]/g, ''));
+    if (browser) filterParts.push(browser.replace(/[^a-zA-Z0-9]/g, ''));
+    if (refId) filterParts.push(refId.replace(/[^a-zA-Z0-9]/g, ''));
+
+    const filterString = filterParts.join('+');
+    const filename = filterString
+      ? `${filterString}-aria-html-features.csv`
+      : 'aria-html-features.csv';
+
+    res.setHeader('Content-Disposition', `attachment;filename="${filename}"`);
     res.setHeader('Content-Type', 'text/csv;charset=utf-8');
     res.status(200).send(csv);
   } catch (error) {
