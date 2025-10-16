@@ -79,23 +79,21 @@ const CreateBugForm = forwardRef(
           />
 
           {showButtons && (
-            <>
-              <button
-                type="submit"
-                className={buttonClass}
-                disabled={creating || hasDuplicate}
-              >
-                {buttonLabel}
-              </button>
-              <button
-                type="button"
-                className="btn btn-link btn-sm ms-2"
-                onClick={onCancel}
-              >
-                Back to list
-              </button>
-            </>
+            <button
+              type="submit"
+              className={buttonClass}
+              disabled={creating || hasDuplicate}
+            >
+              {buttonLabel}
+            </button>
           )}
+          <button
+            type="button"
+            className="btn btn-link btn-sm ms-0 ps-0"
+            onClick={onCancel}
+          >
+            Back to list
+          </button>
           {error && (
             <div className="text-danger mt-2" role="alert">
               {error.message}
