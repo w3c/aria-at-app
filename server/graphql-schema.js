@@ -1267,6 +1267,10 @@ const graphqlSchema = gql`
     This is computed from runnable tests for the AT, accounting for EXCLUDE exceptions.
     """
     totalPossibleAssertions: Int!
+    """
+    Events for this test plan report, tracking tester assignments and other events.
+    """
+    events: [UpdateEvent]!
   }
 
   """
@@ -1379,18 +1383,40 @@ const graphqlSchema = gql`
     previousVersionGroups: [PreviousVersionGroup!]!
   }
 
-  enum UpdateEventType {
-    COLLECTION_JOB
-    GENERAL
-    TEST_PLAN_RUN
-    TEST_PLAN_REPORT
-  }
-
+  """
+  Records tracking events in the system.
+  """
   type UpdateEvent {
+    """
+    Postgres-provided numeric ID.
+    """
     id: ID!
-    timestamp: String!
+    """
+    The type of event that was logged (e.g., 'TESTER_ASSIGNMENT', 'TESTER_REASSIGNMENT', etc.).
+    """
+    type: String!
+    """
+    Human-readable description of the event.
+    """
     description: String!
-    type: UpdateEventType!
+    """
+    The user who performed the action.
+    """
+    performedBy: User
+    """
+    The primary entity ID involved in the event (e.g., testPlanReportId).
+    The metadata field should state what entity this id is for.
+    """
+    entityId: Int
+    """
+    Additional metadata about the event, including specific details like
+    tester IDs, test plan run IDs, entity IDs, etc.
+    """
+    metadata: Any
+    """
+    When the event occurred.
+    """
+    timestamp: Timestamp!
   }
 
   type Query {
@@ -1502,7 +1528,7 @@ const graphqlSchema = gql`
     """
     Get update events
     """
-    updateEvents(type: UpdateEventType): [UpdateEvent!]!
+    updateEvents(types: [String]): [UpdateEvent!]!
     """
     Get a particular update event by ID
     """

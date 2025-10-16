@@ -15,10 +15,8 @@ const {
   USER_ATTRIBUTES,
   COLLECTION_JOB_TEST_STATUS_ATTRIBUTES
 } = require('./helpers');
-const {
-  COLLECTION_JOB_STATUS,
-  UPDATE_EVENT_TYPE
-} = require('../../util/enums');
+const { COLLECTION_JOB_STATUS } = require('../../util/enums');
+const { EVENT_TYPES } = require('../../util/eventTypes');
 const { Op } = require('sequelize');
 const {
   createTestPlanRun,
@@ -47,7 +45,7 @@ const {
   getLatestAutomationSupportedAtVersion,
   getRerunnableTestPlanReportsForVersion
 } = require('./AtVersionService');
-const { createUpdateEvent } = require('./UpdateEventService');
+const { createEvent } = require('./EventService');
 
 // association helpers to be included with Models' results
 
@@ -827,10 +825,10 @@ const createCollectionJobsFromPreviousAtVersion = async ({
             error.message
           );
 
-          await createUpdateEvent({
+          await createEvent({
             values: {
               description: `Failed to start automated re-run for ${reportInfo.testPlanVersion.title} ${reportInfo.testPlanVersion.versionString} using ${currentVersion.at.name} ${currentVersion.name}: ${error.message}`,
-              type: UPDATE_EVENT_TYPE.COLLECTION_JOB
+              type: EVENT_TYPES.COLLECTION_JOB_CREATION
             },
             transaction
           });
@@ -843,10 +841,10 @@ const createCollectionJobsFromPreviousAtVersion = async ({
     collectionJobs.length === 1 ? '' : 's'
   } for ${currentVersion.at.name} ${currentVersion.name}`;
 
-  await createUpdateEvent({
+  await createEvent({
     values: {
       description: message,
-      type: UPDATE_EVENT_TYPE.COLLECTION_JOB
+      type: EVENT_TYPES.COLLECTION_JOB_CREATION
     },
     transaction
   });
