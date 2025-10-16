@@ -1,22 +1,6 @@
 const ModelService = require('./ModelService');
 const { Assertion, AssertionAtBug } = require('../');
-
-// Default attributes to select for Assertion queries
-const ASSERTION_ATTRIBUTES = [
-  'id',
-  'testPlanVersionId',
-  'testId',
-  'assertionIndex',
-  'priority',
-  'text',
-  'rawAssertionId',
-  'assertionStatement',
-  'assertionPhrase',
-  'assertionExceptions',
-  'encodedId',
-  'createdAt',
-  'updatedAt'
-];
+const { ASSERTION_ATTRIBUTES } = require('./helpers');
 
 /**
  * @param {object} options
@@ -156,7 +140,10 @@ const linkAtBugsToAssertion = async ({
   atBugIds,
   transaction
 }) => {
-  const assertion = await Assertion.findByPk(assertionId, { transaction });
+  const assertion = await ModelService.findByPk(Assertion, {
+    id: assertionId,
+    transaction
+  });
   if (!assertion) {
     throw new Error(`Assertion with id ${assertionId} not found`);
   }
@@ -168,7 +155,8 @@ const linkAtBugsToAssertion = async ({
     )
   );
   if (numericBugIds.length === 0) {
-    return await Assertion.findByPk(assertionId, {
+    return await ModelService.findByPk(Assertion, {
+      id: assertionId,
       include: [{ association: 'atBugs' }],
       transaction
     });
@@ -190,7 +178,8 @@ const linkAtBugsToAssertion = async ({
   }
 
   // Return the assertion with its bugs
-  return await Assertion.findByPk(assertionId, {
+  return await ModelService.findByPk(Assertion, {
+    id: assertionId,
     include: [
       {
         association: 'atBugs',
@@ -214,7 +203,10 @@ const unlinkAtBugsFromAssertion = async ({
   atBugIds,
   transaction
 }) => {
-  const assertion = await Assertion.findByPk(assertionId, { transaction });
+  const assertion = await ModelService.findByPk(Assertion, {
+    id: assertionId,
+    transaction
+  });
   if (!assertion) {
     throw new Error(`Assertion with id ${assertionId} not found`);
   }
@@ -229,7 +221,8 @@ const unlinkAtBugsFromAssertion = async ({
   }
 
   // Return the assertion with its bugs
-  return await Assertion.findByPk(assertionId, {
+  return await ModelService.findByPk(Assertion, {
+    id: assertionId,
     include: [
       {
         association: 'atBugs',
@@ -253,7 +246,8 @@ const unlinkAllAtBugsFromAssertion = async ({ assertionId, transaction }) => {
     transaction
   });
 
-  return await Assertion.findByPk(assertionId, {
+  return await ModelService.findByPk(Assertion, {
+    id: assertionId,
     include: [{ association: 'atBugs' }],
     transaction
   });

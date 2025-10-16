@@ -1,20 +1,6 @@
 const ModelService = require('./ModelService');
 const { NegativeSideEffect, NegativeSideEffectAtBug } = require('../');
-
-// Default attributes to select for NegativeSideEffect queries
-const NEGATIVE_SIDE_EFFECT_ATTRIBUTES = [
-  'id',
-  'testPlanRunId',
-  'testResultId',
-  'scenarioResultId',
-  'negativeSideEffectId',
-  'impact',
-  'details',
-  'highlightRequired',
-  'encodedId',
-  'createdAt',
-  'updatedAt'
-];
+const { NEGATIVE_SIDE_EFFECT_ATTRIBUTES } = require('./helpers');
 
 /**
  * @param {object} options
@@ -199,10 +185,10 @@ const linkAtBugsToNegativeSideEffect = async ({
   atBugIds,
   transaction
 }) => {
-  const negativeSideEffect = await NegativeSideEffect.findByPk(
-    negativeSideEffectId,
-    { transaction }
-  );
+  const negativeSideEffect = await ModelService.findByPk(NegativeSideEffect, {
+    id: negativeSideEffectId,
+    transaction
+  });
   if (!negativeSideEffect) {
     throw new Error(
       `NegativeSideEffect with id ${negativeSideEffectId} not found`
@@ -216,7 +202,8 @@ const linkAtBugsToNegativeSideEffect = async ({
     )
   );
   if (numericBugIds.length === 0) {
-    return await NegativeSideEffect.findByPk(negativeSideEffectId, {
+    return await ModelService.findByPk(NegativeSideEffect, {
+      id: negativeSideEffectId,
       include: [{ association: 'atBugs' }],
       transaction
     });
@@ -238,7 +225,8 @@ const linkAtBugsToNegativeSideEffect = async ({
   }
 
   // Return the negative side effect with its bugs
-  return await NegativeSideEffect.findByPk(negativeSideEffectId, {
+  return await ModelService.findByPk(NegativeSideEffect, {
+    id: negativeSideEffectId,
     include: [
       {
         association: 'atBugs',
@@ -262,10 +250,10 @@ const unlinkAtBugsFromNegativeSideEffect = async ({
   atBugIds,
   transaction
 }) => {
-  const negativeSideEffect = await NegativeSideEffect.findByPk(
-    negativeSideEffectId,
-    { transaction }
-  );
+  const negativeSideEffect = await ModelService.findByPk(NegativeSideEffect, {
+    id: negativeSideEffectId,
+    transaction
+  });
   if (!negativeSideEffect) {
     throw new Error(
       `NegativeSideEffect with id ${negativeSideEffectId} not found`
@@ -282,7 +270,8 @@ const unlinkAtBugsFromNegativeSideEffect = async ({
   }
 
   // Return the negative side effect with its bugs
-  return await NegativeSideEffect.findByPk(negativeSideEffectId, {
+  return await ModelService.findByPk(NegativeSideEffect, {
+    id: negativeSideEffectId,
     include: [
       {
         association: 'atBugs',
@@ -309,7 +298,8 @@ const unlinkAllAtBugsFromNegativeSideEffect = async ({
     transaction
   });
 
-  return await NegativeSideEffect.findByPk(negativeSideEffectId, {
+  return await ModelService.findByPk(NegativeSideEffect, {
+    id: negativeSideEffectId,
     include: [{ association: 'atBugs' }],
     transaction
   });
