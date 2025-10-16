@@ -1,20 +1,13 @@
-.assignment-container {
+.assignment-disclosure {
   margin-bottom: var(--section-gap);
+}
+
+.assignment-container {
   border: 1px solid var(--border-gray);
   border-radius: var(--6px);
   background-color: var(--white);
-  overflow: hidden;
-}
-
-.assignment-header {
-  background-color: var(--bg-lighter-gray);
-  border-bottom: 1px solid var(--border-gray);
-  padding: 0.75rem 1rem;
-  font-weight: var(--font-weight-headings);
-  color: var(--dark-gray);
-  display: flex;
-  align-items: center;
-  gap: var(--el-gap);
+  max-height: 16rem;
+  overflow: scroll;
 }
 
 .assignment-row {

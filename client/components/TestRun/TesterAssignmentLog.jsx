@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHistory, faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
+import { faPeopleArrows } from '@fortawesome/free-solid-svg-icons';
+import DisclosureComponent from '../common/DisclosureComponent';
 import { EventPropType } from '../common/proptypes';
 import { dates } from '@shared';
 import styles from './TesterAssignmentLog.module.css';
@@ -42,13 +43,13 @@ const TesterAssignmentLog = ({ events = [] }) => {
   };
 
   return (
-    <div className={styles.assignmentContainer}>
-      <div className={styles.assignmentHeader}>
-        <FontAwesomeIcon icon={faHistory} />
-        <span>Tester Assignment History</span>
-      </div>
-      <div>
-        <div>
+    <DisclosureComponent
+      componentId="testAssignmentLog"
+      headingLevel="2"
+      title="Tester Assignment History"
+      className={styles.assignmentDisclosure}
+      disclosureContainerView={
+        <div className={styles.assignmentContainer}>
           {events.map(record => (
             <div key={record.id} className={styles.assignmentRow}>
               <FontAwesomeIcon icon={faPeopleArrows} />
@@ -63,8 +64,8 @@ const TesterAssignmentLog = ({ events = [] }) => {
             </div>
           ))}
         </div>
-      </div>
-    </div>
+      }
+    />
   );
 };
 
