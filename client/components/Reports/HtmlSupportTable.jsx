@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ProgressBar from '@components/common/ProgressBar';
+import { Link } from 'react-router-dom';
 import { Table } from 'react-bootstrap';
 
 const columnName = ({ atName, browserName }) => `${atName} and ${browserName}`;
@@ -11,12 +12,13 @@ const HtmlSupportTable = ({ ariaHtmlFeaturesMetrics }) => {
   console.log(htmlFeaturesByAtBrowser);
 
   const supportCombos = [...new Set(htmlFeaturesByAtBrowser.map(columnName))];
-
+  const links = {};
   const dataByFeature = {};
   for (const row of htmlFeaturesByAtBrowser) {
     if (!dataByFeature[row.refId]) {
       dataByFeature[row.refId] = {};
     }
+    links[row.refId] = { href: row.value, text: row.linkText };
     dataByFeature[row.refId][columnName(row)] = row;
   }
 
@@ -38,7 +40,9 @@ const HtmlSupportTable = ({ ariaHtmlFeaturesMetrics }) => {
         <tbody>
           {keys.map(key => (
             <tr key={key}>
-              <td>{key}</td>
+              <td>
+                <Link to={links[key].href}>{key}</Link>
+              </td>
               {supportCombos.map(col => (
                 <td key={key + col}>
                   <ProgressBar
