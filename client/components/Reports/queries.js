@@ -35,6 +35,69 @@ export const REPORTS_PAGE_QUERY = gql`
         }
       }
     }
+
+    ariaHtmlFeaturesMetrics {
+      ariaFeaturesPassedCount
+      ariaFeaturesCount
+      ariaFeaturesFailedCount
+      ariaFeaturesUntestableCount
+      htmlFeaturesPassedCount
+      htmlFeaturesCount
+      htmlFeaturesFailedCount
+      htmlFeaturesUntestableCount
+      ariaFeatures {
+        refId
+        type
+        linkText
+        value
+        total
+        passed
+        failed
+        untestable
+        passedPercentage
+        formatted
+      }
+      htmlFeatures {
+        refId
+        type
+        linkText
+        value
+        total
+        passed
+        failed
+        untestable
+        passedPercentage
+        formatted
+      }
+      ariaFeaturesByAtBrowser {
+        refId
+        type
+        linkText
+        value
+        total
+        passed
+        failed
+        untestable
+        passedPercentage
+        formatted
+        atName
+        browserName
+      }
+      htmlFeaturesByAtBrowser {
+        refId
+        type
+        linkText
+        value
+        total
+        passed
+        failed
+        untestable
+        passedPercentage
+        formatted
+        atName
+        browserName
+      }
+    }
   }
 `;
 

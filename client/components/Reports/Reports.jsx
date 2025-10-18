@@ -39,6 +39,7 @@ const Reports = () => {
         testPlanVersions={data.testPlanVersions.filter(
           testPlanVersion => testPlanVersion.testPlanReports.length
         )}
+        ariaHtmlFeaturesMetrics={data.ariaHtmlFeaturesMetrics}
       />
     </>
   );

@@ -12,8 +12,13 @@ import ProgressBar from '@components/common/ProgressBar';
 import { TestPlanVersionPropType } from '../common/proptypes';
 import styles from './SummarizeTestPlanReports.module.css';
 import commonStyles from '../common/styles.module.css';
+import AriaSupportTable from './AriaSupportTable';
+import HtmlSupportTable from './HtmlSupportTable';
 
-const SummarizeTestPlanReports = ({ testPlanVersions }) => {
+const SummarizeTestPlanReports = ({
+  testPlanVersions,
+  ariaHtmlFeaturesMetrics
+}) => {
   if (!testPlanVersions.length) {
     return (
       <Container
@@ -65,12 +70,12 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
         collected, reviewed and published by the ARIA-AT project. Follow a link
         in the table below to view detailed results.
       </p>
-      <h2>Support Levels</h2>
+      <h2>Test Plan Support Levels</h2>
       <p id="support-levels-table-description">
         The percentage of assertions which passed when each Test Plan was
         executed by a given Assistive Technology and Browser.
       </p>
-      <Table bordered responsive aria-label="Support Levels">
+      <Table bordered responsive aria-label="Test Plan Support Levels">
         <thead>
           <tr>
             <th>Test Plan</th>
@@ -143,12 +148,16 @@ const SummarizeTestPlanReports = ({ testPlanVersions }) => {
             })}
         </tbody>
       </Table>
+
+      <AriaSupportTable ariaHtmlFeaturesMetrics={ariaHtmlFeaturesMetrics} />
+      <HtmlSupportTable ariaHtmlFeaturesMetrics={ariaHtmlFeaturesMetrics} />
     </Container>
   );
 };
 
 SummarizeTestPlanReports.propTypes = {
-  testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType).isRequired
+  testPlanVersions: PropTypes.arrayOf(TestPlanVersionPropType).isRequired,
+  ariaHtmlFeaturesMetrics: PropTypes.object.isRequired
 };
 
 export default SummarizeTestPlanReports;
