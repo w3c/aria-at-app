@@ -1,6 +1,7 @@
 const {
   getReviewerStatuses
 } = require('../../models/services/ReviewerStatusService');
+
 const vendorReviewStatusResolver = async (
   testPlanReport,
   args, // eslint-disable-line no-unused-vars
