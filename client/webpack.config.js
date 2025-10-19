@@ -4,7 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 require('dotenv').config({ path: '../config/dev.env' });
 
 module.exports = {
-  entry: ['babel-polyfill', './index.js'],
+  entry: ['core-js/stable', './index.js'],
   mode: 'development',
   devtool: 'inline-source-map',
   module: {

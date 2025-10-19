@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: ['babel-polyfill', './index.js'],
+  entry: ['core-js/stable', './index.js'],
   mode: 'production',
   module: {
     rules: [
