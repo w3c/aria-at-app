@@ -1,8 +1,11 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
 import { useParams, Link } from 'react-router-dom';
-import { Table, Container, Button } from 'react-bootstrap';
+import { Table, Container, Button, Breadcrumb } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
+import { LinkContainer } from 'react-router-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 import PageStatus from '../common/PageStatus';
 import { ARIA_HTML_FEATURE_DETAIL_REPORT_QUERY } from './queries';
 
@@ -64,6 +67,24 @@ const AriaHtmlFeatureDetailReport = () => {
             {feature.linkText || 'Feature'}
           </a>
         </h1>
+        <Breadcrumb
+          label="Breadcrumb"
+          listProps={{
+            'aria-label': 'Breadcrumb Navigation'
+          }}
+        >
+          <LinkContainer to="/reports">
+            <Breadcrumb.Item>
+              <FontAwesomeIcon icon={faHome} />
+              AT Interoperability Reports
+            </Breadcrumb.Item>
+          </LinkContainer>
+          <Breadcrumb.Item active>
+            {`${at.name} and ${browser.name} Support for ${
+              feature.linkText || 'Feature'
+            }`}
+          </Breadcrumb.Item>
+        </Breadcrumb>
 
         {!hasData && (
           <div className="alert alert-info" role="status">
