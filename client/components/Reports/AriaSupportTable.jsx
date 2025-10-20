@@ -6,7 +6,7 @@ import { Table } from 'react-bootstrap';
 
 const columnName = ({ atName, browserName }) => `${atName} and ${browserName}`;
 
-const AriaSupportTable = ({ ariaHtmlFeaturesMetrics }) => {
+const AriaSupportTable = ({ ariaHtmlFeaturesMetrics, headingText }) => {
   const { ariaFeaturesByAtBrowser } = ariaHtmlFeaturesMetrics;
 
   const supportCombos = [...new Set(ariaFeaturesByAtBrowser.map(columnName))];
@@ -31,7 +31,7 @@ const AriaSupportTable = ({ ariaHtmlFeaturesMetrics }) => {
 
   return (
     <>
-      <h2>ARIA Feature Support Levels</h2>
+      <h2>{headingText || 'ARIA Feature Support Levels'}</h2>
       <p id="aria-feature-support-levels-table-description"></p>
       <Table bordered responsive aria-label="ARIA Feature Support Levels">
         <thead>
@@ -74,7 +74,8 @@ const AriaSupportTable = ({ ariaHtmlFeaturesMetrics }) => {
 };
 
 AriaSupportTable.propTypes = {
-  ariaHtmlFeaturesMetrics: PropTypes.object.isRequired
+  ariaHtmlFeaturesMetrics: PropTypes.object.isRequired,
+  headingText: PropTypes.string
 };
 
 export default AriaSupportTable;
