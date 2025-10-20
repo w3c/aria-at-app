@@ -16,24 +16,24 @@
   }
 }
 
-/* Remove default container padding to allow full-width KeyMetricsBanner */
-main.container {
+/* Reports container - remove padding to allow full-width KeyMetricsBanner */
+main.container.reportsContainer {
   padding: 0;
 }
 
-/* Content wrapper for padding, excluding KeyMetricsBanner */
-.content-wrapper {
-  padding: 3rem;
+/* Content section with padding */
+.contentSection {
+  padding: 1rem;
 }
 
-@media (max-width: 768px) {
-  .content-wrapper {
-    padding: 1rem;
+@media (min-width: 768px) {
+  .contentSection {
+    padding: 3rem;
   }
 }
 
 @media (min-width: 1024px) {
-  .content-wrapper {
+  .contentSection {
     padding: 5rem;
   }
 }

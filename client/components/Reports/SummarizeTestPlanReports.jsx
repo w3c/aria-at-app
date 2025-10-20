@@ -27,13 +27,15 @@ const SummarizeTestPlanReports = ({
         id="main"
         as="main"
         tabIndex="-1"
-        className={commonStyles.fhContainer}
+        className={clsx(commonStyles.fhContainer, styles.reportsContainer)}
       >
         <Helmet>
           <title>AT Interop Reports | ARIA-AT</title>
         </Helmet>
-        <h1>Assistive Technology Interoperability Reports</h1>
-        <p>There are no results to show just yet. Please check back soon!</p>
+        <section className={styles.contentSection}>
+          <h1>Assistive Technology Interoperability Reports</h1>
+          <p>There are no results to show just yet. Please check back soon!</p>
+        </section>
       </Container>
     );
   }
@@ -60,13 +62,13 @@ const SummarizeTestPlanReports = ({
       id="main"
       as="main"
       tabIndex="-1"
-      className={commonStyles.fhContainer}
+      className={clsx(commonStyles.fhContainer, styles.reportsContainer)}
     >
       <Helmet>
         <title>AT Interop Reports | ARIA-AT</title>
       </Helmet>
       <KeyMetricsBanner />
-      <div className={styles.contentWrapper}>
+      <section className={styles.contentSection}>
         <h1>Assistive Technology Interoperability Reports</h1>
         <h2>Introduction</h2>
         <p>
@@ -194,7 +196,7 @@ const SummarizeTestPlanReports = ({
             }
           ]}
         />
-      </div>
+      </section>
     </Container>
   );
 };

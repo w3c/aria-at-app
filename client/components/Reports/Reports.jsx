@@ -1,7 +1,8 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { Container, Spinner } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
+import clsx from 'clsx';
 import SummarizeTestPlanReports from './SummarizeTestPlanReports';
 import PageStatus from '../common/PageStatus';
 import { REPORTS_PAGE_QUERY } from './queries';
@@ -31,20 +32,19 @@ const Reports = () => {
         id="main"
         as="main"
         tabIndex="-1"
-        className={commonStyles.fhContainer}
+        className={clsx(
+          commonStyles.fhContainer,
+          reportsStyles.reportsContainer
+        )}
       >
         <Helmet>
           <title>Loading - AT Interop Reports | ARIA-AT</title>
         </Helmet>
         <KeyMetricsBanner />
-        <div className={reportsStyles.contentWrapper}>
+        <section className={clsx(reportsStyles.contentSection)}>
           <h1>Assistive Technology Interoperability Reports</h1>
-          <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
-        </div>
+          <p>Loading...</p>
+        </section>
       </Container>
     );
   }
