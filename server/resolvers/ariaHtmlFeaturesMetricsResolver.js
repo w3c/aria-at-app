@@ -124,7 +124,9 @@ const getAriaHtmlFeatures = async context => {
             featuresAtBrowserMap.set(atBrowserFeatureKey, {
               ...feature,
               atName,
-              browserName
+              browserName,
+              atId,
+              browserId
             });
           }
         });

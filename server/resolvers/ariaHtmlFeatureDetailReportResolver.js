@@ -101,18 +101,37 @@ const calculateAssertionStatistics = rows => {
     },
     {
       label: 'Percent of Behaviors',
-      passingCount: calculatePercentage(combinedPassed, combinedTotal),
+      passingCount:
+        combinedTotal === 0
+          ? 0
+          : Math.floor((combinedPassed / combinedTotal) * 100),
       passingTotal: 100,
-      failingCount: calculatePercentage(combinedFailed, combinedTotal),
+      failingCount:
+        combinedTotal === 0
+          ? 0
+          : Math.floor((combinedFailed / combinedTotal) * 100),
       failingTotal: 100,
-      untestableCount: calculatePercentage(combinedUntestable, combinedTotal),
+      untestableCount:
+        combinedTotal === 0
+          ? 0
+          : 100 -
+            Math.floor((combinedPassed / combinedTotal) * 100) -
+            Math.floor((combinedFailed / combinedTotal) * 100),
       untestableTotal: 100,
-      passingPercentage: calculatePercentage(combinedPassed, combinedTotal),
-      failingPercentage: calculatePercentage(combinedFailed, combinedTotal),
-      untestablePercentage: calculatePercentage(
-        combinedUntestable,
-        combinedTotal
-      )
+      passingPercentage:
+        combinedTotal === 0
+          ? 0
+          : Math.floor((combinedPassed / combinedTotal) * 100),
+      failingPercentage:
+        combinedTotal === 0
+          ? 0
+          : Math.floor((combinedFailed / combinedTotal) * 100),
+      untestablePercentage:
+        combinedTotal === 0
+          ? 0
+          : 100 -
+            Math.floor((combinedPassed / combinedTotal) * 100) -
+            Math.floor((combinedFailed / combinedTotal) * 100)
     }
   ];
 };
@@ -146,10 +165,10 @@ const ariaHtmlFeatureDetailReportResolver = async (
         { context }
       );
 
-      const finalizedTestResults = await getFinalizedTestResults(
-        populatedTestPlanReport,
+      const finalizedTestResults = await getFinalizedTestResults({
+        testPlanReport: populatedTestPlanReport,
         context
-      );
+      });
 
       if (!finalizedTestResults) continue;
 
@@ -172,9 +191,32 @@ const ariaHtmlFeatureDetailReportResolver = async (
   }
 
   if (rows.length === 0) {
-    throw new Error(
-      `No data found for refId: ${refId}, atId: ${atId}, browserId: ${browserId}`
-    );
+    return {
+      feature: {
+        refId,
+        type: '',
+        linkText: '',
+        value: '',
+        total: 0,
+        passed: 0,
+        failed: 0,
+        untestable: 0,
+        passedPercentage: 0,
+        formatted: '0% of passing'
+      },
+      at: {
+        id: at.id,
+        name: at.name,
+        key: at.key
+      },
+      browser: {
+        id: browser.id,
+        name: browser.name,
+        key: browser.key
+      },
+      assertionStatistics: calculateAssertionStatistics([]),
+      rows: []
+    };
   }
 
   rows.sort((a, b) => {
@@ -232,9 +274,11 @@ const ariaHtmlFeatureDetailReportResolver = async (
     rows: rows.map(row => ({
       testPlanName: row.testPlanName,
       testPlanVersion: row.testPlanVersion,
+      testPlanVersionId: row.testPlanVersionId,
       testPlanReportId: row.testPlanReportId,
       testTitle: row.testTitle,
       testId: row.testId,
+      testResultId: row.testResultId,
       commandSequence: row.commandSequence,
       assertionPriority: row.assertionPriority,
       assertionPhrase: row.assertionPhrase,

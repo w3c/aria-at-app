@@ -10,7 +10,7 @@ const extractFeatureAssertionRows = (
   let featureInfo = {};
 
   const testPlanName = testPlanReport.testPlanVersion.testPlan.title;
-  const testPlanVersion = testPlanReport.testPlanVersion.version;
+  const testPlanVersion = testPlanReport.testPlanVersion.versionString;
 
   finalizedTestResults.forEach(testResult => {
     const testTitle = testResult.test.title;
@@ -64,9 +64,11 @@ const extractFeatureAssertionRows = (
           rows.push({
             testPlanName,
             testPlanVersion,
+            testPlanVersionId: testPlanReport.testPlanVersionId,
             testPlanReportId: testPlanReport.id,
             testTitle,
             testId,
+            testResultId: testResult.id,
             commandSequence: scenarioResult.scenario.commands
               .map(cmd => cmd.text)
               .join(' then '),
@@ -78,6 +80,8 @@ const extractFeatureAssertionRows = (
               : null,
             atVersion: testResult.atVersion?.name || 'N/A',
             browserVersion: testResult.browserVersion?.name || 'N/A',
+            atName: testPlanReport.at?.name || 'N/A',
+            browserName: testPlanReport.browser?.name || 'N/A',
             severeSideEffectsCount: severeSideEffects,
             moderateSideEffectsCount: moderateSideEffects
           });

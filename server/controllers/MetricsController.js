@@ -125,10 +125,10 @@ const downloadARIAHtmlFeaturesDetailsCSV = async (req, res, next) => {
           { context }
         );
 
-        const finalizedTestResults = await getFinalizedTestResults(
-          populatedTestPlanReport,
+        const finalizedTestResults = await getFinalizedTestResults({
+          testPlanReport: populatedTestPlanReport,
           context
-        );
+        });
 
         if (!finalizedTestResults) continue;
 
@@ -145,11 +145,9 @@ const downloadARIAHtmlFeaturesDetailsCSV = async (req, res, next) => {
       }
     }
 
-    const filterByAt = at
-      ? allRows.filter(row => row.atVersion === at)
-      : allRows;
+    const filterByAt = at ? allRows.filter(row => row.atName === at) : allRows;
     const filterByBrowser = browser
-      ? filterByAt.filter(row => row.browserVersion === browser)
+      ? filterByAt.filter(row => row.browserName === browser)
       : filterByAt;
 
     if (filterByBrowser.length === 0) {
@@ -175,8 +173,11 @@ const downloadARIAHtmlFeaturesDetailsCSV = async (req, res, next) => {
     });
 
     const headers = [
+      'ARIA/HTML Feature Name',
       'Test Plan',
+      'Test Plan URL',
       'Test Title',
+      'Test Title URL',
       'Command',
       'Assertion Priority',
       'Assertion Phrase',
@@ -193,8 +194,15 @@ const downloadARIAHtmlFeaturesDetailsCSV = async (req, res, next) => {
     for (const row of filterByBrowser) {
       csvLines.push(
         [
+          escape(refId),
           escape(`${row.testPlanName} (${row.testPlanVersion})`),
+          escape(
+            `https://aria-at.w3.org/report/${row.testPlanVersionId}/targets/${row.testPlanReportId}`
+          ),
           escape(row.testTitle),
+          escape(
+            `https://aria-at.w3.org/report/${row.testPlanVersionId}/targets/${row.testPlanReportId}#result-${row.testResultId}`
+          ),
           escape(row.commandSequence),
           escape(row.assertionPriority),
           escape(row.assertionPhrase),

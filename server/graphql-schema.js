@@ -1891,6 +1891,8 @@ const graphqlSchema = gql`
     formatted: String!
     atName: String
     browserName: String
+    atId: ID
+    browserId: ID
   }
 
   type ARIAHTMLFeatureMetrics {
@@ -1924,9 +1926,11 @@ const graphqlSchema = gql`
   type ARIAHTMLFeatureDetailReportRow {
     testPlanName: String!
     testPlanVersion: String!
+    testPlanVersionId: ID!
     testPlanReportId: ID!
     testTitle: String!
     testId: ID!
+    testResultId: ID!
     commandSequence: String!
     assertionPriority: String!
     assertionPhrase: String!
