@@ -1,10 +1,8 @@
-const {
-  getTestPlanReports
-} = require('../models/services/TestPlanReportService');
 const getMetrics = require('../../shared/getMetrics');
 const finalizedTestResultsResolver = require('./TestPlanReport/finalizedTestResultsResolver');
 const runnableTestsResolver = require('./TestPlanReport/runnableTestsResolver');
 const populateData = require('../services/PopulatedData/populateData');
+const getFilteredTestPlanReports = require('../services/getFilteredTestPlanReports');
 
 /**
  * Runs getMetrics across all test plan reports for test plan versions in
@@ -14,48 +12,10 @@ const populateData = require('../services/PopulatedData/populateData');
 const getAriaHtmlFeatures = async context => {
   const { transaction } = context;
 
-  // Get all test plan reports for versions in candidate and recommended phases
-  const testPlanReports = await getTestPlanReports({
-    where: {
-      markedFinalAt: {
-        [require('sequelize').Op.ne]: null
-      }
-    },
-    testPlanReportAttributes: ['id', 'testPlanId', 'testPlanVersionId'],
-    testPlanVersionAttributes: ['id', 'phase', 'testPlanId'],
-    testPlanRunAttributes: [],
-    testPlanAttributes: [],
-    atAttributes: [],
-    browserAttributes: [],
-    userAttributes: [],
-    pagination: { order: [['createdAt', 'desc']] },
-    transaction
-  });
-  const filteredReports = testPlanReports.filter(
-    report =>
-      report.testPlanVersion &&
-      ['CANDIDATE', 'RECOMMENDED'].includes(report.testPlanVersion.phase)
+  const reportsToProcess = await getFilteredTestPlanReports(
+    {},
+    { transaction }
   );
-
-  // Group by test plan ID and prioritize recommended over candidate
-  const reportsByTestPlan = {};
-  filteredReports.forEach(report => {
-    const testPlanId = report.testPlanId;
-    const phase = report.testPlanVersion.phase;
-
-    if (!reportsByTestPlan[testPlanId]) {
-      reportsByTestPlan[testPlanId] = [];
-    }
-
-    // If we already have a recommended version, skip candidate versions
-    const hasRecommended = reportsByTestPlan[testPlanId].some(
-      r => r.testPlanVersion.phase === 'RECOMMENDED'
-    );
-
-    if (phase === 'RECOMMENDED' || !hasRecommended) {
-      reportsByTestPlan[testPlanId].push(report);
-    }
-  });
 
   const aggregatedMetrics = {
     ariaFeaturesPassedCount: 0,
@@ -79,7 +39,6 @@ const getAriaHtmlFeatures = async context => {
   const htmlFeaturesByAtBrowserMap = new Map();
 
   // Process each report
-  const reportsToProcess = Object.values(reportsByTestPlan).flat();
   for (const report of reportsToProcess) {
     try {
       const { testPlanReport: populatedTestPlanReport } = await populateData(

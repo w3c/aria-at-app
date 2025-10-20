@@ -1544,6 +1544,16 @@ const graphqlSchema = gql`
     versions in the candidate and recommended phases
     """
     ariaHtmlFeaturesMetrics: ARIAHTMLFeatureMetrics!
+    """
+    Get detailed assertion results for a specific ARIA or HTML feature for a
+    given AT and browser combination. Used to construct individual feature
+    detail report pages.
+    """
+    ariaHtmlFeatureDetailReport(
+      refId: String!
+      atId: ID!
+      browserId: ID!
+    ): ARIAHTMLFeatureDetailReport
   }
 
   # Mutation-specific types below
@@ -1896,6 +1906,44 @@ const graphqlSchema = gql`
     htmlFeatures: [ARIAHTMLFeatureCount]!
     ariaFeaturesByAtBrowser: [ARIAHTMLFeatureCount]!
     htmlFeaturesByAtBrowser: [ARIAHTMLFeatureCount]!
+  }
+
+  type AssertionStatisticsRow {
+    label: String!
+    passingCount: Int!
+    passingTotal: Int!
+    failingCount: Int!
+    failingTotal: Int!
+    untestableCount: Int!
+    untestableTotal: Int!
+    passingPercentage: Int
+    failingPercentage: Int
+    untestablePercentage: Int
+  }
+
+  type ARIAHTMLFeatureDetailReportRow {
+    testPlanName: String!
+    testPlanVersion: String!
+    testPlanReportId: ID!
+    testTitle: String!
+    testId: ID!
+    commandSequence: String!
+    assertionPriority: String!
+    assertionPhrase: String!
+    result: String!
+    testedOn: String
+    atVersion: String!
+    browserVersion: String!
+    severeSideEffectsCount: Int!
+    moderateSideEffectsCount: Int!
+  }
+
+  type ARIAHTMLFeatureDetailReport {
+    feature: ARIAHTMLFeatureCount!
+    at: At!
+    browser: Browser!
+    assertionStatistics: [AssertionStatisticsRow!]!
+    rows: [ARIAHTMLFeatureDetailReportRow!]!
   }
 `;
 
