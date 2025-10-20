@@ -11,6 +11,7 @@ import { getTestPlanTargetTitle, getTestPlanVersionTitle } from './getTitles';
 import ProgressBar from '@components/common/ProgressBar';
 import { TestPlanVersionPropType } from '../common/proptypes';
 import Tabs from '../common/Tabs';
+import KeyMetricsBanner from '../KeyMetricsBanner';
 import styles from './SummarizeTestPlanReports.module.css';
 import commonStyles from '../common/styles.module.css';
 import AriaSupportTable from './AriaSupportTable';
@@ -64,132 +65,136 @@ const SummarizeTestPlanReports = ({
       <Helmet>
         <title>AT Interop Reports | ARIA-AT</title>
       </Helmet>
-      <h1>Assistive Technology Interoperability Reports</h1>
-      <h2>Introduction</h2>
-      <p>
-        This page offers a high-level view of all results which have been
-        collected, reviewed and published by the ARIA-AT project. Follow a link
-        in the table below to view detailed results.
-      </p>
+      <KeyMetricsBanner />
+      <div className={styles.contentWrapper}>
+        <h1>Assistive Technology Interoperability Reports</h1>
+        <h2>Introduction</h2>
+        <p>
+          This page offers a high-level view of all results which have been
+          collected, reviewed and published by the ARIA-AT project. Follow a
+          link in the table below to view detailed results.
+        </p>
 
-      <Tabs
-        tabs={[
-          {
-            label: 'Test Plans',
-            content: (
-              <>
-                <h2>Test Plan Support Levels</h2>
-                <p id="support-levels-table-description">
-                  The percentage of assertions which passed when each Test Plan
-                  was executed by a given Assistive Technology and Browser.
-                </p>
-                <Table
-                  bordered
-                  responsive
-                  aria-label="Test Plan Support Levels"
-                >
-                  <thead>
-                    <tr>
-                      <th>Test Plan</th>
-                      {Object.values(testPlanTargetsById).map(
-                        testPlanTarget => (
-                          <th key={testPlanTarget.id}>
-                            {getTestPlanTargetTitle(testPlanTarget)}
-                          </th>
-                        )
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {testPlanVersions.map(testPlanVersion => {
-                      const { testPlanReports } = testPlanVersion;
-                      const phase = testPlanVersion.phase;
-                      return (
-                        <tr key={testPlanVersion.id}>
-                          <td>
-                            <Link
-                              to={`/report/${testPlanVersion.id}`}
-                              aria-label={`${getTestPlanVersionTitle(
-                                testPlanVersion
-                              )}, ${phase} report`}
-                            >
-                              {getTestPlanVersionTitle(testPlanVersion)}
-                            </Link>
-                            <span
-                              className={clsx(
-                                styles.phaseText,
-                                styles[phase.toLowerCase()]
-                              )}
-                              aria-hidden
-                            >
-                              {derivePhaseName(phase)}
-                            </span>
-                          </td>
-                          {Object.values(testPlanTargetsById).map(
-                            testPlanTarget => {
-                              const testPlanReport = testPlanReports.find(
-                                testPlanReport =>
-                                  testPlanReport.at.id ===
-                                    testPlanTarget.at.id &&
-                                  testPlanReport.browser.id ===
-                                    testPlanTarget.browser.id
-                              );
+        <Tabs
+          tabs={[
+            {
+              label: 'Test Plans',
+              content: (
+                <>
+                  <h2>Test Plan Support Levels</h2>
+                  <p id="support-levels-table-description">
+                    The percentage of assertions which passed when each Test
+                    Plan was executed by a given Assistive Technology and
+                    Browser.
+                  </p>
+                  <Table
+                    bordered
+                    responsive
+                    aria-label="Test Plan Support Levels"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Test Plan</th>
+                        {Object.values(testPlanTargetsById).map(
+                          testPlanTarget => (
+                            <th key={testPlanTarget.id}>
+                              {getTestPlanTargetTitle(testPlanTarget)}
+                            </th>
+                          )
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {testPlanVersions.map(testPlanVersion => {
+                        const { testPlanReports } = testPlanVersion;
+                        const phase = testPlanVersion.phase;
+                        return (
+                          <tr key={testPlanVersion.id}>
+                            <td>
+                              <Link
+                                to={`/report/${testPlanVersion.id}`}
+                                aria-label={`${getTestPlanVersionTitle(
+                                  testPlanVersion
+                                )}, ${phase} report`}
+                              >
+                                {getTestPlanVersionTitle(testPlanVersion)}
+                              </Link>
+                              <span
+                                className={clsx(
+                                  styles.phaseText,
+                                  styles[phase.toLowerCase()]
+                                )}
+                                aria-hidden
+                              >
+                                {derivePhaseName(phase)}
+                              </span>
+                            </td>
+                            {Object.values(testPlanTargetsById).map(
+                              testPlanTarget => {
+                                const testPlanReport = testPlanReports.find(
+                                  testPlanReport =>
+                                    testPlanReport.at.id ===
+                                      testPlanTarget.at.id &&
+                                    testPlanReport.browser.id ===
+                                      testPlanTarget.browser.id
+                                );
 
-                              if (!testPlanReport) {
+                                if (!testPlanReport) {
+                                  return (
+                                    <td
+                                      key={`${testPlanVersion.id}-${testPlanTarget.id}`}
+                                    >
+                                      {none}
+                                    </td>
+                                  );
+                                }
+                                const metrics = testPlanReport.metrics;
                                 return (
-                                  <td
-                                    key={`${testPlanVersion.id}-${testPlanTarget.id}`}
-                                  >
-                                    {none}
+                                  <td key={testPlanReport.id}>
+                                    <Link
+                                      to={
+                                        `/report/${testPlanVersion.id}` +
+                                        `/targets/${testPlanReport.id}`
+                                      }
+                                      aria-label={`${metrics.supportPercent}%`}
+                                    >
+                                      <ProgressBar
+                                        progress={metrics.supportPercent}
+                                      />
+                                    </Link>
                                   </td>
                                 );
                               }
-                              const metrics = testPlanReport.metrics;
-                              return (
-                                <td key={testPlanReport.id}>
-                                  <Link
-                                    to={
-                                      `/report/${testPlanVersion.id}` +
-                                      `/targets/${testPlanReport.id}`
-                                    }
-                                    aria-label={`${metrics.supportPercent}%`}
-                                  >
-                                    <ProgressBar
-                                      progress={metrics.supportPercent}
-                                    />
-                                  </Link>
-                                </td>
-                              );
-                            }
-                          )}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              </>
-            )
-          },
-          {
-            label: 'ARIA Features',
-            content: (
-              <AriaSupportTable
-                ariaHtmlFeaturesMetrics={ariaHtmlFeaturesMetrics}
-                headingText="ARIA Feature Support Levels"
-              />
-            )
-          },
-          {
-            label: 'HTML Features',
-            content: (
-              <HtmlSupportTable
-                ariaHtmlFeaturesMetrics={ariaHtmlFeaturesMetrics}
-                headingText="HTML Feature Support Levels"
-              />
-            )
-          }
-        ]}
-      />
+                            )}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </Table>
+                </>
+              )
+            },
+            {
+              label: 'ARIA Features',
+              content: (
+                <AriaSupportTable
+                  ariaHtmlFeaturesMetrics={ariaHtmlFeaturesMetrics}
+                  headingText="ARIA Feature Support Levels"
+                />
+              )
+            },
+            {
+              label: 'HTML Features',
+              content: (
+                <HtmlSupportTable
+                  ariaHtmlFeaturesMetrics={ariaHtmlFeaturesMetrics}
+                  headingText="HTML Feature Support Levels"
+                />
+              )
+            }
+          ]}
+        />
+      </div>
     </Container>
   );
 };
