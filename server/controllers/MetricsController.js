@@ -235,5 +235,6 @@ const downloadARIAHtmlFeaturesDetailsCSV = async (req, res, next) => {
 
 module.exports = {
   downloadARIAHtmlFeaturesCSV,
-  downloadARIAHtmlFeaturesDetailsCSV
+  downloadARIAHtmlFeaturesDetailsCSV,
+  escape
 };
