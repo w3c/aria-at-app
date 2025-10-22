@@ -15,3 +15,25 @@
     background: var(--recommended-color);
   }
 }
+
+/* Reports container - remove padding to allow full-width KeyMetricsBanner */
+main.container.reportsContainer {
+  padding: 0;
+}
+
+/* Content section with padding */
+.contentSection {
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .contentSection {
+    padding: 3rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contentSection {
+    padding: 5rem;
+  }
+}

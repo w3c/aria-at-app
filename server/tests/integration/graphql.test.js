@@ -210,6 +210,141 @@ describe('graphql', () => {
             testsCount
             suitesCount
           }
+          ariaHtmlFeaturesMetrics {
+            __typename
+            ariaFeaturesPassedCount
+            ariaFeaturesCount
+            ariaFeaturesFailedCount
+            ariaFeaturesUntestableCount
+            htmlFeaturesPassedCount
+            htmlFeaturesCount
+            htmlFeaturesFailedCount
+            htmlFeaturesUntestableCount
+            ariaFeatures {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+            }
+            ariaFeaturesByAtBrowser {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+              atName
+              browserName
+              atId
+              browserId
+            }
+            htmlFeatures {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+            }
+            htmlFeaturesByAtBrowser {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+              atName
+              browserName
+              atId
+              browserId
+            }
+          }
+          ariaHtmlFeatureDetailReport(
+            refId: "aria-expanded"
+            atId: 1
+            browserId: 1
+          ) {
+            __typename
+            feature {
+              __typename
+              refId
+              type
+              linkText
+              value
+              total
+              passed
+              failed
+              untestable
+              passedPercentage
+              formatted
+            }
+            at {
+              __typename
+              id
+              name
+              key
+            }
+            browser {
+              __typename
+              id
+              name
+              key
+            }
+            assertionStatistics {
+              __typename
+              label
+              passingCount
+              passingTotal
+              failingCount
+              failingTotal
+              untestableCount
+              untestableTotal
+              passingPercentage
+              failingPercentage
+              untestablePercentage
+            }
+            rows {
+              __typename
+              testPlanName
+              testPlanVersion
+              testPlanVersionId
+              testPlanReportId
+              testTitle
+              testId
+              testResultId
+              commandSequence
+              assertionPriority
+              assertionPhrase
+              result
+              testedOn
+              atVersion
+              browserVersion
+              severeSideEffectsCount
+              moderateSideEffectsCount
+            }
+          }
           browsers {
             __typename
             id
@@ -347,6 +482,18 @@ describe('graphql', () => {
           }
           latestTestPlanVersion {
             id
+            tests {
+              assertions {
+                __typename
+                references {
+                  __typename
+                  refId
+                  type
+                  value
+                  linkText
+                }
+              }
+            }
           }
           testPlan(id: "checkbox") {
             __typename
