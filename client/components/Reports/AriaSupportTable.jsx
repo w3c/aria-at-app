@@ -13,18 +13,12 @@ const AriaSupportTable = ({ ariaHtmlFeaturesMetrics, headingText }) => {
 
   const dataByFeature = {};
   const links = {};
-  const atBrowserLinks = {};
   for (const row of ariaFeaturesByAtBrowser) {
     if (!dataByFeature[row.refId]) {
       dataByFeature[row.refId] = {};
-      atBrowserLinks[row.refId] = {};
     }
     links[row.refId] = { href: row.value, text: row.linkText };
     dataByFeature[row.refId][columnName(row)] = row;
-    atBrowserLinks[row.refId][columnName(row)] = {
-      atId: row.atId,
-      browserId: row.browserId
-    };
   }
 
   const keys = Object.keys(dataByFeature).sort();
@@ -52,8 +46,7 @@ const AriaSupportTable = ({ ariaHtmlFeaturesMetrics, headingText }) => {
               </td>
               {supportCombos.map(col => {
                 const row = dataByFeature[key][col];
-                const ids = atBrowserLinks[key][col];
-                const detailLink = `/aria-html-feature/${ids.atId}/${ids.browserId}/${key}`;
+                const detailLink = `/aria-html-feature/${row.atId}/${row.browserId}/${key}`;
                 return (
                   <td key={key + col}>
                     <Link
