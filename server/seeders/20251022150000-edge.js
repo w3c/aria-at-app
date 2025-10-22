@@ -1,12 +1,19 @@
 'use strict';
 
-const { Browser } = require('../models');
+const { Browser, BrowserVersion } = require('../models');
 
 module.exports = {
   up: async queryInterface => {
     const [edge] = await Browser.findOrCreate({
       where: { name: 'Microsoft Edge', key: 'MicrosoftEdge' }
     });
+
+    await BrowserVersion.bulkCreate([
+      {
+        browserId: edge.id,
+        name: '141.0.3537.85'
+      }
+    ]);
 
     const jawsAtId = 1;
     const nvdaAtId = 2;
