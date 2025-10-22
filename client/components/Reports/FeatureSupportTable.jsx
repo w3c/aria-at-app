@@ -6,14 +6,12 @@ import { Table } from 'react-bootstrap';
 
 const columnName = ({ atName, browserName }) => `${atName} and ${browserName}`;
 
-const AriaSupportTable = ({ ariaHtmlFeaturesMetrics, headingText }) => {
-  const { ariaFeaturesByAtBrowser } = ariaHtmlFeaturesMetrics;
-
-  const supportCombos = [...new Set(ariaFeaturesByAtBrowser.map(columnName))];
+const FeatureSupportTable = ({ featureData, featureLabel }) => {
+  const supportCombos = [...new Set(featureData.map(columnName))];
 
   const dataByFeature = {};
   const links = {};
-  for (const row of ariaFeaturesByAtBrowser) {
+  for (const row of featureData) {
     if (!dataByFeature[row.refId]) {
       dataByFeature[row.refId] = {};
     }
@@ -23,14 +21,19 @@ const AriaSupportTable = ({ ariaHtmlFeaturesMetrics, headingText }) => {
 
   const keys = Object.keys(dataByFeature).sort();
 
+  const headingText = `${featureLabel} Feature Support Levels`;
+  const tableLabel = `${featureLabel} Feature Support Levels`;
+  const descriptionId = `${featureLabel.toLowerCase()}-feature-support-levels-table-description`;
+  const featureColumnLabel = `${featureLabel} Feature`;
+
   return (
     <>
-      <h2>{headingText || 'ARIA Feature Support Levels'}</h2>
-      <p id="aria-feature-support-levels-table-description"></p>
-      <Table bordered responsive aria-label="ARIA Feature Support Levels">
+      <h2>{headingText}</h2>
+      <p id={descriptionId}></p>
+      <Table bordered responsive aria-label={tableLabel}>
         <thead>
           <tr>
-            <th>ARIA Feature</th>
+            <th>{featureColumnLabel}</th>
             {supportCombos.map(name => (
               <th key={name}>{name}</th>
             ))}
@@ -66,9 +69,9 @@ const AriaSupportTable = ({ ariaHtmlFeaturesMetrics, headingText }) => {
   );
 };
 
-AriaSupportTable.propTypes = {
-  ariaHtmlFeaturesMetrics: PropTypes.object.isRequired,
-  headingText: PropTypes.string
+FeatureSupportTable.propTypes = {
+  featureData: PropTypes.array.isRequired,
+  featureLabel: PropTypes.oneOf(['ARIA', 'HTML']).isRequired
 };
 
-export default AriaSupportTable;
+export default FeatureSupportTable;

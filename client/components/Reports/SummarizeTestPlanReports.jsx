@@ -14,8 +14,7 @@ import Tabs from '../common/Tabs';
 import KeyMetricsBanner from '../KeyMetricsBanner';
 import styles from './SummarizeTestPlanReports.module.css';
 import commonStyles from '../common/styles.module.css';
-import AriaSupportTable from './AriaSupportTable';
-import HtmlSupportTable from './HtmlSupportTable';
+import FeatureSupportTable from './FeatureSupportTable';
 
 const SummarizeTestPlanReports = ({
   testPlanVersions,
@@ -179,18 +178,18 @@ const SummarizeTestPlanReports = ({
             {
               label: 'ARIA Features',
               content: (
-                <AriaSupportTable
-                  ariaHtmlFeaturesMetrics={ariaHtmlFeaturesMetrics}
-                  headingText="ARIA Feature Support Levels"
+                <FeatureSupportTable
+                  featureData={ariaHtmlFeaturesMetrics.ariaFeaturesByAtBrowser}
+                  featureLabel="ARIA"
                 />
               )
             },
             {
               label: 'HTML Features',
               content: (
-                <HtmlSupportTable
-                  ariaHtmlFeaturesMetrics={ariaHtmlFeaturesMetrics}
-                  headingText="HTML Feature Support Levels"
+                <FeatureSupportTable
+                  featureData={ariaHtmlFeaturesMetrics.htmlFeaturesByAtBrowser}
+                  featureLabel="HTML"
                 />
               )
             }
