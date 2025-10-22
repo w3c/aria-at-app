@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import styles from './Tabs.module.css';
 
-const Tabs = ({ tabs }) => {
+const Tabs = ({ tabs, onSelectedTabChange }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const tabRefs = useRef([]);
 
@@ -33,7 +33,13 @@ const Tabs = ({ tabs }) => {
 
     event.preventDefault();
     setSelectedTab(newIndex);
+    onSelectedTabChange?.(newIndex);
     tabRefs.current[newIndex]?.focus();
+  };
+
+  const handleTabClick = index => {
+    setSelectedTab(index);
+    onSelectedTabChange?.(index);
   };
 
   return (
@@ -50,7 +56,7 @@ const Tabs = ({ tabs }) => {
             className={`${styles.tabButton} ${
               selectedTab === index ? styles.selectedTab : ''
             }`}
-            onClick={() => setSelectedTab(index)}
+            onClick={() => handleTabClick(index)}
             onKeyDown={e => handleKeyDown(e, index)}
             tabIndex={selectedTab === index ? 0 : -1}
           >
@@ -58,19 +64,17 @@ const Tabs = ({ tabs }) => {
           </button>
         ))}
       </div>
-      {tabs.map((tab, index) => (
+      {tabs[selectedTab] && (
         <div
-          key={index}
           role="tabpanel"
-          id={`panel-${index}`}
-          aria-labelledby={`tab-${index}`}
-          hidden={selectedTab !== index}
+          id={`panel-${selectedTab}`}
+          aria-labelledby={`tab-${selectedTab}`}
           tabIndex={0}
           className={styles.tabPanel}
         >
-          {tab.content}
+          {tabs[selectedTab].content}
         </div>
-      ))}
+      )}
     </div>
   );
 };
@@ -79,9 +83,10 @@ Tabs.propTypes = {
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
-      content: PropTypes.node.isRequired
+      content: PropTypes.node
     })
-  ).isRequired
+  ).isRequired,
+  onSelectedTabChange: PropTypes.func
 };
 
 export default Tabs;

@@ -24,6 +24,8 @@ import FilterButtons from '../common/FilterButtons';
 import styles from './TestQueue.module.css';
 import pillStyles from '../common/VersionString/VersionString.module.css';
 import commonStyles from '../common/styles.module.css';
+import { ME_QUERY } from '../App/queries';
+import useReportRerunCount from '../ReportRerun/useReportRerunCount';
 
 const FILTER_KEYS = {
   ALL: 'all',
@@ -33,11 +35,16 @@ const FILTER_KEYS = {
 
 const TestQueue = () => {
   const client = useApolloClient();
-  const [totalAutomatedRuns, setTotalAutomatedRuns] = useState(null);
   const [activeFilter, setActiveFilter] = useState(FILTER_KEYS.MANUAL);
+  const [selectedTab, setSelectedTab] = useState(0);
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network'
   });
+
+  const { data: { me } = {} } = useQuery(ME_QUERY);
+  const { isAdmin } = evaluateAuth(me);
+
+  const totalAutomatedRuns = useReportRerunCount(isAdmin);
 
   const openDisclosuresRef = useRef({});
   const forceUpdate = useForceUpdate();
@@ -205,8 +212,6 @@ const TestQueue = () => {
   }
 
   const isSignedIn = !!data.me;
-
-  const { isAdmin } = evaluateAuth(data.me);
 
   // Use processed data from useMemo hooks
   const { testPlans, testers } = processedData;
@@ -455,19 +460,17 @@ const TestQueue = () => {
     {
       get label() {
         return `Automated Report Updates${
-          typeof totalAutomatedRuns === 'number'
+          typeof totalAutomatedRuns === 'number' && totalAutomatedRuns > 0
             ? ` (${totalAutomatedRuns})`
             : ''
         }`;
       },
-      content: (
-        <div className={styles.tabContentPadding}>
-          <ReportRerun
-            onQueueUpdate={refetch}
-            onTotalRunsAvailable={setTotalAutomatedRuns}
-          />
-        </div>
-      )
+      content:
+        selectedTab === 1 ? (
+          <div className={styles.tabContentPadding}>
+            <ReportRerun onQueueUpdate={refetch} />
+          </div>
+        ) : null
     }
   ];
 
@@ -477,7 +480,7 @@ const TestQueue = () => {
         <title>Test Queue | ARIA-AT</title>
       </Helmet>
       <h1 className="test-queue-heading">Test Queue</h1>
-      <Tabs tabs={tabs} />
+      <Tabs tabs={tabs} onSelectedTabChange={setSelectedTab} />
     </Container>
   );
 };
