@@ -21,7 +21,7 @@ export const isSupportedByResponseCollector = ctx => {
     atKey === 'nvda' &&
     (browserKey === 'chrome' ||
       browserKey === 'firefox' ||
-      browserKey == 'MicrosoftEdge');
+      browserKey === 'MicrosoftEdge');
   const isVoiceOverMacWithSupportedBrowser =
     atKey === 'voiceover_macos' &&
     (browserKey === 'safari_macos' ||
@@ -31,7 +31,7 @@ export const isSupportedByResponseCollector = ctx => {
     atKey === 'jaws' &&
     (browserKey === 'chrome' ||
       browserKey === 'firefox' ||
-      browserKey == 'MicrosoftEdge');
+      browserKey === 'MicrosoftEdge');
 
   if (
     !(
