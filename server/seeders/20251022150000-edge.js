@@ -14,8 +14,8 @@ module.exports = {
       'AtBrowsers',
       // prettier-ignore
       [
-                { atId: jawsAtId, browserId: edge.id, isCandidate: false, isRecommended: true },
-                { atId: nvdaAtId, browserId: edge.id, isCandidate: false, isRecommended: true },
+                { atId: jawsAtId, browserId: edge.id, isCandidate: false, isRecommended: false },
+                { atId: nvdaAtId, browserId: edge.id, isCandidate: false, isRecommended: false },
       ],
       {}
     );

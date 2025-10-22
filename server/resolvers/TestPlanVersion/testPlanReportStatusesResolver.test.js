@@ -64,7 +64,11 @@ describe('testPlanReportStatusesResolver', () => {
 
     expect(statuses.length).toBe(9);
     expect(atsInOrder).toEqual(['JAWS', 'NVDA', 'VoiceOver for macOS']);
-    expect(jawsBrowsersInOrder).toEqual(['Chrome', 'Firefox']);
+    expect(jawsBrowsersInOrder).toEqual([
+      'Chrome',
+      'Firefox',
+      'Microsoft Edge'
+    ]);
     expect(voiceoverBrowsersInOrder).toEqual(['Chrome', 'Firefox', 'Safari']);
     expect(exactAtVersions).toEqual([]);
     expect(requiredStatuses.length).toBe(3);
