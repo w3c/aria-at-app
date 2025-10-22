@@ -1,6 +1,7 @@
 const { getTestPlans } = require('../models/services/TestPlanService');
+const staleWhileRevalidate = require('../util/staleWhileRevalidate');
 
-const testPlans = async (_, { testPlanVersionPhases }, context) => {
+const testPlansUncached = async (_, { testPlanVersionPhases }, context) => {
   const { transaction } = context;
 
   const plans = await getTestPlans({
@@ -19,5 +20,11 @@ const testPlans = async (_, { testPlanVersionPhases }, context) => {
     };
   });
 };
+
+const testPlans = staleWhileRevalidate(testPlansUncached, {
+  getCacheKeyFromArguments: (_, { testPlanVersionPhases }) =>
+    JSON.stringify(testPlanVersionPhases),
+  millisecondsUntilStale: 30000
+});
 
 module.exports = testPlans;
