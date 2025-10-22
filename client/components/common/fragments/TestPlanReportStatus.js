@@ -8,11 +8,6 @@ const TEST_PLAN_REPORT_STATUS_FIELDS = (type = 'simple') => {
           __typename
           testPlanReport {
             metrics
-            draftTestPlanRuns {
-              testResults {
-                completedAt
-              }
-            }
           }
         }
       `;
