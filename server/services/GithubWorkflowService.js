@@ -197,8 +197,7 @@ const createGithubWorkflow = async ({ job, directory, gitSha, atVersion }) => {
       'X-GitHub-Api-Version': '2022-11-28'
     },
     data: JSON.stringify({
-      // switch this back to main after https://github.com/bocoup/aria-at-gh-actions-helper/pull/88
-      ref: 'edge-tests',
+      ref: 'main',
       inputs
     }),
     validateStatus: () => true,
