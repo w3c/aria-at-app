@@ -62,20 +62,6 @@ const TEST_PLAN_REPORT_STATUS_FIELDS = (type = 'simple') => {
               testPlanReport {
                 id
               }
-              testResults {
-                test {
-                  id
-                }
-                atVersion {
-                  id
-                  name
-                }
-                browserVersion {
-                  id
-                  name
-                }
-                completedAt
-              }
             }
           }
         }
