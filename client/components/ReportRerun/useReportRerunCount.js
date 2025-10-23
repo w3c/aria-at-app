@@ -14,7 +14,8 @@ const useReportRerunCount = isAdmin => {
     GET_AUTOMATION_SUPPORTED_AT_VERSIONS,
     {
       skip: !isAdmin,
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first'
     }
   );
 

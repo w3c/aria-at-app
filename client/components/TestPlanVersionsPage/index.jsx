@@ -27,7 +27,8 @@ const TestPlanVersionsPage = () => {
 
   const { loading, data, error } = useQuery(TEST_PLAN_VERSIONS_PAGE_QUERY, {
     variables: { testPlanDirectory },
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
   });
   const forceUpdate = useForceUpdate();
 

@@ -38,11 +38,14 @@ const TestQueue = () => {
   const [activeFilter, setActiveFilter] = useState(FILTER_KEYS.MANUAL);
   const [selectedTab, setSelectedTab] = useState(0);
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
-    fetchPolicy: 'cache-first',
+    fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-first'
   });
 
-  const { data: { me } = {} } = useQuery(ME_QUERY);
+  const { data: { me } = {} } = useQuery(ME_QUERY, {
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
+  });
   const { isAdmin } = evaluateAuth(me);
 
   const totalAutomatedRuns = useReportRerunCount(isAdmin);

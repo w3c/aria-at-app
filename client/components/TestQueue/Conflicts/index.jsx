@@ -26,6 +26,7 @@ const TestQueueConflicts = () => {
   const { testPlanReportId } = useParams();
   const { data, error, loading } = useQuery(TEST_QUEUE_CONFLICTS_PAGE_QUERY, {
     fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
     variables: {
       testPlanReportId: testPlanReportId
     }

@@ -40,7 +40,8 @@ const ManageBotRunDialog = ({
       variables: {
         testPlanRunId: testPlanRun.id
       },
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first'
     }
   );
 
@@ -48,7 +49,8 @@ const ManageBotRunDialog = ({
     variables: {
       testPlanReportId: testPlanReportId,
       userId: testPlanRun.tester.id
-    }
+    },
+    refetchQueries: ['TestQueuePage']
   });
 
   const { data: testPlanReportAssignedTestersQuery } = useQuery(
@@ -57,7 +59,8 @@ const ManageBotRunDialog = ({
       variables: {
         testPlanReportId
       },
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first'
     }
   );
 

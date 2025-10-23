@@ -16,6 +16,7 @@ export const useTestPlanRunValidatedAssertionCounts = (
       testPlanRunId: testPlanRun.id
     },
     fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first',
     pollInterval
   });
 

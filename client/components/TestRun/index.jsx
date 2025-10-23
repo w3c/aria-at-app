@@ -93,6 +93,7 @@ const TestRun = () => {
     isViewingRun ? TEST_RUN_PAGE_QUERY : TEST_RUN_PAGE_ANON_QUERY,
     {
       fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first',
       variables: { testPlanRunId, testPlanReportId },
       pollInterval: 0,
       awaitRefetchQueries: true
@@ -104,13 +105,30 @@ const TestRun = () => {
   }, [data]);
 
   const [createTestResult, { loading: createTestResultLoading }] = useMutation(
-    FIND_OR_CREATE_TEST_RESULT_MUTATION
+    FIND_OR_CREATE_TEST_RESULT_MUTATION,
+    {
+      refetchQueries: ['TestRunPage'],
+      awaitRefetchQueries: true
+    }
   );
-  const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION);
-  const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION);
-  const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION);
+  const [saveTestResult] = useMutation(SAVE_TEST_RESULT_MUTATION, {
+    refetchQueries: ['TestRunPage'],
+    awaitRefetchQueries: true
+  });
+  const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT_MUTATION, {
+    refetchQueries: ['TestRunPage'],
+    awaitRefetchQueries: true
+  });
+  const [deleteTestResult] = useMutation(DELETE_TEST_RESULT_MUTATION, {
+    refetchQueries: ['TestRunPage'],
+    awaitRefetchQueries: true
+  });
   const [createBrowserVersion] = useMutation(
-    FIND_OR_CREATE_BROWSER_VERSION_MUTATION
+    FIND_OR_CREATE_BROWSER_VERSION_MUTATION,
+    {
+      refetchQueries: ['TestRunPage'],
+      awaitRefetchQueries: true
+    }
   );
 
   const [isRendererReady, setIsRendererReady] = useState(false);

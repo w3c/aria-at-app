@@ -61,6 +61,7 @@ function AddTestToQueueWithConfirmation({
         directory: testPlanVersion?.testPlan?.directory
       },
       fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first',
       skip: !testPlanVersion?.id
     }
   );

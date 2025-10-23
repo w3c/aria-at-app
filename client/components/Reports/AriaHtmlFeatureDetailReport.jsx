@@ -16,7 +16,8 @@ const AriaHtmlFeatureDetailReport = () => {
     ARIA_HTML_FEATURE_DETAIL_REPORT_QUERY,
     {
       variables: { refId, atId, browserId },
-      fetchPolicy: 'cache-and-network'
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first'
     }
   );
 
