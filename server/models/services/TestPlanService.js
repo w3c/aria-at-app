@@ -33,7 +33,6 @@ const testPlanVersionAssociation = (
   association: 'testPlanVersions',
   attributes: testPlanVersionAttributes,
   include: [
-    // eslint-disable-next-line no-use-before-define
     testPlanReportAssociation(
       testPlanReportAttributes,
       atAttributes,
@@ -62,11 +61,8 @@ const testPlanReportAssociation = (
   association: 'testPlanReports',
   attributes: testPlanReportAttributes,
   include: [
-    // eslint-disable-next-line no-use-before-define
     atAssociation(atAttributes),
-    // eslint-disable-next-line no-use-before-define
     browserAssociation(browserAttributes),
-    // eslint-disable-next-line no-use-before-define
     testPlanRunAssociation(testPlanRunAttributes, userAttributes)
   ]
 });
@@ -79,10 +75,7 @@ const testPlanReportAssociation = (
 const testPlanRunAssociation = (testPlanRunAttributes, userAttributes) => ({
   association: 'testPlanRuns',
   attributes: testPlanRunAttributes,
-  include: [
-    // eslint-disable-next-line no-use-before-define
-    userAssociation(userAttributes)
-  ]
+  include: [userAssociation(userAttributes)]
 });
 
 /**

@@ -1215,6 +1215,12 @@ const graphqlSchema = gql`
     """
     runnableTestsLength: Int!
     """
+    The total number of scenarios across all runnable tests for this
+    TestPlanReport's AT. This is a pre-computed value that counts scenarios
+    for the specific AT associated with this report.
+    """
+    totalScenarioCount: Int!
+    """
     A list of conflicts between runs, which may occur at the level of the
     Scenario if the output or negative side effects do not match, or even at
     the level of an Assertion, if the result of an assertion does not match.

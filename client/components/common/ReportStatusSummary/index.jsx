@@ -39,9 +39,9 @@ const ReportStatusSummary = ({
   };
 
   const renderPartialCompleteReportStatus = testPlanReport => {
-    const { metrics, draftTestPlanRuns } = testPlanReport;
+    const { conflictsLength, draftTestPlanRuns } = testPlanReport;
 
-    const conflictsCount = metrics.conflictsCount ?? 0;
+    const conflictsCount = conflictsLength ?? 0;
     switch (draftTestPlanRuns?.length) {
       case 0:
         return fromTestQueue ? (
@@ -91,7 +91,7 @@ ReportStatusSummary.propTypes = {
     id: PropTypes.string.isRequired,
     percentComplete: PropTypes.number,
     markedFinalAt: PropTypes.string,
-    metrics: PropTypes.object,
+    conflictsLength: PropTypes.number,
     draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType).isRequired
   }),
   me: UserPropType,

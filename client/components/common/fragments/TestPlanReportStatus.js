@@ -7,7 +7,14 @@ const TEST_PLAN_REPORT_STATUS_FIELDS = (type = 'simple') => {
         fragment TestPlanReportStatusFieldsSimple on TestPlanReportStatus {
           __typename
           testPlanReport {
-            metrics
+            percentComplete
+            markedFinalAt
+            conflictsLength
+            draftTestPlanRuns {
+              tester {
+                username
+              }
+            }
           }
         }
       `;

@@ -22,12 +22,7 @@ module.exports = {
       },
       {
         test: /\.s[ac]ss$/i,
-        use: [
-          // Creates `style` nodes from JS strings
-          'style-loader',
-          // Translates CSS into CommonJS
-          'css-loader'
-        ]
+        use: ['style-loader', 'css-loader']
       },
       {
         test: /\.module\.css$/,
@@ -56,7 +51,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist/'),
-    filename: 'bundle.js'
+    filename: 'bundle.[contenthash:8].js',
+    chunkFilename: 'chunk.[name].[contenthash:8].js'
   },
   resolve: {
     alias: {
@@ -81,6 +77,41 @@ module.exports = {
       'process.env.ENVIRONMENT': JSON.stringify(process.env.ENVIRONMENT)
     })
   ],
+  optimization: {
+    minimize: true,
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          priority: 10,
+          reuseExistingChunk: true
+        },
+        apollo: {
+          test: /[\\/]node_modules[\\/]@apollo[\\/]/,
+          name: 'apollo',
+          priority: 20,
+          reuseExistingChunk: true
+        },
+        reactBootstrap: {
+          test: /[\\/]node_modules[\\/](react-bootstrap|bootstrap)[\\/]/,
+          name: 'react-bootstrap',
+          priority: 20,
+          reuseExistingChunk: true
+        },
+        common: {
+          minChunks: 2,
+          priority: 5,
+          reuseExistingChunk: true,
+          name: 'common'
+        }
+      }
+    },
+    runtimeChunk: {
+      name: 'runtime'
+    }
+  },
   performance: {
     hints: false,
     maxEntrypointSize: 512000,
