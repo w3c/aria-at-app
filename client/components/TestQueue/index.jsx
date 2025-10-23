@@ -38,7 +38,8 @@ const TestQueue = () => {
   const [activeFilter, setActiveFilter] = useState(FILTER_KEYS.MANUAL);
   const [selectedTab, setSelectedTab] = useState(0);
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
-    fetchPolicy: 'cache-and-network'
+    fetchPolicy: 'cache-first',
+    nextFetchPolicy: 'cache-first'
   });
 
   const { data: { me } = {} } = useQuery(ME_QUERY);
