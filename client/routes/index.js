@@ -1,37 +1,62 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Navigate, Routes } from 'react-router-dom';
+import { Container } from 'react-bootstrap';
 import ConfirmAuth from '@components/ConfirmAuth';
 import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 
 const Reports = lazy(() =>
-  import('@components/Reports').then(m => ({ default: m.Reports }))
+  import(/* webpackPrefetch: true */ '@components/Reports').then(m => ({
+    default: m.Reports
+  }))
 );
 const Report = lazy(() =>
-  import('@components/Reports').then(m => ({ default: m.Report }))
+  import(/* webpackPrefetch: true */ '@components/Reports').then(m => ({
+    default: m.Report
+  }))
 );
 const AriaHtmlFeatureDetailReport = lazy(() =>
-  import('@components/Reports/AriaHtmlFeatureDetailReport')
+  import(
+    /* webpackPrefetch: true */ '@components/Reports/AriaHtmlFeatureDetailReport'
+  )
 );
-const CandidateReview = lazy(() => import('@components/CandidateReview'));
-const SignupInstructions = lazy(() => import('@components/SignupInstructions'));
-const TestQueue = lazy(() => import('@components/TestQueue'));
-const TestRun = lazy(() => import('@components/TestRun'));
-const UserSettings = lazy(() => import('@components/UserSettings'));
+const CandidateReview = lazy(() =>
+  import(/* webpackPrefetch: true */ '@components/CandidateReview')
+);
+const SignupInstructions = lazy(() =>
+  import(/* webpackPrefetch: true */ '@components/SignupInstructions')
+);
+const TestQueue = lazy(() =>
+  import(/* webpackPrefetch: true */ '@components/TestQueue')
+);
+const TestRun = lazy(() =>
+  import(/* webpackPrefetch: true */ '@components/TestRun')
+);
+const UserSettings = lazy(() =>
+  import(/* webpackPrefetch: true */ '@components/UserSettings')
+);
 const CandidateTestPlanRun = lazy(() =>
-  import('@components/CandidateReview/CandidateTestPlanRun')
+  import(
+    /* webpackPrefetch: true */ '@components/CandidateReview/CandidateTestPlanRun'
+  )
 );
-const DataManagement = lazy(() => import('client/components/DataManagement'));
+const DataManagement = lazy(() =>
+  import(/* webpackPrefetch: true */ 'client/components/DataManagement')
+);
 const TestPlanVersionsPage = lazy(() =>
-  import('../components/TestPlanVersionsPage')
+  import(/* webpackPrefetch: true */ '../components/TestPlanVersionsPage')
 );
-const TestReview = lazy(() => import('../components/TestReview'));
+const TestReview = lazy(() =>
+  import(/* webpackPrefetch: true */ '../components/TestReview')
+);
 const TestQueueConflicts = lazy(() =>
-  import('../components/TestQueue/Conflicts')
+  import(/* webpackPrefetch: true */ '../components/TestQueue/Conflicts')
 );
 
-const PageLoader = () => <div>Loading...</div>;
+const PageLoader = () => (
+  <Container id="main" as="main" tabIndex="-1"></Container>
+);
 
 export default () => (
   <Routes>
