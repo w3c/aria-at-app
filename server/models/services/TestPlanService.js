@@ -186,19 +186,36 @@ const getTestPlans = async ({
   const searchQuery = search ? `%${search}%` : '';
   if (searchQuery) where = { ...where, title: { [Op.iLike]: searchQuery } };
 
+  // Build include array conditionally - only include if attributes are provided
+  const include = [];
+
+  if (testPlanVersionAttributes && testPlanVersionAttributes.length > 0) {
+    const testPlanVersionIncludes = [];
+
+    // Only include testPlanReports if testPlanReportAttributes are provided
+    if (testPlanReportAttributes && testPlanReportAttributes.length > 0) {
+      testPlanVersionIncludes.push(
+        testPlanReportAssociation(
+          testPlanReportAttributes,
+          atAttributes,
+          browserAttributes,
+          testPlanRunAttributes,
+          userAttributes
+        )
+      );
+    }
+
+    include.push({
+      association: 'testPlanVersions',
+      attributes: testPlanVersionAttributes,
+      include: testPlanVersionIncludes
+    });
+  }
+
   const data = await ModelService.get(TestPlan, {
     where,
     attributes: testPlanAttributes,
-    include: [
-      testPlanVersionAssociation(
-        testPlanVersionAttributes,
-        testPlanReportAttributes,
-        atAttributes,
-        browserAttributes,
-        testPlanRunAttributes,
-        userAttributes
-      )
-    ],
+    include,
     pagination,
     transaction
   });
