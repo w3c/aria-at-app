@@ -1,5 +1,5 @@
 import React, { Fragment, useRef, useState, useMemo } from 'react';
-import { useApolloClient, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { Alert, Container, Table } from 'react-bootstrap';
@@ -21,6 +21,7 @@ import BotRunTestStatusList from '../BotRunTestStatusList';
 import ReportRerun from '../ReportRerun';
 import Tabs from '../common/Tabs';
 import FilterButtons from '../common/FilterButtons';
+import TestQueueDisclosureContent from './TestQueueDisclosureContent';
 import styles from './TestQueue.module.css';
 import pillStyles from '../common/VersionString/VersionString.module.css';
 import commonStyles from '../common/styles.module.css';
@@ -34,7 +35,6 @@ const FILTER_KEYS = {
 };
 
 const TestQueue = () => {
-  const client = useApolloClient();
   const [activeFilter, setActiveFilter] = useState(FILTER_KEYS.MANUAL);
   const [selectedTab, setSelectedTab] = useState(0);
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
@@ -252,7 +252,8 @@ const TestQueue = () => {
         ))}
         onClick={testPlan.testPlanVersions.map(testPlanVersion => () => {
           const isOpen = openDisclosuresRef.current[testPlanVersion.id];
-          openDisclosuresRef.current[testPlanVersion.id] = !isOpen;
+          const newIsOpen = !isOpen;
+          openDisclosuresRef.current[testPlanVersion.id] = newIsOpen;
           forceUpdate();
         })}
         expanded={testPlan.testPlanVersions.map(
@@ -260,130 +261,17 @@ const TestQueue = () => {
             openDisclosuresRef.current[testPlanVersion.id] || false
         )}
         disclosureContainerView={testPlan.testPlanVersions.map(
-          testPlanVersion =>
-            renderDisclosureContent({ testPlan, testPlanVersion })
+          testPlanVersion => (
+            <TestQueueDisclosureContent
+              key={testPlanVersion.id}
+              testPlan={testPlan}
+              testPlanVersion={testPlanVersion}
+              me={me}
+              testers={testers}
+            />
+          )
         )}
       />
-    );
-  };
-
-  const renderDisclosureContent = ({ testPlan, testPlanVersion }) => {
-    return (
-      <>
-        <div className={styles.metadataContainer}>
-          <a href={`/test-review/${testPlanVersion.id}`}>
-            <FontAwesomeIcon
-              icon={faArrowUpRightFromSquare}
-              size="xs"
-              className={commonStyles.darkGray}
-            />
-            View tests in {testPlanVersion.versionString}
-          </a>
-          <TestPlanReportStatusDialogWithButton
-            triggerUpdate={refetch}
-            testPlanVersionId={testPlanVersion.id}
-          />
-        </div>
-        <Table
-          aria-label={
-            `Reports for ${testPlanVersion.title} ` +
-            `${testPlanVersion.versionString} in ` +
-            `${testPlanVersion.phase.toLowerCase()} phase`
-          }
-          bordered
-          responsive
-          hover={false}
-          className={styles.testQueue}
-        >
-          <thead>
-            <tr>
-              <th>Assistive Technology</th>
-              <th>Browser</th>
-              <th>Testers</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {testPlanVersion.testPlanReports.map(testPlanReport =>
-              renderRow({
-                testPlan,
-                testPlanVersion,
-                testPlanReport
-              })
-            )}
-          </tbody>
-        </Table>
-      </>
-    );
-  };
-
-  const renderRow = ({ testPlan, testPlanVersion, testPlanReport }) => {
-    const hasBotRun = testPlanReport.draftTestPlanRuns?.some(
-      ({ tester }) => tester.isBot
-    );
-
-    const shouldPollPercent = hasBotRun;
-
-    return (
-      <tr key={testPlanReport.id}>
-        <td>
-          <AtVersion
-            at={testPlanReport.at}
-            minimumAtVersion={testPlanReport.minimumAtVersion}
-            exactAtVersion={testPlanReport.exactAtVersion}
-          />
-        </td>
-        <td>
-          <BrowserVersion browser={testPlanReport.browser} />
-        </td>
-        <td>
-          <AssignTesters
-            me={data.me}
-            testers={testers}
-            testPlanReport={testPlanReport}
-          />
-        </td>
-        <td>
-          <div className={styles.statusContainer}>
-            <RowStatus
-              testPlanVersion={testPlanVersion}
-              testPlanReport={testPlanReport}
-              shouldPoll={!!shouldPollPercent}
-            />
-            {testPlanReport.onHold ? (
-              <span
-                className={`${pillStyles.styledPill} ${pillStyles.autoWidth}`}
-              >
-                On hold
-              </span>
-            ) : null}
-            {hasBotRun ? (
-              <BotRunTestStatusList testPlanReportId={testPlanReport.id} />
-            ) : null}
-          </div>
-        </td>
-        <td>
-          <Actions
-            me={data.me}
-            testers={testers}
-            testPlan={testPlan}
-            testPlanReport={testPlanReport}
-            triggerUpdate={async () => {
-              await client.refetchQueries({
-                include: ['TestQueuePage', 'TestPlanReportStatusDialog']
-              });
-
-              // Refocus on testers assignment dropdown button
-              const selector = `#assign-testers-${testPlanReport.id} button`;
-              const element = document.querySelector(selector);
-              if (element) {
-                element.focus();
-              }
-            }}
-          />
-        </td>
-      </tr>
     );
   };
 

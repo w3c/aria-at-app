@@ -21,7 +21,7 @@ import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDia
 import { TestPlanReportPropType, UserPropType } from '../common/proptypes';
 import styles from './TestQueue.module.css';
 
-const AssignTesters = ({ me, testers, testPlanReport }) => {
+const AssignTesters = ({ me, testers, testPlanReport, triggerUpdate }) => {
   const { triggerLoad, loadingMessage } = useTriggerLoad();
 
   const setAlertMessage = useAriaLiveRegion();
@@ -104,6 +104,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
         hideConfirmationModal();
 
         await assignedCallback?.({ tester });
+        await triggerUpdate();
       };
 
       showConfirmationModal(
@@ -155,6 +156,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
     }, 'Assigning...');
 
     await unassignedCallback?.({ tester });
+    await triggerUpdate();
   };
 
   const onSelect = testerId => {
@@ -290,7 +292,8 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
 AssignTesters.propTypes = {
   me: UserPropType,
   testers: PropTypes.arrayOf(UserPropType).isRequired,
-  testPlanReport: TestPlanReportPropType.isRequired
+  testPlanReport: TestPlanReportPropType.isRequired,
+  triggerUpdate: PropTypes.func.isRequired
 };
 
 export default AssignTesters;
