@@ -36,7 +36,7 @@ const ManageTestQueue = ({
           <AddTestPlans
             key="AddTestPlans"
             ats={ats}
-            testPlanVersions={testPlanVersions}
+            isOpen={showAddTestPlans}
             triggerUpdate={triggerUpdate}
           />
         ]}

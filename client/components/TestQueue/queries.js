@@ -7,7 +7,6 @@ import {
   TEST_PLAN_FIELDS,
   TEST_PLAN_REPORT_FIELDS,
   TEST_PLAN_RUN_FIELDS,
-  TEST_PLAN_VERSION_FIELDS,
   ISSUE_FIELDS,
   USER_FIELDS
 } from '@components/common/fragments';
@@ -19,7 +18,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
   ${ME_FIELDS}
   ${TEST_PLAN_FIELDS}
   ${TEST_PLAN_REPORT_FIELDS}
-  ${TEST_PLAN_VERSION_FIELDS}
   ${USER_FIELDS}
   query TestQueuePage {
     me {
@@ -41,15 +39,22 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
     testPlans(testPlanVersionPhases: [DRAFT, CANDIDATE, RECOMMENDED]) {
       ...TestPlanFields
       testPlanVersions {
-        ...TestPlanVersionFields
+        __typename
+        id
+        title
+        phase
+        versionString
+        updatedAt
+        draftPhaseReachedAt
+        candidatePhaseReachedAt
+        recommendedPhaseReachedAt
+        recommendedPhaseTargetDate
+        deprecatedAt
         testPlanReports(isFinal: false) {
           ...TestPlanReportFields
           totalScenarioCount
           at {
             ...AtFields
-            atVersions {
-              ...AtVersionFields
-            }
           }
           browser {
             ...BrowserFields
@@ -228,9 +233,6 @@ export const TEST_QUEUE_EXPANDED_ROW_QUERY = gql`
       ...TestPlanReportFields
       at {
         ...AtFields
-        atVersions {
-          ...AtVersionFields
-        }
       }
       browser {
         ...BrowserFields
@@ -243,6 +245,21 @@ export const TEST_QUEUE_EXPANDED_ROW_QUERY = gql`
       }
       draftTestPlanRuns {
         ...TestPlanRunFields
+      }
+    }
+  }
+`;
+
+export const ADD_TEST_PLANS_QUERY = gql`
+  ${TEST_PLAN_FIELDS}
+  query AddTestPlans($testPlanVersionPhases: [TestPlanVersionPhase!]!) {
+    testPlans(testPlanVersionPhases: $testPlanVersionPhases) {
+      ...TestPlanFields
+      testPlanVersions {
+        __typename
+        id
+        gitSha
+        gitMessage
       }
     }
   }
