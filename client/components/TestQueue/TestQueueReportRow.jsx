@@ -18,7 +18,9 @@ const TestQueueReportRow = ({
   testers
 }) => {
   const { data, refetch } = useQuery(TEST_QUEUE_EXPANDED_ROW_QUERY, {
-    variables: { testPlanReportId: testPlanReport.id }
+    variables: { testPlanReportId: testPlanReport.id },
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-first'
   });
 
   const isDataLoaded = !!data?.testPlanReport;

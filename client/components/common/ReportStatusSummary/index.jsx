@@ -1,11 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { dates } from 'shared';
-import {
-  TestPlanVersionPropType,
-  TestPlanRunPropType,
-  UserPropType
-} from '../proptypes';
+import { UserPropType } from '../proptypes';
 import styles from './ReportStatusSummary.module.css';
 
 const ReportStatusSummary = ({
@@ -86,13 +82,21 @@ const ReportStatusSummary = ({
 };
 
 ReportStatusSummary.propTypes = {
-  testPlanVersion: TestPlanVersionPropType.isRequired,
+  testPlanVersion: PropTypes.shape({
+    id: PropTypes.string.isRequired
+  }),
   testPlanReport: PropTypes.shape({
     id: PropTypes.string.isRequired,
     percentComplete: PropTypes.number,
     markedFinalAt: PropTypes.string,
     conflictsLength: PropTypes.number,
-    draftTestPlanRuns: PropTypes.arrayOf(TestPlanRunPropType).isRequired
+    draftTestPlanRuns: PropTypes.arrayOf(
+      PropTypes.shape({
+        tester: PropTypes.shape({
+          username: PropTypes.string
+        })
+      })
+    )
   }),
   me: UserPropType,
   fromTestQueue: PropTypes.bool

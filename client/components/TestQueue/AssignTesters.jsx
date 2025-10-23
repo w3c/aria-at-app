@@ -11,11 +11,7 @@ import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import { useAriaLiveRegion } from '../providers/AriaLiveRegionProvider';
 import { evaluateAuth } from '../../utils/evaluateAuth';
 import { isSupportedByResponseCollector } from '../../utils/automation';
-import {
-  ASSIGN_TESTER_MUTATION,
-  DELETE_TEST_PLAN_RUN,
-  TEST_QUEUE_PAGE_QUERY
-} from './queries';
+import { ASSIGN_TESTER_MUTATION, DELETE_TEST_PLAN_RUN } from './queries';
 import { SCHEDULE_COLLECTION_JOB_MUTATION } from '../AddTestToQueueWithConfirmation/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
 import { TestPlanReportPropType, UserPropType } from '../common/proptypes';
@@ -39,7 +35,7 @@ const AssignTesters = ({ me, testers, testPlanReport, triggerUpdate }) => {
   const isSelfAssigned =
     me &&
     testPlanReport.draftTestPlanRuns.some(
-      testPlanRun => testPlanRun.tester.id === me.id
+      testPlanRun => testPlanRun.tester?.id === me.id
     );
 
   const onToggle = isShown => {
@@ -78,7 +74,7 @@ const AssignTesters = ({ me, testers, testPlanReport, triggerUpdate }) => {
     const tester = testers.find(tester => tester.id === testerId);
 
     const isAssigned = testPlanReport.draftTestPlanRuns.some(
-      testPlanRun => testPlanRun.tester.id === testerId
+      testPlanRun => testPlanRun.tester?.id === testerId
     );
 
     if (isAssigned) {
@@ -89,10 +85,7 @@ const AssignTesters = ({ me, testers, testPlanReport, triggerUpdate }) => {
         await triggerLoad(async () => {
           await client.mutate({
             mutation: DELETE_TEST_PLAN_RUN,
-            refetchQueries: [
-              TEST_QUEUE_PAGE_QUERY,
-              TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
-            ],
+            refetchQueries: [TEST_PLAN_REPORT_STATUS_DIALOG_QUERY],
             awaitRefetchQueries: true,
             variables: {
               testReportId: testPlanReport.id,
@@ -130,10 +123,7 @@ const AssignTesters = ({ me, testers, testPlanReport, triggerUpdate }) => {
       if (tester.isBot) {
         await client.mutate({
           mutation: SCHEDULE_COLLECTION_JOB_MUTATION,
-          refetchQueries: [
-            TEST_QUEUE_PAGE_QUERY,
-            TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
-          ],
+          refetchQueries: [TEST_PLAN_REPORT_STATUS_DIALOG_QUERY],
           awaitRefetchQueries: true,
           variables: {
             testPlanReportId: testPlanReport.id
@@ -142,10 +132,7 @@ const AssignTesters = ({ me, testers, testPlanReport, triggerUpdate }) => {
       } else {
         await client.mutate({
           mutation: ASSIGN_TESTER_MUTATION,
-          refetchQueries: [
-            TEST_QUEUE_PAGE_QUERY,
-            TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
-          ],
+          refetchQueries: [TEST_PLAN_REPORT_STATUS_DIALOG_QUERY],
           awaitRefetchQueries: true,
           variables: {
             testReportId: testPlanReport.id,
@@ -207,7 +194,7 @@ const AssignTesters = ({ me, testers, testPlanReport, triggerUpdate }) => {
     }
 
     const isAssigned = testPlanReport.draftTestPlanRuns.some(
-      testPlanRun => testPlanRun.tester.username === username
+      testPlanRun => testPlanRun.tester?.username === username
     );
 
     let icon;
@@ -266,6 +253,7 @@ const AssignTesters = ({ me, testers, testPlanReport, triggerUpdate }) => {
       </div>
       <ul className={styles.assignTestersList}>
         {testPlanReport.draftTestPlanRuns
+          .filter(testPlanRun => testPlanRun.tester)
           .slice()
           .sort((a, b) => a.tester.username.localeCompare(b.tester.username))
           .map(testPlanRun => {

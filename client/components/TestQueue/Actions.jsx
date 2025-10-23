@@ -53,11 +53,13 @@ const Actions = ({
   const selfAssignedRun =
     me &&
     testPlanReport.draftTestPlanRuns.find(
-      testPlanRun => testPlanRun.tester.id === me.id
+      testPlanRun => testPlanRun.tester?.id === me.id
     );
 
   const nonSelfAssignedRuns = testPlanReport.draftTestPlanRuns
-    .filter(testPlanRun => testPlanRun.tester.id !== me?.id)
+    .filter(
+      testPlanRun => testPlanRun.tester?.id !== me?.id && testPlanRun.tester
+    )
     .sort((a, b) => a.tester.username.localeCompare(b.tester.username));
 
   const completedAllTests = testPlanReport.draftTestPlanRuns.every(
@@ -66,7 +68,7 @@ const Actions = ({
   );
 
   const assignedBotRun = testPlanReport.draftTestPlanRuns.find(
-    testPlanRun => testPlanRun.tester.isBot
+    testPlanRun => testPlanRun.tester?.isBot
   );
 
   const canMarkAsFinal =
@@ -77,7 +79,7 @@ const Actions = ({
     completedAllTests;
 
   const markAsFinal = () => {
-    const runs = testPlanReport.draftTestPlanRuns;
+    const runs = testPlanReport.draftTestPlanRuns.filter(run => run.tester);
 
     primaryRunIdRef.current = runs[0].id;
 
