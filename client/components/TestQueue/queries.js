@@ -31,9 +31,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
     users {
       ...UserFields
       roles
-      ats {
-        ...AtFields
-      }
     }
     ats {
       ...AtFields

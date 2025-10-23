@@ -191,10 +191,9 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
   };
 
   const renderDropdownItem = ({ tester }) => {
-    const { id, username, isBot, ats } = tester;
+    const { id, username, isBot } = tester;
 
     if (isBot) {
-      const foundAtForBot = ats.find(({ id }) => id === testPlanReport.at?.id);
       const supportedByResponseCollector = isSupportedByResponseCollector({
         id: testPlanReport.id,
         at: testPlanReport.at,
@@ -202,7 +201,7 @@ const AssignTesters = ({ me, testers, testPlanReport }) => {
         minimumAtVersion: testPlanReport.minimumAtVersion,
         exactAtVersion: testPlanReport.exactAtVersion
       });
-      if (!foundAtForBot || !supportedByResponseCollector) return null;
+      if (!supportedByResponseCollector) return null;
     }
 
     const isAssigned = testPlanReport.draftTestPlanRuns.some(
