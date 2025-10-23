@@ -52,7 +52,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         deprecatedAt
         testPlanReports(isFinal: false) {
           ...TestPlanReportFields
-          totalScenarioCount
           at {
             ...AtFields
           }
@@ -231,6 +230,7 @@ export const TEST_QUEUE_EXPANDED_ROW_QUERY = gql`
   query TestQueueExpandedRow($testPlanReportId: ID!) {
     testPlanReport(id: $testPlanReportId) {
       ...TestPlanReportFields
+      totalScenarioCount
       at {
         ...AtFields
       }
