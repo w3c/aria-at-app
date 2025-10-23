@@ -29,7 +29,9 @@ const TestQueueReportRow = ({
     ? data.testPlanReport
     : {
         ...testPlanReport,
-        draftTestPlanRuns: []
+        draftTestPlanRuns: [],
+        at: testPlanReport.at || {},
+        browser: testPlanReport.browser || {}
       };
 
   const hasBotRun = expandedReport.draftTestPlanRuns?.some(
@@ -43,14 +45,22 @@ const TestQueueReportRow = ({
   return (
     <tr>
       <td>
-        <AtVersion
-          at={testPlanReport.at}
-          minimumAtVersion={testPlanReport.minimumAtVersion}
-          exactAtVersion={testPlanReport.exactAtVersion}
-        />
+        {isDataLoaded ? (
+          <AtVersion
+            at={expandedReport.at}
+            minimumAtVersion={expandedReport.minimumAtVersion}
+            exactAtVersion={expandedReport.exactAtVersion}
+          />
+        ) : (
+          <span>{expandedReport.at?.name}</span>
+        )}
       </td>
       <td>
-        <BrowserVersion browser={testPlanReport.browser} />
+        {isDataLoaded ? (
+          <BrowserVersion browser={expandedReport.browser} />
+        ) : (
+          <span>{expandedReport.browser?.name}</span>
+        )}
       </td>
       <td>
         {isDataLoaded ? (

@@ -17,7 +17,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
   ${BROWSER_FIELDS}
   ${ME_FIELDS}
   ${TEST_PLAN_FIELDS}
-  ${TEST_PLAN_REPORT_FIELDS}
   ${USER_FIELDS}
   query TestQueuePage {
     me {
@@ -51,18 +50,16 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
         recommendedPhaseTargetDate
         deprecatedAt
         testPlanReports(isFinal: false) {
-          ...TestPlanReportFields
+          id
           at {
-            ...AtFields
+            name
           }
           browser {
-            ...BrowserFields
+            name
           }
-          minimumAtVersion {
-            ...AtVersionFields
-          }
-          exactAtVersion {
-            ...AtVersionFields
+          draftTestPlanRuns {
+            id
+            isRerun
           }
         }
       }
