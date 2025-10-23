@@ -19,7 +19,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
   ${ME_FIELDS}
   ${TEST_PLAN_FIELDS}
   ${TEST_PLAN_REPORT_FIELDS}
-  ${TEST_PLAN_RUN_FIELDS}
   ${TEST_PLAN_VERSION_FIELDS}
   ${USER_FIELDS}
   query TestQueuePage {
@@ -60,10 +59,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
           }
           exactAtVersion {
             ...AtVersionFields
-          }
-          draftTestPlanRuns {
-            ...TestPlanRunFields
-            testResultsLength
           }
         }
       }
@@ -217,6 +212,37 @@ export const SET_ON_HOLD_MUTATION = gql`
           id
           onHold
         }
+      }
+    }
+  }
+`;
+
+export const TEST_QUEUE_EXPANDED_ROW_QUERY = gql`
+  ${AT_FIELDS}
+  ${AT_VERSION_FIELDS}
+  ${BROWSER_FIELDS}
+  ${TEST_PLAN_REPORT_FIELDS}
+  ${TEST_PLAN_RUN_FIELDS}
+  query TestQueueExpandedRow($testPlanReportId: ID!) {
+    testPlanReport(id: $testPlanReportId) {
+      ...TestPlanReportFields
+      at {
+        ...AtFields
+        atVersions {
+          ...AtVersionFields
+        }
+      }
+      browser {
+        ...BrowserFields
+      }
+      minimumAtVersion {
+        ...AtVersionFields
+      }
+      exactAtVersion {
+        ...AtVersionFields
+      }
+      draftTestPlanRuns {
+        ...TestPlanRunFields
       }
     }
   }
