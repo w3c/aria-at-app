@@ -66,9 +66,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
           draftTestPlanRuns {
             ...TestPlanRunFields
             testResultsLength
-            collectionJob {
-              status
-            }
           }
         }
         testPlanReportStatuses {

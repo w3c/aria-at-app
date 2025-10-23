@@ -323,9 +323,7 @@ const TestQueue = () => {
       ({ tester }) => tester.isBot
     );
 
-    const shouldPollPercent = testPlanReport.draftTestPlanRuns?.some(
-      run => run.collectionJob
-    );
+    const shouldPollPercent = hasBotRun;
 
     return (
       <tr key={testPlanReport.id}>
