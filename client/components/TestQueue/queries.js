@@ -6,7 +6,6 @@ import {
   ME_FIELDS,
   TEST_PLAN_FIELDS,
   TEST_PLAN_REPORT_FIELDS,
-  TEST_PLAN_REPORT_STATUS_FIELDS,
   TEST_PLAN_RUN_FIELDS,
   TEST_PLAN_VERSION_FIELDS,
   ISSUE_FIELDS,
@@ -20,7 +19,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
   ${ME_FIELDS}
   ${TEST_PLAN_FIELDS}
   ${TEST_PLAN_REPORT_FIELDS}
-  ${TEST_PLAN_REPORT_STATUS_FIELDS()}
   ${TEST_PLAN_RUN_FIELDS}
   ${TEST_PLAN_VERSION_FIELDS}
   ${USER_FIELDS}
@@ -67,9 +65,6 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             ...TestPlanRunFields
             testResultsLength
           }
-        }
-        testPlanReportStatuses {
-          ...TestPlanReportStatusFieldsSimple
         }
       }
     }
