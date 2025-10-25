@@ -29,6 +29,7 @@ import {
   UserPropType
 } from '../common/proptypes';
 import styles from './TestQueue.module.css';
+import { useMutation } from '@apollo/client';
 
 const Actions = ({
   me,
@@ -49,6 +50,13 @@ const Actions = ({
   const client = useApolloClient();
 
   const { isAdmin, isTester } = evaluateAuth(me);
+
+  const [setOnHold] = useMutation(SET_ON_HOLD_MUTATION, {
+    // In an ideal world, this would target just the query
+    // that is associated with the row acted on but this is fine for now
+    refetchQueries: ['TestQueueExpandedRow'],
+    awaitRefetchQueries: true
+  });
 
   const selfAssignedRun =
     me &&
@@ -300,14 +308,11 @@ const Actions = ({
             onClick={async () => {
               await triggerLoad(
                 async () => {
-                  await client.mutate({
-                    mutation: SET_ON_HOLD_MUTATION,
+                  await setOnHold({
                     variables: {
                       testPlanReportId: testPlanReport.id,
                       onHold: !testPlanReport.onHold
-                    },
-                    refetchQueries: [TEST_QUEUE_PAGE_QUERY],
-                    awaitRefetchQueries: true
+                    }
                   });
                 },
                 testPlanReport.onHold
