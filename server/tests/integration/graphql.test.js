@@ -174,7 +174,8 @@ describe('graphql', () => {
       ['ScenarioResult', 'match'],
       ['UpdateEvent', 'performedBy'],
       ['UpdateEvent', 'entityId'],
-      ['UpdateEvent', 'metadata']
+      ['UpdateEvent', 'metadata'],
+      ['TestPlanReport', 'totalScenarioCount']
     ];
     ({
       typeAwareQuery,
