@@ -836,10 +836,17 @@ describe('Test Run when signed in as tester', () => {
       await page.click(sectionButtonSelector);
       await page.waitForSelector(tableSelector);
 
-      // Toggle to On hold if not already
+      // Toggle to On hold if not already - wait for actions to be available
+      await page.waitForSelector(`${tableSelector} tbody tr button`, {
+        timeout: 5000
+      });
       const toggleWasClicked = await page.$eval(tableSelector, el => {
         const firstRow = el.querySelector('tbody tr');
-        const actionsCell = firstRow.querySelectorAll('td')[4];
+        if (!firstRow) return false;
+        const cells = firstRow.querySelectorAll('td');
+        if (cells.length < 5) return false;
+        const actionsCell = cells[4];
+        if (!actionsCell) return false;
         const btn = Array.from(actionsCell.querySelectorAll('button')).find(b =>
           /Put on hold|Ready for testing/i.test(b.innerText)
         );
@@ -851,7 +858,11 @@ describe('Test Run when signed in as tester', () => {
         }
         return false;
       });
-      if (toggleWasClicked) await page.waitForNetworkIdle();
+      if (toggleWasClicked) {
+        await page.waitForNetworkIdle();
+        // Wait for the refetch to complete and UI to update
+        await page.waitForTimeout(1000);
+      }
 
       // Verify status shows On hold
       const statusText = await page.$eval(tableSelector, el => {
