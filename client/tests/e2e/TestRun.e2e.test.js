@@ -260,6 +260,7 @@ describe('Test Run when signed in as admin', () => {
       await page.waitForSelector('button ::-p-text(Cancel)');
 
       // Proceed with deletion and complete navigation to the test queue
+      await page.waitForSelector('button ::-p-text(Proceed)');
       await page.click('button ::-p-text(Proceed)');
       await page.waitForNavigation({
         waitUntil: ['domcontentloaded', 'networkidle0']
@@ -473,6 +474,11 @@ describe('Test Run when signed in as tester', () => {
       const testNavigatorListSelector = 'nav#test-navigator-nav ol';
       await page.waitForSelector(testNavigatorListSelector);
 
+      // Wait for the navigator links to be fully loaded
+      await page.waitForSelector('nav#test-navigator-nav ol li a', {
+        timeout: 10000
+      });
+
       const listItemsLength = await page.$eval(
         testNavigatorListSelector,
         el => {
@@ -485,8 +491,24 @@ describe('Test Run when signed in as tester', () => {
         // const sequence = i + 1;
         const liSelector = `nav#test-navigator-nav ol li:nth-child(${sequence})`;
 
+        // Wait for the navigation link to exist before clicking
+        await page.waitForSelector(`${liSelector} a`, { timeout: 5000 });
+
+        // Wait a bit for the link to be fully ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         // Select the next test to navigate to
-        await page.$eval(liSelector, el => el.querySelector('a').click());
+        const linkExists = await page.$eval(liSelector, el => {
+          const link = el.querySelector('a');
+          if (!link) return false;
+          link.click();
+          return true;
+        });
+
+        if (!linkExists) {
+          throw new Error(`Navigation link not found for test ${sequence}`);
+        }
+
         await page.waitForNetworkIdle();
 
         await page.waitForSelector(`h1 ::-p-text(Test ${sequence}:)`);
@@ -860,8 +882,6 @@ describe('Test Run when signed in as tester', () => {
       });
       if (toggleWasClicked) {
         await page.waitForNetworkIdle();
-        // Wait for the refetch to complete and UI to update
-        await page.waitForTimeout(1000);
       }
 
       // Verify status shows On hold
@@ -880,9 +900,12 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector(sectionButtonSelector);
       await page.click(sectionButtonSelector);
       await page.waitForSelector(tableSelector);
+      // Wait for the Assign Yourself button to be available
+      await page.waitForSelector(`${tableSelector} button`, { timeout: 5000 });
       await page.$eval(tableSelector, el => {
         // First button is Assign Yourself
-        el.querySelector('button').click();
+        const button = el.querySelector('button');
+        if (button) button.click();
       });
       await page.waitForNetworkIdle();
       await page.waitForSelector('::-p-text(Unassign Yourself)');
