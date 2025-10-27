@@ -295,14 +295,13 @@ describe('Test Run when signed in as tester', () => {
     // Wait for the table to render
     await page.waitForSelector(testPlanTableSelector);
 
-    await page.$eval(testPlanTableSelector, el => {
-      // Find the 'Assign Yourself' button
-      const buttons = el.querySelectorAll('button');
-      const assignYourselfButton = Array.from(buttons).find(button =>
-        button.textContent.includes('Assign Yourself')
-      );
-      assignYourselfButton.click();
+    // Wait for the Assign Yourself button to be available
+    await page.waitForSelector(`${testPlanTableSelector} button`, {
+      timeout: 5000
     });
+    await page.click(
+      `${testPlanTableSelector} button ::-p-text(Assign Yourself)`
+    );
 
     await page.waitForNetworkIdle();
     await page.waitForSelector('::-p-text(Unassign Yourself)');
@@ -491,22 +490,20 @@ describe('Test Run when signed in as tester', () => {
         // const sequence = i + 1;
         const liSelector = `nav#test-navigator-nav ol li:nth-child(${sequence})`;
 
-        // Wait for the navigation link to exist before clicking
-        await page.waitForSelector(`${liSelector} a`, { timeout: 5000 });
-
-        // Wait a bit for the link to be fully ready
-        await new Promise(resolve => setTimeout(resolve, 100));
-
-        // Select the next test to navigate to
-        const linkExists = await page.$eval(liSelector, el => {
-          const link = el.querySelector('a');
-          if (!link) return false;
-          link.click();
-          return true;
+        // Wait for the navigation link to exist and be visible before clicking
+        await page.waitForSelector(`${liSelector} a`, {
+          timeout: 10000,
+          visible: true
         });
 
-        if (!linkExists) {
-          throw new Error(`Navigation link not found for test ${sequence}`);
+        // Select the next test to navigate to - use page.click instead of $eval for better reliability
+        const linkSelector = `${liSelector} a`;
+        try {
+          await page.click(linkSelector, { timeout: 5000 });
+        } catch (error) {
+          throw new Error(
+            `Navigation link not found or not clickable for test ${sequence}: ${error.message}`
+          );
         }
 
         await page.waitForNetworkIdle();
@@ -595,7 +592,8 @@ describe('Test Run when signed in as tester', () => {
         await getGeneratedCheckedAssertionCount(page);
 
       // Navigate to test 2 with navigation menu
-      await page.$eval(test2NavSelector, el => el.querySelector('a').click());
+      await page.waitForSelector(`${test2NavSelector} a`, { visible: true });
+      await page.click(`${test2NavSelector} a`);
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 2:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
@@ -623,7 +621,8 @@ describe('Test Run when signed in as tester', () => {
       );
 
       // Navigate back to Test 1 with navigation menu
-      await page.$eval(test1NavSelector, el => el.querySelector('a').click());
+      await page.waitForSelector(`${test1NavSelector} a`, { visible: true });
+      await page.click(`${test1NavSelector} a`);
       await page.waitForNetworkIdle();
       await page.waitForSelector('h1 ::-p-text(Test 1:)');
       await page.waitForSelector('button ::-p-text(Next Test)');
@@ -902,11 +901,7 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector(tableSelector);
       // Wait for the Assign Yourself button to be available
       await page.waitForSelector(`${tableSelector} button`, { timeout: 5000 });
-      await page.$eval(tableSelector, el => {
-        // First button is Assign Yourself
-        const button = el.querySelector('button');
-        if (button) button.click();
-      });
+      await page.click(`${tableSelector} button:first-child`);
       await page.waitForNetworkIdle();
       await page.waitForSelector('::-p-text(Unassign Yourself)');
 
