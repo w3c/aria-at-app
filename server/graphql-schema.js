@@ -690,6 +690,30 @@ const graphqlSchema = gql`
   }
 
   """
+  Sourced from tests/<pattern>/data/references.csv on the ARIA-AT repo
+  """
+  type Reference {
+    """
+    The reference ID, such as "button" or "aria-expanded".
+    """
+    refId: String!
+    """
+    The value of the reference. This could be link, an identifier such as an
+    email or just text.
+    """
+    value: String!
+    """
+    The type of the reference, such as "htmlAam", "aria", "metadata", etc.
+    """
+    type: String
+    """
+    The link text of the reference if value is, or will be transformed into a
+    link.
+    """
+    linkText: String
+  }
+
+  """
   For a given output, the assertion describes a check on that output which can
   pass or fail.
   """
@@ -716,6 +740,10 @@ const graphqlSchema = gql`
     https://github.com/w3c/aria-at/wiki/Test-Format-Definition-V2#assertionphrase
     """
     phrase: String
+    """
+    Collection of ARIA and HTML features references related to the assertion.
+    """
+    references: [Reference]
   }
 
   """
@@ -1537,6 +1565,21 @@ const graphqlSchema = gql`
     Get key metrics
     """
     keyMetrics: KeyMetrics!
+    """
+    Get ARIA and HTML features metrics across finalized reports for test plan
+    versions in the candidate and recommended phases
+    """
+    ariaHtmlFeaturesMetrics: ARIAHTMLFeatureMetrics!
+    """
+    Get detailed assertion results for a specific ARIA or HTML feature for a
+    given AT and browser combination. Used to construct individual feature
+    detail report pages.
+    """
+    ariaHtmlFeatureDetailReport(
+      refId: String!
+      atId: ID!
+      browserId: ID!
+    ): ARIAHTMLFeatureDetailReport
   }
 
   # Mutation-specific types below
@@ -1859,6 +1902,78 @@ const graphqlSchema = gql`
     verdictsLast90Count: Int!
     testsCount: Int!
     suitesCount: Int!
+  }
+
+  type ARIAHTMLFeatureCount {
+    refId: String!
+    type: String!
+    linkText: String!
+    value: String!
+    total: Int!
+    passed: Int!
+    failed: Int!
+    untestable: Int!
+    passedPercentage: Int!
+    formatted: String!
+    atName: String
+    browserName: String
+    atId: ID
+    browserId: ID
+  }
+
+  type ARIAHTMLFeatureMetrics {
+    ariaFeaturesPassedCount: Int!
+    ariaFeaturesCount: Int!
+    ariaFeaturesFailedCount: Int!
+    ariaFeaturesUntestableCount: Int!
+    htmlFeaturesPassedCount: Int!
+    htmlFeaturesCount: Int!
+    htmlFeaturesFailedCount: Int!
+    htmlFeaturesUntestableCount: Int!
+    ariaFeatures: [ARIAHTMLFeatureCount]!
+    htmlFeatures: [ARIAHTMLFeatureCount]!
+    ariaFeaturesByAtBrowser: [ARIAHTMLFeatureCount]!
+    htmlFeaturesByAtBrowser: [ARIAHTMLFeatureCount]!
+  }
+
+  type AssertionStatisticsRow {
+    label: String!
+    passingCount: Int!
+    passingTotal: Int!
+    failingCount: Int!
+    failingTotal: Int!
+    untestableCount: Int!
+    untestableTotal: Int!
+    passingPercentage: Int
+    failingPercentage: Int
+    untestablePercentage: Int
+  }
+
+  type ARIAHTMLFeatureDetailReportRow {
+    testPlanName: String!
+    testPlanVersion: String!
+    testPlanVersionId: ID!
+    testPlanReportId: ID!
+    testTitle: String!
+    testId: ID!
+    testResultId: ID!
+    commandSequence: String!
+    assertionPriority: String!
+    assertionPhrase: String!
+    result: String!
+    testedOn: String
+    atVersion: String!
+    browserVersion: String!
+    severeSideEffectsCount: Int!
+    moderateSideEffectsCount: Int!
+  }
+
+  type ARIAHTMLFeatureDetailReport {
+    feature: ARIAHTMLFeatureCount!
+    at: At!
+    browser: Browser!
+    assertionStatistics: [AssertionStatisticsRow!]!
+    rows: [ARIAHTMLFeatureDetailReportRow!]!
   }
 `;
 

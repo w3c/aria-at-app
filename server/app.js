@@ -9,6 +9,7 @@ const testRoutes = require('./routes/tests');
 const transactionRoutes = require('./routes/transactions');
 const automationSchedulerRoutes = require('./routes/automation');
 const databaseRoutes = require('./routes/database');
+const metricsRoutes = require('./routes/metrics');
 const apolloServer = require('./graphql-server');
 const {
   setupMockAutomationSchedulerServer
@@ -25,6 +26,7 @@ app.use('/test', testRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/jobs', automationSchedulerRoutes);
 app.use('/database', databaseRoutes);
+app.use('/metrics', metricsRoutes);
 
 apolloServer.start().then(() => {
   apolloServer.applyMiddleware({ app });
