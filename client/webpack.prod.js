@@ -3,7 +3,9 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: ['babel-polyfill', './index.js'],
+  entry: {
+    bundle: ['babel-polyfill', './index.js']
+  },
   mode: 'production',
   module: {
     rules: [
@@ -51,8 +53,8 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, './dist/'),
-    filename: 'bundle.[contenthash:8].js',
-    chunkFilename: 'chunk.[name].[contenthash:8].js'
+    filename: '[name].js',
+    chunkFilename: '[name].chunk.js'
   },
   resolve: {
     alias: {
@@ -79,37 +81,39 @@ module.exports = {
   ],
   optimization: {
     minimize: true,
+    runtimeChunk: false,
     splitChunks: {
-      chunks: 'all',
+      chunks: 'async',
       cacheGroups: {
         vendor: {
           test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
+          name: 'vendor',
+          chunks: 'async',
           priority: 10,
           reuseExistingChunk: true
         },
         apollo: {
           test: /[\\/]node_modules[\\/]@apollo[\\/]/,
           name: 'apollo',
+          chunks: 'async',
           priority: 20,
           reuseExistingChunk: true
         },
         reactBootstrap: {
           test: /[\\/]node_modules[\\/](react-bootstrap|bootstrap)[\\/]/,
           name: 'react-bootstrap',
+          chunks: 'async',
           priority: 20,
           reuseExistingChunk: true
         },
         common: {
           minChunks: 2,
+          chunks: 'async',
           priority: 5,
           reuseExistingChunk: true,
           name: 'common'
         }
       }
-    },
-    runtimeChunk: {
-      name: 'runtime'
     }
   },
   performance: {
