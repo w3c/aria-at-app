@@ -389,6 +389,7 @@ const SummarizeTestPlanReport = ({ testPlanVersion, testPlanReports }) => {
                 testResult={testResult}
                 optionalHeader={<h3>Results for each command</h3>}
                 commandHeadingLevel={4}
+                showAriaHtmlFeatures
               />
             </div>
 

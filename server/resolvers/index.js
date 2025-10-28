@@ -38,6 +38,8 @@ const scheduleCollectionJob = require('./scheduleCollectionJobResolver');
 const restartCollectionJob = require('./restartCollectionJobResolver');
 const collectionJobByTestPlanRunId = require('./collectionJobByTestPlanRunIdResolver');
 const keyMetrics = require('./keyMetricsResolver');
+const ariaHtmlFeaturesMetrics = require('./ariaHtmlFeaturesMetricsResolver');
+const ariaHtmlFeatureDetailReport = require('./ariaHtmlFeatureDetailReportResolver');
 const User = require('./User');
 const AtOperations = require('./AtOperations');
 const AtVersionOperations = require('./AtVersionOperations');
@@ -77,6 +79,8 @@ const resolvers = {
     atBug,
     atBugs,
     keyMetrics,
+    ariaHtmlFeaturesMetrics,
+    ariaHtmlFeatureDetailReport,
     testPlan,
     testPlans,
     testPlanVersion,

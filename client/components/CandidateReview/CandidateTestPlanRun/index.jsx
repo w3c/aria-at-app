@@ -759,6 +759,7 @@ const CandidateTestPlanRun = () => {
                     key={`${testPlanReport.id} + ${testResult.id}`}
                     test={{ ...currentTest, at: { name: at } }}
                     testResult={testResult}
+                    showAriaHtmlFeatures
                   />
                 </>
               );
