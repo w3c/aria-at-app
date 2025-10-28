@@ -6,11 +6,11 @@ const LinkedBugsList = React.memo(({ linkedBugs, onUnlink, unlinking }) => {
   const bugRenderer = (bug, onRemove, removing, removeButtonClass) => (
     <span key={bug.id} className="badge bg-light text-dark me-2">
       <a href={bug.url} target="_blank" rel="noopener noreferrer">
-        {bug.title || `#${bug.bugId}`}
+        {bug.title}
       </a>
       <button
         type="button"
-        aria-label={`Unlink ${bug.title || `bug ${bug.bugId}`}`}
+        aria-label={`Unlink ${bug.title}`}
         className={removeButtonClass}
         onClick={() => onRemove(bug.id)}
         disabled={removing}
@@ -34,8 +34,7 @@ LinkedBugsList.propTypes = {
   linkedBugs: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      title: PropTypes.string,
-      bugId: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
       url: PropTypes.string.isRequired
     })
   ).isRequired,

@@ -5,7 +5,6 @@ export const AT_BUGS_QUERY = gql`
     atBugs(atId: $atId) {
       id
       title
-      bugId
       url
       at {
         id
@@ -20,7 +19,6 @@ export const CREATE_AT_BUG = gql`
     createAtBug(input: $input) {
       id
       title
-      bugId
       url
       at {
         id
@@ -41,7 +39,6 @@ export const LINK_AT_BUGS = gql`
       atBugs {
         id
         title
-        bugId
         url
         at {
           id
@@ -67,7 +64,6 @@ export const UNLINK_AT_BUGS = gql`
       atBugs {
         id
         title
-        bugId
         url
         at {
           id
@@ -91,7 +87,6 @@ export const LINK_AT_BUGS_TO_NEGATIVE_SIDE_EFFECT = gql`
       atBugs {
         id
         title
-        bugId
         url
         at {
           id
@@ -115,7 +110,6 @@ export const UNLINK_AT_BUGS_FROM_NEGATIVE_SIDE_EFFECT = gql`
       atBugs {
         id
         title
-        bugId
         url
         at {
           id

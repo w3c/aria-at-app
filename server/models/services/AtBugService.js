@@ -5,7 +5,6 @@ const { AtBug } = require('../');
 const AT_BUG_ATTRIBUTES = [
   'id',
   'title',
-  'bugId',
   'url',
   'atId',
   'createdAt',
@@ -101,7 +100,6 @@ const getAtBugsByAtId = async ({ atId, transaction }) =>
  * @param {object} options
  * @param {object} options.values - atBug data
  * @param {string} options.values.title - Bug title
- * @param {string} options.values.bugId - Bug ID (string)
  * @param {string} options.values.url - Bug URL
  * @param {number} options.values.atId - AT ID
  * @param {import('sequelize').Transaction} options.transaction - Sequelize transaction

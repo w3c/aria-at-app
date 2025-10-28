@@ -178,7 +178,6 @@ describe('NegativeSideEffectService Data Checks', () => {
         const atBug = await sequelize.models.AtBug.create(
           {
             title: 'Test Bug',
-            bugId: '123',
             url: 'https://example.com/bug/123',
             atId: atId
           },

@@ -14,12 +14,13 @@ describe('AtBugService Data Checks', () => {
       // A1
       const atId = 1;
       const title = `Bug ${randomStringGenerator()}`;
-      const bugId = `${Math.floor(Math.random() * 10000)}`;
-      const url = `https://example.com/issues/${bugId}`;
+      const url = `https://example.com/issues/${Math.floor(
+        Math.random() * 10000
+      )}`;
 
       // A2 - create
       const created = await AtBugService.createAtBug({
-        values: { title, bugId, url, atId },
+        values: { title, url, atId },
         transaction
       });
 
@@ -27,7 +28,6 @@ describe('AtBugService Data Checks', () => {
         expect.objectContaining({
           id: expect.any(Number),
           title,
-          bugId,
           url,
           atId
         })
@@ -38,7 +38,7 @@ describe('AtBugService Data Checks', () => {
       // A2 - getById
       const fetched = await AtBugService.getAtBugById({ id, transaction });
       expect(fetched).toEqual(
-        expect.objectContaining({ id, title, bugId, url, atId })
+        expect.objectContaining({ id, title, url, atId })
       );
 
       // A2 - update
@@ -66,11 +66,12 @@ describe('AtBugService Data Checks', () => {
     await dbCleaner(async transaction => {
       const atId = 1;
       const title = `Bug ${randomStringGenerator()}`;
-      const bugId = `${Math.floor(Math.random() * 10000)}`;
-      const url = `https://example.com/issues/${bugId}`;
+      const url = `https://example.com/issues/${Math.floor(
+        Math.random() * 10000
+      )}`;
 
       const created = await AtBugService.createAtBug({
-        values: { title, bugId, url, atId },
+        values: { title, url, atId },
         transaction
       });
 
@@ -90,7 +91,6 @@ describe('AtBugService Data Checks', () => {
       const bug = await AtBugService.createAtBug({
         values: {
           title: `Bug ${randomStringGenerator()}`,
-          bugId: `${Math.floor(Math.random() * 10000)}`,
           url: `https://example.com/issues/${Math.floor(
             Math.random() * 10000
           )}`,

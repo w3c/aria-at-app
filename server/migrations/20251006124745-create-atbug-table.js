@@ -19,10 +19,6 @@ module.exports = {
           type: Sequelize.TEXT,
           allowNull: false
         },
-        bugId: {
-          type: Sequelize.TEXT,
-          allowNull: false
-        },
         url: {
           type: Sequelize.TEXT,
           allowNull: false
@@ -54,16 +50,11 @@ module.exports = {
         name: 'atbug_at_id_idx'
       });
 
-      // Add composite unique index on (atId, bugId, url, title) to prevent fully duplicate entries
-      // Note: bugId alone can be duplicated as it's just for display purposes
-      await queryInterface.addIndex(
-        'AtBug',
-        ['atId', 'bugId', 'url', 'title'],
-        {
-          name: 'atbug_at_id_bug_id_url_title_unique_idx',
-          unique: true
-        }
-      );
+      // Add composite unique index on (atId, url, title) to prevent fully duplicate entries
+      await queryInterface.addIndex('AtBug', ['atId', 'url', 'title'], {
+        name: 'atbug_at_id_url_title_unique_idx',
+        unique: true
+      });
     }
   },
 

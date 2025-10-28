@@ -13,7 +13,6 @@ const ASSERTION_RESULT_FIELDS = gql`
       atBugs {
         id
         title
-        bugId
         url
         commandIds
         at {

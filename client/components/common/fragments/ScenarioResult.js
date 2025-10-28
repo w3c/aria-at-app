@@ -73,7 +73,6 @@ const SCENARIO_RESULT_FIELDS = (type = 'simple') => {
             atBugs {
               id
               title
-              bugId
               url
               at {
                 id

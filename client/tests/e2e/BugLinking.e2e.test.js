@@ -29,14 +29,10 @@ describe('AT Bug Linking - Basic Functionality', () => {
         await page.waitForSelector('::-p-text(Add New Bug Link)');
 
         const titleInputSelector = 'input[name="title"]';
-        const bugIdInputSelector = 'input[name="bugId"]';
         const urlInputSelector = 'input[name="url"]';
 
         await page.waitForSelector(titleInputSelector);
         await page.type(titleInputSelector, 'Test Bug Title');
-
-        await page.waitForSelector(bugIdInputSelector);
-        await page.type(bugIdInputSelector, '12345');
 
         await page.waitForSelector(urlInputSelector);
         await page.type(urlInputSelector, 'https://example.com/bug/12345');

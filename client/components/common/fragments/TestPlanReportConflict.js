@@ -43,7 +43,6 @@ const TEST_PLAN_REPORT_CONFLICT_FIELDS = gql`
           atBugs {
             id
             title
-            bugId
             url
             at {
               id

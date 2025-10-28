@@ -19,9 +19,7 @@ describe('AtBugModel', () => {
 
   describe('properties', () => {
     // A3 - properties
-    ['title', 'bugId', 'url', 'atId'].forEach(
-      checkPropertyExists(modelInstance)
-    );
+    ['title', 'url', 'atId'].forEach(checkPropertyExists(modelInstance));
   });
 
   describe('associations', () => {

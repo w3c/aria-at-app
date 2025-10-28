@@ -9,7 +9,6 @@ const CreateBugForm = forwardRef(
   ) => {
     const [formData, setFormData] = useState({
       title: '',
-      bugId: '',
       url: ''
     });
 
@@ -26,7 +25,7 @@ const CreateBugForm = forwardRef(
 
       const created = await onCreateBug(formData);
       if (created) {
-        setFormData({ title: '', bugId: '', url: '' });
+        setFormData({ title: '', url: '' });
       }
     };
 
@@ -54,16 +53,6 @@ const CreateBugForm = forwardRef(
           />
 
           <FormField
-            id="new-bug-id"
-            name="bugId"
-            label="ID"
-            type="number"
-            value={formData.bugId}
-            onChange={handleChange}
-            required
-          />
-
-          <FormField
             id="new-bug-url"
             name="url"
             label="URL"
@@ -73,7 +62,7 @@ const CreateBugForm = forwardRef(
             required
             error={
               duplicateUrl
-                ? `This URL already exists as Bug #${duplicateUrl.bugId}: ${duplicateUrl.title}`
+                ? `This URL already exists: ${duplicateUrl.title}`
                 : null
             }
           />

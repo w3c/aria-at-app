@@ -105,8 +105,7 @@ const FailingAssertionsSummaryTable = ({
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
-                                {bug.at?.name && `${bug.at.name}#`}
-                                {bug.bugId}: {bug.title}
+                                {bug.title}
                               </a>
                             </li>
                           ))

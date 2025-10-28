@@ -20,7 +20,6 @@ const BugSearchCombobox = React.memo(
     const bugRenderer = (bug, styles) => (
       <>
         <strong>{bug.title}</strong>
-        {bug.bugId && ` #${bug.bugId}`}
         {bug.url && (
           <div className={`small text-truncate ${styles.itemUrl}`}>
             {bug.url}
@@ -33,7 +32,7 @@ const BugSearchCombobox = React.memo(
       <SearchCombobox
         id="bug-search-combobox"
         label={`${atName} Bug`}
-        placeholder="Type to search by title, number, or URL"
+        placeholder="Type to search by title or URL"
         searchText={searchText}
         onSearchChange={onSearchChange}
         items={filteredBugs}
@@ -54,9 +53,8 @@ BugSearchCombobox.propTypes = {
   filteredBugs: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
-      title: PropTypes.string,
-      bugId: PropTypes.string,
-      url: PropTypes.string
+      title: PropTypes.string.isRequired,
+      url: PropTypes.string.isRequired
     })
   ).isRequired,
   onSelectBug: PropTypes.func.isRequired,

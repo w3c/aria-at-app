@@ -14,10 +14,6 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: false
       },
-      bugId: {
-        type: DataTypes.TEXT,
-        allowNull: false
-      },
       url: {
         type: DataTypes.TEXT,
         allowNull: false

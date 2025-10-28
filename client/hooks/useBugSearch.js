@@ -24,7 +24,7 @@ export const useBugSearch = ({ atId, assertion }) => {
     filteredItems: filteredBugs
   } = useSearchableList({
     items: availableBugs,
-    searchFields: bug => [bug.title, bug.bugId, bug.url],
+    searchFields: bug => [bug.title, bug.url],
     excludeIds: linkedBugIds,
     maxResults: 20
   });

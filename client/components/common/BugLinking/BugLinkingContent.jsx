@@ -68,7 +68,6 @@ const BugLinkingContent = ({ useBugLinkingContext }) => {
       if (form.checkValidity()) {
         const formData = {
           title: form.elements['title'].value,
-          bugId: form.elements['bugId'].value,
           url: form.elements['url'].value
         };
         return await handleCreate(formData);

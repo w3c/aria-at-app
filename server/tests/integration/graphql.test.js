@@ -357,7 +357,6 @@ describe('graphql', () => {
                   __typename
                   id
                   title
-                  bugId
                   url
                 }
               }
@@ -412,7 +411,6 @@ describe('graphql', () => {
                     __typename
                     id
                     title
-                    bugId
                     url
                   }
                 }
@@ -599,7 +597,6 @@ describe('graphql', () => {
                       __typename
                       id
                       title
-                      bugId
                       url
                     }
                   }
@@ -756,7 +753,6 @@ describe('graphql', () => {
             __typename
             id
             title
-            bugId
             url
             createdAt
             updatedAt
@@ -788,7 +784,6 @@ describe('graphql', () => {
       const testAtBug = await db.AtBug.create(
         {
           title: 'Test Bug for GraphQL Tests',
-          bugId: `TEST-BUG-${Date.now()}`,
           url: `https://example.com/bug/TEST-BUG-${Date.now()}`,
           atId: 1 // Use JAWS AT
         },
@@ -803,7 +798,6 @@ describe('graphql', () => {
               __typename
               id
               title
-              bugId
               url
               createdAt
               updatedAt
@@ -1205,7 +1199,6 @@ const getMutationInputs = async () => {
             atBugs {
               id
               title
-              bugId
               url
             }
           }

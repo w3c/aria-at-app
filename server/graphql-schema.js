@@ -736,10 +736,6 @@ const graphqlSchema = gql`
     """
     title: String!
     """
-    The bug identifier as a string (e.g., "123", "820"). Usually the GH issue number.
-    """
-    bugId: String!
-    """
     Full URL to the bug tracker issue.
     """
     url: String!
@@ -833,10 +829,6 @@ const graphqlSchema = gql`
     """
     title: String!
     """
-    The bug identifier as a string.
-    """
-    bugId: String!
-    """
     Full URL to the bug tracker issue.
     """
     url: String!
@@ -854,10 +846,6 @@ const graphqlSchema = gql`
     The bug title or link text.
     """
     title: String
-    """
-    The bug identifier as a string.
-    """
-    bugId: String
     """
     Full URL to the bug tracker issue.
     """

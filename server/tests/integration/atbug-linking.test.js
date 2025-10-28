@@ -25,8 +25,9 @@ describe('AT Bug linking - GraphQL integration', () => {
       );
       const atId = ats[0].id;
       const title = `Bug ${randomStringGenerator()}`;
-      const bugId = `${Math.floor(Math.random() * 10000)}`;
-      const url = `https://example.com/issues/${bugId}`;
+      const url = `https://example.com/issues/${Math.floor(
+        Math.random() * 10000
+      )}`;
 
       // Create AtBug via GraphQL
       const createMutation = gql`
@@ -34,7 +35,6 @@ describe('AT Bug linking - GraphQL integration', () => {
           createAtBug(input: $input) {
             id
             title
-            bugId
             url
             at {
               id
@@ -45,13 +45,13 @@ describe('AT Bug linking - GraphQL integration', () => {
       `;
 
       const createResult = await mutate(createMutation, {
-        variables: { input: { title, bugId, url, atId } },
+        variables: { input: { title, url, atId } },
         transaction
       });
 
       const created = createResult.createAtBug;
       expect(created).toEqual(
-        expect.objectContaining({ id: expect.any(String), title, bugId, url })
+        expect.objectContaining({ id: expect.any(String), title, url })
       );
 
       // Get a numeric assertionId via service (GraphQL assertion ids are encoded strings)
@@ -74,7 +74,6 @@ describe('AT Bug linking - GraphQL integration', () => {
             id
             atBugs {
               id
-              bugId
               title
               url
             }

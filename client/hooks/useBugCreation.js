@@ -19,9 +19,9 @@ export const useBugCreation = ({ atId, availableBugs }) => {
   );
 
   const handleCreateBug = useCallback(
-    async ({ title, bugId, url }) => {
+    async ({ title, url }) => {
       const res = await createAtBug({
-        variables: { input: { title, bugId, url, atId: Number(atId) } }
+        variables: { input: { title, url, atId: Number(atId) } }
       });
       const created = res?.data?.createAtBug;
       if (created?.id) {
