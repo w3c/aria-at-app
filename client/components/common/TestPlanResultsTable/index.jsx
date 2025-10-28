@@ -11,6 +11,10 @@ import {
 } from '../proptypes';
 import { NEGATIVE_SIDE_EFFECT_ASSERTION_PHRASES } from '../../../utils/constants';
 import getAssertionPhraseOrText from '../../../utils/getAssertionPhraseOrText';
+import { None } from '../None';
+import commonStyles from '../styles.module.css';
+
+const none = None();
 
 const getAssertionResultText = (assertionResult, untestable) => {
   const { passed, priorityString, describesSideEffects } = assertionResult;
@@ -29,12 +33,34 @@ const getAssertionResultText = (assertionResult, untestable) => {
   return passed ? 'Passed' : 'Failed';
 };
 
-const renderAssertionRow = (assertionResult, untestable) => {
+const renderAssertionRow = (
+  assertionResult,
+  untestable,
+  { showAriaHtmlFeatures }
+) => {
+  const ariaHtmlFeatures = assertionResult?.assertion?.references || [];
+  const ariaHtmlFeaturesEl =
+    ariaHtmlFeatures.length === 0 ? (
+      none
+    ) : ariaHtmlFeatures.length === 1 ? (
+      <a href={ariaHtmlFeatures[0].value}>{ariaHtmlFeatures[0].linkText}</a>
+    ) : (
+      // greater than 1, display list
+      <ul className={commonStyles.bulletList}>
+        {ariaHtmlFeatures.map(f => (
+          <li key={`${f.refId}`}>
+            <a href={f.value}>{f.linkText}</a>
+          </li>
+        ))}
+      </ul>
+    );
+
   return (
     <tr key={`${assertionResult.id}__${nextId()}`}>
       <td>{assertionResult.priorityString}</td>
       <td>{getAssertionPhraseOrText(assertionResult.assertion)}</td>
       <td>{getAssertionResultText(assertionResult, untestable)}</td>
+      {showAriaHtmlFeatures ? <td>{ariaHtmlFeaturesEl}</td> : null}
     </tr>
   );
 };
@@ -76,7 +102,8 @@ const TestPlanResultsTable = ({
   testResult,
   tableClassName = '',
   optionalHeader = null,
-  commandHeadingLevel = 3
+  commandHeadingLevel = 3,
+  showAriaHtmlFeatures = false
 }) => {
   const NegativeSideEffectsHeading = `h${commandHeadingLevel}`;
 
@@ -187,11 +214,16 @@ const TestPlanResultsTable = ({
                   <th>Priority</th>
                   <th>Assertion</th>
                   <th>Result</th>
+                  {showAriaHtmlFeatures ? <th>ARIA/HTML Feature</th> : null}
                 </tr>
               </thead>
               <tbody>
                 {sortedAssertionResults.map(assertionResult =>
-                  renderAssertionRow(assertionResult, scenarioResult.untestable)
+                  renderAssertionRow(
+                    assertionResult,
+                    scenarioResult.untestable,
+                    { showAriaHtmlFeatures }
+                  )
                 )}
               </tbody>
             </Table>
@@ -245,7 +277,8 @@ TestPlanResultsTable.propTypes = {
   testResult: TestResultPropType.isRequired,
   tableClassName: PropTypes.string,
   optionalHeader: PropTypes.node,
-  commandHeadingLevel: PropTypes.number
+  commandHeadingLevel: PropTypes.number,
+  showAriaHtmlFeatures: PropTypes.bool
 };
 
 export default TestPlanResultsTable;

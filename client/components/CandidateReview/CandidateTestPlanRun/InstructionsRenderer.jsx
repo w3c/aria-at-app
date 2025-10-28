@@ -18,8 +18,12 @@ import { TestWindow } from '../../../resources/aria-at-test-window.mjs';
 import { evaluateAtNameKey } from '../../../utils/aria.js';
 import commandsJson from '../../../resources/commands.json';
 import supportJson from '../../../resources/support.json';
+import { None } from '../../common/None';
 import { convertAssertionPriority } from 'shared';
 import styles from './CandidateTestPlanRun.module.css';
+import commonStyles from '@components/common/styles.module.css';
+
+const none = None();
 
 const InstructionsRenderer = ({
   test,
@@ -27,6 +31,7 @@ const InstructionsRenderer = ({
   at,
   headingLevel = 2,
   testFormatVersion,
+  showAriaHtmlFeatures = false,
   customClassNames
 }) => {
   const { renderableContent } = test;
@@ -226,6 +231,7 @@ const InstructionsRenderer = ({
                       <th>Priority</th>
                       <th>Assertion Phrase</th>
                       <th>Assertion Statement</th>
+                      {showAriaHtmlFeatures ? <th>ARIA/HTML Feature</th> : null}
                     </tr>
                   </thead>
                   <tbody>
@@ -234,14 +240,44 @@ const InstructionsRenderer = ({
                         assertionPhrase,
                         assertionStatement,
                         priority,
-                        assertionId
-                      }) => (
-                        <tr key={`${i}-${assertionId}`}>
-                          <td>{convertAssertionPriority(priority)}</td>
-                          <td>{assertionPhrase}</td>
-                          <td>{assertionStatement}</td>
-                        </tr>
-                      )
+                        assertionId,
+                        refIds
+                      }) => {
+                        const refIdsArray = refIds ? refIds.split(' ') : [];
+                        const ariaHtmlFeatures = refIdsArray.map(refId =>
+                          renderableContent.info.references.find(
+                            ref => ref.refId === refId
+                          )
+                        );
+                        const ariaHtmlFeaturesEl =
+                          ariaHtmlFeatures.length === 0 ? (
+                            none
+                          ) : ariaHtmlFeatures.length === 1 ? (
+                            <a href={ariaHtmlFeatures[0].value}>
+                              {ariaHtmlFeatures[0].linkText}
+                            </a>
+                          ) : (
+                            // greater than 1, display list
+                            <ul className={commonStyles.bulletList}>
+                              {ariaHtmlFeatures.map(f => (
+                                <li key={`${i}-${assertionId}-${f.refId}`}>
+                                  <a href={f.value}>{f.linkText}</a>
+                                </li>
+                              ))}
+                            </ul>
+                          );
+
+                        return (
+                          <tr key={`${i}-${assertionId}`}>
+                            <td>{convertAssertionPriority(priority)}</td>
+                            <td>{assertionPhrase}</td>
+                            <td>{assertionStatement}</td>
+                            {showAriaHtmlFeatures ? (
+                              <td>{ariaHtmlFeaturesEl}</td>
+                            ) : null}
+                          </tr>
+                        );
+                      }
                     )}
                   </tbody>
                 </Table>
@@ -296,6 +332,7 @@ InstructionsRenderer.propTypes = {
   }),
   testFormatVersion: PropTypes.number,
   headingLevel: PropTypes.number,
+  showAriaHtmlFeatures: PropTypes.bool,
   customClassNames: PropTypes.string
 };
 
