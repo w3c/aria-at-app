@@ -231,7 +231,9 @@ const InstructionsRenderer = ({
                       <th>Priority</th>
                       <th>Assertion Phrase</th>
                       <th>Assertion Statement</th>
-                      {showAriaHtmlFeatures ? <th>ARIA/HTML Feature</th> : null}
+                      {isV2 && showAriaHtmlFeatures ? (
+                        <th>ARIA/HTML Feature</th>
+                      ) : null}
                     </tr>
                   </thead>
                   <tbody>
@@ -243,7 +245,9 @@ const InstructionsRenderer = ({
                         assertionId,
                         refIds
                       }) => {
-                        const refIdsArray = refIds ? refIds.split(' ') : [];
+                        const refIdsArray = refIds
+                          ? refIds.trim().split(' ')
+                          : [];
                         const ariaHtmlFeatures = refIdsArray.map(refId =>
                           renderableContent.info.references.find(
                             ref => ref.refId === refId
@@ -259,11 +263,14 @@ const InstructionsRenderer = ({
                           ) : (
                             // greater than 1, display list
                             <ul className={commonStyles.bulletList}>
-                              {ariaHtmlFeatures.map(f => (
-                                <li key={`${i}-${assertionId}-${f.refId}`}>
-                                  <a href={f.value}>{f.linkText}</a>
-                                </li>
-                              ))}
+                              {ariaHtmlFeatures.map(f => {
+                                if (!f?.refId) return null;
+                                return (
+                                  <li key={`${i}-${assertionId}-${f.refId}`}>
+                                    <a href={f.value}>{f.linkText}</a>
+                                  </li>
+                                );
+                              })}
                             </ul>
                           );
 
@@ -272,7 +279,7 @@ const InstructionsRenderer = ({
                             <td>{convertAssertionPriority(priority)}</td>
                             <td>{assertionPhrase}</td>
                             <td>{assertionStatement}</td>
-                            {showAriaHtmlFeatures ? (
+                            {isV2 && showAriaHtmlFeatures ? (
                               <td>{ariaHtmlFeaturesEl}</td>
                             ) : null}
                           </tr>

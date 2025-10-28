@@ -47,11 +47,14 @@ const renderAssertionRow = (
     ) : (
       // greater than 1, display list
       <ul className={commonStyles.bulletList}>
-        {ariaHtmlFeatures.map(f => (
-          <li key={`${f.refId}`}>
-            <a href={f.value}>{f.linkText}</a>
-          </li>
-        ))}
+        {ariaHtmlFeatures.map(f => {
+          if (!f?.refId) return null;
+          return (
+            <li key={`${f.refId}`}>
+              <a href={f.value}>{f.linkText}</a>
+            </li>
+          );
+        })}
       </ul>
     );
 
@@ -106,6 +109,7 @@ const TestPlanResultsTable = ({
   showAriaHtmlFeatures = false
 }) => {
   const NegativeSideEffectsHeading = `h${commandHeadingLevel}`;
+  const isV2 = test?.testFormatVersion === 2;
 
   return (
     <>
@@ -214,7 +218,9 @@ const TestPlanResultsTable = ({
                   <th>Priority</th>
                   <th>Assertion</th>
                   <th>Result</th>
-                  {showAriaHtmlFeatures ? <th>ARIA/HTML Feature</th> : null}
+                  {isV2 && showAriaHtmlFeatures ? (
+                    <th>ARIA/HTML Feature</th>
+                  ) : null}
                 </tr>
               </thead>
               <tbody>
@@ -222,7 +228,7 @@ const TestPlanResultsTable = ({
                   renderAssertionRow(
                     assertionResult,
                     scenarioResult.untestable,
-                    { showAriaHtmlFeatures }
+                    { showAriaHtmlFeatures: isV2 && showAriaHtmlFeatures }
                   )
                 )}
               </tbody>
