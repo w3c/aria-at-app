@@ -19,6 +19,7 @@ const ASSERTION_RESULT_FIELDS = gql`
           id
           name
         }
+      }
       references {
         refId
         value
