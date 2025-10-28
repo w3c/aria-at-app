@@ -124,34 +124,51 @@ describe('Test Run when signed in as admin', () => {
     // Wait for the table to render
     await page.waitForSelector(testPlanTableSelector);
 
-    // Find the 'Open run as...' dropdown button from the Actions Column
+    // Wait for and click the 'Open run as...' dropdown button from the Actions Column
+    await page.waitForSelector(`${testPlanTableSelector} tbody tr td button`, {
+      timeout: 5000
+    });
+
     await page.evaluate(() => {
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
       const modalDialogTable = document.querySelector(modalDialogTableSelector);
+      if (!modalDialogTable) return;
 
-      // Find the 'Open run as...' button from the Actions Column
       const cells = Array.from(modalDialogTable.querySelectorAll('td'));
       const actionsColumn = cells[4];
+      if (!actionsColumn) return;
+
       const openRunAsDropdownButton = actionsColumn.querySelector(
         'div.dropdown button'
       );
-      openRunAsDropdownButton.click();
+      if (openRunAsDropdownButton) {
+        openRunAsDropdownButton.click();
+      }
     });
 
-    // Wait for the dropdown menu to appear and click the tester's name
+    // Wait for the dropdown menu to appear
     const openRunAsMenuSelector = 'div.dropdown-menu';
     await page.waitForSelector(openRunAsMenuSelector);
 
+    // Wait for the tester option to be available and click it
+    await page.waitForSelector(`${openRunAsMenuSelector} a.dropdown-item`, {
+      timeout: 5000
+    });
+
     await page.evaluate(() => {
       const openRunAsMenu = document.querySelector('div.dropdown-menu');
+      if (!openRunAsMenu) return;
+
       const testerOptions = Array.from(
         openRunAsMenu.querySelectorAll('a.dropdown-item')
       );
       const targetTesterOption = testerOptions.find(option =>
         option.innerText.includes('esmeralda-baggins')
       );
-      targetTesterOption.click();
+      if (targetTesterOption) {
+        targetTesterOption.click();
+      }
     });
 
     // Wait for navigation to Test Run page to complete
@@ -192,7 +209,12 @@ describe('Test Run when signed in as admin', () => {
       // Wait for the page to be fully rendered with all data
       await page.waitForSelector('h1 ::-p-text(Test 1)');
 
-      // Find the reassign dropdown button in the Test Options section
+      // Wait for the reassign dropdown button in the Test Options section
+      await page.waitForSelector('button[aria-label="Reassign Testers"]', {
+        timeout: 5000
+      });
+
+      // Find and click the reassign dropdown button
       await page.evaluate(() => {
         const reassignDropdownButton = document.querySelector(
           'button[aria-label="Reassign Testers"]'
@@ -206,12 +228,20 @@ describe('Test Run when signed in as admin', () => {
       const assignTestersMenuSelector = 'div [role="menu"]';
       await page.waitForSelector(assignTestersMenuSelector);
 
+      // Wait for the tester options to be available
+      await page.waitForSelector(
+        `${assignTestersMenuSelector} [role="menuitemcheckbox"]`,
+        { timeout: 5000 }
+      );
+
       // Find and click the target tester in the dropdown
       await page.evaluate(() => {
         const assignTestersMenuSelector = 'div [role="menu"]';
         const assignTestersMenu = document.querySelector(
           assignTestersMenuSelector
         );
+        if (!assignTestersMenu) return;
+
         const assignTesterOptions = Array.from(
           assignTestersMenu.querySelectorAll('[role="menuitemcheckbox"]')
         );
@@ -350,34 +380,51 @@ describe('Test Run when signed in as tester', () => {
     // Wait for the table to render
     await page.waitForSelector(testPlanTableSelector);
 
-    // Find the 'View Results for...' dropdown button from the Actions Column
+    // Wait for and click the 'View Results for...' dropdown button from the Actions Column
+    await page.waitForSelector(`${testPlanTableSelector} tbody tr td button`, {
+      timeout: 5000
+    });
+
     await page.evaluate(() => {
       const modalDialogTableSelector =
         'table[aria-label="Reports for Modal Dialog Example V24.06.07 in draft phase"]';
       const modalDialogTable = document.querySelector(modalDialogTableSelector);
+      if (!modalDialogTable) return;
 
-      // Find the 'View Results for...' button from the Actions Column
       const cells = Array.from(modalDialogTable.querySelectorAll('td'));
       const actionsColumn = cells[4];
+      if (!actionsColumn) return;
+
       const viewResultsDropdownButton = actionsColumn.querySelector(
         'div.dropdown button'
       );
-      viewResultsDropdownButton.click();
+      if (viewResultsDropdownButton) {
+        viewResultsDropdownButton.click();
+      }
     });
 
-    // Wait for the dropdown menu to appear and click the tester's name
+    // Wait for the dropdown menu to appear
     const viewResultsMenuSelector = 'div.dropdown-menu';
     await page.waitForSelector(viewResultsMenuSelector);
 
+    // Wait for the tester option to be available and click it
+    await page.waitForSelector(`${viewResultsMenuSelector} a.dropdown-item`, {
+      timeout: 5000
+    });
+
     await page.evaluate(() => {
       const openRunAsMenu = document.querySelector('div.dropdown-menu');
+      if (!openRunAsMenu) return;
+
       const testerOptions = Array.from(
         openRunAsMenu.querySelectorAll('a.dropdown-item')
       );
       const targetTesterOption = testerOptions.find(option =>
         option.innerText.includes('esmeralda-baggins')
       );
-      targetTesterOption.click();
+      if (targetTesterOption) {
+        targetTesterOption.click();
+      }
     });
 
     // Wait for navigation to Test Run page to complete
