@@ -49,6 +49,7 @@ const FeatureSupportTable = ({ featureData, featureLabel }) => {
               </td>
               {supportCombos.map(col => {
                 const row = dataByFeature[key][col];
+                if (!row) return null;
                 const detailLink = `/aria-html-feature/${row.atId}/${row.browserId}/${key}`;
                 return (
                   <td key={key + col}>
