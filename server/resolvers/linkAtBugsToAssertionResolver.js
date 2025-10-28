@@ -6,7 +6,7 @@ const {
 
 const linkAtBugsToAssertionResolver = async (
   _,
-  { assertionId, atBugIds },
+  { assertionId, atBugIds, commandId },
   context
 ) => {
   const { user, transaction } = context;
@@ -35,12 +35,14 @@ const linkAtBugsToAssertionResolver = async (
     return await linkAtBugsToAssertion({
       assertionId: numericAssertionId,
       atBugIds,
+      commandId,
       transaction
     });
   } catch (e) {
     console.error('linkAtBugsToAssertion error', {
       assertionId,
       atBugIds,
+      commandId,
       message: e.message,
       code: e?.original?.code || e?.parent?.code || e.code
     });

@@ -719,7 +719,7 @@ const graphqlSchema = gql`
     """
     AT bugs that are linked to this assertion.
     """
-    atBugs: [AtBug]!
+    atBugs(commandId: String): [AtBug]!
   }
 
   """
@@ -743,6 +743,10 @@ const graphqlSchema = gql`
     Full URL to the bug tracker issue.
     """
     url: String!
+    """
+    Command IDs this bug is linked to (for assertions only).
+    """
+    commandIds: [String]
     """
     The assistive technology this bug is associated with.
     """
@@ -2007,11 +2011,19 @@ const graphqlSchema = gql`
     """
     Link one or more AT bugs to an assertion.
     """
-    linkAtBugsToAssertion(assertionId: ID!, atBugIds: [ID]!): Assertion!
+    linkAtBugsToAssertion(
+      assertionId: ID!
+      atBugIds: [ID]!
+      commandId: String
+    ): Assertion!
     """
     Unlink one or more AT bugs from an assertion.
     """
-    unlinkAtBugsFromAssertion(assertionId: ID!, atBugIds: [ID]!): Assertion!
+    unlinkAtBugsFromAssertion(
+      assertionId: ID!
+      atBugIds: [ID]!
+      commandId: String
+    ): Assertion!
     """
     Link one or more AT bugs to a negative side effect.
     """

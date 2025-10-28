@@ -34,7 +34,9 @@ const FailingAssertionsSummaryTable = ({
   // Merge server data with local updates
   const displayAssertions = useMemo(() => {
     return failingAssertions.map(assertion => {
-      const update = assertionUpdates[assertion.assertionId];
+      // Use composite key: assertionId + commandId to distinguish different command rows
+      const updateKey = `${assertion.assertionId}_${assertion.commandId}`;
+      const update = assertionUpdates[updateKey];
       return update || assertion;
     });
   }, [failingAssertions, assertionUpdates]);
@@ -151,9 +153,11 @@ const FailingAssertionsSummaryTable = ({
         atName={atName}
         assertion={selectedAssertion}
         onLinked={updatedAssertion => {
+          // Use composite key: assertionId + commandId to distinguish different command rows
+          const updateKey = `${updatedAssertion.assertionId}_${updatedAssertion.commandId}`;
           setAssertionUpdates(prev => ({
             ...prev,
-            [updatedAssertion.assertionId]: updatedAssertion
+            [updateKey]: updatedAssertion
           }));
         }}
       />

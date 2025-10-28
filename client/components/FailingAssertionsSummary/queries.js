@@ -31,8 +31,12 @@ export const CREATE_AT_BUG = gql`
 `;
 
 export const LINK_AT_BUGS = gql`
-  mutation LinkAtBugs($assertionId: ID!, $atBugIds: [ID]!) {
-    linkAtBugsToAssertion(assertionId: $assertionId, atBugIds: $atBugIds) {
+  mutation LinkAtBugs($assertionId: ID!, $atBugIds: [ID]!, $commandId: String) {
+    linkAtBugsToAssertion(
+      assertionId: $assertionId
+      atBugIds: $atBugIds
+      commandId: $commandId
+    ) {
       id
       atBugs {
         id
@@ -49,8 +53,16 @@ export const LINK_AT_BUGS = gql`
 `;
 
 export const UNLINK_AT_BUGS = gql`
-  mutation UnlinkAtBugs($assertionId: ID!, $atBugIds: [ID]!) {
-    unlinkAtBugsFromAssertion(assertionId: $assertionId, atBugIds: $atBugIds) {
+  mutation UnlinkAtBugs(
+    $assertionId: ID!
+    $atBugIds: [ID]!
+    $commandId: String
+  ) {
+    unlinkAtBugsFromAssertion(
+      assertionId: $assertionId
+      atBugIds: $atBugIds
+      commandId: $commandId
+    ) {
       id
       atBugs {
         id

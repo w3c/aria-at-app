@@ -138,6 +138,7 @@ const deleteAssertionById = async ({ id, transaction }) =>
 const linkAtBugsToAssertion = async ({
   assertionId,
   atBugIds,
+  commandId,
   transaction
 }) => {
   const assertion = await ModelService.findByPk(Assertion, {
@@ -162,16 +163,30 @@ const linkAtBugsToAssertion = async ({
     });
   }
 
-  const existing = await assertion.getAtBugs({
-    attributes: ['id'],
-    joinTableAttributes: [],
+  // Get existing links for this assertion and commandId combination
+  const whereClause = { assertionId };
+  if (commandId) {
+    whereClause.commandId = commandId;
+  }
+  const existing = await AssertionAtBug.findAll({
+    where: whereClause,
+    attributes: ['atBugId'],
     transaction
   });
-  const existingIds = new Set(existing.map(b => b.id));
+  const existingIds = new Set(existing.map(r => r.atBugId));
   const toAdd = numericBugIds.filter(id => !existingIds.has(id));
+
   if (toAdd.length) {
     try {
-      await assertion.addAtBugs(toAdd, { transaction });
+      // Bulk create with commandId
+      await AssertionAtBug.bulkCreate(
+        toAdd.map(atBugId => ({
+          assertionId,
+          atBugId,
+          commandId: commandId || null
+        })),
+        { transaction }
+      );
     } catch (e) {
       // Ignore duplicate link errors that may occur under concurrent requests
     }
@@ -201,6 +216,7 @@ const linkAtBugsToAssertion = async ({
 const unlinkAtBugsFromAssertion = async ({
   assertionId,
   atBugIds,
+  commandId,
   transaction
 }) => {
   const assertion = await ModelService.findByPk(Assertion, {
@@ -217,7 +233,18 @@ const unlinkAtBugsFromAssertion = async ({
     )
   );
   if (numericBugIds.length) {
-    await assertion.removeAtBugs(numericBugIds, { transaction });
+    // Delete directly from AssertionAtBug table with commandId filter
+    const whereClause = {
+      assertionId,
+      atBugId: numericBugIds
+    };
+    if (commandId) {
+      whereClause.commandId = commandId;
+    }
+    await AssertionAtBug.destroy({
+      where: whereClause,
+      transaction
+    });
   }
 
   // Return the assertion with its bugs

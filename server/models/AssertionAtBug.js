@@ -22,6 +22,10 @@ module.exports = function (sequelize, DataTypes) {
           key: 'id'
         }
       },
+      commandId: {
+        type: DataTypes.TEXT,
+        allowNull: true
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,

@@ -25,18 +25,30 @@ export const useFailingAssertions = testPlanReport => {
           const processPriorityAssertionResults = priority => {
             return scenarioResult[`${priority.toLowerCase()}AssertionResults`]
               .filter(assertionResult => !assertionResult.passed)
-              .map(assertionResult => ({
-                ...commonResult,
-                priority,
-                assertionText: getAssertionPhraseOrText(
-                  assertionResult.assertion
-                ),
-                output: scenarioResult.output,
-                assertionId: assertionResult.assertion.id,
-                assertionAtBugs: assertionResult.assertion.atBugs || [],
-                atVersionName: testResult?.atVersion?.name || null,
-                browserVersionName: testResult?.browserVersion?.name || null
-              }));
+              .map(assertionResult => {
+                // Filter bugs by commandId to only show bugs linked to this specific command
+                const allBugs = assertionResult.assertion.atBugs || [];
+                const filteredBugs = allBugs.filter(bug => {
+                  // If bug has commandIds array, check if it includes this commandId
+                  if (bug.commandIds && Array.isArray(bug.commandIds)) {
+                    return bug.commandIds.includes(commonResult.commandId);
+                  }
+                  return false;
+                });
+
+                return {
+                  ...commonResult,
+                  priority,
+                  assertionText: getAssertionPhraseOrText(
+                    assertionResult.assertion
+                  ),
+                  output: scenarioResult.output,
+                  assertionId: assertionResult.assertion.id,
+                  assertionAtBugs: filteredBugs,
+                  atVersionName: testResult?.atVersion?.name || null,
+                  browserVersionName: testResult?.browserVersion?.name || null
+                };
+              });
           };
 
           const assertionResults = scenarioResult.untestable

@@ -6,7 +6,7 @@ const {
 
 const unlinkAtBugsFromAssertionResolver = async (
   _,
-  { assertionId, atBugIds },
+  { assertionId, atBugIds, commandId },
   context
 ) => {
   const { user, transaction } = context;
@@ -35,12 +35,14 @@ const unlinkAtBugsFromAssertionResolver = async (
     return await unlinkAtBugsFromAssertion({
       assertionId: numericAssertionId,
       atBugIds,
+      commandId,
       transaction
     });
   } catch (e) {
     console.error('unlinkAtBugsFromAssertion error', {
       assertionId,
       atBugIds,
+      commandId,
       message: e.message,
       code: e?.original?.code || e?.parent?.code || e.code
     });

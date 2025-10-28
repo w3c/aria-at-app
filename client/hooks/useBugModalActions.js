@@ -74,7 +74,8 @@ export const useBugModalActions = ({
             await linkAtBugs({
               variables: {
                 assertionId: assertion.assertionId,
-                atBugIds: [bug.id]
+                atBugIds: [bug.id],
+                commandId: assertion.commandId
               }
             });
           }
@@ -83,7 +84,8 @@ export const useBugModalActions = ({
             await unlinkAtBugs({
               variables: {
                 assertionId: assertion.assertionId,
-                atBugIds: pendingChanges.unlinkedBugs
+                atBugIds: pendingChanges.unlinkedBugs,
+                commandId: assertion.commandId
               }
             });
           }
@@ -91,15 +93,61 @@ export const useBugModalActions = ({
 
         // Notify parent of the update
         if (onLinked) {
-          const updatedAssertion = newlyCreatedBug
-            ? {
-                ...displayAssertion,
-                assertionAtBugs: [
-                  ...(displayAssertion?.assertionAtBugs || []),
-                  newlyCreatedBug
-                ]
+          // Build updated bugs list with commandIds set correctly
+          const existingBugs = displayAssertion?.assertionAtBugs || [];
+          const unlinkedBugIds = new Set(pendingChanges.unlinkedBugs);
+          const linkedBugIds = new Set(bugsToLink.map(bug => bug.id));
+
+          // Process existing bugs: update commandIds arrays
+          const updatedBugs = existingBugs
+            .map(bug => {
+              const wasUnlinked = unlinkedBugIds.has(bug.id);
+              const wasRelinked = linkedBugIds.has(bug.id);
+
+              if (wasUnlinked && !wasRelinked) {
+                // Remove this commandId from the bug's commandIds array
+                const updatedCommandIds = (bug.commandIds || []).filter(
+                  cid => cid !== assertion.commandId
+                );
+                // If bug has no commandIds left, remove it entirely
+                if (updatedCommandIds.length === 0) {
+                  return null;
+                }
+                return {
+                  ...bug,
+                  commandIds: updatedCommandIds
+                };
               }
-            : displayAssertion;
+
+              if (wasRelinked) {
+                // Add this commandId to the bug's commandIds array if not already present
+                const commandIds = bug.commandIds || [];
+                if (!commandIds.includes(assertion.commandId)) {
+                  return {
+                    ...bug,
+                    commandIds: [...commandIds, assertion.commandId]
+                  };
+                }
+              }
+
+              return bug;
+            })
+            .filter(bug => bug !== null);
+
+          // Add newly linked bugs that weren't already in the list
+          const existingBugIds = new Set(existingBugs.map(bug => bug.id));
+          const newlyLinkedBugs = bugsToLink
+            .filter(bug => !existingBugIds.has(bug.id))
+            .map(bug => ({
+              ...bug,
+              commandIds: [assertion.commandId]
+            }));
+
+          const updatedAssertion = {
+            ...displayAssertion,
+            assertionAtBugs: [...updatedBugs, ...newlyLinkedBugs]
+          };
+
           onLinked(updatedAssertion);
         }
       } catch (error) {

@@ -31,6 +31,13 @@ module.exports = {
           onDelete: 'CASCADE',
           primaryKey: true
         },
+        commandId: {
+          type: Sequelize.TEXT,
+          allowNull: true,
+          primaryKey: true,
+          comment:
+            'Command ID to make the link specific to test+assertion+command'
+        },
         createdAt: {
           type: Sequelize.DATE,
           allowNull: false,
@@ -46,6 +53,11 @@ module.exports = {
       // Add index on atBugId for efficient reverse lookups
       await queryInterface.addIndex('AssertionAtBug', ['atBugId'], {
         name: 'assertion_atbug_atbug_id_idx'
+      });
+
+      // Add index on commandId for efficient filtering
+      await queryInterface.addIndex('AssertionAtBug', ['commandId'], {
+        name: 'assertion_atbug_command_id_idx'
       });
     }
   },
