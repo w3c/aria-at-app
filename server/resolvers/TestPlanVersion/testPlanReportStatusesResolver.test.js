@@ -62,9 +62,13 @@ describe('testPlanReportStatusesResolver', () => {
     const exactAtVersions = statuses.filter(status => status.exactAtVersion);
     const requiredStatuses = statuses.filter(status => status.isRequired);
 
-    expect(statuses.length).toBe(7);
+    expect(statuses.length).toBe(9);
     expect(atsInOrder).toEqual(['JAWS', 'NVDA', 'VoiceOver for macOS']);
-    expect(jawsBrowsersInOrder).toEqual(['Chrome', 'Firefox']);
+    expect(jawsBrowsersInOrder).toEqual([
+      'Chrome',
+      'Firefox',
+      'Microsoft Edge'
+    ]);
     expect(voiceoverBrowsersInOrder).toEqual(['Chrome', 'Firefox', 'Safari']);
     expect(exactAtVersions).toEqual([]);
     expect(requiredStatuses.length).toBe(3);
@@ -90,7 +94,7 @@ describe('testPlanReportStatusesResolver', () => {
 
     const statusesWithReport = statuses.filter(status => status.testPlanReport);
 
-    expect(statuses.length).toBe(7);
+    expect(statuses.length).toBe(9);
     expect(statusesWithReport.length).toBe(1);
     expect(statusesWithReport[0].isRequired).toBe(true);
     expect(statusesWithReport[0].at.name).toBe('JAWS');
@@ -123,7 +127,7 @@ describe('testPlanReportStatusesResolver', () => {
 
     const statusesWithReport = statuses.filter(status => status.testPlanReport);
 
-    expect(statuses.length).toBe(8);
+    expect(statuses.length).toBe(10);
     expect(statusesWithReport.length).toBe(2);
     expect(statusesWithReport[0].isRequired).toBe(true);
     expect(statusesWithReport[0].at.name).toBe('JAWS');
