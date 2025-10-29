@@ -61,6 +61,12 @@ export const TEST_QUEUE_PAGE_QUERY = gql`
             id
             isRerun
           }
+          minimumAtVersion {
+            releasedAt
+          }
+          exactAtVersion {
+            releasedAt
+          }
         }
       }
     }
