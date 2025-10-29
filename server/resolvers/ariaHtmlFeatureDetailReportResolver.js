@@ -86,10 +86,29 @@ const ariaHtmlFeatureDetailReportResolver = async (
 
   if (rows.length === 0)
     return {
-      feature: {},
-      at: {},
-      browser: {},
-      assertionStatistics: [],
+      feature: {
+        refId: '',
+        type: '',
+        linkText: '',
+        value: '',
+        total: 0,
+        passed: 0,
+        failed: 0,
+        untestable: 0,
+        passedPercentage: 0,
+        formatted: '0% of passing'
+      },
+      at: {
+        id: at.id,
+        name: at.name,
+        key: at.key
+      },
+      browser: {
+        id: browser.id,
+        name: browser.name,
+        key: browser.key
+      },
+      assertionStatistics: calculateAssertionStatistics([]),
       rows: []
     };
 
