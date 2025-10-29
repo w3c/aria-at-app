@@ -17,7 +17,7 @@ describe('AT Bug Linking - Basic Functionality', () => {
         );
         await page.waitForSelector('::-p-text(NVDA Bug)');
         await page.waitForSelector(
-          'input[placeholder="Type to search by title, number, or URL"]'
+          'input[placeholder="Type to search by title or URL"]'
         );
 
         // Step 2: Create an AtBug
