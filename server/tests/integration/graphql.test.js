@@ -149,7 +149,8 @@ describe('graphql', () => {
       'ScenarioResultMatchSource',
       'ScenarioResultMatch',
       'NegativeSideEffect',
-      'NegativeSideEffectRecord'
+      'NegativeSideEffectRecord',
+      'Reference'
     ];
     const excludedTypeNameAndField = [
       // Items formatted like this:
