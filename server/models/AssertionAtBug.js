@@ -24,7 +24,8 @@ module.exports = function (sequelize, DataTypes) {
       },
       commandId: {
         type: DataTypes.TEXT,
-        allowNull: true
+        allowNull: false,
+        primaryKey: true
       },
       createdAt: {
         type: DataTypes.DATE,

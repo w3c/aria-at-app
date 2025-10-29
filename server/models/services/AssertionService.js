@@ -183,7 +183,7 @@ const linkAtBugsToAssertion = async ({
         toAdd.map(atBugId => ({
           assertionId,
           atBugId,
-          commandId: commandId || null
+          commandId
         })),
         { transaction }
       );

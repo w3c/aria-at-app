@@ -66,10 +66,15 @@ describe('AT Bug linking - GraphQL integration', () => {
 
       // Link bug to assertion
       const linkMutation = gql`
-        mutation Link($assertionId: ID!, $atBugIds: [ID]!) {
+        mutation Link(
+          $assertionId: ID!
+          $atBugIds: [ID]!
+          $commandId: String!
+        ) {
           linkAtBugsToAssertion(
             assertionId: $assertionId
             atBugIds: $atBugIds
+            commandId: $commandId
           ) {
             id
             atBugs {
@@ -82,7 +87,11 @@ describe('AT Bug linking - GraphQL integration', () => {
       `;
 
       const linkResult = await mutate(linkMutation, {
-        variables: { assertionId: existingAssertionId, atBugIds: [created.id] },
+        variables: {
+          assertionId: existingAssertionId,
+          atBugIds: [created.id],
+          commandId: 'test-command'
+        },
         transaction
       });
 
@@ -93,10 +102,15 @@ describe('AT Bug linking - GraphQL integration', () => {
 
       // Unlink bug from assertion
       const unlinkMutation = gql`
-        mutation Unlink($assertionId: ID!, $atBugIds: [ID]!) {
+        mutation Unlink(
+          $assertionId: ID!
+          $atBugIds: [ID]!
+          $commandId: String!
+        ) {
           unlinkAtBugsFromAssertion(
             assertionId: $assertionId
             atBugIds: $atBugIds
+            commandId: $commandId
           ) {
             id
             atBugs {
@@ -107,12 +121,122 @@ describe('AT Bug linking - GraphQL integration', () => {
       `;
 
       const unlinkResult = await mutate(unlinkMutation, {
-        variables: { assertionId: existingAssertionId, atBugIds: [created.id] },
+        variables: {
+          assertionId: existingAssertionId,
+          atBugIds: [created.id],
+          commandId: 'test-command'
+        },
         transaction
       });
 
       const unlinkedAssertion = unlinkResult.unlinkAtBugsFromAssertion;
       expect(unlinkedAssertion.atBugs).toEqual([]);
+    });
+  });
+
+  it('links the same bug to the same assertion with different command IDs', async () => {
+    await dbCleaner(async transaction => {
+      const { ats } = await query(
+        gql`
+          query {
+            ats {
+              id
+              name
+            }
+          }
+        `,
+        { transaction }
+      );
+      const atId = ats[0].id;
+      const title = `Bug ${randomStringGenerator()}`;
+      const url = `https://example.com/issues/${Math.floor(
+        Math.random() * 10000
+      )}`;
+
+      const createMutation = gql`
+        mutation Create($input: AtBugInput!) {
+          createAtBug(input: $input) {
+            id
+            title
+            url
+          }
+        }
+      `;
+
+      const createResult = await mutate(createMutation, {
+        variables: { input: { title, url, atId } },
+        transaction
+      });
+
+      const bugId = createResult.createAtBug.id;
+
+      const {
+        getAssertionsByTestPlanVersionId
+      } = require('../../models/services/AssertionService');
+      const assertions = await getAssertionsByTestPlanVersionId({
+        testPlanVersionId: 1,
+        transaction
+      });
+      const assertionId = assertions[0].id;
+
+      const linkMutation = gql`
+        mutation Link(
+          $assertionId: ID!
+          $atBugIds: [ID]!
+          $commandId: String!
+        ) {
+          linkAtBugsToAssertion(
+            assertionId: $assertionId
+            atBugIds: $atBugIds
+            commandId: $commandId
+          ) {
+            id
+            atBugs {
+              id
+              title
+              url
+            }
+          }
+        }
+      `;
+
+      const linkWithCommandId = await mutate(linkMutation, {
+        variables: {
+          assertionId,
+          atBugIds: [bugId],
+          commandId: 'command-1'
+        },
+        transaction
+      });
+
+      expect(linkWithCommandId.linkAtBugsToAssertion.atBugs).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: bugId })])
+      );
+
+      const linkWithDifferentCommandId = await mutate(linkMutation, {
+        variables: {
+          assertionId,
+          atBugIds: [bugId],
+          commandId: 'command-2'
+        },
+        transaction
+      });
+
+      expect(linkWithDifferentCommandId.linkAtBugsToAssertion.atBugs).toEqual(
+        expect.arrayContaining([expect.objectContaining({ id: bugId })])
+      );
+
+      const { AssertionAtBug } = require('../../models');
+      const allLinks = await AssertionAtBug.findAll({
+        where: { assertionId, atBugId: bugId },
+        transaction
+      });
+
+      // Should have 2 links: one with 'command-1', one with 'command-2'
+      // This verifies that Assertion A + Bug B + Command C is distinct from Assertion A + Bug B + Command D
+      expect(allLinks).toHaveLength(2);
+      const commandIds = allLinks.map(link => link.commandId).sort();
+      expect(commandIds).toEqual(['command-1', 'command-2']);
     });
   });
 });

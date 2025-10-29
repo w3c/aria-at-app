@@ -33,7 +33,8 @@ module.exports = {
         },
         commandId: {
           type: Sequelize.TEXT,
-          allowNull: true,
+          allowNull: false,
+          primaryKey: true,
           comment:
             'Command ID to make the link specific to test+assertion+command'
         },

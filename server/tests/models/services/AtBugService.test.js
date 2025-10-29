@@ -116,6 +116,7 @@ describe('AtBugService Data Checks', () => {
       const linked = await AssertionService.linkAtBugsToAssertion({
         assertionId: assertion.id,
         atBugIds: [bug.id],
+        commandId: 'test-command',
         transaction
       });
 
@@ -126,6 +127,7 @@ describe('AtBugService Data Checks', () => {
       const unlinked = await AssertionService.unlinkAtBugsFromAssertion({
         assertionId: assertion.id,
         atBugIds: [bug.id],
+        commandId: 'test-command',
         transaction
       });
 
