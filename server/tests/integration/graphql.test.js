@@ -186,7 +186,9 @@ describe('graphql', () => {
       ['AtBug', 'assertions'],
       ['UpdateEvent', 'performedBy'],
       ['UpdateEvent', 'entityId'],
-      ['UpdateEvent', 'metadata']
+      ['UpdateEvent', 'metadata'],
+      ['Assertion', 'references'],
+      ['AtBug', 'commandIds']
     ];
     ({
       typeAwareQuery,
@@ -912,6 +914,7 @@ describe('graphql', () => {
               id
               text
             }
+            commandIds
           }
         }
       `,
@@ -1165,13 +1168,18 @@ describe('graphql', () => {
               id
               title
             }
-            linkAtBugsToAssertion(assertionId: "1", atBugIds: [$testAtBugId]) {
+            linkAtBugsToAssertion(
+              assertionId: "1"
+              atBugIds: [$testAtBugId]
+              commandId: "test-command"
+            ) {
               __typename
               id
             }
             unlinkAtBugsFromAssertion(
               assertionId: "1"
               atBugIds: [$testAtBugId]
+              commandId: "test-command"
             ) {
               __typename
               id
@@ -1348,6 +1356,7 @@ const getMutationInputs = async () => {
               id
               title
               url
+              commandIds
             }
           }
         }
