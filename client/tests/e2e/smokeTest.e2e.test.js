@@ -55,7 +55,7 @@ describe('smoke test', () => {
 
   it('loads various pages without crashing', async () => {
     await Promise.all([
-      getPage({ role: false, url: '/' }, async page => {
+      getPage({ role: false, url: '/about' }, async page => {
         await page.waitForSelector('h1');
         const h1Text = await text(page, 'h1');
         expect(h1Text).toBe(
