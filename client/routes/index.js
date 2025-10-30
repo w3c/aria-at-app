@@ -19,7 +19,7 @@ import TestQueueConflicts from '../components/TestQueue/Conflicts';
 
 export default () => (
   <Routes>
-    <Route index path="/" exact element={<Reports />} />
+    <Route path="/" element={<Navigate to="/reports" replace />} />
     <Route exact path="/about" element={<Home />} />
     <Route exact path="/signup-instructions" element={<SignupInstructions />} />
     <Route
