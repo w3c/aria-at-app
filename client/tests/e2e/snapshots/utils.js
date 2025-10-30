@@ -1,7 +1,7 @@
 const prettier = require('prettier');
 
 const snapshotRoutes = [
-  { route: '/', waitForSelectors: ['p[data-test-id=keyMetrics]'] },
+  { route: '/about', waitForSelectors: ['p[data-test-id=keyMetrics]'] },
   { route: '/signup-instructions' },
   { route: '/account/settings' },
   { route: '/test-queue' },

@@ -19,7 +19,7 @@ const Home = () => {
       className={clsx(styles.homePage, styles.container)}
     >
       <Helmet>
-        <title>Home | ARIA-AT</title>
+        <title>About | ARIA-AT</title>
       </Helmet>
       <KeyMetricsBanner />
       <section className={styles.heroSection}>

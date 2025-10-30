@@ -69,12 +69,6 @@ const SummarizeTestPlanReports = ({
       <KeyMetricsBanner />
       <section className={styles.contentSection}>
         <h1>Assistive Technology Interoperability Reports</h1>
-        <h2>Introduction</h2>
-        <p>
-          This page offers a high-level view of all results which have been
-          collected, reviewed and published by the ARIA-AT project. Follow a
-          link in the table below to view detailed results.
-        </p>
 
         <Tabs
           tabs={[
@@ -84,9 +78,9 @@ const SummarizeTestPlanReports = ({
                 <>
                   <h2>Test Plan Support Levels</h2>
                   <p id="support-levels-table-description">
-                    The percentage of assertions which passed when each Test
-                    Plan was executed by a given Assistive Technology and
-                    Browser.
+                    The percentage of 'Must' + 'Should' assertions that are
+                    passing for a given combination of assistive technology and
+                    browser.
                   </p>
                   <Table
                     bordered
