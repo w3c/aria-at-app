@@ -6,6 +6,7 @@ After=network.target
 [Service]
 Type=simple
 Environment=DOTENV_CONFIG_PATH={{environment_config.dest}}
+Environment=NODE_OPTIONS=--max-old-space-size=1000
 WorkingDirectory={{source_dir}}
 ExecStart=/usr/bin/node -r dotenv/config index.js
 Restart=always
