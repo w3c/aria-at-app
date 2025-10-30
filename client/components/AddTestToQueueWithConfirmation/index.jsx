@@ -2,7 +2,7 @@ import React, { useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'react-bootstrap';
 import BasicModal from '../common/BasicModal';
-import { useMutation, useQuery } from '@apollo/client';
+import { useMutation, useQuery, useApolloClient } from '@apollo/client';
 import { LoadingStatus, useTriggerLoad } from '../common/LoadingStatus';
 import {
   getBotUsernameFromAtBrowser,
@@ -14,7 +14,10 @@ import {
   EXISTING_TEST_PLAN_REPORTS,
   ADD_TEST_QUEUE_MUTATION
 } from './queries';
-import { TEST_QUEUE_PAGE_QUERY } from '../TestQueue/queries';
+import {
+  TEST_QUEUE_PAGE_QUERY,
+  TEST_QUEUE_EXPANDED_ROW_QUERY
+} from '../TestQueue/queries';
 import { TEST_PLAN_REPORT_STATUS_DIALOG_QUERY } from '../TestPlanReportStatusDialog/queries';
 import { ME_QUERY } from '../App/queries';
 
@@ -28,6 +31,7 @@ function AddTestToQueueWithConfirmation({
   buttonText = 'Add to Test Queue',
   triggerUpdate = () => {}
 }) {
+  const client = useApolloClient();
   const [showPreserveReportDataMessage, setShowPreserveReportDataMessage] =
     useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -297,8 +301,30 @@ function AddTestToQueueWithConfirmation({
       await scheduleCollection({
         variables: {
           testPlanReportId: testPlanReport.id
-        }
+        },
+        refetchQueries: [
+          ME_QUERY,
+          EXISTING_TEST_PLAN_REPORTS,
+          TEST_QUEUE_PAGE_QUERY,
+          TEST_PLAN_REPORT_STATUS_DIALOG_QUERY
+        ],
+        awaitRefetchQueries: true
       });
+
+      // Wait a moment for React to re-render and mount the new row component
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // Manually fetch the expanded row query to update the cache
+      // This ensures the run appears immediately
+      try {
+        await client.query({
+          query: TEST_QUEUE_EXPANDED_ROW_QUERY,
+          variables: { testPlanReportId: testPlanReport.id },
+          fetchPolicy: 'network-only'
+        });
+      } catch (error) {
+        // If the query fails, that's okay - it will load when the component mounts
+      }
     }, 'Scheduling Collection Job');
     setShowConfirmation(true);
   };
