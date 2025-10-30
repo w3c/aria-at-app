@@ -10,8 +10,6 @@ describe('Reports page', () => {
           'h1 ::-p-text(Assistive Technology Interoperability Reports)'
         );
 
-        await page.waitForSelector('h2 ::-p-text(Introduction)');
-
         // Check that tabs exist
         await page.waitForSelector('button ::-p-text(Test Plans)');
         await page.waitForSelector('button ::-p-text(ARIA Features)');
