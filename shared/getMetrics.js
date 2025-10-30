@@ -1,4 +1,4 @@
-const convertAssertionPriority = require('./convertAssertionPriority');
+const checkAssertionResultExceptionMatch = require('./checkAssertionResultExceptionMatch');
 const { calculatePercentage, trimDecimals } = require('./calculations');
 
 const sum = arr => arr?.reduce((total, item) => total + item, 0) || 0;
@@ -61,50 +61,29 @@ const countAssertions = ({
   const countScenarioResult = scenarioResult => {
     const isClient =
       `${priority.toLowerCase()}AssertionResults` in scenarioResult;
-    let all;
+
+    let assertionResults;
     if (isClient) {
-      all = scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] || [];
+      assertionResults =
+        scenarioResult?.[`${priority.toLowerCase()}AssertionResults`] || [];
     } else {
-      all = scenarioResult.assertionResults.filter(a => {
-        // Same as `server/resolvers/ScenarioResult/assertionResultsResolver.js`
-        if (a.assertion?.assertionExceptions?.length) {
-          const scenarioSettings = scenarioResult.scenario.settings;
-          const scenarioCommandId =
-            scenarioResult.scenario.commandIds.join(' ');
-
-          const foundException = a.assertion.assertionExceptions.find(
-            exception =>
-              exception.settings === scenarioSettings &&
-              exception.commandId === scenarioCommandId
-          );
-
-          if (foundException) {
-            return (
-              convertAssertionPriority(foundException.priority) ===
-              convertAssertionPriority(priority)
-            );
-          }
-        }
-
-        return (
-          convertAssertionPriority(a.assertion.priority) ===
-          convertAssertionPriority(priority)
-        );
-      });
+      assertionResults = scenarioResult.assertionResults.filter(a =>
+        checkAssertionResultExceptionMatch(a, scenarioResult, priority)
+      );
     }
 
     if (status === 'untestable') {
-      return scenarioResult.untestable ? all.length : 0;
+      return scenarioResult.untestable ? assertionResults.length : 0;
     }
 
     if (status === 'passed') {
       // In an untestable scenario, no assertions are considered passing.
       return scenarioResult.untestable
         ? 0
-        : all.filter(each => each.passed).length;
+        : assertionResults.filter(each => each.passed).length;
     }
 
-    return all.length;
+    return assertionResults.length;
   };
   return countAvailableData(countScenarioResult, {
     testPlanReport,
@@ -163,6 +142,87 @@ const countCommands = ({
   });
 };
 
+const countFeatures = ({
+  testPlanReport, // Choose one to provide
+  testResult, // Choose one to provide
+  scenarioResult, // Choose one to provide
+  featureType, // 'aria' or 'htmlAam'
+  status // 'passed', 'failed', 'untestable'
+}) => {
+  const countScenarioResult = scenarioResult => {
+    const isClient =
+      'mustAssertionResults' in scenarioResult ||
+      'shouldAssertionResults' in scenarioResult;
+
+    let assertionResults;
+    if (isClient) {
+      assertionResults = [
+        ...scenarioResult.mustAssertionResults,
+        ...scenarioResult.shouldAssertionResults
+      ];
+    } else {
+      assertionResults = [
+        ...scenarioResult.assertionResults.filter(a =>
+          checkAssertionResultExceptionMatch(a, scenarioResult, 'MUST')
+        ),
+        ...scenarioResult.assertionResults.filter(a =>
+          checkAssertionResultExceptionMatch(a, scenarioResult, 'SHOULD')
+        )
+      ];
+    }
+
+    if (!assertionResults) return 0;
+
+    return assertionResults.reduce((count, assertionResult) => {
+      if (!isClient) {
+        if (
+          !checkAssertionResultExceptionMatch(
+            assertionResult,
+            scenarioResult,
+            'MUST'
+          ) &&
+          !checkAssertionResultExceptionMatch(
+            assertionResult,
+            scenarioResult,
+            'SHOULD'
+          )
+        ) {
+          return count;
+        }
+      }
+
+      // If scenario is untestable, all assertions are untestable
+      if (scenarioResult.untestable) {
+        if (status === 'untestable' || status === undefined) {
+          const references = assertionResult.assertion?.references || [];
+          const featureReferences = references.filter(
+            ref => ref.type === featureType
+          );
+          return count + featureReferences.length;
+        }
+        return count;
+      }
+
+      // Handle testable scenarios
+      if (status === 'passed' && !assertionResult.passed) return count;
+      if (status === 'failed' && assertionResult.passed) return count;
+      if (status === 'untestable') return count;
+
+      const references = assertionResult.assertion?.references || [];
+      const featureReferences = references.filter(
+        ref => ref.type === featureType
+      );
+      return count + featureReferences.length;
+    }, 0);
+  };
+
+  return countAvailableData(countScenarioResult, {
+    testPlanReport,
+    testResult,
+    scenarioResult
+  });
+};
+
 const calculateAssertionPriorityCounts = (result, priority) => {
   const assertionsPassedCount = countAssertions({
     ...result,
@@ -187,6 +247,148 @@ const calculateAssertionPriorityCounts = (result, priority) => {
     assertionsFailedCount,
     assertionsUntestableCount
   };
+};
+
+const calculateFeatureCounts = (result, featureType) => {
+  const count = countFeatures({ ...result, featureType });
+  const passedCount = countFeatures({
+    ...result,
+    featureType,
+    status: 'passed'
+  });
+  const failedCount = countFeatures({
+    ...result,
+    featureType,
+    status: 'failed'
+  });
+  const untestableCount = countFeatures({
+    ...result,
+    featureType,
+    status: 'untestable'
+  });
+
+  const formatted =
+    count === 0
+      ? false
+      : `${Math.floor((passedCount / count) * 100)}% of passing`;
+
+  return {
+    count,
+    passedCount,
+    failedCount,
+    untestableCount,
+    formatted
+  };
+};
+
+const calculatePerFeatureCounts = (result, featureType) => {
+  const featureMap = new Map();
+
+  const processScenarioResult = scenarioResult => {
+    const isClient =
+      'mustAssertionResults' in scenarioResult ||
+      'shouldAssertionResults' in scenarioResult;
+
+    const assertionResults = isClient
+      ? [
+          ...scenarioResult.mustAssertionResults,
+          ...scenarioResult.shouldAssertionResults
+        ]
+      : [
+          ...scenarioResult.assertionResults.filter(a =>
+            checkAssertionResultExceptionMatch(a, scenarioResult, 'MUST')
+          ),
+          ...scenarioResult.assertionResults.filter(a =>
+            checkAssertionResultExceptionMatch(a, scenarioResult, 'SHOULD')
+          )
+        ];
+
+    if (!assertionResults) return;
+
+    assertionResults.forEach(assertionResult => {
+      if (!isClient) {
+        if (
+          !checkAssertionResultExceptionMatch(
+            assertionResult,
+            scenarioResult,
+            'MUST'
+          ) &&
+          !checkAssertionResultExceptionMatch(
+            assertionResult,
+            scenarioResult,
+            'SHOULD'
+          )
+        ) {
+          return;
+        }
+      }
+
+      const references = assertionResult.assertion?.references || [];
+      const featureReferences = references.filter(
+        ref => ref.type === featureType
+      );
+
+      featureReferences.forEach(featureRef => {
+        const featureKey = featureRef.refId || featureRef.value;
+
+        if (!featureMap.has(featureKey)) {
+          featureMap.set(featureKey, {
+            refId: featureRef.refId,
+            type: featureRef.type,
+            linkText: featureRef.linkText,
+            value: featureRef.value,
+            total: 0,
+            passed: 0,
+            failed: 0,
+            untestable: 0
+          });
+        }
+
+        const feature = featureMap.get(featureKey);
+        feature.total++;
+
+        // If scenario is untestable, all assertions are untestable
+        if (scenarioResult.untestable) {
+          feature.untestable++;
+        } else {
+          // Handle testable scenarios
+          if (assertionResult.passed) {
+            feature.passed++;
+          } else {
+            feature.failed++;
+          }
+        }
+      });
+    });
+  };
+
+  const processTestResult = testResult => {
+    testResult?.scenarioResults?.forEach(processScenarioResult);
+  };
+
+  const processTestPlanReport = testPlanReport => {
+    testPlanReport?.finalizedTestResults?.forEach(processTestResult);
+  };
+
+  if (result.testPlanReport) {
+    processTestPlanReport(result.testPlanReport);
+  } else if (result.testResult) {
+    processTestResult(result.testResult);
+  } else if (result.scenarioResult) {
+    processScenarioResult(result.scenarioResult);
+  }
+
+  return Array.from(featureMap.values()).map(feature => ({
+    ...feature,
+    passedPercentage:
+      feature.total === 0
+        ? 0
+        : Math.floor((feature.passed / feature.total) * 100),
+    formatted:
+      feature.total === 0
+        ? '0% of passing'
+        : `${Math.floor((feature.passed / feature.total) * 100)}% of passing`
+  }));
 };
 
 const getMetrics = ({
@@ -265,6 +467,23 @@ const getMetrics = ({
   const negativeSideEffectsFormatted =
     negativeSideEffectCount === 0 ? false : `${negativeSideEffectCount} found`;
 
+  const {
+    count: ariaFeaturesCount,
+    passedCount: ariaFeaturesPassedCount,
+    failedCount: ariaFeaturesFailedCount,
+    untestableCount: ariaFeaturesUntestableCount,
+    formatted: ariaFeaturesFormatted
+  } = calculateFeatureCounts(result, 'aria');
+  const {
+    count: htmlFeaturesCount,
+    passedCount: htmlFeaturesPassedCount,
+    failedCount: htmlFeaturesFailedCount,
+    untestableCount: htmlFeaturesUntestableCount,
+    formatted: htmlFeaturesFormatted
+  } = calculateFeatureCounts(result, 'htmlAam');
+  const ariaFeatures = calculatePerFeatureCounts(result, 'aria');
+  const htmlFeatures = calculatePerFeatureCounts(result, 'htmlAam');
+
   let supportLevel;
   if (negativeSideEffectCount > 0 || mustAssertionsFailedCount > 0) {
     supportLevel = 'FAILING';
@@ -320,10 +539,22 @@ const getMetrics = ({
     moderateImpactPassedAssertionCount,
     moderateImpactFailedAssertionCount,
     commandsCount,
+    ariaFeaturesPassedCount,
+    ariaFeaturesCount,
+    ariaFeaturesFailedCount,
+    ariaFeaturesUntestableCount,
+    htmlFeaturesPassedCount,
+    htmlFeaturesCount,
+    htmlFeaturesFailedCount,
+    htmlFeaturesUntestableCount,
     mustFormatted,
     shouldFormatted,
     mayFormatted,
     negativeSideEffectsFormatted,
+    ariaFeaturesFormatted,
+    htmlFeaturesFormatted,
+    ariaFeatures,
+    htmlFeatures,
     supportLevel,
     supportPercent
   };

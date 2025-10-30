@@ -118,7 +118,16 @@ export default (
   {
     request: {
       query: getUpdateEventsQuery,
-      variables: {}
+      variables: {
+        types: [
+          'GENERAL',
+          'COLLECTION_JOB_CREATION',
+          'COLLECTION_JOB_START',
+          'COLLECTION_JOB_COMPLETION',
+          'COLLECTION_JOB_FAILURE',
+          'COLLECTION_JOB_TEST_PLAN_REPORT'
+        ]
+      }
     },
     result: {
       data: {

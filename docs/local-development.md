@@ -20,7 +20,7 @@
    - Note: You must run `yarn db-import-tests:dev` after setting up your database to import the latest test harness into
      your project.
 3. Run the server
-   ` yarn dev `
+   `yarn dev`
    Now you can navigate your browser to: [http://localhost:3000/](http://localhost:3000/). You need to use localhost instead of `0.0.0.0` because the cookie needs to be treated as secure.
 
 ### Signing in as a tester, admin, or vendor
@@ -111,16 +111,16 @@ yarn test
 
 ### Linting and Formatting
 
-Code linting is performed by **ESLint**. To manually run ESLint:
+Code linting is performed by **ESLint** and **Prettier**. To manually run:
 
 ```
 yarn lint
 ```
 
-Code formatting is performed by **Prettier**. To manually run Prettier:
+Code formatting is performed by **ESLint** and **Prettier**. To manually run:
 
 ```
-yarn prettier
+yarn lint:fix
 ```
 
 ### Unit Tests
@@ -151,28 +151,13 @@ yarn workspace server jest --watchAll
 
 Like unit tests, end-to-end tests are run by Jest, and the commands which run Jest tests should be used to run end-to-end tests as well.
 
-### Previewing components with Storybook
-
-Storybook is a tool for building out UI components. To start the Storybook server, run:
-
-```
-yarn storybook
-```
-
-#### Writing stories
-
-- Make a new file in `client/stories` with the format `<component>.stories.jsx`.
-- Run the Storybook server
-
-Any changes in the component will be picked up by the Storybook server.
-
 #### Snapshot Testing
 
 We use snapshot testing to detect regressions. These require upkeep since snapshots can become outdated by upstream test changes in aria-at. It is a good practice to routinely run `yarn update-snapshots` on your working branch.
 
 ### Accessibility testing
 
-#### Manual accessibilty testing
+#### Manual accessibility testing
 
 Please note that this section may be out of date.
 

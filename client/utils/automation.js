@@ -18,14 +18,20 @@ export const isSupportedByResponseCollector = ctx => {
 
   // Check if the AT and browser are supported by the automation
   const isNvdaWithSupportedBrowser =
-    atKey === 'nvda' && (browserKey === 'chrome' || browserKey === 'firefox');
+    atKey === 'nvda' &&
+    (browserKey === 'chrome' ||
+      browserKey === 'firefox' ||
+      browserKey === 'MicrosoftEdge');
   const isVoiceOverMacWithSupportedBrowser =
     atKey === 'voiceover_macos' &&
     (browserKey === 'safari_macos' ||
       browserKey === 'chrome' ||
       browserKey === 'firefox');
   const isJawsWithSupportedBrowser =
-    atKey === 'jaws' && (browserKey === 'chrome' || browserKey === 'firefox');
+    atKey === 'jaws' &&
+    (browserKey === 'chrome' ||
+      browserKey === 'firefox' ||
+      browserKey === 'MicrosoftEdge');
 
   if (
     !(

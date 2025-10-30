@@ -47,17 +47,7 @@ jobs:
           yarn workspace server db-populate-sample-data:test
       # yarn test would run all of these in serial, however we split this up to allow it to continue
       # in case of errors - all tests will still run even if lint fails for instance.
-      - run: yarn workspace shared prettier
-        if: always()
-      - run: yarn workspace client prettier
-        if: always()
-      - run: yarn workspace server prettier
-        if: always()
-      - run: yarn workspace shared lint
-        if: always()
-      - run: yarn workspace client lint
-        if: always()
-      - run: yarn workspace server lint
+      - run: yarn lint
         if: always()
       - run: yarn workspace shared jest
         if: always()

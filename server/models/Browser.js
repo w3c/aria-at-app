@@ -28,6 +28,7 @@ module.exports = function (sequelize, DataTypes) {
   Model.CHROME = 'Chrome';
   Model.FIREFOX = 'Firefox';
   Model.SAFARI = 'Safari';
+  Model.EDGE = 'Microsoft Edge';
 
   Model.BROWSER_VERSION_ASSOCIATION = { as: 'browserVersions' };
 

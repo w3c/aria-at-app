@@ -72,6 +72,17 @@
     }
   }
 
+  div.dropdown[aria-label='Reassign Testers menu'] {
+    width: 100%;
+
+    button {
+      width: 100% !important;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+  }
+
   .help-link {
     font-size: var(--14px);
     text-align: center;
