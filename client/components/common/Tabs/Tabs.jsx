@@ -1,14 +1,56 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Tabs.module.css';
 
 const Tabs = ({ tabs }) => {
-  const [selectedTab, setSelectedTab] = useState(0);
+  const location = useLocation();
+  const navigate = useNavigate();
   const tabRefs = useRef([]);
+
+  const getTabIndexFromQuery = () => {
+    const searchParams = new URLSearchParams(location.search);
+    const tabKey = searchParams.get('tab');
+    if (!tabKey) return 0;
+
+    const index = tabs.findIndex(tab => tab.tabKey === tabKey);
+    return index >= 0 ? index : 0;
+  };
+
+  const [selectedTab, setSelectedTab] = useState(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const tabKey = searchParams.get('tab');
+    if (!tabKey) return 0;
+
+    const index = tabs.findIndex(tab => tab.tabKey === tabKey);
+    return index >= 0 ? index : 0;
+  });
 
   useEffect(() => {
     tabRefs.current = tabRefs.current.slice(0, tabs.length);
   }, [tabs]);
+
+  useEffect(() => {
+    const queryIndex = getTabIndexFromQuery();
+    if (queryIndex !== selectedTab) {
+      setSelectedTab(queryIndex);
+    }
+  }, [location.search, tabs]);
+
+  const updateSelectedTab = index => {
+    setSelectedTab(index);
+    const tab = tabs[index];
+    const tabKey = tab.tabKey || `tab-${index}`;
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('tab', tabKey);
+    const newSearch = searchParams.toString();
+    navigate(
+      `${location.pathname}${newSearch ? `?${newSearch}` : ''}${location.hash}`,
+      {
+        replace: true
+      }
+    );
+  };
 
   const handleKeyDown = (event, index) => {
     const tabCount = tabs.length;
@@ -32,7 +74,7 @@ const Tabs = ({ tabs }) => {
     }
 
     event.preventDefault();
-    setSelectedTab(newIndex);
+    updateSelectedTab(newIndex);
     tabRefs.current[newIndex]?.focus();
   };
 
@@ -50,7 +92,7 @@ const Tabs = ({ tabs }) => {
             className={`${styles.tabButton} ${
               selectedTab === index ? styles.selectedTab : ''
             }`}
-            onClick={() => setSelectedTab(index)}
+            onClick={() => updateSelectedTab(index)}
             onKeyDown={e => handleKeyDown(e, index)}
             tabIndex={selectedTab === index ? 0 : -1}
           >
@@ -79,7 +121,8 @@ Tabs.propTypes = {
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
-      content: PropTypes.node.isRequired
+      content: PropTypes.node.isRequired,
+      tabKey: PropTypes.string
     })
   ).isRequired
 };

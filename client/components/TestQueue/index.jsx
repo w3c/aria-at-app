@@ -450,9 +450,11 @@ const TestQueue = () => {
   const tabs = [
     {
       label: 'Manual Test Queue',
+      tabKey: 'manual',
       content: renderQueueContent()
     },
     {
+      tabKey: 'automated',
       get label() {
         return `Automated Report Updates${
           typeof totalAutomatedRuns === 'number'
