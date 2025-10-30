@@ -36,7 +36,12 @@ const TestConflictsActions = ({
           {testPlanRuns.map(testPlanRun => (
             <Dropdown.Item
               key={testPlanRun.id}
-              href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}#${testIndex}`}
+              onClick={() =>
+                window.open(
+                  `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}#${testIndex}`,
+                  '_blank'
+                )
+              }
             >
               {testPlanRun.tester.username}
             </Dropdown.Item>

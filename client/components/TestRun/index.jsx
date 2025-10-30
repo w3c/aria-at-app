@@ -640,7 +640,7 @@ const TestRun = () => {
       case 'closeTest': {
         // Save renderer's form state
         await saveForm();
-        navigate('/test-queue');
+        window.close();
         break;
       }
     }

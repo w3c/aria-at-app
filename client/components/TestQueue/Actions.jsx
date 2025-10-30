@@ -239,7 +239,11 @@ const Actions = ({
           <Button
             variant="primary"
             disabled={!selfAssignedRun}
-            href={selfAssignedRun ? `/run/${selfAssignedRun.id}` : undefined}
+            onClick={
+              selfAssignedRun
+                ? () => window.open(`/run/${selfAssignedRun.id}`, '_blank')
+                : undefined
+            }
           >
             {selfAssignedRun?.testResultsLength
               ? 'Continue Testing'
@@ -259,7 +263,12 @@ const Actions = ({
               <Dropdown.Item
                 key={testPlanRun.id}
                 role="menuitem"
-                href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`}
+                onClick={() =>
+                  window.open(
+                    `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`,
+                    '_blank'
+                  )
+                }
               >
                 {testPlanRun.tester.username}
               </Dropdown.Item>
