@@ -64,6 +64,8 @@ ${results}`;
               return `"${text}" (Details: ${details}, Impact: ${impact})`;
             })
             .join(' and ');
+          if (scenarioResult.untestable)
+            resultFormatted = `${resultFormatted} and marked the assertions as untestable`;
         } else {
           resultFormatted = 'no negative side effect';
         }

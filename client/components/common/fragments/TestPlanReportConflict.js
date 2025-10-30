@@ -33,6 +33,7 @@ const TEST_PLAN_REPORT_CONFLICT_FIELDS = gql`
       }
       scenarioResult {
         output
+        untestable
         hasNegativeSideEffect
         negativeSideEffects {
           id

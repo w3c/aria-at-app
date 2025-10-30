@@ -34,7 +34,7 @@ const conflictsResolver = async (testPlanReport, _, context) => {
   }
 
   Object.values(testResultsByTestId).forEach(testResults => {
-    // See GraphQL TestPlanResultConflict for more info about how the
+    // See GraphQL TestPlanReportConflict for more info about how the
     // conflicts are formatted
     const conflictDetected = ({ i, j }) => {
       if (j != null) {
@@ -79,6 +79,15 @@ const conflictsResolver = async (testPlanReport, _, context) => {
         conflictDetected({ i });
       }
 
+      const untestableResultComparisons = testResults.map(testResult => {
+        return testResult.scenarioResults[i]?.untestable
+          ? pick(testResult.scenarioResults[i], ['untestable'])
+          : null;
+      });
+      if (!allEqual(untestableResultComparisons)) {
+        conflictDetected({ i });
+      }
+
       for (
         let j = 0;
         j < testResults[0].scenarioResults[i].assertionResults.length;
@@ -90,6 +99,18 @@ const conflictsResolver = async (testPlanReport, _, context) => {
         if (!allEqual(assertionResultComparisons)) {
           conflictDetected({ i, j });
         }
+
+        // TODO: The untestable conflicts should be represented as
+        //  assertionResults conflicts; address the related priority exception
+        //  issues with this approach
+        // const untestableResultComparisons = testResults.map(testResult => {
+        //   return testResult.scenarioResults[i]?.untestable
+        //     ? pick(testResult.scenarioResults[i], ['untestable'])
+        //     : null;
+        // });
+        // if (!allEqual(untestableResultComparisons)) {
+        //   conflictDetected({ i, j });
+        // }
       }
     }
   });
