@@ -106,8 +106,7 @@ const computeMatchesForRerunReport = async ({
   let candidateReports = await getTestPlanReports({
     where: {
       testPlanVersionId: rerunReport.testPlanVersionId,
-      atId: rerunReport.atId,
-      browserId: rerunReport.browserId
+      atId: rerunReport.atId
     },
     pagination: { order: [['createdAt', 'desc']] },
     transaction
@@ -117,7 +116,7 @@ const computeMatchesForRerunReport = async ({
   if (candidateReports.length === 0) {
     return null;
   }
-  // No broader fallbacks; strictly same testPlanVersion + at + browser
+  // No broader fallbacks; strictly same testPlanVersion + at, allowing any browser
   if (typeof candidatesLimit === 'number') {
     candidateReports = candidateReports.slice(0, candidatesLimit);
   }

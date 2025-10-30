@@ -416,7 +416,7 @@ const updateJsons = async () => {
   // Write commands for v1 format
   await fse.writeFile(
     path.resolve(__dirname, '../../resources/commandsV1.json'),
-    JSON.stringify(commands, null, 4)
+    JSON.stringify(commands, null, 2) + '\n'
   );
 
   try {
@@ -430,7 +430,7 @@ const updateJsons = async () => {
     // Write commands for v2 format
     await fse.writeFile(
       path.resolve(__dirname, '../../resources/commandsV2.json'),
-      JSON.stringify(flattenObject(commandsV2Parsed), null, 4)
+      JSON.stringify(flattenObject(commandsV2Parsed), null, 2) + '\n'
     );
   } catch (error) {
     console.error('commands.json for v2 test format may not exist');
@@ -459,7 +459,7 @@ async function updateAtsJson({ ats, supportAts }) {
 
   await fse.writeFile(
     path.resolve(__dirname, '../../resources/ats.json'),
-    JSON.stringify(atsResult, null, 4)
+    JSON.stringify(atsResult, null, 2) + '\n'
   );
 }
 

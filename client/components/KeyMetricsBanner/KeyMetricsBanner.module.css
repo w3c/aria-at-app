@@ -1,0 +1,13 @@
+.keyMetrics {
+  margin: 0 1rem;
+}
+
+.keyMetrics * {
+  display: inline;
+}
+
+.keyMetrics h2 {
+  font-size: var(--default-font-size);
+  margin: 0;
+  font-weight: bold;
+}

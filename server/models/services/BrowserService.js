@@ -92,7 +92,11 @@ const getBrowsers = async ({
 }) => {
   // search and filtering options
   const searchQuery = search ? `%${search}%` : '';
-  if (searchQuery) where = { ...where, name: { [Op.iLike]: searchQuery } };
+  if (searchQuery)
+    where = {
+      ...where,
+      [Op.or]: [{ key: search }, { name: { [Op.iLike]: searchQuery } }]
+    };
 
   return ModelService.get(Browser, {
     where,

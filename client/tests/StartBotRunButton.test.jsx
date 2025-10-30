@@ -2,7 +2,13 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import {
+  render,
+  fireEvent,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { InMemoryCache } from '@apollo/client';
@@ -89,6 +95,11 @@ describe('StartBotRunButton', () => {
     // Release the pending mutation to allow cleanup
     defer.resolve({ data: {} });
 
+    // Wait for modal to close and async state updates to settle
+    await waitForElementToBeRemoved(() =>
+      screen.queryByTestId('confirm-start-bot-run')
+    );
+
     // Mutation should be called once
     expect(mutateMock).toHaveBeenCalledTimes(1);
   });
@@ -122,5 +133,11 @@ describe('StartBotRunButton', () => {
     await waitFor(() => {
       expect(mutateMock).toHaveBeenCalledTimes(1);
     });
+
+    // Wait for modal to close and async state updates to settle
+    const maybeConfirm = screen.queryByTestId('confirm-start-bot-run');
+    if (maybeConfirm) {
+      await waitForElementToBeRemoved(maybeConfirm);
+    }
   });
 });

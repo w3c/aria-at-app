@@ -5,6 +5,7 @@ import Home from '@components/Home';
 import InvalidRequest from '@components/InvalidRequest';
 import NotFound from '@components/NotFound';
 import { Reports, Report } from '@components/Reports';
+import AriaHtmlFeatureDetailReport from '@components/Reports/AriaHtmlFeatureDetailReport';
 import CandidateReview from '@components/CandidateReview';
 import SignupInstructions from '@components/SignupInstructions';
 import TestQueue from '@components/TestQueue';
@@ -57,6 +58,11 @@ export default () => (
     />
     <Route exact path="/reports" element={<Reports />} />
     <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
+    <Route
+      exact
+      path="/aria-html-feature/:atId/:browserId/:refId"
+      element={<AriaHtmlFeatureDetailReport />}
+    />
     <Route
       exact
       path="/candidate-review"
