@@ -1,3 +1,24 @@
+## [1.22.0](https://github.com/w3c/aria-at-app/compare/v1.21.1...v1.22.0) (2025-10-30)
+
+
+### Features
+
+* Add Key Metrics banner to homepage ([#1546](https://github.com/w3c/aria-at-app/issues/1546)) ([47d8018](https://github.com/w3c/aria-at-app/commit/47d801888864f384a9137cea36d2d209b08c10b5))
+* Allow tester reassignment and expand `UpdateEvent` table ([#1547](https://github.com/w3c/aria-at-app/issues/1547)) ([fd5026a](https://github.com/w3c/aria-at-app/commit/fd5026ad25005f6311e96be855fbcf1d87e2e36a))
+* ARIA/HTML support tables ([#1583](https://github.com/w3c/aria-at-app/issues/1583)) ([8ce1c43](https://github.com/w3c/aria-at-app/commit/8ce1c43bf5010fb2c67d24e9ac486795c8e8e14e))
+* cross-browser verdict copying ([#1586](https://github.com/w3c/aria-at-app/issues/1586)) ([397669c](https://github.com/w3c/aria-at-app/commit/397669c769264273b84dc6c1e8dd088b9df64971))
+* Display mappings of ARIA and HTML features ([#1594](https://github.com/w3c/aria-at-app/issues/1594)) ([494ef54](https://github.com/w3c/aria-at-app/commit/494ef54e6ed93fbc7654e807c803e6c678f8ef7f))
+* Enable Edge for Testing ([#1587](https://github.com/w3c/aria-at-app/issues/1587)) ([2f87784](https://github.com/w3c/aria-at-app/commit/2f8778421ecfbb564fe52fe25c31435de452fb63))
+
+
+### Bug Fixes
+
+* browser correction for edge support on automation ([#1597](https://github.com/w3c/aria-at-app/issues/1597)) ([ec043dc](https://github.com/w3c/aria-at-app/commit/ec043dc6b2d3752fc91fd01aff78d9ac3a352110))
+* correctly determine assertion priority in report feature rows ([#1595](https://github.com/w3c/aria-at-app/issues/1595)) ([2f2536b](https://github.com/w3c/aria-at-app/commit/2f2536b8568cd766950c05e421dcec0f18049166))
+* remove alert role from key metrics banner ([#1596](https://github.com/w3c/aria-at-app/issues/1596)) ([e507789](https://github.com/w3c/aria-at-app/commit/e507789376442f40184a38ace096ac0e7b55c679))
+* silence error messages in CI by waiting for modal close ([#1564](https://github.com/w3c/aria-at-app/issues/1564)) ([cf7e353](https://github.com/w3c/aria-at-app/commit/cf7e3530c6270b00e88d8666ba5e463f6056fb3a))
+* Support unavailable results for ARIA or HTML feature target on reports page ([#1591](https://github.com/w3c/aria-at-app/issues/1591)) ([758b4d5](https://github.com/w3c/aria-at-app/commit/758b4d5bf0cbb68287326d7123e60a2d2444182c))
+
 ### [1.21.1](https://github.com/w3c/aria-at-app/compare/v1.21.0...v1.21.1) (2025-10-02)
 
 
