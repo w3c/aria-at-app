@@ -236,6 +236,9 @@ export const TEST_QUEUE_EXPANDED_ROW_QUERY = gql`
       totalScenarioCount
       at {
         ...AtFields
+        atVersions {
+          ...AtVersionFields
+        }
       }
       browser {
         ...BrowserFields
