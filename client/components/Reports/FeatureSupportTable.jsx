@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ProgressBar from '@components/common/ProgressBar';
 import { Link } from 'react-router-dom';
 import { Table } from 'react-bootstrap';
+import ProgressBar from '@components/common/ProgressBar';
+import { None } from '@components/common/None';
 
 const columnName = ({ atName, browserName }) => `${atName} and ${browserName}`;
+const none = None();
 
 const FeatureSupportTable = ({ featureData, featureLabel }) => {
   const supportCombos = [...new Set(featureData.map(columnName))];
@@ -49,7 +51,9 @@ const FeatureSupportTable = ({ featureData, featureLabel }) => {
               </td>
               {supportCombos.map(col => {
                 const row = dataByFeature[key][col];
-                if (!row) return null;
+
+                if (!row) return <td key={key + col}>{none}</td>;
+
                 const detailLink = `/aria-html-feature/${row.atId}/${row.browserId}/${key}`;
                 return (
                   <td key={key + col}>

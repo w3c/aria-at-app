@@ -1,4 +1,5 @@
 const checkAssertionResultExceptionMatch = require('../../shared/checkAssertionResultExceptionMatch');
+const convertAssertionPriority = require('../../shared/convertAssertionPriority');
 
 const extractFeatureAssertionRows = (
   testPlanReport,
@@ -72,7 +73,10 @@ const extractFeatureAssertionRows = (
             commandSequence: scenarioResult.scenario.commands
               .map(cmd => cmd.text)
               .join(' then '),
-            assertionPriority: assertion.priority === 1 ? 'Must' : 'Should',
+            assertionPriority:
+              convertAssertionPriority(assertion.priority) === 'MUST'
+                ? 'Must'
+                : 'Should',
             assertionPhrase: assertion.phrase || assertion.text,
             result,
             testedOn: testResult.completedAt

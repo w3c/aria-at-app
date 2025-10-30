@@ -329,6 +329,7 @@ const TestReview = () => {
                     testFormatVersion={
                       testPlanVersion.metadata.testFormatVersion
                     }
+                    showAriaHtmlFeatures
                   />
                 </Fragment>
               );

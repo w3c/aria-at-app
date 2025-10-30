@@ -1,11 +1,9 @@
 # Allow users with the following GitHub usernames to sign in as admins.
 # One username per line.
 
-boazsender
 mfairchild365
 gnarf
 jugglinmike
-isaacdurazo
 sinabahram
 jscholes
 howard-e
@@ -13,8 +11,4 @@ mcking65
 stalgiag
 IsaDC
 ccanash
-Paul-Clue
-gracemccants
-outofambit
 ChrisC
-LouisDo10
