@@ -239,11 +239,17 @@ const Actions = ({
           <Button
             variant="primary"
             disabled={!selfAssignedRun}
-            onClick={
-              selfAssignedRun
-                ? () => window.open(`/run/${selfAssignedRun.id}`, '_blank')
-                : undefined
-            }
+            href={selfAssignedRun ? `/run/${selfAssignedRun.id}` : undefined}
+            target={selfAssignedRun ? '_blank' : undefined}
+            onClick={e => {
+              if (!selfAssignedRun) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+              }
+              e.preventDefault();
+              window.open(`/run/${selfAssignedRun.id}`, '_blank');
+            }}
           >
             {selfAssignedRun?.testResultsLength
               ? 'Continue Testing'
@@ -263,12 +269,15 @@ const Actions = ({
               <Dropdown.Item
                 key={testPlanRun.id}
                 role="menuitem"
-                onClick={() =>
+                href={`/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`}
+                target="_blank"
+                onClick={e => {
+                  e.preventDefault();
                   window.open(
                     `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`,
                     '_blank'
-                  )
-                }
+                  );
+                }}
               >
                 {testPlanRun.tester.username}
               </Dropdown.Item>
