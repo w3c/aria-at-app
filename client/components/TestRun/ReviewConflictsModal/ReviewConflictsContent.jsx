@@ -1,26 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import TurndownService from 'turndown';
-import { TestPlanReportPropType, TestPropType } from '../common/proptypes';
+import { TestPlanReportPropType, TestPropType } from '../../common/proptypes';
 import styles from './ReviewConflicts.module.css';
 
-const ReviewConflicts = ({
+const ReviewConflictsContent = ({
   testPlanReport,
   test,
-  hideHeadline = false,
-  conflictMarkdownRef = null
+  hideHeadline = false
 }) => {
-  const contentRef = useRef();
-
-  useEffect(() => {
-    if (!contentRef.current || !conflictMarkdownRef) return;
-    const turndownService = new TurndownService({ headingStyle: 'atx' });
-    conflictMarkdownRef.current = turndownService.turndown(
-      contentRef.current.outerHTML
-    );
-  });
-
   const conflicts = testPlanReport.conflicts.filter(
     conflict => conflict.source.test.id === test.id
   );
@@ -44,7 +32,11 @@ const ReviewConflicts = ({
     const results = conflictingResults.map(result => {
       const { testPlanRun, scenarioResult, assertionResult } = result;
       let assertionResultFormatted;
-      assertionResultFormatted = assertionResult.passed ? 'passing' : 'failing';
+      assertionResultFormatted = scenarioResult.untestable
+        ? 'untestable'
+        : assertionResult.passed
+        ? 'passing'
+        : 'failing';
       return (
         <li key={testPlanRun.id}>
           Tester {testPlanRun.tester.username} recorded output &quot;
@@ -55,7 +47,7 @@ const ReviewConflicts = ({
     });
 
     return (
-      <li key={`${assertion.id}-${commandString(scenario)}`}>
+      <li key={`${assertion.id}-${scenario.id}`}>
         <h3>
           Assertion Results for &quot;
           {commandString(scenario)}&quot; Command and &quot;
@@ -109,7 +101,6 @@ const ReviewConflicts = ({
         styles.conflictsContainer,
         hideHeadline && styles.hideHeadline
       )}
-      ref={contentRef}
     >
       <h2>Review Conflicts for &quot;{test.title}&quot;</h2>
       <ol>{conflicts.map(renderConflict)}</ol>
@@ -117,7 +108,7 @@ const ReviewConflicts = ({
   );
 };
 
-ReviewConflicts.propTypes = {
+ReviewConflictsContent.propTypes = {
   testPlanReport: TestPlanReportPropType.isRequired,
   test: TestPropType.isRequired,
   hideHeadline: PropTypes.bool,
@@ -126,4 +117,4 @@ ReviewConflicts.propTypes = {
   })
 };
 
-export default ReviewConflicts;
+export default ReviewConflictsContent;

@@ -2,6 +2,9 @@ const { pick, omit } = require('lodash');
 const testResultsResolver = require('../TestPlanRun/testResultsResolver');
 const populateData = require('../../services/PopulatedData/populateData');
 const allEqual = require('../../util/allEqual');
+const {
+  hasExceptionWithPriority
+} = require('../../util/hasExceptionWithPriority');
 
 const conflictsResolver = async (testPlanReport, _, context) => {
   let testPlanReportData = {};
@@ -79,38 +82,40 @@ const conflictsResolver = async (testPlanReport, _, context) => {
         conflictDetected({ i });
       }
 
-      const untestableResultComparisons = testResults.map(testResult => {
-        return testResult.scenarioResults[i]?.untestable
-          ? pick(testResult.scenarioResults[i], ['untestable'])
-          : null;
-      });
-      if (!allEqual(untestableResultComparisons)) {
-        conflictDetected({ i });
-      }
-
       for (
         let j = 0;
         j < testResults[0].scenarioResults[i].assertionResults.length;
         j += 1
       ) {
+        // Ignore assertions with EXCLUDE priority
+        const representativeScenarioResult = testResults[0].scenarioResults[i];
+        const representativeAssertionResult =
+          representativeScenarioResult.assertionResults[j];
+        const isExcluded =
+          representativeAssertionResult.assertion?.priority === 'EXCLUDE' ||
+          hasExceptionWithPriority(
+            representativeAssertionResult.assertion,
+            representativeScenarioResult.scenario,
+            'EXCLUDE'
+          );
+        if (isExcluded) continue;
+
+        const untestableResultComparisons = testResults.map(testResult => {
+          return testResult.scenarioResults[i]?.untestable
+            ? pick(testResult.scenarioResults[i], ['untestable'])
+            : null;
+        });
         const assertionResultComparisons = testResults.map(testResult =>
           pick(testResult.scenarioResults[i].assertionResults[j], ['passed'])
         );
-        if (!allEqual(assertionResultComparisons)) {
+
+        // The untestable conflicts should be represented as assertionResults
+        // conflicts
+        if (!allEqual(untestableResultComparisons)) {
+          conflictDetected({ i, j });
+        } else if (!allEqual(assertionResultComparisons)) {
           conflictDetected({ i, j });
         }
-
-        // TODO: The untestable conflicts should be represented as
-        //  assertionResults conflicts; address the related priority exception
-        //  issues with this approach
-        // const untestableResultComparisons = testResults.map(testResult => {
-        //   return testResult.scenarioResults[i]?.untestable
-        //     ? pick(testResult.scenarioResults[i], ['untestable'])
-        //     : null;
-        // });
-        // if (!allEqual(untestableResultComparisons)) {
-        //   conflictDetected({ i, j });
-        // }
       }
     }
   });

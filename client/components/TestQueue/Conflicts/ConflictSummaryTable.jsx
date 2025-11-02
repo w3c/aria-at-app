@@ -21,6 +21,9 @@ const ConflictSummaryTable = ({ conflictingResults }) => {
 
   const hasAssertionConflicts = useMemo(
     () =>
+      // If the scenarioResults aren't all matching with untestable then there
+      // must be conflicts
+      !conflictingResults.every(cr => !!cr.scenarioResult.untestable) ||
       conflictingResults[0].scenarioResult.assertionResults.some((ar, index) =>
         conflictingResults.some(
           cr => cr.scenarioResult.assertionResults[index].passed !== ar.passed

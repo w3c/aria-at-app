@@ -58,7 +58,9 @@ const NegativeSideEffectsConflictsTable = ({ conflictingResults, testers }) => {
                         {isUntestable && (
                           <>
                             <br />
-                            <b>Assertions marked as Untestable</b>
+                            <b>
+                              Note: Assertions marked as &apos;untestable&apos;
+                            </b>
                           </>
                         )}
                       </>

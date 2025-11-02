@@ -122,6 +122,9 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
           directory
         }
       }
+      exactAtVersion {
+        name
+      }
       minimumAtVersion {
         name
       }
@@ -141,6 +144,27 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
         ...IssueFieldsAll
       }
       conflicts {
+        source {
+          test {
+            id
+            title
+            rowNumber
+          }
+          scenario {
+            id
+            commands {
+              id
+              text
+              atOperatingMode
+            }
+          }
+          assertion {
+            id
+            text
+            phrase
+            priority
+          }
+        }
         conflictingResults {
           testPlanRun {
             ...TestPlanRunFields
@@ -167,13 +191,15 @@ export const TEST_QUEUE_CONFLICTS_PAGE_QUERY = gql`
             untestable
             hasNegativeSideEffect
             negativeSideEffects {
+              id
               text
-              details
               impact
+              details
             }
             assertionResults {
               assertion {
                 text
+                priority
               }
               passed
             }
