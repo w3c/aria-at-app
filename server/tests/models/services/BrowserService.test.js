@@ -228,6 +228,60 @@ describe('BrowserModel Data Checks', () => {
     });
   });
 
+  it('should return correct browser for chrome', async () => {
+    await dbCleaner(async () => {
+      // A1
+      const search = 'chrome';
+
+      // A2
+      const result = await BrowserService.getBrowsers({
+        search,
+        transaction: false
+      });
+
+      // A3
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBeGreaterThanOrEqual(1);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(Number),
+            name: 'Chrome',
+            browserVersions: expect.any(Array),
+            ats: expect.any(Array)
+          })
+        ])
+      );
+    });
+  });
+
+  it('should return correct browser for MicrosoftEdge', async () => {
+    await dbCleaner(async () => {
+      // A1
+      const search = 'MicrosoftEdge';
+
+      // A2
+      const result = await BrowserService.getBrowsers({
+        search,
+        transaction: false
+      });
+
+      // A3
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toEqual(1);
+      expect(result).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(Number),
+            name: 'Microsoft Edge',
+            browserVersions: expect.any(Array),
+            ats: expect.any(Array)
+          })
+        ])
+      );
+    });
+  });
+
   it('should return collection of browsers with paginated structure', async () => {
     // A1
     const result = await BrowserService.getBrowsers({

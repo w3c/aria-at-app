@@ -1,5 +1,4 @@
 import React from 'react';
-import { Alert } from 'react-bootstrap';
 import { KEY_METRICS_QUERY } from './queries';
 import { useQuery } from '@apollo/client';
 import styles from './KeyMetricsBanner.module.css';
@@ -15,10 +14,10 @@ const KeyMetricsBanner = () => {
     testsCount
   } = keyMetricsQuery?.keyMetrics ?? {};
   return (
-    <Alert
-      className={styles.keyMetrics}
-      variant="primary"
-      show={Boolean(keyMetricsQuery)}
+    <div
+      className={`${styles.keyMetrics} alert alert-primary fade ${
+        keyMetricsQuery ? 'show' : ''
+      }`}
     >
       {keyMetricsQuery && (
         <>
@@ -35,7 +34,7 @@ const KeyMetricsBanner = () => {
           </p>
         </>
       )}
-    </Alert>
+    </div>
   );
 };
 
