@@ -1,5 +1,6 @@
-import React, { Fragment, useRef, useState, useMemo } from 'react';
+import React, { Fragment, useRef, useState, useMemo, useCallback } from 'react';
 import { useApolloClient, useQuery } from '@apollo/client';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { Alert, Container, Table } from 'react-bootstrap';
@@ -474,13 +475,20 @@ const TestQueue = () => {
   ];
 
   return (
-    <Container id="main" as="main" tabIndex="-1">
-      <Helmet>
-        <title>Test Queue | ARIA-AT</title>
-      </Helmet>
-      <h1 className="test-queue-heading">Test Queue</h1>
-      <Tabs tabs={tabs} />
-    </Container>
+    <Routes>
+      <Route
+        path="*"
+        element={
+          <Container id="main" as="main" tabIndex="-1">
+            <Helmet>
+              <title>Test Queue | ARIA-AT</title>
+            </Helmet>
+            <h1 className="test-queue-heading">Test Queue</h1>
+            <Tabs basePath="/test-queue" tabs={tabs} />
+          </Container>
+        }
+      />
+    </Routes>
   );
 };
 

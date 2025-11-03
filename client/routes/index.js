@@ -39,12 +39,11 @@ export default () => (
         </ConfirmAuth>
       }
     />
-    <Route exact path="/test-queue" element={<TestQueue />} />
     <Route
-      exact
       path="/test-queue/:testPlanReportId/conflicts"
       element={<TestQueueConflicts />}
     />
+    <Route path="/test-queue/*" element={<TestQueue />} />
     <Route
       exact
       path="/test-plan-report/:testPlanReportId"
@@ -56,7 +55,7 @@ export default () => (
       path="/test-review/:testPlanVersionId"
       element={<TestReview />}
     />
-    <Route exact path="/reports" element={<Reports />} />
+    <Route path="/reports/*" element={<Reports />} />
     <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
     <Route
       exact

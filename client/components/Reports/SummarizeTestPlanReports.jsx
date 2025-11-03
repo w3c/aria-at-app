@@ -77,6 +77,7 @@ const SummarizeTestPlanReports = ({
         </p>
 
         <Tabs
+          basePath="/reports"
           tabs={[
             {
               label: 'Test Plans',

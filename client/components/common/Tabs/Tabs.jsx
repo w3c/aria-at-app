@@ -3,53 +3,66 @@ import PropTypes from 'prop-types';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Tabs.module.css';
 
-const Tabs = ({ tabs }) => {
+const Tabs = ({ tabs, basePath }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const tabRefs = useRef([]);
 
-  const getTabIndexFromQuery = () => {
-    const searchParams = new URLSearchParams(location.search);
-    const tabKey = searchParams.get('tab');
-    if (!tabKey) return 0;
+  const getTabIndexFromPath = () => {
+    if (!basePath) return 0;
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const baseSegments = basePath.split('/').filter(Boolean);
+    const relativePath = pathSegments.slice(baseSegments.length);
+    const currentTabKey = relativePath[0];
 
-    const index = tabs.findIndex(tab => tab.tabKey === tabKey);
+    if (!currentTabKey) return 0;
+    const index = tabs.findIndex(tab => tab.tabKey === currentTabKey);
     return index >= 0 ? index : 0;
   };
 
-  const [selectedTab, setSelectedTab] = useState(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const tabKey = searchParams.get('tab');
-    if (!tabKey) return 0;
-
-    const index = tabs.findIndex(tab => tab.tabKey === tabKey);
-    return index >= 0 ? index : 0;
-  });
+  const [selectedTab, setSelectedTab] = useState(() => getTabIndexFromPath());
 
   useEffect(() => {
     tabRefs.current = tabRefs.current.slice(0, tabs.length);
   }, [tabs]);
 
   useEffect(() => {
-    const queryIndex = getTabIndexFromQuery();
-    if (queryIndex !== selectedTab) {
-      setSelectedTab(queryIndex);
+    if (!basePath) return;
+
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const baseSegments = basePath.split('/').filter(Boolean);
+    const relativePath = pathSegments.slice(baseSegments.length);
+    const currentTabKey = relativePath[0];
+
+    if (currentTabKey) {
+      const index = tabs.findIndex(tab => tab.tabKey === currentTabKey);
+      if (index < 0) {
+        navigate(basePath, { replace: true });
+        return;
+      }
     }
-  }, [location.search, tabs]);
+
+    const pathIndex = getTabIndexFromPath();
+    if (pathIndex !== selectedTab) {
+      setSelectedTab(pathIndex);
+    }
+  }, [location.pathname, tabs, basePath, selectedTab, navigate]);
 
   const updateSelectedTab = index => {
     setSelectedTab(index);
     const tab = tabs[index];
     const tabKey = tab.tabKey || `tab-${index}`;
-    const searchParams = new URLSearchParams(location.search);
-    searchParams.set('tab', tabKey);
-    const newSearch = searchParams.toString();
-    navigate(
-      `${location.pathname}${newSearch ? `?${newSearch}` : ''}${location.hash}`,
-      {
-        replace: true
-      }
-    );
+    let targetPath;
+    if (!basePath) {
+      targetPath = location.pathname;
+    } else if (index === 0) {
+      targetPath = basePath;
+    } else {
+      targetPath = `${basePath}/${tabKey}`;
+    }
+    navigate(`${targetPath}${location.search}${location.hash}`, {
+      replace: true
+    });
   };
 
   const handleKeyDown = (event, index) => {
@@ -124,7 +137,8 @@ Tabs.propTypes = {
       content: PropTypes.node.isRequired,
       tabKey: PropTypes.string
     })
-  ).isRequired
+  ).isRequired,
+  basePath: PropTypes.string
 };
 
 export default Tabs;
