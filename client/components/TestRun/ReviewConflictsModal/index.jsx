@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal } from 'react-bootstrap';
-import ReviewConflicts from '../../ReviewConflicts';
+import ReviewConflictsContent from './ReviewConflictsContent';
 import {
   TestPlanReportPropType,
   TestPlanVersionPropType,
@@ -34,7 +34,7 @@ const ReviewConflictsModal = ({
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <ReviewConflicts
+        <ReviewConflictsContent
           hideHeadline
           testPlanReport={testPlanReport}
           test={test}
