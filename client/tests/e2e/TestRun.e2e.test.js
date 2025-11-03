@@ -1,6 +1,41 @@
 import getPage from '../util/getPage';
 import { text } from './util';
 
+// Utility function to handle new tab/window opening
+const waitForNewPageOnClick = async (browser, clickAction) => {
+  const pagesBefore = await browser.pages();
+  const pagesBeforeCount = pagesBefore.length;
+
+  // Execute the click action first
+  await clickAction();
+
+  // Wait for new page to appear by polling (more reliable than events)
+  let newPage = null;
+  for (let i = 0; i < 100; i++) {
+    const currentPages = await browser.pages();
+    if (currentPages.length > pagesBeforeCount) {
+      newPage = currentPages[currentPages.length - 1];
+      break;
+    }
+    await new Promise(r => setTimeout(r, 50));
+  }
+
+  if (!newPage) {
+    throw new Error('New page was not created after click');
+  }
+
+  // Bring the new page to front
+  await newPage.bringToFront();
+
+  // Wait for the page to have a body (indicates it's loaded)
+  await newPage.waitForSelector('body', { timeout: 10000 });
+
+  // Wait a bit more for any initial JavaScript to execute
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  return newPage;
+};
+
 describe('Test Run when not signed in', () => {
   it('renders /run/:id page but unable to make changes', async () => {
     await getPage(
@@ -144,25 +179,18 @@ describe('Test Run when signed in as admin', () => {
     await page.waitForSelector(openRunAsMenuSelector);
 
     const browser = page.browser();
-    const newPagePromise = new Promise(resolve =>
-      browser.once('targetcreated', target => resolve(target.page()))
+    const newPage = await waitForNewPageOnClick(browser, () =>
+      page.evaluate(() => {
+        const openRunAsMenu = document.querySelector('div.dropdown-menu');
+        const testerOptions = Array.from(
+          openRunAsMenu.querySelectorAll('a.dropdown-item')
+        );
+        const targetTesterOption = testerOptions.find(option =>
+          option.innerText.includes('esmeralda-baggins')
+        );
+        targetTesterOption.click();
+      })
     );
-
-    await page.evaluate(() => {
-      const openRunAsMenu = document.querySelector('div.dropdown-menu');
-      const testerOptions = Array.from(
-        openRunAsMenu.querySelectorAll('a.dropdown-item')
-      );
-      const targetTesterOption = testerOptions.find(option =>
-        option.innerText.includes('esmeralda-baggins')
-      );
-      targetTesterOption.click();
-    });
-
-    const newPage = await newPagePromise;
-    await newPage.waitForNavigation({
-      waitUntil: ['domcontentloaded', 'networkidle0']
-    });
 
     const atBrowserModalHeadingSelector =
       'h1 ::-p-text(Assistive Technology and Browser Details)';
@@ -315,15 +343,19 @@ describe('Test Run when signed in as tester', () => {
     await page.waitForSelector(startTestingButtonSelector);
 
     const browser = page.browser();
-    const newPagePromise = new Promise(resolve =>
-      browser.once('targetcreated', target => resolve(target.page()))
-    );
-
-    await page.click(startTestingButtonSelector);
-
-    const newPage = await newPagePromise;
-    await newPage.waitForNavigation({
-      waitUntil: ['domcontentloaded', 'networkidle0']
+    const newPage = await waitForNewPageOnClick(browser, async () => {
+      // Use evaluate to click, which ensures JavaScript handlers fire
+      await page.evaluate(() => {
+        const buttons = Array.from(
+          document.querySelectorAll('a[role="button"]')
+        );
+        const startTestingButton = buttons.find(b =>
+          b.textContent.includes('Start Testing')
+        );
+        if (startTestingButton) {
+          startTestingButton.click();
+        }
+      });
     });
 
     const atBrowserModalHeadingSelector =
@@ -385,25 +417,18 @@ describe('Test Run when signed in as tester', () => {
     await page.waitForSelector(viewResultsMenuSelector);
 
     const browser = page.browser();
-    const newPagePromise = new Promise(resolve =>
-      browser.once('targetcreated', target => resolve(target.page()))
+    const newPage = await waitForNewPageOnClick(browser, () =>
+      page.evaluate(() => {
+        const openRunAsMenu = document.querySelector('div.dropdown-menu');
+        const testerOptions = Array.from(
+          openRunAsMenu.querySelectorAll('a.dropdown-item')
+        );
+        const targetTesterOption = testerOptions.find(option =>
+          option.innerText.includes('esmeralda-baggins')
+        );
+        targetTesterOption.click();
+      })
     );
-
-    await page.evaluate(() => {
-      const openRunAsMenu = document.querySelector('div.dropdown-menu');
-      const testerOptions = Array.from(
-        openRunAsMenu.querySelectorAll('a.dropdown-item')
-      );
-      const targetTesterOption = testerOptions.find(option =>
-        option.innerText.includes('esmeralda-baggins')
-      );
-      targetTesterOption.click();
-    });
-
-    const newPage = await newPagePromise;
-    await newPage.waitForNavigation({
-      waitUntil: ['domcontentloaded', 'networkidle0']
-    });
     await newPage.waitForSelector(
       '::-p-text(tests of esmeralda-baggins in read-only mode)'
     );
@@ -811,25 +836,30 @@ describe('Test Run when signed in as tester', () => {
   });
 
   it('inputs results and successfully submits', async () => {
-    await getPage(
-      { role: 'tester', url: '/test-queue' },
-      async (page, { baseUrl }) => {
-        const newPage = await assignSelfAndNavigateToRun(page);
-        await handlePageSubmit(newPage);
+    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
+      const newPage = await assignSelfAndNavigateToRun(page);
+      await handlePageSubmit(newPage);
 
-        // Do the same for Color Viewer Slider which has specially handled
-        // exclusions;
-        // Excluded in tests.csv and re-included in *-commands.csv
-        await page.goto(`${baseUrl}/test-queue`);
-        const newPage2 = await assignSelfAndNavigateToRun(page, {
-          testPlanSectionButtonSelector:
-            'button#disclosure-btn-horizontal-slider-0',
-          testPlanTableSelector:
-            'table[aria-label="Reports for Color Viewer Slider V24.12.04 in draft phase"]'
-        });
-        await handlePageSubmit(newPage2, { expectConflicts: false });
-      }
-    );
+      // Close the new tab (as the app does with "Save and Close")
+      await newPage.close();
+
+      // Bring the original test queue page back to front
+      await page.bringToFront();
+
+      // Do the same for Color Viewer Slider which has specially handled
+      // exclusions;
+      // Excluded in tests.csv and re-included in *-commands.csv
+      const newPage2 = await assignSelfAndNavigateToRun(page, {
+        testPlanSectionButtonSelector:
+          'button#disclosure-btn-horizontal-slider-0',
+        testPlanTableSelector:
+          'table[aria-label="Reports for Color Viewer Slider V24.12.04 in draft phase"]'
+      });
+      await handlePageSubmit(newPage2, { expectConflicts: false });
+
+      // Close the second tab
+      await newPage2.close();
+    });
   });
 
   it('opens popup with content after clicking "Open Test Page" button', async () => {
@@ -904,23 +934,31 @@ describe('Test Run when signed in as tester', () => {
 
       // Start testing
       const browser = page.browser();
-      const newPagePromise = new Promise(resolve =>
-        browser.once('targetcreated', target => resolve(target.page()))
-      );
-
-      await page.waitForSelector('a[role="button"] ::-p-text(Start Testing)');
-      await page.click('a[role="button"] ::-p-text(Start Testing)');
-
-      const newPage = await newPagePromise;
-      await newPage.waitForNavigation({
-        waitUntil: ['domcontentloaded', 'networkidle0']
+      const newPage = await waitForNewPageOnClick(browser, async () => {
+        // Use evaluate to click, which ensures JavaScript handlers fire
+        await page.evaluate(() => {
+          const buttons = Array.from(
+            document.querySelectorAll('a[role="button"]')
+          );
+          const startTestingButton = buttons.find(b =>
+            b.textContent.includes('Start Testing')
+          );
+          if (startTestingButton) {
+            startTestingButton.click();
+          }
+        });
       });
 
       // Wait for Test Run to render
       await newPage.waitForSelector('h1 ::-p-text(Test 1:)');
 
-      // On hold modal should be visible
-      await newPage.waitForSelector('::-p-text(On hold)');
+      // Wait a bit for React to render the on-hold modal after page loads
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // On hold modal should be visible - wait for the modal backdrop and title
+      // Bootstrap modals have a .modal.show class when visible
+      await newPage.waitForSelector('.modal.show', { timeout: 10000 });
+      await newPage.waitForSelector('::-p-text(On hold)', { timeout: 10000 });
 
       // Submit button should be disabled
       await newPage.waitForSelector('button ::-p-text(Submit Results)');
