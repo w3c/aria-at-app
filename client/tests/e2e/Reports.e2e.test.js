@@ -10,8 +10,6 @@ describe('Reports page', () => {
           'h1 ::-p-text(Assistive Technology Interoperability Reports)'
         );
 
-        await page.waitForSelector('h2 ::-p-text(Introduction)');
-
         // Check that tabs exist
         await page.waitForSelector('button ::-p-text(Test Plans)');
         await page.waitForSelector('button ::-p-text(ARIA Features)');
@@ -294,8 +292,8 @@ describe('ARIA Feature detail report page', () => {
 
         await page.waitForSelector('h2 ::-p-text(Raw Data)');
         await page.waitForSelector('table[aria-label="Raw assertion data"]');
-        await page.waitForSelector('th ::-p-text(Test Plan)');
-        await page.waitForSelector('th ::-p-text(Test Title)');
+        await page.waitForSelector('th ::-p-text(Test Plan Report)');
+        await page.waitForSelector('th ::-p-text(Test)');
         await page.waitForSelector('th ::-p-text(Command)');
         await page.waitForSelector('th ::-p-text(Assertion Priority)');
         await page.waitForSelector('th ::-p-text(Assertion Phrase)');
@@ -361,8 +359,8 @@ describe('HTML Feature detail report page', () => {
 
         await page.waitForSelector('h2 ::-p-text(Raw Data)');
         await page.waitForSelector('table[aria-label="Raw assertion data"]');
-        await page.waitForSelector('th ::-p-text(Test Plan)');
-        await page.waitForSelector('th ::-p-text(Test Title)');
+        await page.waitForSelector('th ::-p-text(Test Plan Report)');
+        await page.waitForSelector('th ::-p-text(Test)');
         await page.waitForSelector('th ::-p-text(Command)');
         await page.waitForSelector('th ::-p-text(Assertion Priority)');
 

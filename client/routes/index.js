@@ -19,7 +19,8 @@ import TestQueueConflicts from '../components/TestQueue/Conflicts';
 
 export default () => (
   <Routes>
-    <Route index path="/" exact element={<Home />} />
+    <Route path="/" element={<Navigate to="/reports" replace />} />
+    <Route exact path="/about" element={<Home />} />
     <Route exact path="/signup-instructions" element={<SignupInstructions />} />
     <Route
       exact
@@ -39,12 +40,11 @@ export default () => (
         </ConfirmAuth>
       }
     />
-    <Route exact path="/test-queue" element={<TestQueue />} />
     <Route
-      exact
       path="/test-queue/:testPlanReportId/conflicts"
       element={<TestQueueConflicts />}
     />
+    <Route path="/test-queue/*" element={<TestQueue />} />
     <Route
       exact
       path="/test-plan-report/:testPlanReportId"
@@ -56,7 +56,7 @@ export default () => (
       path="/test-review/:testPlanVersionId"
       element={<TestReview />}
     />
-    <Route exact path="/reports" element={<Reports />} />
+    <Route path="/reports/*" element={<Reports />} />
     <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
     <Route
       exact

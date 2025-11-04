@@ -1,3 +1,16 @@
+## [1.23.0](https://github.com/w3c/aria-at-app/compare/v1.22.0...v1.23.0) (2025-10-30)
+
+
+### Features
+
+* Change main home page to reports page ([#1604](https://github.com/w3c/aria-at-app/issues/1604)) ([48066d3](https://github.com/w3c/aria-at-app/commit/48066d3156d86f22e82c31c9321bbb8732dde66a))
+
+
+### Bug Fixes
+
+* give node process 1g memory on deploys ([#1602](https://github.com/w3c/aria-at-app/issues/1602)) ([59380f4](https://github.com/w3c/aria-at-app/commit/59380f4fe0a3ded2a81a746916c5f623821d49dc))
+* max node heap on deploy to 2g, use swap ([0343a2a](https://github.com/w3c/aria-at-app/commit/0343a2ad97196a8605c88c42a6c586d986492696))
+
 ## [1.22.0](https://github.com/w3c/aria-at-app/compare/v1.21.1...v1.22.0) (2025-10-30)
 
 

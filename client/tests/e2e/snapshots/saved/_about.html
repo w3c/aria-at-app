@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="google" content="notranslate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+    <title>About | ARIA-AT</title>
+  </head>
+  <body>
+    <div id="root">
+      <div class="container-fluid">
+        <nav
+          aria-label="Menu"
+          class="navbar navbar-expand-xl navbar-light bg-light">
+          <a aria-current="false" class="logo navbar-brand" href="/reports"
+            >ARIA-AT</a
+          ><a class="skip-link" href="#main">Skip to main content</a
+          ><button
+            aria-controls="basic-navbar-nav"
+            type="button"
+            aria-label="Toggle navigation"
+            class="navbar-toggler collapsed">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div
+            class="justify-content-end navbar-collapse collapse"
+            id="basic-navbar-nav">
+            <div class="navbar-nav">
+              <li>
+                <a aria-current="true" class="nav-link" href="/about">About</a>
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/reports"
+                  >AT Interoperability Reports</a
+                >
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/data-management"
+                  >Data Management</a
+                >
+              </li>
+              <li>
+                <a aria-current="false" class="nav-link" href="/test-queue"
+                  >Test Queue</a
+                >
+              </li>
+              <li>
+                <a
+                  aria-current="false"
+                  class="nav-link"
+                  href="/candidate-review"
+                  >Candidate Review</a
+                >
+              </li>
+              <li>
+                <a
+                  aria-current="false"
+                  class="nav-link"
+                  href="/account/settings"
+                  >Settings</a
+                >
+              </li>
+              <li class="signed-in-wrapper">
+                <div class="signed-in" id="signed-in">
+                  <svg
+                    aria-hidden="true"
+                    focusable="false"
+                    data-prefix="fas"
+                    data-icon="circle-user"
+                    class="svg-inline--fa fa-circle-user"
+                    role="img"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512">
+                    <path
+                      fill="currentColor"
+                      d="M399 384.2C376.9 345.8 335.4 320 288 320H224c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z"></path></svg
+                  >Signed in as <b>joe-the-admin</b>
+                </div>
+                <a aria-describedby="signed-in" class="nav-link" href="/"
+                  >Sign out</a
+                >
+              </li>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <div class="container-fluid">
+        <main id="main" tabindex="-1" class="home-page container container">
+          <div class="keyMetrics alert alert-primary fade show">
+            <h2>Today's Testing Snapshot:</h2>
+            <p data-test-id="keyMetrics">
+              As of <strong>Sep 25 2025</strong>,
+              <strong>12,345</strong> interop verdicts for
+              <strong>1,234</strong> AT commands across
+              <strong>1,024</strong> tests enabled by
+              <strong>12</strong> contributors. <strong>123</strong> verdicts
+              collected in the last 90 days.
+            </p>
+          </div>
+          <section class="hero-section">
+            <h1>Enabling Interoperability for Assistive Technology Users</h1>
+            <div class="hero-copy-and-video">
+              <div class="hero-copy">
+                <p class="authorization-message">
+                  <i aria-hidden="true">✨</i
+                  ><em
+                    ><strong>Note:</strong> The
+                    <a
+                      target="_blank"
+                      rel="noreferrer"
+                      href="https://github.com/w3c/aria-at"
+                      >ARIA-AT Project</a
+                    >
+                    is managed by the
+                    <a
+                      target="_blank"
+                      rel="noreferrer"
+                      href="https://www.w3.org/community/aria-at/"
+                      >ARIA-AT Community Group</a
+                    >
+                    in coordination with the
+                    <a
+                      target="_blank"
+                      rel="noreferrer"
+                      href="https://www.w3.org/WAI/ARIA/task-forces/practices/"
+                      >Authoring Practices Task Force</a
+                    >
+                    of the
+                    <a
+                      target="_blank"
+                      rel="noreferrer"
+                      href="https://www.w3.org/WAI/ARIA/"
+                      >ARIA Working Group</a
+                    >. The W3C staff contact is
+                    <a href="mailto:dmontalvo@w3.org">Daniel Montalvo</a>.</em
+                  >
+                </p>
+                <p>
+                  Today, different screen readers often yield conflicting
+                  experiences when presenting a web page, disadvantaging or even
+                  excluding some users. These differences also create
+                  accessibility design and test barriers for web developers.
+                </p>
+                <p>
+                  On the other hand, browsers are interoperable for people who
+                  do not use assistive technologies. That is, different browsers
+                  provide equivalent experiences. Browser interoperability
+                  facilitates an inclusive web.
+                </p>
+                <p>
+                  Assistive technology users deserve equal inclusion. The
+                  ARIA-AT project aims to empower equal inclusion by realizing
+                  interoperability for AT users.
+                </p>
+                <p>
+                  <a
+                    class="hero-link"
+                    href="https://github.com/w3c/aria-at/wiki/How-Gaps-in-Assistive-Technology-Interoperability-Hinder-Inclusion"
+                    >Read more about how the AT interoperability gap hinders
+                    inclusion on the web for people with disabilities.</a
+                  >
+                </p>
+              </div>
+              <div class="hero-video">
+                <iframe
+                  src="https://player.vimeo.com/video/651279608?h=45aefd646f&amp;byline=false&amp;dnt=true&amp;portrait=false"
+                  width="640"
+                  height="340"
+                  frameborder="0"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowfullscreen=""
+                  title="ARIA-AT Video"></iframe>
+              </div>
+            </div>
+          </section>
+          <section class="improvements">
+            <div class="improvements-container">
+              <h2>How are we improving interoperability?</h2>
+              <ul class="improvement-list">
+                <li>
+                  <img
+                    src="http://localhost:3033/b69701922b27f0ff95a2f8a4f03b5025.jpg"
+                    alt="" />
+                  <h3>Proposing expectations for ATs</h3>
+                  <p>
+                    We have written initial drafts for more than a thousand
+                    tests that articulate expected screen reader behaviors for
+                    40 examples of common web design patterns. View the
+                    <a
+                      href="https://github.com/w3c/aria-at/blob/master/metrics/coverage.md"
+                      >Test Writing Progress Report</a
+                    >
+                    and
+                    <a href="https://aria-at.netlify.app"
+                      >view the draft test plans</a
+                    >
+                    preview.
+                  </p>
+                </li>
+                <li>
+                  <img
+                    src="http://localhost:3033/c0a3b8e1b3d7237301d71953c9a811d1.jpg"
+                    alt="" />
+                  <h3>Testing proposed expectations</h3>
+                  <p>
+                    This website enables us to manage test data, run tests with
+                    multiple testers, review results, and publish reports. View
+                    our progress on the
+                    <a href="/test-queue">test queue</a> page.
+                  </p>
+                </li>
+                <li>
+                  <img
+                    src="http://localhost:3033/d590efaabe47e07bb6394b5a9618986d.jpg"
+                    alt="" />
+                  <h3>Building industry consensus</h3>
+                  <p>
+                    Once a pattern has a reviewed test plan with results data, a
+                    candidate report is published and the process of building
+                    consensus around the plan begins. View reports generated
+                    from candidate test plans on the
+                    <a href="/reports">reports</a> page.
+                  </p>
+                </li>
+                <li>
+                  <img
+                    src="http://localhost:3033/b94a228c191bd738b564128bf6c5b467.jpg"
+                    alt="" />
+                  <h3>Enabling scalable automated testing</h3>
+                  <p>
+                    In order to regularly collect test results at scale for
+                    multiple web design patterns, browsers, and ATs, we are
+                    developing an industry standard for automating assistive
+                    technology. Read the
+                    <a href="https://github.com/bocoup/aria-at-automation"
+                      >explainer for a draft AT automation standard</a
+                    >
+                    and
+                    <a href="https://github.com/bocoup/at-automation-experiment"
+                      >explore the code repository</a
+                    >
+                    where experimental drivers are being developed.
+                  </p>
+                </li>
+              </ul>
+            </div>
+          </section>
+          <section class="get-involved">
+            <div class="container">
+              <h2>Get Involved</h2>
+              <p>
+                Enabling AT interoperability is a large, ongoing endeavor that
+                requires industry-wide collaboration and support. The W3C
+                ARIA-AT Community Group is currently focusing on a stable and
+                mature test suite for five screen readers. In the future, we
+                plan to test additional screen readers and other kinds of
+                assistive technologies with a broader set of web design patterns
+                and test material.
+              </p>
+              <p>Learn how you can help by:</p>
+              <ol>
+                <li>
+                  <a
+                    href="https://github.com/w3c/aria-at/wiki/Contributing-to-the-ARIA-and-Assistive-Technologies-Project"
+                    >Reading more about the project and spreading awareness of
+                    its mission</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/w3c/aria-at/wiki/Frequently-Asked-Questions"
+                    >Browsing the ARIA-AT Frequently Asked Questions (FAQ)</a
+                  >
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/w3c/aria-at/wiki/How-to-Join-the-ARIA-AT-Community-Group"
+                    >Joining the community group</a
+                  >
+                  to participate in our mailing list and conference calls
+                </li>
+              </ol>
+            </div>
+          </section>
+        </main>
+      </div>
+      <span
+        class="visually-hidden-aria-live-region"
+        aria-live="polite"
+        aria-atomic="true"></span>
+    </div>
+    <script src="/bundle.js"></script>
+  </body>
+</html>
