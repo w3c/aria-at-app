@@ -44,6 +44,24 @@ const withDeadlockRetry = async (
 };
 
 /**
+ * Gets a record by its primary key
+ * @param {Model} model - Sequelize Model instance to query for
+ * @param {object} options
+ * @param {number | string} options.id - ID of the record to find
+ * @param {any[]} options.include - information on Sequelize Model relationships
+ * @param {*} options.transaction - Sequelize transaction
+ * @returns {Promise<Model>} - Sequelize Model or null if not found
+ */
+const findByPk = async (model, { id, include = [], transaction }) => {
+  if (!model) throw new Error('Model not defined');
+
+  return model.findByPk(id, {
+    include,
+    transaction
+  });
+};
+
+/**
  * Created Query Sequelize Example:
  * UserModel.findOne({
  *   where: { id },
@@ -576,5 +594,6 @@ module.exports = {
   removeById,
   removeByQuery,
   rawQuery,
-  withDeadlockRetry
+  withDeadlockRetry,
+  findByPk
 };

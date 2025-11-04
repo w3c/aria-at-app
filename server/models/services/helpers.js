@@ -1,10 +1,12 @@
 const {
   At,
+  Assertion,
   AtVersion,
   Browser,
   BrowserVersion,
   CollectionJob,
   CollectionJobTestStatus,
+  NegativeSideEffect,
   ReviewerStatus,
   Role,
   TestPlan,
@@ -31,6 +33,7 @@ const getSequelizeModelAttributes = model => {
 
 module.exports = {
   getSequelizeModelAttributes,
+  ASSERTION_ATTRIBUTES: getSequelizeModelAttributes(Assertion),
   AT_ATTRIBUTES: getSequelizeModelAttributes(At),
   AT_VERSION_ATTRIBUTES: getSequelizeModelAttributes(AtVersion),
   EVENT_ATTRIBUTES: getSequelizeModelAttributes(UpdateEvent),
@@ -40,6 +43,8 @@ module.exports = {
   COLLECTION_JOB_TEST_STATUS_ATTRIBUTES: getSequelizeModelAttributes(
     CollectionJobTestStatus
   ),
+  NEGATIVE_SIDE_EFFECT_ATTRIBUTES:
+    getSequelizeModelAttributes(NegativeSideEffect),
   REVIEWER_STATUS_ATTRIBUTES: getSequelizeModelAttributes(ReviewerStatus),
   ROLE_ATTRIBUTES: getSequelizeModelAttributes(Role),
   TEST_PLAN_ATTRIBUTES: getSequelizeModelAttributes(TestPlan),
