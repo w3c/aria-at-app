@@ -248,7 +248,11 @@ const Actions = ({
                 return;
               }
               e.preventDefault();
-              window.open(`/run/${selfAssignedRun.id}`, '_blank');
+              if (window.PUPPETEER_TESTING) {
+                window.location.href = `/run/${selfAssignedRun.id}`;
+              } else {
+                window.open(`/run/${selfAssignedRun.id}`, '_blank');
+              }
             }}
           >
             {selfAssignedRun?.testResultsLength
@@ -273,10 +277,14 @@ const Actions = ({
                 target="_blank"
                 onClick={e => {
                   e.preventDefault();
-                  window.open(
-                    `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`,
-                    '_blank'
-                  );
+                  if (window.PUPPETEER_TESTING) {
+                    window.location.href = `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`;
+                  } else {
+                    window.open(
+                      `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}`,
+                      '_blank'
+                    );
+                  }
                 }}
               >
                 {testPlanRun.tester.username}

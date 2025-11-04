@@ -645,7 +645,9 @@ const TestRun = () => {
       case 'closeTest': {
         // Save renderer's form state
         await saveForm();
-        window.close();
+        if (!window.PUPPETEER_TESTING) {
+          window.close();
+        }
         break;
       }
     }

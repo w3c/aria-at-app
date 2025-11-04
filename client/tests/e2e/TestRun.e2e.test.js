@@ -1,73 +1,6 @@
 import getPage from '../util/getPage';
 import { text } from './util';
 
-// Utility function to handle new tab/window opening
-const waitForNewPageOnClick = async (
-  browser,
-  clickAction,
-  expectedUrlPattern = null
-) => {
-  const pagesBefore = await browser.pages();
-  // Store page references in a Set for comparison (objects compared by reference)
-  const pagesBeforeSet = new Set(pagesBefore);
-
-  // Execute the click action first
-  await clickAction();
-
-  // Wait for new page to appear by polling (more reliable than events)
-  // Track which pages are new to avoid picking up pages from other parallel tests
-  let newPage = null;
-  for (let i = 0; i < 100; i++) {
-    const currentPages = await browser.pages();
-    // Find pages that are new (not in the original set)
-    // JavaScript Set uses reference equality for objects, so this works
-    const newPages = currentPages.filter(page => !pagesBeforeSet.has(page));
-
-    if (newPages.length > 0) {
-      // If we have an expected URL pattern, try to match it
-      if (expectedUrlPattern) {
-        for (const page of newPages) {
-          try {
-            const url = await page.url();
-            if (expectedUrlPattern.test(url)) {
-              newPage = page;
-              break;
-            }
-          } catch (e) {
-            // Page might not have navigated yet
-          }
-        }
-      }
-
-      // If no match found or no pattern, use the first new page
-      // In parallel runs, this should still be correct since we're filtering
-      // to only pages that weren't in the original set
-      if (!newPage && newPages.length > 0) {
-        newPage = newPages[0];
-      }
-
-      if (newPage) break;
-    }
-
-    await new Promise(r => setTimeout(r, 50));
-  }
-
-  if (!newPage) {
-    throw new Error('New page was not created after click');
-  }
-
-  // Bring the new page to front
-  await newPage.bringToFront();
-
-  // Wait for the page to have a body (indicates it's loaded)
-  await newPage.waitForSelector('body', { timeout: 10000 });
-
-  // Wait a bit more for any initial JavaScript to execute
-  await new Promise(resolve => setTimeout(resolve, 500));
-
-  return newPage;
-};
-
 describe('Test Run when not signed in', () => {
   it('renders /run/:id page but unable to make changes', async () => {
     await getPage(
@@ -210,19 +143,21 @@ describe('Test Run when signed in as admin', () => {
     const openRunAsMenuSelector = 'div.dropdown-menu';
     await page.waitForSelector(openRunAsMenuSelector);
 
-    const browser = page.browser();
-    const newPage = await waitForNewPageOnClick(browser, () =>
-      page.evaluate(() => {
-        const openRunAsMenu = document.querySelector('div.dropdown-menu');
-        const testerOptions = Array.from(
-          openRunAsMenu.querySelectorAll('a.dropdown-item')
-        );
-        const targetTesterOption = testerOptions.find(option =>
-          option.innerText.includes('esmeralda-baggins')
-        );
-        targetTesterOption.click();
-      })
-    );
+    await page.evaluate(() => {
+      const openRunAsMenu = document.querySelector('div.dropdown-menu');
+      const testerOptions = Array.from(
+        openRunAsMenu.querySelectorAll('a.dropdown-item')
+      );
+      const targetTesterOption = testerOptions.find(option =>
+        option.innerText.includes('esmeralda-baggins')
+      );
+      targetTesterOption.click();
+    });
+
+    // Wait for navigation to Test Run page to complete
+    await page.waitForNavigation({
+      waitUntil: ['domcontentloaded', 'networkidle0']
+    });
 
     const atBrowserModalHeadingSelector =
       'h1 ::-p-text(Assistive Technology and Browser Details)';
@@ -233,34 +168,32 @@ describe('Test Run when signed in as admin', () => {
     const atBrowserModalSaveButtonSelector =
       'button ::-p-text(Save and Continue)';
 
-    await newPage.waitForSelector(atBrowserModalHeadingSelector);
-    await newPage.select(atBrowserModalAtVersionSelectSelector, '2');
-    await newPage.$eval(
+    await page.waitForSelector(atBrowserModalHeadingSelector);
+    await page.select(atBrowserModalAtVersionSelectSelector, '2');
+    await page.$eval(
       atBrowserModalBrowserVersionInputSelector,
       input => (input.value = '')
     );
-    await newPage.type(
+    await page.type(
       atBrowserModalBrowserVersionInputSelector,
       '1.TestBrowserVersion'
     );
-    await newPage.click(atBrowserModalSaveButtonSelector);
-    await newPage.waitForSelector(
+    await page.click(atBrowserModalSaveButtonSelector);
+    await page.waitForSelector(
       '::-p-text(Your version of Chrome has been updated to 1.TestBrowserVersion)'
     );
-
-    return newPage;
   };
 
   it('reassigns run to different tester then verifies tester assignment history is viewable', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       // Open run as tester, esmeralda-baggins
-      const newPage = await navigateToRunAsTester(page);
+      await navigateToRunAsTester(page);
 
       // Wait for the page to be fully rendered with all data
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
 
       // Find the reassign dropdown button in the Test Options section
-      await newPage.evaluate(() => {
+      await page.evaluate(() => {
         const reassignDropdownButton = document.querySelector(
           'button[aria-label="Reassign Testers"]'
         );
@@ -271,10 +204,10 @@ describe('Test Run when signed in as admin', () => {
 
       // Wait for the dropdown menu to appear
       const assignTestersMenuSelector = 'div [role="menu"]';
-      await newPage.waitForSelector(assignTestersMenuSelector);
+      await page.waitForSelector(assignTestersMenuSelector);
 
       // Find and click the target tester in the dropdown
-      await newPage.evaluate(() => {
+      await page.evaluate(() => {
         const assignTestersMenuSelector = 'div [role="menu"]';
         const assignTestersMenu = document.querySelector(
           assignTestersMenuSelector
@@ -290,8 +223,8 @@ describe('Test Run when signed in as admin', () => {
         }
       });
 
-      await newPage.waitForSelector('::-p-text(Tester Assignment History)');
-      const assignmentHistoryText = await newPage.evaluate(() => {
+      await page.waitForSelector('::-p-text(Tester Assignment History)');
+      const assignmentHistoryText = await page.evaluate(() => {
         const assignmentHistoryText = document.querySelector(
           '[class*="assignment-container"]'
         );
@@ -308,33 +241,33 @@ describe('Test Run when signed in as admin', () => {
   it('deletes a test run as admin from the test run page', async () => {
     await getPage({ role: 'admin', url: '/test-queue' }, async page => {
       // Open run as tester, esmeralda-baggins
-      const newPage = await navigateToRunAsTester(page);
+      await navigateToRunAsTester(page);
 
       // Wait for the page to be fully rendered with all data
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
 
       // Find and click the Delete Run button
-      await newPage.waitForSelector('button ::-p-text(Delete Run)');
-      await newPage.click('button ::-p-text(Delete Run)');
+      await page.waitForSelector('button ::-p-text(Delete Run)');
+      await page.click('button ::-p-text(Delete Run)');
 
       // Wait for confirmation modal to appear
-      await newPage.waitForSelector('::-p-text(Deleting Run)');
-      await newPage.waitForSelector(
+      await page.waitForSelector('::-p-text(Deleting Run)');
+      await page.waitForSelector(
         '::-p-text(Are you sure you want to permanently delete)'
       );
-      await newPage.waitForSelector('::-p-text(This cannot be undone)');
-      await newPage.waitForSelector('button ::-p-text(Proceed)');
-      await newPage.waitForSelector('button ::-p-text(Cancel)');
+      await page.waitForSelector('::-p-text(This cannot be undone)');
+      await page.waitForSelector('button ::-p-text(Proceed)');
+      await page.waitForSelector('button ::-p-text(Cancel)');
 
       // Proceed with deletion and complete navigation to the test queue
-      await newPage.click('button ::-p-text(Proceed)');
-      await newPage.waitForNavigation({
+      await page.click('button ::-p-text(Proceed)');
+      await page.waitForNavigation({
         waitUntil: ['domcontentloaded', 'networkidle0']
       });
 
       // Verify we're back on the test queue page
-      await newPage.waitForSelector('h1 ::-p-text(Test Queue)');
-      const currentUrl = await newPage.url();
+      await page.waitForSelector('h1 ::-p-text(Test Queue)');
+      const currentUrl = await page.url();
       expect(currentUrl).toMatch(/\/test-queue$/);
     });
   });
@@ -373,21 +306,11 @@ describe('Test Run when signed in as tester', () => {
     await page.waitForNetworkIdle();
     await page.waitForSelector('::-p-text(Unassign Yourself)');
     await page.waitForSelector(startTestingButtonSelector);
+    await page.click(startTestingButtonSelector);
 
-    const browser = page.browser();
-    const newPage = await waitForNewPageOnClick(browser, async () => {
-      // Use evaluate to click, which ensures JavaScript handlers fire
-      await page.evaluate(() => {
-        const buttons = Array.from(
-          document.querySelectorAll('a[role="button"]')
-        );
-        const startTestingButton = buttons.find(b =>
-          b.textContent.includes('Start Testing')
-        );
-        if (startTestingButton) {
-          startTestingButton.click();
-        }
-      });
+    // Wait for navigation to Test Run page to complete
+    await page.waitForNavigation({
+      waitUntil: ['domcontentloaded', 'networkidle0']
     });
 
     const atBrowserModalHeadingSelector =
@@ -399,20 +322,18 @@ describe('Test Run when signed in as tester', () => {
     const atBrowserModalSaveButtonSelector =
       'button ::-p-text(Save and Continue)';
 
-    await newPage.waitForSelector(atBrowserModalHeadingSelector);
-    await newPage.select(atBrowserModalAtVersionSelectSelector, '2');
-    await newPage.$eval(
+    await page.waitForSelector(atBrowserModalHeadingSelector);
+    await page.select(atBrowserModalAtVersionSelectSelector, '2');
+    await page.$eval(
       atBrowserModalBrowserVersionInputSelector,
       input => (input.value = '')
     );
-    await newPage.type(
+    await page.type(
       atBrowserModalBrowserVersionInputSelector,
       '1.TestBrowserVersion'
     );
-    await newPage.click(atBrowserModalSaveButtonSelector);
-    await newPage.waitForNetworkIdle();
-
-    return newPage;
+    await page.click(atBrowserModalSaveButtonSelector);
+    await page.waitForNetworkIdle();
   };
 
   const navigateToRunAsAnotherTester = async (
@@ -448,24 +369,24 @@ describe('Test Run when signed in as tester', () => {
     const viewResultsMenuSelector = 'div.dropdown-menu';
     await page.waitForSelector(viewResultsMenuSelector);
 
-    const browser = page.browser();
-    const newPage = await waitForNewPageOnClick(browser, () =>
-      page.evaluate(() => {
-        const openRunAsMenu = document.querySelector('div.dropdown-menu');
-        const testerOptions = Array.from(
-          openRunAsMenu.querySelectorAll('a.dropdown-item')
-        );
-        const targetTesterOption = testerOptions.find(option =>
-          option.innerText.includes('esmeralda-baggins')
-        );
-        targetTesterOption.click();
-      })
-    );
-    await newPage.waitForSelector(
+    await page.evaluate(() => {
+      const openRunAsMenu = document.querySelector('div.dropdown-menu');
+      const testerOptions = Array.from(
+        openRunAsMenu.querySelectorAll('a.dropdown-item')
+      );
+      const targetTesterOption = testerOptions.find(option =>
+        option.innerText.includes('esmeralda-baggins')
+      );
+      targetTesterOption.click();
+    });
+
+    // Wait for navigation to Test Run page to complete
+    await page.waitForNavigation({
+      waitUntil: ['domcontentloaded', 'networkidle0']
+    });
+    await page.waitForSelector(
       '::-p-text(tests of esmeralda-baggins in read-only mode)'
     );
-
-    return newPage;
   };
 
   const handlePageSubmit = async (page, { expectConflicts = true } = {}) => {
@@ -534,10 +455,10 @@ describe('Test Run when signed in as tester', () => {
 
   it('self assigns tester on Test Queue page and opens test run', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
+      await assignSelfAndNavigateToRun(page);
 
-      const h1Text = await text(newPage, 'h1 ::-p-text(Test 1)');
-      const currentUrl = await newPage.url();
+      const h1Text = await text(page, 'h1 ::-p-text(Test 1)');
+      const currentUrl = await page.url();
 
       expect(h1Text.includes('Test 1:')).toBe(true);
       expect(currentUrl).toMatch(/^.*\/run\/\d+/);
@@ -546,13 +467,13 @@ describe('Test Run when signed in as tester', () => {
 
   it('navigates between tests', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
+      await assignSelfAndNavigateToRun(page);
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
       const testNavigatorListSelector = 'nav#test-navigator-nav ol';
-      await newPage.waitForSelector(testNavigatorListSelector);
+      await page.waitForSelector(testNavigatorListSelector);
 
-      const listItemsLength = await newPage.$eval(
+      const listItemsLength = await page.$eval(
         testNavigatorListSelector,
         el => {
           return el.children.length;
@@ -565,25 +486,25 @@ describe('Test Run when signed in as tester', () => {
         const liSelector = `nav#test-navigator-nav ol li:nth-child(${sequence})`;
 
         // Select the next test to navigate to
-        await newPage.$eval(liSelector, el => el.querySelector('a').click());
-        await newPage.waitForNetworkIdle();
+        await page.$eval(liSelector, el => el.querySelector('a').click());
+        await page.waitForNetworkIdle();
 
-        await newPage.waitForSelector(`h1 ::-p-text(Test ${sequence}:)`);
-        await newPage.waitForSelector(
+        await page.waitForSelector(`h1 ::-p-text(Test ${sequence}:)`);
+        await page.waitForSelector(
           `div[data-testid="info-label"] ::-p-text(Test Plan:)`
         );
-        await newPage.waitForSelector(
+        await page.waitForSelector(
           `div[data-testid="info-label"] ::-p-text(AT:)`
         );
-        await newPage.waitForSelector(
+        await page.waitForSelector(
           `div[data-testid="info-label"] ::-p-text(Browser:)`
         );
-        await newPage.waitForSelector(
+        await page.waitForSelector(
           `div[data-testid="info-label"] ::-p-text(0 of ${listItemsLength} tests completed)`
         );
-        await newPage.waitForSelector(`h2 ::-p-text(Instructions)`);
-        await newPage.waitForSelector(`h2 ::-p-text(Record Results)`);
-        await newPage.waitForSelector(`h3 ::-p-text(After)`);
+        await page.waitForSelector(`h2 ::-p-text(Instructions)`);
+        await page.waitForSelector(`h2 ::-p-text(Record Results)`);
+        await page.waitForSelector(`h3 ::-p-text(After)`);
       }
 
       expect(listItemsLength).toBeGreaterThan(1);
@@ -592,24 +513,24 @@ describe('Test Run when signed in as tester', () => {
 
   it('clamps the test index to the bounds of the test list', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
+      await assignSelfAndNavigateToRun(page);
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
-      const url = await newPage.url();
-      await newPage.goto(`${url}#0`);
-      await newPage.waitForNetworkIdle();
-      let h1Text = await text(newPage, 'h1');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      const url = await page.url();
+      await page.goto(`${url}#0`);
+      await page.waitForNetworkIdle();
+      let h1Text = await text(page, 'h1');
       expect(h1Text).toMatch(/^Test 1:/);
 
-      const numberOfTests = await newPage.$eval(
+      const numberOfTests = await page.$eval(
         'nav#test-navigator-nav ol',
         el => {
           return el.children.length;
         }
       );
-      await newPage.goto(`${url}#${numberOfTests + 10}`);
-      await newPage.waitForNetworkIdle();
-      h1Text = await text(newPage, 'h1');
+      await page.goto(`${url}#${numberOfTests + 10}`);
+      await page.waitForNetworkIdle();
+      h1Text = await text(page, 'h1');
       expect(h1Text).toMatch(new RegExp(`Test ${numberOfTests}:`));
     });
   });
@@ -636,10 +557,10 @@ describe('Test Run when signed in as tester', () => {
 
   it('inputs results and navigates between tests to confirm saving', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
+      await assignSelfAndNavigateToRun(page);
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
-      await newPage.waitForSelector('button ::-p-text(Next Test)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
 
       const radioSelector = 'input[type="radio"][id^="pass-"]';
       const test1NavSelector = 'nav#test-navigator-nav ol li:nth-child(1)';
@@ -649,46 +570,42 @@ describe('Test Run when signed in as tester', () => {
 
       // Randomly select radio buttons on first test
       const generatedCheckedTest1Count =
-        await getGeneratedCheckedAssertionCount(newPage);
+        await getGeneratedCheckedAssertionCount(page);
 
       // Navigate to test 2 with navigation menu
-      await newPage.$eval(test2NavSelector, el =>
-        el.querySelector('a').click()
-      );
-      await newPage.waitForNetworkIdle();
-      await newPage.waitForSelector('h1 ::-p-text(Test 2:)');
-      await newPage.waitForSelector('button ::-p-text(Next Test)');
+      await page.$eval(test2NavSelector, el => el.querySelector('a').click());
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 2:)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
       const generatedCheckedTest2Count =
-        await getGeneratedCheckedAssertionCount(newPage);
+        await getGeneratedCheckedAssertionCount(page);
 
       // Navigate to test 3 with next button
-      await newPage.click(nextTestButtonSelector);
-      await newPage.waitForNetworkIdle();
-      await newPage.waitForSelector('h1 ::-p-text(Test 3:)');
-      await newPage.waitForSelector('button ::-p-text(Next Test)');
-      const test3CheckedCount = await newPage.$$eval(
+      await page.click(nextTestButtonSelector);
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 3:)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
+      const test3CheckedCount = await page.$$eval(
         radioSelector,
         els => els.filter(radio => radio.checked).length
       );
 
       // Navigate back to test 2 with previous button
-      await newPage.click(previousTestButtonSelector);
-      await newPage.waitForNetworkIdle();
-      await newPage.waitForSelector('h1 ::-p-text(Test 2:)');
-      await newPage.waitForSelector('button ::-p-text(Next Test)');
-      const test2CheckedCount = await newPage.$$eval(
+      await page.click(previousTestButtonSelector);
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 2:)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
+      const test2CheckedCount = await page.$$eval(
         radioSelector,
         els => els.filter(radio => radio.checked).length
       );
 
       // Navigate back to Test 1 with navigation menu
-      await newPage.$eval(test1NavSelector, el =>
-        el.querySelector('a').click()
-      );
-      await newPage.waitForNetworkIdle();
-      await newPage.waitForSelector('h1 ::-p-text(Test 1:)');
-      await newPage.waitForSelector('button ::-p-text(Next Test)');
-      const test1CheckedCount = await newPage.$$eval(
+      await page.$eval(test1NavSelector, el => el.querySelector('a').click());
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Next Test)');
+      const test1CheckedCount = await page.$$eval(
         radioSelector,
         els =>
           els.filter(radio => radio.checked && radio.id.includes('-yes')).length
@@ -709,16 +626,16 @@ describe('Test Run when signed in as tester', () => {
       });
     };
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page, {
+      await assignSelfAndNavigateToRun(page, {
         testPlanSectionButtonSelector: 'button#disclosure-btn-alert-0',
         testPlanTableSelector:
           'table[aria-label="Reports for Alert Example V22.04.14 in draft phase"]'
       });
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1:)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
-      expect(await countChecked(newPage)).toEqual([
+      expect(await countChecked(page)).toEqual([
         false,
         false,
         false,
@@ -727,12 +644,12 @@ describe('Test Run when signed in as tester', () => {
         false
       ]);
 
-      await newPage.evaluate(() => {
+      await page.evaluate(() => {
         document.querySelector('#problem-1-true').click();
         document.querySelector('#problem-2-false').click();
       });
 
-      expect(await countChecked(newPage)).toEqual([
+      expect(await countChecked(page)).toEqual([
         false,
         false,
         true,
@@ -741,14 +658,14 @@ describe('Test Run when signed in as tester', () => {
         true
       ]);
 
-      await newPage.click(
+      await page.click(
         'button[class="btn btn-primary"] ::-p-text(Submit Results)'
       );
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1:)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
-      expect(await countChecked(newPage)).toEqual([
+      expect(await countChecked(page)).toEqual([
         false,
         false,
         true,
@@ -773,51 +690,51 @@ describe('Test Run when signed in as tester', () => {
       });
     };
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page, {
+      await assignSelfAndNavigateToRun(page, {
         testPlanSectionButtonSelector: 'button#disclosure-btn-alert-0',
         testPlanTableSelector:
           'table[aria-label="Reports for Alert Example V22.04.14 in draft phase"]'
       });
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1:)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
-      expect(await countChecked(newPage)).toEqual({
+      expect(await countChecked(page)).toEqual({
         passing: 0,
         failing: 0
       });
 
-      await getGeneratedCheckedAssertionCount(newPage);
+      await getGeneratedCheckedAssertionCount(page);
 
-      expect(await countChecked(newPage)).toEqual({
+      expect(await countChecked(page)).toEqual({
         passing: 3,
         failing: 3
       });
 
-      await newPage.click('label ::-p-text(Command is untestable)');
+      await page.click('label ::-p-text(Command is untestable)');
 
-      expect(await countChecked(newPage)).toEqual({
+      expect(await countChecked(page)).toEqual({
         passing: 2,
         failing: 2
       });
 
       // The initial submission should fail because no SEVERE unexpected
       // behaviors have been specified.
-      await newPage.click(submitResultsButtonSelector);
-      await newPage.waitForNetworkIdle();
-      await newPage.waitForSelector('h1 ::-p-text(Test 1:)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
-      await newPage.click('label ::-p-text(excessively verbose)');
-      await newPage.select('.negative-side-effects-label select', 'SEVERE');
-      await newPage.type(
+      await page.click('label ::-p-text(excessively verbose)');
+      await page.select('.negative-side-effects-label select', 'SEVERE');
+      await page.type(
         '.negative-side-effects-label input[type=text]',
         'anything'
       );
 
-      await handlePageSubmit(newPage, { expectConflicts: false });
+      await handlePageSubmit(page, { expectConflicts: false });
 
-      const text = await newPage.evaluate(() => {
+      const text = await page.evaluate(() => {
         // Scrape text and normalize empty space characters.
         const text = el => el.innerText.replace(/\s/g, ' ');
         const readTable = el => {
@@ -868,42 +785,37 @@ describe('Test Run when signed in as tester', () => {
   });
 
   it('inputs results and successfully submits', async () => {
-    await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
-      await handlePageSubmit(newPage);
+    await getPage(
+      { role: 'tester', url: '/test-queue' },
+      async (page, { baseUrl }) => {
+        await assignSelfAndNavigateToRun(page);
+        await handlePageSubmit(page);
 
-      // Close the new tab (as the app does with "Save and Close")
-      await newPage.close();
-
-      // Bring the original test queue page back to front
-      await page.bringToFront();
-
-      // Do the same for Color Viewer Slider which has specially handled
-      // exclusions;
-      // Excluded in tests.csv and re-included in *-commands.csv
-      const newPage2 = await assignSelfAndNavigateToRun(page, {
-        testPlanSectionButtonSelector:
-          'button#disclosure-btn-horizontal-slider-0',
-        testPlanTableSelector:
-          'table[aria-label="Reports for Color Viewer Slider V24.12.04 in draft phase"]'
-      });
-      await handlePageSubmit(newPage2, { expectConflicts: false });
-
-      // Close the second tab
-      await newPage2.close();
-    });
+        // Do the same for Color Viewer Slider which has specially handled
+        // exclusions;
+        // Excluded in tests.csv and re-included in *-commands.csv
+        await page.goto(`${baseUrl}/test-queue`);
+        await assignSelfAndNavigateToRun(page, {
+          testPlanSectionButtonSelector:
+            'button#disclosure-btn-horizontal-slider-0',
+          testPlanTableSelector:
+            'table[aria-label="Reports for Color Viewer Slider V24.12.04 in draft phase"]'
+        });
+        await handlePageSubmit(page, { expectConflicts: false });
+      }
+    );
   });
 
   it('opens popup with content after clicking "Open Test Page" button', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
+      await assignSelfAndNavigateToRun(page);
 
       // Confirm open test page works
       const openTestPageButtonSelector = 'button ::-p-text(Open Test Page)';
-      await newPage.click(openTestPageButtonSelector);
+      await page.click(openTestPageButtonSelector);
 
       // Allow additional time for popup to open
-      await newPage.waitForNetworkIdle();
+      await page.waitForNetworkIdle();
 
       const pages = await global.browser.pages();
       const popupPage = pages[pages.length - 1];
@@ -965,79 +877,62 @@ describe('Test Run when signed in as tester', () => {
       await page.waitForSelector('::-p-text(Unassign Yourself)');
 
       // Start testing
-      const browser = page.browser();
-      const newPage = await waitForNewPageOnClick(browser, async () => {
-        // Use evaluate to click, which ensures JavaScript handlers fire
-        await page.evaluate(() => {
-          const buttons = Array.from(
-            document.querySelectorAll('a[role="button"]')
-          );
-          const startTestingButton = buttons.find(b =>
-            b.textContent.includes('Start Testing')
-          );
-          if (startTestingButton) {
-            startTestingButton.click();
-          }
-        });
+      await page.waitForSelector('a[role="button"] ::-p-text(Start Testing)');
+      await page.click('a[role="button"] ::-p-text(Start Testing)');
+      await page.waitForNavigation({
+        waitUntil: ['domcontentloaded', 'networkidle0']
       });
 
       // Wait for Test Run to render
-      await newPage.waitForSelector('h1 ::-p-text(Test 1:)');
+      await page.waitForSelector('h1 ::-p-text(Test 1:)');
 
-      // Wait a bit for React to render the on-hold modal after page loads
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // On hold modal should be visible - wait for the modal backdrop and title
-      // Bootstrap modals have a .modal.show class when visible
-      await newPage.waitForSelector('.modal.show', { timeout: 10000 });
-      await newPage.waitForSelector('::-p-text(On hold)', { timeout: 10000 });
+      // On hold modal should be visible
+      await page.waitForSelector('::-p-text(On hold)');
 
       // Submit button should be disabled
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
-      const submitDisabled = await newPage.$eval(
+      await page.waitForSelector('button ::-p-text(Submit Results)');
+      const submitDisabled = await page.$eval(
         'button[class="btn btn-primary"] ::-p-text(Submit Results)',
         el => el.closest('button').disabled
       );
       expect(submitDisabled).toBe(true);
 
       // Start Over should be disabled
-      const startOverDisabled = await newPage.$eval(
+      const startOverDisabled = await page.$eval(
         'button ::-p-text(Start Over)',
         el => el.closest('button').disabled
       );
       expect(startOverDisabled).toBe(true);
 
       // Close label should be present (not Save and Close)
-      await newPage.waitForSelector('button ::-p-text(Close)');
-      const hasSaveAndClose = await newPage.$(
-        'button ::-p-text(Save and Close)'
-      );
+      await page.waitForSelector('button ::-p-text(Close)');
+      const hasSaveAndClose = await page.$('button ::-p-text(Save and Close)');
       expect(hasSaveAndClose).toBeNull();
     });
   });
 
   it('focuses first assertion radio button when only top output is filled', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
+      await assignSelfAndNavigateToRun(page);
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
       // Fill only the first speech output textarea
       const firstOutputTextareaSelector = 'textarea#speechoutput-0';
-      await newPage.waitForSelector(firstOutputTextareaSelector);
-      await newPage.type(firstOutputTextareaSelector, 'Test output content');
+      await page.waitForSelector(firstOutputTextareaSelector);
+      await page.type(firstOutputTextareaSelector, 'Test output content');
 
       // Submit without filling any assertion radio buttons
-      await newPage.click(submitResultsButtonSelector);
-      await newPage.waitForNetworkIdle();
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
 
       // Wait for the form to be re-rendered after submission
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
       // Check that the first assertion radio button is focused
-      const activeElement = await newPage.evaluate(() => {
+      const activeElement = await page.evaluate(() => {
         return {
           dataTestId: document.activeElement.getAttribute('data-testid'),
           nodeName: document.activeElement.nodeName.toLowerCase(),
@@ -1053,13 +948,13 @@ describe('Test Run when signed in as tester', () => {
 
   it('focuses negative side effect details field when details are required but not provided', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
+      await assignSelfAndNavigateToRun(page);
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
       // Fill required fields to get past initial validation
-      await newPage.evaluate(() => {
+      await page.evaluate(() => {
         const yesRadios = document.querySelectorAll(
           'input[data-testid^="radio-yes-"]'
         );
@@ -1072,7 +967,7 @@ describe('Test Run when signed in as tester', () => {
       });
 
       // First enable negative side effects by clicking "Yes, negative side effects occurred"
-      await newPage.evaluate(() => {
+      await page.evaluate(() => {
         const yesUndesiredRadios = document.querySelectorAll(
           'input[id^="problem-"][id$="-false"]'
         );
@@ -1083,18 +978,18 @@ describe('Test Run when signed in as tester', () => {
       });
 
       // Select an negative side effect but don't fill details
-      await newPage.click('label ::-p-text(excessively verbose)');
+      await page.click('label ::-p-text(excessively verbose)');
 
       // Submit the form
-      await newPage.click(submitResultsButtonSelector);
-      await newPage.waitForNetworkIdle();
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
 
       // Wait for the form to be re-rendered after submission
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
       // Check that the details input field is focused
-      const activeElement = await newPage.evaluate(() => {
+      const activeElement = await page.evaluate(() => {
         return {
           className: document.activeElement.className,
           nodeName: document.activeElement.nodeName.toLowerCase(),
@@ -1112,13 +1007,13 @@ describe('Test Run when signed in as tester', () => {
 
   it('focuses first negative side effects radio button when required but not provided', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
+      await assignSelfAndNavigateToRun(page);
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
       // Fill all required fields except negative side effects
-      await newPage.evaluate(() => {
+      await page.evaluate(() => {
         const yesRadios = document.querySelectorAll(
           'input[data-testid^="radio-yes-"]'
         );
@@ -1131,15 +1026,15 @@ describe('Test Run when signed in as tester', () => {
       });
 
       // Submit without selecting negative side effects option
-      await newPage.click(submitResultsButtonSelector);
-      await newPage.waitForNetworkIdle();
+      await page.click(submitResultsButtonSelector);
+      await page.waitForNetworkIdle();
 
       // Wait for the form to be re-rendered after submission
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
-      await newPage.waitForSelector('button ::-p-text(Submit Results)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('button ::-p-text(Submit Results)');
 
       // Check that the first negative side effects radio button is focused
-      const activeElement = await newPage.evaluate(() => {
+      const activeElement = await page.evaluate(() => {
         return {
           id: document.activeElement.id,
           nodeName: document.activeElement.nodeName.toLowerCase(),
@@ -1155,11 +1050,11 @@ describe('Test Run when signed in as tester', () => {
 
   it('shows delete run button for self', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
-      const newPage = await assignSelfAndNavigateToRun(page);
+      await assignSelfAndNavigateToRun(page);
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
 
-      const deleteRunButton = await newPage.$('button ::-p-text(Delete Run)');
+      const deleteRunButton = await page.$('button ::-p-text(Delete Run)');
       expect(deleteRunButton).toBeDefined();
     });
   });
@@ -1167,12 +1062,12 @@ describe('Test Run when signed in as tester', () => {
   it('does not show delete run button when viewing other tester run', async () => {
     await getPage({ role: 'tester', url: '/test-queue' }, async page => {
       // Open a run as another tester using the 'View Results for' button on the test queue page
-      const newPage = await navigateToRunAsAnotherTester(page);
+      await navigateToRunAsAnotherTester(page);
 
-      await newPage.waitForSelector('h1 ::-p-text(Test 1)');
-      await newPage.waitForSelector('::-p-text(Test Options)');
+      await page.waitForSelector('h1 ::-p-text(Test 1)');
+      await page.waitForSelector('::-p-text(Test Options)');
 
-      const deleteRunButton = await newPage.$('button ::-p-text(Delete Run)');
+      const deleteRunButton = await page.$('button ::-p-text(Delete Run)');
       expect(deleteRunButton).toBeNull();
     });
   });

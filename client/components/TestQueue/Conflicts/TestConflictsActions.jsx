@@ -40,10 +40,14 @@ const TestConflictsActions = ({
               target="_blank"
               onClick={e => {
                 e.preventDefault();
-                window.open(
-                  `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}#${testIndex}`,
-                  '_blank'
-                );
+                if (window.PUPPETEER_TESTING) {
+                  window.location.href = `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}#${testIndex}`;
+                } else {
+                  window.open(
+                    `/run/${testPlanRun.id}?user=${testPlanRun.tester.id}#${testIndex}`,
+                    '_blank'
+                  );
+                }
               }}
             >
               {testPlanRun.tester.username}
