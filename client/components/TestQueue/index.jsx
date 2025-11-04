@@ -1,6 +1,6 @@
-import React, { Fragment, useRef, useState, useMemo, useCallback } from 'react';
+import React, { Fragment, useRef, useState, useMemo } from 'react';
 import { useApolloClient, useQuery } from '@apollo/client';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { Alert, Container, Table } from 'react-bootstrap';
