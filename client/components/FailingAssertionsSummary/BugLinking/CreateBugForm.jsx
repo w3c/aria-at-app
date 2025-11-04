@@ -34,6 +34,25 @@ const CreateBugForm = forwardRef(
       setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const getUrlError = () => {
+      if (!formData.url) {
+        return null;
+      }
+
+      if (duplicateUrl) {
+        return `This URL already exists: ${duplicateUrl.title}`;
+      }
+
+      try {
+        new URL(formData.url);
+        return null;
+      } catch {
+        return 'Invalid URL. Please include the protocol (e.g., https://)';
+      }
+    };
+
+    const urlError = getUrlError();
+
     const buttonLabel = creating ? 'Saving…' : 'Save';
     const buttonClass = 'btn btn-primary btn-sm';
 
@@ -60,11 +79,8 @@ const CreateBugForm = forwardRef(
             value={formData.url}
             onChange={handleChange}
             required
-            error={
-              duplicateUrl
-                ? `This URL already exists: ${duplicateUrl.title}`
-                : null
-            }
+            placeholder="https://example.com/bug-report"
+            error={urlError}
           />
 
           {showButtons && (

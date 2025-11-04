@@ -30,7 +30,10 @@ export const useNegativeSideEffects = testPlanReport => {
               .join(' then '),
             commandId: `${
               scenarioResult.scenario.id
-            }_${scenarioResult.scenario.commands.map(cmd => cmd.id).join('_')}`
+            }_${scenarioResult.scenario.commands.map(cmd => cmd.id).join('_')}`,
+            output: scenarioResult.output,
+            atVersionName: testResult?.atVersion?.name || null,
+            browserVersionName: testResult?.browserVersion?.name || null
           };
 
           return (scenarioResult.negativeSideEffects || []).map(

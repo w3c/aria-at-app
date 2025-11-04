@@ -2,19 +2,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const AssertionDetails = ({ assertion }) => {
+  const displayValue = (value, fallback = 'N/A') => {
+    return value || fallback;
+  };
+
   return (
     <div className="mb-2">
       <div>
-        <strong>Test Name:</strong> {assertion?.testTitle}
+        <strong>Test Name:</strong> {displayValue(assertion?.testTitle)}
       </div>
       <div>
-        <strong>Command:</strong> {assertion?.scenarioCommands}
+        <strong>Command:</strong> {displayValue(assertion?.scenarioCommands)}
       </div>
       <div>
-        <strong>Assertion:</strong> {assertion?.assertionText}
+        <strong>Assertion:</strong> {displayValue(assertion?.assertionText)}
       </div>
       <div>
-        <strong>AT Response:</strong> {assertion?.output}
+        <strong>AT Response:</strong> {displayValue(assertion?.output)}
       </div>
       <div>
         <strong>AT Version & Browser version:</strong>{' '}
