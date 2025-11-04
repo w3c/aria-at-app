@@ -135,6 +135,50 @@ const getPage = async (options, callback) => {
 
   const page = await incognitoContext.newPage();
 
+  // Track pages created in this test
+  const testContext = { pages: new Set([page]) };
+
+  // Override window.open to use navigation instead of new tabs in test environment
+  await page.evaluateOnNewDocument(() => {
+    window.__PUPPETEER_TEST__ = true;
+    const originalOpen = window.open;
+    window.open = function (url, target) {
+      if (target === '_blank' && window.__PUPPETEER_TEST__) {
+        // In test mode, navigate instead of opening new tab
+        window.location.href = url;
+        return window;
+      }
+      return originalOpen.apply(this, arguments);
+    };
+  });
+
+  // Listen for new tabs if they do get created
+  const newPageHandler = async newPage => {
+    testContext.pages.add(newPage);
+
+    // Also add the override to any new pages
+    await newPage.evaluateOnNewDocument(() => {
+      window.__PUPPETEER_TEST__ = true;
+      const originalOpen = window.open;
+      window.open = function (url, target) {
+        if (target === '_blank' && window.__PUPPETEER_TEST__) {
+          window.location.href = url;
+          return window;
+        }
+        return originalOpen.apply(this, arguments);
+      };
+    });
+  };
+
+  incognitoContext.on('targetcreated', async target => {
+    if (target.type() === 'page') {
+      const newPage = await target.page();
+      if (newPage) {
+        await newPageHandler(newPage);
+      }
+    }
+  });
+
   if (!url) {
     throw new Error('Please provide a URL, even if it it is simply "/"');
   }
@@ -188,13 +232,24 @@ const getPage = async (options, callback) => {
     await callback(page, {
       browser: global.browser,
       baseUrl,
-      consoleErrors
+      consoleErrors,
+      testContext // Pass test context for tab management
     });
   } finally {
     await page.evaluate('endTestTransaction()');
-  }
 
-  await page.close();
+    // Close only the pages created by THIS test
+    for (const testPage of testContext.pages) {
+      if (testPage && !testPage.isClosed()) {
+        try {
+          await testPage.close();
+        } catch (error) {
+          // Page might already be closed
+          console.error('Page already closed:', error.message);
+        }
+      }
+    }
+  }
 };
 
 module.exports = getPage;
