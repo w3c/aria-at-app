@@ -2,21 +2,53 @@ import getPage from '../util/getPage';
 import { text } from './util';
 
 // Utility function to handle new tab/window opening
-const waitForNewPageOnClick = async (browser, clickAction) => {
+const waitForNewPageOnClick = async (
+  browser,
+  clickAction,
+  expectedUrlPattern = null
+) => {
   const pagesBefore = await browser.pages();
-  const pagesBeforeCount = pagesBefore.length;
+  // Store page references in a Set for comparison (objects compared by reference)
+  const pagesBeforeSet = new Set(pagesBefore);
 
   // Execute the click action first
   await clickAction();
 
   // Wait for new page to appear by polling (more reliable than events)
+  // Track which pages are new to avoid picking up pages from other parallel tests
   let newPage = null;
   for (let i = 0; i < 100; i++) {
     const currentPages = await browser.pages();
-    if (currentPages.length > pagesBeforeCount) {
-      newPage = currentPages[currentPages.length - 1];
-      break;
+    // Find pages that are new (not in the original set)
+    // JavaScript Set uses reference equality for objects, so this works
+    const newPages = currentPages.filter(page => !pagesBeforeSet.has(page));
+
+    if (newPages.length > 0) {
+      // If we have an expected URL pattern, try to match it
+      if (expectedUrlPattern) {
+        for (const page of newPages) {
+          try {
+            const url = await page.url();
+            if (expectedUrlPattern.test(url)) {
+              newPage = page;
+              break;
+            }
+          } catch (e) {
+            // Page might not have navigated yet
+          }
+        }
+      }
+
+      // If no match found or no pattern, use the first new page
+      // In parallel runs, this should still be correct since we're filtering
+      // to only pages that weren't in the original set
+      if (!newPage && newPages.length > 0) {
+        newPage = newPages[0];
+      }
+
+      if (newPage) break;
     }
+
     await new Promise(r => setTimeout(r, 50));
   }
 
