@@ -33,9 +33,15 @@ const AssertionConflictsTable = ({ conflictingResults, testers }) => {
         </thead>
         <tbody>
           {allAssertions.map((assertion, index) => {
-            const results = conflictingResults.map(
-              cr => cr.scenarioResult.assertionResults[index].passed
-            );
+            const results = conflictingResults.map(cr => {
+              return cr.scenarioResult.untestable &&
+                cr.scenarioResult.assertionResults[index].assertion.priority !==
+                  'EXCLUDE'
+                ? 'Untestable'
+                : cr.scenarioResult.assertionResults[index].passed
+                ? 'Passed'
+                : 'Failed';
+            });
             const hasConflict = results.some(r => r !== results[0]);
             if (!hasConflict) {
               return null;
@@ -44,7 +50,7 @@ const AssertionConflictsTable = ({ conflictingResults, testers }) => {
               <tr key={index}>
                 <td>{assertion}</td>
                 {results.map((result, i) => (
-                  <td key={i}>{result ? 'Passed' : 'Failed'}</td>
+                  <td key={i}>{result}</td>
                 ))}
               </tr>
             );

@@ -43,12 +43,35 @@ const ariaHtmlFeatureDetailReportResolver = async (
 
       if (!finalizedTestResults) continue;
 
+      const testIdToResultIdMap = {};
+      if (populatedTestPlanReport.testPlanRuns.length) {
+        const primaryTestPlanRun =
+          populatedTestPlanReport.testPlanRuns.find(
+            ({ isPrimary }) => isPrimary
+          ) ||
+          populatedTestPlanReport.testPlanRuns.find(testPlanRun =>
+            testPlanRun.testResults?.some(
+              testResult => !!testResult.completedAt
+            )
+          ) ||
+          populatedTestPlanReport.testPlanRuns[0];
+
+        if (primaryTestPlanRun && primaryTestPlanRun.testResults) {
+          primaryTestPlanRun.testResults.forEach(testResult => {
+            if (testResult.testId) {
+              testIdToResultIdMap[testResult.testId] = testResult.id;
+            }
+          });
+        }
+      }
+
       const { rows: extractedRows, featureInfo: extracted } =
         extractFeatureAssertionRows(
           populatedTestPlanReport,
           report.id,
           finalizedTestResults,
-          refId
+          refId,
+          testIdToResultIdMap
         );
 
       rows.push(...extractedRows);
@@ -61,10 +84,10 @@ const ariaHtmlFeatureDetailReportResolver = async (
     }
   }
 
-  if (rows.length === 0) {
+  if (rows.length === 0)
     return {
       feature: {
-        refId,
+        refId: '',
         type: '',
         linkText: '',
         value: '',
@@ -88,21 +111,21 @@ const ariaHtmlFeatureDetailReportResolver = async (
       assertionStatistics: calculateAssertionStatistics([]),
       rows: []
     };
-  }
 
   rows.sort((a, b) => {
-    const aTestPlan = a.testPlanName ?? '';
-    const bTestPlan = b.testPlanName ?? '';
-    if (String(aTestPlan) !== String(bTestPlan))
-      return String(aTestPlan).localeCompare(bTestPlan);
+    const aTestPlan = `${a.testPlanName}`.toUpperCase();
+    const bTestPlan = `${b.testPlanName}`.toUpperCase();
+    const testPlanCompare = aTestPlan.localeCompare(bTestPlan);
+    if (testPlanCompare !== 0) return testPlanCompare;
 
-    const aTestTitle = a.testTitle ?? '';
-    const bTestTitle = b.testTitle ?? '';
-    if (String(aTestTitle) !== String(bTestTitle))
-      return String(aTestTitle).localeCompare(bTestTitle);
+    const aTitle = `${a.testTitle}`.toUpperCase();
+    const bTitle = `${b.testTitle}`.toUpperCase();
+    const titleCompare = aTitle.localeCompare(bTitle);
+    if (titleCompare !== 0) return titleCompare;
 
-    const aCommand = a.commandSequence ?? '';
-    const bCommand = b.commandSequence ?? '';
+    const aCommand = `${a.commandSequence}`.toUpperCase();
+    const bCommand = `${b.commandSequence}`.toUpperCase();
+
     return String(aCommand).localeCompare(bCommand);
   });
 
