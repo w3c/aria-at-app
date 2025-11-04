@@ -1,3 +1,18 @@
+## [1.24.0](https://github.com/w3c/aria-at-app/compare/v1.23.0...v1.24.0) (2025-11-04)
+
+
+### Features
+
+* `AtBugs` for tracking known AT issues ([#1577](https://github.com/w3c/aria-at-app/issues/1577)) ([a92724e](https://github.com/w3c/aria-at-app/commit/a92724eff3897087c1875111d696aee4f54df533))
+* tab urls ([#1606](https://github.com/w3c/aria-at-app/issues/1606)) ([d3262e6](https://github.com/w3c/aria-at-app/commit/d3262e628e951f6a461850e7d13c17fd3fe1d55a))
+
+
+### Bug Fixes
+
+* aria/html feature front end fixes ([#1598](https://github.com/w3c/aria-at-app/issues/1598)) ([52841bc](https://github.com/w3c/aria-at-app/commit/52841bc550894ae74517e4001f496eb9f80e1ce8))
+* Incorrect sort order on reports page Test Plans tab ([#1612](https://github.com/w3c/aria-at-app/issues/1612)) ([144e797](https://github.com/w3c/aria-at-app/commit/144e7972a8035a99fa6e2788295039818ecf6d33))
+* Show untestable vs passing/failing assertions as conflicts ([#1599](https://github.com/w3c/aria-at-app/issues/1599)) ([4cb0793](https://github.com/w3c/aria-at-app/commit/4cb079316241f1dd1dbbed0afff4120696caf2da))
+
 ## [1.23.0](https://github.com/w3c/aria-at-app/compare/v1.22.0...v1.23.0) (2025-10-30)
 
 
