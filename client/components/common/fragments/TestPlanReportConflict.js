@@ -27,18 +27,57 @@ const TEST_PLAN_REPORT_CONFLICT_FIELDS = gql`
     conflictingResults {
       testPlanRun {
         id
+        initiatedByAutomation
+        isRerun
         tester {
+          id
           username
+          isBot
+        }
+      }
+      atVersion {
+        name
+      }
+      browserVersion {
+        name
+      }
+      test {
+        id
+        rowNumber
+        title
+        renderedUrl
+      }
+      scenario {
+        commands {
+          text
         }
       }
       scenarioResult {
         output
+        untestable
         hasNegativeSideEffect
         negativeSideEffects {
           id
           text
           impact
           details
+          encodedId
+          atBugs {
+            id
+            title
+            url
+            at {
+              id
+              name
+            }
+          }
+        }
+        assertionResults {
+          assertion {
+            text
+            priority
+          }
+          passed
         }
       }
       assertionResult {
