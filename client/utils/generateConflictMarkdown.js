@@ -10,24 +10,17 @@ const generateConflictMarkdown = (testPlanReport, test) => {
   };
 
   const renderConflict = (conflict, index) => {
-    const hasNegativeSideEffects = conflict.conflictingResults.some(
-      result => result.scenarioResult.negativeSideEffects.length > 0
-    );
-    if (hasNegativeSideEffects)
-      return renderNegativeSideEffectConflict(conflict, index);
-    return renderAssertionResultConflict(conflict, index);
+    const assertion = conflict.source.assertion;
+    if (assertion) return renderAssertionResultConflict(conflict, index);
+    return renderNegativeSideEffectConflict(conflict, index);
   };
 
-  const renderAssertionResultConflict = ({ conflictingResults }, index) => {
-    const scenario = conflictingResults[0].scenario;
+  const renderAssertionResultConflict = (
+    { source: { scenario, assertion }, conflictingResults },
+    index
+  ) => {
     const command = commandString(scenario);
-    const assertion =
-      conflictingResults[0].scenarioResult.assertionResults.find(
-        ar => !ar.passed
-      );
-    const assertionText = assertion
-      ? assertion.assertion.text
-      : 'Unknown assertion';
+    const assertionText = assertion ? assertion.text : 'Unknown assertion';
 
     const results = conflictingResults
       .map(result => {
@@ -38,7 +31,13 @@ const generateConflictMarkdown = (testPlanReport, test) => {
         const passed = assertionResult ? assertionResult.passed : false;
         return `* Tester ${testPlanRun.tester.username} recorded output "${
           scenarioResult.output
-        }" and marked assertion as ${passed ? 'passing' : 'failing'}.`;
+        }" and marked assertion as ${
+          scenarioResult.untestable
+            ? 'untestable'
+            : passed
+            ? 'passing'
+            : 'failing'
+        }.`;
       })
       .join('\n');
 
@@ -50,8 +49,10 @@ ${
 ${results}`;
   };
 
-  const renderNegativeSideEffectConflict = ({ conflictingResults }, index) => {
-    const scenario = conflictingResults[0].scenario;
+  const renderNegativeSideEffectConflict = (
+    { source: { scenario }, conflictingResults },
+    index
+  ) => {
     const command = commandString(scenario);
 
     const results = conflictingResults
@@ -64,6 +65,8 @@ ${results}`;
               return `"${text}" (Details: ${details}, Impact: ${impact})`;
             })
             .join(' and ');
+          if (scenarioResult.untestable)
+            resultFormatted = `${resultFormatted} and marked the assertions as untestable`;
         } else {
           resultFormatted = 'no negative side effect';
         }

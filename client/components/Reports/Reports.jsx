@@ -1,5 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
+import { Routes, Route } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import { Helmet } from 'react-helmet';
 import clsx from 'clsx';
@@ -51,13 +52,22 @@ const Reports = () => {
 
   if (!data) return null;
 
+  const testPlanVersions = data.testPlanVersions.filter(
+    testPlanVersion => testPlanVersion.testPlanReports.length
+  );
+
   return (
-    <SummarizeTestPlanReports
-      testPlanVersions={data.testPlanVersions.filter(
-        testPlanVersion => testPlanVersion.testPlanReports.length
-      )}
-      ariaHtmlFeaturesMetrics={data.ariaHtmlFeaturesMetrics}
-    />
+    <Routes>
+      <Route
+        path="*"
+        element={
+          <SummarizeTestPlanReports
+            testPlanVersions={testPlanVersions}
+            ariaHtmlFeaturesMetrics={data.ariaHtmlFeaturesMetrics}
+          />
+        }
+      />
+    </Routes>
   );
 };
 

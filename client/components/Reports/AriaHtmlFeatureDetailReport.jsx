@@ -51,12 +51,19 @@ const AriaHtmlFeatureDetailReport = () => {
     feature.linkText || 'Feature'
   } | ARIA-AT Reports`;
 
+  const sortedRows = [...rows].sort((a, b) => {
+    const nameA = `${a.testPlanName}`.toUpperCase();
+    const nameB = `${b.testPlanName}`.toUpperCase();
+    return nameA.localeCompare(nameB);
+  });
+
   return (
     <>
       <Helmet>
         <title>{pageTitle}</title>
       </Helmet>
       <Container
+        id="main"
         className="aria-html-feature-detail-report"
         as="main"
         tabIndex="-1"
@@ -143,8 +150,8 @@ const AriaHtmlFeatureDetailReport = () => {
         <Table bordered responsive aria-label="Raw assertion data">
           <thead>
             <tr>
-              <th>Test Plan</th>
-              <th>Test Title</th>
+              <th>Test Plan Report</th>
+              <th>Test</th>
               <th>Command</th>
               <th>Assertion Priority</th>
               <th>Assertion Phrase</th>
@@ -157,7 +164,7 @@ const AriaHtmlFeatureDetailReport = () => {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, index) => (
+            {sortedRows.map((row, index) => (
               <tr key={index}>
                 <td>
                   <Link

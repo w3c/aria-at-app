@@ -43,6 +43,7 @@ const NegativeSideEffectsConflictsTable = ({ conflictingResults, testers }) => {
             <tr key={index}>
               <td>{behaviorText}</td>
               {conflictingResults.map((result, i) => {
+                const isUntestable = result.scenarioResult.untestable;
                 const matchingBehavior =
                   result.scenarioResult.negativeSideEffects.find(
                     ub => ub.text === behaviorText
@@ -54,6 +55,14 @@ const NegativeSideEffectsConflictsTable = ({ conflictingResults, testers }) => {
                         Impact: {matchingBehavior.impact}
                         <br />
                         Details: {matchingBehavior.details}
+                        {isUntestable && (
+                          <>
+                            <br />
+                            <b>
+                              Note: Assertions marked as &apos;untestable&apos;
+                            </b>
+                          </>
+                        )}
                       </>
                     ) : (
                       'Not reported'
