@@ -121,7 +121,6 @@ let incognitoContexts = {};
  * needed for navigation.
  */
 const getPage = async (options, callback) => {
-  window.PUPPETEER_TESTING = true;
   const { role, url } = options;
   if (role == null || !['admin', 'tester', 'vendor', false].includes(role)) {
     throw new Error('Please provide a valid role');
@@ -135,6 +134,10 @@ const getPage = async (options, callback) => {
   const incognitoContext = incognitoContexts[role];
 
   const page = await incognitoContext.newPage();
+
+  await page.evaluateOnNewDocument(() => {
+    window.PUPPETEER_TESTING = true;
+  });
 
   if (!url) {
     throw new Error('Please provide a URL, even if it it is simply "/"');
