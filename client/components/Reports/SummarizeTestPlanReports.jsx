@@ -71,9 +71,11 @@ const SummarizeTestPlanReports = ({
         <h1>Assistive Technology Interoperability Reports</h1>
 
         <Tabs
+          basePath="/reports"
           tabs={[
             {
               label: 'Test Plans',
+              tabKey: 'test-plans',
               content: (
                 <>
                   <h2>Test Plan Support Levels</h2>
@@ -173,6 +175,7 @@ const SummarizeTestPlanReports = ({
             },
             {
               label: 'ARIA Features',
+              tabKey: 'aria-features',
               content: (
                 <FeatureSupportTable
                   featureData={ariaHtmlFeaturesMetrics.ariaFeaturesByAtBrowser}
@@ -182,6 +185,7 @@ const SummarizeTestPlanReports = ({
             },
             {
               label: 'HTML Features',
+              tabKey: 'html-features',
               content: (
                 <FeatureSupportTable
                   featureData={ariaHtmlFeaturesMetrics.htmlFeaturesByAtBrowser}
