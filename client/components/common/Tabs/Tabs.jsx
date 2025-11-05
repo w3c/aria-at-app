@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, startTransition } from 'react';
 import PropTypes from 'prop-types';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './Tabs.module.css';
@@ -37,7 +37,9 @@ const Tabs = ({ tabs, onSelectedTabChange, basePath }) => {
     if (currentTabKey) {
       const index = tabs.findIndex(tab => tab.tabKey === currentTabKey);
       if (index < 0) {
-        navigate(basePath, { replace: true });
+        startTransition(() => {
+          navigate(basePath, { replace: true });
+        });
         return;
       }
     }
@@ -61,8 +63,10 @@ const Tabs = ({ tabs, onSelectedTabChange, basePath }) => {
     } else {
       targetPath = `${basePath}/${tabKey}`;
     }
-    navigate(`${targetPath}${location.search}${location.hash}`, {
-      replace: true
+    startTransition(() => {
+      navigate(`${targetPath}${location.search}${location.hash}`, {
+        replace: true
+      });
     });
   };
 

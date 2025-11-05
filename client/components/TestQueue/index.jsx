@@ -1,6 +1,6 @@
-import React, { Fragment, useRef, useState, useMemo, Suspense } from 'react';
+import React, { Fragment, useRef, useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@apollo/client';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import PageStatus from '../common/PageStatus';
 import { TEST_QUEUE_PAGE_QUERY } from './queries';
 import { Alert, Container } from 'react-bootstrap';
@@ -19,10 +19,6 @@ import styles from './TestQueue.module.css';
 import { ME_QUERY } from '../App/queries';
 import useReportRerunCount from '../ReportRerun/useReportRerunCount';
 
-const PageLoader = () => (
-  <Container id="main" as="main" tabIndex="-1"></Container>
-);
-
 const FILTER_KEYS = {
   ALL: 'all',
   MANUAL: 'manual',
@@ -30,12 +26,41 @@ const FILTER_KEYS = {
 };
 
 const TestQueue = () => {
+  const location = useLocation();
   const [activeFilter, setActiveFilter] = useState(FILTER_KEYS.MANUAL);
-  const [selectedTab, setSelectedTab] = useState(0);
+
+  const getInitialTabIndex = () => {
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const baseSegments = '/test-queue'.split('/').filter(Boolean);
+    const relativePath = pathSegments.slice(baseSegments.length);
+    const currentTabKey = relativePath[0];
+
+    if (!currentTabKey) return 0;
+    if (currentTabKey === 'automated') return 1;
+    return 0;
+  };
+
+  const [selectedTab, setSelectedTab] = useState(() => getInitialTabIndex());
   const { data, error, refetch } = useQuery(TEST_QUEUE_PAGE_QUERY, {
     fetchPolicy: 'cache-first',
     nextFetchPolicy: 'cache-first'
   });
+
+  useEffect(() => {
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const baseSegments = '/test-queue'.split('/').filter(Boolean);
+    const relativePath = pathSegments.slice(baseSegments.length);
+    const currentTabKey = relativePath[0];
+
+    let pathIndex = 0;
+    if (currentTabKey === 'automated') {
+      pathIndex = 1;
+    }
+
+    if (pathIndex !== selectedTab) {
+      setSelectedTab(pathIndex);
+    }
+  }, [location.pathname, selectedTab]);
 
   const { data: { me } = {} } = useQuery(ME_QUERY, {
     fetchPolicy: 'cache-first',
@@ -366,19 +391,17 @@ const TestQueue = () => {
       <Route
         path="*"
         element={
-          <Suspense fallback={<PageLoader />}>
-            <Container id="main" as="main" tabIndex="-1">
-              <Helmet>
-                <title>Test Queue | ARIA-AT</title>
-              </Helmet>
-              <h1 className="test-queue-heading">Test Queue</h1>
-              <Tabs
-                basePath="/test-queue"
-                tabs={tabs}
-                onSelectedTabChange={setSelectedTab}
-              />
-            </Container>
-          </Suspense>
+          <Container id="main" as="main" tabIndex="-1">
+            <Helmet>
+              <title>Test Queue | ARIA-AT</title>
+            </Helmet>
+            <h1 className="test-queue-heading">Test Queue</h1>
+            <Tabs
+              basePath="/test-queue"
+              tabs={tabs}
+              onSelectedTabChange={setSelectedTab}
+            />
+          </Container>
         }
       />
     </Routes>

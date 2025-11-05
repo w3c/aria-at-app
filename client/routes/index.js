@@ -101,7 +101,14 @@ export default () => (
         </Suspense>
       }
     />
-    <Route path="/test-queue/*" element={<TestQueue />} />
+    <Route
+      path="/test-queue/*"
+      element={
+        <Suspense fallback={<PageLoader />}>
+          <TestQueue />
+        </Suspense>
+      }
+    />
     <Route
       exact
       path="/test-plan-report/:testPlanReportId"
@@ -147,8 +154,14 @@ export default () => (
         </Suspense>
       }
     />
-    <Route path="/reports/*" element={<Reports />} />
-    <Route exact path="/report/:testPlanVersionId/*" element={<Report />} />
+    <Route
+      path="/reports/*"
+      element={
+        <Suspense fallback={<PageLoader />}>
+          <Reports />
+        </Suspense>
+      }
+    />
     <Route
       exact
       path="/aria-html-feature/:atId/:browserId/:refId"
