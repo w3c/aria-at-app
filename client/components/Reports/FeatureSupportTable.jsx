@@ -14,11 +14,11 @@ const FeatureSupportTable = ({ featureData, featureLabel }) => {
   const dataByFeature = {};
   const links = {};
   for (const row of featureData) {
-    if (!dataByFeature[row.refId]) {
-      dataByFeature[row.refId] = {};
+    if (!dataByFeature[row.rawValue]) {
+      dataByFeature[row.rawValue] = {};
     }
-    links[row.refId] = { href: row.value, text: row.linkText };
-    dataByFeature[row.refId][columnName(row)] = row;
+    links[row.rawValue] = { href: row.value, text: row.linkText };
+    dataByFeature[row.rawValue][columnName(row)] = row;
   }
 
   const keys = Object.keys(dataByFeature).sort();

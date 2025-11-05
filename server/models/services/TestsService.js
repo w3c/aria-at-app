@@ -5,27 +5,16 @@ const {
   getCommandV2
 } = require('../../resolvers/helpers/retrieveCommands');
 
-const {
-  references: { aria, htmlAam }
-} = support;
-
 const mutateReference = reference => {
-  if (!reference) return reference;
+  if (!reference || !reference.type) return reference;
 
-  if (reference.type === 'aria') {
-    const fragmentId = aria.fragmentIds[reference.value];
-    if (fragmentId) {
-      reference.value = `${aria.baseUrl}${fragmentId}`;
-      reference.linkText = `${reference.linkText} ${aria.linkText}`;
-    }
-  }
-
-  if (reference.type === 'htmlAam') {
-    const fragmentId = htmlAam.fragmentIds[reference.value];
-    if (fragmentId) {
-      reference.value = `${htmlAam.baseUrl}${fragmentId}`;
-      reference.linkText = `${reference.linkText} ${htmlAam.linkText}`;
-    }
+  const supportReferenceObj = support.references[reference.type];
+  const fragmentId = supportReferenceObj?.fragmentIds[reference.value];
+  if (fragmentId) {
+    reference.rawValue = reference.value;
+    reference.rawLinkText = reference.linkText;
+    reference.value = `${supportReferenceObj.baseUrl}${fragmentId}`;
+    reference.linkText = `${reference.linkText} ${supportReferenceObj.linkText}`;
   }
 
   return reference;
