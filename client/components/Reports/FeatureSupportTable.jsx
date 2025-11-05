@@ -54,7 +54,7 @@ const FeatureSupportTable = ({ featureData, featureLabel }) => {
 
                 if (!row) return <td key={key + col}>{none}</td>;
 
-                const detailLink = `/aria-html-feature/${row.atId}/${row.browserId}/${key}`;
+                const detailLink = `/aria-html-feature/${row.atId}/${row.browserId}/${key}/${row.type}`;
                 return (
                   <td key={key + col}>
                     <Link

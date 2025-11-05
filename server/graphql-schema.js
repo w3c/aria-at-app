@@ -1729,6 +1729,7 @@ const graphqlSchema = gql`
     """
     ariaHtmlFeatureDetailReport(
       refId: String!
+      refType: String
       atId: ID!
       browserId: ID!
     ): ARIAHTMLFeatureDetailReport

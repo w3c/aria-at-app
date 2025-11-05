@@ -6,6 +6,7 @@ const extractFeatureAssertionRows = (
   testPlanReportId,
   finalizedTestResults,
   refId,
+  refType,
   testIdToResultIdMap = {}
 ) => {
   const rows = [];
@@ -26,6 +27,7 @@ const extractFeatureAssertionRows = (
 
         assertion.references.forEach(reference => {
           if (reference.refId !== refId) return;
+          if (refType && reference.type !== refType) return;
 
           if (!featureInfo.refId) {
             featureInfo.refId = reference.refId;

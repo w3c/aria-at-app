@@ -193,11 +193,13 @@ export const ARIA_HTML_FEATURE_DETAIL_REPORT_QUERY = gql`
   ${BROWSER_FIELDS}
   query AriaHtmlFeatureDetailReport(
     $refId: String!
+    $refType: String
     $atId: ID!
     $browserId: ID!
   ) {
     ariaHtmlFeatureDetailReport(
       refId: $refId
+      refType: $refType
       atId: $atId
       browserId: $browserId
     ) {
