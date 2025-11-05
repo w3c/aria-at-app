@@ -520,12 +520,6 @@ const updateJsons = async () => {
     const supportPathString = fse.readFileSync(supportPath, 'utf8');
     const supportParsed = JSON.parse(supportPathString);
 
-    // // Write commands for v2 format
-    // await fse.writeFile(
-    //   path.resolve(__dirname, '../../resources/support.json'),
-    //   JSON.stringify(supportParsed, null, 2) + '\n'
-    // );
-
     return { support: supportParsed };
   } catch (error) {
     throw new Error(
