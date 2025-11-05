@@ -1,8 +1,35 @@
 const ats = require('../../resources/ats.json');
+const support = require('../../resources/support.json');
 const {
   getCommandV1,
   getCommandV2
 } = require('../../resolvers/helpers/retrieveCommands');
+
+const {
+  references: { aria, htmlAam }
+} = support;
+
+const mutateReference = reference => {
+  if (!reference) return reference;
+
+  if (reference.type === 'aria') {
+    const fragmentId = aria.fragmentIds[reference.value];
+    if (fragmentId) {
+      reference.value = `${aria.baseUrl}${fragmentId}`;
+      reference.linkText = `${reference.linkText} ${aria.linkText}`;
+    }
+  }
+
+  if (reference.type === 'htmlAam') {
+    const fragmentId = htmlAam.fragmentIds[reference.value];
+    if (fragmentId) {
+      reference.value = `${htmlAam.baseUrl}${fragmentId}`;
+      reference.linkText = `${reference.linkText} ${htmlAam.linkText}`;
+    }
+  }
+
+  return reference;
+};
 
 const getTests = parentRecord => {
   let testPlanVersion;
@@ -68,21 +95,24 @@ const getTests = parentRecord => {
           `unexpected.renderableContentAssertion.found: ${assertion.rawAssertionId}`
         );
 
+      let references =
+        isV2 && renderableContentAssertion.refIds.trim() !== ''
+          ? renderableContentAssertion.refIds
+              .trim()
+              .split(' ')
+              .map(refId => {
+                const reference = test.renderableContent.info.references.find(
+                  r => r.refId === refId
+                );
+                return mutateReference(reference);
+              })
+          : null;
+
       return {
         ...assertion,
         text: isV2 ? assertion.assertionStatement : assertion.text,
         phrase: isV2 ? assertion.assertionPhrase : null,
-        references:
-          isV2 && renderableContentAssertion.refIds.trim() !== ''
-            ? renderableContentAssertion.refIds
-                .trim()
-                .split(' ')
-                .map(refId =>
-                  test.renderableContent.info.references.find(
-                    r => r.refId === refId
-                  )
-                )
-            : null
+        references
       };
     })
   }));
