@@ -364,20 +364,21 @@ async function createAssertionsForTestPlanVersion({
  */
 const importHarness = () => {
   const sourceFolder = path.resolve(`${testsDirectory}/resources`);
-  const targetFolder = path.resolve(
+  const targetClientFolder = path.resolve(
     __dirname,
     '../../../',
     'client',
     'resources'
   );
+  const targetServerFolder = path.resolve(__dirname, '../../', 'resources');
   console.info(
-    `Updating harness directory, copying from ${sourceFolder} to ${targetFolder} ...`
+    `Updating harness directory, copying from ${sourceFolder} to ${targetClientFolder} ...`
   );
-  fse.rmSync(targetFolder, { recursive: true, force: true });
+  fse.rmSync(targetClientFolder, { recursive: true, force: true });
 
   // Copy source folder
   console.info('Importing latest harness files ...');
-  fse.copySync(sourceFolder, targetFolder, {
+  fse.copySync(sourceFolder, targetClientFolder, {
     filter: src => {
       if (fse.lstatSync(src).isDirectory()) {
         return true;
@@ -394,13 +395,23 @@ const importHarness = () => {
   if (fse.existsSync(`${testsDirectory}/${commandsJson}`)) {
     fse.copyFileSync(
       `${testsDirectory}/${commandsJson}`,
-      `${targetFolder}/${commandsJson}`
+      `${targetClientFolder}/${commandsJson}`
     );
   }
-  fse.copyFileSync(
-    `${testsDirectory}/${supportJson}`,
-    `${targetFolder}/${supportJson}`
-  );
+  if (fse.existsSync(`${testsDirectory}/${supportJson}`)) {
+    fse.copyFileSync(
+      `${testsDirectory}/${supportJson}`,
+      `${targetClientFolder}/${supportJson}`
+    );
+
+    console.info(
+      `Updating server/resources/support.json, copying from ${sourceFolder} to ${targetServerFolder} ...`
+    );
+    fse.copyFileSync(
+      `${testsDirectory}/${supportJson}`,
+      `${targetServerFolder}/${supportJson}`
+    );
+  }
   console.info('Harness files update complete.');
 };
 
@@ -509,11 +520,11 @@ const updateJsons = async () => {
     const supportPathString = fse.readFileSync(supportPath, 'utf8');
     const supportParsed = JSON.parse(supportPathString);
 
-    // Write commands for v2 format
-    await fse.writeFile(
-      path.resolve(__dirname, '../../resources/support.json'),
-      JSON.stringify(supportParsed, null, 2) + '\n'
-    );
+    // // Write commands for v2 format
+    // await fse.writeFile(
+    //   path.resolve(__dirname, '../../resources/support.json'),
+    //   JSON.stringify(supportParsed, null, 2) + '\n'
+    // );
 
     return { support: supportParsed };
   } catch (error) {
