@@ -50,8 +50,11 @@ const SummarizeTestPlanReports = ({
       testPlanTargetsById[testPlanTarget.id] = testPlanTarget;
     });
   });
-  testPlanTargetsById = alphabetizeObjectBy(testPlanTargetsById, keyValue =>
-    getTestPlanTargetTitle(keyValue[1])
+  const orderedColumns = Object.entries(testPlanTargetsById).map(
+    ([, data]) => data
+  );
+  orderedColumns.sort((a, b) =>
+    getTestPlanTargetTitle(a).localeCompare(getTestPlanTargetTitle(b))
   );
 
   const none = None();
@@ -92,13 +95,11 @@ const SummarizeTestPlanReports = ({
                     <thead>
                       <tr>
                         <th>Test Plan</th>
-                        {Object.values(testPlanTargetsById).map(
-                          testPlanTarget => (
-                            <th key={testPlanTarget.id}>
-                              {getTestPlanTargetTitle(testPlanTarget)}
-                            </th>
-                          )
-                        )}
+                        {orderedColumns.map(testPlanTarget => (
+                          <th key={testPlanTarget.id}>
+                            {getTestPlanTargetTitle(testPlanTarget)}
+                          </th>
+                        ))}
                       </tr>
                     </thead>
                     <tbody>
@@ -128,43 +129,41 @@ const SummarizeTestPlanReports = ({
                                   {derivePhaseName(phase)}
                                 </span>
                               </td>
-                              {Object.values(testPlanTargetsById).map(
-                                testPlanTarget => {
-                                  const testPlanReport = testPlanReports.find(
-                                    testPlanReport =>
-                                      testPlanReport.at.id ===
-                                        testPlanTarget.at.id &&
-                                      testPlanReport.browser.id ===
-                                        testPlanTarget.browser.id
-                                  );
+                              {orderedColumns.map(testPlanTarget => {
+                                const testPlanReport = testPlanReports.find(
+                                  testPlanReport =>
+                                    testPlanReport.at.id ===
+                                      testPlanTarget.at.id &&
+                                    testPlanReport.browser.id ===
+                                      testPlanTarget.browser.id
+                                );
 
-                                  if (!testPlanReport) {
-                                    return (
-                                      <td
-                                        key={`${testPlanVersion.id}-${testPlanTarget.id}`}
-                                      >
-                                        {none}
-                                      </td>
-                                    );
-                                  }
-                                  const metrics = testPlanReport.metrics;
+                                if (!testPlanReport) {
                                   return (
-                                    <td key={testPlanReport.id}>
-                                      <Link
-                                        to={
-                                          `/report/${testPlanVersion.id}` +
-                                          `/targets/${testPlanReport.id}`
-                                        }
-                                        aria-label={`${metrics.supportPercent}%`}
-                                      >
-                                        <ProgressBar
-                                          progress={metrics.supportPercent}
-                                        />
-                                      </Link>
+                                    <td
+                                      key={`${testPlanVersion.id}-${testPlanTarget.id}`}
+                                    >
+                                      {none}
                                     </td>
                                   );
                                 }
-                              )}
+                                const metrics = testPlanReport.metrics;
+                                return (
+                                  <td key={testPlanReport.id}>
+                                    <Link
+                                      to={
+                                        `/report/${testPlanVersion.id}` +
+                                        `/targets/${testPlanReport.id}`
+                                      }
+                                      aria-label={`${metrics.supportPercent}%`}
+                                    >
+                                      <ProgressBar
+                                        progress={metrics.supportPercent}
+                                      />
+                                    </Link>
+                                  </td>
+                                );
+                              })}
                             </tr>
                           );
                         })}

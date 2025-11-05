@@ -10,6 +10,7 @@ const none = None();
 
 const FeatureSupportTable = ({ featureData, featureLabel }) => {
   const supportCombos = [...new Set(featureData.map(columnName))];
+  supportCombos.sort((a, b) => a.localeCompare(b));
 
   const dataByFeature = {};
   const links = {};
